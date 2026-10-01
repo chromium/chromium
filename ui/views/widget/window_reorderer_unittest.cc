@@ -579,4 +579,53 @@ TEST_F(WindowReordererTest, DetachReattach) {
   EXPECT_EQ("w_assoc1 w_assoc2 u1", ChildWindowNamesAsString(*parent_window));
 }
 
+// Adding a subtree to a widget reorders the native windows when the subtree
+// hosts a native view, even though the subtree's root has no layer: the host
+// view owns a layer, which is how View::AddChildViewAtImpl() decides whether a
+// reorder is needed at all.
+//
+// View hierarchy:
+// contents_view
+// ├── below (no layer)
+// ├── host_view1 (hosts w1)
+// └── container (no layer)
+//     └── host_view2 (hosts w2)
+//
+// Initial window stack (bottom to top): w1, w2
+//
+// Move `container` under `below`: w2 must move below w1.
+// Add a plain view: nothing changes.
+TEST_F(WindowReordererTest, AddSubtreeHostingNativeView) {
+  std::unique_ptr<Widget> parent = CreateControlWidget(root_window());
+  parent->Show();
+  aura::Window* parent_window = parent->GetNativeWindow();
+  View* contents_view = parent->SetContentsView(std::make_unique<View>());
+
+  View* below = contents_view->AddChildView(std::make_unique<View>());
+
+  TreeBuilder builder(this, parent.get());
+  builder.AddNativeViewHost("w_assoc1");
+
+  std::unique_ptr<Widget> w2 = CreateControlWidget(parent_window, "w_assoc2");
+  w2->Show();
+  View* container = contents_view->AddChildView(std::make_unique<View>());
+  auto* host2 = container->AddChildView(std::make_unique<NativeViewHost>());
+  host2->Attach(w2->GetNativeView());
+  ASSERT_EQ("w_assoc1 w_assoc2", ChildWindowNamesAsString(*parent_window));
+  ASSERT_FALSE(container->layer());
+  ASSERT_TRUE(host2->layer());
+
+  // Moving `container` within the same widget goes through
+  // View::AddChildViewAtImpl() without any widget notifications, so the native
+  // windows are restacked only if that reorders the layers.
+  below->AddChildViewRaw(container);
+  EXPECT_EQ("w_assoc2 w_assoc1", ChildWindowNamesAsString(*parent_window));
+
+  // A subtree without layers or hosted native views leaves the order alone.
+  contents_view->AddChildViewAt(std::make_unique<View>(), 0);
+  EXPECT_EQ("w_assoc2 w_assoc1", ChildWindowNamesAsString(*parent_window));
+
+  host2->Detach();
+}
+
 }  // namespace views

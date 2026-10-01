@@ -116,6 +116,14 @@ namespace views {
 
 namespace {
 
+// Returns true if `view` or any of its descendants owns a layer.
+bool SubtreeHasLayer(const View* view) {
+  if (view->layer()) {
+    return true;
+  }
+  return std::ranges::any_of(view->children(), &SubtreeHasLayer);
+}
+
 #if BUILDFLAG(IS_WIN)
 constexpr bool kContextMenuOnMousePress = false;
 #else
@@ -3308,7 +3316,19 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
     widget->LayerTreeChanged();
   }
 
-  ReorderLayers();
+  // Layers and hosted native views are stacked according to the order of the
+  // views that own them, so adding a subtree that owns no layer cannot change
+  // that order: with kNativeViewHostManagesLayers a view hosting a native view
+  // owns a layer too. Skip the reorder in that case, since it walks the whole
+  // subtree of the nearest layer-backed ancestor and, through
+  // Widget::ReorderNativeViews(), the whole widget, which is quadratic when
+  // many children are added in a row, e.g. when a large session is restored
+  // into the tab strip. The legacy reorderer associates windows with
+  // arbitrary views via kHostViewKey, so it keeps the unconditional reorder.
+  if (SubtreeHasLayer(view) ||
+      !base::FeatureList::IsEnabled(features::kNativeViewHostManagesLayers)) {
+    ReorderLayers();
+  }
 
   // Make sure the visibility of the child layers are correct.
   // If any of the parent View is hidden, then the layers of the subtree
