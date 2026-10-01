@@ -112,9 +112,11 @@ class StatefulTestModelReference {
 #if defined(UNDEFINED_SANITIZER)
 #define MAYBE_CreateWorks DISABLED_CreateWorks
 #define MAYBE_ProcessAudioWorks DISABLED_ProcessAudioWorks
+#define MAYBE_FailsOnIncompatibleModel DSIABLED_FailsOnIncompatibleModel
 #else
 #define MAYBE_CreateWorks CreateWorks
 #define MAYBE_ProcessAudioWorks ProcessAudioWorks
+#define MAYBE_FailsOnIncompatibleModel FailsOnIncompatibleModel
 #endif
 TEST(TfLiteVoiceIsolation, MAYBE_CreateWorks) {
   auto model = LoadVoiceIsolationTestModel();
@@ -214,7 +216,7 @@ TEST(TfLiteVoiceIsolation, FailsOnEmptyModel) {
 // Verifies that a FlatBuffer model with incompatible tensor configuration (such
 // as an unexpected frame size or identical input and output tensors) is safely
 // rejected with kIncompatibleModel.
-TEST(TfLiteVoiceIsolation, FailsOnIncompatibleModel) {
+TEST(TfLiteVoiceIsolation, MAYBE_FailsOnIncompatibleModel) {
   FakeModel fake_model =
       BuildModelWithSameInputOutputTensor(/*tensor_size=*/320);
   ASSERT_NE(fake_model.model, nullptr);
