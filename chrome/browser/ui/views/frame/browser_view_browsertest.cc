@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -154,6 +155,7 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "url/url_constants.h"
 
 #if defined(USE_AURA)
@@ -402,19 +404,16 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   raw_ptr<content::WebContents, DanglingUntriaged> other_;
 };
 
-// Waits for a different view to claim focus within a widget with the
-// specified name.
+// Waits for a view matching (or contained within) the specified
+// `ui::ElementIdentifier` in `browser` to claim focus.
 class TestFocusChangeWaiter : public views::FocusChangeListener {
  public:
-  TestFocusChangeWaiter(views::FocusManager* focus_manager,
-                        const std::string& expected_widget_name)
-      : focus_manager_(focus_manager),
-        expected_widget_name_(expected_widget_name) {
-    if (auto* current_focused_view = focus_manager->GetFocusedView()) {
-      previous_view_id_ = current_focused_view->GetID();
-    } else {
-      previous_view_id_ = -1;
-    }
+  TestFocusChangeWaiter(BrowserWindowInterface* browser,
+                        ui::ElementIdentifier expected_element_id)
+      : browser_elements_(BrowserElementsViews::From(browser)),
+        focus_manager_(
+            browser_elements_->GetPrimaryWindowWidget()->GetFocusManager()),
+        expected_element_id_(expected_element_id) {
     focus_manager_->AddFocusChangeListener(this);
   }
 
@@ -424,25 +423,40 @@ class TestFocusChangeWaiter : public views::FocusChangeListener {
     focus_manager_->RemoveFocusChangeListener(this);
   }
 
-  void Wait() { run_loop_.Run(); }
+  // Waits until a view matching or inside `expected_element_id_` is focused.
+  void Wait() {
+    // Focus may have already moved to the target element before `Wait()` is
+    // called (for example, synchronously when the dialog is created and shown),
+    // in which case `OnDidChangeFocus()` has already fired and we can return
+    // immediately without running `run_loop_`.
+    if (IsExpectedElementFocused(focus_manager_->GetFocusedView())) {
+      return;
+    }
+    run_loop_.Run();
+  }
 
  private:
+  bool IsExpectedElementFocused(views::View* focused_view) const {
+    if (!focused_view) {
+      return false;
+    }
+    views::View* expected_view =
+        browser_elements_->GetView(expected_element_id_);
+    return expected_view && expected_view->Contains(focused_view);
+  }
+
   // views::FocusChangeListener:
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    if (focused_now && focused_now->GetID() != previous_view_id_) {
-      views::Widget* widget = focused_now->GetWidget();
-      if (widget && widget->GetName() == expected_widget_name_) {
-        run_loop_.Quit();
-      }
+    if (IsExpectedElementFocused(focused_now)) {
+      run_loop_.Quit();
     }
   }
 
+  raw_ptr<BrowserElementsViews> browser_elements_;
   raw_ptr<views::FocusManager> focus_manager_;
   base::RunLoop run_loop_;
-  int previous_view_id_;
-  std::string expected_widget_name_;
-  base::WeakPtrFactory<TestFocusChangeWaiter> weak_factory_{this};
+  ui::ElementIdentifier expected_element_id_;
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
@@ -1514,8 +1528,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
   // Waiting for the dialog to be shown should ensure that the first
   // condition is met. But we also need to wait for the focus to change
   // or the second condition flakily fails.
-  TestFocusChangeWaiter focus_waiter(browser_view()->GetFocusManager(),
-                                     "MessageBoxView");
+  TestFocusChangeWaiter focus_waiter(browser(),
+                                     views::DialogClientView::kTopViewId);
   TabModalConfirmDialog::Create(std::move(delegate), contents);
   focus_waiter.Wait();
 
