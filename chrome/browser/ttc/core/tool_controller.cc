@@ -12,16 +12,20 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/core/journal_details_builder.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
@@ -41,28 +45,75 @@
 
 namespace ttc {
 
+namespace {
+
+void OnToolCallFinished(
+    std::unique_ptr<SessionJournal::PendingAsyncEvent> journal_event,
+    ToolResponseCallback callback,
+    ToolResponse response) {
+  actor::JournalDetailsBuilder details;
+  if (response.Ok()) {
+    details.Add("result", "ok");
+  } else {
+    const ToolError& error = response.error();
+    if (error.code) {
+      details.Add("code", *error.code);
+    }
+    details.AddError(error.message.value_or("Tool call failed"));
+  }
+  journal_event->EndEntry(std::move(details).Build());
+  std::move(callback).Run(std::move(response));
+}
+
+}  // namespace
+
 ToolController::ToolController(SessionControllerImpl& session_controller)
-    : session_controller_(session_controller) {}
+    : session_controller_(session_controller) {
+  // Start the task up front so that the whole session is journaled under it.
+  // TtcKeyedServiceFactory doesn't create TTC without the actor service.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  CHECK(actor_service);
+  EnsureTaskCreated(actor_service);
+}
 
 ToolController::~ToolController() {
   if (!task_id_.is_null()) {
     auto* actor_service = actor::ActorKeyedService::Get(GetProfile());
     CHECK(actor_service);
-    actor_service->StopTask(task_id_,
-                            actor::ActorTask::StoppedReason::kTaskComplete);
+
+    // Cancel a task that never acted so that it isn't surfaced to the user.
+    // TODO(b/544821996): Revisit once TTC has its own task client and delegate.
+    actor::ActorTask::StoppedReason stop_reason =
+        actor::ActorTask::StoppedReason::kTaskComplete;
+    if (const actor::ActorTask* task = actor_service->GetTask(task_id_);
+        task && task->GetState() == actor::ActorTask::State::kCreated) {
+      stop_reason = actor::ActorTask::StoppedReason::kStoppedByUser;
+    }
+    actor_service->StopTask(task_id_, stop_reason);
   }
 }
 
 void ToolController::ProcessToolCall(const ToolRequest& tool_request,
                                      ToolResponseCallback callback) {
-  // Every tool below is executed as an actor tool within an actor task, so no
-  // tools are supported if the actor service isn't available. This matches
-  // GetToolDefinitions().
-  if (!actor::ActorKeyedService::Get(GetProfile())) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kToolUnknown, "Unsupported tool"));
-    return;
-  }
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  CHECK(actor_service);
+
+  // Done before journaling the call so that, if the task has to be replaced,
+  // the call is journaled under the task it runs in.
+  EnsureTaskCreated(actor_service);
+
+  callback = base::BindOnce(
+      &OnToolCallFinished,
+      journal_->BeginAsyncEvent(
+          "TtcToolCall",
+          actor::JournalDetailsBuilder()
+              .Add("name", tool_request.name)
+              .Add("arguments",
+                   base::WriteJson(tool_request.arguments).value_or(""))
+              .Build()),
+      std::move(callback));
 
 #if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "open_url") {
@@ -124,12 +175,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
 std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   std::vector<ToolDefinition> tools;
-
-  // Every tool below is executed as an actor tool within an actor task, so
-  // return an empty list if the actor service isn't available.
-  if (!actor::ActorKeyedService::Get(GetProfile())) {
-    return tools;
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   ToolDefinition open_url;
@@ -338,6 +383,15 @@ void ToolController::EnsureTaskCreated(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
       actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
       /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager());
+
+  // The session keeps a single journal so that its async events stay
+  // continuous if the task is replaced.
+  if (journal_) {
+    journal_->SetTaskId(task_id_);
+  } else {
+    journal_ =
+        std::make_unique<SessionJournal>(actor_service->GetJournal(), task_id_);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -559,7 +613,6 @@ void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(GetProfile());
   CHECK(actor_service);
-  EnsureTaskCreated(actor_service);
 
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(std::move(action));

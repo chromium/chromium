@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_STATES_H_
 #define CHROME_BROWSER_TTC_CORE_STATES_H_
 
+#include <iosfwd>
+
 namespace ttc {
 
 enum class ServiceState {
@@ -25,6 +27,8 @@ enum class SessionLifecycle {
   // The session has been disconnected and is no longer usable.
   kFinished,
 };
+
+std::ostream& operator<<(std::ostream& os, SessionLifecycle lifecycle);
 
 }  // namespace ttc
 

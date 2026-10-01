@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,7 +35,7 @@ class FakeObserver : public TtcBackend::Observer {
  public:
   void OnApplicationInitialized() override {}
   void OnApplicationClosed() override {}
-  void OnApplicationError(ErrorCode error) override {}
+  void OnApplicationError(ErrorCode error) override { last_error_ = error; }
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override {}
   void OnAudioOutput(base::span<const int16_t> audio_data,
@@ -49,11 +51,13 @@ class FakeObserver : public TtcBackend::Observer {
   int audio_output_count() const { return audio_output_count_; }
   const std::vector<int16_t>& last_samples() const { return last_samples_; }
   int64_t last_sequence_number() const { return last_sequence_number_; }
+  std::optional<ErrorCode> last_error() const { return last_error_; }
 
  private:
   int audio_output_count_ = 0;
   std::vector<int16_t> last_samples_;
   int64_t last_sequence_number_ = -1;
+  std::optional<ErrorCode> last_error_;
 };
 
 // Stands in for a live MES session so that Connect() succeeds without any
@@ -88,6 +92,13 @@ optimization_guide::proto::TtcServerFrame MakeAudioFrame(
   auto* audio_output = frame.mutable_server_content()->mutable_audio_output();
   audio_output->set_audio_data(audio_bytes);
   audio_output->set_sequence_number(seq);
+  return frame;
+}
+
+optimization_guide::proto::TtcServerFrame MakeServerErrorFrame(
+    optimization_guide::proto::ServerErrorNotification::ErrorCode code) {
+  optimization_guide::proto::TtcServerFrame frame;
+  frame.mutable_server_error()->set_error_code(code);
   return frame;
 }
 
@@ -154,6 +165,30 @@ TEST_F(TtcMesClientTest, ForwardsEmptyAudioChunk) {
 
   EXPECT_EQ(observer_.audio_output_count(), 1);
   EXPECT_TRUE(observer_.last_samples().empty());
+}
+
+TEST_F(TtcMesClientTest, ForwardsServerError) {
+  client().HandleServerFrame(
+      MakeServerErrorFrame(optimization_guide::proto::ServerErrorNotification::
+                               ERROR_CODE_RATE_LIMITED));
+
+  EXPECT_EQ(observer_.last_error(), ErrorCode::kRateLimited);
+}
+
+// Server error codes are open enum values, so they may be outside of the range
+// of known codes and must then be reported as unknown.
+TEST_F(TtcMesClientTest, ReportsOutOfRangeServerErrorAsUnknown) {
+  for (int code :
+       {-1, static_cast<int>(ErrorCode::kMaxServerErrorCode) + 1,
+        static_cast<int>(ErrorCode::kOptimizationGuideUnavailable)}) {
+    SCOPED_TRACE(code);
+    client().HandleServerFrame(MakeServerErrorFrame(
+        static_cast<
+            optimization_guide::proto::ServerErrorNotification::ErrorCode>(
+            code)));
+
+    EXPECT_EQ(observer_.last_error(), ErrorCode::kUnknown);
+  }
 }
 
 }  // namespace ttc

@@ -15,6 +15,7 @@ source_set("core") {
     "entrypoint_controller.h",
     "page_context.h",
     "session_controller.h",
+    "session_journal.h",
     "session_view.h",
     "states.h",
     "ttc_keyed_service.h",
@@ -29,6 +30,10 @@ source_set("core") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/app:public",
     "//chrome/browser/ui/browser_window",
+    "//components/actor/core",
+    "//components/actor/core:journal",
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -45,7 +50,9 @@ source_set("impl") {
     "page_context.cc",
     "session_controller_impl.cc",
     "session_controller_impl.h",
+    "session_journal.cc",
     "session_view_delegate.h",
+    "states.cc",
     "tool_controller.cc",
     "tool_controller.h",
     "ttc_actor_ui_state_manager.cc",
@@ -111,6 +118,9 @@ source_set("test_support") {
     ":core",
     "//base",
     "//chrome/browser/ttc/app:public",
+    "//components/actor/core:journal",
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gmock",
     "//url",
@@ -120,7 +130,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_keyed_service_unittest.cc" ]
+  sources = [
+    "session_journal_unittest.cc",
+    "ttc_keyed_service_unittest.cc",
+  ]
   deps = [
     ":core",
     ":impl",
@@ -129,6 +142,11 @@ source_set("unit_tests") {
     "//chrome/browser/ttc/app:public",
     "//chrome/browser/ttc/app:unit_tests",
     "//chrome/test:test_support",
+    "//components/actor/core",
+    "//components/actor/core:journal",
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//components/keyed_service/core",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -169,6 +187,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "page_context_monitor_browsertest.cc",
+      "session_journal_browsertest.cc",
       "tool_controller_browsertest.cc",
       "ttc_keyed_service_browsertest.cc",
       "voice_focused_contents_tracker_browsertest.cc",
@@ -190,6 +209,8 @@ if (!is_android) {
       "//chrome/common",
       "//chrome/test:test_support",
       "//components/actor/core",
+      "//components/actor/core:journal",
+      "//components/actor/core:task_id",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
       "//components/optimization_guide/proto:optimization_guide_proto",

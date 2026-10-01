@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
+#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -50,6 +52,8 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
       session_view_(MakeSessionView(*this)),
       tool_controller_(*this) {
+  GetJournal().Log("TtcSessionStart", {});
+
   // Created here rather than in the initializer list because MakeConversation()
   // calls back into GetProfile() on this object.
   conversation_ =
@@ -72,6 +76,14 @@ SessionControllerImpl::~SessionControllerImpl() {
   if (conversation_) {
     conversation_->Stop();
   }
+
+  GetJournal().Log(
+      "TtcSessionEnd",
+      actor::JournalDetailsBuilder().Add("state", session_lifecycle_).Build());
+}
+
+SessionJournal& SessionControllerImpl::GetJournal() {
+  return tool_controller_.journal();
 }
 
 SessionLifecycle SessionControllerImpl::GetSessionLifecycle() const {
@@ -83,6 +95,11 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
     return;
   }
 
+  GetJournal().Log("TtcSessionLifecycle",
+                   actor::JournalDetailsBuilder()
+                       .Add("current_state", session_lifecycle_)
+                       .Add("new_state", lifecycle)
+                       .Build());
   session_lifecycle_ = lifecycle;
 
   if (session_lifecycle_ == SessionLifecycle::kFinished) {

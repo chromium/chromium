@@ -214,9 +214,10 @@ void TtcMesClient::HandleServerFrame(
     optimization_guide::proto::ServerErrorNotification_ErrorCode
         server_error_code = frame.server_error().error_code();
     ErrorCode ttc_error_code = ErrorCode::kUnknown;
-    if (server_error_code <= static_cast<int>(ErrorCode::kMaxServerErrorCode)) {
-      ttc_error_code =
-          static_cast<ErrorCode>(frame.server_error().error_code());
+    // The proto enum is open, so the code can be any int.
+    if (server_error_code >= 0 &&
+        server_error_code <= static_cast<int>(ErrorCode::kMaxServerErrorCode)) {
+      ttc_error_code = static_cast<ErrorCode>(server_error_code);
     }
     observer_->OnApplicationError(ttc_error_code);
   }

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ttc/core/tool_controller.h"
 
+#include <map>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
+#include "base/callback_list.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -30,7 +32,6 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -823,27 +824,44 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   EXPECT_EQ(*seek_required, base::ListValue().Append("timecode"));
 }
 
-class ToolControllerActorDisabledBrowserTest
-    : public ToolControllerBrowserTest {
- public:
-  ToolControllerActorDisabledBrowserTest() {
-    actor_feature_list_.InitAndDisableFeature(features::kGlicActor);
-  }
-  ~ToolControllerActorDisabledBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList actor_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ToolControllerActorDisabledBrowserTest,
-                       GetToolDefinitionsIsEmpty) {
-  ASSERT_FALSE(actor::ActorKeyedService::Get(profile()));
+// The session's actor task is started with the session and stopped when it
+// ends. A task that never acted is cancelled rather than finished.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       TaskIsCancelledUnlessSessionActed) {
+  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  std::map<actor::TaskId, actor::ActorTask::State> last_task_states;
+  base::CallbackListSubscription subscription =
+      actor_service->AddTaskStateChangedCallback(
+          base::BindLambdaForTesting([&](actor::ActorTask& task) {
+            last_task_states[task.id()] = task.GetState();
+          }));
 
   ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
+  ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
+  const actor::TaskId idle_task_id =
+      actor_service->GetActiveTasks().begin()->first;
+  ttc_service().EndSession();
+  EXPECT_EQ(last_task_states[idle_task_id],
+            actor::ActorTask::State::kCancelled);
 
-  EXPECT_TRUE(session_controller->GetToolDefinitions().empty());
+  ttc_service().StartSession();
+  ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
+  const actor::TaskId acting_task_id =
+      actor_service->GetActiveTasks().begin()->first;
+  ToolRequest tool_request;
+  tool_request.name = "open_url";
+  tool_request.arguments.Set("url", embedded_https_test_server()
+                                        .GetURL("example.com", "/title1.html")
+                                        .spec());
+  tool_request.arguments.Set("new_tab", false);
+  base::test::TestFuture<ToolResponse> future;
+  ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
+                                                      future.GetCallback());
+  ASSERT_TRUE(future.Take().Ok());
+  ttc_service().EndSession();
+  EXPECT_EQ(last_task_states[acting_task_id],
+            actor::ActorTask::State::kFinished);
 }
 
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than

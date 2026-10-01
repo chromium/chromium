@@ -7,14 +7,19 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/states.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,12 +59,25 @@ class TtcKeyedServiceUnitTest : public testing::Test {
  public:
   TtcKeyedServiceUnitTest() {
     scoped_feature_list_.InitAndEnableFeature(kTtc);
-    service_ = std::make_unique<TtcKeyedService>(
-        &profile_,
+    // Registered with the factory so that TtcKeyedService::Get() returns it,
+    // which sessions rely on to create their actor task, and so that the actor
+    // service, whose tasks refer to this service, shuts down before this
+    // service is destroyed.
+    service_ = static_cast<TtcKeyedService*>(
+        TtcKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            &profile_,
+            base::BindRepeating(&TtcKeyedServiceUnitTest::CreateService,
+                                base::Unretained(this))));
+  }
+  ~TtcKeyedServiceUnitTest() override = default;
+
+  std::unique_ptr<KeyedService> CreateService(
+      content::BrowserContext* context) {
+    return std::make_unique<TtcKeyedService>(
+        Profile::FromBrowserContext(context),
         base::BindRepeating(&TtcKeyedServiceUnitTest::CreateFakeConversation,
                             base::Unretained(this)));
   }
-  ~TtcKeyedServiceUnitTest() override = default;
 
   std::unique_ptr<Conversation> CreateFakeConversation(SessionController&) {
     return std::make_unique<FakeConversation>(
@@ -75,7 +93,7 @@ class TtcKeyedServiceUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TtcKeyedService> service_;
+  raw_ptr<TtcKeyedService> service_ = nullptr;
   int conversation_stopped_count_ = 0;
 };
 

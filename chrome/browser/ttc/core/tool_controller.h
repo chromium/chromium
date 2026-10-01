@@ -28,7 +28,10 @@ class ToolRequest;
 namespace ttc {
 
 class SessionControllerImpl;
+class SessionJournal;
 
+// Executes the session's tool calls in an actor task. The task is started on
+// construction and stopped on destruction.
 class ToolController {
  public:
   explicit ToolController(SessionControllerImpl& session_controller);
@@ -40,6 +43,10 @@ class ToolController {
   // Returns the definitions of the tools this controller can execute, for
   // registration with the model backend.
   std::vector<ToolDefinition> GetToolDefinitions();
+
+  // Returns the session's journal, which records events under the current
+  // actor task.
+  SessionJournal& journal() { return *journal_; }
 
  private:
   Profile* GetProfile();
@@ -68,8 +75,8 @@ class ToolController {
 
   // Runs the tool request returned by `create_action` against the session's
   // active tab, replying to `callback` with the result. Replies with an error
-  // if there's no window or tab to act on, or if the actor service is
-  // unavailable, in which case `create_action` isn't invoked.
+  // if there's no window or tab to act on, in which case `create_action` isn't
+  // invoked.
   void PerformActionOnActiveTab(
       base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
           create_action,
@@ -86,7 +93,14 @@ class ToolController {
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;
 
+  // The task can be stopped outside of this class, e.g. when the user closes a
+  // tab it acted on (see EnsureTaskCreated()), in which case it's replaced by a
+  // new one.
   actor::TaskId task_id_;
+  // Journals the session's events under `task_id_`, following it if the task is
+  // replaced. Created in the constructor, so never null.
+  std::unique_ptr<SessionJournal> journal_;
+
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };
 

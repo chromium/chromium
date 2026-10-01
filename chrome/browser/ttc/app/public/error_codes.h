@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_APP_PUBLIC_ERROR_CODES_H_
 #define CHROME_BROWSER_TTC_APP_PUBLIC_ERROR_CODES_H_
 
+#include <iosfwd>
+
 namespace ttc {
 
 enum class ErrorCode {
@@ -36,6 +38,8 @@ enum class ErrorCode {
   // Audio capture encountered an unknown error.
   kAudioUnknownError = 1005,
 };
+
+std::ostream& operator<<(std::ostream& os, ErrorCode error);
 
 }  // namespace ttc
 

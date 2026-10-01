@@ -41,6 +41,7 @@ class SessionControllerImpl : public SessionController,
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
   void GetPageContext(FetchCompleteCallback callback) override;
+  SessionJournal& GetJournal() override;
   SessionLifecycle GetSessionLifecycle() const override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
   void ProcessToolCall(const ToolRequest& tool_request,

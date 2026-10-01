@@ -47,6 +47,11 @@ TtcKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(kTtc)) {
     return nullptr;
   }
+  // TTC's tool calls run in actor tasks, so TTC isn't supported without the
+  // actor service (e.g. if features::kGlicActor is disabled).
+  if (!actor::ActorKeyedServiceFactory::GetActorKeyedService(context)) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TtcKeyedService>(profile);
 }

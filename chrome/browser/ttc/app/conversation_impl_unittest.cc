@@ -20,8 +20,11 @@
 #include "chrome/browser/ttc/app/test_utils.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/task_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -46,6 +49,7 @@ class FakeSessionController : public SessionController {
   // SessionController overrides:
   void GetPageContext(FetchCompleteCallback callback) override {}
   Profile* GetProfile() override { return profile_; }
+  SessionJournal& GetJournal() override { return session_journal_; }
   SessionLifecycle GetSessionLifecycle() const override {
     return session_lifecycle_;
   }
@@ -89,6 +93,8 @@ class FakeSessionController : public SessionController {
   int error_count_ = 0;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+  actor::AggregatedJournal journal_;
+  SessionJournal session_journal_{journal_, actor::TaskId()};
 };
 
 }  // namespace
