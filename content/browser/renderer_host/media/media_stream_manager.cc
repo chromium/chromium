@@ -1677,7 +1677,9 @@ MediaStreamManager::~MediaStreamManager() {
 
 VideoCaptureManager* MediaStreamManager::video_capture_manager() const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
-  CHECK(video_capture_manager_.get(), base::NotFatalUntil::M158);
+  // TODO(crbug.com/565233977): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(video_capture_manager_.get());
   return video_capture_manager_.get();
 }
 
