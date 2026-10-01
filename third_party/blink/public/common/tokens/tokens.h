@@ -19,6 +19,13 @@ namespace blink {
 // for informational messages that cross over other interfaces, in both
 // directions.
 //
+// A token should NEVER be sent to a renderer that is not supposed to be aware
+// of it, because that could give a compromised renderer an actual token from a
+// different process that it could potentially use to spoof browser-side
+// checks. For example, don't send a LocalFrameToken to a renderer for which
+// that frame is remote, and don't send a RemoteFrameToken to the wrong
+// renderer (see below).
+//
 // See README.md for more details.
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,9 +47,17 @@ using LocalFrameToken = base::TokenType<class LocalFrameTokenTypeMarker>;
 
 // Uniquely identifies a blink::RemoteFrame / blink::WebRemoteFrame /
 // content::RenderFrameProxy in a renderer process, and its
-// content::RenderFrameProxyHost counterpart in the browser. There can be
-// multiple RemoteFrames corresponding to a single LocalFrame, and each token
-// will be distinct.
+// content::RenderFrameProxyHost counterpart in the browser.
+//
+// RemoteFrameToken is the token that a specific renderer process knows for a
+// frame that is in a different process. There can be multiple RemoteFrames
+// corresponding to a single LocalFrame, and each renderer that is aware of
+// that frame has a different RemoteFrameToken for it.
+//
+// In the browser process, RemoteFrameToken must always be paired with a
+// process ID to keep track of which renderer knows that token. Always send a
+// renderer the correct RemoteFrameToken for its process, to prevent
+// information leaks.
 using RemoteFrameToken = base::TokenType<class RemoteFrameTokenTypeMarker>;
 
 // Can represent either type of FrameToken.
