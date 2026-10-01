@@ -1400,6 +1400,12 @@ bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
                                           source_contents);
   }
 
+  // Check if the navigation is a Chromnient or Lens search navigation.
+  if (ShouldHandleLensNavigation(url_params.url, source_contents)) {
+    return HandleLensNavigation(std::move(url_params), source_contents, tab,
+                                window_features);
+  }
+
   // Check if the navigation is a citation link or scroll-to-text link.
   if (ShouldHandleCitationClick(url_params.url, source_contents)) {
     return HandleCitationClick(std::move(url_params), source_contents, tab,
@@ -1436,8 +1442,8 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
     return false;
   }
 
-  // Only apply to Search or AIM/Lens search URLs.
-  if (!IsSearchResultsUrl(url) && !IsAiUrl(url)) {
+  // Only apply to valid Search or AIM/Lens search URLs.
+  if (!IsValidSearchResultsPage(url) && !IsAiUrl(url)) {
     return false;
   }
 
@@ -1744,6 +1750,83 @@ bool ContextualTasksUiService::HandleCitationClick(
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
                      window_features, browser_window));
   return true;
+}
+
+bool ContextualTasksUiService::ShouldHandleLensNavigation(
+    const GURL& url,
+    content::WebContents* source_contents) {
+  if (!IsWebContentsInSidePanel(source_contents)) {
+    return false;
+  }
+
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Navigations to AI pages are handled through the standard AI flow.
+  if (IsAiUrl(url)) {
+    return false;
+  }
+
+  // If the target URL is a search results page, handle it here.
+  if (IsSearchResultsUrl(url)) {
+    return true;
+  }
+
+  // If the side panel is currently displaying a search results page, links
+  // clicked within it (e.g. organic search results) are handled here.
+  if (source_contents) {
+    const GURL& committed_url = source_contents->GetLastCommittedURL();
+    if (IsSearchResultsUrl(committed_url) && !IsAiUrl(committed_url)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ContextualTasksUiService::HandleLensNavigation(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    const blink::mojom::WindowFeatures& window_features) {
+  const GURL url = url_params.url;
+  OMNIBOX_LOG("nav_trace") << "ContextualTasks HandleLensNavigation: "
+                           << url.spec();
+
+  // If the target URL is a Google CAPTCHA challenge, allow it to commit
+  // within the side panel without redirection or parameter mutation.
+  if (IsGoogleCaptchaUrl(url)) {
+    return false;
+  }
+
+  // If the target URL is a valid search results page (e.g. text query or Lens
+  // mode query, and not shopping mode), and the navigation was not explicitly
+  // requested in a new window/tab:
+  if (IsValidSearchResultsPage(url) &&
+      url_params.disposition == WindowOpenDisposition::CURRENT_TAB &&
+      shared_highlighting::ExtractTextFragments(url.GetRef()).empty()) {
+    // If the search results URL requires side panel parameters (e.g. gsc=2,
+    // theme, locale) to be added, apply them.
+    if (ShouldAddRequiredSidePanelUrlChanges(url_params, source_contents)) {
+      return AddRequiredSidePanelUrlChanges(std::move(url_params),
+                                            source_contents);
+    }
+    // Otherwise, allow the refinement navigation to commit within the side
+    // panel.
+    return false;
+  }
+
+  // At this point, the navigation is either:
+  // 1) An organic search result link clicked from the SRP (external web page),
+  // 2) An unsupported search results mode (e.g. shopping mode udm=28),
+  // 3) A citation link with text fragments, or
+  // 4) An SRP navigation explicitly opened in a new tab/window.
+  //
+  // Delegate to HandleCitationClick to handle existing open tab matching,
+  // video/PDF citations, active tab clobbering, and routing to the tab strip.
+  return HandleCitationClick(std::move(url_params), source_contents, tab,
+                             window_features);
 }
 
 bool ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation(

@@ -152,11 +152,13 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   }
 
   using ContextualTasksUiService::HandleCitationClick;
+  using ContextualTasksUiService::HandleLensNavigation;
   using ContextualTasksUiService::HandleNavigationImpl;
   using ContextualTasksUiService::HandleSidePanelExternalNavigation;
   using ContextualTasksUiService::IsAllowedSidePanelUrl;
   using ContextualTasksUiService::IsWebContentsInSidePanel;
   using ContextualTasksUiService::ShouldHandleCitationClick;
+  using ContextualTasksUiService::ShouldHandleLensNavigation;
   using ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation;
   bool HandleNavigationImpl(
       content::OpenURLParams url_params,

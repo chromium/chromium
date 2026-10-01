@@ -565,6 +565,22 @@ class ContextualTasksUiService : public KeyedService {
       tabs::TabInterface* tab,
       const blink::mojom::WindowFeatures& window_features);
 
+  // Returns whether the given navigation should be treated as a Chromnient or
+  // Lens search results navigation within the side panel.
+  virtual bool ShouldHandleLensNavigation(
+      const GURL& url,
+      content::WebContents* source_contents);
+
+  // Handles a Chromnient or Lens search results navigation originating in the
+  // side panel. Preserves valid search results query refinements within the
+  // side panel while dispatching external search results and unsupported search
+  // modes (e.g. shopping) to the main browser tab strip.
+  virtual bool HandleLensNavigation(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      const blink::mojom::WindowFeatures& window_features);
+
   // Returns whether the given navigation should be treated as an external link
   // clicked from within the side panel, routing to the browser tab strip.
   virtual bool ShouldHandleSidePanelExternalNavigation(

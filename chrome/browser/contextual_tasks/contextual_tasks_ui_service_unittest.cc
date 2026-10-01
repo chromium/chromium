@@ -3476,6 +3476,262 @@ TEST_F(
              "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true));
 }
 
+TEST_F(ContextualTasksUiServiceTest, ShouldHandleLensNavigation_TargetIsSrp) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL srp_url("https://www.google.com/search?q=test");
+  EXPECT_TRUE(service_for_nav_->ShouldHandleLensNavigation(srp_url,
+                                                           web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleLensNavigation_SourceIsSrp_TargetIsExternal) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("https://www.google.com/search?q=test"));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL external_url("https://example.com/page");
+  EXPECT_TRUE(service_for_nav_->ShouldHandleLensNavigation(external_url,
+                                                           web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleLensNavigation_TargetIsAiUrl_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  GURL ai_url("https://www.google.com/search?udm=50&q=test");
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(ai_url, _))
+      .WillByDefault(testing::Return(true));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  EXPECT_FALSE(
+      service_for_nav_->ShouldHandleLensNavigation(ai_url, web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleLensNavigation_NotInSidePanel_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
+
+  GURL srp_url("https://www.google.com/search?q=test");
+  EXPECT_FALSE(service_for_nav_->ShouldHandleLensNavigation(
+      srp_url, web_contents.get()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_SrpRefinement_CommitsInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL srp_refinement(
+      "https://www.google.com/search?q=refined_query&gsc=2&cs=0&hl=en&gl=us");
+
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  // A valid SRP refinement with required parameters commits inside side panel.
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(srp_refinement, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_CaptchaChallenge_CommitsInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL captcha_url("https://www.google.com/sorry/index?continue=foo");
+
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  // Google CAPTCHA challenge is allowed to commit inside the side panel.
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(captcha_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_ShoppingMode_DispatchedToTabStrip) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {contextual_tasks::kContextualTasksClobberActiveTab});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL shopping_url("https://www.google.com/search?udm=28&q=shoes");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* browser) {
+        EXPECT_EQ(shopping_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(shopping_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_OrganicResultClick_DispatchedToTabStrip) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {contextual_tasks::kContextualTasksClobberActiveTab});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("https://www.google.com/search?q=test"));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL organic_url("https://example.com/organic_result");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* browser) {
+        EXPECT_EQ(organic_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(organic_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_OrganicResultClick_ClobberEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksClobberActiveTab},
+      {});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(panel_contents.get())
+      ->SetLastCommittedURL(GURL("https://www.google.com/search?q=test"));
+
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  GURL initial_url("https://initial.com/");
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(initial_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&mock_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&mock_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL organic_url("https://example.com/organic_result");
+
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(organic_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  // Active tab was clobbered to the organic result URL.
+  EXPECT_EQ(organic_url, active_tab_contents->GetVisibleURL());
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
