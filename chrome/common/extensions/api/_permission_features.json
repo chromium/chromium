@@ -497,21 +497,6 @@
     "extension_types": ["extension", "legacy_packaged_app"],
     "platforms": ["chromeos"]
   },
-  "imageLoaderPrivate": [{
-    "channel": "stable",
-    "component_extensions_auto_granted": false,
-    "extension_types": ["extension"],
-    "location": "component",
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
-    ]
-  }, {
-    "channel": "trunk",
-    "platforms": ["chromeos"],
-    "extension_types": ["extension"],
-    "location": "component"
-  }],
   "languageSettingsPrivate": [
     {
       "channel": "trunk",

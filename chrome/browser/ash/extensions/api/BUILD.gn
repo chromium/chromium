@@ -23,6 +23,7 @@ function_registration("api_registration") {
     "file_manager_private_internal",
     "file_system_provider",
     "file_system_provider_internal",
+    "image_loader_private",
     "input_method_private",
     "login_screen_ui",
     "speech_recognition_private",
@@ -32,10 +33,12 @@ function_registration("api_registration") {
   inputs = [
     "//chrome/browser/accessibility/accessibility_extension_api_ash.h",
     "//chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h",
+    "//chrome/browser/ash/extensions/file_manager/image_loader_private_api.h",
     "//chrome/browser/ash/extensions/input_method_api.h",
     "//chrome/browser/ash/extensions/login_screen_ui/login_screen_ui_api.h",
     "//chrome/browser/ash/extensions/speech/speech_recognition_private_api.h",
     "//chrome/browser/ash/extensions/users_private/users_private_api.h",
+    "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
     "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
     "//chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h",
   ]

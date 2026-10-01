@@ -145,7 +145,6 @@ function_registration("api_registration") {
     "experimental_actor",
     "experimental_ai_data",
     "extension",
-    "image_loader_private",
     "login",
     "login_screen_storage",
     "login_state",
@@ -180,7 +179,6 @@ function_registration("api_registration") {
     "//chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.h",
     "//chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h",
     "//chrome/browser/ash/extensions/autotest_private/autotest_private_api.h",
-    "//chrome/browser/ash/extensions/file_manager/image_loader_private_api.h",
     "//chrome/browser/ash/extensions/media_player_api.h",
     "//chrome/browser/extensions/api/enterprise_login/enterprise_login_api.h",
     "enterprise_platform_keys/enterprise_platform_keys_api.h",
@@ -229,7 +227,6 @@ function_registration("api_registration") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/extensions/autotest_private",
-      "//chrome/browser/ash/extensions/file_manager",
 
       # TODO: We should pull these out into a separate build and function
       # generation step so that //chrome/browser/extensions has fewer

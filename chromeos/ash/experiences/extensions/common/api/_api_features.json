@@ -114,6 +114,10 @@
     ],
     "platforms": ["chromeos"]
   }],
+  "imageLoaderPrivate": {
+    "dependencies": ["permission:imageLoaderPrivate"],
+    "contexts": ["privileged_extension"]
+  },
   "inputMethodPrivate": [{
     "dependencies": ["permission:inputMethodPrivate"],
     "contexts": ["privileged_extension"]

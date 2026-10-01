@@ -120,7 +120,6 @@ if (enable_extensions) {
       "enterprise_platform_keys.webidl",
       "enterprise_platform_keys_internal.webidl",
       "enterprise_platform_keys_private.json",
-      "image_loader_private.webidl",
       "login.webidl",
       "login_screen_storage.webidl",
       "login_state.idl",

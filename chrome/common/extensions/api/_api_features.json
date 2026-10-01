@@ -541,10 +541,6 @@
     ],
     "disallow_for_service_workers": true
   },
-  "imageLoaderPrivate": {
-    "dependencies": ["permission:imageLoaderPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "input.ime": {
     "dependencies": ["permission:input"],
     "contexts": ["privileged_extension"],
