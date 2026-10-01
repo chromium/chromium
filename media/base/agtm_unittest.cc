@@ -14,8 +14,8 @@ namespace media {
 class AgtmTest : public testing::Test {
  public:
   AgtmTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kHdrAgtm, features::kHdrAgtmParseOldSyntax}, {});
+    scoped_feature_list_.InitWithFeatures({features::kHdrAgtmParseOldSyntax},
+                                          {});
   }
 
  private:

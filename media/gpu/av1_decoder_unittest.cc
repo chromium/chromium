@@ -1077,9 +1077,8 @@ TEST_F(AV1DecoderTest, DecodeWithFrameSizeChange) {
 }
 
 TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kHdrAgtm, features::kHdrAgtmParseOldSyntax}, {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kHdrAgtmParseOldSyntax);
   constexpr gfx::Size kFrameSize(320, 240);
   constexpr gfx::Size kRenderSize(320, 240);
   constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;

@@ -52,7 +52,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/switches.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -1956,7 +1955,6 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
 }
 
 TEST_F(FFmpegDemuxerTest, AgtmMetadataWebM) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
   CreateDemuxer("vp9-agtm.webm");
   InitializeDemuxer();
 
@@ -1969,9 +1967,8 @@ TEST_F(FFmpegDemuxerTest, AgtmMetadataWebM) {
 // The metadata track is attached to the video track by a `cdsc` track
 // reference, which points from the metadata track to the video track.
 TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4CdscTrack) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kHdrAgtm, kFFmpegDemuxerIT35MetadataTrack}, {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      kFFmpegDemuxerIT35MetadataTrack);
   CreateDemuxer("agtm-metadata-cdsc-track.mp4");
   InitializeDemuxer();
 
@@ -1983,9 +1980,8 @@ TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4CdscTrack) {
 // The metadata track is attached to the video track by a `rndr` track
 // reference, which points from the video track to the metadata track.
 TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4RndrTrack) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kHdrAgtm, kFFmpegDemuxerIT35MetadataTrack}, {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      kFFmpegDemuxerIT35MetadataTrack);
   CreateDemuxer("agtm-metadata-rndr-track.mp4");
   InitializeDemuxer();
 
@@ -1999,9 +1995,8 @@ TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4RndrTrack) {
 // verify that the metadata that applies to the frames that are read after
 // seeking is demuxed again and attached to them.
 TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4Seek) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kHdrAgtm, kFFmpegDemuxerIT35MetadataTrack}, {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      kFFmpegDemuxerIT35MetadataTrack);
   CreateDemuxer("staircase-pq-av1-st-2094-50-rndr.mp4");
   InitializeDemuxer();
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);

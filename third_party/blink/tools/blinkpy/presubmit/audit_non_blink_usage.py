@@ -590,7 +590,6 @@ _CONFIG = [
             'gfx::ColorSpace',
             'gfx::CubicBezier',
             'gfx::HDRMetadata',
-            'gfx::HdrMetadataAgtm',
             'gfx::HdrMetadataExtendedRange',
             # For fast cos/sin functions
             'gfx::SinCosDegrees',

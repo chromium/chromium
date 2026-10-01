@@ -16,12 +16,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/switches.h"
 
 namespace media {
 
@@ -259,8 +257,6 @@ TEST(DecoderBufferTest, IsKeyFrame) {
 }
 
 TEST(DecoderBufferTest, SideData) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
-
   auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
   EXPECT_FALSE(buffer->side_data());
 

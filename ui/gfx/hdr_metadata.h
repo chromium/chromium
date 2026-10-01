@@ -48,11 +48,6 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
                          const HdrMetadataExtendedRange&) = default;
 };
 
-// Return whether or not use of AGTM metadata is enabled by default or not.
-struct COLOR_SPACE_EXPORT HdrMetadataAgtm {
-  static bool IsEnabled();
-};
-
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
   HDRMetadata();

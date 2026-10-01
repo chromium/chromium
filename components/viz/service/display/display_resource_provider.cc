@@ -146,10 +146,8 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
   // not marked as overlays to ensure that rendering falls back to shaders
   // on all platforms.
   // https://crbug.com/395659818
-  if (gfx::HdrMetadataAgtm::IsEnabled()) {
-    if (resource->transferable.hdr_metadata.HasAgtm()) {
-      return false;
-    }
+  if (resource->transferable.hdr_metadata.HasAgtm()) {
+    return false;
   }
   return resource->transferable.GetIsOverlayCandidate();
 }

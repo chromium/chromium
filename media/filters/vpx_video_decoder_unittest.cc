@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/agtm.h"
@@ -25,7 +24,6 @@
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -511,7 +509,6 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
 #if BUILDFLAG(ENABLE_FFMPEG)
 TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
   Initialize();
 
   scoped_refptr<DecoderBuffer> data = ReadTestDataFile("vp9-agtm.webm");

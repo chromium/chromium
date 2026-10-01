@@ -596,7 +596,7 @@ bool MetadataIT35SampleEntry::Parse(BoxReader* reader) {
   std::vector<uint8_t> it35_prefix;
   RCHECK(reader->ReadVec(&it35_prefix, it35_identifier_length));
 
-  if (gfx::HdrMetadataAgtm::IsEnabled() && MatchesAgtmT35(it35_prefix)) {
+  if (MatchesAgtmT35(it35_prefix)) {
     it35_prefix_type = MetadataTrack::IT35PrefixType::kSmpteSt2094App5;
   }
   return true;

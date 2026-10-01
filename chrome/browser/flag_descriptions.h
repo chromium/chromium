@@ -605,11 +605,6 @@ inline constexpr char kFieldClassificationModelCachingDescription[] =
     "When enabled, the field classification model uses runtime caching to not "
     "run models on the same inputs multiple times.";
 
-inline constexpr char kHdrAgtmName[] = "Adaptive global tone mapping";
-inline constexpr char kHdrAgtmDescription[] =
-    "Enables parsing and rendering of adaptive global tone mapping (AGTM) aka "
-    "SMTPE ST 2094-50 HDR metadata";
-
 inline constexpr char kHistorySyncAlternativeIllustrationName[] =
     "History Sync Alternative Illustration";
 inline constexpr char kHistorySyncAlternativeIllustrationDescription[] =

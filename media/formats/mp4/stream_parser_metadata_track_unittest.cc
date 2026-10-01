@@ -6,13 +6,11 @@
 
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer_side_data.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/switches.h"
 
 namespace media {
 
@@ -26,12 +24,9 @@ class StreamParserMetadataTrackTest : public testing::Test {
   StreamParserMetadataTrackTest()
       : metadata_track_(kMetadataTrackId,
                         MetadataTrack::IT35PrefixType::kSmpteSt2094App5,
-                        {kRenderTrackId}) {
-    feature_list_.InitWithFeatures({features::kHdrAgtm}, {});
-  }
+                        {kRenderTrackId}) {}
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   StreamParserMetadataTrack metadata_track_;
 };
 

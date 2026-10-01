@@ -133,11 +133,9 @@ void ParseCanvasHighDynamicRangeOptions(
         .fMinimumDisplayMasteringLuminance = v8_metadata->minimumLuminance(),
     });
   }
-  if (gfx::HdrMetadataAgtm::IsEnabled()) {
-    if (options->hasAgtm()) {
-      auto span = options->agtm().RawByteSpan();
-      hdr_metadata.SetSerializedAgtm(span);
-    }
+  if (options->hasAgtm()) {
+    auto span = options->agtm().RawByteSpan();
+    hdr_metadata.SetSerializedAgtm(span);
   }
 }
 

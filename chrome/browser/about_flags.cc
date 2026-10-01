@@ -7092,10 +7092,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForcedColorsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kForcedColors)},
 
-    {"hdr-agtm", flag_descriptions::kHdrAgtmName,
-     flag_descriptions::kHdrAgtmDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kHdrAgtm)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"notebooks", flag_descriptions::kNotebooksName,
      flag_descriptions::kNotebooksDescription, kOsDesktop,

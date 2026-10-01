@@ -39,7 +39,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/switches.h"
 
 using ::testing::InSequence;
 using ::testing::StrictMock;
@@ -1200,9 +1199,7 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
 #define MAYBE_TimedMetadataTrack DISABLED_TimedMetadataTrack
 #endif
 TEST_F(MP4StreamParserTest, MAYBE_TimedMetadataTrack) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kMP4TimedMetadataTrack, features::kHdrAgtm},
-                                {});
+  base::test::ScopedFeatureList feature_list(kMP4TimedMetadataTrack);
 
   auto params = GetDefaultInitParametersExpectations();
   params.liveness = StreamLiveness::kRecorded;

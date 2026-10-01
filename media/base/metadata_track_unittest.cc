@@ -4,12 +4,10 @@
 
 #include "media/base/metadata_track.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_buffer_side_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/switches.h"
 
 namespace media {
 
@@ -40,12 +38,9 @@ float GetAttachedReferenceWhite(const DecoderBuffer& buffer) {
 class MetadataTrackTest : public testing::Test {
  public:
   MetadataTrackTest()
-      : metadata_track_(MetadataTrack::IT35PrefixType::kSmpteSt2094App5) {
-    feature_list_.InitWithFeatures({features::kHdrAgtm}, {});
-  }
+      : metadata_track_(MetadataTrack::IT35PrefixType::kSmpteSt2094App5) {}
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   MetadataTrack metadata_track_;
 };
 

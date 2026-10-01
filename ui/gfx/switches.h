@@ -30,7 +30,6 @@ namespace features {
 
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kUseSmartRefForGPUFenceHandle);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kUseRoundedPointConversion);
-GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHdrAgtm);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHdrAgtmParseOldSyntax);
 
 // Workaround for an issue in Windows where icons with fully transparent

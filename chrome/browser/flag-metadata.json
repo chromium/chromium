@@ -6096,11 +6096,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "hdr-agtm",
-    "owners": [ "ccameron@chromium.org", "fgalligan@chromium.org" ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "yaoxia@chromium.org", "jkarlin@chromium.org" ],
     // A debugging and demo flag to allow testing of heavy ads

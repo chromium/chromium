@@ -62,10 +62,9 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
 
   skhdr::Metadata skia_metadata;
 
-  // Parse AGTM only if the feature is enabled.
   skhdr::AdaptiveGlobalToneMap agtm;
   bool agtm_valid = false;
-  if (gfx::HdrMetadataAgtm::IsEnabled() && metadata.HasAgtm()) {
+  if (metadata.HasAgtm()) {
     agtm_valid = true;
     agtm = metadata.GetAgtm();
   }
