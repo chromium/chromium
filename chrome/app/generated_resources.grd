@@ -18065,17 +18065,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_RELAUNCH_REQUIRED_CANCEL_BUTTON" desc="The text in the cancel button that dismisses a dialog telling users the browser must be relaunched.">
         Dismiss
       </message>
-      <message name="IDS_RELAUNCH_RECOMMENDED_RESTART_NOW" desc="Button label to restart immediately." translateable="false">
-        Restart now
+      <message name="IDS_RELAUNCH_RECOMMENDED_RESTART_NOW" desc="Button label to relaunch immediately.">
+        Relaunch now
       </message>
-      <message name="IDS_RELAUNCH_RECOMMENDED_RESTART_WHEN_IDLE" desc="Button label to restart when idle." translateable="false">
-        Restart when idle
+      <message name="IDS_RELAUNCH_RECOMMENDED_RESTART_WHEN_IDLE" desc="Button label to schedule an update when the user steps away.">
+        Update when I step away
       </message>
-      <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE" desc="The body text for the scheduled restart reminder bubble dialog." translateable="false">
-        Restart now to finish updating, or restart next time you're idle for 5 minutes. Your open tabs and windows will restore. Incognito windows won't reopen.
+      <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IMPORTANT_UPDATE" desc="Emphasized phrase inside the first body paragraph of the scheduled restart reminder bubble dialog.">
+        important security update
       </message>
-      <message name="IDS_APP_MENU_BUTTON_RESTART_SCHEDULED" desc="Short label next to app-menu button when a scheduled restart is pending." translateable="false">
-        Restart scheduled
+      <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IDLE_DURATION" desc="Emphasized idle duration inside the first body paragraph of the scheduled restart reminder bubble dialog.">
+        5 minutes
+      </message>
+      <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_TABS_REOPEN" desc="The second body paragraph for the scheduled restart reminder bubble dialog.">
+        All of your open tabs and windows will reopen automatically.
+      </message>
+      <message name="IDS_APP_MENU_BUTTON_RESTART_SCHEDULED" desc="Short label next to app-menu button when a scheduled update is pending.">
+        Update scheduled
       </message>
     </if>
 

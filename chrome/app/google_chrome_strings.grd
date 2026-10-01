@@ -2555,8 +2555,14 @@ Google Chrome is unable to recover your settings.
               =1 {Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}
               other {Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}
           </message>
-          <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_IDLE_TOAST" desc="Toast notification message shown after scheduling an idle restart." translateable="false">
-            Chrome will restart when you're next idle
+          <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_IDLE_TOAST" desc="Toast notification message shown after scheduling an idle restart.">
+            Chrome will update when you're away
+          </message>
+          <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_TITLE" desc="The title of a bubble dialog that tells users that Chrome wants to update.">
+            Chrome wants to update
+          </message>
+          <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE" desc="The first body paragraph for the scheduled restart reminder bubble dialog.">
+            An <ph name="IMPORTANT_UPDATE">$1<ex>important security update</ex></ph> is pending. To keep your browsing safe, Chrome will update the next time you're inactive for <ph name="IDLE_DURATION">$2<ex>5 minutes</ex></ph>.
           </message>
           <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the browser must be relaunched within two or more days.">
             {0, plural,

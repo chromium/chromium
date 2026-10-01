@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -33,6 +34,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
@@ -40,6 +42,8 @@
 namespace scheduled_restart {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartDialogId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartBodyId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartTabsReopenBodyId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRestartNowButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRestartWhenIdleButtonId);
 
@@ -142,16 +146,33 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
   auto* delegate_ptr = dialog_delegate.get();
 
   ui::DialogModel::Builder builder(std::move(dialog_delegate));
-  // Passing 0 explicitly selects the general non-deadline "=0 {A Chrome update
-  // is available}" branch, already branded and localized in Chrome and
-  // Chromium strings.
   builder
       .SetTitle(
-          l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE, 0))
+          l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_SCHEDULED_TITLE))
+      .SetIsAlertDialog()
       .OverrideShowCloseButton(true)
       .SetElementIdentifier(kScheduledRestartDialogId)
-      .AddParagraph(ui::DialogModelLabel(
-          l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE)))
+      .AddParagraph(
+          ui::DialogModelLabel::CreateWithReplacements(
+              IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE,
+              {ui::DialogModelLabel::CreateEmphasizedText(
+                   l10n_util::GetStringUTF16(
+                       IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IMPORTANT_UPDATE)),
+               ui::DialogModelLabel::CreateEmphasizedText(
+                   l10n_util::GetStringUTF16(
+                       IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IDLE_DURATION))}),
+          /*header=*/std::u16string(), kScheduledRestartBodyId)
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              views::Builder<views::Label>()
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_TABS_REOPEN))
+                  .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .Build(),
+              views::BubbleDialogModelHost::FieldType::kText),
+          kScheduledRestartTabsReopenBodyId)
       .AddExtraButton(
           base::BindRepeating(
               &ScheduledRestartDialogDelegate::OnRestartWhenIdleClicked,
@@ -178,13 +199,7 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
 
   const auto* layout_provider = ChromeLayoutProvider::Get();
   bubble->set_fixed_width(layout_provider->GetDistanceMetric(
-      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
-
-  gfx::Insets margins = bubble->margins();
-  margins.set_bottom(margins.bottom() +
-                     layout_provider->GetDistanceMetric(
-                         views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  bubble->set_margins(margins);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   std::unique_ptr<views::Widget> widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble).release(),

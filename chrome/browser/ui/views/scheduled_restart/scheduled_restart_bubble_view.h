@@ -16,6 +16,8 @@ class BrowserWindowInterface;
 namespace scheduled_restart {
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartDialogId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartBodyId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartTabsReopenBodyId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRestartNowButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRestartWhenIdleButtonId);
 
