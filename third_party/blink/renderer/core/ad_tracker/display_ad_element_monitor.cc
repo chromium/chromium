@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -79,6 +80,14 @@ bool MeetsLargeStickyAdGeometry(const gfx::Rect& main_frame_viewport,
 // viewport).
 bool IsOutermostContainerStatic(Element* element) {
   DCHECK(element);
+
+  // Subframe content moves with the main frame's scroll as its frame owner
+  // does, so evaluate the outermost rendered frame owner instead.
+  HTMLFrameOwnerElement* owner = element->GetDocument().LocalOwner();
+  while (owner && owner->GetLayoutObject()) {
+    element = owner;
+    owner = owner->GetDocument().LocalOwner();
+  }
 
   LayoutView* layout_view = element->GetDocument().GetLayoutView();
   LayoutObject* object = element->GetLayoutObject();
