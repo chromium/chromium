@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
       EnsurePresent(kDiscountsBubbleTermsAndConditionLabelId),
       EnsureNotPresent(kDiscountsBubbleTermsAndConditionPageId),
       WithElement(kDiscountsBubbleTermsAndConditionLabelId,
-                  [](ui::TrackedElement* el) {
+                  [this](ui::TrackedElement* el) {
                     AsView<views::StyledLabel>(el)->ClickFirstLinkForTesting();
                   })
           .SetMustRemainVisible(false),
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(DiscountsBubbleDialogInteractiveTest,
       PressButton(kDiscountsChipElementId),
       WaitForShow(kDiscountsBubbleDialogId),
       WithElement(kDiscountsBubbleTermsAndConditionLabelId,
-                  [](ui::TrackedElement* el) {
+                  [this](ui::TrackedElement* el) {
                     AsView<views::StyledLabel>(el)->ClickFirstLinkForTesting();
                   })
           .SetMustRemainVisible(false),

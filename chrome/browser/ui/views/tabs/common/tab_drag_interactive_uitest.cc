@@ -1201,10 +1201,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenReattach) {
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
       WaitForDetachedWindowVisible(), NameTabViewAt("Target tab", 1),
-      MoveMouseTo("Target tab", base::BindOnce([](ui::TrackedElement* el) {
-                    return views::test::InteractiveViewsTestApi::AsView(el)
-                               ->GetBoundsInScreen()
-                               .CenterPoint() +
+      MoveMouseTo("Target tab",
+                  base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                    return AsView(el)->GetBoundsInScreen().CenterPoint() +
                            gfx::Vector2d(0, -5);
                   })),
       WaitForState(kBrowserCountPoller, 1u), ReleaseMouse(),

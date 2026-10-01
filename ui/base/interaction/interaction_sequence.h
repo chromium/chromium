@@ -200,6 +200,21 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     kImmediate
   };
 
+  // Delegate that receives notifications when a step is executing in a
+  // particular sequence. Note that due to parallel sequences, steps may be
+  // executing in multiple sequences simultaneously (for example, if one branch
+  // has a step callback that's blocking in a call with a run loop).
+  class TestDelegate {
+   public:
+    // Called when a step start callback will run.
+    virtual void OnStepStartCallbackWillRun(InteractionSequence* seq) = 0;
+    // Called when a step start callback has ended. Does not necessarily run if
+    // the sequence is aborted inside of the callback.
+    virtual void OnStepStartCallbackDone(const InteractionSequence* seq) = 0;
+    // Called when a sequence completes or aborts.
+    virtual void OnSequenceDestroying(const InteractionSequence* seq) = 0;
+  };
+
   // Determines whether a subsequence will run. `seq` is the parent sequence,
   // and `el` is the reference element, and may be null if the element is not
   // specified or if there is no matching element. This is unlike other steps
@@ -404,6 +419,9 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     // a default value if not set; for subsequences, the value of the parent
     // sequence is inherited instead if no value is set.
     Builder& SetDefaultStepStartMode(StepStartMode step_start_mode);
+
+    // Sets the test delegate; may only be called during tests.
+    Builder& SetDelegateForTesting(TestDelegate* test_delegate);
 
     // Creates the InteractionSequence. You must call Start() to initiate the
     // sequence; sequences cannot be re-used, and a Builder is no longer valid

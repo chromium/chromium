@@ -235,7 +235,7 @@ class GeminiAppInteractiveUiTestBase
   // Returns a builder for a step which assigns the view associated with the
   // given `element_specifier` to the given `ptr`.
   template <typename ViewClass>
-  [[nodiscard]] static auto AssignView(
+  [[nodiscard]] auto AssignView(
       ElementSpecifier element_specifier,
       std::reference_wrapper<raw_ptr<ViewClass>> ptr) {
     return WithView(element_specifier,

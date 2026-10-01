@@ -422,6 +422,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
   builder.SetAbortedCallback(
       base::BindOnce(&internal::InteractiveTestPrivate::OnSequenceAborted,
                      base::Unretained(private_test_impl_.get())));
+  builder.SetDelegateForTesting(private_test_impl_.get());
   auto sequence = builder.Build();
 
   {

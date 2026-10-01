@@ -72,9 +72,8 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto TopCenter() {
-    return base::BindOnce([](ui::TrackedElement* el) {
-      auto* const view =
-          views::test::InteractiveViewsTestApi::AsView<views::View>(el);
+    return base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+      auto* const view = AsView<views::View>(el);
       return view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 5);
     });
   }

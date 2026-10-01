@@ -256,7 +256,7 @@ InteractiveFeaturePromoTestApi::CheckPromoImpl(const base::Feature& iph_feature,
   return std::move(
       WithElement(
           kBrowserViewElementId,
-          [&iph_feature, requested, include_queued](
+          [this, &iph_feature, requested, include_queued](
               ui::InteractionSequence* seq, ui::TrackedElement* browser_el) {
             bool actual = false;
             if (seq->IsCurrentStepInAnyContextForTesting()) {

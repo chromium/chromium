@@ -159,8 +159,8 @@ class DictationSessionUiImplBrowserTest
 
   auto CheckElementWithinBounds(ui::ElementIdentifier element_id,
                                 const gfx::Rect& target_bounds) {
-    return InAnyContext(
-        CheckElement(element_id, [&target_bounds](ui::TrackedElement* el) {
+    return InAnyContext(CheckElement(
+        element_id, [this, &target_bounds](ui::TrackedElement* el) {
           const views::View* const view = AsView(el);
           const gfx::Rect view_bounds = view->GetBoundsInScreen();
           return target_bounds.Contains(view_bounds.origin());

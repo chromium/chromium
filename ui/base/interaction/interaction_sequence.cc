@@ -179,6 +179,7 @@ struct InteractionSequence::Configuration {
   ElementContext context;
   AbortedCallback aborted_callback;
   CompletedCallback completed_callback;
+  raw_ptr<TestDelegate> test_delegate = nullptr;
 };
 
 InteractionSequence::Builder::Builder()
@@ -291,6 +292,14 @@ InteractionSequence::Builder::SetDefaultStepStartMode(
   return *this;
 }
 
+InteractionSequence::Builder&
+InteractionSequence::Builder::SetDelegateForTesting(
+    TestDelegate* test_delegate) {
+  CHECK(!configuration_->test_delegate);
+  configuration_->test_delegate = test_delegate;
+  return *this;
+}
+
 void InteractionSequence::Builder::PopulateSubsequenceStepStacks() {
   for (const auto& step : configuration_->steps) {
     if (step->type != StepType::kSubsequence) {
@@ -339,6 +348,9 @@ InteractionSequence::Builder::BuildSubsequence(
   if (reference_config && !configuration_->step_start_mode) {
     configuration_->step_start_mode = *reference_config->step_start_mode;
   }
+
+  // Copy the parent's delegate.
+  configuration_->test_delegate = reference_config->test_delegate;
 
   return base::WrapUnique(
       new InteractionSequence(std::move(configuration_), reference_step));
@@ -1220,10 +1232,19 @@ void InteractionSequence::CompleteStepTransition() {
   step_transition_callback_ = base::BindOnce(&InteractionSequence::FinishStep,
                                              weak_factory_.GetWeakPtr());
 
+  if (configuration_->test_delegate) {
+    configuration_->test_delegate->OnStepStartCallbackWillRun(this);
+    CHECK(abort_guard) << "Test delegates may not destroy a sequence.";
+  }
   RunIfValid(std::move(current_step_->start_callback), this,
              current_step_->element.get());
   if (!abort_guard) {
     return;
+  }
+
+  if (configuration_->test_delegate) {
+    configuration_->test_delegate->OnStepStartCallbackDone(this);
+    CHECK(abort_guard) << "Test delegates may not destroy a sequence.";
   }
 
   if (step_transition_callback_) {
@@ -1255,6 +1276,9 @@ void InteractionSequence::FinishStep(bool success) {
     CompletedCallback completed_callback =
         std::move(configuration_->completed_callback);
     std::unique_ptr<Step> last_step = std::move(current_step_);
+    if (configuration_->test_delegate) {
+      configuration_->test_delegate->OnSequenceDestroying(this);
+    }
     RunIfValid(std::move(last_step->end_callback), last_step->element.get());
     RunIfValid(std::move(completed_callback));
     RunIfValid(std::move(quit_closure));
@@ -1491,6 +1515,10 @@ void InteractionSequence::Abort(AbortedReason reason) {
   // This blows up any abort guards and pending callbacks.
   weak_factory_.InvalidateWeakPtrs();
 
+  if (configuration_->test_delegate) {
+    configuration_->test_delegate->OnSequenceDestroying(this);
+  }
+
   // Note that if the sequence has already been aborted, this is a no-op, the
   // callbacks will already be null.
   if (current_step) {
@@ -1629,12 +1657,12 @@ void InteractionSequence::BuildSubsequences(const Step* current_step) {
   for (auto& subsequence_data : next_step()->subsequence_data) {
     if (!subsequence_data.sequence) {
       subsequence_data.builder.SetContext(configuration_->context);
-      subsequence_data.builder.SetCompletedCallback(
-          base::BindOnce(&InteractionSequence::OnSubsequenceCompleted,
-                         AsWeakPtr(), SubsequenceHandle(&subsequence_data)));
-      subsequence_data.builder.SetAbortedCallback(
-          base::BindOnce(&InteractionSequence::OnSubsequenceAborted,
-                         AsWeakPtr(), SubsequenceHandle(&subsequence_data)));
+      subsequence_data.builder.SetCompletedCallback(base::BindOnce(
+          &InteractionSequence::OnSubsequenceCompleted, AsWeakPtr(),
+          static_cast<SubsequenceHandle>(&subsequence_data)));
+      subsequence_data.builder.SetAbortedCallback(base::BindOnce(
+          &InteractionSequence::OnSubsequenceAborted, AsWeakPtr(),
+          static_cast<SubsequenceHandle>(&subsequence_data)));
       subsequence_data.sequence = subsequence_data.builder.BuildSubsequence(
           configuration_.get(), current_step);
 

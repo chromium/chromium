@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -141,13 +142,12 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
   // of `view`, converting view-local coordinates to absolute screen
   // coordinates.
   auto MoveMouseInView(ElementSpecifier view, gfx::Point offset) {
-    return MoveMouseTo(view, base::BindOnce(
-                                 [](gfx::Point pt, ui::TrackedElement* el) {
-                                   views::View* v = AsView<views::View>(el);
-                                   return views::View::ConvertPointToScreen(v,
-                                                                            pt);
-                                 },
-                                 offset));
+    return MoveMouseTo(
+        view,
+        base::BindLambdaForTesting([this, offset](ui::TrackedElement* el) {
+          views::View* v = AsView<views::View>(el);
+          return views::View::ConvertPointToScreen(v, offset);
+        }));
   }
 
   // Checks whether the Omnibox Everywhere widget exists and matches the
