@@ -300,6 +300,26 @@ TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFail) {
   loader_->DidFail(WebURLError(net::ERR_ABORTED, url_));
 }
 
+// An ORB-blocked response is a cross-origin no-cors response, so the data must
+// be marked as cross-origin to avoid leaking information about it.
+TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbIsCrossOrigin) {
+  Initialize(kHttpUrl, 0);
+  Start();
+  scoped_refptr<UrlData> url_data = url_data_;
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
+  EXPECT_TRUE(url_data->is_cors_cross_origin());
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DidFailOtherErrorNotCrossOrigin) {
+  Initialize(kHttpUrl, 0);
+  Start();
+  scoped_refptr<UrlData> url_data = url_data_;
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_FAILED, url_));
+  EXPECT_FALSE(url_data->is_cors_cross_origin());
+}
+
 TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFinish) {
   Initialize(kHttpUrl, 100);
   Start();

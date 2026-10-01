@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -514,6 +515,13 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
   DVLOG(1) << "didFail: reason=" << error.reason();
   DCHECK(active_loader_.get());
   active_loader_.reset();
+
+  // ORB only blocks cross-origin no-cors responses, which are opaque. Record
+  // this so that the failure is not distinguishable from other opaque
+  // failures (e.g. via error messages exposed by the media element).
+  if (error.reason() == net::ERR_BLOCKED_BY_ORB) {
+    url_data_->set_is_cors_cross_origin(true);
+  }
 
   if (url_data_->url_index() && retries_ < kMaxRetries && pos_ != 0) {
     retries_++;
