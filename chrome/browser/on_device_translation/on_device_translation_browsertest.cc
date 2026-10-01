@@ -4,7 +4,6 @@
 
 #include <iterator>
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -15,7 +14,6 @@
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -201,32 +199,6 @@ class TestSupportsUserData : public base::SupportsUserData {
   ~TestSupportsUserData() override = default;
 };
 
-class TestObserver : public OnDeviceTranslationInstaller::Observer {
- public:
-  TestObserver(LanguagePackKey expected_pack,
-               base::RepeatingClosure pack_installed_closure,
-               base::RepeatingClosure init_closure)
-      : expected_pack_(expected_pack),
-        pack_installed_closure_(std::move(pack_installed_closure)),
-        init_closure_(std::move(init_closure)) {}
-
-  void OnLanguagePackInstalled(const LanguagePackKey lang_pack) override {
-    if (lang_pack == expected_pack_) {
-      pack_installed_closure_.Run();
-    }
-  }
-
-  void OnLanguagePackInstallationChanged(
-      const LanguagePackKey /*lang_pack*/) override {}
-
-  void OnInstallationChanged() override { init_closure_.Run(); }
-
- private:
-  const LanguagePackKey expected_pack_;
-  base::RepeatingClosure pack_installed_closure_;
-  base::RepeatingClosure init_closure_;
-};
-
 }  // namespace
 
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
@@ -234,7 +206,6 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
   OnDeviceTranslationBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
     CHECK(tmp_dir_.CreateUniqueTempDir());
-    fake_installer_.emplace(GetTempDir());
   }
   ~OnDeviceTranslationBrowserTest() override = default;
 
@@ -430,8 +401,6 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     return ExecJs("document.body.removeChild(window._iframe);");
   }
 
-  std::optional<FakeOnDeviceTranslationInstaller> fake_installer_;
-
  private:
   base::ScopedTempDir tmp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -442,30 +411,20 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
 // the language pack.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorInstallLibraryAndThenLanguagePack) {
-  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      browser()->GetProfile());
-  manager->SetInstallerForTesting(&fake_installer_.value());
-
+  MockComponentManager mock_component_manager(GetTempDir());
   NavigateToEmptyPage();
 
-  // Pre-initialize the fake installer to make library ready immediately.
-  fake_installer_->InitNow(base::DoNothing());
-  // Copy the mock library to the expected path so it succeeds.
-  base::ScopedAllowBlockingForTesting allow_io;
-  ASSERT_TRUE(
-      base::CopyFile(GetMockLibraryPath(), fake_installer_->GetLibraryPath()));
+  base::RunLoop run_loop_for_register_translate_kit;
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
-  // Create the mock language pack files.
-  WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
-
-  // Add an observer to wait for language pack installation.
-  base::RunLoop run_loop;
-  TestObserver observer(LanguagePackKey::kEn_Ja, run_loop.QuitClosure(),
-                        base::DoNothing());
-  base::ScopedObservation<OnDeviceTranslationInstaller,
-                          OnDeviceTranslationInstaller::Observer>
-      scoped_observation(&observer);
-  scoped_observation.Observe(&fake_installer_.value());
+  base::RunLoop run_loop_for_register_language_pack;
+  EXPECT_CALL(mock_component_manager,
+              RegisterTranslateKitLanguagePackComponent(_))
+      .WillOnce([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
+        run_loop_for_register_language_pack.Quit();
+      });
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -481,14 +440,23 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   )"),
             "OK");
 
-  // The promise of create() should not be resolved yet because the language
-  // pack is not ready.
+  // Wait until RegisterTranslateKitComponentImpl() is called.
+  run_loop_for_register_translate_kit.Run();
+  // Wait until RegisterTranslateKitLanguagePackComponent() is called.
+  run_loop_for_register_language_pack.Run();
+  // Install the mock TranslateKit component.
+  mock_component_manager.InstallMockTranslateKitComponent();
+
+  // The promise of create() should not be resolved yet.
   EXPECT_FALSE(EvalJs("window._testPromiseResolved").ExtractBool());
 
-  // Wait until the language pack is "installed".
-  run_loop.Run();
+  // Install the mock language pack.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
   // Translate "hello" to Japanese.
+  // Note: the mock TranslateKit component returns the concatenation of the
+  // content of "dict.dat" in the language pack and the input text.
+  // See comments in mock_translate_kit_lib.cc for more details.
   EXPECT_EQ(EvalJsCatchingError(
                 "return await (await window._testPromise).translate('hello');"),
             "en to ja: hello");
@@ -498,30 +466,20 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 // before the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorInstallLanguagePackAndThenLibrary) {
-  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
-      browser()->GetProfile());
-  manager->SetInstallerForTesting(&fake_installer_.value());
-
+  MockComponentManager mock_component_manager(GetTempDir());
   NavigateToEmptyPage();
 
-  // Copy the mock library to the expected path so it succeeds.
-  base::ScopedAllowBlockingForTesting allow_io;
-  ASSERT_TRUE(
-      base::CopyFile(GetMockLibraryPath(), fake_installer_->GetLibraryPath()));
+  base::RunLoop run_loop_for_register_translate_kit;
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
-  // Create the mock language pack files.
-  WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
-
-  // Add an observer to wait for installation events.
-  base::RunLoop run_loop_for_pack;
-  base::RunLoop run_loop_for_init;
-  TestObserver observer(LanguagePackKey::kEn_Ja,
-                        run_loop_for_pack.QuitClosure(),
-                        run_loop_for_init.QuitClosure());
-  base::ScopedObservation<OnDeviceTranslationInstaller,
-                          OnDeviceTranslationInstaller::Observer>
-      scoped_observation(&observer);
-  scoped_observation.Observe(&fake_installer_.value());
+  base::RunLoop run_loop_for_register_language_pack;
+  EXPECT_CALL(mock_component_manager,
+              RegisterTranslateKitLanguagePackComponent(_))
+      .WillOnce([&](LanguagePackKey key) {
+        EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
+        run_loop_for_register_language_pack.Quit();
+      });
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -537,16 +495,19 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   )"),
             "OK");
 
-  // Wait until the language pack is "installed".
-  run_loop_for_pack.Run();
+  // Wait until RegisterTranslateKitComponentImpl() is called.
+  run_loop_for_register_translate_kit.Run();
+  // Wait until RegisterTranslateKitLanguagePackComponent() is called.
+  run_loop_for_register_language_pack.Run();
 
-  // The promise of create() should not be resolved yet because the library is
-  // not ready.
+  // Install the mock language pack.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+
+  // The promise of create() should not be resolved yet.
   EXPECT_FALSE(EvalJs("window._testPromiseResolved").ExtractBool());
 
-  // Wait until Init() is called (library ready).
-  run_loop_for_init.Run();
-
+  // Install the mock TranslateKit component.
+  mock_component_manager.InstallMockTranslateKitComponent();
   // Translate "hello" to Japanese.
   EXPECT_EQ(EvalJsCatchingError(
                 "return await (await window._testPromise).translate('hello');"),
@@ -879,10 +840,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 // incompatibility of the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryIncompatible) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja,
-                     GetMockInvalidFunctionPointerLibraryPath());
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallMockInvalidFunctionPointerLibraryComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   auto console_observer =
@@ -905,9 +868,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 // initialization failure of the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryFailedToInitialize) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja, GetMockFailingLibraryPath());
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallMockFailingLibraryComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   auto console_observer =
@@ -929,9 +895,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 // Tests the behavior of failure of translator creation in the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryTranslatorCreationFailed) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   auto console_observer = CreateConsoleObserver(
@@ -952,9 +919,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
 // Tests the behavior of streaming translation.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslateStreaming) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   // Create a translator and call translateStreaming().
@@ -985,11 +953,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslateStreaming) {
             "en to ja: Sentence one en to ja: Sentence two");
 }
 
-// Tests the FIFO order of multiple parallel invocations of
-// TranslateStreaming().
+// Tests the FIFO order of multiple parallel TranslateStreaming() invocations.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, MultipleStreamingCalls) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   // Create one translator and call translateStreaming() multiple times in
@@ -2086,6 +2055,9 @@ class OnDeviceTranslationCrossOriginBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
+
+ protected:
+  FakeOnDeviceTranslationInstaller fake_installer_{GetTempDir()};
 };
 
 // Tests the behavior of the Translation API in a cross origin iframe.
@@ -2108,9 +2080,16 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 // service count exceeds the limit.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        ExceedServiceCountLimit) {
-  SetupFakeInstaller(browser()->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+  fake_installer_.InitNow(base::DoNothing());
+  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  base::ScopedAllowBlockingForTesting allow_io;
+  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
+  auto* manager =
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->GetProfile());
+  manager->SetInstallerForTesting(&fake_installer_);
   NavigateToTestPage(browser());
   size_t i = 0;
   // Until the service count exceeds the limit, the translator can be created,
@@ -2143,9 +2122,18 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 // incognito profile.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        TranslateInIframeIncognitoBrowser) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+  fake_installer_.InitNow(base::DoNothing());
+  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  base::ScopedAllowBlockingForTesting allow_io;
+  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
+
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
-  SetupFakeInstaller(incognito_browser->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
+  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
+      incognito_browser->GetProfile());
+  manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(incognito_browser);
   content::RenderFrameHost* iframe0 =
@@ -2163,9 +2151,18 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 // guest profile.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
                        TranslateInIframeGuestBrowser) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+  fake_installer_.InitNow(base::DoNothing());
+  fake_installer_.InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  base::ScopedAllowBlockingForTesting allow_io;
+  CHECK(base::CopyFile(GetMockLibraryPath(), fake_installer_.GetLibraryPath()));
+
   BrowserWindowInterface* guest_browser = CreateGuestBrowser();
-  SetupFakeInstaller(guest_browser->GetProfile(), &fake_installer_.value(),
-                     LanguagePackKey::kEn_Ja);
+  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
+      guest_browser->GetProfile());
+  manager->SetInstallerForTesting(&fake_installer_);
 
   NavigateToTestPage(guest_browser);
   content::RenderFrameHost* iframe =

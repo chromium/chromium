@@ -813,7 +813,6 @@
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "components/on_device_translation/component_manager.h"
-#include "components/on_device_translation/installer.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
@@ -8593,20 +8592,10 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
         sandbox::policy::kParamScreenAiComponentPath,
         screen_ai_binary_path.value());
   }
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   if (sandbox_type == sandbox::mojom::Sandbox::kOnDeviceTranslation) {
-    base::FilePath translatekit_binary_path;
-    if (auto* installer = on_device_translation::OnDeviceTranslationInstaller::
-            GetInstance()) {
-      if (installer->IsInit()) {
-        translatekit_binary_path = installer->GetLibraryPath().DirName();
-      }
-    }
-    if (translatekit_binary_path.empty()) {
-      translatekit_binary_path =
-          on_device_translation::ComponentManager::GetInstance()
-              .GetTranslateKitComponentPath();
-    }
+    auto translatekit_binary_path =
+        on_device_translation::ComponentManager::GetInstance()
+            .GetTranslateKitComponentPath();
     if (translatekit_binary_path.empty()) {
       VLOG(1) << "TranslationKit component not found.";
       return false;
@@ -8615,7 +8604,6 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
         sandbox::policy::kParamTranslatekitComponentPath,
         translatekit_binary_path.value());
   }
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
   return false;
 }
