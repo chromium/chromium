@@ -1249,7 +1249,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     new ShareParams.Builder(
                                     getWindow(),
                                     ContextMenuUtils.getAltText(mParams),
-                                    mParams.getUrl().getSpec())
+                                    mParams.isAnchor()
+                                            ? mParams.getUrl().getSpec()
+                                            : mParams.getPageUrl().getSpec())
                             .build();
             assumeNonNull(mShareDelegateSupplier.get())
                     .share(
