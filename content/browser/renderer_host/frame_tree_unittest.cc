@@ -545,8 +545,8 @@ TEST_F(FrameTreeTest, FindFrames) {
   EXPECT_EQ(nullptr, frame_tree.FindByName("no such frame"));
 }
 
-// Check that PreviousSibling() and NextSibling() are retrieved correctly.
-TEST_F(FrameTreeTest, GetSibling) {
+// Check that PreviousSibling() is retrieved correctly.
+TEST_F(FrameTreeTest, PreviousSibling) {
   main_test_rfh()->InitializeRenderFrameIfNeeded();
 
   constexpr auto kOwnerType = blink::FrameOwnerElementType::kIframe;
@@ -602,13 +602,6 @@ TEST_F(FrameTreeTest, GetSibling) {
   EXPECT_EQ(child0, child1->current_frame_host()->PreviousSibling());
   EXPECT_EQ(child1, child2->current_frame_host()->PreviousSibling());
   EXPECT_EQ(nullptr, grandchild->current_frame_host()->PreviousSibling());
-
-  // Test NextSibling().
-  EXPECT_EQ(nullptr, root->current_frame_host()->NextSibling());
-  EXPECT_EQ(child1, child0->current_frame_host()->NextSibling());
-  EXPECT_EQ(child2, child1->current_frame_host()->NextSibling());
-  EXPECT_EQ(nullptr, child2->current_frame_host()->NextSibling());
-  EXPECT_EQ(nullptr, grandchild->current_frame_host()->NextSibling());
 }
 
 // Do some simple manipulations of the frame tree, making sure that

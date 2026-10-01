@@ -40,7 +40,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/memory.h"
 #include "base/rand_util.h"
@@ -13928,14 +13927,6 @@ void RenderFrameHostImpl::CreateBrokerHolder() {
 }
 
 FrameTreeNode* RenderFrameHostImpl::PreviousSibling() const {
-  return GetSibling(-1);
-}
-
-FrameTreeNode* RenderFrameHostImpl::NextSibling() const {
-  return GetSibling(1);
-}
-
-FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
   if (!parent_ || !parent_->child_count()) {
     return nullptr;
   }
@@ -13943,18 +13934,9 @@ FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
   for (size_t i = 0; i < parent_->child_count(); ++i) {
     // Frame tree node id will only be known for subframes, and will therefore
     // be accessible in this iteration, as all children are subframes.
-    if (parent_->child_at(i)->frame_tree_node_id() != GetFrameTreeNodeId()) {
-      continue;
+    if (parent_->child_at(i)->frame_tree_node_id() == GetFrameTreeNodeId()) {
+      return i > 0 ? parent_->child_at(i - 1) : nullptr;
     }
-
-    if (relative_offset < 0 &&
-        base::checked_cast<size_t>(-relative_offset) > i) {
-      return nullptr;
-    }
-    if (i + relative_offset >= parent_->child_count()) {
-      return nullptr;
-    }
-    return parent_->child_at(i + relative_offset);
   }
 
   NOTREACHED() << "FrameTreeNode not found in its parent's children.";

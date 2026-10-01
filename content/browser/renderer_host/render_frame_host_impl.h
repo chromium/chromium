@@ -2825,10 +2825,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // children, or nullptr if there is no such node.
   FrameTreeNode* PreviousSibling() const;
 
-  // Return the frame immediately following this RenderFrameHost in its parent's
-  // children, or nullptr if there is no such node.
-  FrameTreeNode* NextSibling() const;
-
   // Sets the |last_committed_origin_|, |isolation_info_|,
   // |permissions_policy_|, and the RuntimeFeatureStateDocumentData of |this|
   // frame, inheriting the origin from |creator_frame| as appropriate (e.g.
@@ -3432,8 +3428,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class SubresourceLoaderFactoriesConfig;
 
   void CreateBrokerHolder();
-
-  FrameTreeNode* GetSibling(int relative_offset) const;
 
   FrameTreeNode* FindAndVerifyChildInternal(
       RenderFrameHostOrProxy child_frame_or_proxy,

@@ -7403,7 +7403,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetSiblings) {
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, PreviousSibling) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   // Use actual FrameTreeNode id values in URL.
   GURL main_url(embedded_test_server()->GetURL(
@@ -7417,23 +7417,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetSiblings) {
   FrameTreeNode* ftn5 = ftn3->child_at(0);
 
   // Check root node.
-  EXPECT_EQ(ftn1->current_frame_host()->NextSibling(), nullptr);
   EXPECT_EQ(ftn1->current_frame_host()->PreviousSibling(), nullptr);
 
   // Check first child of root (leaf node).
-  EXPECT_EQ(ftn2->current_frame_host()->NextSibling(), ftn3);
   EXPECT_EQ(ftn2->current_frame_host()->PreviousSibling(), nullptr);
 
   // Check second child of root (has child).
-  EXPECT_EQ(ftn3->current_frame_host()->NextSibling(), ftn4);
   EXPECT_EQ(ftn3->current_frame_host()->PreviousSibling(), ftn2);
 
   // Check third child of root (leaf).
-  EXPECT_EQ(ftn4->current_frame_host()->NextSibling(), nullptr);
   EXPECT_EQ(ftn4->current_frame_host()->PreviousSibling(), ftn3);
 
   // Check deepest node in tree (leaf with no siblings).
-  EXPECT_EQ(ftn5->current_frame_host()->NextSibling(), nullptr);
   EXPECT_EQ(ftn5->current_frame_host()->PreviousSibling(), nullptr);
 }
 
