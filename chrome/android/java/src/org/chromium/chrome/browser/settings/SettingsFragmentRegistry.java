@@ -94,6 +94,7 @@ import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSett
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -458,6 +459,10 @@ public class SettingsFragmentRegistry {
                 "accessPoint",
                 SafeBrowsingSettingsFragment.ACCESS_POINT,
                 /* defaultValue= */ SettingsAccessPoint.DEFAULT);
+        registerIntParameterMapping(
+                "mode",
+                CookieSettings.EXTRA_COOKIE_PAGE_STATE,
+                /* defaultValue= */ CookieControlsMode.OFF);
     }
 
     /**

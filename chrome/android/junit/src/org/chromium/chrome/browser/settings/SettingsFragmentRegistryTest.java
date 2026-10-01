@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
+import org.chromium.components.browser_ui.site_settings.CookieSettings;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.LocationPermissionSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -71,6 +72,7 @@ import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSett
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.Collections;
@@ -404,6 +406,15 @@ public class SettingsFragmentRegistryTest {
                 GlicNavigationUtils.FIELD_LOCATION_PERMISSION);
         String url = SettingsFragmentRegistry.createUrlForFragment(GlicSettings.class, args);
         assertEquals("chrome://settings/ai/gemini?highlight=location_permission", url);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(url, args));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_cookiePageStateRoundTrips() {
+        Bundle args = new Bundle();
+        args.putInt(CookieSettings.EXTRA_COOKIE_PAGE_STATE, CookieControlsMode.BLOCK_THIRD_PARTY);
+        String url = SettingsFragmentRegistry.createUrlForFragment(CookieSettings.class, args);
+        assertEquals("chrome://settings/cookies?mode=" + CookieControlsMode.BLOCK_THIRD_PARTY, url);
         assertTrue(SettingsFragmentRegistry.urlPreservesArgs(url, args));
     }
 
