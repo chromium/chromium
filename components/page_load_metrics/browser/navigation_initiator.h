@@ -83,17 +83,59 @@ class NavigationInitiator final {
 // LINT.IfChange(PageLoadMetricsNavigationInitiator)
 namespace navigation_initiator {
 
-// The trigger of the navigation is unknown, or is not interesting enough to
-// have a dedicated `NavigationInitiator`.
+// The fallback initiator.
+//
+// Used when the trigger of the navigation is unknown, or is not classified into
+// any dedicated `NavigationInitiator`. Also used when a navigation has a
+// relevant page transition (like link click or form submission) but lacks
+// renderer initiation or user gesture, or when a history navigation has an
+// offset of 0.
 inline constexpr NavigationInitiator kOther{0, "Other"};
 
 // The following are derived from `ui::PageTransition` in
 // `GetNavigationInitiator()`, not attached by a trigger. See the comment of
 // `NavigationInitiator`.
+
+// Navigation triggered by clicking a link on a web page.
+//
+// Classified in `GetNavigationInitiator()` when
+// `ui::PageTransitionCoreTypeIs(PAGE_TRANSITION_LINK)` holds, and the
+// navigation is renderer-initiated (`navigation_handle.IsRendererInitiated()`)
+// with a user gesture (`navigation_handle.HasUserGesture()`). If without a user
+// gesture (e.g. script-driven link clicks), falls back to `kOther`.
 inline constexpr NavigationInitiator kLinkClick{5, "LinkClick"};
+
+// Navigation to a forward history entry or a BFCache restore.
+//
+// Classified in `GetNavigationInitiator()` when
+// `(navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK)`
+// holds or `navigation_handle.IsServedFromBackForwardCache()` is true, and
+// `navigation_handle.GetNavigationEntryOffset() > 0`.
 inline constexpr NavigationInitiator kForward{6, "Forward"};
+
+// Navigation to a backward history entry or a BFCache restore.
+//
+// Classified in `GetNavigationInitiator()` when
+// `(navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK)`
+// holds or `navigation_handle.IsServedFromBackForwardCache()` is true, and
+// `navigation_handle.GetNavigationEntryOffset() < 0`.
 inline constexpr NavigationInitiator kBackward{7, "Backward"};
+
+// Navigation triggered by reloading the page.
+//
+// Classified in `GetNavigationInitiator()` when
+// `ui::PageTransitionCoreTypeIs(PAGE_TRANSITION_RELOAD)` holds, provided that
+// it is not classified as a forward/backward navigation (since pages restored
+// from BFCache preserve the previous transition type).
 inline constexpr NavigationInitiator kReload{8, "Reload"};
+
+// Navigation triggered by submitting an HTML form.
+//
+// Classified in `GetNavigationInitiator()` when
+// `ui::PageTransitionCoreTypeIs(PAGE_TRANSITION_FORM_SUBMIT)` holds, and the
+// navigation is renderer-initiated (`navigation_handle.IsRendererInitiated()`)
+// with a user gesture (`navigation_handle.HasUserGesture()`). If without a user
+// gesture, falls back to `kOther`.
 inline constexpr NavigationInitiator kFormSubmission{11, "FormSubmission"};
 
 }  // namespace navigation_initiator

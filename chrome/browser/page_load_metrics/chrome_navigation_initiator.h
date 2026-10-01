@@ -20,27 +20,51 @@
 // LINT.IfChange(ChromeNavigationInitiator)
 namespace chrome_navigation_initiator {
 
+// Navigation triggered from the bookmark bar.
+//
+// Attached when opening bookmarks by clicking a top-level bookmark button on
+// the bookmark bar, or via the bookmark bar page handler. Note that bookmarks
+// inside folders are not supported yet.
 inline constexpr page_load_metrics::NavigationInitiator kBookmarkBar{
     1, "BookmarkBar"};
+
+// Navigation triggered from the New Tab Page (NTP).
+//
+// Attached when clicking a Most Visited tile or shortcut on the NTP.
 inline constexpr page_load_metrics::NavigationInitiator kNewTabPage{
     2, "NewTabPage"};
+
+// Navigation triggered from the omnibox by typing a URL directly.
+//
+// Attached by `ChromeOmniboxClient` (Desktop) or
+// `AutocompleteControllerAndroid` (Android) when the user enters a URL directly
+// (`ui::PAGE_TRANSITION_TYPED`).
 inline constexpr page_load_metrics::NavigationInitiator kOmniboxDirectUrlInput{
     3, "OmniboxDirectUrlInput"};
+
+// Navigation triggered from the omnibox by submitting a search query.
+//
+// Attached by `ChromeOmniboxClient` (Desktop) or
+// `AutocompleteControllerAndroid` (Android) when the user searches with the
+// default search engine
+// (`ui::PAGE_TRANSITION_GENERATED`).
 inline constexpr page_load_metrics::NavigationInitiator
     kOmniboxDefaultSearchEngine{4, "OmniboxDefaultSearchEngine"};
 
-// This is search navigation triggered as follows:
-// Android: "Web search" from the text selection context menu.
-// Desktop: "Search [default search engine] for ..." from the right-click menu
-// on selected text.
+// Navigation triggered by searching from the context menu.
+//
+// - Android: "Web search" from the text selection context menu.
+// - Desktop: "Search [default search engine] for ..." from the right-click menu
+//   on selected text.
 inline constexpr page_load_metrics::NavigationInitiator kContextMenuSearch{
     9, "ContextMenuSearch"};
 
-// This is link navigation triggered as follows:
-// Android: "Open in new tab", "Open in Incognito tab", etc. from the long
-// press context menu on a link.
-// Desktop: "Open link in new tab", "Open link in new window", "Open link in
-// Incognito window", etc. from the right-click menu on a link.
+// Navigation triggered by opening a link from the context menu.
+//
+// - Android: "Open in new tab", "Open in Incognito tab", etc. from the long
+//   press context menu on a link.
+// - Desktop: "Open link in new tab", "Open link in new window", "Open link in
+//   Incognito window", etc. from the right-click menu on a link.
 inline constexpr page_load_metrics::NavigationInitiator kContextMenuOpenLink{
     10, "ContextMenuOpenLink"};
 
