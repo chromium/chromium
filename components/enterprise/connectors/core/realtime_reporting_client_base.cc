@@ -110,10 +110,13 @@ RealtimeReportingClientBase::InitBrowserReportingClient(
   // Make sure DeviceManagementService has been initialized.
   device_management_service_->ScheduleInitialization(0);
 
-  browser_private_client_ = std::make_unique<policy::CloudPolicyClient>(
-      device_management_service_, url_loader_factory_,
-      policy::CloudPolicyClient::DeviceDMTokenCallback());
-  policy::CloudPolicyClient* client = browser_private_client_.get();
+  SetOwnedReportingClient(
+      /*per_profile=*/false,
+      std::make_unique<policy::CloudPolicyClient>(
+          device_management_service_, url_loader_factory_,
+          policy::CloudPolicyClient::DeviceDMTokenCallback()));
+  policy::CloudPolicyClient* client =
+      GetOwnedReportingClient(/*per_profile=*/false);
 
   if (!client->is_registered()) {
     client->SetupRegistration(
@@ -122,6 +125,28 @@ RealtimeReportingClientBase::InitBrowserReportingClient(
   }
 
   return {policy_client_desc, client};
+}
+
+void RealtimeReportingClientBase::SetOwnedReportingClient(
+    bool per_profile,
+    std::unique_ptr<policy::CloudPolicyClient> client) {
+  auto& active_client = per_profile ? profile_client_ : browser_client_;
+  if (active_client) {
+    active_client->RemoveObserver(this);
+    active_client = nullptr;
+  }
+
+  if (per_profile) {
+    profile_private_client_ = std::move(client);
+  } else {
+    browser_private_client_ = std::move(client);
+  }
+}
+
+policy::CloudPolicyClient* RealtimeReportingClientBase::GetOwnedReportingClient(
+    bool per_profile) const {
+  return per_profile ? profile_private_client_.get()
+                     : browser_private_client_.get();
 }
 
 policy::CloudPolicyClient* RealtimeReportingClientBase::GetReportingClient(
@@ -148,27 +173,13 @@ void RealtimeReportingClientBase::OnCloudPolicyClientAvailable(
     return;
   }
 
+  // Any previous client for this scope must already have been unregistered and
+  // cleared by SetOwnedReportingClient() before `client` was set.
   if (policy_client_desc == kProfilePolicyClientDescription) {
-    DCHECK_NE(profile_client_, client);
-    if (profile_client_ == client) {
-      return;
-    }
-
-    if (profile_client_) {
-      profile_client_->RemoveObserver(this);
-    }
-
+    DCHECK(!profile_client_);
     profile_client_ = client;
   } else {
-    DCHECK_NE(browser_client_, client);
-    if (browser_client_ == client) {
-      return;
-    }
-
-    if (browser_client_) {
-      browser_client_->RemoveObserver(this);
-    }
-
+    DCHECK(!browser_client_);
     browser_client_ = client;
   }
 
