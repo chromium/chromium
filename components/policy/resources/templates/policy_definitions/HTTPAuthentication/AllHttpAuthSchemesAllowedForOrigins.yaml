@@ -2,6 +2,8 @@ caption: List of origins allowing all HTTP authentication
 desc: |-
   Setting the policy specifies for which origins to allow all the HTTP authentication schemes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports regardless of the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy.
 
+  Starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 161, this policy applies only to destination server origins and does not apply to proxy server authentication challenges. To allow all HTTP authentication schemes for proxy servers, use the <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME">AllHttpAuthSchemesAllowedForProxies</ph> policy instead. Prior to version 161, proxy servers matching this policy are also allowed to use all HTTP authentication schemes unless <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME">AllHttpAuthSchemesAllowedForProxies</ph> is set.
+
         Format the origin pattern according to this format (<ph name="URL_SCHEME_FORMAT_LINK">https://support.google.com/chrome/a?p=url_blocklist_filter_format</ph>). Up to 1,000 exceptions can be defined in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME">AllHttpAuthSchemesAllowedForOrigins</ph>.
         Wildcards are allowed for the host component (e.g., '*:8000' matches all hosts on port 8000). To match all schemes or all ports, omit the component entirely (e.g., 'example.com' matches any scheme and any port). A hostname (e.g., 'example.com') also matches its subdomains. To match a host exactly and exclude its subdomains, prepend it with a dot (e.g., '.example.com'). To match all origins, use a single asterisk ('*').
 example_value:

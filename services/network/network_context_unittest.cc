@@ -10875,9 +10875,11 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilter) {
   const GURL kGoogleSubdomain("https://subdomain.google.com");
   const GURL kBlocked("https://www.blocked.com");
   auto is_url_allowed_to_use_auth_schemes =
-      [&network_context](const GURL& url) {
+      [&network_context](const GURL& url, net::HttpAuth::Target target =
+                                              net::HttpAuth::AUTH_SERVER) {
         return network_context->GetHttpAuthPreferences()
-            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url));
+            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url),
+                                               target);
       };
 
   network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
@@ -10921,15 +10923,22 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilter) {
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogleSubdomain));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kBlocked));
+
+  // Target HttpAuth::AUTH_PROXY is not matched by
+  // patterns_allowed_to_use_all_schemes.
+  EXPECT_FALSE(
+      is_url_allowed_to_use_auth_schemes(kGoogle, net::HttpAuth::AUTH_PROXY));
 }
 
 TEST_F(NetworkContextTest, HttpAuthUrlFilterWithPort) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   auto is_url_allowed_to_use_auth_schemes =
-      [&network_context](const GURL& url) {
+      [&network_context](const GURL& url, net::HttpAuth::Target target =
+                                              net::HttpAuth::AUTH_SERVER) {
         return network_context->GetHttpAuthPreferences()
-            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url));
+            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url),
+                                               target);
       };
 
   network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
@@ -10969,6 +10978,54 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilterWithPort) {
   EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kHttpGoogle));
   EXPECT_FALSE(is_url_allowed_to_use_auth_schemes(kGoogle));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle8000));
+}
+
+TEST_F(NetworkContextTest, HttpAuthProxyUrlFilter) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const GURL kProxy("https://proxy.example.com:8080");
+  const GURL kProxySubdomain("https://sub.proxy.example.com:8080");
+  const GURL kOtherProxy("https://other.example.com:8080");
+  auto is_proxy_allowed_to_use_auth_schemes =
+      [&network_context](const GURL& url) {
+        return network_context->GetHttpAuthPreferences()
+            ->IsAllowedToUseAllHttpAuthSchemes(url::SchemeHostPort(url),
+                                               net::HttpAuth::AUTH_PROXY);
+      };
+
+  network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
+      network::mojom::HttpAuthDynamicParams::New();
+  // Before any dynamic params are set, no filter is installed.
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kProxy));
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kProxySubdomain));
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kOtherProxy));
+
+  // Once empty params are configured, the filter is active and rejects proxies.
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kProxy));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kProxySubdomain));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kOtherProxy));
+
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
+      std::vector<std::string>{"proxy.example.com:8080"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kProxy));
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kProxySubdomain));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kOtherProxy));
+
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
+      std::vector<std::string>{".proxy.example.com:8080"};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_TRUE(is_proxy_allowed_to_use_auth_schemes(kProxy));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kProxySubdomain));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kOtherProxy));
+
+  auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
+      std::vector<std::string>{};
+  network_context->OnHttpAuthDynamicParamsChanged(auth_dynamic_params.get());
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kProxy));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kProxySubdomain));
+  EXPECT_FALSE(is_proxy_allowed_to_use_auth_schemes(kOtherProxy));
 }
 
 TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {

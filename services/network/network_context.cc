@@ -2852,6 +2852,11 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
   url_matcher::util::AddAllowFiltersWithLimit(
       url_matcher_.get(), http_auth_dynamic_network_service_params
                               ->patterns_allowed_to_use_all_schemes);
+  proxy_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  url_matcher::util::AddAllowFiltersWithLimit(
+      proxy_url_matcher_.get(),
+      http_auth_dynamic_network_service_params
+          ->patterns_allowed_to_use_all_schemes_for_proxies);
   http_auth_merged_preferences_.set_http_auth_scheme_filter(
       base::BindRepeating(&NetworkContext::IsAllowedToUseAllHttpAuthSchemes,
                           base::Unretained(this)));
@@ -3600,8 +3605,13 @@ void NetworkContext::FinishConstructingTrustTokenStore(
 }
 
 bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
-    const url::SchemeHostPort& scheme_host_port) {
-  DCHECK(url_matcher_);
+    const url::SchemeHostPort& scheme_host_port,
+    net::HttpAuth::Target target) {
+  if (target == net::HttpAuth::AUTH_PROXY) {
+    CHECK(proxy_url_matcher_);
+    return !proxy_url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
+  }
+  CHECK(url_matcher_);
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
 }
 

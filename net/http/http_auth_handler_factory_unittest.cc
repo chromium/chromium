@@ -5,7 +5,9 @@
 #include "net/http/http_auth_handler_factory.h"
 
 #include <memory>
+#include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -38,8 +40,8 @@ namespace {
 
 class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
  public:
-  explicit MockHttpAuthHandlerFactory(int return_code) :
-      return_code_(return_code) {}
+  explicit MockHttpAuthHandlerFactory(int return_code)
+      : return_code_(return_code) {}
   ~MockHttpAuthHandlerFactory() override = default;
 
   int CreateAuthHandler(
@@ -233,8 +235,8 @@ TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilter) {
   http_auth_preferences.set_basic_over_http_enabled(false);
   // Set the preference that only allows "https://www.example.com" to use HTTP
   // auth.
-  http_auth_preferences.set_http_auth_scheme_filter(
-      base::BindRepeating([](const url::SchemeHostPort& scheme_host_port) {
+  http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
+      [](const url::SchemeHostPort& scheme_host_port, HttpAuth::Target target) {
         return scheme_host_port ==
                url::SchemeHostPort(GURL("https://www.example.com"));
       }));
@@ -277,6 +279,126 @@ TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilter) {
   }
 }
 
+TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilterDoesNotApplyToProxy) {
+  MockHostResolver host_resolver;
+
+  MockAllowHttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.SetAllowedSchemes(
+      base::flat_set<std::string>{kBasicAuthScheme, kNegotiateAuthScheme});
+
+  const url::SchemeHostPort kAllowedOrigin(GURL("https://www.example.com"));
+  const url::SchemeHostPort kNonAllowedOrigin(
+      GURL("https://other.example.com"));
+
+  http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
+      [](const url::SchemeHostPort& allowed_origin,
+         const url::SchemeHostPort& scheme_host_port, HttpAuth::Target target) {
+        return target == HttpAuth::AUTH_SERVER &&
+               scheme_host_port == allowed_origin;
+      },
+      kAllowedOrigin));
+
+  std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
+      HttpAuthHandlerFactory::CreateDefault(&http_auth_preferences));
+
+  SSLInfo null_ssl_info;
+
+  struct TestCase {
+    HttpAuth::Target target;
+    url::SchemeHostPort origin;
+    const char* challenge;
+    int expected_net_error;
+  } const kTestCases[] = {
+      // {AUTH_SERVER, kAllowedOrigin, Basic} -> OK
+      {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Basic realm=\"FooBar\"", OK},
+
+      // {AUTH_SERVER, kAllowedOrigin, Ntlm} -> OK (allowed by origin filter)
+      {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Ntlm", OK},
+
+      // {AUTH_SERVER, kNonAllowedOrigin, Basic} -> OK
+      // (allowed by AuthSchemes policy)
+      {HttpAuth::AUTH_SERVER, kNonAllowedOrigin, "Basic realm=\"FooBar\"", OK},
+
+      // {AUTH_SERVER, kNonAllowedOrigin, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME
+      // (disallowed by AuthSchemes policy and origin filter)
+      {HttpAuth::AUTH_SERVER, kNonAllowedOrigin, "Ntlm",
+       ERR_UNSUPPORTED_AUTH_SCHEME},
+
+
+      // {AUTH_PROXY, kAllowedOrigin, Basic} -> OK (allowed by AuthSchemes policy)
+      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Basic realm=\"FooBar\"", OK},
+
+      // {AUTH_PROXY, kAllowedOrigin, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME
+      // (the filter rejects proxies, even for the allowed origin)
+      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Ntlm",
+       ERR_UNSUPPORTED_AUTH_SCHEME},
+
+      // {AUTH_PROXY, kNonAllowedOrigin, Basic} -> OK
+      // (allowed by AuthSchemes policy)
+      {HttpAuth::AUTH_PROXY, kNonAllowedOrigin, "Basic realm=\"FooBar\"", OK},
+
+      // {AUTH_PROXY, kNonAllowedOrigin, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME
+      // (disallowed by AuthSchemes policy)
+      {HttpAuth::AUTH_PROXY, kNonAllowedOrigin, "Ntlm",
+       ERR_UNSUPPORTED_AUTH_SCHEME},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    std::unique_ptr<HttpAuthHandler> handler;
+    int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+        test_case.challenge, test_case.target, null_ssl_info,
+        NetworkAnonymizationKey(), test_case.origin, NetLogWithSource(),
+        &host_resolver, &handler);
+    EXPECT_THAT(rv, IsError(test_case.expected_net_error));
+    if (test_case.expected_net_error == OK) {
+      EXPECT_TRUE(handler);
+    } else {
+      EXPECT_FALSE(handler);
+    }
+  }
+}
+
+TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilterAppliesToProxy) {
+  MockHostResolver host_resolver;
+
+  MockAllowHttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.SetAllowedSchemes(
+      base::flat_set<std::string>{kBasicAuthScheme});
+
+  const url::SchemeHostPort kAllowedProxy(
+      GURL("https://proxy.example.com:8080"));
+  const url::SchemeHostPort kNonAllowedProxy(
+      GURL("https://other-proxy.example.com:8080"));
+
+  http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
+      [](const url::SchemeHostPort& allowed_origin,
+         const url::SchemeHostPort& scheme_host_port, HttpAuth::Target target) {
+        return target == HttpAuth::AUTH_PROXY &&
+               scheme_host_port == allowed_origin;
+      },
+      kAllowedProxy));
+
+  std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
+      HttpAuthHandlerFactory::CreateDefault(&http_auth_preferences));
+
+  SSLInfo null_ssl_info;
+  std::unique_ptr<HttpAuthHandler> handler;
+
+  // When the filter allows proxy targets, matching proxies can use all schemes.
+  int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+      "Ntlm", HttpAuth::AUTH_PROXY, null_ssl_info, NetworkAnonymizationKey(),
+      kAllowedProxy, NetLogWithSource(), &host_resolver, &handler);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(handler);
+
+  // Non-matching proxies are still rejected for disallowed schemes.
+  rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+      "Ntlm", HttpAuth::AUTH_PROXY, null_ssl_info, NetworkAnonymizationKey(),
+      kNonAllowedProxy, NetLogWithSource(), &host_resolver, &handler);
+  EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
+  EXPECT_FALSE(handler);
+}
+
 TEST(HttpAuthHandlerFactoryTest, SchemeAllowedByAllSchemesPolicyHistogram) {
   MockHostResolver host_resolver;
   base::HistogramTester histogram_tester;
@@ -286,14 +408,21 @@ TEST(HttpAuthHandlerFactoryTest, SchemeAllowedByAllSchemesPolicyHistogram) {
       base::flat_set<std::string>{kBasicAuthScheme});
 
   const url::SchemeHostPort kAllowedOrigin(GURL("https://www.example.com"));
-  const url::SchemeHostPort kNonAllowedHost(GURL("https://other.example.com"));
+  const url::SchemeHostPort kAllowedProxy(
+      GURL("https://proxy.example.com:8080"));
+  const url::SchemeHostPort kNonAllowedHost(
+      GURL("https://other.example.com"));
 
   http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
       [](const url::SchemeHostPort& allowed_origin,
-         const url::SchemeHostPort& scheme_host_port) {
+         const url::SchemeHostPort& allowed_proxy,
+         const url::SchemeHostPort& scheme_host_port, HttpAuth::Target target) {
+        if (target == HttpAuth::AUTH_PROXY) {
+          return scheme_host_port == allowed_proxy;
+        }
         return scheme_host_port == allowed_origin;
       },
-      kAllowedOrigin));
+      kAllowedOrigin, kAllowedProxy));
 
   std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
       HttpAuthHandlerFactory::CreateDefault(&http_auth_preferences));
@@ -311,25 +440,18 @@ TEST(HttpAuthHandlerFactoryTest, SchemeAllowedByAllSchemesPolicyHistogram) {
       // histogram
       {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Basic realm=\"FooBar\"", OK,
        std::nullopt},
-
-      // {AUTH_SERVER, kAllowedOrigin, Ntlm} -> OK, records AUTH_SERVER
+      // AUTH_SERVER x kAllowedOrigin x disallowed scheme (Ntlm) -> OK, records AUTH_SERVER
       {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Ntlm", OK,
        HttpAuth::AUTH_SERVER},
-
-      // {AUTH_PROXY, kAllowedOrigin, Basic} -> OK, no policy override histogram
-      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Basic realm=\"FooBar\"", OK,
+      // AUTH_PROXY x kAllowedProxy x allowed scheme (Basic) -> OK, no policy override histogram
+      {HttpAuth::AUTH_PROXY, kAllowedProxy, "Basic realm=\"FooBar\"", OK,
        std::nullopt},
-
-      // {AUTH_PROXY, kAllowedOrigin, Ntlm} -> OK, records AUTH_PROXY
-      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Ntlm", OK, HttpAuth::AUTH_PROXY},
-
-      // {AUTH_SERVER, kNonAllowedHost, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME, no
-      // histogram
+      // AUTH_PROXY x kAllowedProxy x disallowed scheme (Ntlm) -> OK, records AUTH_PROXY
+      {HttpAuth::AUTH_PROXY, kAllowedProxy, "Ntlm", OK,
+       HttpAuth::AUTH_PROXY},
+      // Disallowed scheme on non-allowed host -> rejected, no histogram
       {HttpAuth::AUTH_SERVER, kNonAllowedHost, "Ntlm",
        ERR_UNSUPPORTED_AUTH_SCHEME, std::nullopt},
-
-      // {AUTH_PROXY, kNonAllowedHost, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME, no
-      // histogram
       {HttpAuth::AUTH_PROXY, kNonAllowedHost, "Ntlm",
        ERR_UNSUPPORTED_AUTH_SCHEME, std::nullopt},
   };

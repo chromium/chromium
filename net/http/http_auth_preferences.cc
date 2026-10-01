@@ -82,9 +82,10 @@ void HttpAuthPreferences::SetAllowedSchemes(
 }
 
 bool HttpAuthPreferences::IsAllowedToUseAllHttpAuthSchemes(
-    const url::SchemeHostPort& scheme_host_port) const {
+    const url::SchemeHostPort& scheme_host_port,
+    HttpAuth::Target target) const {
   return !http_auth_scheme_filter_ ||
-         http_auth_scheme_filter_.Run(scheme_host_port);
+         http_auth_scheme_filter_.Run(scheme_host_port, target);
 }
 
 void HttpAuthPreferences::SetServerAllowlist(

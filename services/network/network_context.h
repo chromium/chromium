@@ -933,8 +933,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void FinishConstructingTrustTokenStore(
       std::unique_ptr<SQLiteTrustTokenPersister> persister);
 
+  // Returns whether `scheme_host_port` is allowed to use all HTTP auth
+  // schemes regardless of the AuthSchemes policy.
+  // `scheme_host_port` is the challenging server origin or proxy address.
+  // `target` determines whether to match against destination server patterns
+  // (AUTH_SERVER via `url_matcher_`) or proxy patterns (AUTH_PROXY via
+  // `proxy_url_matcher_`).
   bool IsAllowedToUseAllHttpAuthSchemes(
-      const url::SchemeHostPort& scheme_host_port);
+      const url::SchemeHostPort& scheme_host_port,
+      net::HttpAuth::Target target);
 
   void InitializePrefetchURLLoaderFactory();
 
@@ -1181,6 +1188,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       connection_change_observers_;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
+  std::unique_ptr<url_matcher::URLMatcher> proxy_url_matcher_;
 
   scoped_refptr<MojoBackendFileOperationsFactory>
       http_cache_file_operations_factory_;

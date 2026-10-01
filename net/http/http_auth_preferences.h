@@ -99,11 +99,16 @@ class NET_EXPORT HttpAuthPreferences {
       const std::optional<base::flat_set<std::string>>& allowed_schemes);
 
   void set_http_auth_scheme_filter(
-      base::RepeatingCallback<bool(const url::SchemeHostPort&)>&& filter) {
+      base::RepeatingCallback<bool(const url::SchemeHostPort&,
+                                   HttpAuth::Target)>&& filter) {
     http_auth_scheme_filter_ = std::move(filter);
   }
 
-  bool IsAllowedToUseAllHttpAuthSchemes(const url::SchemeHostPort& url) const;
+  // An auth scheme is allowed if either the scheme is in the allowed schemes
+  // (e.g. via AuthSchemes policy or default schemes), or this method returns
+  // true. It is not required for both to be true.
+  bool IsAllowedToUseAllHttpAuthSchemes(const url::SchemeHostPort& url,
+                                        HttpAuth::Target target) const;
 
   void SetServerAllowlist(const std::string& server_allowlist);
 
@@ -140,9 +145,8 @@ class NET_EXPORT HttpAuthPreferences {
 
   std::optional<base::flat_set<std::string>> allowed_schemes_;
   std::unique_ptr<URLSecurityManager> security_manager_;
-  base::RepeatingCallback<bool(const url::SchemeHostPort&)>
-      http_auth_scheme_filter_ =
-          base::RepeatingCallback<bool(const url::SchemeHostPort&)>();
+  base::RepeatingCallback<bool(const url::SchemeHostPort&, HttpAuth::Target)>
+      http_auth_scheme_filter_;
 };
 
 }  // namespace net

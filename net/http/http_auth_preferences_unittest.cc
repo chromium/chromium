@@ -96,14 +96,20 @@ TEST(HttpAuthPreferencesTest, DelegationType) {
 
 TEST(HttpAuthPreferencesTest, HttpAuthSchemesFilter) {
   HttpAuthPreferences http_auth_preferences;
-  http_auth_preferences.set_http_auth_scheme_filter(
-      base::BindRepeating([](const url::SchemeHostPort& scheme_host_port) {
-        return scheme_host_port.GetURL() == GURL("https://www.google.com");
+  http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
+      [](const url::SchemeHostPort& scheme_host_port, HttpAuth::Target target) {
+        return scheme_host_port.GetURL() == GURL("https://www.google.com") &&
+               target == HttpAuth::AUTH_SERVER;
       }));
   EXPECT_TRUE(http_auth_preferences.IsAllowedToUseAllHttpAuthSchemes(
-      url::SchemeHostPort(GURL("https://www.google.com"))));
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      HttpAuth::AUTH_SERVER));
   EXPECT_FALSE(http_auth_preferences.IsAllowedToUseAllHttpAuthSchemes(
-      url::SchemeHostPort(GURL("https://www.example.com"))));
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      HttpAuth::AUTH_PROXY));
+  EXPECT_FALSE(http_auth_preferences.IsAllowedToUseAllHttpAuthSchemes(
+      url::SchemeHostPort(GURL("https://www.example.com")),
+      HttpAuth::AUTH_SERVER));
 }
 
 TEST(HttpAuthPreferencesTest, SetAllowedSchemes) {

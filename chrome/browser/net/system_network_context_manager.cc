@@ -185,6 +185,10 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
     auth_dynamic_params->patterns_allowed_to_use_all_schemes.push_back(
         item.GetString());
   }
+  if (CHROME_VERSION_MAJOR < 161) {
+    auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
+        auth_dynamic_params->patterns_allowed_to_use_all_schemes;
+  }
   auth_dynamic_params->server_allowlist =
       local_state->GetString(prefs::kAuthServerAllowlist);
   auth_dynamic_params->delegate_allowlist =
