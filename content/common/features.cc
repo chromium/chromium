@@ -410,6 +410,15 @@ BASE_FEATURE(kIsSuitableForUrlInfoEarlyReturnHoldback,
 // When enabled, child process will not terminate itself when IPC is reset.
 BASE_FEATURE(kKeepChildProcessAfterIPCReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When navigating away from a previously committed unassigned NavigationEntry
+// (e.g., chrome-native://newtab/ on Android), only replace its SiteInstance if
+// the new navigation stayed in that same SiteInstance, keeping it in its
+// original BrowsingInstance if the navigation swapped SiteInstances.
+// TODO(crbug.com/493236843): Remove this killswitch once the change has made it
+// through a stable channel revision.
+BASE_FEATURE(kKeepUnassignedSiteInstanceInOriginalBrowsingInstance,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the renderer process will be killed if it provides
 // invalid (non-allowlisted) headers in a navigation request.
 BASE_FEATURE(kKillOnInvalidNavigationHeaders, base::FEATURE_ENABLED_BY_DEFAULT);

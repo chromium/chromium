@@ -5512,7 +5512,11 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // url that doesn't require a site assignment, if this new commit will be
     // assigning an incompatible site to the previous SiteInstance. This ensures
     // the new SiteInstance can be used with the old entry if we return to it.
-    // See http://crbug.com/992198 for further context.
+    // Note that if the new navigation swapped to a different SiteInstance
+    // (e.g., due to Cross-Origin-Opener-Policy: same-origin), the previous
+    // entry's SiteInstance remains unassigned in its original BrowsingInstance
+    // and does not need to be replaced. See http://crbug.com/992198 and
+    // http://crbug.com/493236843 for further context.
     NavigationEntryImpl* nav_entry =
         frame_tree_node_->navigator().controller().GetLastCommittedEntry();
     if (nav_entry && !nav_entry->GetURL().IsAboutBlank() &&
@@ -5520,23 +5524,30 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
         SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
       scoped_refptr<FrameNavigationEntry> frame_entry =
           nav_entry->root_node()->frame_entry;
-      scoped_refptr<SiteInstanceImpl> new_site_instance =
-          base::WrapRefCounted<SiteInstanceImpl>(static_cast<SiteInstanceImpl*>(
-              instance->GetRelatedSiteInstance(frame_entry->url()).get()));
-      nav_entry->AddOrUpdateFrameEntry(
-          frame_tree_node_, NavigationEntryImpl::UpdatePolicy::kReplace,
-          frame_entry->item_sequence_number(),
-          frame_entry->document_sequence_number(),
-          frame_entry->navigation_api_key(), new_site_instance.get(),
-          frame_entry->source_site_instance(), frame_entry->url(),
-          frame_entry->committed_origin(), frame_entry->referrer(),
-          frame_entry->initiator_origin(), frame_entry->initiator_base_url(),
-          frame_entry->redirect_chain(), frame_entry->page_state(),
-          frame_entry->method(), frame_entry->post_id(),
-          frame_entry->blob_url_loader_factory(),
-          frame_entry->policy_container_policies()
-              ? frame_entry->policy_container_policies()->ClonePtr()
-              : nullptr);
+      if (!base::FeatureList::IsEnabled(
+              features::
+                  kKeepUnassignedSiteInstanceInOriginalBrowsingInstance) ||
+          frame_entry->site_instance() == instance) {
+        scoped_refptr<SiteInstanceImpl> new_site_instance =
+            base::WrapRefCounted<SiteInstanceImpl>(
+                static_cast<SiteInstanceImpl*>(
+                    instance->GetRelatedSiteInstance(frame_entry->url())
+                        .get()));
+        nav_entry->AddOrUpdateFrameEntry(
+            frame_tree_node_, NavigationEntryImpl::UpdatePolicy::kReplace,
+            frame_entry->item_sequence_number(),
+            frame_entry->document_sequence_number(),
+            frame_entry->navigation_api_key(), new_site_instance.get(),
+            frame_entry->source_site_instance(), frame_entry->url(),
+            frame_entry->committed_origin(), frame_entry->referrer(),
+            frame_entry->initiator_origin(), frame_entry->initiator_base_url(),
+            frame_entry->redirect_chain(), frame_entry->page_state(),
+            frame_entry->method(), frame_entry->post_id(),
+            frame_entry->blob_url_loader_factory(),
+            frame_entry->policy_container_policies()
+                ? frame_entry->policy_container_policies()->ClonePtr()
+                : nullptr);
+      }
     }
   }
 
