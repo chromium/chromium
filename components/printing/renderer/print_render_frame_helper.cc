@@ -547,8 +547,9 @@ bool CopyMetafileDataToReadOnlySharedMem(
   if (!region_mapping.IsValid())
     return false;
 
-  if (!metafile.GetData(region_mapping.mapping.memory(), buf_size))
+  if (!metafile.GetData(region_mapping.mapping.data(), buf_size)) {
     return false;
+  }
 
   *region = std::move(region_mapping.region);
   return true;

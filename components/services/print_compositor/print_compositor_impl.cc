@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/task/single_thread_task_runner.h"
@@ -444,7 +445,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     return mojom::PrintCompositor::Status::kHandleMapError;
   }
 
-  wstream.copyToAndReset(region_mapping.mapping.memory());
+  wstream.copyToAndReset(region_mapping.mapping.data());
   *region = std::move(region_mapping.region);
   return mojom::PrintCompositor::Status::kSuccess;
 }
@@ -537,8 +538,7 @@ void PrintCompositorImpl::FinishDocumentRequest(
       base::ReadOnlySharedMemoryRegion::Create(
           doc_info_->compositor_stream.bytesWritten());
   if (region_mapping.IsValid()) {
-    doc_info_->compositor_stream.copyToAndReset(
-        region_mapping.mapping.memory());
+    doc_info_->compositor_stream.copyToAndReset(region_mapping.mapping.data());
     region = std::move(region_mapping.region);
     status = mojom::PrintCompositor::Status::kSuccess;
   } else {

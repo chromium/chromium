@@ -128,8 +128,9 @@ base::ReadOnlySharedMemoryRegion PdfToEmfConverter::RenderPdfPageToMetafile(
   if (!region_mapping.IsValid())
     return invalid_emf_region;
 
-  if (!metafile.GetData(region_mapping.mapping.memory(), size))
+  if (!metafile.GetData(region_mapping.mapping.data(), size)) {
     return invalid_emf_region;
+  }
 
   return std::move(region_mapping.region);
 }

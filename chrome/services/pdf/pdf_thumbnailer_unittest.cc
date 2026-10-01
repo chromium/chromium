@@ -5,13 +5,12 @@
 #include "chrome/services/pdf/pdf_thumbnailer.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -88,8 +87,7 @@ class PdfThumbnailerTest : public testing::Test {
   base::ReadOnlySharedMemoryRegion CreatePdfRegion(const std::string& content) {
     auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(content.size());
     EXPECT_TRUE(pdf_region.IsValid());
-    UNSAFE_TODO(
-        memcpy(pdf_region.mapping.memory(), content.data(), content.size()));
+    base::span(pdf_region.mapping).copy_from(base::as_byte_span(content));
     return std::move(pdf_region.region);
   }
 

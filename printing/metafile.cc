@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -47,7 +48,7 @@ base::MappedReadOnlyRegion Metafile::GetDataAsSharedMemoryRegion() const {
     return base::MappedReadOnlyRegion();
   }
 
-  if (!GetData(region_mapping.mapping.memory(), data_size)) {
+  if (!GetData(region_mapping.mapping.data(), data_size)) {
     DLOG(ERROR) << "Failure getting metafile data into region";
     return base::MappedReadOnlyRegion();
   }

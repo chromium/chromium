@@ -4,13 +4,13 @@
 
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
 
+#include <stdint.h>
+
 #include <optional>
-#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -47,28 +47,28 @@ base::MappedReadOnlyRegion GetPdfRegion(const char* file_name) {
     return pdf_region;
 
   base::FilePath pdf_file = test_data_dir.AppendASCII(file_name);
-  std::string pdf_str;
-  if (!base::ReadFileToString(pdf_file, &pdf_str) || pdf_str.empty())
+  std::optional<std::vector<uint8_t>> pdf_bytes =
+      base::ReadFileToBytes(pdf_file);
+  if (!pdf_bytes || pdf_bytes->empty()) {
     return pdf_region;
+  }
 
-  pdf_region = base::ReadOnlySharedMemoryRegion::Create(pdf_str.size());
+  pdf_region = base::ReadOnlySharedMemoryRegion::Create(pdf_bytes->size());
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  UNSAFE_TODO(
-      memcpy(pdf_region.mapping.memory(), pdf_str.data(), pdf_str.size()));
+  base::span(pdf_region.mapping).copy_from(*pdf_bytes);
   return pdf_region;
 }
 
 base::MappedReadOnlyRegion GetBadDataRegion() {
-  static const char kBadData[] = "BADDATA";
+  static constexpr uint8_t kBadData[] = "BADDATA";
   base::MappedReadOnlyRegion pdf_region =
       base::ReadOnlySharedMemoryRegion::Create(std::size(kBadData));
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  UNSAFE_TODO(
-      memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData)));
+  base::span(pdf_region.mapping).copy_from(kBadData);
   return pdf_region;
 }
 
