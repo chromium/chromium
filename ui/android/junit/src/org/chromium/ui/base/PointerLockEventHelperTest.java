@@ -188,11 +188,13 @@ public class PointerLockEventHelperTest {
         MotionEvent updatedEvent =
                 mPointerLockEventHelper.transformCapturedPointerEvent(event, Surface.ROTATION_0);
 
-        // X: (1 + 3 - 2) * 2.4 = 4.8; Y: (-2 + 4 + 5) * 2.4 = 16.8.
-        assertEquals(104.8f, updatedEvent.getX(), 0.01);
-        assertEquals(216.8f, updatedEvent.getY(), 0.01);
-        assertEquals(154.8f, updatedEvent.getRawX(), 0.01);
-        assertEquals(266.8f, updatedEvent.getRawY(), 0.01);
+        float scaleFactor = PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR;
+        float expectedDeltaX = (1 + 3 - 2) * scaleFactor;
+        float expectedDeltaY = (-2 + 4 + 5) * scaleFactor;
+        assertEquals(100f + expectedDeltaX, updatedEvent.getX(), 0.01);
+        assertEquals(200f + expectedDeltaY, updatedEvent.getY(), 0.01);
+        assertEquals(150f + expectedDeltaX, updatedEvent.getRawX(), 0.01);
+        assertEquals(250f + expectedDeltaY, updatedEvent.getRawY(), 0.01);
         assertEquals(InputDevice.SOURCE_MOUSE, updatedEvent.getSource());
     }
 

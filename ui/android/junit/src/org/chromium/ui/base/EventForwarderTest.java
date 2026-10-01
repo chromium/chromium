@@ -50,6 +50,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
@@ -251,7 +252,8 @@ public class EventForwarderTest {
                         /* isLatestEventTimeResampled= */ anyBoolean());
         verify(mNativeMock, never())
                 .onMouseEvent(
-                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt(),
+                        anyBoolean());
         eventForwarder.destroy();
     }
 
@@ -263,7 +265,8 @@ public class EventForwarderTest {
         eventForwarder.onTouchEvent(trackpadClickDownEvent);
         verify(mNativeMock, never())
                 .onMouseEvent(
-                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt(),
+                        anyBoolean());
         eventForwarder.destroy();
     }
 
@@ -331,7 +334,8 @@ public class EventForwarderTest {
         eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
         verify(mNativeMock, never())
                 .onMouseEvent(
-                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
+                        anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt(),
+                        anyBoolean());
         eventForwarder.destroy();
     }
 
@@ -385,7 +389,8 @@ public class EventForwarderTest {
                         eq(MotionEventUtils.getEventTimeNanos(expectedEvent)),
                         eq(expectedEvent.getActionMasked()),
                         eq(EventForwarder.getMouseEventActionButton(expectedEvent)),
-                        eq(MotionEvent.TOOL_TYPE_MOUSE));
+                        eq(MotionEvent.TOOL_TYPE_MOUSE),
+                        eq(false));
         MotionEventTestUtils.assertEquals(captor.getValue(), expectedEvent);
         eventForwarder.destroy();
     }
@@ -438,7 +443,8 @@ public class EventForwarderTest {
                         eq(eventTimeNanos),
                         eq(MotionEvent.ACTION_BUTTON_RELEASE),
                         eq(MotionEvent.BUTTON_SECONDARY),
-                        eq(MotionEvent.TOOL_TYPE_MOUSE));
+                        eq(MotionEvent.TOOL_TYPE_MOUSE),
+                        eq(true));
         Assert.assertEquals(0, captor.getValue().getButtonState());
         eventForwarder.destroy();
     }
@@ -483,7 +489,8 @@ public class EventForwarderTest {
                         eq(eventTimeNanos),
                         eq(MotionEvent.ACTION_BUTTON_RELEASE),
                         eq(0),
-                        eq(MotionEvent.TOOL_TYPE_FINGER));
+                        eq(MotionEvent.TOOL_TYPE_FINGER),
+                        eq(true));
         Assert.assertEquals(MotionEvent.BUTTON_SECONDARY, captor.getValue().getButtonState());
         eventForwarder.destroy();
     }
@@ -545,7 +552,8 @@ public class EventForwarderTest {
                         eq(MotionEventUtils.getEventTimeNanos(transformed)),
                         eq(transformed.getActionMasked()),
                         eq(EventForwarder.getMouseEventActionButton(transformed)),
-                        eq(MotionEvent.TOOL_TYPE_MOUSE));
+                        eq(MotionEvent.TOOL_TYPE_MOUSE),
+                        eq(false));
 
         MotionEventTestUtils.assertEquals(captor.getValue(), transformed);
         eventForwarder.destroy();
@@ -555,6 +563,7 @@ public class EventForwarderTest {
     public void testCapturedPointerMouseMoveEvent() {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
+        float scaleFactor = PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR;
 
         final long downTime = 100;
         final long eventTime = 200;
@@ -573,8 +582,8 @@ public class EventForwarderTest {
                         downTime,
                         eventTime,
                         MotionEvent.ACTION_MOVE,
-                        /* x= */ 1 * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
-                        /* y= */ -1 * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
+                        /* x= */ scaleFactor,
+                        /* y= */ -scaleFactor,
                         /* metaState= */ 0);
         expectedEvent1.setSource(InputDevice.SOURCE_MOUSE);
 
@@ -585,12 +594,8 @@ public class EventForwarderTest {
                         downTime,
                         eventTime,
                         MotionEvent.ACTION_MOVE,
-                        /* x= */ moveEvent.getX()
-                                * 2
-                                * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
-                        /* y= */ moveEvent.getY()
-                                * 2
-                                * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
+                        /* x= */ moveEvent.getX() * 2 * scaleFactor,
+                        /* y= */ moveEvent.getY() * 2 * scaleFactor,
                         /* metaState= */ 0);
         expectedEvent2.setSource(InputDevice.SOURCE_MOUSE);
 
@@ -604,9 +609,33 @@ public class EventForwarderTest {
                         eq(MotionEventUtils.getEventTimeNanos(moveEvent)),
                         eq(moveEvent.getActionMasked()),
                         eq(EventForwarder.getMouseEventActionButton(moveEvent)),
-                        eq(moveEvent.getToolType(0)));
+                        eq(moveEvent.getToolType(0)),
+                        eq(true));
         MotionEventTestUtils.assertEquals(captor.getAllValues().get(0), expectedEvent1);
         MotionEventTestUtils.assertEquals(captor.getAllValues().get(1), expectedEvent2);
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @DisableFeatures(UiAndroidFeatures.POINTER_LOCK_MOUSE_SCALING)
+    public void testCapturedPointerMouseMoveEventWhenScalingDisabled() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
+        MotionEvent moveEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, /* x= */ 1, /* y= */ 0, 0);
+        moveEvent.setSource(InputDevice.SOURCE_MOUSE_RELATIVE);
+
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
+
+        verify(mNativeMock)
+                .onMouseEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        any(MotionEvent.class),
+                        eq(MotionEventUtils.getEventTimeNanos(moveEvent)),
+                        eq(MotionEvent.ACTION_MOVE),
+                        anyInt(),
+                        anyInt(),
+                        eq(false));
         eventForwarder.destroy();
     }
 
@@ -772,7 +801,8 @@ public class EventForwarderTest {
                         MotionEventUtils.getEventTimeNanos(event),
                         event.getActionMasked(),
                         EventForwarder.getMouseEventActionButton(event),
-                        MotionEvent.TOOL_TYPE_MOUSE);
+                        MotionEvent.TOOL_TYPE_MOUSE,
+                        false);
     }
 
     private void validateDragDropEvent(

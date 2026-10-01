@@ -165,7 +165,8 @@ void EventForwarder::OnMouseEvent(
     int64_t time_ns,
     int32_t android_action,
     int32_t android_action_button,
-    int32_t android_tool_type) {
+    int32_t android_tool_type,
+    bool skip_dip_scale) {
   std::unique_ptr<MotionEventAndroidSource> source =
       MotionEventAndroidSourceJava::Create(
           motion_event, /*is_latest_event_time_resampled=*/false);
@@ -180,9 +181,10 @@ void EventForwarder::OnMouseEvent(
       source->GetPressure(0), source->GetRawOrientation(0),
       source->GetRawTilt(0),
       /*tool_type=*/android_tool_type);
+  // Captured relative mouse movement should retain its physical pixel delta.
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, /*event=*/motion_event,
-      /*pix_to_dip=*/1.f / view_->GetDipScale(),
+      /*pix_to_dip=*/skip_dip_scale ? 1.f : 1.f / view_->GetDipScale(),
       /*ticks_x=*/0.f,
       /*ticks_y=*/0.f,
       /*tick_multiplier=*/0.f,
