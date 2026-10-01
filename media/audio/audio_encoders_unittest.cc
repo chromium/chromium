@@ -970,7 +970,17 @@ INSTANTIATE_TEST_SUITE_P(Opus,
                          AudioOpusEncoderTest,
                          testing::ValuesIn(kTestAudioParamsOpus));
 
-#if HAS_AAC_ENCODER
+// Note: theoretically we could create the test fixture AACAudioEncoderTest with
+// only `HAS_AAC_ENCODER`. However, since it's a parameterized test and there
+// are no test cases without the other two flags, this results in an empty
+// parameterized test on some builders, which causes the test suite to crash.
+// See https://crbug.com/568313689 for an example.
+//
+// Feel free to break these conditions up in the future if there are tests where
+// only `HAS_AAC_ENCODER` is required.
+#if HAS_AAC_ENCODER && BUILDFLAG(ENABLE_FFMPEG) && \
+    BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 class AACAudioEncoderTest : public AudioEncodersTest {
  public:
   AACAudioEncoderTest() = default;
@@ -978,7 +988,6 @@ class AACAudioEncoderTest : public AudioEncodersTest {
   AACAudioEncoderTest& operator=(const AACAudioEncoderTest&) = delete;
   ~AACAudioEncoderTest() override = default;
 
-#if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
   void InitializeDecoder() {
     decoder_ = std::make_unique<FFmpegAudioDecoder>(
         base::SequencedTaskRunner::GetCurrentDefault(), &media_log);
@@ -1018,10 +1027,8 @@ class AACAudioEncoderTest : public AudioEncodersTest {
   MockMediaLog media_log;
   std::unique_ptr<FFmpegAudioDecoder> decoder_;
   int decoder_output_callback_count = 0;
-#endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
-#if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode) {
   InitializeDecoder();
 
@@ -1135,11 +1142,12 @@ TEST_P(AACAudioEncoderTest, AacOutputFormat) {
     FlushAndVerifyStatus();
   }
 }
-#endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(AAC,
                          AACAudioEncoderTest,
                          testing::ValuesIn(kTestAudioParamsAAC));
-#endif  // HAS_AAC_ENCODER
+
+#endif  // HAS_AAC_ENCODER && BUILDFLAG(ENABLE_FFMPEG) &&
+        // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media
