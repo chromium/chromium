@@ -8,6 +8,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,7 +25,8 @@
 #include "chrome/browser/ui/views/extensions/dialogs/print_job_confirmation_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blob_reader.h"
@@ -149,10 +151,10 @@ bool PrintJobSubmitter::CheckPrintTicket() {
 void PrintJobSubmitter::CheckPrinter() {
   CHECK(local_printer_);
   local_printer_->GetCapability(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       // TODO(crbug.com/479647640): Check if we should use current user than
       // primary user.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       request_.job.printer_id,
       base::BindOnce(&PrintJobSubmitter::CheckCapabilitiesCompatibility,
                      weak_ptr_factory_.GetWeakPtr()));

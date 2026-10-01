@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,7 +22,8 @@
 #include "chrome/browser/printing/web_api/web_printing_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_request_data.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
@@ -235,8 +237,9 @@ void WebPrintingServiceChromeOS::FetchAttributes(
 
   const std::string& printer_id = *printers_.current_context();
   ash::LocalPrinter::Get()->GetCapability(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      // TODO(crbug.com/479647640): Consider ash::AnnotatedAccountId instead.
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       printer_id,
       base::BindOnce(&ConvertCaps)
           .Then(base::BindOnce(
@@ -257,8 +260,9 @@ void WebPrintingServiceChromeOS::Print(
   const std::string& printer_id = *printers_.current_context();
   attributes->set_device_name(base::UTF8ToUTF16(printer_id));
   ash::LocalPrinter::Get()->GetCapability(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      // TODO(crbug.com/479647640): Consider ash::AnnotatedAccountId instead.
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       printer_id,
       base::BindOnce(
           &WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint,
@@ -275,8 +279,9 @@ void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
     return;
   }
   ash::LocalPrinter::Get()->GetPrinters(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      // TODO(crbug.com/479647640): Consider ash::AnnotatedAccountId instead.
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintersRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

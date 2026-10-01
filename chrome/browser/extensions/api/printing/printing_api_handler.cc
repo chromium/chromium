@@ -96,7 +96,6 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
   CHECK(user_manager::UserManager::IsInitialized());
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
   CHECK(session_manager::SessionManager::Get()->GetPrimarySession());
-  // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
   // TODO(crbug.com/479647640): Check if we should use current user than
   // primary user.
   AccountId account_id =
@@ -238,7 +237,6 @@ std::optional<std::string> PrintingAPIHandler::CancelJob(
   CHECK(user_manager::UserManager::IsInitialized());
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
   CHECK(session_manager::SessionManager::Get()->GetPrimarySession());
-  // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
   // TODO(crbug.com/479647640): Check if we should use current user than
   // primary user.
   AccountId account_id =
@@ -260,8 +258,9 @@ void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   local_printer_->GetPrinters(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      // TODO(crbug.com/479647640): Consider ash::AnnotatedAccountId instead.
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       base::BindOnce(&PrintingAPIHandler::OnPrintersRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -300,8 +299,9 @@ void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   local_printer_->GetCapability(
-      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      // TODO(crbug.com/479647640): Consider ash::AnnotatedAccountId instead.
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id(),
       printer_id,
       base::BindOnce(&PrintingAPIHandler::OnPrinterCapabilitiesRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), printer_id,

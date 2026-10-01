@@ -109,6 +109,8 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "components/account_manager_core/pref_names.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/events/ash/pref_names.h"
@@ -1511,10 +1513,10 @@ std::optional<settings_api::PrefObject> PrefsUtil::GetPref(
   if (IsPrefPrimaryUserControlled(name)) {
     pref_object->controlled_by = settings_api::ControlledBy::kPrimaryUser;
     pref_object->enforcement = settings_api::Enforcement::kEnforced;
-    pref_object->controlled_by_name = user_manager::UserManager::Get()
-                                          ->GetPrimaryUser()
-                                          ->GetAccountId()
-                                          .GetUserEmail();
+    pref_object->controlled_by_name =
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+            .account_id()
+            .GetUserEmail();
     return pref_object;
   }
 #endif
@@ -1767,11 +1769,13 @@ bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
   // it should have "primary user controlled" attribute.
   if (pref_name == ash::prefs::kUserTimezone ||
       pref_name == ash::kSystemTimezone) {
-    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     const user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-    if (user && user->GetAccountId() !=
-                    user_manager->GetPrimaryUser()->GetAccountId()) {
+    if (user &&
+        user->GetAccountId() !=
+            CHECK_DEREF(
+                session_manager::SessionManager::Get()->GetPrimarySession())
+                .account_id()) {
       return true;
     }
   }
