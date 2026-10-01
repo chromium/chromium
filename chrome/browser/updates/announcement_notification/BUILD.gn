@@ -86,6 +86,7 @@ source_set("unit_tests") {
     ":announcement_notification",
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/sync_preferences",
     "//skia",
     "//testing/gmock",
