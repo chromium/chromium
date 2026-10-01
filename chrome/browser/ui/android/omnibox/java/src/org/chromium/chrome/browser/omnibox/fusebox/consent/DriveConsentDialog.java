@@ -77,6 +77,7 @@ public class DriveConsentDialog
     private @Nullable ThinWebView mThinWebView;
     private @Nullable DriveConsentKitClient mClient;
     private @Nullable LoadingView mSpinner;
+    private @Nullable View mLoadingOverlay;
     private @Nullable PropertyModel mModalDialogModel;
     private boolean mDestroyed;
     private boolean mConsentGranted;
@@ -167,8 +168,10 @@ public class DriveConsentDialog
 
         // Build the layout with a loading spinner and display the modal dialog.
         FrameLayout container = buildContentContainer(thinWebView.getView());
+        // An opaque overlay as the background for the spinner, ensuring smooth UI transition.
+        mLoadingOverlay = container.findViewById(R.id.drive_consent_loading_overlay);
         LoadingView spinner = container.findViewById(R.id.drive_consent_spinner);
-        spinner.showLoadingUi();
+        spinner.showLoadingUi(/* skipDelay= */ true);
         mSpinner = spinner;
 
         PropertyModel modalDialogModel = buildModalDialogModel(container);
@@ -212,7 +215,6 @@ public class DriveConsentDialog
             IntentRequestTracker tracker,
             @ColorInt int backgroundColor) {
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
-        constraints.supportsOpacity = true;
         constraints.backgroundColor = backgroundColor;
         ThinWebView thinWebView =
                 ThinWebViewFactory.create(
@@ -260,6 +262,9 @@ public class DriveConsentDialog
 
     @Override
     public void onPageFirstPaint() {
+        if (mLoadingOverlay != null) {
+            mLoadingOverlay.setVisibility(View.GONE);
+        }
         if (mSpinner != null) {
             mSpinner.hideLoadingUi();
         }
@@ -324,12 +329,17 @@ public class DriveConsentDialog
             mSpinner.destroy();
             mSpinner = null;
         }
+        mLoadingOverlay = null;
 
         notifyConsentComplete(mConsentGranted);
     }
 
     void setSpinnerForTesting(LoadingView spinner) {
         mSpinner = spinner;
+    }
+
+    void setLoadingOverlayForTesting(View loadingOverlay) {
+        mLoadingOverlay = loadingOverlay;
     }
 
     void setModalDialogModelForTesting(PropertyModel model) {

@@ -11,6 +11,13 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:background="@macro/default_bg_color">
 
+    <View
+        android:id="@+id/drive_consent_loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@macro/default_bg_color"
+        android:clickable="true" />
+
     <org.chromium.ui.widget.LoadingView
         android:id="@+id/drive_consent_spinner"
         android:layout_width="wrap_content"

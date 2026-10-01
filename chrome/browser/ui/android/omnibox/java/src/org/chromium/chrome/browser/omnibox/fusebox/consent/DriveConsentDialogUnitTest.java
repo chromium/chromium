@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox.consent;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +50,7 @@ public class DriveConsentDialogUnitTest {
 
     private Activity mActivity;
     private LoadingView mSpinner;
+    private View mLoadingOverlay;
     private DriveConsentDialog mDialog;
     private WindowAndroid mWindowAndroid;
     private PropertyModel mModalDialogModel;
@@ -58,6 +61,7 @@ public class DriveConsentDialogUnitTest {
         mSpinner = new LoadingView(mActivity);
         mSpinner.showLoadingUi();
         mSpinner.addObserver(mSpinnerObserver);
+        mLoadingOverlay = new View(mActivity);
         mModalDialogModel = new PropertyModel(ModalDialogProperties.ALL_KEYS);
         mDialog = new DriveConsentDialog(mActivity, mModalDialogManager, mOnConsentComplete);
         mDialog.setModalDialogModelForTesting(mModalDialogModel);
@@ -116,17 +120,20 @@ public class DriveConsentDialogUnitTest {
     }
 
     @Test
-    public void onPageFirstPaint_hidesSpinner() {
+    public void onPageFirstPaint_hidesLoadingUi() {
         mDialog.setSpinnerForTesting(mSpinner);
+        mDialog.setLoadingOverlayForTesting(mLoadingOverlay);
 
         mDialog.onPageFirstPaint();
 
+        assertEquals(View.GONE, mLoadingOverlay.getVisibility());
         verify(mSpinnerObserver).onHideLoadingUiComplete();
     }
 
     @Test
     public void destroy_cleansUpAndDismissesDialog() {
         mDialog.setSpinnerForTesting(mSpinner);
+        mDialog.setLoadingOverlayForTesting(mLoadingOverlay);
 
         mDialog.destroy();
         mDialog.destroy();
