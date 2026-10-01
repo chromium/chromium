@@ -195,6 +195,14 @@ void* BadAlignedAlloc(size_t, size_t, allocator_shim::AllocToken, void*) {
   base::ImmediateCrash();
 }
 
+void* BadAlignedCalloc(size_t,
+                       size_t,
+                       size_t,
+                       allocator_shim::AllocToken,
+                       void*) {
+  base::ImmediateCrash();
+}
+
 void* BadAlignedRealloc(void*,
                         size_t,
                         size_t,
@@ -232,6 +240,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     nullptr,            /* try_free_default_function */
     &BadAlignedAlloc,   /* aligned_malloc_function */
     &BadAlignedAlloc,   /* aligned_malloc_unchecked_function */
+    &BadAlignedCalloc,  /* aligned_calloc_unchecked_function */
     &BadAlignedRealloc, /* aligned_realloc_function */
     &BadAlignedRealloc, /* aligned_realloc_unchecked_function */
     &BadFree,           /* aligned_free_function */

@@ -351,6 +351,24 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
       alignment, size, alloc_token);
 }
 
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    AlignedCallocUnchecked(size_t n,
+                           size_t size,
+                           size_t alignment,
+                           AllocToken alloc_token,
+                           void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  const size_t total =
+      partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
+  return AllocateAlignedMemory<base_alloc_flags |
+                               partition_alloc::AllocFlags::kReturnNull |
+                               partition_alloc::AllocFlags::kZeroFill>(
+      alignment, total, alloc_token);
+}
+
 // aligned_realloc documentation is
 // https://docs.microsoft.com/ja-jp/cpp/c-runtime-library/reference/aligned-realloc
 // TODO(tasak): Expand the given memory block to the given size if possible.
@@ -977,6 +995,16 @@ void* DelegatedAlignedMallocUncheckedFn(size_t size,
       size, alignment, alloc_token, context);
 }
 
+void* DelegatedAlignedCallocUncheckedFn(size_t n,
+                                        size_t size,
+                                        size_t alignment,
+                                        AllocToken alloc_token,
+                                        void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->aligned_calloc_unchecked_function(
+      n, size, alignment, alloc_token, context);
+}
+
 void* DelegatedAlignedReallocFn(void* address,
                                 size_t size,
                                 size_t alignment,
@@ -1026,6 +1054,7 @@ void InstallCustomDispatch(AllocatorDispatch* dispatch) {
 #endif  // PA_BUILDFLAG(IS_APPLE)
   PA_DCHECK(dispatch->aligned_malloc_function != nullptr);
   PA_DCHECK(dispatch->aligned_malloc_unchecked_function != nullptr);
+  PA_DCHECK(dispatch->aligned_calloc_unchecked_function != nullptr);
   PA_DCHECK(dispatch->aligned_realloc_function != nullptr);
   PA_DCHECK(dispatch->aligned_realloc_unchecked_function != nullptr);
   PA_DCHECK(dispatch->aligned_free_function != nullptr);
@@ -1229,6 +1258,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     .try_free_default_function = &DelegatedTryFreeDefaultFn,
     .aligned_malloc_function = &DelegatedAlignedMallocFn,
     .aligned_malloc_unchecked_function = &DelegatedAlignedMallocUncheckedFn,
+    .aligned_calloc_unchecked_function = &DelegatedAlignedCallocUncheckedFn,
     .aligned_realloc_function = &DelegatedAlignedReallocFn,
     .aligned_realloc_unchecked_function = &DelegatedAlignedReallocUncheckedFn,
     .aligned_free_function = &DelegatedAlignedFreeFn,

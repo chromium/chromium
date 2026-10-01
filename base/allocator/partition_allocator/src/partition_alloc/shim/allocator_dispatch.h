@@ -74,6 +74,11 @@ struct AllocatorDispatch {
                                          size_t alignment,
                                          AllocToken alloc_token,
                                          void* context);
+  using AlignedCallocUncheckedFn = void*(size_t n,
+                                         size_t size,
+                                         size_t alignment,
+                                         AllocToken alloc_token,
+                                         void* context);
   using AlignedReallocFn = void*(void* address,
                                  size_t size,
                                  size_t alignment,
@@ -107,9 +112,12 @@ struct AllocatorDispatch {
   BatchFreeFn* batch_free_function;
   TryFreeDefaultFn* try_free_default_function;
   // _aligned_malloc, _aligned_realloc, and _aligned_free are specific to the
-  // Windows allocator.
+  // Windows allocator. aligned_calloc_unchecked is to _aligned_malloc what
+  // calloc is to malloc: its memory is also resized with _aligned_realloc and
+  // freed with _aligned_free. The Windows allocator has no such function.
   AlignedMallocFn* aligned_malloc_function;
   AlignedMallocUncheckedFn* aligned_malloc_unchecked_function;
+  AlignedCallocUncheckedFn* aligned_calloc_unchecked_function;
   AlignedReallocFn* aligned_realloc_function;
   AlignedReallocUncheckedFn* aligned_realloc_unchecked_function;
   AlignedFreeFn* aligned_free_function;
@@ -181,6 +189,7 @@ struct AllocatorDispatch {
     COPY_IF_NULLPTR(try_free_default_function);
     COPY_IF_NULLPTR(aligned_malloc_function);
     COPY_IF_NULLPTR(aligned_malloc_unchecked_function);
+    COPY_IF_NULLPTR(aligned_calloc_unchecked_function);
     COPY_IF_NULLPTR(aligned_realloc_function);
     COPY_IF_NULLPTR(aligned_realloc_unchecked_function);
     COPY_IF_NULLPTR(aligned_free_function);

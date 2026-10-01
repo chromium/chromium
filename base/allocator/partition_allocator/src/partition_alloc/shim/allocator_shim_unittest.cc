@@ -4,7 +4,10 @@
 
 #include "partition_alloc/shim/allocator_shim.h"
 
+#include <algorithm>
+#include <array>
 #include <atomic>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
@@ -326,6 +329,18 @@ class AllocatorShimTest : public testing::Test {
         size, alignment, alloc_token, context);
   }
 
+  static void* MockAlignedCallocUnchecked(size_t n,
+                                          size_t size,
+                                          size_t alignment,
+                                          AllocToken alloc_token,
+                                          void* context) {
+    if (instance_ && alignment < MaxSizeTracked()) {
+      ++instance_->aligned_zero_allocs_intercepted_by_alignment[alignment];
+    }
+    return g_mock_dispatch.next->aligned_calloc_unchecked_function(
+        n, size, alignment, alloc_token, context);
+  }
+
   static void* MockAlignedRealloc(void* address,
                                   size_t size,
                                   size_t alignment,
@@ -378,6 +393,7 @@ class AllocatorShimTest : public testing::Test {
     allocs_intercepted_by_size.resize(MaxSizeTracked());
     allocs_intercepted_by_alignment.resize(MaxSizeTracked());
     zero_allocs_intercepted_by_size.resize(MaxSizeTracked());
+    aligned_zero_allocs_intercepted_by_alignment.resize(MaxSizeTracked());
     reallocs_intercepted_by_size.resize(MaxSizeTracked());
     reallocs_intercepted_by_addr.resize(MaxSizeTracked());
     frees_intercepted_by_addr.resize(MaxSizeTracked());
@@ -417,6 +433,7 @@ class AllocatorShimTest : public testing::Test {
   std::vector<size_t> allocs_intercepted_by_size;
   std::vector<size_t> allocs_intercepted_by_alignment;
   std::vector<size_t> zero_allocs_intercepted_by_size;
+  std::vector<size_t> aligned_zero_allocs_intercepted_by_alignment;
   std::vector<size_t> reallocs_intercepted_by_size;
   std::vector<size_t> reallocs_intercepted_by_addr;
   std::vector<size_t> frees_intercepted_by_addr;
@@ -475,6 +492,8 @@ AllocatorDispatch g_mock_dispatch = {
     .aligned_malloc_function = &AllocatorShimTest::MockAlignedMalloc,
     .aligned_malloc_unchecked_function =
         &AllocatorShimTest::MockAlignedMallocUnchecked,
+    .aligned_calloc_unchecked_function =
+        &AllocatorShimTest::MockAlignedCallocUnchecked,
     .aligned_realloc_function = &AllocatorShimTest::MockAlignedRealloc,
     .aligned_realloc_unchecked_function =
         &AllocatorShimTest::MockAlignedReallocUnchecked,
@@ -678,6 +697,77 @@ TEST_F(AllocatorShimTest, AlignedReallocSizeZeroFrees) {
   ASSERT_TRUE(!alloc_ptr);
 }
 #endif  // PA_BUILDFLAG(IS_WIN)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || PA_BUILDFLAG(IS_WIN)
+template <size_t kSize>
+bool IsZeroed(const std::array<uint8_t, kSize>& bytes) {
+  return std::ranges::all_of(bytes, [](uint8_t byte) { return byte == 0; });
+}
+
+// Checks UncheckedAlignedCalloc() of `kSize` bytes. The memory is accessed as
+// std::arrays of the allocated sizes, so that their types bound the accesses.
+template <size_t kSize>
+void CheckUncheckedAlignedCalloc(size_t alignment) {
+  SCOPED_TRACE(testing::Message()
+               << "size: " << kSize << ", alignment: " << alignment);
+  using Bytes = std::array<uint8_t, kSize>;
+
+  // Frees memory with other contents, which the zeroed allocation below may
+  // reuse.
+  auto* dirty =
+      static_cast<Bytes*>(UncheckedAlignedAlloc(sizeof(Bytes), alignment));
+  ASSERT_NE(nullptr, dirty);
+  std::ranges::fill(*dirty, uint8_t{0xA5});
+  UncheckedAlignedFree(dirty);
+
+  auto* zeroed =
+      static_cast<Bytes*>(UncheckedAlignedCalloc(1, sizeof(Bytes), alignment));
+  ASSERT_NE(nullptr, zeroed);
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(zeroed) % alignment);
+  EXPECT_TRUE(IsZeroed(*zeroed));
+
+  // The memory is resized and freed like that of UncheckedAlignedAlloc().
+  using Resized = std::array<Bytes, 2>;
+  auto* resized = static_cast<Resized*>(
+      UncheckedAlignedRealloc(zeroed, sizeof(Resized), alignment));
+  ASSERT_NE(nullptr, resized);
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(resized) % alignment);
+  EXPECT_TRUE(IsZeroed((*resized)[0]));
+  UncheckedAlignedFree(resized);
+}
+
+TEST_F(AllocatorShimTest, UncheckedAlignedCalloc) {
+  InsertAllocatorDispatch(&g_mock_dispatch);
+
+  // Alignments up to, and larger than, a partition page.
+  constexpr size_t kAlignments[] = {16, 64, 4096, 1 << 18};
+  for (size_t alignment : kAlignments) {
+    // Sizes served from buckets, and larger ones, which PartitionAlloc
+    // direct-maps and doesn't zero again.
+    CheckUncheckedAlignedCalloc<1>(alignment);
+    CheckUncheckedAlignedCalloc<100>(alignment);
+    CheckUncheckedAlignedCalloc<4097>(alignment);
+    CheckUncheckedAlignedCalloc<100000>(alignment);
+    CheckUncheckedAlignedCalloc<(1 << 20) + 1>(alignment);
+    if (alignment < MaxSizeTracked()) {
+      // One for each size above.
+      EXPECT_GE(aligned_zero_allocs_intercepted_by_alignment[alignment], 5u);
+    }
+  }
+
+  // Multiple elements.
+  using Element = std::array<uint8_t, 1000>;
+  auto* elements = static_cast<std::array<Element, 3>*>(
+      UncheckedAlignedCalloc(3, sizeof(Element), 64));
+  ASSERT_NE(nullptr, elements);
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(elements) % 64);
+  EXPECT_TRUE(std::ranges::all_of(*elements, IsZeroed<1000>));
+  UncheckedAlignedFree(elements);
+  EXPECT_GE(frees_intercepted_by_addr[Hash(elements)], 1u);
+
+  RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || PA_BUILDFLAG(IS_WIN)
 
 // PartitionAlloc disallows large allocations to avoid errors with int
 // overflows.
@@ -1711,6 +1801,12 @@ void* MockAlignedMallocUncheckedWithAdvancedChecks(size_t,
                                                    AllocToken,
                                                    void*);
 
+void* MockAlignedCallocUncheckedWithAdvancedChecks(size_t,
+                                                   size_t,
+                                                   size_t,
+                                                   AllocToken,
+                                                   void*);
+
 void* MockAlignedReallocWithAdvancedChecks(void*,
                                            size_t,
                                            size_t,
@@ -1751,6 +1847,8 @@ AllocatorDispatch g_mock_dispatch_for_advanced_checks = {
     .aligned_malloc_function = &MockAlignedMallocWithAdvancedChecks,
     .aligned_malloc_unchecked_function =
         &MockAlignedMallocUncheckedWithAdvancedChecks,
+    .aligned_calloc_unchecked_function =
+        &MockAlignedCallocUncheckedWithAdvancedChecks,
     .aligned_realloc_function = &MockAlignedReallocWithAdvancedChecks,
     .aligned_realloc_unchecked_function =
         &MockAlignedReallocUncheckedWithAdvancedChecks,
@@ -1907,6 +2005,17 @@ void* MockAlignedMallocUncheckedWithAdvancedChecks(size_t size,
   // no-op.
   return g_mock_dispatch_for_advanced_checks.next
       ->aligned_malloc_unchecked_function(size, alignment, alloc_token,
+                                          context);
+}
+
+void* MockAlignedCallocUncheckedWithAdvancedChecks(size_t n,
+                                                   size_t size,
+                                                   size_t alignment,
+                                                   AllocToken alloc_token,
+                                                   void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next
+      ->aligned_calloc_unchecked_function(n, size, alignment, alloc_token,
                                           context);
 }
 

@@ -6,6 +6,9 @@
 
 #include <stdlib.h>
 
+#include <algorithm>
+#include <array>
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -259,6 +262,68 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 TEST_F(SamplingMallocShimsTest, Calloc) {
   runTest("Calloc");
 }
+
+// The unchecked calloc() tests below access the memory as an std::array of the
+// allocated size, which bounds the accesses. It's at most a page, which is the
+// largest allocation GWP-ASan makes.
+using CallocBytes = std::array<uint8_t, 4096>;
+
+bool IsZeroed(const CallocBytes& bytes) {
+  return std::ranges::all_of(bytes, [](uint8_t byte) { return byte == 0; });
+}
+
+MULTIPROCESS_TEST_MAIN_WITH_SETUP(
+    UncheckedCalloc,
+    SamplingMallocShimsTest::multiprocessTestSetup) {
+  for (size_t i = 0; i < kLoopIterations; i++) {
+    auto* alloc = static_cast<CallocBytes*>(
+        allocator_shim::UncheckedCalloc(1, sizeof(CallocBytes)));
+    CHECK_NE(alloc, nullptr);
+
+    if (GetMallocGpaForTesting().PointerIsMine(alloc)) {
+      CHECK(IsZeroed(*alloc));
+      allocator_shim::UncheckedFree(alloc);
+      return kSuccess;
+    }
+
+    allocator_shim::UncheckedFree(alloc);
+  }
+
+  return kFailure;
+}
+
+TEST_F(SamplingMallocShimsTest, UncheckedCalloc) {
+  runTest("UncheckedCalloc");
+}
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || BUILDFLAG(IS_WIN)
+MULTIPROCESS_TEST_MAIN_WITH_SETUP(
+    UncheckedAlignedCalloc,
+    SamplingMallocShimsTest::multiprocessTestSetup) {
+  constexpr size_t kAlignment = 64;
+  for (size_t i = 0; i < kLoopIterations; i++) {
+    auto* alloc =
+        static_cast<CallocBytes*>(allocator_shim::UncheckedAlignedCalloc(
+            1, sizeof(CallocBytes), kAlignment));
+    CHECK_NE(alloc, nullptr);
+    CHECK_EQ(reinterpret_cast<uintptr_t>(alloc) % kAlignment, 0U);
+
+    if (GetMallocGpaForTesting().PointerIsMine(alloc)) {
+      CHECK(IsZeroed(*alloc));
+      allocator_shim::UncheckedAlignedFree(alloc);
+      return kSuccess;
+    }
+
+    allocator_shim::UncheckedAlignedFree(alloc);
+  }
+
+  return kFailure;
+}
+
+TEST_F(SamplingMallocShimsTest, UncheckedAlignedCalloc) {
+  runTest("UncheckedAlignedCalloc");
+}
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || BUILDFLAG(IS_WIN)
 
 // GetCrashKeyValue() operates on a per-component basis, can't read the crash
 // key from the gwp_asan_client component in a component build.

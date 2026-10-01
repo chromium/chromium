@@ -102,17 +102,23 @@ unsigned char* alloc_zeroed(size_t size, size_t align) {
   // correctness or security.
   //
   // PartitionAlloc direct-maps large allocations, so they always get new pages,
-  // which are zeroed already: `UncheckedCalloc()` doesn't zero them again, and
+  // which are zeroed already: the calloc functions don't zero them again, and
   // the pages that are never written are never faulted in.
   //
   // Smaller allocations usually reuse freed memory, which has to be zeroed
-  // anyway, and `UncheckedCalloc()` would zero their whole slot rather than
-  // only `size` bytes, so `alloc()` and `memset()` are faster for them. There
-  // is no aligned `UncheckedCalloc()`.
-  if (partition_alloc::IsAlwaysDirectMapped(size) &&
-      align <= alignof(std::max_align_t)) {
-    return static_cast<unsigned char*>(
-        allocator_shim::UncheckedCalloc(1, size));
+  // anyway, and the calloc functions would zero their whole slot rather than
+  // only `size` bytes, so `alloc()` and `memset()` are faster for them.
+  if (partition_alloc::IsAlwaysDirectMapped(size)) {
+    // Like `alloc()`, as `dealloc()` and `realloc()` expect.
+    if (align <= alignof(std::max_align_t)) {
+      return static_cast<unsigned char*>(
+          allocator_shim::UncheckedCalloc(1, size));
+    }
+    // PartitionAlloc will crash if given an alignment larger than this.
+    if (align <= partition_alloc::internal::kMaxSupportedAlignment) {
+      return static_cast<unsigned char*>(
+          allocator_shim::UncheckedAlignedCalloc(1, size, align));
+    }
   }
 #endif  // BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   unsigned char* p = alloc(size, align);

@@ -94,6 +94,12 @@ void* UncheckedAlignedAlloc(size_t size, size_t align) {
       size, align, kDefaultAllocToken, nullptr);
 }
 
+void* UncheckedAlignedCalloc(size_t n, size_t size, size_t align) {
+  const AllocatorDispatch* const chain_head = internal::GetChainHead();
+  return chain_head->aligned_calloc_unchecked_function(
+      n, size, align, kDefaultAllocToken, nullptr);
+}
+
 void* UncheckedAlignedRealloc(void* ptr, size_t size, size_t align) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
   return chain_head->aligned_realloc_unchecked_function(

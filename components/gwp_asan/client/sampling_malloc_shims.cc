@@ -91,10 +91,15 @@ void* AllocZeroInitializedFn(size_t n,
       n, size, alloc_token, context);
 }
 
-void* AllocZeroInitializedUncheckedFn(size_t n,
-                                      size_t size,
-                                      allocator_shim::AllocToken alloc_token,
-                                      void* context) {
+// If this allocation is sampled, returns `n * size` zeroed bytes aligned to
+// `alignment` (or by default if 0) from GWP-ASan, or nullptr if the size
+// overflows. Otherwise, or if GWP-ASan can't allocate them, returns
+// `fallback()`.
+template <typename FallbackFn>
+void* AllocZeroInitializedUncheckedImpl(size_t n,
+                                        size_t size,
+                                        size_t alignment,
+                                        FallbackFn fallback) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
     checked_total *= n;
@@ -103,7 +108,7 @@ void* AllocZeroInitializedUncheckedFn(size_t n,
     }
 
     size_t total_size = checked_total.ValueOrDie();
-    if (void* allocation = gpa->Allocate(total_size)) {
+    if (void* allocation = gpa->Allocate(total_size, alignment)) {
       // SAFETY: This is a low-level function.
       // The memory was just allocated for this size above.
       UNSAFE_BUFFERS(memset(allocation, 0, total_size));
@@ -111,8 +116,17 @@ void* AllocZeroInitializedUncheckedFn(size_t n,
     }
   }
 
-  return g_allocator_dispatch.next->alloc_zero_initialized_unchecked_function(
-      n, size, alloc_token, context);
+  return fallback();
+}
+
+void* AllocZeroInitializedUncheckedFn(size_t n,
+                                      size_t size,
+                                      allocator_shim::AllocToken alloc_token,
+                                      void* context) {
+  return AllocZeroInitializedUncheckedImpl(n, size, /*alignment=*/0, [&] {
+    return g_allocator_dispatch.next->alloc_zero_initialized_unchecked_function(
+        n, size, alloc_token, context);
+  });
 }
 
 void* AllocAlignedFn(size_t alignment,
@@ -340,6 +354,17 @@ static void* AlignedMallocUncheckedFn(size_t size,
       size, alignment, alloc_token, context);
 }
 
+static void* AlignedCallocUncheckedFn(size_t n,
+                                      size_t size,
+                                      size_t alignment,
+                                      allocator_shim::AllocToken alloc_token,
+                                      void* context) {
+  return AllocZeroInitializedUncheckedImpl(n, size, alignment, [&] {
+    return g_allocator_dispatch.next->aligned_calloc_unchecked_function(
+        n, size, alignment, alloc_token, context);
+  });
+}
+
 static void* AlignedReallocFn(void* address,
                               size_t size,
                               size_t alignment,
@@ -435,6 +460,7 @@ AllocatorDispatch g_allocator_dispatch = {
     &TryFreeDefaultFn,
     &AlignedMallocFn,
     &AlignedMallocUncheckedFn,
+    &AlignedCallocUncheckedFn,
     &AlignedReallocFn,
     &AlignedReallocUncheckedFn,
     &AlignedFreeFn,

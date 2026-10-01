@@ -100,6 +100,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr,                       /* try_free_default_function */
     nullptr,                       /* aligned_malloc_function */
     nullptr,                       /* aligned_malloc_unchecked_function */
+    nullptr,                       /* aligned_calloc_unchecked_function */
     nullptr,                       /* aligned_realloc_function */
     nullptr,                       /* aligned_realloc_unchecked_function */
     nullptr,                       /* aligned_free_function */

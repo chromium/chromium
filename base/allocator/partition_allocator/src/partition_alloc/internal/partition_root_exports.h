@@ -128,6 +128,9 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kReturnNull |
                                                   AllocFlags::kNoHooks>(size_t,
                                                                         size_t);
 EXPORT_TEMPLATE void*
+PartitionRoot::AlignedAlloc<AllocFlags::kReturnNull | AllocFlags::kZeroFill |
+                            AllocFlags::kNoHooks>(size_t, size_t);
+EXPORT_TEMPLATE void*
 PartitionRoot::AlignedAlloc<AllocFlags::kAllowGigaAllocations>(size_t, size_t);
 EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<
     AllocFlags::kAllowGigaAllocations | AllocFlags::kReturnNull>(size_t,
