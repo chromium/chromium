@@ -12307,6 +12307,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kContextualTaskContextVariations,
                                     "ContextualTasks")},
 
+    {"contextual-tasks-context-multi-turn-tab-relevance",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksContextMultiTurnTabRelevanceName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksContextMultiTurnTabRelevanceDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksContextMultiTurnTabRelevance)},
+
     {"contextual-tasks-suggestions-enabled",
      contextual_tasks::flag_descriptions::
          kContextualTasksSuggestionsEnabledName,

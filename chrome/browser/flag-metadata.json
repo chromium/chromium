@@ -2292,6 +2292,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "contextual-tasks-context-multi-turn-tab-relevance",
+    "owners": ["sophiechang@chromium.org", "chrome-contextual-tasks-eng@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-cookie-prefetch",
     "owners": [
       "nguyenbryan@google.com",

@@ -943,6 +943,11 @@ const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =
     "Enables relevant context determination for contextual tasks.";
 
+const char kContextualTasksContextMultiTurnTabRelevanceName[] =
+    "Contextual Tasks Context Multi-Turn Tab Relevance";
+const char kContextualTasksContextMultiTurnTabRelevanceDescription[] =
+    "Enables multi-turn tab relevance model for contextual tasks.";
+
 const char kContextualTasksSearchQueryName[] = "Contextual Tasks Search Query";
 const char kContextualTasksSearchQueryDescription[] =
     "Enables forwarding the search query parameter 'q' in contextual tasks.";

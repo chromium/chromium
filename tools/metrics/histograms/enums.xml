@@ -16795,6 +16795,8 @@ from previous Chrome versions.
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
   <int value="583840453" label="EnableDownloadSaveAsSystemFileDialog:enabled"/>
+  <int value="584241117"
+      label="ContextualTasksContextMultiTurnTabRelevance:disabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"
@@ -18258,6 +18260,8 @@ from previous Chrome versions.
       label="DisablePeripheralDataAccessProtection:disabled"/>
   <int value="1032214050"
       label="GlicExperimentalTriggeringOsNotification:enabled"/>
+  <int value="1032328293"
+      label="ContextualTasksContextMultiTurnTabRelevance:enabled"/>
   <int value="1033148287" label="NTPShortcuts:disabled"/>
   <int value="1033412163" label="OmniboxDisplayTitleForCurrentUrl:enabled"/>
   <int value="1033597574" label="disable-layer-squashing"/>
