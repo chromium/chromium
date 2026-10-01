@@ -130,6 +130,7 @@ textarea {
   overflow: hidden;
   padding: var(--textarea-padding-vert) var(--textarea-padding-inline);
   resize: none;
+  text-decoration-skip-ink: none;
 }
 
 :host([text-rotations_='1']) textarea {
