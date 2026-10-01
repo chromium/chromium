@@ -5,11 +5,11 @@
 package org.chromium.chrome.test.util;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Triggers.noopTo;
+import static org.chromium.base.test.util.ForgivingClickAction.forgivingClick;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -737,7 +737,7 @@ public class OmniboxTestUtils {
                         actionOnItemAtPosition(
                                 suggestionIndex,
                                 OmniboxTestUtils.actionOnOmniboxActionAtPosition(
-                                        actionIndex, click())));
+                                        actionIndex, forgivingClick())));
     }
 
     /**
