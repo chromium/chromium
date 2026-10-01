@@ -1026,6 +1026,11 @@ source_set("browser_tests") {
     "//ui/gfx/geometry",
   ]
 
+  if (!is_mac) {
+    sources += [ "host/glic_drag_and_drop_browsertest.cc" ]
+    deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
+  }
+
   if (!is_android) {
     sources += [
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
@@ -1050,11 +1055,6 @@ source_set("browser_tests") {
       "suggestions/zero_state_suggestions_browsertest.cc",
       "widget/glic_side_panel_coordinator_browsertest.cc",
     ]
-
-    if (!is_mac) {
-      sources += [ "host/glic_drag_and_drop_browsertest.cc" ]
-      deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
-    }
 
     if (!is_mac && enterprise_cloud_content_analysis) {
       sources += [

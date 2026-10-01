@@ -1511,13 +1511,10 @@ if (is_chromeos) {
   }
 }
 
-if (use_aura) {
+if (use_aura || is_android) {
   source_set("drag_and_drop_test_utils") {
     testonly = true
-    sources = [
-      "drag_and_drop_test_utils.h",
-      "drag_and_drop_test_utils_aura.cc",
-    ]
+    sources = [ "drag_and_drop_test_utils.h" ]
     public_deps = [
       "//base",
       "//ui/gfx/geometry",
@@ -1526,13 +1523,27 @@ if (use_aura) {
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",
-      "//ui/aura",
-      "//ui/base",
       "//ui/base/clipboard:file_info",
       "//ui/base/dragdrop:types",
-      "//ui/base/dragdrop/mojom",
       "//url",
     ]
+    if (use_aura) {
+      sources += [ "drag_and_drop_test_utils_aura.cc" ]
+      deps += [
+        "//ui/aura",
+        "//ui/base",
+        "//ui/base/dragdrop/mojom",
+      ]
+    } else if (is_android) {
+      sources += [ "android/drag_and_drop_test_utils_android.cc" ]
+      deps += [
+        "//content/public/android:jar_jni",
+        "//content/public/common",
+        "//net",
+        "//ui/android",
+        "//ui/base/clipboard:clipboard_types",
+      ]
+    }
   }
 }
 

@@ -93,6 +93,7 @@ class DragAndDropSimulator {
   bool SimulateDragEnter(const gfx::Point& location,
                          const std::vector<ui::FileInfo>& file_infos);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Simulates notification that an item was dragged from outside of the
   // browser, using the specified `data` into the specified `location` inside
   // `drag_contents`.
@@ -100,6 +101,7 @@ class DragAndDropSimulator {
   // Returns true upon success.
   bool SimulateDragEnter(const gfx::Point& location,
                          std::unique_ptr<ui::OSExchangeData> data);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   // Simulates notification that multiple virtual files were dragged from
@@ -140,6 +142,7 @@ class DragAndDropSimulator {
   std::unique_ptr<PlatformState> state_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Helper for waiting until a drag-and-drop starts (e.g., in response to a
 // mouse-down + mouse-move simulated by the test).
 // Acts as the `Drag Source Interceptor`: overrides platform drag handlers to
@@ -184,6 +187,7 @@ class DragStartWaiter {
 
   std::unique_ptr<PlatformState> state_;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace drag_and_drop_test_utils
 

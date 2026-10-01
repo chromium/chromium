@@ -75,18 +75,44 @@ void GlicDragAndDropTestBase::PrepareGuestForDrag(Host& glic_host) {
   EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
   ExecuteJsTest();
 
+  // Wait for `chrome://glic` to transition out of `kHoldLoading` into `kReady`
+  // (or, under `kGlicNoWebview`, for `GlicNoWebviewContentsManager` to swap
+  // `active_web_contents()` to `guest_contents`).
+  if (is_no_webview_) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return glic_host.webui_contents() == guest_contents; }));
+  } else {
+    ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // Disable and blur the autofocus `<input id="inputBox">` in `test.html` so
+  // Android's `InputMethodManager` does not keep the soft keyboard open and
+  // resize the viewport mid-drag.
+  constexpr char kBlurGuestInputScript[] =
+      "const input = document.getElementById('inputBox');"
+      "if (input) { input.disabled = true; input.blur(); }"
+      "if (document.activeElement instanceof HTMLElement) {"
+      "  document.activeElement.blur();"
+      "}";
+  ASSERT_TRUE(
+      content::ExecJs(glic_host.GetGuestMainFrame(), kBlurGuestInputScript));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   content::RenderWidgetHost* rwh =
       glic_host.GetGuestMainFrame()->GetRenderWidgetHost();
   ASSERT_TRUE(rwh);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !rwh->GetView()->GetViewBounds().IsEmpty() &&
-           !glic_host.webui_contents()
-                ->GetRenderWidgetHostView()
-                ->GetViewBounds()
-                .IsEmpty();
+    if (!rwh->GetView() || !glic_host.webui_contents() ||
+        !glic_host.webui_contents()->GetRenderWidgetHostView()) {
+      return false;
+    }
+    const gfx::Rect guest_bounds = rwh->GetView()->GetViewBounds();
+    const gfx::Rect host_bounds =
+        glic_host.webui_contents()->GetRenderWidgetHostView()->GetViewBounds();
+    return guest_bounds.width() > 1 && guest_bounds.height() > 1 &&
+           !host_bounds.IsEmpty();
   }));
-  // Ensure hit test data is ready for the guest.
   content::WaitForHitTestData(glic_host.GetGuestMainFrame());
 }
 

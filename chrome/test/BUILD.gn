@@ -508,7 +508,7 @@ static_library("test_support") {
     ]
   }
 
-  if (use_aura) {
+  if (use_aura || is_android) {
     public_deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
   }
 
