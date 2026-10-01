@@ -22,6 +22,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -37,6 +38,7 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
@@ -163,10 +165,15 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   std::unique_ptr<EntitySuppressionSyncBridge> bridge_;
 };
 
-// Tests that when the encryptor has no usable key, the bridge does not
-// initialize the store or report ready to sync.
-TEST_F(EntitySuppressionSyncBridgeTest, EncryptionUnavailableDoesNotLoad) {
+// Tests that when the encryptor has no usable key, the bridge reports an error
+// instead of loading.
+TEST_F(EntitySuppressionSyncBridgeTest, EncryptionUnavailableReportsError) {
   EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
+  EXPECT_CALL(mock_processor(),
+              ReportError(Property(
+                  &syncer::ModelError::type,
+                  syncer::ModelError::Type::
+                      kAutofillEntitySuppressionEncryptionUnavailable)));
 
   os_crypt_async::OSCryptAsync os_crypt_async_without_keys({});
   EntitySuppressionSyncBridge bridge(

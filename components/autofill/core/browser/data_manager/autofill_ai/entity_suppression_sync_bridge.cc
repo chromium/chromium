@@ -16,6 +16,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
@@ -26,6 +27,7 @@
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -36,15 +38,14 @@ namespace autofill {
 namespace {
 
 // Encrypts `AutofillEntitySuppressionSpecifics` into an encrypted string for
-// disk storage. Returns `std::nullopt` if encryption fails.
-std::optional<std::string> EncryptSuppressionSpecifics(
+// disk storage. This can't fail because the bridge only keeps encryptors for
+// which encryption is available (see `OnEncryptorReady()`).
+std::string EncryptSuppressionSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
     const os_crypt_async::Encryptor& encryptor) {
   std::string encrypted_value;
-  if (!encryptor.EncryptString(specifics.SerializeAsString(),
-                               &encrypted_value)) {
-    return std::nullopt;
-  }
+  CHECK(
+      encryptor.EncryptString(specifics.SerializeAsString(), &encrypted_value));
   return encrypted_value;
 }
 
@@ -123,17 +124,14 @@ bool EntitySuppressionSyncBridge::Suppress(
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionEntry(guid, entry);
 
-  std::optional<std::string> encrypted_value =
+  const std::string encrypted_value =
       EncryptSuppressionSpecifics(specifics, *encryptor_);
-  if (!encrypted_value) {
-    return false;
-  }
 
   guids_by_entry_.insert_or_assign(entry, guid);
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  batch->WriteData(guid, *encrypted_value);
+  batch->WriteData(guid, encrypted_value);
   change_processor()->Put(
       guid, CreateEntityDataFromEntitySuppressionSpecifics(specifics),
       batch->GetMetadataChangeList());
@@ -241,23 +239,18 @@ bool EntitySuppressionSyncBridge::ApplyRemoteEntry(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
     EntitySuppressionEntry entry,
     syncer::DataTypeStore::WriteBatch& batch) {
-  std::optional<std::string> encrypted_value =
+  const std::string encrypted_value =
       EncryptSuppressionSpecifics(specifics, *encryptor_);
-  if (!encrypted_value) {
-    // TODO(crbug.com/501036619): Report a ModelError when encryption is
-    // unavailable.
-    return false;
-  }
 
   const std::string* existing_guid = base::FindOrNull(guids_by_entry_, entry);
   if (!existing_guid) {
-    batch.WriteData(storage_key, *encrypted_value);
+    batch.WriteData(storage_key, encrypted_value);
     guids_by_entry_.insert_or_assign(std::move(entry), storage_key);
     return true;
   }
 
   if (*existing_guid == storage_key) {
-    batch.WriteData(storage_key, *encrypted_value);
+    batch.WriteData(storage_key, encrypted_value);
     return false;
   }
 
@@ -271,7 +264,7 @@ bool EntitySuppressionSyncBridge::ApplyRemoteEntry(
   // lexicographically wins.
   if (storage_key < *existing_guid) {
     delete_entry(*existing_guid);
-    batch.WriteData(storage_key, *encrypted_value);
+    batch.WriteData(storage_key, encrypted_value);
     guids_by_entry_.insert_or_assign(std::move(entry), storage_key);
   } else {
     delete_entry(storage_key);
@@ -481,8 +474,11 @@ void EntitySuppressionSyncBridge::OnEncryptorReady(
   if (encryptor->IsEncryptionAvailable()) {
     encryptor_ = std::move(encryptor);
   } else {
-    // TODO(crbug.com/501036619): Report a ModelError when encryption is
-    // unavailable.
+    // Suppressions can't be stored without encryption. Report an error so that
+    // Sync doesn't wait for this data type to load.
+    change_processor()->ReportError(
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutofillEntitySuppressionEncryptionUnavailable});
   }
   barrier.Run();
 }

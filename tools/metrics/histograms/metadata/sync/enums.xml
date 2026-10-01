@@ -1711,6 +1711,7 @@ chromium-metrics-reviews@google.com.
   <int value="193" label="kTabContextContainerFailedToDeserializeSpecifics"/>
   <int value="194" label="kJourneysFailedToLoadMetadata"/>
   <int value="195" label="kJourneysDatabaseError"/>
+  <int value="196" label="kAutofillEntitySuppressionEncryptionUnavailable"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->

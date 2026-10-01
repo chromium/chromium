@@ -203,7 +203,8 @@ class ModelError {
     kTabContextContainerFailedToDeserializeSpecifics = 193,
     kJourneysFailedToLoadMetadata = 194,
     kJourneysDatabaseError = 195,
-    kMaxValue = kJourneysDatabaseError,
+    kAutofillEntitySuppressionEncryptionUnavailable = 196,
+    kMaxValue = kAutofillEntitySuppressionEncryptionUnavailable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
 
