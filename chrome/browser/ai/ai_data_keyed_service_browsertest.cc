@@ -154,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa",
+      "bbnmkciocedkjdlapchelmdflhahacpa"};
 
   for (const auto& extension_id : expected_allowlisted_extensions) {
     EXPECT_TRUE(

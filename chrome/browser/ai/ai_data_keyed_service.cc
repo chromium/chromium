@@ -784,7 +784,10 @@ bool AiDataKeyedService::IsExtensionAllowlistedForData(
                                        // https://issues.chromium.org/414437025
                                        "fiamdfnbelfkjlacoaeiclobkdmckaoa",
                                        // https://issues.chromium.org/427296150
-                                       "mofldjifenhadohlkkngamgbifiofbnd"});
+                                       "mofldjifenhadohlkkngamgbifiofbnd",
+                                       // APC Debugging Extension.
+                                       // https://issues.chromium.org/555303047
+                                       "bbnmkciocedkjdlapchelmdflhahacpa"});
   if (std::ranges::contains(*kHardcodedAllowlistedExtensions, extension_id)) {
     return true;
   }

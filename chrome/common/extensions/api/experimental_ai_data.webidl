@@ -4,17 +4,66 @@
 
 // Experimental API to handle data collection in the browser process for
 // AI features.
+enum SnapshotType {
+  "apc",
+  "screenshot",
+  "apc_and_screenshot"
+};
+
+dictionary ApcOptions {
+  // Selects the data to return. Defaults to apc. Screenshot-only requests still
+  // extract APC internally to support sensitive-field redaction.
+  SnapshotType type;
+
+  // Requests content-only APC, omitting interaction details, geometry, and
+  // stacking order. Defaults to false.
+  boolean excludeActionableDetails;
+
+  // Excludes APC content from frames outside the top-level page's site.
+  // Defaults to false.
+  boolean excludeCrossSiteFrames;
+
+  // Excludes nodes and subtrees identified as advertising.
+  // Defaults to false.
+  boolean excludeAdRelated;
+
+  // Maximum number of named HTML meta elements to include. Must be nonnegative.
+  // Zero or omission excludes meta elements.
+  long maxMetaElements;
+};
+
+// A snapshot is the result of one capture request. It contains structured
+// page content (APC), a screenshot (an image of the visible viewport), or both.
+dictionary ApcSnapshot {
+  // Base64-encoded optimization_guide.proto.AnnotatedPageContent bytes.
+  // Present for apc and apc_and_screenshot snapshots.
+  DOMString apcBase64;
+
+  // Base64-encoded PNG bytes of the visible viewport.
+  // Present for screenshot and apc_and_screenshot snapshots.
+  DOMString screenshotBase64;
+};
+
 [implemented_in="chrome/browser/extensions/api/experimental_ai_data/experimental_ai_data_api.h"]
 interface ExperimentalAiData {
   // |PromiseValue|: data
   static Promise<ArrayBuffer> getAiData(long domNodeId,
-                                                           DOMString frameId,
-                                                           DOMString userInput,
-                                                           long tabId);
+                                       DOMString frameId,
+                                       DOMString userInput,
+                                       long tabId);
   // |PromiseValue|: data
   static Promise<ArrayBuffer> getAiDataWithSpecifier(
       long tabId,
       ArrayBuffer aiDataSpecifier);
+
+  // Captures Annotated Page Content (APC), a viewport screenshot, or both for
+  // debugging. Uses the same extension and channel restrictions as getAiData.
+  // Incognito callers and target tabs are not supported.
+  // Rejects requests if any frame in the page is blocked by enterprise runtime
+  // host policy, honoring allowed-host exceptions. Screenshot restrictions
+  // also apply.
+  // |PromiseValue|: snapshot
+  static Promise<ApcSnapshot> getApcSnapshot(long tabId, ApcOptions options);
 };
 
 partial interface Browser {

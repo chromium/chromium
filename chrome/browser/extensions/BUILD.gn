@@ -2133,6 +2133,7 @@ source_set("unit_tests") {
     sources += [
       "api/device_permissions_manager_unittest.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
+      "api/experimental_ai_data/experimental_ai_data_api_unittest.cc",
       "api/experimental_ai_data/experimental_ai_data_policy_unittest.cc",
       "api/file_system/file_system_api_unittest.cc",
       "api/identity/gaia_remote_consent_flow_unittest.cc",
@@ -3022,6 +3023,7 @@ source_set("browser_tests") {
       sources += [
         "//chrome/browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         "api/experimental_actor/experimental_actor_apitest.cc",
+        "api/experimental_ai_data/experimental_ai_data_apitest.cc",
         "api/proxy_override_rules/proxy_override_rules_private_apitest.cc",
         "api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
       ]

@@ -10,9 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/screenshot_access.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace extensions {
 
@@ -87,6 +92,64 @@ class ExperimentalAiDataGetAiDataWithSpecifierFunction
                              EXPERIMENTALAIDATA_PRIVATE_GETAIDATAWITHSPECIFIER)
 };
 
-}  //  namespace extensions
+// Returns a coordinated Annotated Page Content (APC) extraction, viewport
+// screenshot, or both to the allowlisted extension.
+class ExperimentalAiDataGetApcSnapshotFunction
+    : public ExperimentalAiDataApiFunction {
+ public:
+  ExperimentalAiDataGetApcSnapshotFunction();
+
+  ExperimentalAiDataGetApcSnapshotFunction(
+      const ExperimentalAiDataGetApcSnapshotFunction&) = delete;
+  ExperimentalAiDataGetApcSnapshotFunction& operator=(
+      const ExperimentalAiDataGetApcSnapshotFunction&) = delete;
+
+ protected:
+  ~ExperimentalAiDataGetApcSnapshotFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  // Resolves the target tab, excluding incognito tabs. Virtual so
+  // unit tests can supply a WebContents without a browser window.
+  virtual content::WebContents* GetTabById(int tab_id, bool include_incognito);
+
+  // Checks screenshot preferences and DLP restrictions. Virtual so unit tests
+  // can simulate restrictions changing during capture.
+  virtual base::expected<void, ScreenshotAccessError> CheckScreenshotAccess(
+      content::WebContents* web_contents) const;
+
+  // Fetches page content and any requested screenshot. Virtual so unit tests
+  // can control completion, failures, and changes to the page during capture.
+  virtual void FetchSnapshot(
+      content::WebContents* web_contents,
+      const page_content_annotations::FetchPageContextOptions& options,
+      page_content_annotations::FetchPageContextResultCallback callback);
+
+ private:
+  // Configures APC extraction and optional lossless viewport capture, then
+  // starts the fetch with asynchronous completion. Screenshot-only requests
+  // also extract APC for redaction.
+  void StartSnapshot(content::WebContents* web_contents,
+                     bool capture_apc,
+                     bool capture_screenshot,
+                     blink::mojom::AIPageContentOptionsPtr apc_options);
+
+  // Handles fetch errors or starts serialization on a worker thread.
+  void OnSnapshotFetched(
+      bool capture_apc,
+      bool capture_screenshot,
+      page_content_annotations::FetchPageContextResultCallbackArg result);
+
+  // Rechecks page validity and permissions before returning serialized data.
+  void OnSnapshotSerialized(
+      bool capture_screenshot,
+      base::expected<base::ListValue, std::string> result);
+
+  DECLARE_EXTENSION_FUNCTION("experimentalAiData.getApcSnapshot",
+                             EXPERIMENTALAIDATA_GETAPCSNAPSHOT)
+};
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
