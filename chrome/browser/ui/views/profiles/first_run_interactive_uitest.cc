@@ -4031,14 +4031,8 @@ class FirstRunFeatureShowcaseInteractiveUiTest
   }
 };
 
-// TODO(crbug.com/366119368): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FeatureShowcaseAcceptSteps DISABLED_FeatureShowcaseAcceptSteps
-#else
-#define MAYBE_FeatureShowcaseAcceptSteps FeatureShowcaseAcceptSteps
-#endif
 IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseInteractiveUiTest,
-                       MAYBE_FeatureShowcaseAcceptSteps) {
+                       FeatureShowcaseAcceptSteps) {
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
   base::test::TestFuture<bool> proceed_future;
@@ -4137,16 +4131,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseInteractiveUiTest,
 using FirstRunFeatureShowcaseWithSyncInteractiveUiTest =
     WithTestSyncServiceMixin<FirstRunFeatureShowcaseInteractiveUiTest>;
 
-// TODO(crbug.com/366119368): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned \
-  DISABLED_FeatureShowcaseSkipPasswordManagerIfPinned
-#else
-#define MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned \
-  FeatureShowcaseSkipPasswordManagerIfPinned
-#endif
 IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseWithSyncInteractiveUiTest,
-                       MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned) {
+                       FeatureShowcaseSkipPasswordManagerIfPinned) {
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
   PinnedToolbarActionsModel* model = PinnedToolbarActionsModel::Get(profile());
@@ -4225,18 +4211,15 @@ IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseWithSyncInteractiveUiTest,
                                       "DefaultBrowser",
                                       /*eligible=*/true, /*shown=*/true,
                                       FeatureShowcaseStepUserAction::kAccepted);
-  ExpectFeatureShowcaseStepHistograms(
-      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
-      /*eligible=*/false, /*shown=*/false);
 #else
   ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
                                       "DefaultBrowser",
                                       /*eligible=*/false, /*shown=*/false);
+#endif
   ExpectFeatureShowcaseStepHistograms(
       FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
       /*eligible=*/true, /*shown=*/true,
       FeatureShowcaseStepUserAction::kAccepted);
-#endif
 
   ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGoogleLens,
                                       "GoogleLens",
@@ -4270,16 +4253,8 @@ class FirstRunFeatureShowcaseWithGeminiInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_gemini_;
 };
 
-// TODO(crbug.com/366119368): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FeatureShowcaseGeminiExcludesGoogleLens \
-  DISABLED_FeatureShowcaseGeminiExcludesGoogleLens
-#else
-#define MAYBE_FeatureShowcaseGeminiExcludesGoogleLens \
-  FeatureShowcaseGeminiExcludesGoogleLens
-#endif
 IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseWithGeminiInteractiveUiTest,
-                       MAYBE_FeatureShowcaseGeminiExcludesGoogleLens) {
+                       FeatureShowcaseGeminiExcludesGoogleLens) {
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
   base::test::TestFuture<bool> proceed_future;
