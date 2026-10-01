@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -533,6 +534,109 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
         } finally {
             if (!tempImage.delete()) throw new AssertionError();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLoadDataWithBaseUrlRecordsFileAccessDestinationHistogram() throws Throwable {
+        AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        contentSettings.setImagesEnabled(true);
+        contentSettings.setJavaScriptEnabled(true);
+
+        String histogramName = "Android.WebView.LoadDataWithBaseUrl.FileAccessDestination";
+        // RequestDestination.IMAGE is 8 (defined in services/network/public/mojom/fetch_api.mojom)
+        int destinationImage = 8;
+        String nonDataBaseUrl = "http://example.com";
+        String dataBaseUrl = "data:text/html,";
+
+        // Loading with a non-data base URL that loads two local images should record
+        // the IMAGE destination exactly once for the page load.
+        var watcher = HistogramWatcher.newSingleRecordWatcher(histogramName, destinationImage);
+        String imageLoaded = "LOADED";
+        String htmlWithTwoImages =
+                "<html><body>"
+                        + "<img src=\"file:///android_asset/asset_icon.png\" "
+                        + "onload=\"document.title=\'"
+                        + imageLoaded
+                        + "\';\" />"
+                        + "<img src=\"file:///android_res/raw/resource_icon.png\" />"
+                        + "</body></html>";
+        loadDataWithBaseUrlSync(htmlWithTwoImages, "text/html", false, nonDataBaseUrl, null);
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> imageLoaded.equals(mActivityTestRule.getTitleOnUiThread(mAwContents)));
+        watcher.assertExpected();
+
+        // Loading with a data: base URL should not record the histogram because its origin
+        // is opaque/data: and local access is blocked.
+        var noRecordsWatcher = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+        loadDataWithBaseUrlSync(htmlWithTwoImages, "text/html", false, dataBaseUrl, null);
+        noRecordsWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLoadDataWithBaseUrlRecordsContentAccessDestinationHistogram() throws Throwable {
+        AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        contentSettings.setImagesEnabled(true);
+        contentSettings.setJavaScriptEnabled(true);
+
+        String histogramName = "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination";
+        int destinationImage = 8;
+        String nonDataBaseUrl = "http://example.com";
+        String contentImageUrl = TestContentProvider.createContentUrl("image");
+
+        var watcher = HistogramWatcher.newSingleRecordWatcher(histogramName, destinationImage);
+        String imageLoaded = "LOADED";
+        String htmlWithTwoContentImages =
+                "<html><body>"
+                        + "<img src=\""
+                        + contentImageUrl
+                        + "\" "
+                        + "onload=\"document.title=\'"
+                        + imageLoaded
+                        + "\';\" />"
+                        + "<img src=\""
+                        + contentImageUrl
+                        + "\" />"
+                        + "</body></html>";
+        loadDataWithBaseUrlSync(
+                htmlWithTwoContentImages, "text/html", false, nonDataBaseUrl, null);
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> imageLoaded.equals(mActivityTestRule.getTitleOnUiThread(mAwContents)));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLoadDataWithBaseUrlTopLevelNavigationRecordsDocumentDestination()
+            throws Throwable {
+        AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        contentSettings.setJavaScriptEnabled(true);
+
+        String contentHistogramName = "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination";
+        // RequestDestination.DOCUMENT is 3 (defined in services/network/public/mojom/fetch_api.mojom)
+        int destinationDocument = 3;
+        String nonDataBaseUrl = "http://example.com";
+        String targetContentUrl = TestContentProvider.createContentUrl("target");
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(contentHistogramName, destinationDocument);
+
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+
+        String htmlWithScript =
+                "<html><body><script>location.href = '"
+                        + targetContentUrl
+                        + "';</script></body></html>";
+        loadDataWithBaseUrlSync(htmlWithScript, "text/html", false, nonDataBaseUrl, null);
+        onPageFinishedHelper.waitForCallback(currentCallCount, 1);
+
+        watcher.assertExpected();
     }
 
     /** Disallowed from running on Svelte devices due to OOM errors: crbug.com/598013 */

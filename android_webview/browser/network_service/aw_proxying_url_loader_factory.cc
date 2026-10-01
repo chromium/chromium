@@ -1034,6 +1034,26 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
         target_factory_clone.InitWithNewPipeAndPassReceiver());
   }
 
+  if (request.request_initiator.has_value() &&
+      request.request_initiator->scheme() != url::kContentScheme &&
+      request.request_initiator->scheme() != url::kFileScheme) {
+    if (request.url.SchemeIs(url::kContentScheme)) {
+      if (recorded_content_access_destinations_.insert(request.destination)
+              .second) {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination",
+            request.destination);
+      }
+    } else if (request.url.SchemeIsFile()) {
+      if (recorded_file_access_destinations_.insert(request.destination)
+              .second) {
+        base::UmaHistogramEnumeration(
+            "Android.WebView.LoadDataWithBaseUrl.FileAccessDestination",
+            request.destination);
+      }
+    }
+  }
+
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient(web_contents_key_, frame_tree_node_id_,
                         browser_context_handle_.get());
