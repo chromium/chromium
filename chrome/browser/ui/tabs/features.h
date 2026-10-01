@@ -38,48 +38,6 @@ BASE_DECLARE_FEATURE(kTabSearchPerformanceImprovements);
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
-BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsExpandOnHoverDefaultEnabled);
-
-// Default strategy for expand on hover uses a fixed delay before the tab strip
-// expands.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVerticalTabsExpandOnHoverDelay);
-// Additional delay after a click inside the tab strip. If this value is 0, no
-// click delay is applied.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kVerticalTabsExpandOnHoverClickDelay);
-
-// When enabled, use a velocity heuristic rather than
-// `kVerticalTabsExpandOnHoverDelay` and `kVerticalTabsExpandOnHoverClickDelay`
-// to determine EOH state.
-BASE_DECLARE_FEATURE_PARAM(bool,
-                           kVerticalTabsExpandOnHoverUseVelocityHeuristic);
-// When using the velocity heuristic, this is the minimum time before EOH can be
-// triggered.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kVerticalTabsExpandOnHoverVelocityHeuristicDelay);
-// This in the minimum number of samples needed to calculate the heuristic.
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples);
-// The interval with which to sample the mouse position to supplement mouse move
-// events.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kVerticalTabsExpandOnHoverVelocityHeuristicInterval);
-// Threshold for the ratio of dp/ms of horizontal movement before EOH is
-// triggered.
-BASE_DECLARE_FEATURE_PARAM(
-    double,
-    kVerticalTabsExpandOnHoverVelocityHeuristicThreshold);
-// Minimum distance from the inside edge of the vertical tab strip before EOH
-// can be triggered.
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge);
-// When distance from edge is set, only evaluate that parameter until this delay
-// is reached.
-BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay);
 
 BASE_DECLARE_FEATURE(kBackToOpener);
 
@@ -92,8 +50,6 @@ bool IsSplitViewHorizontalIndirectAccessEnabled();
 bool IsSplitViewHorizontalDirectAccessEnabledForTab();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
-
-bool IsExpandOnHoverClickDelayEnabled();
 
 bool IsNewHorizontalPinnedTabStylingEnabled();
 

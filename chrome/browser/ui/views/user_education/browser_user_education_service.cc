@@ -2081,9 +2081,7 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHVerticalTabsExpandOnHoverFeature:
   const auto expand_on_hover_iph_body_string_id =
-      tabs::kVerticalTabsExpandOnHoverDefaultEnabled.Get()
-          ? IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY
-          : IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_DISABLED_IPH_BODY;
+      IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY;
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(
           feature_engagement::kIPHVerticalTabsExpandOnHoverFeature,

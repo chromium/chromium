@@ -184,25 +184,6 @@ class VerticalTabStripRegionView final
     raw_ptr<VerticalTabStripRegionView> region_view_;
   };
 
-  // To avoid extra motion during expand on hover when the user doesn't need the
-  // expanded state, we reset the expand on hover timer when the user clicks on
-  // a tab to give them time to exit the tab strip before triggering the expand
-  // on hover state. This class listens for those click events to restart the
-  // timer.
-  class ClickEventHandler : public ui::EventHandler {
-   public:
-    explicit ClickEventHandler(VerticalTabStripRegionView* region_view);
-    ClickEventHandler(const ClickEventHandler&) = delete;
-    ClickEventHandler& operator=(const ClickEventHandler&) = delete;
-    ~ClickEventHandler() override = default;
-
-    // ui::EventHandler:
-    void OnMouseEvent(ui::MouseEvent* event) override;
-
-   private:
-    raw_ptr<VerticalTabStripRegionView> region_view_;
-  };
-
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
 
@@ -233,7 +214,6 @@ class VerticalTabStripRegionView final
 
   void OnExpandOnHoverEnabledChanged(bool enabled);
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
-  void RestartExpandOnHoverTimer(const base::TimeDelta& delay);
   void OnMouseVelocityHeuristicInterval();
   void CalculateMouseVelocityForExpandOnHover();
   void ResetExpandOnHoverTimers();
@@ -312,7 +292,6 @@ class VerticalTabStripRegionView final
       hover_card_animation_lock_;
 
   RegionViewFocusListener focus_listener_{this};
-  ClickEventHandler click_handler_{this};
   std::unique_ptr<VerticalTabStripFocusSwipeController> focus_swipe_controller_;
 
   // Allows the swipe controller to inspect tab dragging state and rotate

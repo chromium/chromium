@@ -25,9 +25,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kTabScrollButtonsPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
-  registry->RegisterBooleanPref(
-      prefs::kVerticalTabsExpandOnHoverEnabled,
-      tabs::kVerticalTabsExpandOnHoverDefaultEnabled.Get());
+  registry->RegisterBooleanPref(prefs::kVerticalTabsExpandOnHoverEnabled, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabledFirstTime, false);
   registry->RegisterBooleanPref(prefs::kVerticalTabsCollapsedState, false);
   registry->RegisterIntegerPref(prefs::kVerticalTabsUncollapsedWidth,

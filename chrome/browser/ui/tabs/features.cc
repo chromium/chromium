@@ -35,58 +35,6 @@ BASE_FEATURE(kTabSearchPerformanceImprovements,
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabsExpandOnHover, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kVerticalTabsExpandOnHoverDefaultEnabled,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_default_enabled",
-                   true);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVerticalTabsExpandOnHoverDelay,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_delay",
-                   base::Milliseconds(350));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVerticalTabsExpandOnHoverClickDelay,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_click_delay",
-                   base::Milliseconds(0));
-
-BASE_FEATURE_PARAM(bool,
-                   kVerticalTabsExpandOnHoverUseVelocityHeuristic,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_use_velocity_heuristic",
-                   true);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicDelay,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_delay",
-                   base::Milliseconds(50));
-BASE_FEATURE_PARAM(int,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_min_samples",
-                   3);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicInterval,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_interval",
-                   base::Milliseconds(10));
-BASE_FEATURE_PARAM(double,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicThreshold,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_threshold",
-                   0.25);
-BASE_FEATURE_PARAM(int,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_distance_from_edge",
-                   12);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay,
-                   &kVerticalTabsExpandOnHover,
-                   "expand_on_hover_velocity_heuristic_edge_delay",
-                   base::Milliseconds(200));
 
 BASE_FEATURE(kTabStripUnification, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -109,10 +57,6 @@ bool IsSplitViewHorizontalDirectAccessEnabledForTab() {
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
   return base::FeatureList::IsEnabled(kVerticalTabsExpandOnHover);
-}
-
-bool IsExpandOnHoverClickDelayEnabled() {
-  return !kVerticalTabsExpandOnHoverClickDelay.Get().is_zero();
 }
 
 bool IsNewHorizontalPinnedTabStylingEnabled() {

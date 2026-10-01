@@ -97,6 +97,24 @@ constexpr ShadowFrameView::ShadowAlpha kExpandOnHoverShadowAlpha(
      .light_ambient = 0.0,
      .dark_key = 0.6,
      .dark_ambient = 0.0});
+
+// This is the minimum time before EOH can be triggered.
+constexpr base::TimeDelta kVerticalTabsExpandOnHoverVelocityHeuristicDelay =
+    base::Milliseconds(50);
+// This in the minimum number of samples needed to calculate the heuristic.
+constexpr int kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples = 3;
+// The interval with which to sample the mouse position to supplement mouse move
+// events.
+constexpr base::TimeDelta kVerticalTabsExpandOnHoverVelocityHeuristicInterval =
+    base::Milliseconds(10);
+// Threshold for the ratio of dp/ms of horizontal movement before EOH is
+// triggered.
+constexpr double kVerticalTabsExpandOnHoverVelocityHeuristicThreshold = 0.25;
+// When distance from edge is set, only evaluate that parameter until this delay
+// is reached.
+constexpr base::TimeDelta kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay =
+    base::Milliseconds(200);
+
 }  // namespace
 
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(VerticalTabStripRegionView,
@@ -837,20 +855,6 @@ void VerticalTabStripRegionView::RegionViewFocusListener::OnDidChangeFocus(
   }
 }
 
-VerticalTabStripRegionView::ClickEventHandler::ClickEventHandler(
-    VerticalTabStripRegionView* region_view)
-    : region_view_(region_view) {}
-
-void VerticalTabStripRegionView::ClickEventHandler::OnMouseEvent(
-    ui::MouseEvent* event) {
-  if (event->type() == ui::EventType::kMousePressed &&
-      region_view_->state_controller_->IsExpandOnHoverEnabled() &&
-      !region_view_->is_expanded_on_hover()) {
-    region_view_->RestartExpandOnHoverTimer(
-        tabs::kVerticalTabsExpandOnHoverClickDelay.Get());
-  }
-}
-
 void VerticalTabStripRegionView::AddTabStripView(
     std::unique_ptr<views::View> view) {
   view->SetProperty(
@@ -1045,33 +1049,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
         hover_card_controller()->GetHoverCardHideLock();
   }
 
-  if (tabs::kVerticalTabsExpandOnHoverUseVelocityHeuristic.Get()) {
-    CalculateMouseVelocityForExpandOnHover();
-  } else if (expand_on_hover_timer_.IsRunning()) {
-    // If the timer is already running then we are already waiting to
-    // expand, so do nothing.
-    return;
-  } else {
-    expand_on_hover_timer_.Start(
-        FROM_HERE, tabs::kVerticalTabsExpandOnHoverDelay.Get(),
-        base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
-                       base::Unretained(this),
-                       /*expand=*/true));
-    if (tabs::IsExpandOnHoverClickDelayEnabled()) {
-      AddPreTargetHandler(&click_handler_);
-    }
-  }
-}
-
-void VerticalTabStripRegionView::RestartExpandOnHoverTimer(
-    const base::TimeDelta& delay) {
-  if (expand_on_hover_timer_.IsRunning()) {
-    expand_on_hover_timer_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
-                       base::Unretained(this),
-                       /*expand=*/true));
-  }
+  CalculateMouseVelocityForExpandOnHover();
 }
 
 void VerticalTabStripRegionView::OnMouseVelocityHeuristicInterval() {
@@ -1098,8 +1076,7 @@ void VerticalTabStripRegionView::CalculateMouseVelocityForExpandOnHover() {
     time_at_expand_on_hover_timer_start_ = base::TimeTicks::Now();
     expand_on_hover_heuristic_samples_ = 1;
     expand_on_hover_heuristic_timer_.Start(
-        FROM_HERE,
-        tabs::kVerticalTabsExpandOnHoverVelocityHeuristicInterval.Get(),
+        FROM_HERE, kVerticalTabsExpandOnHoverVelocityHeuristicInterval,
         base::BindRepeating(
             &VerticalTabStripRegionView::OnMouseVelocityHeuristicInterval,
             base::Unretained(this)));
@@ -1120,7 +1097,7 @@ void VerticalTabStripRegionView::CalculateMouseVelocityForExpandOnHover() {
 
   // Wait a minimum amount of time before potentially expanding. This also
   // avoids divide by zero errors because this param is at least 0.
-  if (dt <= tabs::kVerticalTabsExpandOnHoverVelocityHeuristicDelay.Get()) {
+  if (dt <= kVerticalTabsExpandOnHoverVelocityHeuristicDelay) {
     return;
   }
 
@@ -1128,17 +1105,17 @@ void VerticalTabStripRegionView::CalculateMouseVelocityForExpandOnHover() {
   // more fully inside the tab strip.
   const int distance_from_inside_edge =
       std::abs(current_point.x() - GetContentsBounds().right());
-  if (dt <= tabs::kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay.Get() &&
+  if (dt <= kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay &&
       distance_from_inside_edge <=
-          tabs::kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge
-              .Get()) {
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripHorizontalPadding)) {
     return;
   }
 
   if (expand_on_hover_heuristic_samples_ >=
-          tabs::kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples.Get() &&
+          kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples &&
       static_cast<double>(dx) / dt.InMilliseconds() <
-          tabs::kVerticalTabsExpandOnHoverVelocityHeuristicThreshold.Get()) {
+          kVerticalTabsExpandOnHoverVelocityHeuristicThreshold) {
     AnimateExpandOnHover(/*expand=*/true);
   }
 }
@@ -1146,20 +1123,10 @@ void VerticalTabStripRegionView::CalculateMouseVelocityForExpandOnHover() {
 void VerticalTabStripRegionView::ResetExpandOnHoverTimers() {
   hover_card_animation_lock_.reset();
 
-  if (expand_on_hover_timer_.IsRunning()) {
-    expand_on_hover_timer_.Stop();
-
-    if (tabs::IsExpandOnHoverClickDelayEnabled()) {
-      RemovePreTargetHandler(&click_handler_);
-    }
-  }
-
-  if (tabs::kVerticalTabsExpandOnHoverUseVelocityHeuristic.Get()) {
-    expand_on_hover_heuristic_timer_.Stop();
-    time_at_expand_on_hover_timer_start_ = std::nullopt;
-    point_at_expand_on_hover_timer_start_ = std::nullopt;
-    expand_on_hover_heuristic_samples_ = 0;
-  }
+  expand_on_hover_heuristic_timer_.Stop();
+  time_at_expand_on_hover_timer_start_ = std::nullopt;
+  point_at_expand_on_hover_timer_start_ = std::nullopt;
+  expand_on_hover_heuristic_samples_ = 0;
 }
 
 void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
