@@ -8,7 +8,6 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
@@ -284,17 +283,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
       break;
   }
 
-  NSArray* fontList;
-  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeSupportNewFonts)) {
-    fontList = @[ lexendAction, monospaceAction, sansSerifAction, serifAction ];
-  } else {
-    fontList = @[ monospaceAction, sansSerifAction, serifAction ];
-  }
-
   return [UIMenu
       menuWithTitle:l10n_util::GetNSString(
                         IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE)
-           children:fontList];
+           children:@[
+             lexendAction, monospaceAction, sansSerifAction, serifAction
+           ]];
 }
 
 // Returns the action to select the Sans-serif font family.

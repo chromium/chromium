@@ -142,7 +142,8 @@ public class ReaderModePrefsViewUnitTest {
                         FontFamily.SANS_SERIF,
                         FontFamily.SANS_SERIF,
                         FontFamily.SERIF,
-                        FontFamily.MONOSPACE);
+                        FontFamily.MONOSPACE,
+                        FontFamily.LEXEND);
         // Test clicking the already selected font family.
         HistogramWatcher histogramSansSerif =
                 HistogramWatcher.newBuilder()
@@ -179,6 +180,18 @@ public class ReaderModePrefsViewUnitTest {
         histogramMonospace.assertExpected();
         mReaderModePrefsView.onChangeFontFamily(FontFamily.MONOSPACE);
 
+        HistogramWatcher histogramLexend =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "DomDistiller.Android.FontFamilySelected", FontFamily.LEXEND)
+                        .build();
+        mReaderModePrefsView.findViewById(R.id.font_lexend).performClick();
+        verify(mDistilledPagePrefs).setFontFamily(FontFamily.LEXEND);
+        Assert.assertEquals(
+                3, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+        histogramLexend.assertExpected();
+        mReaderModePrefsView.onChangeFontFamily(FontFamily.LEXEND);
+
         // Test clicking the first option again.
         HistogramWatcher histogramSansSerif2 =
                 HistogramWatcher.newBuilder()
@@ -188,22 +201,8 @@ public class ReaderModePrefsViewUnitTest {
         mReaderModePrefsView.findViewById(R.id.font_sans_serif).performClick();
         verify(mDistilledPagePrefs).setFontFamily(FontFamily.SANS_SERIF);
         Assert.assertEquals(
-                3, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+                4, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSansSerif2.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
-    public void testAdditionalFontFamilyButtonsVisibility_NewFontsEnabled() {
-        assertEquals(
-                View.VISIBLE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
-    }
-
-    @Test
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
-    public void testAdditionalFontFamilyButtonsVisibility_NewFontsDisabled() {
-        assertEquals(
-                View.GONE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
     }
 
     @Test
@@ -350,14 +349,17 @@ public class ReaderModePrefsViewUnitTest {
         AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfo =
                 containerInfo.getCollectionInfo();
         assertNotNull(collectionInfo);
-        assertEquals(3, collectionInfo.getColumnCount());
+        assertEquals(4, collectionInfo.getColumnCount());
         assertEquals(1, collectionInfo.getRowCount());
         assertEquals(
                 AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_SINGLE,
                 collectionInfo.getSelectionMode());
 
         // Test buttons
-        int[] buttonIds = new int[] {R.id.font_sans_serif, R.id.font_serif, R.id.font_monospace};
+        int[] buttonIds =
+                new int[] {
+                    R.id.font_sans_serif, R.id.font_serif, R.id.font_monospace, R.id.font_lexend
+                };
         for (int i = 0; i < buttonIds.length; i++) {
             View button = mReaderModePrefsView.findViewById(buttonIds[i]);
             AccessibilityDelegateCompat buttonDelegate =

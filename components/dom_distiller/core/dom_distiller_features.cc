@@ -30,11 +30,6 @@ bool ShouldStartDistillabilityService() {
       switches::kEnableDistillabilityService);
 }
 
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kSyncReaderForAccessibility, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -50,8 +45,7 @@ BASE_FEATURE(kReaderModeToggleLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 namespace android {
 static int64_t JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
-      &kReaderModeDelayBottomSheetPeek, &kReaderModeSupportNewFonts,
-      &kReaderModeToggleLinks};
+      &kReaderModeDelayBottomSheetPeek, &kReaderModeToggleLinks};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

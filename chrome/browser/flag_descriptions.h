@@ -6437,11 +6437,6 @@ inline constexpr char kReaderModeHeuristicsAllArticles[] = "All articles";
 inline constexpr char kReaderModeHeuristicsAlwaysOff[] = "Never";
 inline constexpr char kReaderModeHeuristicsAlwaysOn[] = "Always";
 
-inline constexpr char kReaderModeSupportNewFontsName[] =
-    "Reader Mode support new fonts";
-inline constexpr char kReaderModeSupportNewFontsDescription[] =
-    "Enables new accessible font options in Reader Mode.";
-
 inline constexpr char kReaderModeToggleLinksName[] = "Reader Mode toggle links";
 inline constexpr char kReaderModeToggleLinksDescription[] =
     "Enables the ability to toggle links in Reader Mode.";

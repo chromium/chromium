@@ -145,18 +145,7 @@ public class ReaderModePrefsView extends LinearLayout
         initializeFontButton(R.id.font_sans_serif, FontFamily.SANS_SERIF, 0);
         initializeFontButton(R.id.font_serif, FontFamily.SERIF, 1);
         initializeFontButton(R.id.font_monospace, FontFamily.MONOSPACE, 2);
-
-        if (DomDistillerFeatures.shouldShowNewAccessibleFontOptions()) {
-            initializeFontButton(R.id.font_lexend, FontFamily.LEXEND, 3);
-        } else {
-            findViewById(R.id.font_lexend).setVisibility(View.GONE);
-
-            // Remove marginEnd from the monospace button that lies before the Lexend button.
-            View monospaceButton = findViewById(R.id.font_monospace);
-            MarginLayoutParams params = (MarginLayoutParams) monospaceButton.getLayoutParams();
-            params.setMarginEnd(0);
-            monospaceButton.setLayoutParams(params);
-        }
+        initializeFontButton(R.id.font_lexend, FontFamily.LEXEND, 3);
 
         View fontFamilyButtonContainer = findViewById(R.id.font_family_button_container);
         setCollectionInfoAccessibilityDelegate(

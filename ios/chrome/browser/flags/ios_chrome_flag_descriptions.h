@@ -1693,11 +1693,6 @@ inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerName[] =
 inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
     "Enables the popup blocker feature row in the Page Action Menu.";
 
-inline constexpr char kReaderModeSupportNewFontsName[] =
-    "Reader Mode support new fonts";
-inline constexpr char kReaderModeSupportNewFontsDescription[] =
-    "Enables new accessible font options in Reader Mode.";
-
 inline constexpr char kRecoverTabsOfLastClosedWindowName[] =
     "Recover Tabs of last closed window";
 inline constexpr char kRecoverTabsOfLastClosedWindowDescription[] =
