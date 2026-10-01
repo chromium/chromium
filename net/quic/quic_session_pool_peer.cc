@@ -168,6 +168,14 @@ bool QuicSessionPoolPeer::CryptoConfigSessionCacheIsEmpty(
       std::move(key));
 }
 
+size_t QuicSessionPoolPeer::GetNumActiveCryptoConfigs(QuicSessionPool* pool) {
+  return pool->active_crypto_config_map_.size();
+}
+
+size_t QuicSessionPoolPeer::GetNumRecentCryptoConfigs(QuicSessionPool* pool) {
+  return pool->recent_crypto_config_map_.size();
+}
+
 size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* pool) {
   return pool->connectivity_monitor_.GetNumDegradingSessions();
 }

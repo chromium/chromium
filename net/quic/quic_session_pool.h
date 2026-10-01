@@ -27,6 +27,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -130,7 +131,8 @@ enum AllActiveSessionsGoingAwayReason {
   kClockSkewDetected,
   kIPAddressChanged,
   kCertDBChanged,
-  kCertVerifierChanged
+  kCertVerifierChanged,
+  kSSLContextConfigChanged,
 };
 
 enum CreateSessionFailure {
@@ -312,7 +314,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public NetworkChangeNotifier::NetworkObserver,
       public CertDatabase::Observer,
-      public CertVerifier::Observer {
+      public CertVerifier::Observer,
+      public SSLConfigService::Observer {
  public:
   QuicSessionPool(
       NetLog* net_log,
@@ -511,6 +514,11 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // We close all sessions when certificate verifier settings have changed.
   void OnCertVerifierChanged() override;
 
+  // SSLConfigService::Observer:
+  // We close all sessions when the SSL configuration changes, and drop cached
+  // QuicCryptoClientConfigs from the MRU cache.
+  void OnSSLContextConfigChanged() override;
+
   bool has_quic_ever_worked_on_current_network() const {
     return has_quic_ever_worked_on_current_network_;
   }
@@ -597,6 +605,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   using QuicCryptoClientConfigMap =
       std::map<QuicCryptoClientConfigKey,
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
+  using SSLContextConfigGeneration =
+      base::IdTypeU64<class SSLContextConfigGenerationTag>;
 
   // Records whether an active session already exists for a given IP address
   // during connection.
@@ -842,6 +852,11 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       enum QuicPlatformNotification notification,
       handles::NetworkHandle affected_network) const;
 
+  // Completes the QuicCryptoClientConfigKey by removing the
+  // NetworkAnonymizationKey if not applicable, and filling in the current
+  // SSLContextConfigGeneration.
+  void NormalizeCryptoConfigKey(QuicCryptoClientConfigKey& key) const;
+
   std::unique_ptr<QuicCryptoClientConfigHandle> GetCryptoConfigForTesting(
       QuicCryptoClientConfigKey key);
 
@@ -917,10 +932,20 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // it will be removed from the cache and return to the active config map.
   // These two maps should never both have entries with the same
   // NetworkAnonymizationKey.
+  // `recent_crypto_config_map_` will only ever contain entries with the current
+  // value of `ssl_config_generation_`. While old sessions are draining,
+  // `active_crypto_config_map_` may still hold entries with stale values of
+  // `ssl_config_generation_`.
   QuicCryptoClientConfigMap active_crypto_config_map_;
   base::LRUCache<QuicCryptoClientConfigKey,
                  std::unique_ptr<QuicCryptoClientConfigOwner>>
       recent_crypto_config_map_;
+
+  // Increments a counter whenever we are notified that the SSLContextConfig has
+  // changed.
+  SSLContextConfigGeneration::Generator ssl_config_generation_generator_;
+  SSLContextConfigGeneration ssl_config_generation_ =
+      ssl_config_generation_generator_.GenerateNextId();
 
   const quic::QuicConfig config_;
 
@@ -1063,7 +1088,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner
   const raw_ptr<QuicSessionPool> quic_session_pool_;
 };
 
-// Key for QuicCryptoClienConfigOwners within a session pool.
+// Key for QuicCryptoClientConfigOwners within a session pool.
 struct NET_EXPORT_PRIVATE QuicSessionPool::QuicCryptoClientConfigKey {
   QuicCryptoClientConfigKey() = default;
   explicit QuicCryptoClientConfigKey(const QuicSessionKey& session_key)
@@ -1077,11 +1102,14 @@ struct NET_EXPORT_PRIVATE QuicSessionPool::QuicCryptoClientConfigKey {
   NetworkAnonymizationKey network_anonymization_key;
   ProxyChain proxy_chain = ProxyChain::Direct();
   SessionUsage session_usage = SessionUsage::kDestination;
+  // Must be filled in by `NormalizeCryptoConfigKey()`.
+  SSLContextConfigGeneration ssl_config_generation;
 
  private:
   std::tuple<const NetworkAnonymizationKey&,
              const ProxyChain&,
-             const SessionUsage&>
+             const SessionUsage&,
+             SSLContextConfigGeneration>
   Tie() const;
 };
 

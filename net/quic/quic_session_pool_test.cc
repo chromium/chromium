@@ -17714,6 +17714,150 @@ TEST_P(QuicSessionPoolTest, ConfigureSSLCompliancePolicy) {
             ssl_compliance_policy_cnsa_202407);
 }
 
+// Changing the SSLContextConfig after Initialize() should apply to crypto
+// configs created afterwards, and leave existing ones unchanged.
+TEST_P(QuicSessionPoolTest, SSLContextConfigChangeUpdatesCryptoConfig) {
+  Initialize();
+  const QuicSessionPool::QuicCryptoClientConfigKey key;
+  std::unique_ptr<QuicCryptoClientConfigHandle> old_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key);
+  const std::vector<uint16_t> old_groups =
+      old_handle->GetConfig()->preferred_groups();
+  EXPECT_FALSE(old_handle->GetConfig()->ssl_compliance_policy().has_value());
+
+  SSLContextConfig ssl_config;
+  ssl_config.tls13_cipher_prefer_aes_256 = true;
+  ssl_config.supported_named_groups = {
+      {.group_id = SSL_GROUP_MLKEM1024, .send_key_share = true},
+      {.group_id = SSL_GROUP_X25519_MLKEM768, .send_key_share = false},
+  };
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  std::unique_ptr<QuicCryptoClientConfigHandle> new_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key);
+  EXPECT_NE(old_handle->GetConfig(), new_handle->GetConfig());
+  const std::vector<uint16_t> new_groups =
+      new_handle->GetConfig()->preferred_groups();
+  EXPECT_THAT(new_groups,
+              ElementsAre(SSL_GROUP_MLKEM1024, SSL_GROUP_X25519_MLKEM768));
+  EXPECT_THAT(new_handle->GetConfig()->client_key_shares(),
+              ElementsAre(SSL_GROUP_MLKEM1024));
+  EXPECT_EQ(new_handle->GetConfig()->ssl_compliance_policy(),
+            ssl_compliance_policy_cnsa_202407);
+
+  // The config still referenced by `old_handle` is unchanged.
+  EXPECT_EQ(old_handle->GetConfig()->preferred_groups(), old_groups);
+  EXPECT_FALSE(old_handle->GetConfig()->ssl_compliance_policy().has_value());
+
+  // Unsetting the compliance policy also takes effect.
+  ssl_config_service_.UpdateSSLConfigAndNotify(SSLContextConfig());
+  std::unique_ptr<QuicCryptoClientConfigHandle> newest_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key);
+  EXPECT_NE(new_handle->GetConfig(), newest_handle->GetConfig());
+  EXPECT_FALSE(newest_handle->GetConfig()->ssl_compliance_policy().has_value());
+
+  // The configs still referenced by previously acquired handles are unchanged.
+  EXPECT_EQ(old_handle->GetConfig()->preferred_groups(), old_groups);
+  EXPECT_FALSE(old_handle->GetConfig()->ssl_compliance_policy().has_value());
+  EXPECT_EQ(new_handle->GetConfig()->preferred_groups(), new_groups);
+  EXPECT_EQ(new_handle->GetConfig()->ssl_compliance_policy(),
+            ssl_compliance_policy_cnsa_202407);
+}
+
+// Crypto configs created under a previous SSLContextConfig are discarded rather
+// than cached for reuse.
+TEST_P(QuicSessionPoolTest, SSLContextConfigChangeDropsStaleCryptoConfigs) {
+  Initialize();
+  const QuicSessionPool::QuicCryptoClientConfigKey key;
+  SSLContextConfig ssl_config;
+
+  // A released config is cached in the recent map...
+  QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key).reset();
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumActiveCryptoConfigs(pool_.get()));
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumRecentCryptoConfigs(pool_.get()));
+
+  // ...until the SSLContextConfig changes.
+  ssl_config.tls13_cipher_prefer_aes_256 = true;
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumActiveCryptoConfigs(pool_.get()));
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumRecentCryptoConfigs(pool_.get()));
+
+  // A config still referenced across an SSLContextConfig change stays alive,
+  // but new lookups get a distinct config.
+  std::unique_ptr<QuicCryptoClientConfigHandle> stale_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key);
+  ssl_config.tls13_cipher_prefer_aes_256 = false;
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+  std::unique_ptr<QuicCryptoClientConfigHandle> fresh_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(pool_.get(), key);
+  EXPECT_NE(stale_handle->GetConfig(), fresh_handle->GetConfig());
+  EXPECT_EQ(2u, QuicSessionPoolPeer::GetNumActiveCryptoConfigs(pool_.get()));
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumRecentCryptoConfigs(pool_.get()));
+
+  // Releasing the stale config destroys it rather than caching it.
+  stale_handle.reset();
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumActiveCryptoConfigs(pool_.get()));
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumRecentCryptoConfigs(pool_.get()));
+
+  // Releasing the current config caches it as usual.
+  fresh_handle.reset();
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumActiveCryptoConfigs(pool_.get()));
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumRecentCryptoConfigs(pool_.get()));
+}
+
+// Active sessions are marked going away when the SSLContextConfig changes.
+TEST_P(QuicSessionPoolTest, OnSSLContextConfigChanged) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream);
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+
+  SSLContextConfig ssl_config;
+  ssl_config.tls13_cipher_prefer_aes_256 = true;
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicActiveSessionCount.SSLContextConfigChanged", 1, 1);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_FALSE(HasActiveSession(kDefaultDestination));
+
+  // A new request to the same origin creates a new session.
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  EXPECT_TRUE(stream2);
+  QuicChromiumClientSession* session2 = GetActiveSession(kDefaultDestination);
+  EXPECT_NE(session, session2);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+
+  stream2.reset();
+  stream.reset();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
+}
+
 // Test for https://crbug.com/454787716.
 TEST_P(QuicSessionPoolTest,
        SuccessfullyMigratedToServerPreferredAddressBeforeHandshakeConfirmed) {

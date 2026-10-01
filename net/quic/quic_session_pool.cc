@@ -209,6 +209,8 @@ const char* AllActiveSessionsGoingAwayReasonToString(
       return "CertDBChanged";
     case kCertVerifierChanged:
       return "CertVerifierChanged";
+    case kSSLContextConfigChanged:
+      return "SSLContextConfigChanged";
   }
 }
 
@@ -669,9 +671,11 @@ bool QuicSessionPool::QuicCryptoClientConfigKey::operator<(
 
 std::tuple<const NetworkAnonymizationKey&,
            const ProxyChain&,
-           const SessionUsage&>
+           const SessionUsage&,
+           QuicSessionPool::SSLContextConfigGeneration>
 QuicSessionPool::QuicCryptoClientConfigKey::Tie() const {
-  return std::tie(network_anonymization_key, proxy_chain, session_usage);
+  return std::tie(network_anonymization_key, proxy_chain, session_usage,
+                  ssl_config_generation);
 }
 
 QuicSessionPool::CryptoClientConfigHandle::CryptoClientConfigHandle(
@@ -760,6 +764,7 @@ QuicSessionPool::QuicSessionPool(
   InitializeMigrationOptions();
   cert_verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);
+  ssl_config_service_->AddObserver(this);
 #if BUILDFLAG(IS_ANDROID)
   RegisterPreFreezeTask();
 #endif
@@ -789,6 +794,7 @@ QuicSessionPool::~QuicSessionPool() {
 
   CertDatabase::GetInstance()->RemoveObserver(this);
   cert_verifier_->RemoveObserver(this);
+  ssl_config_service_->RemoveObserver(this);
   if (params_.close_sessions_on_ip_change ||
       params_.goaway_sessions_on_ip_change) {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
@@ -1577,6 +1583,16 @@ void QuicSessionPool::OnTrustStoreChanged() {
 void QuicSessionPool::OnCertVerifierChanged() {
   // Flush sessions if the CertCerifier configuration has changed.
   MarkAllActiveSessionsGoingAway(kCertVerifierChanged);
+}
+
+void QuicSessionPool::OnSSLContextConfigChanged() {
+  ssl_config_generation_ = ssl_config_generation_generator_.GenerateNextId();
+  // Clear cached configs that must have been created under the previous
+  // SSLContextConfig.
+  recent_crypto_config_map_.Clear();
+  // Flush sessions if the SSL configuration has changed. Configs will be
+  // dropped from `active_crypto_config_map_` as old sessions drain.
+  MarkAllActiveSessionsGoingAway(kSSLContextConfigChanged);
 }
 
 void QuicSessionPool::set_has_quic_ever_worked_on_current_network(
@@ -2847,9 +2863,7 @@ void QuicSessionPool::UnmapSessionFromSessionAliases(
 
 std::unique_ptr<QuicSessionPool::CryptoClientConfigHandle>
 QuicSessionPool::CreateCryptoConfigHandle(QuicCryptoClientConfigKey key) {
-  if (!use_network_anonymization_key_for_crypto_configs_) {
-    key.network_anonymization_key = NetworkAnonymizationKey();
-  }
+  NormalizeCryptoConfigKey(key);
 
   // If there's a matching entry in |active_crypto_config_map_|, create a
   // CryptoClientConfigHandle for it.
@@ -2923,8 +2937,12 @@ QuicSessionPool::CreateCryptoConfigHandle(QuicCryptoClientConfigKey key) {
 void QuicSessionPool::OnAllCryptoClientRefReleased(
     QuicCryptoClientConfigMap::iterator& map_iterator) {
   DCHECK_EQ(0, map_iterator->second->num_refs());
-  recent_crypto_config_map_.Put(map_iterator->first,
-                                std::move(map_iterator->second));
+  DCHECK(!map_iterator->first.ssl_config_generation.is_null());
+  // Don't stash the config if it was created under a previous SSLContextConfig.
+  if (map_iterator->first.ssl_config_generation == ssl_config_generation_) {
+    recent_crypto_config_map_.Put(map_iterator->first,
+                                  std::move(map_iterator->second));
+  }
   active_crypto_config_map_.erase(map_iterator);
 }
 
@@ -2963,6 +2981,14 @@ void QuicSessionPool::CheckQuicSessionKeyMismatch(
                                 destination, session_key, active_key));
 }
 
+void QuicSessionPool::NormalizeCryptoConfigKey(
+    QuicCryptoClientConfigKey& key) const {
+  if (!use_network_anonymization_key_for_crypto_configs_) {
+    key.network_anonymization_key = NetworkAnonymizationKey();
+  }
+  key.ssl_config_generation = ssl_config_generation_;
+}
+
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicSessionPool::GetCryptoConfigForTesting(QuicCryptoClientConfigKey key) {
   return CreateCryptoConfigHandle(std::move(key));
@@ -2972,9 +2998,7 @@ bool QuicSessionPool::CryptoConfigCacheIsEmptyForTesting(
     const quic::QuicServerId& server_id,
     QuicCryptoClientConfigKey key) {
   quic::QuicCryptoClientConfig::CachedState* cached = nullptr;
-  if (!use_network_anonymization_key_for_crypto_configs_) {
-    key.network_anonymization_key = NetworkAnonymizationKey();
-  }
+  NormalizeCryptoConfigKey(key);
   auto map_iterator = active_crypto_config_map_.find(key);
   if (map_iterator != active_crypto_config_map_.end()) {
     cached = map_iterator->second->config()->LookupOrCreate(server_id);
@@ -2989,9 +3013,7 @@ bool QuicSessionPool::CryptoConfigCacheIsEmptyForTesting(
 
 bool QuicSessionPool::CryptoConfigSessionCacheIsEmptyForTesting(
     QuicCryptoClientConfigKey key) {
-  if (!use_network_anonymization_key_for_crypto_configs_) {
-    key.network_anonymization_key = NetworkAnonymizationKey();
-  }
+  NormalizeCryptoConfigKey(key);
   quic::QuicCryptoClientConfig* config = nullptr;
   auto map_iterator = active_crypto_config_map_.find(key);
   if (map_iterator != active_crypto_config_map_.end()) {

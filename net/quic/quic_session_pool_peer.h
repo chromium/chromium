@@ -115,6 +115,12 @@ class QuicSessionPoolPeer {
       QuicSessionPool* pool,
       QuicSessionPool::QuicCryptoClientConfigKey key);
 
+  // Returns the number of crypto configs with outstanding handles.
+  static size_t GetNumActiveCryptoConfigs(QuicSessionPool* pool);
+
+  // Returns the number of unreferenced crypto configs cached for reuse.
+  static size_t GetNumRecentCryptoConfigs(QuicSessionPool* pool);
+
   static size_t GetNumDegradingSessions(QuicSessionPool* pool);
 
   // Returns the session establishment reason for a given key. For testing only.
