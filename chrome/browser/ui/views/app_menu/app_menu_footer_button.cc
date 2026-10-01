@@ -35,6 +35,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kRowLineHeight = 16;
@@ -87,6 +88,7 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   label_->SetCanProcessEventsWithinSubtree(false);
 
   if (submenu_item) {
+    submenu_item_tracker_.SetView(submenu_item);
     submenu_item->SetAnchorView(this);
 
     submenu_arrow_view_ = AddChildView(std::make_unique<views::ImageView>());
@@ -95,12 +97,9 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
     submenu_arrow_view_->SetProperty(views::kSkipAccessibilityPaintChecks,
                                      true);
     submenu_arrow_view_->SetCanProcessEventsWithinSubtree(false);
-    submenu_arrow_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kKeyboardArrowRightFlippableIcon
-            : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
-        kColorAppMenuFooterButtonForeground, icon_size));
   }
+
+  UpdateColors();
 }
 
 AppMenuFooterButton::~AppMenuFooterButton() {
@@ -109,8 +108,31 @@ AppMenuFooterButton::~AppMenuFooterButton() {
   }
 }
 
-views::MenuItemView* AppMenuFooterButton::GetSubmenuItem() const {
-  return GetProperty(views::kSubmenuItemKey);
+views::MenuItemView* AppMenuFooterButton::GetSubmenuItem() {
+  return views::AsViewClass<views::MenuItemView>(submenu_item_tracker_.view());
+}
+
+void AppMenuFooterButton::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
+
+  const bool is_disabled = GetState() == STATE_DISABLED;
+  auto* const ink_drop_host = views::InkDrop::Get(this);
+  if (is_disabled) {
+    ink_drop_host->SetMode(views::InkDropHost::InkDropMode::OFF);
+  } else {
+    ink_drop_host->SetMode(views::InkDropHost::InkDropMode::ON);
+    ink_drop_host->GetInkDrop()->SetHovered(IsMouseHovered());
+  }
+
+  // Detach from the submenu while disabled, so that views::MenuController does
+  // not treat this button as a submenu trigger on hover, click, or keyboard
+  // event.
+  if (auto* submenu_item = GetSubmenuItem()) {
+    submenu_item->SetEnabled(!is_disabled);
+    submenu_item->SetAnchorView(is_disabled ? nullptr : this);
+  }
+
+  UpdateColors();
 }
 
 void AppMenuFooterButton::SetText(std::u16string_view text) {
@@ -126,11 +148,14 @@ void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
   } else if (image_model.IsVectorIcon()) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+    ui::ColorId icon_color = ui::kColorMenuIconDisabled;
+    if (GetState() != STATE_DISABLED) {
+      icon_color = use_row_style_
+                       ? ui::ColorId{ui::kColorMenuIcon}
+                       : ui::ColorId{kColorAppMenuFooterButtonForeground};
+    }
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        *image_model.GetVectorIcon().vector_icon(),
-        use_row_style_ ? ui::ColorId{ui::kColorMenuIcon}
-                       : ui::ColorId{kColorAppMenuFooterButtonForeground},
-        icon_size));
+        *image_model.GetVectorIcon().vector_icon(), icon_color, icon_size));
     icon_view_->SetVisible(true);
   } else {
     icon_view_->SetImage(image_model);
@@ -145,7 +170,6 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
     label_->SetTextContext(views::style::CONTEXT_MENU);
     label_->SetTextStyle(views::style::STYLE_BODY_4);
     label_->SetLineHeight(kRowLineHeight);
-    label_->SetEnabledColor(ui::kColorMenuItemForeground);
 
     views::InstallRectHighlightPathGenerator(this);
     SetBackground(views::CreateSolidBackground(ui::kColorMenuBackground));
@@ -159,7 +183,6 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
         gfx::Insets::VH(vertical_padding, horizontal_padding));
   } else {
     label_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-    label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
 
     const int corner_radius =
         provider->GetCornerRadiusMetric(kActionAppMenuFooterButtonCornerRadius);
@@ -171,6 +194,34 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
     layout_->set_inside_border_insets(
         provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON));
   }
+  UpdateColors();
+}
+
+void AppMenuFooterButton::UpdateColors() {
+  const bool is_disabled = GetState() == STATE_DISABLED;
+
+  if (use_row_style_) {
+    label_->SetEnabledColor(
+        is_disabled ? ui::ColorId{ui::kColorMenuItemForegroundDisabled}
+                    : ui::ColorId{ui::kColorMenuItemForeground});
+  } else {
+    label_->SetEnabledColor(
+        is_disabled ? ui::ColorId{ui::kColorButtonForegroundDisabled}
+                    : ui::ColorId{kColorAppMenuFooterButtonForeground});
+  }
+
+  if (submenu_arrow_view_) {
+    const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+    submenu_arrow_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowRightFlippableIcon
+            : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
+        is_disabled ? ui::ColorId{ui::kColorMenuIconDisabled}
+                    : ui::ColorId{kColorAppMenuFooterButtonForeground},
+        icon_size));
+  }
+
   if (!icon_view_->GetImageModel().IsEmpty()) {
     SetImageModel(icon_view_->GetImageModel());
   }
