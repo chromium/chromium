@@ -6,8 +6,10 @@ import re
 
 
 def result_contains_repaint_rects(text):
-    return (isinstance(text, str) and
-            re.search(r'"invalidations": \[$', text, re.MULTILINE) is not None)
+    return (
+        isinstance(text, str)
+        and re.search(r'"invalidations": \[$', text, re.MULTILINE) is not None
+    )
 
 
 def extract_layer_tree(input_str):
@@ -26,12 +28,13 @@ def extract_layer_tree(input_str):
         return '{}'
 
     # FIXME: There may be multiple layer trees in the result.
-    return input_str[start:end + 3]
+    return input_str[start : end + 3]
 
 
 def generate_repaint_overlay_html(test_name, actual_text, expected_text):
-    if (not result_contains_repaint_rects(actual_text)
-            and not result_contains_repaint_rects(expected_text)):
+    if not result_contains_repaint_rects(
+        actual_text
+    ) and not result_contains_repaint_rects(expected_text):
         return ''
 
     expected_layer_tree = extract_layer_tree(expected_text)

@@ -19,9 +19,7 @@ import google.auth
 import google_auth_httplib2
 from apiclient import discovery
 
-_DISCOVERY_URI = (
-    'https://issuetracker.googleapis.com/$discovery/rest?version=v1&labels=GOOGLE_PUBLIC'
-)
+_DISCOVERY_URI = 'https://issuetracker.googleapis.com/$discovery/rest?version=v1&labels=GOOGLE_PUBLIC'
 
 BUGANIZER_SCOPES = 'https://www.googleapis.com/auth/buganizer'
 EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
@@ -29,6 +27,7 @@ EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 MAX_DISCOVERY_RETRIES = 3
 MAX_REQUEST_RETRIES = 5
 MAX_PAGE_SIZE = 500
+
 
 class Status(enum.Enum):
     NEW = enum.auto()
@@ -65,6 +64,7 @@ class BuganizerIssue:
 
     [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker.proto
     """
+
     title: str
     description: str
     component_id: str
@@ -113,7 +113,8 @@ class BuganizerIssue:
             cc=[email for email in cc if email],
             status=Status[state['status']],
             priority=Priority[state['priority']],
-            severity=Severity[state['severity']])
+            severity=Severity[state['severity']],
+        )
 
 
 # An issue ID may be one of:
@@ -144,7 +145,8 @@ class BuganizerClient:
                     'issuetracker',
                     'v1',
                     discoveryServiceUrl=_DISCOVERY_URI,
-                    http=self.http)
+                    http=self.http,
+                )
                 break
             except http_client.HTTPException as e:
                 logging.error('Attempt #%d: %s', attempt + 1, e)
@@ -152,7 +154,8 @@ class BuganizerClient:
 
         if self._service is None:
             raise BuganizerError(
-                'failed to connect to service') from http_exception
+                'failed to connect to service'
+            ) from http_exception
 
     def GetIssue(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get an issue."""
@@ -160,13 +163,14 @@ class BuganizerClient:
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
-            logging.error('[BuganizerClient] Failed to GetIssue '
-                          'error: %s', str(e))
+            logging.error(
+                '[BuganizerClient] Failed to GetIssue error: %s', str(e)
+            )
             return {'error': str(e)}
 
-    def GetIssueList(self,
-                     query_string,
-                     limit: int = MAX_PAGE_SIZE) -> List[BuganizerIssue]:
+    def GetIssueList(
+        self, query_string, limit: int = MAX_PAGE_SIZE
+    ) -> List[BuganizerIssue]:
         """Makes a request to the issue tracker to get list of issues by query"""
         return list(self._GetIssueListGenerator(query_string, limit))
 
@@ -175,18 +179,19 @@ class BuganizerClient:
         page_token = None
         remaining_limit = limit
         while remaining_limit > 0:
-            request = self._service.issues().list(query=query_string,
-                                                  pageSize=min(
-                                                      MAX_PAGE_SIZE,
-                                                      remaining_limit),
-                                                  view='FULL',
-                                                  pageToken=page_token)
+            request = self._service.issues().list(
+                query=query_string,
+                pageSize=min(MAX_PAGE_SIZE, remaining_limit),
+                view='FULL',
+                pageToken=page_token,
+            )
             try:
                 response = self._ExecuteRequest(request)
             except Exception as e:
                 raise BuganizerError(f'failed to get issue list: {e}') from e
-            logging.debug('[BuganizerClient] GetIssueList response: %s',
-                          response)
+            logging.debug(
+                '[BuganizerClient] GetIssueList response: %s', response
+            )
             if not response:
                 return
 
@@ -201,14 +206,17 @@ class BuganizerClient:
 
     def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""
-        request = self._service.issues().issueUpdates().list(
-            issueId=str(self._ResolveID(issue_id)))
+        request = (
+            self._service.issues()
+            .issueUpdates()
+            .list(issueId=str(self._ResolveID(issue_id)))
+        )
 
         try:
             response = self._ExecuteRequest(request)
             logging.debug(
-                '[BuganizerClient] Post GetIssueComments response:'
-                ' %s', response)
+                '[BuganizerClient] Post GetIssueComments response: %s', response
+            )
             comments = []
             if not response:
                 return comments
@@ -219,34 +227,34 @@ class BuganizerClient:
                     'index': index,
                     'timestamp': update.get('timestamp'),
                     'author': update.get('author', {}).get('emailAddress', ''),
-                    'comment': update.get('issueComment',
-                                          {}).get('comment', ''),
+                    'comment': update.get('issueComment', {}).get(
+                        'comment', ''
+                    ),
                 }
                 comments.append(comment)
             return comments
         except Exception as e:
             logging.error(
-                '[BuganizerClient] Failed to GetIssueComments '
-                'error: %s', str(e))
+                '[BuganizerClient] Failed to GetIssueComments error: %s', str(e)
+            )
             return {'error': str(e)}
 
-    def NewComment(self,
-                   issue_id: IssueID,
-                   comment: str,
-                   use_markdown: bool = False):
+    def NewComment(
+        self, issue_id: IssueID, comment: str, use_markdown: bool = False
+    ):
         """Makes a request to the issue tracker to add a comment."""
         new_comment_request = {'issueComment': {'comment': comment}}
         if use_markdown:
             new_comment_request['issueComment']['formattingMode'] = 'MARKDOWN'
-        request = self._service.issues().modify(issueId=str(
-            self._ResolveID(issue_id)),
-                                                body=new_comment_request)
+        request = self._service.issues().modify(
+            issueId=str(self._ResolveID(issue_id)), body=new_comment_request
+        )
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
             logging.error(
-                '[BuganizerClient] Failed to NewComment '
-                'error: %s', str(e))
+                '[BuganizerClient] Failed to NewComment error: %s', str(e)
+            )
             return {'error': str(e)}
 
     @memoized
@@ -284,25 +292,27 @@ class BuganizerClient:
             maybe_match = self._URL_PATTERN.search(text)
         if not maybe_match:
             raise BuganizerError(
-                f'{issue_id!r} did not resolve into a valid Buganizer ID')
+                f'{issue_id!r} did not resolve into a valid Buganizer ID'
+            )
         return int(maybe_match.group('id'))
 
     def _ExecuteRequest(self, request):
         """Makes a request to the issue tracker.
 
-            Args:
-            request: The request object, which has a execute method.
+        Args:
+        request: The request object, which has a execute method.
 
-            Returns:
-            The response if there was one, or else None.
+        Returns:
+        The response if there was one, or else None.
         """
-        response = request.execute(num_retries=MAX_REQUEST_RETRIES,
-                                   http=self.http)
+        response = request.execute(
+            num_retries=MAX_REQUEST_RETRIES, http=self.http
+        )
         return response
 
-    def NewIssue(self,
-                 issue: BuganizerIssue,
-                 use_markdown: bool = False) -> BuganizerIssue:
+    def NewIssue(
+        self, issue: BuganizerIssue, use_markdown: bool = False
+    ) -> BuganizerIssue:
         """File a new bug with the `CreateIssue` RPC [0].
 
         [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker_service.proto
@@ -318,9 +328,12 @@ class BuganizerClient:
                 'type': 'BUG',
                 'severity': issue.severity.name,
                 'priority': issue.priority.name,
-                'ccs': [{
-                    'emailAddress': email,
-                } for email in set(issue.cc)],
+                'ccs': [
+                    {
+                        'emailAddress': email,
+                    }
+                    for email in set(issue.cc)
+                ],
             },
             'issueComment': {
                 'comment': issue.description,
@@ -364,5 +377,7 @@ def _GetAppDefaultCredentials(scope=None):
     except google.auth.exceptions.DefaultCredentialsError as e:
         logging.error(
             '[BuganizerClient]  Error when getting the application default'
-            ' credentials: %s', str(e))
+            ' credentials: %s',
+            str(e),
+        )
         return None

@@ -48,7 +48,8 @@ class Command(object):
 
     def __init__(self, options=None, requires_local_commits=False):
         self.required_arguments = self._parse_required_arguments(
-            self.argument_names)
+            self.argument_names
+        )
         self.options = options
         self.requires_local_commits = requires_local_commits
         # option_parser can be overridden by the tool using set_option_parser
@@ -56,7 +57,8 @@ class Command(object):
         self.option_parser = HelpPrintingOptionParser(
             usage=optparse.SUPPRESS_USAGE,
             add_help_option=False,
-            option_list=self.options)
+            option_list=self.options,
+        )
 
     def _exit(self, code):
         sys.exit(code)
@@ -86,7 +88,8 @@ class Command(object):
                 if argument[-1] != ']':
                     raise Exception(
                         'Failure to parse argument string %s.  Argument %s is missing ending ]'
-                        % (argument_names, argument))
+                        % (argument_names, argument)
+                    )
             else:
                 required_args.append(argument)
         return required_args
@@ -107,18 +110,28 @@ class Command(object):
             _log.error(
                 "%s required, %s provided.  Provided: %s  Required: %s\nSee '%s help %s' for usage.",
                 pluralize('argument', len(self.required_arguments)),
-                pluralize('argument', len(args)), "'%s'" % ' '.join(args),
-                ' '.join(self.required_arguments), tool.name(), self.name)
+                pluralize('argument', len(args)),
+                "'%s'" % ' '.join(args),
+                ' '.join(self.required_arguments),
+                tool.name(),
+                self.name,
+            )
             return 1
         return self.execute(options, args, tool) or 0
 
     def standalone_help(self):
-        help_text = self.name_with_arguments().ljust(
-            len(self.name_with_arguments()) + 3) + self.help_text + '\n\n'
+        help_text = (
+            self.name_with_arguments().ljust(
+                len(self.name_with_arguments()) + 3
+            )
+            + self.help_text
+            + '\n\n'
+        )
         if self.long_help:
             help_text += '%s\n\n' % self.long_help
         help_text += self.option_parser.format_option_help(
-            optparse.IndentedHelpFormatter())
+            optparse.IndentedHelpFormatter()
+        )
         return help_text
 
     def execute(self, options, args, tool):
@@ -141,8 +154,9 @@ class HelpPrintingOptionParser(optparse.OptionParser):
         self.print_usage(sys.stderr)
         error_message = '%s: error: %s\n' % (self.get_prog_name(), msg)
         # This method is overridden to add this one line to the output:
-        error_message += '\nType \'%s --help\' to see usage.\n' % \
-            self.get_prog_name()
+        error_message += (
+            '\nType \'%s --help\' to see usage.\n' % self.get_prog_name()
+        )
         self.exit(1, error_message)
 
     # We override format_epilog to avoid the default formatting which would paragraph-wrap the epilog
@@ -157,8 +171,7 @@ def check_file_option(option, _opt_str, value, parser):
     if value:
         value = os.path.expanduser(value)
         if not os.path.isfile(value):
-            raise optparse.OptionValueError('%s is not a regular file.' %
-                                            value)
+            raise optparse.OptionValueError('%s is not a regular file.' % value)
     setattr(parser.values, option.dest, value)
 
 
@@ -170,14 +183,16 @@ def check_dir_option(option, _opt_str, value, parser):
     setattr(parser.values, option.dest, value)
 
 
-def resolve_test_patterns(port: Port,
-                          test_patterns: Collection[str]) -> Set[str]:
+def resolve_test_patterns(
+    port: Port, test_patterns: Collection[str]
+) -> Set[str]:
     tests = set()
     for pattern in sorted(test_patterns):
         resolved_tests = port.tests([pattern])
         if not resolved_tests:
             _log.warning(
                 '%r does not represent any tests and may be misspelled.',
-                pattern)
+                pattern,
+            )
         tests.update(resolved_tests)
     return tests

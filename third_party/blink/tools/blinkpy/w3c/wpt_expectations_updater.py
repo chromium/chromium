@@ -62,27 +62,33 @@ class WPTExpectationsUpdater:
         self.git_cl = GitCL(host)
         self.git = self.host.git(self.finder.chromium_base())
         self.patchset = None
-        self.wpt_manifests = (
-            wpt_manifests
-            or [self.port.wpt_manifest(d) for d in self.port.wpt_dirs()])
+        self.wpt_manifests = wpt_manifests or [
+            self.port.wpt_manifest(d) for d in self.port.wpt_dirs()
+        ]
 
         # Get options from command line arguments.
         parser = argparse.ArgumentParser(description=__doc__)
         self.add_arguments(parser)
         self.options = parser.parse_args(args or [])
         self.options.builders = self.options.builders or self.DEFAULT_BUILDERS
-        if not (self.options.clean_up_test_expectations or
-                self.options.clean_up_test_expectations_only):
+        if not (
+            self.options.clean_up_test_expectations
+            or self.options.clean_up_test_expectations_only
+        ):
             assert not self.options.clean_up_affected_tests_only, (
                 'Cannot use --clean-up-affected-tests-only without using '
                 '--clean-up-test-expectations or '
-                '--clean-up-test-expectations-only')
+                '--clean-up-test-expectations-only'
+            )
         # Set up TestExpectations instance which contains all
         # expectations files associated with the platform.
-        expectations_dict = {p: self.host.filesystem.read_text_file(p)
-                             for p in self.expectations_files()}
+        expectations_dict = {
+            p: self.host.filesystem.read_text_file(p)
+            for p in self.expectations_files()
+        }
         self._test_expectations = TestExpectations(
-            self.port, expectations_dict=expectations_dict)
+            self.port, expectations_dict=expectations_dict
+        )
 
     def expectations_files(self):
         """Returns list of expectations files.
@@ -104,8 +110,10 @@ class WPTExpectationsUpdater:
 
         self.patchset = self.options.patchset
 
-        if (self.options.clean_up_test_expectations or
-                self.options.clean_up_test_expectations_only):
+        if (
+            self.options.clean_up_test_expectations
+            or self.options.clean_up_test_expectations_only
+        ):
             # Remove expectations for deleted tests and rename tests in
             # expectations for renamed tests.
             self.cleanup_test_expectations_files()
@@ -120,38 +128,44 @@ class WPTExpectationsUpdater:
         parser.add_argument(
             '--patchset',
             default=None,
-            help='Patchset number to fetch new baselines from.')
+            help='Patchset number to fetch new baselines from.',
+        )
         parser.add_argument(
-            '-v',
-            '--verbose',
-            action='store_true',
-            help='More verbose logging.')
+            '-v', '--verbose', action='store_true', help='More verbose logging.'
+        )
         parser.add_argument(
             '--clean-up-test-expectations',
             action='store_true',
-            help='Cleanup test expectations files.')
+            help='Cleanup test expectations files.',
+        )
         parser.add_argument(
             '--clean-up-test-expectations-only',
             action='store_true',
-            help='Clean up expectations and then exit script.')
+            help='Clean up expectations and then exit script.',
+        )
         parser.add_argument(
             '--clean-up-affected-tests-only',
             action='store_true',
             help='Only cleanup expectations deleted or renamed in current CL. '
-                 'If flag is not used then a full cleanup of deleted or '
-                 'renamed tests will be done in expectations.')
+            'If flag is not used then a full cleanup of deleted or '
+            'renamed tests will be done in expectations.',
+        )
         parser.add_argument(
             '--include-unexpected-pass',
             action='store_true',
             help='Adds Pass to tests with failure expectations. '
-                 'This command line argument can be used to mark tests '
-                 'as flaky.')
+            'This command line argument can be used to mark tests '
+            'as flaky.',
+        )
         parser.add_argument(
             '--builder',
             dest='builders',
             action='append',
-            help=('Builder name to use for updating expectations. May provide '
-                  'multiple times.'))
+            help=(
+                'Builder name to use for updating expectations. May provide '
+                'multiple times.'
+            ),
+        )
 
     def suites_for_builder(self, builder: str) -> Set[str]:
         # TODO(crbug.com/1502294): Make everything a suite name (i.e., without
@@ -178,9 +192,9 @@ class WPTExpectationsUpdater:
         # here. See https://crbug.com/1154650 .
         self.port.wpt_manifest.cache_clear()
 
-        resolver = BuildResolver(self.host.web,
-                                 self.git_cl,
-                                 can_trigger_jobs=False)
+        resolver = BuildResolver(
+            self.host.web, self.git_cl, can_trigger_jobs=False
+        )
         builds = [Build(builder) for builder in self.options.builders]
         try:
             issue = self.git_cl.get_issue_number()
@@ -190,10 +204,12 @@ class WPTExpectationsUpdater:
             _log.debug('Latest try jobs: %r', build_to_status)
         except UnresolvedBuildException as error:
             raise ScriptError(
-                'No try job information was collected.') from error
+                'No try job information was collected.'
+            ) from error
 
         tests_to_rebaseline, results = self._fetch_results_for_update(
-            build_to_status)
+            build_to_status
+        )
 
         # Some builders run duplicated test suites with some slight difference.
         # E.g. both linux-rel and linux-blink-rel runs headless_shell_wpt_tests
@@ -206,12 +222,14 @@ class WPTExpectationsUpdater:
         # TODO(crbug.com/1475013): Decide how to organize Android expectations.
         results_by_path = defaultdict(list)
         for suite_results in results:
-            port = self._port_for_build_step(suite_results.builder_name,
-                                             suite_results.step_name())
+            port = self._port_for_build_step(
+                suite_results.builder_name, suite_results.step_name()
+            )
             flag_specific = port.flag_specific_config_name()
             if flag_specific:
                 path = port.path_to_flag_specific_expectations_file(
-                    flag_specific)
+                    flag_specific
+                )
             else:
                 path = port.path_to_generic_test_expectations_file()
             results_by_path[path].append(suite_results)
@@ -219,16 +237,19 @@ class WPTExpectationsUpdater:
         exp_lines_dict = defaultdict(list)
         for path in sorted(results_by_path, key=self._update_order):
             for test, lines in self.write_to_test_expectations(
-                    results_by_path[path], path).items():
+                results_by_path[path], path
+            ).items():
                 exp_lines_dict[test].extend(lines)
         return sorted(tests_to_rebaseline), exp_lines_dict
 
-    def _merge_results(self,
-                       results: List[WebTestResults]) -> List[WebTestResults]:
+    def _merge_results(
+        self, results: List[WebTestResults]
+    ) -> List[WebTestResults]:
         results_dict = {}
         for suite_results in results:
-            port = self._port_for_build_step(suite_results.builder_name,
-                                             suite_results.step_name())
+            port = self._port_for_build_step(
+                suite_results.builder_name, suite_results.step_name()
+            )
             key = (port.name(), suite_results.step_name())
             if key in results_dict:
                 results_dict[key].merge_results(suite_results)
@@ -258,16 +279,19 @@ class WPTExpectationsUpdater:
                 # exonerations (e.g., experimental build). This is good enough
                 # in practice.
                 suite_results = self.host.results_fetcher.gather_results(
-                    build, suite, not self.options.include_unexpected_pass)
+                    build, suite, not self.options.include_unexpected_pass
+                )
                 to_rebaseline, suite_results = self.filter_results_for_update(
-                    suite_results)
+                    suite_results
+                )
                 tests_to_rebaseline.update(to_rebaseline)
                 if 'webdriver_wpt_tests' in suite:
                     if build in incomplete_builds:
                         raise ValueError(
                             f"{suite!r} on {build!r} doesn't run the main WPT "
                             'suite and therefore cannot inherit results from '
-                            'other builds.')
+                            'other builds.'
+                        )
                     final_results.append(suite_results)
                 elif build in incomplete_builds:
                     missing_results.append(suite_results)
@@ -278,10 +302,15 @@ class WPTExpectationsUpdater:
             # Missing results should only get failed test results from
             # the SAME step in its counter part.
             final_results.append(
-                self.fill_missing_results(results, [
-                    r for r in completed_results
-                    if r.step_name() == results.step_name()
-                ]))
+                self.fill_missing_results(
+                    results,
+                    [
+                        r
+                        for r in completed_results
+                        if r.step_name() == results.step_name()
+                    ],
+                )
+            )
         final_results.extend(completed_results)
         return tests_to_rebaseline, final_results
 
@@ -295,8 +324,9 @@ class WPTExpectationsUpdater:
         def os_name(port_name):
             return self.host.port_factory.get(port_name).operating_system()
 
-        missing_port = self._port_for_build_step(missing_results.builder_name,
-                                                 missing_results.step_name())
+        missing_port = self._port_for_build_step(
+            missing_results.builder_name, missing_results.step_name()
+        )
 
         # When a config has no results, we try to guess at what its results are
         # based on other results. We prefer to use results from other builds on
@@ -305,8 +335,11 @@ class WPTExpectationsUpdater:
         # In both cases, we union the results across the other builders (whether
         # same OS or all builders), so we are usually over-expecting.
         filled_results = []
-        _log.warning('No results for %s on %s, inheriting from other builds',
-                     missing_results.step_name(), missing_results.builder_name)
+        _log.warning(
+            'No results for %s on %s, inheriting from other builds',
+            missing_results.step_name(),
+            missing_results.builder_name,
+        )
         for test_name in self._tests(completed_results):
             if missing_port.skips_test(test_name):
                 continue
@@ -325,25 +358,34 @@ class WPTExpectationsUpdater:
                     continue
                 union_actual_all.update(result.actual_results())
                 completed_port = self.host.builders.port_name_for_builder_name(
-                    completed_suite_results.builder_name)
+                    completed_suite_results.builder_name
+                )
                 if os_name(completed_port) == os_name(missing_port.name()):
                     union_actual_sameos.update(result.actual_results())
 
             statuses = union_actual_sameos or union_actual_all
             _log.debug(
                 'Inheriting %s result for test %s on %s from %s builders.',
-                ', '.join(sorted(statuses)), test_name,
+                ', '.join(sorted(statuses)),
+                test_name,
                 missing_results.builder_name,
-                'same OS' if union_actual_sameos else 'all')
-            filled_result = WebTestResult(test_name, {
-                'actual': ' '.join(sorted(statuses)),
-                'is_unexpected': True,
-            }, {})
+                'same OS' if union_actual_sameos else 'all',
+            )
+            filled_result = WebTestResult(
+                test_name,
+                {
+                    'actual': ' '.join(sorted(statuses)),
+                    'is_unexpected': True,
+                },
+                {},
+            )
             filled_results.append(filled_result)
 
-        return WebTestResults(filled_results,
-                              build=missing_results.build,
-                              step_name=missing_results.step_name())
+        return WebTestResults(
+            filled_results,
+            build=missing_results.build,
+            step_name=missing_results.step_name(),
+        )
 
     def _tests(self, results: List[WebTestResults]) -> Set[str]:
         tests = set()
@@ -378,13 +420,15 @@ class WPTExpectationsUpdater:
                 failing_results.append(result)
 
         failing_results = [
-            result for result in failing_results
+            result
+            for result in failing_results
             if ResultType.Skip not in result.actual_results()
         ]
         # TODO(crbug.com/1149035): Extract or make this check configurable
         # to allow updating expectations for non-WPT tests.
         failing_results = [
-            result for result in failing_results
+            result
+            for result in failing_results
             if self._is_wpt_test(result.test_name())
         ]
 
@@ -401,11 +445,12 @@ class WPTExpectationsUpdater:
                 statuses.discard(ResultType.Failure)
                 if len(statuses) > 1:
                     new_leaf = {
-                        **result._result_dict, 'actual':
-                        ' '.join(sorted(statuses))
+                        **result._result_dict,
+                        'actual': ' '.join(sorted(statuses)),
                     }
-                    result = WebTestResult(result.test_name(), new_leaf,
-                                           result.artifacts)
+                    result = WebTestResult(
+                        result.test_name(), new_leaf, result.artifacts
+                    )
                     results_to_update.append(result)
             else:
                 results_to_update.append(result)
@@ -414,7 +459,8 @@ class WPTExpectationsUpdater:
             results_to_update,
             step_name=test_results.step_name(),
             incomplete_reason=test_results.incomplete_reason,
-            build=test_results.build)
+            build=test_results.build,
+        )
         return tests_to_rebaseline, results_to_update
 
     def _is_wpt_test(self, test_name):
@@ -429,17 +475,20 @@ class WPTExpectationsUpdater:
             the web_tests directory."""
         return self.port.is_wpt_test(test_name)
 
-    def _platform_specifiers(self, test: str,
-                             ports: Collection[Port]) -> Set[str]:
+    def _platform_specifiers(
+        self, test: str, ports: Collection[Port]
+    ) -> Set[str]:
         return {
             self.host.builders.version_specifier_for_port_name(
-                port.name()).lower()
-            for port in ports if not port.skips_test(test)
+                port.name()
+            ).lower()
+            for port in ports
+            if not port.skips_test(test)
         }
 
-    def write_to_test_expectations(self,
-                                   results: Collection[WebTestResults],
-                                   path: Optional[str] = None):
+    def write_to_test_expectations(
+        self, results: Collection[WebTestResults], path: Optional[str] = None
+    ):
         """Writes the given lines to the TestExpectations file.
 
         The place in the file where the new lines are inserted is after a marker
@@ -458,17 +507,16 @@ class WPTExpectationsUpdater:
         """
         path = path or self.port.path_to_generic_test_expectations_file()
         port_by_results = {
-            suite_results:
-            self._port_for_build_step(suite_results.builder_name,
-                                      suite_results.step_name())
+            suite_results: self._port_for_build_step(
+                suite_results.builder_name, suite_results.step_name()
+            )
             for suite_results in results
         }
         for port in port_by_results.values():
             assert path in port.expectations_dict(), (
                 f'{path!r} not in {list(port.expectations_dict())!r} for {port!r}'
             )
-        rel_path = self.host.filesystem.relpath(path,
-                                                self.port.web_tests_dir())
+        rel_path = self.host.filesystem.relpath(path, self.port.web_tests_dir())
         _log.info(f'Updating {rel_path!r}')
 
         exp_by_port = TestExpectationsCache()
@@ -489,13 +537,13 @@ class WPTExpectationsUpdater:
             macros = {
                 os: set(versions)
                 & self._platform_specifiers(test, port_by_results.values())
-                for os, versions in
-                port_for_file.configuration_specifier_macros().items()
+                for os, versions in port_for_file.configuration_specifier_macros().items()
             }
             editor = SystemConfigurationEditor(expectations, path, macros)
             for suite_results, port in port_by_results.items():
                 version = self.host.builders.version_specifier_for_port_name(
-                    port.name())
+                    port.name()
+                )
                 result = suite_results.result_for_test(test)
                 if not version or not result:
                     continue
@@ -506,10 +554,12 @@ class WPTExpectationsUpdater:
                 if statuses == exp_for_port.get_expectations(test).results:
                     continue
                 change += editor.update_versions(
-                    test, {version},
+                    test,
+                    {version},
                     statuses,
                     reason=' '.join(result.bugs),
-                    marker=self.MARKER_COMMENT[len('# '):])
+                    marker=self.MARKER_COMMENT[len('# ') :],
+                )
             change += editor.merge_versions(test)
 
         if not change.lines_added:
@@ -522,17 +572,17 @@ class WPTExpectationsUpdater:
 
     @memoized
     def _port_for_build_step(self, builder: str, step: str) -> Port:
-        """"Get the port used to run a build step in CQ/CI."""
+        """ "Get the port used to run a build step in CQ/CI."""
         builders = self.host.builders
         port_name = builders.port_name_for_builder_name(builder)
         port = self.host.port_factory.get(port_name)
-        port.set_option_default('flag_specific',
-                                builders.flag_specific_option(builder, step))
+        port.set_option_default(
+            'flag_specific', builders.flag_specific_option(builder, step)
+        )
         return port
 
     def skip_slow_timeout_tests(self, port):
-        """Skip any Slow and Timeout tests found in TestExpectations.
-        """
+        """Skip any Slow and Timeout tests found in TestExpectations."""
         _log.info('Skip Slow and Timeout tests.')
         try:
             test_expectations = TestExpectations(port)
@@ -545,10 +595,14 @@ class WPTExpectationsUpdater:
         for line in test_expectations.get_updated_lines(path):
             if not line.test or line.is_glob:
                 continue
-            if (ResultType.Timeout in line.results and
-                    len(line.results) == 1 and
-                    (test_expectations.get_expectations(line.test).is_slow_test or
-                        port.is_slow_wpt_test(line.test))):
+            if (
+                ResultType.Timeout in line.results
+                and len(line.results) == 1
+                and (
+                    test_expectations.get_expectations(line.test).is_slow_test
+                    or port.is_slow_wpt_test(line.test)
+                )
+            ):
                 test_expectations.remove_expectations(path, [line])
                 line.add_expectations({ResultType.Skip})
                 test_expectations.add_expectations(path, [line], line.lineno)
@@ -572,16 +626,24 @@ class WPTExpectationsUpdater:
         modified_files = self._list_modified_files()
 
         for path in self._test_expectations.expectations_dict:
-            _log.info('Updating %s for any removed or renamed tests.',
-                      self.host.filesystem.basename(path))
-            self._clean_single_test_expectations_file(path, deleted_files,
-                                                      renamed_files)
+            _log.info(
+                'Updating %s for any removed or renamed tests.',
+                self.host.filesystem.basename(path),
+            )
+            self._clean_single_test_expectations_file(
+                path, deleted_files, renamed_files
+            )
         self._test_expectations.commit_changes()
 
     def _list_files(self, diff_filter):
         paths = self.git.run(
-            ['diff', 'origin/main', '--diff-filter=' + diff_filter,
-             '--name-only']).splitlines()
+            [
+                'diff',
+                'origin/main',
+                '--diff-filter=' + diff_filter,
+                '--name-only',
+            ]
+        ).splitlines()
         files = []
         for p in paths:
             rel_path = self._relative_to_web_test_dir(p)
@@ -606,10 +668,9 @@ class WPTExpectationsUpdater:
 
         Returns a dictionary mapping source name to destination name.
         """
-        out = self.git.run([
-            'diff', 'origin/main', '-M90%', '--diff-filter=R',
-            '--name-status'
-        ])
+        out = self.git.run(
+            ['diff', 'origin/main', '-M90%', '--diff-filter=R', '--name-status']
+        )
         renamed_tests = {}
         for line in out.splitlines():
             try:
@@ -624,7 +685,8 @@ class WPTExpectationsUpdater:
         return renamed_tests
 
     def _clean_single_test_expectations_file(
-            self, path, deleted_files, renamed_files):
+        self, path, deleted_files, renamed_files
+    ):
         """Cleans up a single test expectations file.
 
         Args:
@@ -650,13 +712,16 @@ class WPTExpectationsUpdater:
                     # Based on logic in Base._wpt_test_urls_matching_paths
                     line.test = line.test.replace(
                         re.sub(r'\.js$', '.', root_file),
-                        re.sub(r'\.js$', '.', new_file_name))
+                        re.sub(r'\.js$', '.', new_file_name),
+                    )
                 else:
                     line.test = new_file_name
                 self._test_expectations.add_expectations(
-                    path, [line], lineno=line.lineno)
+                    path, [line], lineno=line.lineno
+                )
             elif not root_file or not self.host.filesystem.isfile(
-                    self.finder.path_from_web_tests(root_file)):
+                self.finder.path_from_web_tests(root_file)
+            ):
                 if not self.options.clean_up_affected_tests_only:
                     self._test_expectations.remove_expectations(path, [line])
 
@@ -679,11 +744,12 @@ class WPTExpectationsUpdater:
         if self.port.is_wpt_test(test_name):
             for wpt_manifest in self.wpt_manifests:
                 if test_name.startswith(wpt_manifest.wpt_dir):
-                    wpt_test = test_name[len(wpt_manifest.wpt_dir) + 1:]
+                    wpt_test = test_name[len(wpt_manifest.wpt_dir) + 1 :]
                     if wpt_manifest.is_test_url(wpt_test):
                         return self.host.filesystem.join(
                             wpt_manifest.wpt_dir,
-                            wpt_manifest.file_path_for_test_url(wpt_test))
+                            wpt_manifest.file_path_for_test_url(wpt_test),
+                        )
             # The test was not found in any of the wpt manifests, therefore
             # the test does not exist. So we will return None in this case.
             return None
@@ -695,11 +761,13 @@ class WPTExpectationsUpdater:
     def _relative_to_web_test_dir(self, path_relative_to_repo_root):
         """Returns a path that's relative to the web tests directory."""
         abs_path = self.finder.path_from_chromium_base(
-            path_relative_to_repo_root)
+            path_relative_to_repo_root
+        )
         if not abs_path.startswith(self.finder.web_tests_dir()):
             return None
         return self.host.filesystem.relpath(
-            abs_path, self.finder.web_tests_dir())
+            abs_path, self.finder.web_tests_dir()
+        )
 
     # TODO(robertma): Unit test this method.
     def download_text_baselines(self, tests_to_rebaseline):
@@ -728,7 +796,7 @@ class WPTExpectationsUpdater:
             # The importer should have already updated the manifests.
             '--no-manifest-update',
             '--clobber-os-version',
-            f'--builders={builders}'
+            f'--builders={builders}',
         ]
         if self.options.verbose:
             args.append('--verbose')
@@ -745,16 +813,19 @@ class WPTExpectationsUpdater:
             *args,
         ]
         output = self.host.executive.run_command(command)
-        _log.info('Output of %s:',
-                  self.host.executive.command_for_printing(command))
+        _log.info(
+            'Output of %s:', self.host.executive.command_for_printing(command)
+        )
         for line in output.splitlines():
             _log.info('  %s: %s', subcommand, line)
         _log.info('-- end of %s output --', subcommand)
 
     def can_rebaseline(self, result: WebTestResult) -> bool:
         """Checks if a test can be rebaselined."""
-        if not self.port.get_wpt_type(
-                result.test_name()) in {'testharness', 'wdspec'}:
+        if not self.port.get_wpt_type(result.test_name()) in {
+            'testharness',
+            'wdspec',
+        }:
             return False
         statuses = set(result.actual_results())
         if {ResultType.Pass, ResultType.Failure} <= statuses:

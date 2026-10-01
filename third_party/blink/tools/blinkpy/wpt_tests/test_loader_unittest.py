@@ -29,43 +29,45 @@ class TestLoaderTestCase(unittest.TestCase):
         self.finder = path_finder.PathFinder(self.fs)
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
-            json.dumps({
-                'version': 9,
-                'items': {
-                    'testharness': {
-                        'variant.html': [
-                            'abcdef',
-                            ['variant.html?foo=bar/abc', {}],
-                            ['variant.html?foo=baz', {}],
-                        ],
-                        'long.html': ['abcdef', [None, {
-                            'timeout': 'long'
-                        }]],
-                        'dir': {
-                            'multiglob.https.any.js': [
-                                '123456',
-                                ['dir/multiglob.https.any.html', {}],
-                                ['dir/multiglob.https.any.worker.html', {}],
+            json.dumps(
+                {
+                    'version': 9,
+                    'items': {
+                        'testharness': {
+                            'variant.html': [
+                                'abcdef',
+                                ['variant.html?foo=bar/abc', {}],
+                                ['variant.html?foo=baz', {}],
+                            ],
+                            'long.html': [
+                                'abcdef',
+                                [None, {'timeout': 'long'}],
+                            ],
+                            'dir': {
+                                'multiglob.https.any.js': [
+                                    '123456',
+                                    ['dir/multiglob.https.any.html', {}],
+                                    ['dir/multiglob.https.any.worker.html', {}],
+                                ],
+                            },
+                        },
+                        'reftest': {
+                            'reftest.html': [
+                                '7890ab',
+                                [None, [['reftest-ref.html', '==']], {}],
                             ],
                         },
+                        'wdspec': {
+                            'test.py': ['abcdef', [None, {}]],
+                            'long.py': ['abcdef', [None, {'timeout': 'long'}]],
+                        },
+                        'crashtest': {
+                            'crash.html': ['abcdef', [None, {}]],
+                        },
                     },
-                    'reftest': {
-                        'reftest.html': [
-                            '7890ab',
-                            [None, [['reftest-ref.html', '==']], {}],
-                        ],
-                    },
-                    'wdspec': {
-                        'test.py': ['abcdef', [None, {}]],
-                        'long.py': ['abcdef', [None, {
-                            'timeout': 'long'
-                        }]],
-                    },
-                    'crashtest': {
-                        'crash.html': ['abcdef', [None, {}]],
-                    },
-                },
-            }))
+                }
+            ),
+        )
         self.logger = wptlogging.setup({}, {})
 
     @contextlib.contextmanager
@@ -78,24 +80,29 @@ class TestLoaderTestCase(unittest.TestCase):
                 self.finder.path_from_wpt_tests('MANIFEST.json'),
                 '/',
                 update=False,
-                parallel=False)
+                parallel=False,
+            )
             test_root = {
                 'url_base': manifest.url_base,
                 'tests_path': manifest.tests_root,
                 'metadata_path': manifest.tests_root,
             }
-            yield TestLoader(port,
-                             self.logger, {manifest: test_root},
-                             ['testharness', 'reftest', 'wdspec', 'crashtest'],
-                             base_run_info={},
-                             **kwargs)
+            yield TestLoader(
+                port,
+                self.logger,
+                {manifest: test_root},
+                ['testharness', 'reftest', 'wdspec', 'crashtest'],
+                base_run_info={},
+                **kwargs,
+            )
 
     def _load_metadata(self, test_path: str, virtual_suite: str = ''):
         with self._make_loader() as loader:
             run_info = {**loader.base_run_info, 'virtual_suite': virtual_suite}
             manifest, *_ = loader.manifests
             inherit_metadata, test_metadata = loader.load_metadata(
-                run_info, manifest, manifest.tests_root, test_path)
+                run_info, manifest, manifest.tests_root, test_path
+            )
         self.assertEqual(inherit_metadata, [])
         return test_metadata
 
@@ -110,20 +117,24 @@ class TestLoaderTestCase(unittest.TestCase):
                 # tags: [ Linux Mac Win ]
                 # results: [ Failure ]
                 [ Linux ] external/wpt/variant.html?foo=baz [ Failure ]
-                """))
+                """),
+        )
         test_file = self._load_metadata('variant.html')
 
         test = test_file.get_test('variant.html?foo=baz')
         self.assertEqual(test.expected, 'OK')
-        self.assertEqual(test.known_intermittent,
-                         ['ERROR', 'PRECONDITION_FAILED'])
+        self.assertEqual(
+            test.known_intermittent, ['ERROR', 'PRECONDITION_FAILED']
+        )
         self.assertFalse(test.disabled)
 
         # Any status is allowed, even without an explicit baseline.
         subtest = test.get_subtest('implicit subtest')
         self.assertEqual(subtest.expected, 'FAIL')
-        self.assertEqual(subtest.known_intermittent,
-                         ['PASS', 'TIMEOUT', 'PRECONDITION_FAILED', 'NOTRUN'])
+        self.assertEqual(
+            subtest.known_intermittent,
+            ['PASS', 'TIMEOUT', 'PRECONDITION_FAILED', 'NOTRUN'],
+        )
         self.assertFalse(subtest.disabled)
         self.assertFalse(subtest.has_key('expected-fail-message'))
 
@@ -134,7 +145,8 @@ class TestLoaderTestCase(unittest.TestCase):
                 # tags: [ Linux Mac Win ]
                 # results: [ Failure ]
                 [ Linux ] external/wpt/reftest* [ Failure ]
-                """))
+                """),
+        )
         test_file = self._load_metadata('reftest.html')
         test = test_file.get_test('reftest.html')
         self.assertEqual(test.expected, 'FAIL')
@@ -145,7 +157,8 @@ class TestLoaderTestCase(unittest.TestCase):
     def test_load_baseline_fail(self):
         self.fs.write_text_file(
             self.finder.path_from_web_tests(
-                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'),
+                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'
+            ),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 CONSOLE WARNING: warning
@@ -156,7 +169,8 @@ class TestLoaderTestCase(unittest.TestCase):
                   promise_rejects_dom: message\\n  3
                 Harness: the test ran to completion.
 
-                """))
+                """),
+        )
         test_file = self._load_metadata('dir/multiglob.https.any.js')
 
         test = test_file.get_test('multiglob.https.any.html')
@@ -174,15 +188,19 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertEqual(subtest.expected, 'FAIL')
         self.assertEqual(subtest.known_intermittent, [])
         self.assertFalse(subtest.disabled)
-        self.assertEqual(subtest.get('expected-fail-message'),
-                         'assert_unreached:\n  message 2')
+        self.assertEqual(
+            subtest.get('expected-fail-message'),
+            'assert_unreached:\n  message 2',
+        )
 
         subtest = test.get_subtest('sub\n  test3')
         self.assertEqual(subtest.expected, 'NOTRUN')
         self.assertEqual(subtest.known_intermittent, [])
         self.assertFalse(subtest.disabled)
-        self.assertEqual(subtest.get('expected-fail-message'),
-                         'promise_rejects_dom: message\n  3')
+        self.assertEqual(
+            subtest.get('expected-fail-message'),
+            'promise_rejects_dom: message\n  3',
+        )
 
     def test_load_variant_one_skipped(self):
         self.fs.write_text_file(
@@ -191,20 +209,23 @@ class TestLoaderTestCase(unittest.TestCase):
                 # results: [ Failure Skip ]
                 external/wpt/variant.html?foo=bar/abc [ Failure ]
                 external/wpt/variant.html?foo=baz [ Skip ]
-                """))
+                """),
+        )
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('variant_foo=baz-expected.txt'),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 [FAIL] subtest
                 Harness: the test ran to completion.
-                """))
+                """),
+        )
 
         test_file = self._load_metadata('variant.html')
         test = test_file.get_test('variant.html?foo=bar/abc')
         self.assertEqual(test.expected, 'OK')
-        self.assertEqual(test.known_intermittent,
-                         ['ERROR', 'PRECONDITION_FAILED'])
+        self.assertEqual(
+            test.known_intermittent, ['ERROR', 'PRECONDITION_FAILED']
+        )
 
         # Even though this test is annotated with `[ Skip ]`, the test loader
         # should still translate its expectations in case it was explicitly
@@ -224,31 +245,35 @@ class TestLoaderTestCase(unittest.TestCase):
             textwrap.dedent("""\
                 # results: [ Failure ]
                 external/wpt/variant.html?foo=bar/abc [ Failure ]
-                """))
+                """),
+        )
         self.fs.write_text_file(
-            self.finder.path_from_wpt_tests(
-                'variant_foo=bar_abc-expected.txt'),
+            self.finder.path_from_wpt_tests('variant_foo=bar_abc-expected.txt'),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 3 , harness_status.message =
                 Harness: the test ran to completion.
-                """))
+                """),
+        )
         test_file = self._load_metadata('variant.html')
         test = test_file.get_test('variant.html?foo=bar/abc')
         self.assertEqual(test.expected, 'OK')
-        self.assertEqual(test.known_intermittent,
-                         ['ERROR', 'PRECONDITION_FAILED'])
+        self.assertEqual(
+            test.known_intermittent, ['ERROR', 'PRECONDITION_FAILED']
+        )
 
     def test_load_baseline_precondition_failed(self):
         self.fs.write_text_file(
             self.finder.path_from_web_tests(
-                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'),
+                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'
+            ),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 3 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
                 Harness: the test ran to completion.
 
-                """))
+                """),
+        )
         test_file = self._load_metadata('dir/multiglob.https.any.js')
 
         test = test_file.get_test('multiglob.https.any.html')
@@ -259,13 +284,15 @@ class TestLoaderTestCase(unittest.TestCase):
     def test_load_baseline_harness_ok(self):
         self.fs.write_text_file(
             self.finder.path_from_web_tests(
-                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'),
+                'external', 'wpt', 'dir', 'multiglob.https.any-expected.txt'
+            ),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 [FAIL] subtest
                 Harness: the test ran to completion.
 
-                """))
+                """),
+        )
         test_file = self._load_metadata('dir/multiglob.https.any.js')
 
         test = test_file.get_test('multiglob.https.any.html')
@@ -276,21 +303,28 @@ class TestLoaderTestCase(unittest.TestCase):
     def test_ignore_irrelevant_expectations(self):
         self.fs.write_text_file(
             self.finder.path_from_web_tests(
-                'platform', 'test-mac-mac10.11', 'external', 'wpt', 'dir',
-                'multiglob.https.any-expected.txt'),
+                'platform',
+                'test-mac-mac10.11',
+                'external',
+                'wpt',
+                'dir',
+                'multiglob.https.any-expected.txt',
+            ),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 FAIL subtest message
                 Harness: the test ran to completion.
 
-                """))
+                """),
+        )
         self.fs.write_text_file(
             self.finder.path_from_web_tests('TestExpectations'),
             textwrap.dedent("""\
                 # tags: [ Linux Mac Win ]
                 # results: [ Pass Failure Timeout Crash Skip ]
                 [ Mac ] external/wpt/dir/multiglob.https.any.worker.html [ Failure ]
-                """))
+                """),
+        )
         test_file = self._load_metadata('dir/multiglob.https.any.js')
         self.assertIsNone(test_file)
 
@@ -300,7 +334,8 @@ class TestLoaderTestCase(unittest.TestCase):
             textwrap.dedent("""\
                 # results: [ Timeout ]
                 external/wpt/variant.html?foo=baz [ Timeout ]
-                """))
+                """),
+        )
         test_file = self._load_metadata('variant.html')
         test = test_file.get_test('variant.html?foo=baz')
         self.assertEqual(test.expected, 'OK')
@@ -313,20 +348,27 @@ class TestLoaderTestCase(unittest.TestCase):
             textwrap.dedent("""\
                 # results: [ Pass Failure Crash Timeout Skip ]
                 virtual/fake-vts/external/wpt/variant.html?foo=baz [ Pass Crash Timeout ]
-                """))
+                """),
+        )
         self.fs.write_text_file(
-            self.finder.path_from_web_tests('virtual', 'fake-vts', 'external',
-                                            'wpt',
-                                            'variant_foo=baz-expected.txt'),
+            self.finder.path_from_web_tests(
+                'virtual',
+                'fake-vts',
+                'external',
+                'wpt',
+                'variant_foo=baz-expected.txt',
+            ),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 [FAIL] subtest1
                   assert_equals: message
                 Harness: the test ran to completion.
 
-                """))
-        test_file = self._load_metadata('variant.html',
-                                        virtual_suite='fake-vts')
+                """),
+        )
+        test_file = self._load_metadata(
+            'variant.html', virtual_suite='fake-vts'
+        )
 
         test = test_file.get_test('variant.html?foo=baz')
         self.assertEqual(test.expected, 'OK')
@@ -342,24 +384,28 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertEqual(subtest.known_intermittent, [])
 
     def test_wpt_url_to_exp_test(self):
-        self.assertEqual(wpt_url_to_blink_test('/css/test.html?a'),
-                         'external/wpt/css/test.html?a')
-        self.assertEqual(wpt_url_to_blink_test('/wpt_internal/test.html'),
-                         'wpt_internal/test.html')
+        self.assertEqual(
+            wpt_url_to_blink_test('/css/test.html?a'),
+            'external/wpt/css/test.html?a',
+        )
+        self.assertEqual(
+            wpt_url_to_blink_test('/wpt_internal/test.html'),
+            'wpt_internal/test.html',
+        )
 
     def test_allow_any_subtests_on_timeout(self):
         test = mock.Mock()
         test.expected_fail_message.return_value = 'expect this message'
-        test_result = wpttest.TestharnessResult('TIMEOUT',
-                                                message=None,
-                                                expected='TIMEOUT')
-        subtest_result = wpttest.TestharnessSubtestResult('subtest',
-                                                          'TIMEOUT',
-                                                          message=None,
-                                                          expected='FAIL')
+        test_result = wpttest.TestharnessResult(
+            'TIMEOUT', message=None, expected='TIMEOUT'
+        )
+        subtest_result = wpttest.TestharnessSubtestResult(
+            'subtest', 'TIMEOUT', message=None, expected='FAIL'
+        )
 
-        test_result, (subtest_result, ) = allow_any_subtests_on_timeout(
-            test, (test_result, [subtest_result]))
+        test_result, (subtest_result,) = allow_any_subtests_on_timeout(
+            test, (test_result, [subtest_result])
+        )
         self.assertEqual(subtest_result.expected, 'TIMEOUT')
         self.assertEqual(subtest_result.known_intermittent, [])
         self.assertEqual(subtest_result.message, 'expect this message')
@@ -368,17 +414,18 @@ class TestLoaderTestCase(unittest.TestCase):
     def test_do_not_allow_any_subtests_on_completion(self):
         test = mock.Mock()
         test.expected_fail_message.return_value = (
-            'should not expect this message')
-        test_result = wpttest.TestharnessResult('OK',
-                                                message=None,
-                                                expected='TIMEOUT')
-        subtest_result = wpttest.TestharnessSubtestResult('subtest',
-                                                          'FAIL',
-                                                          message=None,
-                                                          expected='TIMEOUT')
+            'should not expect this message'
+        )
+        test_result = wpttest.TestharnessResult(
+            'OK', message=None, expected='TIMEOUT'
+        )
+        subtest_result = wpttest.TestharnessSubtestResult(
+            'subtest', 'FAIL', message=None, expected='TIMEOUT'
+        )
 
-        test_result, (subtest_result, ) = allow_any_subtests_on_timeout(
-            test, (test_result, [subtest_result]))
+        test_result, (subtest_result,) = allow_any_subtests_on_timeout(
+            test, (test_result, [subtest_result])
+        )
         self.assertEqual(subtest_result.expected, 'TIMEOUT')
         self.assertEqual(subtest_result.known_intermittent, [])
         self.assertIsNone(subtest_result.message)
@@ -386,21 +433,21 @@ class TestLoaderTestCase(unittest.TestCase):
 
     def test_load_tests(self):
         subsuites = {
-            '':
-            Subsuite('', config={}),
-            'fake-vts':
-            Subsuite('fake-vts',
-                     config={},
-                     include=['/variant.html?foo=baz',
-                              '/does-not-exist.html']),
+            '': Subsuite('', config={}),
+            'fake-vts': Subsuite(
+                'fake-vts',
+                config={},
+                include=['/variant.html?foo=baz', '/does-not-exist.html'],
+            ),
         }
-        with self._make_loader(subsuites=subsuites,
-                               include=['reftest.html']) as loader:
+        with self._make_loader(
+            subsuites=subsuites, include=['reftest.html']
+        ) as loader:
             self.assertEqual(set(loader.tests), {'', 'fake-vts'})
             self.assertEqual(set(loader.tests['']), {'reftest'})
             self.assertEqual(set(loader.tests['fake-vts']), {'testharness'})
-            (base_test, ) = loader.tests['']['reftest']
-            (virtual_test, ) = loader.tests['fake-vts']['testharness']
+            (base_test,) = loader.tests['']['reftest']
+            (virtual_test,) = loader.tests['fake-vts']['testharness']
             self.assertEqual(base_test.id, '/reftest.html')
             self.assertEqual(virtual_test.id, '/variant.html?foo=baz')
             self.assertEqual(loader.disabled_tests, {'': {}, 'fake-vts': {}})
@@ -418,88 +465,122 @@ class TestLoaderTestCase(unittest.TestCase):
             'external/wpt/test.py [ Slow ]\n'
             'external/wpt/variant.html?foo=baz [ Slow ]\n'
             'external/wpt/reftest.html [ Slow ]\n'
-            'external/wpt/crash.html [ Slow ]\n')
+            'external/wpt/crash.html [ Slow ]\n',
+        )
         subsuites = {'': Subsuite('', config={})}
-        with self._make_loader(subsuites=subsuites,
-                               include=[
-                                   '/test.py', '/long.py', '/long.html',
-                                   '/variant.html?foo=bar/abc',
-                                   '/variant.html?foo=baz', '/reftest.html',
-                                   '/crash.html'
-                               ]) as loader:
+        with self._make_loader(
+            subsuites=subsuites,
+            include=[
+                '/test.py',
+                '/long.py',
+                '/long.html',
+                '/variant.html?foo=bar/abc',
+                '/variant.html?foo=baz',
+                '/reftest.html',
+                '/crash.html',
+            ],
+        ) as loader:
             tests = {
                 test.id: test
                 for test_type in loader.tests[''].values()
                 for test in test_type
             }
-            self.assertEqual(tests['/test.py'].timeout,
-                             wpttest.WdspecTest.long_timeout)
-            self.assertEqual(tests['/long.py'].timeout,
-                             wpttest.WdspecTest.long_timeout)
-            self.assertEqual(tests['/variant.html?foo=baz'].timeout,
-                             wpttest.TestharnessTest.long_timeout)
-            self.assertEqual(tests['/variant.html?foo=bar/abc'].timeout,
-                             wpttest.TestharnessTest.default_timeout)
-            self.assertEqual(tests['/long.html'].timeout,
-                             wpttest.TestharnessTest.long_timeout)
-            self.assertEqual(tests['/reftest.html'].timeout,
-                             wpttest.ReftestTest.long_timeout)
-            self.assertEqual(tests['/crash.html'].timeout,
-                             wpttest.CrashTest.long_timeout)
+            self.assertEqual(
+                tests['/test.py'].timeout, wpttest.WdspecTest.long_timeout
+            )
+            self.assertEqual(
+                tests['/long.py'].timeout, wpttest.WdspecTest.long_timeout
+            )
+            self.assertEqual(
+                tests['/variant.html?foo=baz'].timeout,
+                wpttest.TestharnessTest.long_timeout,
+            )
+            self.assertEqual(
+                tests['/variant.html?foo=bar/abc'].timeout,
+                wpttest.TestharnessTest.default_timeout,
+            )
+            self.assertEqual(
+                tests['/long.html'].timeout,
+                wpttest.TestharnessTest.long_timeout,
+            )
+            self.assertEqual(
+                tests['/reftest.html'].timeout, wpttest.ReftestTest.long_timeout
+            )
+            self.assertEqual(
+                tests['/crash.html'].timeout, wpttest.CrashTest.long_timeout
+            )
 
         # WPT-only reporting must retain the upstream manifest timeout.
-        with self._make_loader(subsuites=subsuites,
-                               no_expectations=True,
-                               include=[
-                                   '/test.py', '/variant.html?foo=baz',
-                                   '/reftest.html', '/crash.html', '/long.html'
-                               ]) as loader:
+        with self._make_loader(
+            subsuites=subsuites,
+            no_expectations=True,
+            include=[
+                '/test.py',
+                '/variant.html?foo=baz',
+                '/reftest.html',
+                '/crash.html',
+                '/long.html',
+            ],
+        ) as loader:
             tests = {
                 test.id: test
                 for test_type in loader.tests[''].values()
                 for test in test_type
             }
-            self.assertEqual(tests['/test.py'].timeout,
-                             wpttest.WdspecTest.default_timeout)
-            self.assertEqual(tests['/variant.html?foo=baz'].timeout,
-                             wpttest.TestharnessTest.default_timeout)
-            self.assertEqual(tests['/reftest.html'].timeout,
-                             wpttest.ReftestTest.default_timeout)
-            self.assertEqual(tests['/crash.html'].timeout,
-                             wpttest.CrashTest.default_timeout)
-            self.assertEqual(tests['/long.html'].timeout,
-                             wpttest.TestharnessTest.long_timeout)
+            self.assertEqual(
+                tests['/test.py'].timeout, wpttest.WdspecTest.default_timeout
+            )
+            self.assertEqual(
+                tests['/variant.html?foo=baz'].timeout,
+                wpttest.TestharnessTest.default_timeout,
+            )
+            self.assertEqual(
+                tests['/reftest.html'].timeout,
+                wpttest.ReftestTest.default_timeout,
+            )
+            self.assertEqual(
+                tests['/crash.html'].timeout, wpttest.CrashTest.default_timeout
+            )
+            self.assertEqual(
+                tests['/long.html'].timeout,
+                wpttest.TestharnessTest.long_timeout,
+            )
 
     def test_slow_timeout_is_scoped_to_virtual_suite(self):
         self.fs.write_text_file(
             self.finder.path_from_web_tests('SlowTests'),
             '# results: [ Slow ]\n'
             'virtual/fake-vts/external/wpt/test.py [ Slow ]\n'
-            'virtual/fake-vts/external/wpt/variant.html?foo=baz [ Slow ]\n')
+            'virtual/fake-vts/external/wpt/variant.html?foo=baz [ Slow ]\n',
+        )
         subsuites = {
-            '':
-            Subsuite('', config={}),
-            'fake-vts':
-            Subsuite('fake-vts',
-                     config={},
-                     run_info_extras={'virtual_suite': 'fake-vts'},
-                     include=['/test.py', '/variant.html?foo=baz']),
+            '': Subsuite('', config={}),
+            'fake-vts': Subsuite(
+                'fake-vts',
+                config={},
+                run_info_extras={'virtual_suite': 'fake-vts'},
+                include=['/test.py', '/variant.html?foo=baz'],
+            ),
         }
-        with self._make_loader(subsuites=subsuites,
-                               include=['/test.py',
-                                        '/variant.html?foo=baz']) as loader:
-            (base_test, ) = loader.tests['']['wdspec']
-            (virtual_test, ) = loader.tests['fake-vts']['wdspec']
-            self.assertEqual(base_test.timeout,
-                             wpttest.WdspecTest.default_timeout)
-            self.assertEqual(virtual_test.timeout,
-                             wpttest.WdspecTest.long_timeout)
-            (base_test, ) = loader.tests['']['testharness']
-            (virtual_test, ) = loader.tests['fake-vts']['testharness']
-            self.assertEqual(base_test.timeout,
-                             wpttest.TestharnessTest.default_timeout)
-            self.assertEqual(virtual_test.timeout,
-                             wpttest.TestharnessTest.long_timeout)
+        with self._make_loader(
+            subsuites=subsuites, include=['/test.py', '/variant.html?foo=baz']
+        ) as loader:
+            (base_test,) = loader.tests['']['wdspec']
+            (virtual_test,) = loader.tests['fake-vts']['wdspec']
+            self.assertEqual(
+                base_test.timeout, wpttest.WdspecTest.default_timeout
+            )
+            self.assertEqual(
+                virtual_test.timeout, wpttest.WdspecTest.long_timeout
+            )
+            (base_test,) = loader.tests['']['testharness']
+            (virtual_test,) = loader.tests['fake-vts']['testharness']
+            self.assertEqual(
+                base_test.timeout, wpttest.TestharnessTest.default_timeout
+            )
+            self.assertEqual(
+                virtual_test.timeout, wpttest.TestharnessTest.long_timeout
+            )
 
     def test_slow_timeout_respects_platform_tags(self):
         self.fs.write_text_file(
@@ -507,14 +588,17 @@ class TestLoaderTestCase(unittest.TestCase):
             '# tags: [ Linux Mac ]\n'
             '# results: [ Slow ]\n'
             '[ Mac ] external/wpt/test.py [ Slow ]\n'
-            'external/wpt/variant.html?foo=baz [ Slow ]\n')
+            'external/wpt/variant.html?foo=baz [ Slow ]\n',
+        )
         subsuites = {'': Subsuite('', config={})}
-        with self._make_loader(subsuites=subsuites,
-                               include=['/test.py',
-                                        '/variant.html?foo=baz']) as loader:
-            (wdspec_test, ) = loader.tests['']['wdspec']
-            (testharness_test, ) = loader.tests['']['testharness']
-            self.assertEqual(wdspec_test.timeout,
-                             wpttest.WdspecTest.default_timeout)
-            self.assertEqual(testharness_test.timeout,
-                             wpttest.TestharnessTest.long_timeout)
+        with self._make_loader(
+            subsuites=subsuites, include=['/test.py', '/variant.html?foo=baz']
+        ) as loader:
+            (wdspec_test,) = loader.tests['']['wdspec']
+            (testharness_test,) = loader.tests['']['testharness']
+            self.assertEqual(
+                wdspec_test.timeout, wpttest.WdspecTest.default_timeout
+            )
+            self.assertEqual(
+                testharness_test.timeout, wpttest.TestharnessTest.long_timeout
+            )

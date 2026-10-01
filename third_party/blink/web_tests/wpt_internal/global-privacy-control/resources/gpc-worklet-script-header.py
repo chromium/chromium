@@ -13,7 +13,11 @@ def main(request, _):
     response_headers = [(b"Content-Type", b"text/javascript")]
 
     if has_gpc_header:
-        return (200, response_headers, b"""
+        return (
+            200,
+            response_headers,
+            b"""
 // Do nothing.
-""")
+""",
+        )
     return (404, response_headers, b"")

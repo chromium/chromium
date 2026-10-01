@@ -17,12 +17,15 @@ def web_socket_transfer_data(request):
     for i in range(NUMBER_OF_MESSAGES):
         # We need to use an internal function to verify that the frame has the
         # "final" flag set.
-        opcode, recv_payload, final, reserved1, reserved2, reserved3 = \
+        opcode, recv_payload, final, reserved1, reserved2, reserved3 = (
             request.ws_stream._receive_frame()
+        )
 
         # We assume that the browser will not send any control messages.
         if opcode != common.OPCODE_BINARY:
-            msgutil.send_message(request, 'FAIL: message %r was not opcode binary' % i)
+            msgutil.send_message(
+                request, 'FAIL: message %r was not opcode binary' % i
+            )
             return
 
         if not final:

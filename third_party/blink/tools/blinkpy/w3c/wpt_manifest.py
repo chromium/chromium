@@ -62,12 +62,14 @@ Reference = Tuple[str, Relation]
 FuzzyRange = Tuple[int, int]
 FuzzyParameters = Tuple[Optional[FuzzyRange], Optional[FuzzyRange]]
 
-TestType = Literal['crashtest', 'manual', 'print-reftest', 'reftest',
-                   'testharness', 'wdspec']
+TestType = Literal[
+    'crashtest', 'manual', 'print-reftest', 'reftest', 'testharness', 'wdspec'
+]
 
 
 class _Test(NamedTuple):
     """A container for per-test information."""
+
     # To save space, `file_path` is `None` if it's identical to the URL, which
     # it is for most tests.
     file_path: Optional[str]
@@ -147,11 +149,13 @@ class WPTManifest:
         [[reference_url1, "=="], [reference_url2, "!="], ...]
     """
 
-    def __init__(self,
-                 raw_dict,
-                 wpt_dir: str,
-                 test_types: Optional[Sequence[TestType]] = None,
-                 exclude_jsshell: bool = True):
+    def __init__(
+        self,
+        raw_dict,
+        wpt_dir: str,
+        test_types: Optional[Sequence[TestType]] = None,
+        exclude_jsshell: bool = True,
+    ):
         self._raw_dict = raw_dict
         self.wpt_dir = wpt_dir
         self.test_types = test_types or (
@@ -166,15 +170,15 @@ class WPTManifest:
 
         items = self._raw_dict.get('items', {})
         for test_type in self.test_types:
-            for url, test in self._items_in_trie(test_type,
-                                                 items.get(test_type, {})):
+            for url, test in self._items_in_trie(
+                test_type, items.get(test_type, {})
+            ):
                 assert url not in self._tests_by_url, f'duplicate URL {url!r}'
                 self._tests_by_url[url] = test
 
-    def _items_in_trie(self,
-                       test_type: TestType,
-                       trie,
-                       path: str = '') -> Iterator[Tuple[str, _Test]]:
+    def _items_in_trie(
+        self, test_type: TestType, trie, path: str = ''
+    ) -> Iterator[Tuple[str, _Test]]:
         """Get tests present in a trie for some test type.
 
         Arguments:
@@ -216,17 +220,22 @@ class WPTManifest:
                 yield url, test
 
     @classmethod
-    def from_file(cls,
-                  port,
-                  manifest_path: str,
-                  test_types: Optional[Sequence[str]] = None,
-                  exclude_jsshell: bool = True) -> 'WPTManifest':
+    def from_file(
+        cls,
+        port,
+        manifest_path: str,
+        test_types: Optional[Sequence[str]] = None,
+        exclude_jsshell: bool = True,
+    ) -> 'WPTManifest':
         fs = port.host.filesystem
         with fs.open_text_file_for_reading(manifest_path) as manifest_file:
             raw_dict = json.load(manifest_file)
-        return cls(raw_dict,
-                   fs.dirname(fs.relpath(manifest_path, port.web_tests_dir())),
-                   test_types, exclude_jsshell)
+        return cls(
+            raw_dict,
+            fs.dirname(fs.relpath(manifest_path, port.web_tests_dir())),
+            test_types,
+            exclude_jsshell,
+        )
 
     @memoized
     def all_urls(self):
@@ -252,8 +261,12 @@ class WPTManifest:
         for test_type in self.test_types:
             trie_for_type = tries_by_type.get(test_type, {})
             if trie_for_path := self._lookup_path(trie_for_type, components):
-                tests.update(url for url, _ in self._items_in_trie(
-                    test_type, trie_for_path, file_path))
+                tests.update(
+                    url
+                    for url, _ in self._items_in_trie(
+                        test_type, trie_for_path, file_path
+                    )
+                )
         return tests
 
     def is_test_file(self, file_path: str) -> bool:
@@ -262,9 +275,10 @@ class WPTManifest:
         components = file_path.split('/')
         assert components, file_path
         tries_by_type = self._raw_dict.get('items', {})
-        test_files = (self._lookup_path(tries_by_type.get(test_type, {}),
-                                        components)
-                      for test_type in self.test_types)
+        test_files = (
+            self._lookup_path(tries_by_type.get(test_type, {}), components)
+            for test_type in self.test_types
+        )
         return any(isinstance(maybe_file, list) for maybe_file in test_files)
 
     def _lookup_path(self, trie, components: Sequence[str]):
@@ -400,8 +414,11 @@ class WPTManifest:
 
         if not port.should_update_manifest(path):
             return
-        _log.info('%s MANIFEST.json for %s ...',
-                  'Partially updating' if test_paths else 'Generating', path)
+        _log.info(
+            '%s MANIFEST.json for %s ...',
+            'Partially updating' if test_paths else 'Generating',
+            path,
+        )
 
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)
@@ -418,15 +435,20 @@ class WPTManifest:
         # `url_base` should match those of `external/wpt/config.tmpl.json` (or
         # the implicit root `/` URL base).
         if path.startswith('external'):
-            base_manifest_path = fs.join(port.web_tests_dir(), 'external',
-                                         BASE_MANIFEST_NAME)
+            base_manifest_path = fs.join(
+                port.web_tests_dir(), 'external', BASE_MANIFEST_NAME
+            )
             if fs.exists(base_manifest_path):
-                _log.debug('Copying base manifest from "%s" to "%s".',
-                           base_manifest_path, manifest_path)
+                _log.debug(
+                    'Copying base manifest from "%s" to "%s".',
+                    base_manifest_path,
+                    manifest_path,
+                )
                 fs.copyfile(base_manifest_path, manifest_path)
             else:
-                _log.info('Manifest base not found at "%s".',
-                          base_manifest_path)
+                _log.info(
+                    'Manifest base not found at "%s".', base_manifest_path
+                )
             url_base = '/'
         elif path.startswith('wpt_internal'):
             url_base = '/wpt_internal/'
@@ -435,22 +457,27 @@ class WPTManifest:
 
         if fs.isfile(manifest_path):
             _log.info(
-                f'Manifest generation completed for {url_base!r} ({path})')
+                f'Manifest generation completed for {url_base!r} ({path})'
+            )
         else:
             _log.error(
                 f'Manifest generation failed for {url_base!r} ({path}); '
-                'creating an empty MANIFEST.json...')
+                'creating an empty MANIFEST.json...'
+            )
             fs.write_text_file(manifest_path, '{}')
 
     @staticmethod
-    def generate_manifest(port,
-                          dest_path,
-                          url_base: str = '/',
-                          test_paths: Optional[List[str]] = None):
+    def generate_manifest(
+        port,
+        dest_path,
+        url_base: str = '/',
+        test_paths: Optional[List[str]] = None,
+    ):
         """Generates MANIFEST.json on the specified directory."""
         fs = port.host.filesystem
         wpt_tools_dir = PathFinder(fs).path_from_chromium_base(
-            'third_party', 'wpt_tools', 'wpt')
+            'third_party', 'wpt_tools', 'wpt'
+        )
         cmd = [
             port.python3_command(),
             fs.join(wpt_tools_dir, 'wpt'),

@@ -24,17 +24,21 @@ class WebBluetoothFuzzerTest(unittest.TestCase):
 
     def testCanGenerate100Files(self):
         sys.argv = [
-            'fuzz_main_run.py', '--no_of_files=100', '--input_dir={}'.format(
-                self._output_dir), '--output_dir={}'.format(self._output_dir)
+            'fuzz_main_run.py',
+            '--no_of_files=100',
+            '--input_dir={}'.format(self._output_dir),
+            '--output_dir={}'.format(self._output_dir),
         ]
 
         import fuzz_main_run
+
         fuzz_main_run.main()
 
         written_files = glob.glob(os.path.join(self._output_dir, '*.html'))
 
-        self.assertEqual(100, len(written_files), 'Should have written 100 '
-                         'test files.')
+        self.assertEqual(
+            100, len(written_files), 'Should have written 100 test files.'
+        )
 
         for test_case in written_files:
             with open(test_case, encoding='utf-8') as f:

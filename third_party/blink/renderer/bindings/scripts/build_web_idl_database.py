@@ -17,12 +17,14 @@ import web_idl
 def parse_options():
     parser = optparse.OptionParser()
     parser.add_option(
-        '--output', type='string', help="filepath of the resulting database")
+        '--output', type='string', help="filepath of the resulting database"
+    )
     parser.add_option(
         '--runtime_enabled_features',
         type='string',
         action='append',
-        help="filepath to runtime_enabled_features.json5")
+        help="filepath to runtime_enabled_features.json5",
+    )
     options, args = parser.parse_args()
 
     required_option_names = ('output', 'runtime_enabled_features')
@@ -40,7 +42,8 @@ def main():
     options, filepaths = parse_options()
 
     web_idl.init(
-        runtime_enabled_features_paths=options.runtime_enabled_features)
+        runtime_enabled_features_paths=options.runtime_enabled_features
+    )
 
     was_error_reported = [False]
 
@@ -49,7 +52,8 @@ def main():
         sys.stderr.writelines([message, "\n"])
 
     database = web_idl.build_database(
-        filepaths=filepaths, report_error=report_error)
+        filepaths=filepaths, report_error=report_error
+    )
 
     if was_error_reported[0]:
         sys.exit("Aborted due to error.")

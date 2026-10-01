@@ -12,7 +12,7 @@ def web_socket_transfer_data(request):
     msgutil.send_message(request, '2')
     msgutil.send_message(request, '3')
 
-    for expected in (u'1', u'2', u'3'):
+    for expected in ('1', '2', '3'):
         message = msgutil.receive_message(request)
         if not isinstance(message, str) or message != expected:
             raise handshake.AbortedByUserException('Abort the connection')

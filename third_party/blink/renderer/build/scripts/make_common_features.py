@@ -12,8 +12,9 @@ class CommonFeaturesImplWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     file_basename = 'features_generated'
 
     def __init__(self, json5_file_path, output_dir):
-        super(CommonFeaturesImplWriter, self).__init__(json5_file_path,
-                                                       output_dir)
+        super(CommonFeaturesImplWriter, self).__init__(
+            json5_file_path, output_dir
+        )
         self._outputs = {
             (self.file_basename + '.cc'): self.generate_implementation,
         }

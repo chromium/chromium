@@ -29,8 +29,10 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
         self.instance = expectations.WebTestExpectations()
         CreateFile(
             self.fs,
-            os.path.join(constants.WEB_TEST_ROOT_DIR, 'FlagExpectations',
-                         'README.txt'))
+            os.path.join(
+                constants.WEB_TEST_ROOT_DIR, 'FlagExpectations', 'README.txt'
+            ),
+        )
 
     def testRealFilesCanBeFound(self) -> None:
         """Tests that real files are returned."""
@@ -43,32 +45,34 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
     def testTopLevelFiles(self) -> None:
         """Tests that top-level expectation files are properly returned."""
         top_level_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR, 'foo')
-        with mock.patch.object(self.instance,
-                               '_GetTopLevelExpectationFiles',
-                               return_value=['foo']):
+        with mock.patch.object(
+            self.instance, '_GetTopLevelExpectationFiles', return_value=['foo']
+        ):
             filepaths = self.instance.GetExpectationFilepaths()
         self.assertEqual(filepaths, [top_level_filepath])
 
     def testFlagSpecificFiles(self) -> None:
         """Tests that flag-specific files are properly returned."""
-        flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
-                                     'FlagExpectations', 'foo-flag')
+        flag_filepath = os.path.join(
+            constants.WEB_TEST_ROOT_DIR, 'FlagExpectations', 'foo-flag'
+        )
         CreateFile(self.fs, flag_filepath)
-        with mock.patch.object(self.instance,
-                               '_GetTopLevelExpectationFiles',
-                               return_value=[]):
+        with mock.patch.object(
+            self.instance, '_GetTopLevelExpectationFiles', return_value=[]
+        ):
             filepaths = self.instance.GetExpectationFilepaths()
         self.assertEqual(filepaths, [flag_filepath])
 
     def testAllExpectationFiles(self) -> None:
         """Tests that both top level and flag-specific files are returned."""
         top_level_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR, 'foo')
-        flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
-                                     'FlagExpectations', 'foo-flag')
+        flag_filepath = os.path.join(
+            constants.WEB_TEST_ROOT_DIR, 'FlagExpectations', 'foo-flag'
+        )
         CreateFile(self.fs, flag_filepath)
-        with mock.patch.object(self.instance,
-                               '_GetTopLevelExpectationFiles',
-                               return_value=['foo']):
+        with mock.patch.object(
+            self.instance, '_GetTopLevelExpectationFiles', return_value=['foo']
+        ):
             filepaths = self.instance.GetExpectationFilepaths()
         self.assertEqual(filepaths, [top_level_filepath, flag_filepath])
 
@@ -82,7 +86,8 @@ class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
         """Tests that some sort of valid content can be read from the file."""
         with fake_filesystem_unittest.Pause(self):
             header = self.instance._GetExpectationFileTagHeader(
-                expectations.MAIN_EXPECTATION_FILE)
+                expectations.MAIN_EXPECTATION_FILE
+            )
         self.assertIn('tags', header)
         self.assertIn('results', header)
 
@@ -101,7 +106,8 @@ not a comment
         with open(expectations.MAIN_EXPECTATION_FILE, 'w') as f:
             f.write(header_contents)
         header = self.instance._GetExpectationFileTagHeader(
-            expectations.MAIN_EXPECTATION_FILE)
+            expectations.MAIN_EXPECTATION_FILE
+        )
         expected_header = """\
 # foo
 #   bar
@@ -125,11 +131,13 @@ class GetKnownTagsUnittest(fake_filesystem_unittest.TestCase):
         with open(expectations.MAIN_EXPECTATION_FILE, 'w') as f:
             f.write(header_contents)
         with mock.patch.object(
-                self.instance,
-                'GetExpectationFilepaths',
-                return_value=[expectations.MAIN_EXPECTATION_FILE]):
-            self.assertEqual(self.instance._GetKnownTags(),
-                             {'mac', 'win', 'linux'})
+            self.instance,
+            'GetExpectationFilepaths',
+            return_value=[expectations.MAIN_EXPECTATION_FILE],
+        ):
+            self.assertEqual(
+                self.instance._GetKnownTags(), {'mac', 'win', 'linux'}
+            )
 
 
 if __name__ == '__main__':

@@ -14,22 +14,38 @@ from .idl_type import IdlType
 from .make_copy import make_copy
 
 
-class Attribute(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
-                WithExposure, WithOwner, WithOwnerMixin, WithComponent,
-                WithDebugInfo):
+class Attribute(
+    WithIdentifier,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithOwner,
+    WithOwnerMixin,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-attributes"""
 
-    class IR(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     idl_type,
-                     is_static=False,
-                     is_readonly=False,
-                     does_inherit_getter=False,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        WithIdentifier,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithOwnerMixin,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            idl_type,
+            is_static=False,
+            is_readonly=False,
+            does_inherit_getter=False,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(idl_type, IdlType)
             assert isinstance(is_static, bool)
             assert isinstance(is_readonly, bool)

@@ -39,16 +39,20 @@ def validate_filter_rules(filter_rules, all_categories):
     """
     for rule in filter_rules:
         if not (rule.startswith('+') or rule.startswith('-')):
-            raise ValueError('Invalid filter rule "%s": every rule '
-                             'must start with + or -.' % rule)
+            raise ValueError(
+                'Invalid filter rule "%s": every rule '
+                'must start with + or -.' % rule
+            )
 
         for category in all_categories:
             if category.startswith(rule[1:]):
                 break
         else:
-            raise ValueError('Suspected incorrect filter rule "%s": '
-                             'the rule does not match the beginning '
-                             'of any category name.' % rule)
+            raise ValueError(
+                'Suspected incorrect filter rule "%s": '
+                'the rule does not match the beginning '
+                'of any category name.' % rule
+            )
 
 
 class _CategoryFilter(object):
@@ -191,7 +195,7 @@ class FilterConfiguration(object):
         """Return a copy of self._path_specific with the paths lower-cased."""
         if self._path_specific_lower is None:
             self._path_specific_lower = []
-            for (sub_paths, path_rules) in self._path_specific:
+            for sub_paths, path_rules in self._path_specific:
                 sub_paths = list(map(str.lower, sub_paths))
                 self._path_specific_lower.append((sub_paths, path_rules))
         return self._path_specific_lower
@@ -199,11 +203,11 @@ class FilterConfiguration(object):
     def _path_rules_from_path(self, path):
         """Determine the path-specific rules to use, and return as a tuple.
 
-         This method returns a tuple rather than a list so the return
-         value can be passed to _filter_from_path_rules() without change.
+        This method returns a tuple rather than a list so the return
+        value can be passed to _filter_from_path_rules() without change.
         """
         path = path.lower()
-        for (sub_paths, path_rules) in self._get_path_specific_lower():
+        for sub_paths, path_rules in self._get_path_specific_lower():
             for sub_path in sub_paths:
                 if path.find(sub_path) > -1:
                     return tuple(path_rules)

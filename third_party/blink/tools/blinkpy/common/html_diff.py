@@ -58,8 +58,10 @@ class HtmlDiffGenerator(object):
         output = []
         for tag, a_start, a_end, b_start, b_end in matcher.get_opcodes():
             output.append(
-                self._format_chunk(tag, a_lines[a_start:a_end],
-                                   b_lines[b_start:b_end]))
+                self._format_chunk(
+                    tag, a_lines[a_start:a_end], b_lines[b_start:b_end]
+                )
+            )
         return ''.join(output)
 
     def _format_chunk(self, tag, a_chunk, b_chunk):
@@ -89,24 +91,33 @@ class HtmlDiffGenerator(object):
             self.b_line_no += len(common_chunk) - 6
             output += '<tr><td colspan=3>\n\n</tr>'
             # Do not show context lines at the end of the file.
-            if self.a_line_no + 3 != self.a_lines_len or self.b_line_no + 3 != self.b_lines_len:
-                for line in common_chunk[len(common_chunk) -
-                                         3:len(common_chunk)]:
+            if (
+                self.a_line_no + 3 != self.a_lines_len
+                or self.b_line_no + 3 != self.b_lines_len
+            ):
+                for line in common_chunk[
+                    len(common_chunk) - 3 : len(common_chunk)
+                ]:
                     output += self._format_equal_line(line)
         return output
 
     def _format_equal_line(self, line):
         self.a_line_no += 1
         self.b_line_no += 1
-        return '<tr><th>%d<th>%d<td>%s</tr>' % (self.a_line_no, self.b_line_no,
-                                                escape(line))
+        return '<tr><th>%d<th>%d<td>%s</tr>' % (
+            self.a_line_no,
+            self.b_line_no,
+            escape(line),
+        )
 
     def _format_insert(self, chunk):
         output = ''
         for line in chunk:
             self.b_line_no += 1
             output += '<tr><th><th>%d<td class="add">%s</tr>' % (
-                self.b_line_no, escape(line))
+                self.b_line_no,
+                escape(line),
+            )
         return output
 
     def _format_delete(self, chunk):
@@ -114,5 +125,7 @@ class HtmlDiffGenerator(object):
         for line in chunk:
             self.a_line_no += 1
             output += '<tr><th>%d<th><td class="del">%s</tr>' % (
-                self.a_line_no, escape(line))
+                self.a_line_no,
+                escape(line),
+            )
         return output

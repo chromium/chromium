@@ -40,13 +40,16 @@ def make_forward_declarations(accumulator):
             self._accumulator = accumulator
 
         def __str__(self):
-            return "\n".join([
-                "class {};".format(class_name)
-                for class_name in sorted(self._accumulator.class_decls)
-            ] + [
-                "struct {};".format(struct_name)
-                for struct_name in sorted(self._accumulator.struct_decls)
-            ])
+            return "\n".join(
+                [
+                    "class {};".format(class_name)
+                    for class_name in sorted(self._accumulator.class_decls)
+                ]
+                + [
+                    "struct {};".format(struct_name)
+                    for struct_name in sorted(self._accumulator.struct_decls)
+                ]
+            )
 
     return LiteralNode(ForwardDeclarations(accumulator))
 
@@ -66,17 +69,23 @@ def make_header_include_directives(accumulator):
 
             if self._accumulator.stdcpp_include_headers:
                 lines.extend(
-                    sorted([
-                        "#include <{}>{}".format(h.filename, eol_comment(h))
-                        for h in self._accumulator.stdcpp_include_headers
-                    ]))
+                    sorted(
+                        [
+                            "#include <{}>{}".format(h.filename, eol_comment(h))
+                            for h in self._accumulator.stdcpp_include_headers
+                        ]
+                    )
+                )
                 lines.append("")
 
             lines.extend(
-                sorted([
-                    '#include "{}"{}'.format(h.filename, eol_comment(h))
-                    for h in self._accumulator.include_headers
-                ]))
+                sorted(
+                    [
+                        '#include "{}"{}'.format(h.filename, eol_comment(h))
+                        for h in self._accumulator.include_headers
+                    ]
+                )
+            )
 
             return "\n".join(lines)
 
@@ -96,42 +105,56 @@ def collect_forward_decls_and_include_headers(idl_types):
     def collect(idl_type):
         if idl_type.is_any or idl_type.is_object:
             header_include_headers.add(
-                "third_party/blink/renderer/bindings/core/v8/script_value.h")
+                "third_party/blink/renderer/bindings/core/v8/script_value.h"
+            )
         elif idl_type.is_boolean or idl_type.is_numeric:
             pass
         elif idl_type.is_bigint:
             header_include_headers.add(
-                "third_party/blink/renderer/platform/bindings/bigint.h")
-            source_include_headers.update([
-                "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl_bigint.h",
-                "third_party/blink/renderer/bindings/core/v8/to_v8_traits_bigint.h",
-            ])
+                "third_party/blink/renderer/platform/bindings/bigint.h"
+            )
+            source_include_headers.update(
+                [
+                    "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl_bigint.h",
+                    "third_party/blink/renderer/bindings/core/v8/to_v8_traits_bigint.h",
+                ]
+            )
         elif idl_type.is_data_view:
-            header_include_headers.update([
-                "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
-                "third_party/blink/renderer/core/typed_arrays/dom_data_view.h",
-                "third_party/blink/renderer/platform/heap/member.h",
-            ])
+            header_include_headers.update(
+                [
+                    "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
+                    "third_party/blink/renderer/core/typed_arrays/dom_data_view.h",
+                    "third_party/blink/renderer/platform/heap/member.h",
+                ]
+            )
         elif idl_type.is_buffer_source_type:
-            header_include_headers.update([
-                "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
-                "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h",
-                "third_party/blink/renderer/platform/heap/member.h",
-            ])
+            header_include_headers.update(
+                [
+                    "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
+                    "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h",
+                    "third_party/blink/renderer/platform/heap/member.h",
+                ]
+            )
         elif idl_type.is_nullable:
             if not blink_type_info(idl_type.inner_type).has_null_value:
                 header_stdcpp_include_headers.add("optional")
         elif idl_type.is_promise:
             header_include_headers.add(
-                "third_party/blink/renderer/bindings/core/v8/script_promise.h")
-        elif (idl_type.is_sequence or idl_type.is_frozen_array
-              or idl_type.is_record or idl_type.is_variadic):
+                "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+            )
+        elif (
+            idl_type.is_sequence
+            or idl_type.is_frozen_array
+            or idl_type.is_record
+            or idl_type.is_variadic
+        ):
             header_include_headers.add(
                 "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
             )
         elif idl_type.is_string:
             header_include_headers.add(
-                "third_party/blink/renderer/platform/wtf/text/wtf_string.h")
+                "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+            )
         elif idl_type.is_typedef:
             pass
         elif idl_type.is_undefined:
@@ -142,26 +165,33 @@ def collect_forward_decls_and_include_headers(idl_types):
             type_def_obj = idl_type.type_definition_object
             if type_def_obj.is_enumeration:
                 header_include_headers.add(
-                    PathManager(type_def_obj).api_path(ext="h"))
+                    PathManager(type_def_obj).api_path(ext="h")
+                )
             elif type_def_obj.is_interface:
                 header_forward_decls.add(blink_class_name(type_def_obj))
                 header_include_headers.add(
-                    "third_party/blink/renderer/platform/heap/member.h")
+                    "third_party/blink/renderer/platform/heap/member.h"
+                )
                 source_include_headers.add(
-                    PathManager(type_def_obj).blink_path(ext="h"))
+                    PathManager(type_def_obj).blink_path(ext="h")
+                )
             else:
                 header_forward_decls.add(blink_class_name(type_def_obj))
                 header_include_headers.add(
-                    "third_party/blink/renderer/platform/heap/member.h")
+                    "third_party/blink/renderer/platform/heap/member.h"
+                )
                 source_include_headers.add(
-                    PathManager(type_def_obj).api_path(ext="h"))
+                    PathManager(type_def_obj).api_path(ext="h")
+                )
         elif idl_type.union_definition_object:
             union_def_obj = idl_type.union_definition_object
             header_forward_decls.add(blink_class_name(union_def_obj))
             header_include_headers.add(
-                "third_party/blink/renderer/platform/heap/member.h")
+                "third_party/blink/renderer/platform/heap/member.h"
+            )
             source_include_headers.add(
-                PathManager(union_def_obj).api_path(ext="h"))
+                PathManager(union_def_obj).api_path(ext="h")
+            )
         else:
             assert False, "Unknown type: {}".format(idl_type.syntactic_form)
 
@@ -206,14 +236,16 @@ def enclose_with_header_guard(code_node, header_guard):
     assert isinstance(code_node, CodeNode)
     assert isinstance(header_guard, str)
 
-    return SequenceNode([
-        LiteralNode("#ifndef {}".format(header_guard)),
-        LiteralNode("#define {}".format(header_guard)),
-        EmptyNode(),
-        code_node,
-        EmptyNode(),
-        LiteralNode("#endif  // {}".format(header_guard)),
-    ])
+    return SequenceNode(
+        [
+            LiteralNode("#ifndef {}".format(header_guard)),
+            LiteralNode("#define {}".format(header_guard)),
+            EmptyNode(),
+            code_node,
+            EmptyNode(),
+            LiteralNode("#endif  // {}".format(header_guard)),
+        ]
+    )
 
 
 def write_code_node_to_file(code_node, filepath):
@@ -225,11 +257,15 @@ def write_code_node_to_file(code_node, filepath):
 
     format_result = style_format.auto_format(rendered_text, filename=filepath)
     if not format_result.did_succeed:
-        raise RuntimeError("Style-formatting failed: filename = {filename}\n"
-                           "---- stderr ----\n"
-                           "{stderr}:".format(
-                               filename=format_result.filename,
-                               stderr=format_result.error_message))
+        raise RuntimeError(
+            "Style-formatting failed: filename = {filename}\n"
+            "---- stderr ----\n"
+            "{stderr}:".format(
+                filename=format_result.filename,
+                stderr=format_result.error_message,
+            )
+        )
 
     web_idl.file_io.write_to_file_if_changed(
-        filepath, format_result.contents.encode('utf-8'))
+        filepath, format_result.contents.encode('utf-8')
+    )

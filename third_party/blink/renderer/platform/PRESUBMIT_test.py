@@ -26,7 +26,6 @@ _OVERRIDE_PATH = f'{_PLATFORM_DIR}/{_OVERRIDE_FILE}'
 
 
 class CheckRuntimeEnabledFeaturesTest(unittest.TestCase):
-
     def setUp(self):
         self.mock_input_api = MockInputApi()
         self.mock_input_api.presubmit_local_path = _THIS_DIR
@@ -35,26 +34,31 @@ class CheckRuntimeEnabledFeaturesTest(unittest.TestCase):
     def test_features_sorted_valid(self):
         features = [{'name': 'Alpha'}, {'name': 'Beta'}, {'name': 'Gamma'}]
         results = PRESUBMIT._CheckRuntimeEnabledFeaturesSorted(
-            features, 'test.json5', self.mock_output_api)
+            features, 'test.json5', self.mock_output_api
+        )
         self.assertEqual(results, [])
 
     def test_features_unsorted(self):
         features = [{'name': 'Gamma'}, {'name': 'Alpha'}]
         results = PRESUBMIT._CheckRuntimeEnabledFeaturesSorted(
-            features, 'test.json5', self.mock_output_api)
+            features, 'test.json5', self.mock_output_api
+        )
         self.assertEqual(len(results), 1)
-        self.assertIn('test.json5 features must be sorted alphabetically',
-                      results[0].message)
+        self.assertIn(
+            'test.json5 features must be sorted alphabetically',
+            results[0].message,
+        )
 
     def test_unaffected_files_skip_check(self):
         self.mock_input_api.files = [
-            MockAffectedFile(f'{_PLATFORM_DIR}/fonts/BUILD.gn',
-                             ['# Unrelated'])
+            MockAffectedFile(f'{_PLATFORM_DIR}/fonts/BUILD.gn', ['# Unrelated'])
         ]
-        with mock.patch.object(PRESUBMIT,
-                               'RuntimeEnabledFeatures') as mock_features:
-            results = PRESUBMIT.CheckChangeOnUpload(self.mock_input_api,
-                                                    self.mock_output_api)
+        with mock.patch.object(
+            PRESUBMIT, 'RuntimeEnabledFeatures'
+        ) as mock_features:
+            results = PRESUBMIT.CheckChangeOnUpload(
+                self.mock_input_api, self.mock_output_api
+            )
             self.assertEqual(results, [])
             mock_features.assert_not_called()
 
@@ -63,11 +67,12 @@ class CheckRuntimeEnabledFeaturesTest(unittest.TestCase):
             MockAffectedFile(_FEATURES_PATH, ['# modified'])
         ]
         valid = [{'name': 'Alpha'}, {'name': 'Beta'}]
-        with mock.patch.object(PRESUBMIT,
-                               'RuntimeEnabledFeatures',
-                               return_value=valid) as mock_features:
-            results = PRESUBMIT.CheckChangeOnUpload(self.mock_input_api,
-                                                    self.mock_output_api)
+        with mock.patch.object(
+            PRESUBMIT, 'RuntimeEnabledFeatures', return_value=valid
+        ) as mock_features:
+            results = PRESUBMIT.CheckChangeOnUpload(
+                self.mock_input_api, self.mock_output_api
+            )
             self.assertEqual(results, [])
             mock_features.assert_called_once()
 
@@ -76,11 +81,12 @@ class CheckRuntimeEnabledFeaturesTest(unittest.TestCase):
             MockAffectedFile(_OVERRIDE_PATH, ['# modified'])
         ]
         unsorted = [{'name': 'Zeta'}, {'name': 'Alpha'}]
-        with mock.patch.object(PRESUBMIT,
-                               'RuntimeEnabledFeatures',
-                               return_value=unsorted) as mock_features:
-            results = PRESUBMIT.CheckChangeOnUpload(self.mock_input_api,
-                                                    self.mock_output_api)
+        with mock.patch.object(
+            PRESUBMIT, 'RuntimeEnabledFeatures', return_value=unsorted
+        ) as mock_features:
+            results = PRESUBMIT.CheckChangeOnUpload(
+                self.mock_input_api, self.mock_output_api
+            )
             self.assertEqual(len(results), 1)
             self.assertIn(_OVERRIDE_FILE, results[0].message)
             mock_features.assert_called_once()
@@ -89,20 +95,24 @@ class CheckRuntimeEnabledFeaturesTest(unittest.TestCase):
         self.mock_input_api.files = [
             MockAffectedFile(_FEATURES_PATH, ['# deleted'], action='D')
         ]
-        with mock.patch.object(PRESUBMIT,
-                               'RuntimeEnabledFeatures') as mock_features:
-            results = PRESUBMIT.CheckChangeOnUpload(self.mock_input_api,
-                                                    self.mock_output_api)
+        with mock.patch.object(
+            PRESUBMIT, 'RuntimeEnabledFeatures'
+        ) as mock_features:
+            results = PRESUBMIT.CheckChangeOnUpload(
+                self.mock_input_api, self.mock_output_api
+            )
             self.assertEqual(results, [])
             mock_features.assert_not_called()
 
     def test_runtime_enabled_features_loader(self):
         override_full_path = os.path.join(_THIS_DIR, _OVERRIDE_FILE)
-        features = PRESUBMIT.RuntimeEnabledFeatures(self.mock_input_api,
-                                                    override_full_path)
+        features = PRESUBMIT.RuntimeEnabledFeatures(
+            self.mock_input_api, override_full_path
+        )
         self.assertIsInstance(features, list)
         json5_path = os.path.normpath(
-            os.path.join(_THIS_DIR, '..', '..', '..', 'pyjson5', 'src'))
+            os.path.join(_THIS_DIR, '..', '..', '..', 'pyjson5', 'src')
+        )
         self.assertNotIn(json5_path, sys.path)
 
 

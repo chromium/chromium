@@ -19,14 +19,14 @@ class FuzzyDiffAnalyzerDataTypesUnittest(unittest.TestCase):
         """Tests that image diff tag must be in a tuple."""
         fake_image_diff_tuple = typing.cast(tuple, [1, 10])
         with self.assertRaises(AssertionError):
-            _ = data_types.Result('test', ('win', 'x86'),
-                                  fake_image_diff_tuple, 'build_id')
+            _ = data_types.Result(
+                'test', ('win', 'x86'), fake_image_diff_tuple, 'build_id'
+            )
 
     def testImageDiffLengthEnforced(self) -> None:
         """Tests that image diff tag must be 2 length."""
         with self.assertRaises(AssertionError):
-            _ = data_types.Result('test', ('win', 'x86'), (1, 2, 3),
-                                  'build_id')
+            _ = data_types.Result('test', ('win', 'x86'), (1, 2, 3), 'build_id')
 
     def testWildcardsDisallowed(self) -> None:
         with self.assertRaises(AssertionError):

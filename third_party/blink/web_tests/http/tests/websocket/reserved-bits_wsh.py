@@ -7,11 +7,13 @@ bit = 0
 
 
 def web_socket_do_extra_handshake(request):
-    match = re.search(r'\?compressed=(true|false)&bitNumber=(\d)$',
-                      request.ws_resource)
+    match = re.search(
+        r'\?compressed=(true|false)&bitNumber=(\d)$', request.ws_resource
+    )
     if match is None:
-        msgutil.send_message(request,
-                             'FAIL: Query value is incorrect or missing')
+        msgutil.send_message(
+            request, 'FAIL: Query value is incorrect or missing'
+        )
         return
 
     global bit

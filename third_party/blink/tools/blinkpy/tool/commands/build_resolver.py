@@ -37,6 +37,7 @@ class BuildResolver:
 
     This resolver fetches build information from Buildbucket.
     """
+
     # Build fields required by `_build_statuses_from_responses`.
     _build_fields = [
         'id',
@@ -50,11 +51,13 @@ class BuildResolver:
         'steps.*.logs.*.view_url',
     ]
 
-    def __init__(self,
-                 web: Web,
-                 git_cl: GitCL,
-                 io_pool: Optional[Executor] = None,
-                 can_trigger_jobs: bool = False):
+    def __init__(
+        self,
+        web: Web,
+        git_cl: GitCL,
+        io_pool: Optional[Executor] = None,
+        can_trigger_jobs: bool = False,
+    ):
         self._web = web
         self._git_cl = git_cl
         self._io_pool = io_pool
@@ -72,14 +75,18 @@ class BuildResolver:
         map_fn = self._io_pool.map if self._io_pool else map
         statuses = map_fn(self._status_if_interrupted, raw_builds)
         return {
-            Build(build['builder']['builder'], build['number'], build['id'],
-                  build['builder']['bucket']): status
+            Build(
+                build['builder']['builder'],
+                build['number'],
+                build['id'],
+                build['builder']['bucket'],
+            ): status
             for build, status in zip(raw_builds, statuses)
         }
 
-    def resolve_builds(self,
-                       builds: Collection[Build],
-                       cl: CLRevisionID | None = None) -> BuildStatuses:
+    def resolve_builds(
+        self, builds: Collection[Build], cl: CLRevisionID | None = None
+    ) -> BuildStatuses:
         """Resolve builders (maybe with build numbers) into statuses.
 
         Arguments:
@@ -97,40 +104,46 @@ class BuildResolver:
         for build in builds:
             if build.build_number:
                 self._git_cl.bb_client.add_get_build_req(
-                    build,
-                    build_fields=self._build_fields)
+                    build, build_fields=self._build_fields
+                )
             elif build.bucket == 'try':
                 try_builders_to_infer.add(build.builder_name)
             else:
                 predicate = {
                     'builder': self._builder_predicate(build),
-                    'status': 'FAILURE'
+                    'status': 'FAILURE',
                 }
                 self._git_cl.bb_client.add_search_builds_req(
-                    predicate, build_fields=self._build_fields, count=1)
+                    predicate, build_fields=self._build_fields, count=1
+                )
 
         build_statuses = {}
         # Handle implied tryjobs first, since there are more failure modes.
         if try_builders_to_infer:
             try_build_statuses = self.fetch_or_trigger_try_jobs(
-                try_builders_to_infer, cl)
+                try_builders_to_infer, cl
+            )
             build_statuses.update(try_build_statuses)
             # Re-request completed try builds so that the resolver can check
             # for interrupted steps.
             for build, status in try_build_statuses.items():
                 if build.build_number and status in BuildStatus.COMPLETED:
                     self._git_cl.bb_client.add_get_build_req(
-                        build, build_fields=self._build_fields)
+                        build, build_fields=self._build_fields
+                    )
         # Find explicit or CI builds.
         build_statuses.update(
             self._build_statuses_from_responses(
-                self._git_cl.bb_client.execute_batch()))
+                self._git_cl.bb_client.execute_batch()
+            )
+        )
         if build_statuses:
             self.log_builds(build_statuses)
         if BuildStatus.TRIGGERED in build_statuses.values():
             raise UnresolvedBuildException(
                 'Once all pending try jobs have finished, '
-                'please re-run the tool to fetch new results.')
+                'please re-run the tool to fetch new results.'
+            )
         return build_statuses
 
     def _status_if_interrupted(self, raw_build) -> BuildStatus:
@@ -146,7 +159,8 @@ class BuildResolver:
         #     interpreted to populate `WebTestResults.incomplete_reason`
         #     directly.
         run_web_tests_pattern = re.compile(
-            r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*')
+            r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*'
+        )
         status = BuildStatus[raw_build['status']]
         if status is BuildStatus.FAILURE:
             output_props = raw_build.get('output', {}).get('properties', {})
@@ -167,9 +181,9 @@ class BuildResolver:
                     return BuildStatus.INFRA_FAILURE
         return status
 
-    def _fetch_swarming_summary(self,
-                                step,
-                                log_name: str = 'chromium_swarming.summary'):
+    def _fetch_swarming_summary(
+        self, step, log_name: str = 'chromium_swarming.summary'
+    ):
         # TODO(crbug.com/342409114): Use swarming v2 API to fetch shard status
         # and exit codes, not the potentially unstable
         # `chromium_swarming.summary` log.
@@ -177,8 +191,9 @@ class BuildResolver:
             if log['name'] == log_name:
                 with contextlib.suppress(RequestException):
                     params = {'format': 'raw'}
-                    return self._web.session.get(log['viewUrl'],
-                                                 params=params).json()
+                    return self._web.session.get(
+                        log['viewUrl'], params=params
+                    ).json()
         return None
 
     def fetch_or_trigger_try_jobs(
@@ -201,21 +216,24 @@ class BuildResolver:
             issue_number = self._git_cl.get_issue_number()
             if issue_number is None:
                 raise UnresolvedBuildException(
-                    'No issue number for current branch.')
+                    'No issue number for current branch.'
+                )
             cl = CLRevisionID(issue_number)
-        _log.info(f'Fetching status for {pluralize("build", len(builders))} '
-                  f'from {cl}.')
-        build_statuses = self._git_cl.latest_try_jobs(cl.issue,
-                                                      builder_names=builders,
-                                                      patchset=cl.patchset)
+        _log.info(
+            f'Fetching status for {pluralize("build", len(builders))} '
+            f'from {cl}.'
+        )
+        build_statuses = self._git_cl.latest_try_jobs(
+            cl.issue, builder_names=builders, patchset=cl.patchset
+        )
         if not build_statuses and not self._can_trigger_jobs:
             raise UnresolvedBuildException(
                 "Aborted: no try jobs and '--no-trigger-jobs' or '--dry-run' "
-                'passed.')
+                'passed.'
+            )
 
         builders_without_results = set(builders) - {
-            build.builder_name
-            for build in build_statuses
+            build.builder_name for build in build_statuses
         }
         placeholder_status = BuildStatus.MISSING
         if self._can_trigger_jobs and builders_without_results:
@@ -242,8 +260,9 @@ class BuildResolver:
             _log.info('No finished builds.')
         unfinished_builds = {
             build: status
-            for build, status in build_statuses.items() if
-            build not in finished_builds and status is not BuildStatus.MISSING
+            for build, status in build_statuses.items()
+            if build not in finished_builds
+            and status is not BuildStatus.MISSING
         }
         if unfinished_builds:
             _log.info('Scheduled or started builds:')
@@ -256,14 +275,20 @@ class BuildResolver:
         # `NUMBER` columns.
         name_column_width = max(20, *map(len, builder_names))
         status_column_width = max(
-            len(status.name) for status in build_statuses.values())
-        template = (f'  %-{name_column_width}s %-7s '
-                    f'%-{status_column_width}s %-6s')
+            len(status.name) for status in build_statuses.values()
+        )
+        template = (
+            f'  %-{name_column_width}s %-7s %-{status_column_width}s %-6s'
+        )
         _log.info(template, 'BUILDER', 'NUMBER', 'STATUS', 'BUCKET')
         for build in sorted(build_statuses, key=_build_sort_key):
-            _log.info(template, build.builder_name,
-                      str(build.build_number or '--'),
-                      build_statuses[build].name, build.bucket)
+            _log.info(
+                template,
+                build.builder_name,
+                str(build.build_number or '--'),
+                build_statuses[build].name,
+                build.bucket,
+            )
 
 
 def _build_sort_key(build: Build) -> Tuple[str, int]:

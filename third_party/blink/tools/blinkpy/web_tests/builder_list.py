@@ -58,10 +58,13 @@ class BuilderList:
         self._builders = builders_dict
         for builder in builders_dict:
             specifiers = {
-                s.lower() for s in builders_dict[builder].get('specifiers', {})}
+                s.lower() for s in builders_dict[builder].get('specifiers', {})
+            }
             assert 'port_name' in builders_dict[builder]
-            assert ('android' in specifiers or
-                    len(builders_dict[builder]['specifiers']) == 2)
+            assert (
+                'android' in specifiers
+                or len(builders_dict[builder]['specifiers']) == 2
+            )
         self._flag_spec_to_port = self._find_ports_for_flag_specific_options()
 
     def __repr__(self):
@@ -79,7 +82,8 @@ class BuilderList:
                 if maybe_port_name and maybe_port_name != port_name:
                     raise ValueError(
                         'Flag-specific suite %r can only run on one port, got: '
-                        '%r, %r' % (option, maybe_port_name, port_name))
+                        '%r, %r' % (option, maybe_port_name, port_name)
+                    )
                 flag_spec_to_port[option] = port_name
         return flag_spec_to_port
 
@@ -87,7 +91,8 @@ class BuilderList:
     def load_default_builder_list(filesystem):
         """Loads the set of builders from a JSON file and returns the BuilderList."""
         path = PathFinder(filesystem).path_from_blink_tools(
-            'blinkpy', 'common', 'config', 'builders.json')
+            'blinkpy', 'common', 'config', 'builders.json'
+        )
         contents = filesystem.read_text_file(path)
         return BuilderList(json.loads(contents))
 
@@ -106,19 +111,22 @@ class BuilderList:
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 
-    def filter_builders(self,
-                        exclude_specifiers=None,
-                        include_specifiers=None,
-                        is_try=False,
-                        is_cq=False,
-                        flag_specific=None):
+    def filter_builders(
+        self,
+        exclude_specifiers=None,
+        include_specifiers=None,
+        is_try=False,
+        is_cq=False,
+        flag_specific=None,
+    ):
         _lower_specifiers = lambda specifiers: {s.lower() for s in specifiers}
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
         builders = []
         for b, builder in self._builders.items():
             builder_specifiers = _lower_specifiers(
-                builder.get('specifiers', {}))
+                builder.get('specifiers', {})
+            )
             flag_specific_suites = {
                 step.get('flag_specific')
                 for step in builder.get('steps', {}).values()
@@ -127,21 +135,26 @@ class BuilderList:
                 if flag_specific == '*' and not any(flag_specific_suites):
                     # Skip non flag_specific builders
                     continue
-                if (flag_specific != '*'
-                        and flag_specific not in flag_specific_suites):
+                if (
+                    flag_specific != '*'
+                    and flag_specific not in flag_specific_suites
+                ):
                     # Skip if none of the steps has an exact match
                     continue
             if is_try and builder.get('is_try_builder', False) != is_try:
                 continue
             if is_cq and builder.get('is_cq_builder', False) != is_cq:
                 continue
-            if ((not is_cq and not is_try)
-                    and builder.get('is_try_builder', False)):
+            if (not is_cq and not is_try) and builder.get(
+                'is_try_builder', False
+            ):
                 continue
             if builder_specifiers & exclude_specifiers:
                 continue
-            if  (include_specifiers and
-                     not include_specifiers & builder_specifiers):
+            if (
+                include_specifiers
+                and not include_specifiers & builder_specifiers
+            ):
                 continue
             builders.append(b)
         return sorted(builders)
@@ -244,8 +257,10 @@ class BuilderList:
         for builder_name, info in sorted(self._builders.items()):
             specifiers = set(spec.lower() for spec in info['specifiers'])
             is_try_builder_info = info.get('is_try_builder', False)
-            if (version.lower() in specifiers
-                    and build_type.lower() in specifiers
-                    and is_try_builder_info == is_try_builder):
+            if (
+                version.lower() in specifiers
+                and build_type.lower() in specifiers
+                and is_try_builder_info == is_try_builder
+            ):
                 return builder_name
         return ''

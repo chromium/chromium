@@ -53,14 +53,16 @@ class MakeElementTypeEnumWriter(json5_generator.Writer):
 
         for filename in json5_file_paths:
             json5_file = json5_generator.Json5File.load_from_files(
-                [filename], self.default_metadata, self.default_parameters)
+                [filename], self.default_metadata, self.default_parameters
+            )
             namespace = json5_file.metadata['namespace'].strip('"')
             for tag in json5_file.name_dictionaries:
                 tag['interface'] = self._interface(namespace, tag)
                 elements.add(tag['interface'])
 
-    @template_expander.use_jinja("templates/element_type_enum.h.tmpl",
-                                 filters=filters)
+    @template_expander.use_jinja(
+        "templates/element_type_enum.h.tmpl", filters=filters
+    )
     def generate_enum_header(self):
         return self._template_context
 

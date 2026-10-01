@@ -7,8 +7,12 @@ import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
-from blinkpy.w3c.common import (read_credentials, is_testharness_baseline,
-                                is_basename_skipped, is_file_exportable)
+from blinkpy.w3c.common import (
+    read_credentials,
+    is_testharness_baseline,
+    is_basename_skipped,
+    is_file_exportable,
+)
 
 
 class CommonTest(unittest.TestCase):
@@ -26,68 +30,87 @@ class CommonTest(unittest.TestCase):
 
     def test_get_credentials_gets_values_from_environment(self):
         host = MockHost()
-        host.environ.update({
-            'GH_USER': 'user-github',
-            'GH_TOKEN': 'pass-github',
-            'GERRIT_USER': 'user-gerrit',
-            'GERRIT_TOKEN': 'pass-gerrit',
-            'UNUSED_VALUE': 'foo',
-        })
-        self.assertEqual(
-            read_credentials(host, None), {
+        host.environ.update(
+            {
                 'GH_USER': 'user-github',
                 'GH_TOKEN': 'pass-github',
                 'GERRIT_USER': 'user-gerrit',
                 'GERRIT_TOKEN': 'pass-gerrit',
-            })
+                'UNUSED_VALUE': 'foo',
+            }
+        )
+        self.assertEqual(
+            read_credentials(host, None),
+            {
+                'GH_USER': 'user-github',
+                'GH_TOKEN': 'pass-github',
+                'GERRIT_USER': 'user-gerrit',
+                'GERRIT_TOKEN': 'pass-gerrit',
+            },
+        )
 
     def test_get_credentials_gets_values_from_file(self):
         host = MockHost()
         host.filesystem.write_text_file(
             '/tmp/credentials.json',
-            json.dumps({
-                'GH_USER': 'user-github',
-                'GH_TOKEN': 'pass-github',
-                'GERRIT_USER': 'user-gerrit',
-                'GERRIT_TOKEN': 'pass-gerrit',
-            }))
+            json.dumps(
+                {
+                    'GH_USER': 'user-github',
+                    'GH_TOKEN': 'pass-github',
+                    'GERRIT_USER': 'user-gerrit',
+                    'GERRIT_TOKEN': 'pass-gerrit',
+                }
+            ),
+        )
         self.assertEqual(
-            read_credentials(host, '/tmp/credentials.json'), {
+            read_credentials(host, '/tmp/credentials.json'),
+            {
                 'GH_USER': 'user-github',
                 'GH_TOKEN': 'pass-github',
                 'GERRIT_USER': 'user-gerrit',
                 'GERRIT_TOKEN': 'pass-gerrit',
-            })
+            },
+        )
 
     def test_get_credentials_choose_file_over_environment(self):
         host = MockHost()
-        host.environ.update({
-            'GH_USER': 'user-github-from-env',
-            'GH_TOKEN': 'pass-github-from-env',
-            'GERRIT_USER': 'user-gerrit-from-env',
-            'GERRIT_TOKEN': 'pass-gerrit-from-env',
-        })
+        host.environ.update(
+            {
+                'GH_USER': 'user-github-from-env',
+                'GH_TOKEN': 'pass-github-from-env',
+                'GERRIT_USER': 'user-gerrit-from-env',
+                'GERRIT_TOKEN': 'pass-gerrit-from-env',
+            }
+        )
         host.filesystem.write_text_file(
             '/tmp/credentials.json',
-            json.dumps({
-                'GH_USER': 'user-github-from-json',
-                'GH_TOKEN': 'pass-github-from-json',
-            }))
+            json.dumps(
+                {
+                    'GH_USER': 'user-github-from-json',
+                    'GH_TOKEN': 'pass-github-from-json',
+                }
+            ),
+        )
         self.assertEqual(
-            read_credentials(host, '/tmp/credentials.json'), {
+            read_credentials(host, '/tmp/credentials.json'),
+            {
                 'GH_USER': 'user-github-from-json',
                 'GH_TOKEN': 'pass-github-from-json',
-            })
+            },
+        )
 
     def test_is_testharness_baseline(self):
         self.assertTrue(is_testharness_baseline('fake-test-expected.txt'))
         self.assertTrue(
-            is_testharness_baseline('external/wpt/fake-test-expected.txt'))
+            is_testharness_baseline('external/wpt/fake-test-expected.txt')
+        )
         self.assertTrue(
-            is_testharness_baseline('/tmp/wpt/fake-test-expected.txt'))
+            is_testharness_baseline('/tmp/wpt/fake-test-expected.txt')
+        )
         self.assertFalse(is_testharness_baseline('fake-test-expected.html'))
         self.assertFalse(
-            is_testharness_baseline('external/wpt/fake-test-expected.html'))
+            is_testharness_baseline('external/wpt/fake-test-expected.html')
+        )
 
     def test_is_basename_skipped(self):
         self.assertTrue(is_basename_skipped('MANIFEST.json'))
@@ -103,28 +126,43 @@ class CommonTest(unittest.TestCase):
 
     def test_is_file_exportable(self):
         self.assertTrue(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'html/fake-test.html',
-                               self.project_config))
+            is_file_exportable(
+                RELATIVE_WPT_TESTS + 'html/fake-test.html', self.project_config
+            )
+        )
         self.assertFalse(
             is_file_exportable(
                 RELATIVE_WPT_TESTS + 'html/fake-test-expected.txt',
-                self.project_config))
+                self.project_config,
+            )
+        )
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'MANIFEST.json',
-                               self.project_config))
+            is_file_exportable(
+                RELATIVE_WPT_TESTS + 'MANIFEST.json', self.project_config
+            )
+        )
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/OWNERS',
-                               self.project_config))
+            is_file_exportable(
+                RELATIVE_WPT_TESTS + 'dom/OWNERS', self.project_config
+            )
+        )
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'dom/DIR_METADATA',
-                               self.project_config))
+            is_file_exportable(
+                RELATIVE_WPT_TESTS + 'dom/DIR_METADATA', self.project_config
+            )
+        )
         self.assertTrue(
             is_file_exportable(
                 RELATIVE_WPT_TESTS + 'webdriver/tests/pytest.ini',
-                self.project_config))
+                self.project_config,
+            )
+        )
         self.assertFalse(
-            is_file_exportable(RELATIVE_WPT_TESTS + 'html/tools/PRESUBMIT.py',
-                               self.project_config))
+            is_file_exportable(
+                RELATIVE_WPT_TESTS + 'html/tools/PRESUBMIT.py',
+                self.project_config,
+            )
+        )
 
     def test_is_file_exportable_asserts_path(self):
         # Rejects basenames.
@@ -137,4 +175,5 @@ class CommonTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             is_file_exportable(
                 '/mock-checkout/' + RELATIVE_WPT_TESTS + 'OWNERS',
-                self.project_config)
+                self.project_config,
+            )

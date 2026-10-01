@@ -9,8 +9,9 @@ import template_expander
 
 class DeprecationInfoWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
-        super(DeprecationInfoWriter, self).__init__(json5_file_paths,
-                                                    output_dir)
+        super(DeprecationInfoWriter, self).__init__(
+            json5_file_paths, output_dir
+        )
         self._outputs = {
             'deprecation_info.cc': self.generate_implementation,
         }

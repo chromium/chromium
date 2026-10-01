@@ -21,7 +21,8 @@ class CSSOMTypesWriter(json5_generator.Writer):
 
         self._input_files = json5_file_paths
         self._properties = (
-            css_properties.CSSProperties(json5_file_paths)).longhands
+            css_properties.CSSProperties(json5_file_paths)
+        ).longhands
 
         for property_ in self._properties:
             types = []
@@ -36,8 +37,7 @@ class CSSOMTypesWriter(json5_generator.Writer):
                 keywords = property_.keywords
 
             # Generate CSSValueID values from keywords.
-            property_.keywordIDs = list(map(enum_key_for_css_keyword,
-                                            keywords))
+            property_.keywordIDs = list(map(enum_key_for_css_keyword, keywords))
 
         self._outputs = {
             'cssom_types.cc': self.generate_types,

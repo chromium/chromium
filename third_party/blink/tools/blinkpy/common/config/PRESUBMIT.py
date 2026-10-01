@@ -10,14 +10,14 @@ for more details about the presubmit API built into gcl.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+
 def CheckEnsureSpecifier(input_api, output_api):
-    """Ensure the first specifiers for the builders are valid.
-    """
+    """Ensure the first specifiers for the builders are valid."""
     this_dir = input_api.PresubmitLocalPath()
-    builders_json_file = input_api.os_path.join(this_dir,
-                                                "builders.json")
-    generic_test_expectation = input_api.os_path.join(this_dir,
-        '..', '..', '..', '..', 'web_tests', 'TestExpectations')
+    builders_json_file = input_api.os_path.join(this_dir, "builders.json")
+    generic_test_expectation = input_api.os_path.join(
+        this_dir, '..', '..', '..', '..', 'web_tests', 'TestExpectations'
+    )
     if builders_json_file in input_api.AbsoluteLocalPaths():
         with open(generic_test_expectation, encoding='utf-8') as f:
             tags = f.readline().rstrip()
@@ -30,9 +30,12 @@ def CheckEnsureSpecifier(input_api, output_api):
                 if tag not in tags:
                     error_message = (
                         'This CL updates builders.json, but the specifier %s '
-                        'is not a valid tag in TestExpectations' % tag)
+                        'is not a valid tag in TestExpectations' % tag
+                    )
                     if input_api.is_committing:
                         return [output_api.PresubmitError(error_message)]
                     else:
-                        return [output_api.PresubmitPromptWarning(error_message)]
+                        return [
+                            output_api.PresubmitPromptWarning(error_message)
+                        ]
     return []

@@ -10,8 +10,10 @@ import sys
 
 # go up 3 parent directories to //src/third_party/blink
 path_to_blink = os.path.abspath(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 *[os.path.pardir] * 3))
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), *[os.path.pardir] * 3
+    )
+)
 
 # go up 2 parent directories to //src
 path_to_src_root = os.path.join(path_to_blink, *[os.path.pardir] * 2)
@@ -20,7 +22,9 @@ path_to_src_root = os.path.join(path_to_blink, *[os.path.pardir] * 2)
 sys.path.insert(
     0,
     os.path.normpath(
-        os.path.join(path_to_src_root, 'components/resources/protobufs')))
+        os.path.join(path_to_src_root, 'components/resources/protobufs')
+    ),
+)
 
 from binary_proto_generator import BinaryProtoGenerator
 
@@ -28,6 +32,7 @@ from binary_proto_generator import BinaryProtoGenerator
 class ElementLocatorProtoGenerator(BinaryProtoGenerator):
     def ImportProtoModule(self):
         import element_locator_pb2
+
         globals()['element_locator_pb2'] = element_locator_pb2
 
     def EmptyProtoInstance(self):

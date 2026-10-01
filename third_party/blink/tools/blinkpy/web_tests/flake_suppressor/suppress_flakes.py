@@ -15,13 +15,16 @@ suppress_flakes.py \
 --project chrome-unexpected-pass-data \
 --sample-period 5
 """
+
 from flake_suppressor_common import argument_parsing
 from flake_suppressor_common import result_output
 from flake_suppressor_common import tag_utils as common_tag_utils
 
 from blinkpy.web_tests.flake_suppressor import web_tests_tag_utils as tag_utils
 from blinkpy.web_tests.flake_suppressor import web_tests_queries
-from blinkpy.web_tests.flake_suppressor import web_tests_results as results_module
+from blinkpy.web_tests.flake_suppressor import (
+    web_tests_results as results_module,
+)
 from blinkpy.web_tests.flake_suppressor import web_tests_expectations
 
 
@@ -29,29 +32,35 @@ def main() -> int:
     args = argument_parsing.ParseArgs()
     common_tag_utils.SetTagUtilsImplementation(tag_utils.WebTestsTagUtils)
     expectations_processor = (
-        web_tests_expectations.WebTestsExpectationProcessor())
+        web_tests_expectations.WebTestsExpectationProcessor()
+    )
 
     if not args.bypass_up_to_date_check:
         expectations_processor.AssertCheckoutIsUpToDate()
 
     results_processor = results_module.WebTestsResultProcessor(
-        expectations_processor)
+        expectations_processor
+    )
     querier_instance = web_tests_queries.WebTestsBigQueryQuerier(
-        args.sample_period, args.project, results_processor)
+        args.sample_period, args.project, results_processor
+    )
 
     if args.non_hidden_failures_only:
         if len(args.builder_names) > 0:
-            results = querier_instance.\
-                GetFailingBuildCulpritFromCiBuilders(args.builder_names)
+            results = querier_instance.GetFailingBuildCulpritFromCiBuilders(
+                args.builder_names
+            )
         else:
             results = querier_instance.GetFailingCiBuildCulpritTests()
 
         aggregated_results = results_processor.AggregateTestStatusResults(
-            results)
+            results
+        )
     else:
         if len(args.builder_names) > 0:
-            results = querier_instance.\
-                GetFlakyOrFailingTestsFromCiBuilders(args.builder_names)
+            results = querier_instance.GetFlakyOrFailingTestsFromCiBuilders(
+                args.builder_names
+            )
         else:
             results = querier_instance.GetFlakyOrFailingCiTests()
             results.extend(querier_instance.GetFlakyOrFailingTryTests())
@@ -66,29 +75,39 @@ def main() -> int:
     print(
         'If there are many instances of failed tests, that may be indicative '
         'of an issue that should be handled in some other way, e.g. reverting '
-        'a bad CL.')
+        'a bad CL.'
+    )
 
     if args.prompt_for_user_input:
         input('\nBeginning of user input section - press any key to continue')
         expectations_processor.IterateThroughResultsForUser(
-            aggregated_results, args.group_by_tags, args.include_all_tags)
+            aggregated_results, args.group_by_tags, args.include_all_tags
+        )
     else:
         if args.non_hidden_failures_only:
             expectations_processor.CreateExpectationsForAllResults(
-                aggregated_results, args.group_by_tags, args.include_all_tags,
+                aggregated_results,
+                args.group_by_tags,
+                args.include_all_tags,
                 args.build_fail_total_number_threshold,
                 args.build_fail_consecutive_days_threshold,
-                args.build_fail_recent_days_threshold)
+                args.build_fail_recent_days_threshold,
+            )
         else:
             if len(args.builder_names) > 0:
-                result_counts = querier_instance.\
-                    GetResultCountFromCiBuilders(args.builder_names)
+                result_counts = querier_instance.GetResultCountFromCiBuilders(
+                    args.builder_names
+                )
             else:
                 result_counts = querier_instance.GetResultCounts()
             expectations_processor.IterateThroughResultsWithThresholds(
-                aggregated_results, args.group_by_tags, result_counts,
-                args.ignore_threshold, args.flaky_threshold,
-                args.include_all_tags)
+                aggregated_results,
+                args.group_by_tags,
+                result_counts,
+                args.ignore_threshold,
+                args.flaky_threshold,
+                args.include_all_tags,
+            )
 
     print('\nGenerated expectations will need to have bugs manually added.')
 

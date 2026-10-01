@@ -29,7 +29,8 @@ class CodeNodeTest(unittest.TestCase):
 
         def simplify(text):
             return "\n".join(
-                [" ".join(line.split()) for line in text.split("\n")])
+                [" ".join(line.split()) for line in text.split("\n")]
+            )
 
         actual = simplify(render_code_node(node))
         expected = simplify(expected)
@@ -63,10 +64,12 @@ class CodeNodeTest(unittest.TestCase):
         work just same as Python built-in list.
         """
         root = ListNode(separator=",")
-        root.extend([
-            LiteralNode("2"),
-            LiteralNode("4"),
-        ])
+        root.extend(
+            [
+                LiteralNode("2"),
+                LiteralNode("4"),
+            ]
+        )
         root.insert(1, LiteralNode("3"))
         root.insert(0, LiteralNode("1"))
         root.insert(100, LiteralNode("5"))
@@ -83,22 +86,27 @@ class CodeNodeTest(unittest.TestCase):
         self.assertRenderResult(ListNode(tail="tail"), "")
         self.assertRenderResult(
             ListNode([TextNode("-content-")], head="head", tail="tail"),
-            "head-content-tail")
+            "head-content-tail",
+        )
 
     def test_nested_sequence(self):
         """Tests nested ListNodes."""
         root = ListNode(separator=",")
         nested = ListNode(separator=",")
-        nested.extend([
-            LiteralNode("2"),
-            LiteralNode("3"),
-            LiteralNode("4"),
-        ])
-        root.extend([
-            LiteralNode("1"),
-            nested,
-            LiteralNode("5"),
-        ])
+        nested.extend(
+            [
+                LiteralNode("2"),
+                LiteralNode("3"),
+                LiteralNode("4"),
+            ]
+        )
+        root.extend(
+            [
+                LiteralNode("1"),
+                nested,
+                LiteralNode("5"),
+            ]
+        )
         self.assertRenderResult(root, "1,2,3,4,5")
 
     def test_symbol_definition_chains(self):
@@ -108,94 +116,118 @@ class CodeNodeTest(unittest.TestCase):
         """
         root = SymbolScopeNode(tail="\n")
 
-        root.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = ${var2} + ${var3};"),
-            SymbolNode("var2", "int ${var2} = ${var5};"),
-            SymbolNode("var3", "int ${var3} = ${var4};"),
-            SymbolNode("var4", "int ${var4} = 1;"),
-            SymbolNode("var5", "int ${var5} = 2;"),
-        ])
+        root.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = ${var2} + ${var3};"),
+                SymbolNode("var2", "int ${var2} = ${var5};"),
+                SymbolNode("var3", "int ${var3} = ${var4};"),
+                SymbolNode("var4", "int ${var4} = 1;"),
+                SymbolNode("var5", "int ${var5} = 2;"),
+            ]
+        )
 
         root.append(TextNode("(void)${var1};"))
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 int var5 = 2;
 int var2 = var5;
 int var4 = 1;
 int var3 = var4;
 int var1 = var2 + var3;
 (void)var1;
-""")
+""",
+        )
 
     def test_weak_dependency_node(self):
         root = SymbolScopeNode(tail="\n")
 
-        root.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = 1;"),
-            SymbolNode("var2", "int ${var2} = 2;"),
-            SymbolNode("var3", "int ${var3} = 3;"),
-        ])
+        root.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = 1;"),
+                SymbolNode("var2", "int ${var2} = 2;"),
+                SymbolNode("var3", "int ${var3} = 3;"),
+            ]
+        )
 
-        root.extend([
-            WeakDependencyNode(dep_syms=["var1", "var2"]),
-            TextNode("f();"),
-            TextNode("(void)${var3};"),
-            TextNode("(void)${var1};"),
-        ])
+        root.extend(
+            [
+                WeakDependencyNode(dep_syms=["var1", "var2"]),
+                TextNode("f();"),
+                TextNode("(void)${var3};"),
+                TextNode("(void)${var1};"),
+            ]
+        )
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 int var1 = 1;
 
 f();
 int var3 = 3;
 (void)var3;
 (void)var1;
-""")
+""",
+        )
 
     def test_symbol_sensitive_selection_node(self):
         root = SymbolScopeNode(tail="\n")
 
-        root.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = 1;"),
-            SymbolNode("var2", "int ${var2} = 2;"),
-            SymbolNode("var3", "int ${var3} = 3;"),
-        ])
+        root.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = 1;"),
+                SymbolNode("var2", "int ${var2} = 2;"),
+                SymbolNode("var3", "int ${var3} = 3;"),
+            ]
+        )
 
         choice1 = SymbolSensitiveSelectionNode.Choice(
             symbol_names=["var1", "var2"],
-            code_node=TextNode("F(${var1}, ${var2});"))
+            code_node=TextNode("F(${var1}, ${var2});"),
+        )
         choice2 = SymbolSensitiveSelectionNode.Choice(
-            symbol_names=["var3"], code_node=TextNode("F(${var3});"))
+            symbol_names=["var3"], code_node=TextNode("F(${var3});")
+        )
         choice3 = SymbolSensitiveSelectionNode.Choice(
-            symbol_names=[], code_node=TextNode("F();"))
+            symbol_names=[], code_node=TextNode("F();")
+        )
         root.append(SymbolSensitiveSelectionNode([choice1, choice2, choice3]))
 
-        self.assertRenderResult(root, """\
+        self.assertRenderResult(
+            root,
+            """\
 F();
-""")
+""",
+        )
 
         root.insert(0, TextNode("(void)${var3};"))
-        self.assertRenderResult(root, """\
+        self.assertRenderResult(
+            root,
+            """\
 int var3 = 3;
 (void)var3;
 F(var3);
-""")
+""",
+        )
 
         root.insert(0, TextNode("(void)${var2};"))
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 int var2 = 2;
 (void)var2;
 int var3 = 3;
 (void)var3;
 F(var3);
-""")
+""",
+        )
 
         root.insert(0, TextNode("(void)${var1};"))
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 int var1 = 1;
 (void)var1;
 int var2 = 2;
@@ -203,7 +235,8 @@ int var2 = 2;
 int var3 = 3;
 (void)var3;
 F(var1, var2);
-""")
+""",
+        )
 
     def test_template_error_handling(self):
         renderer = MakoRenderer()
@@ -211,10 +244,13 @@ F(var1, var2);
         root.set_renderer(renderer)
 
         root.append(
-            SymbolScopeNode([
-                # Have Mako raise a NameError.
-                TextNode("${unbound_symbol}"),
-            ]))
+            SymbolScopeNode(
+                [
+                    # Have Mako raise a NameError.
+                    TextNode("${unbound_symbol}"),
+                ]
+            )
+        )
 
         with self.assertRaises(NameError):
             renderer.reset()

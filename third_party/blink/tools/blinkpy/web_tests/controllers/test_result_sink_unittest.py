@@ -50,8 +50,10 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         self.luci_context(result_sink=ctx)
         rs = CreateTestResultSink(self.port)
         self.assertIsNotNone(rs)
-        self.assertEqual(rs._session.headers['Authorization'],
-                         'ResultSink ' + ctx['auth_token'])
+        self.assertEqual(
+            rs._session.headers['Authorization'],
+            'ResultSink ' + ctx['auth_token'],
+        )
 
     def test_with_result_sink_section(self):
         ctx = {'address': 'localhost:123', 'auth_token': 'secret'}
@@ -61,12 +63,10 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
 
         response = requests.Response()
         response.status_code = 200
-        with mock.patch.object(rs._session, 'post',
-                               return_value=response) as m:
+        with mock.patch.object(rs._session, 'post', return_value=response) as m:
             rs.sink(test_results.TestResult('test'))
             self.assertTrue(m.called)
-            self.assertEqual(
-                urlparse(m.call_args[0][0]).netloc, ctx['address'])
+            self.assertEqual(urlparse(m.call_args[0][0]).netloc, ctx['address'])
 
 
 class TestResultSinkMessage(TestResultSinkTestBase):
@@ -99,12 +99,15 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertEqual(sent_data['testId'], 'test-name')
         self.assertEqual(sent_data['duration'], '123.456789012s')
         self.assertEqual(sent_data['statusV2'], 'PASSED')
-        self.assertEqual(sent_data['frameworkExtensions'], {
-            'webTest': {
-                'isExpected': True,
-                'status': 'CRASH',
+        self.assertEqual(
+            sent_data['frameworkExtensions'],
+            {
+                'webTest': {
+                    'isExpected': True,
+                    'status': 'CRASH',
+                },
             },
-        })
+        )
 
     def test_sink_with_expectations(self):
         class FakeTestExpectation(object):
@@ -123,10 +126,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         tr.type = ResultType.Crash
         expectations = FakeExpectations()
         expected_tags = [
-            {
-                'key': 'test_name',
-                'value': 'test-name'
-            },
+            {'key': 'test_name', 'value': 'test-name'},
             {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
@@ -151,18 +151,9 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'key': 'web_tests_used_expectations_file',
                 'value': 'SlowTests',
             },
-            {
-                'key': 'raw_typ_expectation',
-                'value': 'Failure'
-            },
-            {
-                'key': 'typ_tag',
-                'value': 'tag1'
-            },
-            {
-                'key': 'typ_tag',
-                'value': 'tag2'
-            },
+            {'key': 'raw_typ_expectation', 'value': 'Failure'},
+            {'key': 'typ_tag', 'value': 'tag1'},
+            {'key': 'typ_tag', 'value': 'tag2'},
         ]
         sent_data = self.sink(True, tr, expectations)
         self.assertEqual(sent_data['tags'], expected_tags)
@@ -171,10 +162,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         tr = test_results.TestResult(test_name='test-name')
         tr.type = ResultType.Crash
         expected_tags = [
-            {
-                'key': 'test_name',
-                'value': 'test-name'
-            },
+            {'key': 'test_name', 'value': 'test-name'},
             {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
@@ -208,10 +196,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         tr.total_run_time = 2
         tr.type = ResultType.Crash
         expected_tags = [
-            {
-                'key': 'test_name',
-                'value': 'test-name'
-            },
+            {'key': 'test_name', 'value': 'test-name'},
             {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
@@ -244,16 +229,16 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         actual_image_diff_stats = {'maxDifference': 20, 'totalPixels': 50}
         failure = test_failures.FailureImageHashMismatch(
             DriverOutput('', '', '321ea39', ''),
-            DriverOutput('', '', '42215dd', ''))
-        tr = test_results.TestResult(test_name='test-name',
-                                     image_diff_stats=actual_image_diff_stats,
-                                     failures=[failure])
+            DriverOutput('', '', '42215dd', ''),
+        )
+        tr = test_results.TestResult(
+            test_name='test-name',
+            image_diff_stats=actual_image_diff_stats,
+            failures=[failure],
+        )
         tr.type = ResultType.Crash
         expected_tags = [
-            {
-                'key': 'test_name',
-                'value': 'test-name'
-            },
+            {'key': 'test_name', 'value': 'test-name'},
             {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
@@ -266,14 +251,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'key': 'web_tests_actual_image_hash',
                 'value': '321ea39',
             },
-            {
-                'key': 'web_tests_image_diff_max_difference',
-                'value': '20'
-            },
-            {
-                'key': 'web_tests_image_diff_total_pixels',
-                'value': '50'
-            },
+            {'key': 'web_tests_image_diff_max_difference', 'value': '20'},
+            {'key': 'web_tests_image_diff_total_pixels', 'value': '50'},
             {
                 'key': 'web_tests_used_expectations_file',
                 'value': 'TestExpectations',
@@ -296,14 +275,12 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_sink_with_test_type(self):
         actual_test_type = {'image', 'text'}
-        tr = test_results.TestResult(test_name='test-name',
-                                     test_type=actual_test_type)
+        tr = test_results.TestResult(
+            test_name='test-name', test_type=actual_test_type
+        )
         tr.type = ResultType.Crash
         expected_tags = [
-            {
-                'key': 'test_name',
-                'value': 'test-name'
-            },
+            {'key': 'test_name', 'value': 'test-name'},
             {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
@@ -312,14 +289,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'key': 'web_tests_test_was_slow',
                 'value': 'false',
             },
-            {
-                'key': 'web_tests_test_type',
-                'value': 'image'
-            },
-            {
-                'key': 'web_tests_test_type',
-                'value': 'text'
-            },
+            {'key': 'web_tests_test_type', 'value': 'image'},
+            {'key': 'web_tests_test_type', 'value': 'text'},
             {
                 'key': 'web_tests_used_expectations_file',
                 'value': 'TestExpectations',
@@ -374,15 +345,21 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         sent_data = self.sink(False, tr)
 
         self.assertEqual(sent_data['statusV2'], 'FAILED')
-        self.assertEqual(sent_data['failureReason'], {
-            'kind': 'TIMEOUT',
-        })
-        self.assertEqual(sent_data['frameworkExtensions'], {
-            'webTest': {
-                'isExpected': False,
-                'status': 'TIMEOUT',
+        self.assertEqual(
+            sent_data['failureReason'],
+            {
+                'kind': 'TIMEOUT',
             },
-        })
+        )
+        self.assertEqual(
+            sent_data['frameworkExtensions'],
+            {
+                'webTest': {
+                    'isExpected': False,
+                    'status': 'TIMEOUT',
+                },
+            },
+        )
 
     def test_artifacts(self):
         tr = test_results.TestResult(test_name='test-name')
@@ -391,14 +368,12 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
         sent_data = self.sink(True, tr)
         self.assertDictEqual(
-            sent_data['artifacts'], {
-                'test-image.png': {
-                    'filePath': '/tmp/test-image.png'
-                },
-                'stdout': {
-                    'filePath': '/tmp/stdout'
-                }
-            })
+            sent_data['artifacts'],
+            {
+                'test-image.png': {'filePath': '/tmp/test-image.png'},
+                'stdout': {'filePath': '/tmp/stdout'},
+            },
+        )
 
     def test_artifacts_with_duplicate_paths(self):
         tr = test_results.TestResult(test_name='test-name')
@@ -407,14 +382,12 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
         sent_data = self.sink(True, tr)
         self.assertDictEqual(
-            sent_data['artifacts'], {
-                'artifact': {
-                    'filePath': '/tmp/foo'
-                },
-                'artifact-1': {
-                    'filePath': '/tmp/bar'
-                }
-            })
+            sent_data['artifacts'],
+            {
+                'artifact': {'filePath': '/tmp/foo'},
+                'artifact-1': {'filePath': '/tmp/bar'},
+            },
+        )
 
     def test_summary_html(self):
         tr = test_results.TestResult(test_name='test-name')
@@ -424,7 +397,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
         sent_data = self.sink(True, tr)
         p = re.compile(
-            '<text-artifact artifact-id="(command|stderr|crash_log)" />')
+            '<text-artifact artifact-id="(command|stderr|crash_log)" />'
+        )
 
         self.assertListEqual(
             p.findall(sent_data['summaryHtml']),
@@ -434,8 +408,10 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def assertFilename(self, test_name, expected_filename):
         sent_data = self.sink(True, test_results.TestResult(test_name))
-        self.assertEqual(sent_data['testMetadata']['location']['fileName'],
-                         '//' + RELATIVE_WEB_TESTS + expected_filename)
+        self.assertEqual(
+            sent_data['testMetadata']['location']['fileName'],
+            '//' + RELATIVE_WEB_TESTS + expected_filename,
+        )
 
     def test_location_filename(self):
         self.assertFilename('real/test.html', 'real/test.html')
@@ -445,15 +421,22 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         # and base in order for it to be recognized as a virtual test.
         self.assertFilename(
             'virtual/virtual_passes/passes/does_not_exist.html',
-            'passes/does_not_exist.html')
+            'passes/does_not_exist.html',
+        )
         self.port.host.filesystem.write_text_file(
-            self.port.host.filesystem.join(MOCK_WEB_TESTS, 'virtual',
-                                           'virtual_passes', 'passes',
-                                           'exists.html'),
+            self.port.host.filesystem.join(
+                MOCK_WEB_TESTS,
+                'virtual',
+                'virtual_passes',
+                'passes',
+                'exists.html',
+            ),
             'body',
         )
-        self.assertFilename('virtual/virtual_passes/passes/exists.html',
-                            'virtual/virtual_passes/passes/exists.html')
+        self.assertFilename(
+            'virtual/virtual_passes/passes/exists.html',
+            'virtual/virtual_passes/passes/exists.html',
+        )
 
     def test_wpt_location_filename(self):
         add_manifest_to_mock_filesystem(self.port)
@@ -471,17 +454,18 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         tr.type = ResultType.Crash
         tr.failure_reason = FailureReason('primary error message')
         sent_data = self.sink(False, tr)
-        self.assertDictEqual(sent_data.get('failureReason'), {
-            'kind': 'CRASH',
-            'errors': [{
-                'message': 'primary error message'
-            }],
-        })
+        self.assertDictEqual(
+            sent_data.get('failureReason'),
+            {
+                'kind': 'CRASH',
+                'errors': [{'message': 'primary error message'}],
+            },
+        )
 
     def test_failure_reason_truncated(self):
         # Swedish "Place of interest symbol", which encodes as 3 bytes in
         # UTF-8. This is one Unicode code point.
-        poi = b'\xE2\x8C\x98'.decode('utf-8')
+        poi = b'\xe2\x8c\x98'.decode('utf-8')
         primary_error_message = poi * 350
 
         # Test that the primary error message is truncated to 1K bytes in
@@ -495,31 +479,35 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         # In this case, the output ends up being 1023 bytes, which is one
         # byte less than the allowed size of 1024 bytes, as we do not want
         # part of a unicode code point to be included in the output.
-        self.assertDictEqual(sent_data.get('failureReason'), {
-            'kind': 'ORDINARY',
-            'errors': [{
-                'message': (poi * 340) + '...'
-            }],
-        })
+        self.assertDictEqual(
+            sent_data.get('failureReason'),
+            {
+                'kind': 'ORDINARY',
+                'errors': [{'message': (poi * 340) + '...'}],
+            },
+        )
 
     def test_test_id_structures(self):
         tr = test_results.TestResult(test_name='foo/bar/baz.html')
         sent_data = self.sink(True, tr)
         self.assertEqual(sent_data['testIdStructured']['fineName'], 'foo/bar')
         self.assertTrue(
-            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents']
+        )
         self.assertIsNone(sent_data['testIdStructured']['coarseName'])
 
         tr = test_results.TestResult(test_name='/baz.html')
         sent_data = self.sink(True, tr)
         self.assertEqual(sent_data['testIdStructured']['fineName'], '')
         self.assertTrue(
-            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents']
+        )
         self.assertIsNone(sent_data['testIdStructured']['coarseName'])
 
         tr = test_results.TestResult(test_name='baz.html')
         sent_data = self.sink(True, tr)
         self.assertEqual(sent_data['testIdStructured']['fineName'], '/')
         self.assertTrue(
-            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents']
+        )
         self.assertIsNone(sent_data['testIdStructured']['coarseName'])

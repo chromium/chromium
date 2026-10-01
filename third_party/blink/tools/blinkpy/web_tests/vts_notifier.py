@@ -27,9 +27,7 @@ _log = logging.getLogger(__name__)
 BLINK_COMPONENT_ID = '1456407'
 # component ID for Default DIR_METADTA of external/wpt/*
 BLINK_INFRA_ECOSYSTEM_COMPONENT_ID = '1456176'
-DEFAULT_COMPONENT_IDS = [
-    BLINK_INFRA_ECOSYSTEM_COMPONENT_ID, BLINK_COMPONENT_ID
-]
+DEFAULT_COMPONENT_IDS = [BLINK_INFRA_ECOSYSTEM_COMPONENT_ID, BLINK_COMPONENT_ID]
 
 BUGAINZER_DESCRIPTION_TEMPLATE = '''\
 This is a reminder that the virtual test suite, **{prefix}**, expired on **{expires}**.
@@ -50,10 +48,9 @@ Note:
 
 
 class VTSNotifier:
-
-    def __init__(self,
-                 host,
-                 buganizer_client: Optional[BuganizerClient] = None):
+    def __init__(
+        self, host, buganizer_client: Optional[BuganizerClient] = None
+    ):
         self.host = host
         self.port: Port = host.port_factory.get()
         self.buganizer_client = buganizer_client or BuganizerClient()
@@ -65,15 +62,18 @@ class VTSNotifier:
         options = self.parse_args(argv)
         configure_logging(
             logging_level=logging.DEBUG if options.verbose else logging.INFO,
-            include_time=True)
+            include_time=True,
+        )
         self._dry_run = options.dry_run
         virtual_test_suites = self.port.virtual_test_suites()
-        _log.info(
-            f'Processing {len(virtual_test_suites)} virtual test suites.')
+        _log.info(f'Processing {len(virtual_test_suites)} virtual test suites.')
         expired_virtual_test_suites = list(
-            filter(self.check_expired_vts, virtual_test_suites))
-        _log.info(f'Processing {len(expired_virtual_test_suites)} '
-                  'expired virtual test suites.')
+            filter(self.check_expired_vts, virtual_test_suites)
+        )
+        _log.info(
+            f'Processing {len(expired_virtual_test_suites)} '
+            'expired virtual test suites.'
+        )
         for expired_virtual_test_suite in expired_virtual_test_suites:
             bug = self.create_draft_bug(expired_virtual_test_suite)
             self.process_draft_bug(bug)
@@ -84,11 +84,13 @@ class VTSNotifier:
             '-v',
             '--verbose',
             action='store_true',
-            help='Log extra details that may be helpful when debugging.')
+            help='Log extra details that may be helpful when debugging.',
+        )
         parser.add_argument(
             '--dry-run',
             action='store_true',
-            help='See what would be done without actually creating bug.')
+            help='See what would be done without actually creating bug.',
+        )
         return parser.parse_args(argv)
 
     def process_draft_bug(self, bug):
@@ -96,15 +98,18 @@ class VTSNotifier:
         try:
             # Checks if a bug with the same title exists on Buganizer
             existing_bugs = self.buganizer_client.GetIssueList(
-                f'title:"{bug.title}"')
+                f'title:"{bug.title}"'
+            )
             if existing_bugs:
                 _log.info(f'Bug already created: {existing_bugs[0].link}')
             elif self._dry_run:
-                _log.info('[dry_run] would have created the following bug:\n'
-                          f'{bug}')
+                _log.info(
+                    f'[dry_run] would have created the following bug:\n{bug}'
+                )
             else:
-                bug = self.buganizer_client.NewIssue(issue=bug,
-                                                     use_markdown=True)
+                bug = self.buganizer_client.NewIssue(
+                    issue=bug, use_markdown=True
+                )
                 _log.info(f'Filed bug: {bug.link}')
         except BuganizerError as e:
             _log.exception(f'Failed to process bug: {e}')
@@ -112,17 +117,22 @@ class VTSNotifier:
     def create_draft_bug(self, vts: VirtualTestSuite) -> BuganizerIssue:
         """Construct a bug for taking action on an expired VirtualTestSuite."""
         _log.debug(f'Expired VTS found: {vts.prefix=}.')
-        title = ('[VT Expire Notice] Virtual test suite '
-                 f'{vts.prefix} expired on {vts.expires}, '
-                 'action required')
+        title = (
+            '[VT Expire Notice] Virtual test suite '
+            f'{vts.prefix} expired on {vts.expires}, '
+            'action required'
+        )
         description = BUGAINZER_DESCRIPTION_TEMPLATE.format(
-            prefix=vts.prefix, expires=vts.expires)
+            prefix=vts.prefix, expires=vts.expires
+        )
         component_id = self.resolve_component_id(vts)
-        bug = BuganizerIssue(title=title,
-                             description=description,
-                             component_id=component_id,
-                             cc=(vts.owners or []),
-                             priority=Priority.P2)
+        bug = BuganizerIssue(
+            title=title,
+            description=description,
+            component_id=component_id,
+            cc=(vts.owners or []),
+            priority=Priority.P2,
+        )
         return bug
 
     def resolve_component_id(self, vts: VirtualTestSuite) -> str:
@@ -135,8 +145,9 @@ class VTSNotifier:
            that is not `Blink>Infra>Ecosystem` or `Blink`
         3. The component for `Blink>Infra>Ecosystem`.
         """
-        vts_dir = self.host.filesystem.join(self.port.web_tests_dir(),
-                                            vts.full_prefix)
+        vts_dir = self.host.filesystem.join(
+            self.port.web_tests_dir(), vts.full_prefix
+        )
         _log.info(f'Resolving component ID for {vts.full_prefix}.')
         component_id = self.read_component_from_metadata(vts_dir)
         if component_id and component_id not in DEFAULT_COMPONENT_IDS:
@@ -158,13 +169,17 @@ class VTSNotifier:
         """
         for base in bases:
             test_path = self.path_finder.path_from_web_tests(base)
-            test_directory = (test_path
-                              if self.host.filesystem.isdir(test_path) else
-                              self.host.filesystem.dirname(test_path))
+            test_directory = (
+                test_path
+                if self.host.filesystem.isdir(test_path)
+                else self.host.filesystem.dirname(test_path)
+            )
             component_id = self.read_component_from_metadata(test_directory)
             if component_id and component_id not in DEFAULT_COMPONENT_IDS:
-                _log.info(f'Using base, {base}, to resolve component ID to '
-                          f'{component_id}.')
+                _log.info(
+                    f'Using base, {base}, to resolve component ID to '
+                    f'{component_id}.'
+                )
                 return component_id
         _log.info('No DIR_METADATA found. Using Blink component.')
         return BLINK_COMPONENT_ID
@@ -180,7 +195,8 @@ class VTSNotifier:
         for date_format in ['%b %d, %Y', '%B %d, %Y']:
             try:
                 expiration_date = datetime.datetime.strptime(
-                    vts.expires, date_format)
+                    vts.expires, date_format
+                )
                 if datetime.datetime.today() >= expiration_date:
                     return True
             except ValueError:

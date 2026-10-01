@@ -32,8 +32,7 @@ class TestResultSinkClosed(Exception):
     """Raises if sink() is called over a closed TestResultSink instance."""
 
 
-def CreateTestResultSink(port,
-                         expectations: Optional[TestExpectations] = None):
+def CreateTestResultSink(port, expectations: Optional[TestExpectations] = None):
     """Creates TestResultSink, if result_sink is present in LUCI_CONTEXT.
 
     Args:
@@ -58,18 +57,18 @@ def CreateTestResultSink(port,
 class TestResultSink:
     """A class for uploading test results and artifacts via ResultSink."""
 
-    def __init__(self,
-                 port,
-                 sink_ctx,
-                 expectations: Optional[TestExpectations] = None):
+    def __init__(
+        self, port, sink_ctx, expectations: Optional[TestExpectations] = None
+    ):
         self._port = port
         # Null with `--no-expectations`.
         self._expectations = expectations
         self.is_closed = False
         self._sink_ctx = sink_ctx
         self._url = (
-            'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' %
-            self._sink_ctx['address'])
+            'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults'
+            % self._sink_ctx['address']
+        )
         self._session = requests.Session()
         sink_headers = {
             'Content-Type': 'application/json',
@@ -98,15 +97,18 @@ class TestResultSink:
         # According to //third_party/blink/web_tests/SlowTests, a test is
         # considered slow if it is slower than ~30% of its timeout since test
         # times can vary by up to 3x.
-        portion_of_timeout = result.total_run_time / (self._port.timeout_ms() /
-                                                      1000)
+        portion_of_timeout = result.total_run_time / (
+            self._port.timeout_ms() / 1000
+        )
         test_was_slow = portion_of_timeout > 0.3
 
         tags = [
             pair('test_name', result.test_name),
             # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
-            pair('web_tests_base_timeout',
-                 str(int(self._port.timeout_ms() / 1000))),
+            pair(
+                'web_tests_base_timeout',
+                str(int(self._port.timeout_ms() / 1000)),
+            ),
             pair('web_tests_test_was_slow', json.dumps(test_was_slow)),
         ]
 
@@ -114,30 +116,45 @@ class TestResultSink:
         # equal without needing to download the files.
         if result.actual_image_hash:
             tags.append(
-                pair(test_failures.FailureImage.ACTUAL_HASH_RDB_TAG,
-                     result.actual_image_hash))
+                pair(
+                    test_failures.FailureImage.ACTUAL_HASH_RDB_TAG,
+                    result.actual_image_hash,
+                )
+            )
 
         # Used by `//third_party/blink/tools/run_fuzzy_diff_analyzer.py`.
-        if (result.image_diff_stats and result.image_diff_stats.keys() >=
-            {'maxDifference', 'totalPixels'}):
+        if result.image_diff_stats and result.image_diff_stats.keys() >= {
+            'maxDifference',
+            'totalPixels',
+        }:
             tags.append(
-                pair('web_tests_image_diff_max_difference',
-                     str(result.image_diff_stats['maxDifference'])))
+                pair(
+                    'web_tests_image_diff_max_difference',
+                    str(result.image_diff_stats['maxDifference']),
+                )
+            )
             tags.append(
-                pair('web_tests_image_diff_total_pixels',
-                     str(result.image_diff_stats['totalPixels'])))
+                pair(
+                    'web_tests_image_diff_total_pixels',
+                    str(result.image_diff_stats['totalPixels']),
+                )
+            )
         for test_type_str in sorted(result.test_type):
             tags.append(pair('web_tests_test_type', test_type_str))
 
         # Used by the Blink unexpected pass finder (UPF).
         for used_file in self._port.used_expectations_files():
             tags.append(
-                pair('web_tests_used_expectations_file',
-                     self._port.relative_test_filename(used_file)))
+                pair(
+                    'web_tests_used_expectations_file',
+                    self._port.relative_test_filename(used_file),
+                )
+            )
 
         if self._expectations:
             test_expectation = self._expectations.get_expectations(
-                result.test_name)
+                result.test_name
+            )
             for expectation in test_expectation.raw_results:
                 tags.append(pair('raw_typ_expectation', expectation))
             for tag in self._expectations.system_condition_tags:
@@ -187,8 +204,9 @@ class TestResultSink:
                 if name in ['command', 'stderr', 'crash_log']:
                     summaries.append(
                         '<h3>%s</h3>'
-                        '<p><text-artifact artifact-id="%s" /></p>' %
-                        (art_id, art_id))
+                        '<p><text-artifact artifact-id="%s" /></p>'
+                        % (art_id, art_id)
+                    )
 
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
@@ -208,8 +226,9 @@ class TestResultSink:
 
         # fileName refers to the real file path instead of the test path
         # that might be virtualized.
-        path = (self._port.get_file_path_for_wpt_test(result.test_name)
-                or self._port.name_for_test(result.test_name))
+        path = self._port.get_file_path_for_wpt_test(
+            result.test_name
+        ) or self._port.name_for_test(result.test_name)
         if self._port.host.filesystem.sep != '/':
             path = path.replace(self._port.host.filesystem.sep, '/')
         loc_fn = '//%s%s' % (RELATIVE_WEB_TESTS, path)
@@ -260,16 +279,14 @@ class TestResultSink:
                 # ResultDB requires a skipped reason message to be uploaded for all skipped tests.
                 r['skippedReason'] = {
                     # TODO(crbug.com/410893293): Improve this to report the actual skip reason.
-                    'kind':
-                    'OTHER',
-                    'reasonMessage':
-                    'Test was skipped for one of the reasons in https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/port/base.py?q=skips_test',
+                    'kind': 'OTHER',
+                    'reasonMessage': 'Test was skipped for one of the reasons in https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/port/base.py?q=skips_test',
                 }
             else:
                 # Expected failure, timeout, crash, pass all
                 # represent logically "passing" tests.
                 r['statusV2'] = 'PASSED'
-        else: # not result.is_expected
+        else:  # not result.is_expected
             if result.type == ResultType.Skip:
                 r['statusV2'] = 'EXECUTION_ERRORED'
             else:
@@ -291,10 +308,13 @@ class TestResultSink:
 
         if r['statusV2'] == 'FAILED' and result.failure_reason:
             primary_error_message = _truncate_to_utf8_bytes(
-                result.failure_reason.primary_error_message, 1024)
-            r['failureReason']['errors'] = [{
-                'message': primary_error_message,
-            }]
+                result.failure_reason.primary_error_message, 1024
+            )
+            r['failureReason']['errors'] = [
+                {
+                    'message': primary_error_message,
+                }
+            ]
 
         self._send({'testResults': [r]})
 
@@ -309,7 +329,7 @@ class TestResultSink:
 
 
 def _truncate_to_utf8_bytes(s, length):
-    """ Truncates a string to a given number of bytes when encoded as UTF-8.
+    """Truncates a string to a given number of bytes when encoded as UTF-8.
 
     Ensures the given string does not take more than length bytes when encoded
     as UTF-8. Adds trailing ellipsis (...) if truncation occurred. A truncated
@@ -328,7 +348,7 @@ def _truncate_to_utf8_bytes(s, length):
         encoded = s
     if len(encoded) > length:
         # Truncate, leaving space for trailing ellipsis (...).
-        encoded = encoded[:length - 3]
+        encoded = encoded[: length - 3]
         # Truncating the string encoded as UTF-8 may have left the final
         # codepoint only partially present. Pass 'ignore' to acknowledge
         # and ensure this is dropped.

@@ -45,7 +45,8 @@ def main(argv):
     else:
         host = Host()
         stats_path = host.filesystem.join(
-            host.port_factory.get().artifacts_directory(), 'stats.json')
+            host.port_factory.get().artifacts_directory(), 'stats.json'
+        )
 
     with open(stats_path, 'r') as fp:
         stats_trie = json.load(fp)
@@ -57,15 +58,15 @@ def main(argv):
         if worker not in stats_by_worker:
             stats_by_worker[worker] = []
         test_number = data["results"][1]
-        stats_by_worker[worker].append({
-            "name": test_name,
-            "number": test_number
-        })
+        stats_by_worker[worker].append(
+            {"name": test_name, "number": test_number}
+        )
 
     for worker in sorted(stats_by_worker.keys()):
         print(worker + ':')
         for test in sorted(
-                stats_by_worker[worker], key=lambda test: test["number"]):
+            stats_by_worker[worker], key=lambda test: test["number"]
+        ):
             print(test["name"])
         print
 

@@ -4,5 +4,11 @@
 
 
 def main(request, response):
-    return 204, [("Content-Type", "text/html"),
-                 ("Supports-Loading-Mode", "fenced-frame")], b"No content"
+    return (
+        204,
+        [
+            ("Content-Type", "text/html"),
+            ("Supports-Loading-Mode", "fenced-frame"),
+        ],
+        b"No content",
+    )

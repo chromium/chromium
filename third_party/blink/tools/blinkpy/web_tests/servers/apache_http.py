@@ -36,63 +36,70 @@ _log = logging.getLogger(__name__)
 
 
 class ApacheHTTP(server_base.ServerBase):
-    def __init__(self, port_obj, output_dir, additional_dirs,
-                 number_of_servers):
+    def __init__(
+        self, port_obj, output_dir, additional_dirs, number_of_servers
+    ):
         super(ApacheHTTP, self).__init__(port_obj, output_dir)
         # We use the name "httpd" instead of "apache" to make our paths (e.g. the pid file: /tmp/WebKit/httpd.pid)
         # match old-run-webkit-tests: https://bugs.webkit.org/show_bug.cgi?id=63956
         self._name = 'httpd'
         self._log_prefixes = ('access_log', 'error_log')
-        self._mappings = [{
-            'port': 8000,
-            'scheme': 'http'
-        }, {
-            'port': 8080,
-            'scheme': 'http'
-        }, {
-            'port': 8443,
-            'scheme': 'https',
-            'sslcert': True
-        }]
+        self._mappings = [
+            {'port': 8000, 'scheme': 'http'},
+            {'port': 8080, 'scheme': 'http'},
+            {'port': 8443, 'scheme': 'https', 'sslcert': True},
+        ]
         self._number_of_servers = number_of_servers
 
-        self._pid_file = self._filesystem.join(self._runtime_path,
-                                               '%s.pid' % self._name)
+        self._pid_file = self._filesystem.join(
+            self._runtime_path, '%s.pid' % self._name
+        )
 
         executable = self._port_obj.path_to_apache()
 
         test_dir = self._port_obj.web_tests_dir()
         document_root = self._filesystem.join(test_dir, 'http', 'tests')
         forms_test_resources_dir = self._filesystem.join(
-            test_dir, 'fast', 'forms', 'resources')
+            test_dir, 'fast', 'forms', 'resources'
+        )
         media_resources_dir = self._filesystem.join(test_dir, 'media')
         reporting_observer_resources_dir = self._filesystem.join(
-            test_dir, 'reporting-observer', 'resources')
-        webaudio_resources_dir = self._filesystem.join(test_dir, 'webaudio',
-                                                       'resources')
+            test_dir, 'reporting-observer', 'resources'
+        )
+        webaudio_resources_dir = self._filesystem.join(
+            test_dir, 'webaudio', 'resources'
+        )
         mime_types_path = self._filesystem.join(
-            self._port_obj.apache_config_directory(), 'mime.types')
+            self._port_obj.apache_config_directory(), 'mime.types'
+        )
         cert_file = self._filesystem.join(
-            self._port_obj.apache_config_directory(), 'webkit-httpd.pem')
+            self._port_obj.apache_config_directory(), 'webkit-httpd.pem'
+        )
         inspector_sources_dir = self._port_obj.inspector_build_directory()
         generated_sources_dir = self._port_obj.generated_sources_directory()
         php_ini_dir = self._filesystem.join(test_dir, "http", "conf")
 
-        self._access_log_path = self._filesystem.join(output_dir,
-                                                      'access_log.txt')
-        self._error_log_path = self._filesystem.join(output_dir,
-                                                     'error_log.txt')
+        self._access_log_path = self._filesystem.join(
+            output_dir, 'access_log.txt'
+        )
+        self._error_log_path = self._filesystem.join(
+            output_dir, 'error_log.txt'
+        )
 
         self._is_win = self._port_obj.host.platform.is_win()
 
-        assert self._filesystem.exists(test_dir), \
+        assert self._filesystem.exists(test_dir), (
             "'%s' does not exist." % test_dir
-        assert self._filesystem.exists(output_dir), \
+        )
+        assert self._filesystem.exists(output_dir), (
             "'%s' does not exist." % output_dir
-        assert self._filesystem.exists(inspector_sources_dir), \
+        )
+        assert self._filesystem.exists(inspector_sources_dir), (
             "'%s' does not exist." % inspector_sources_dir
-        assert self._filesystem.exists(generated_sources_dir), \
+        )
+        assert self._filesystem.exists(generated_sources_dir), (
             "'%s' does not exist." % generated_sources_dir
+        )
 
         # yapf: disable
         start_cmd = [
@@ -132,17 +139,23 @@ class ApacheHTTP(server_base.ServerBase):
         if self._is_win:
             start_cmd += [
                 '-c',
-                'ThreadsPerChild %d' % (self._number_of_servers * 16)
+                'ThreadsPerChild %d' % (self._number_of_servers * 16),
             ]
         else:
             start_cmd += [
                 '-c',
-                'StartServers %d' % self._number_of_servers, '-c',
-                'MinSpareServers %d' % self._number_of_servers, '-c',
-                'MaxSpareServers %d' % self._number_of_servers, '-C',
-                'User "%s"' % self._port_obj.host.environ.get(
-                    'USERNAME', self._port_obj.host.environ.get('USER', '')),
-                '-k', 'start'
+                'StartServers %d' % self._number_of_servers,
+                '-c',
+                'MinSpareServers %d' % self._number_of_servers,
+                '-c',
+                'MaxSpareServers %d' % self._number_of_servers,
+                '-C',
+                'User "%s"'
+                % self._port_obj.host.environ.get(
+                    'USERNAME', self._port_obj.host.environ.get('USER', '')
+                ),
+                '-k',
+                'start',
             ]
 
         if self._port_obj.http_server_requires_http_protocol_options_unsafe():
@@ -184,28 +197,32 @@ class ApacheHTTP(server_base.ServerBase):
                     '-c',
                     'RemoveHandler .cgi .pl',
                     '-c',
-                    '</Location>'
+                    '</Location>',
                 ]
 
         self._start_cmd = start_cmd
 
     def _spawn_process(self):
-        _log.debug('Starting %s server, cmd="%s"', self._name,
-                   str(self._start_cmd))
+        _log.debug(
+            'Starting %s server, cmd="%s"', self._name, str(self._start_cmd)
+        )
         env = self._port_obj.setup_environ_for_server()
         self._process = self._executive.popen(self._start_cmd, env=env)
         retval = self._process.returncode
         if retval:
             raise server_base.ServerError(
-                'Failed to start %s: %s' % (self._name, retval))
+                'Failed to start %s: %s' % (self._name, retval)
+            )
 
         # For some reason apache isn't guaranteed to have created the pid file before
         # the process exits, so we wait a little while longer.
         if not self._wait_for_action(
-                lambda: self._filesystem.exists(self._pid_file)):
+            lambda: self._filesystem.exists(self._pid_file)
+        ):
             self._log_errors_from_subprocess()
             raise server_base.ServerError(
-                'Failed to start %s: no pid file found' % self._name)
+                'Failed to start %s: no pid file found' % self._name
+            )
 
         return int(self._filesystem.read_text_file(self._pid_file))
 
@@ -224,22 +241,33 @@ class ApacheHTTP(server_base.ServerBase):
             return
 
         env = self._port_obj.setup_environ_for_server()
-        proc = self._executive.popen([
-            self._port_obj.path_to_apache(), '-f',
-            self._port_obj.path_to_apache_config_file(), '-C',
-            'ServerRoot "%s"' % self._port_obj.apache_server_root(), '-c',
-            'PidFile "%s"' % self._pid_file, '-k', 'stop'
-        ], env=env)
+        proc = self._executive.popen(
+            [
+                self._port_obj.path_to_apache(),
+                '-f',
+                self._port_obj.path_to_apache_config_file(),
+                '-C',
+                'ServerRoot "%s"' % self._port_obj.apache_server_root(),
+                '-c',
+                'PidFile "%s"' % self._pid_file,
+                '-k',
+                'stop',
+            ],
+            env=env,
+        )
         _, err = proc.communicate()
         retval = proc.returncode
         if retval or (err and len(err)):
             raise server_base.ServerError(
-                'Failed to stop %s: %s' % (self._name, err))
+                'Failed to stop %s: %s' % (self._name, err)
+            )
 
         # For some reason apache isn't guaranteed to have actually stopped after
         # the stop command returns, so we wait a little while longer for the
         # pid file to be removed.
         if not self._wait_for_action(
-                lambda: not self._filesystem.exists(self._pid_file)):
+            lambda: not self._filesystem.exists(self._pid_file)
+        ):
             raise server_base.ServerError(
-                'Failed to stop %s: pid file still exists' % self._name)
+                'Failed to stop %s: pid file still exists' % self._name
+            )

@@ -64,7 +64,8 @@ class GenericFileSystemTests(object):
     def test_glob__trailing_asterisk(self):
         self.fs.chdir(self.generic_test_dir)
         self.assertEqual(
-            set(self.fs.glob('fo*')), set(['foo.txt', 'foobar', 'foodir']))
+            set(self.fs.glob('fo*')), set(['foo.txt', 'foobar', 'foodir'])
+        )
 
     def test_glob__leading_asterisk(self):
         self.fs.chdir(self.generic_test_dir)
@@ -91,8 +92,7 @@ class GenericFileSystemTests(object):
         self.assertEqual(self.fs.relpath('aaa/./ccc', 'aaa/bbb'), '../ccc')
         self.assertEqual(self.fs.relpath('aaa/../ccc', 'aaa/bbb'), '../../ccc')
         self.assertEqual(self.fs.relpath('aaa/bbb', 'aaa/ccc'), '../bbb')
-        self.assertEqual(
-            self.fs.relpath('aaa/bbb', 'ccc/ddd'), '../../aaa/bbb')
+        self.assertEqual(self.fs.relpath('aaa/bbb', 'ccc/ddd'), '../../aaa/bbb')
         self.assertEqual(self.fs.relpath('aaa/bbb', 'aaa/b'), '../bbb')
         self.assertEqual(self.fs.relpath('aaa/bbb', 'a/bbb'), '../../aaa/bbb')
 
@@ -108,13 +108,16 @@ class GenericFileSystemTests(object):
         self.assertEqual(self.fs.relpath('aaa\\bbb\\ccc', 'aaa\\bbb'), 'ccc')
         self.assertEqual(self.fs.relpath('aaa\\.\\ccc', 'aaa\\bbb'), '..\\ccc')
         self.assertEqual(
-            self.fs.relpath('aaa\\..\\ccc', 'aaa\\bbb'), '..\\..\\ccc')
+            self.fs.relpath('aaa\\..\\ccc', 'aaa\\bbb'), '..\\..\\ccc'
+        )
         self.assertEqual(self.fs.relpath('aaa\\bbb', 'aaa\\ccc'), '..\\bbb')
         self.assertEqual(
-            self.fs.relpath('aaa\\bbb', 'ccc\\ddd'), '..\\..\\aaa\\bbb')
+            self.fs.relpath('aaa\\bbb', 'ccc\\ddd'), '..\\..\\aaa\\bbb'
+        )
         self.assertEqual(self.fs.relpath('aaa\\bbb', 'aaa\\b'), '..\\bbb')
         self.assertEqual(
-            self.fs.relpath('aaa\\bbb', 'a\\bbb'), '..\\..\\aaa\\bbb')
+            self.fs.relpath('aaa\\bbb', 'a\\bbb'), '..\\..\\aaa\\bbb'
+        )
 
     def test_rmtree(self):
         self.fs.chdir(self.generic_test_dir)
@@ -154,11 +157,12 @@ class GenericFileSystemTests(object):
     def test_sanitize_filename(self):
         self.assertEqual(self.fs.sanitize_filename('test.html'), 'test.html')
         self.assertEqual(
-            self.fs.sanitize_filename('test.html?wss&run'),
-            'test.html_wss_run')
+            self.fs.sanitize_filename('test.html?wss&run'), 'test.html_wss_run'
+        )
         self.assertEqual(
             self.fs.sanitize_filename('test.html?wss&run', replacement='-'),
-            'test.html-wss-run')
+            'test.html-wss-run',
+        )
 
 
 class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
@@ -168,8 +172,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
 
         self._this_dir = os.path.dirname(os.path.abspath(__file__))
         self._missing_file = os.path.join(self._this_dir, 'missing_file.py')
-        self._this_file = os.path.join(self._this_dir,
-                                       'filesystem_unittest.py')
+        self._this_file = os.path.join(self._this_dir, 'filesystem_unittest.py')
 
     def tearDown(self):
         self.teardown_generic_test_dir()
@@ -283,7 +286,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         fs = FileSystem()
         text_path = None
 
-        unicode_text_string = '\u016An\u012Dc\u014Dde\u033D'
+        unicode_text_string = '\u016an\u012dc\u014dde\u033d'
         try:
             text_path = tempfile.mktemp(prefix='tree_unittest_')
             file = fs.open_text_file_for_writing(text_path)
@@ -304,8 +307,8 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         text_path = None
         binary_path = None
 
-        unicode_text_string = '\u016An\u012Dc\u014Dde\u033D'
-        hex_equivalent = b'\xC5\xAA\x6E\xC4\xAD\x63\xC5\x8D\x64\x65\xCC\xBD'
+        unicode_text_string = '\u016an\u012dc\u014dde\u033d'
+        hex_equivalent = b'\xc5\xaa\x6e\xc4\xad\x63\xc5\x8d\x64\x65\xcc\xbd'
         try:
             text_path = tempfile.mktemp(prefix='tree_unittest_')
             binary_path = tempfile.mktemp(prefix='tree_unittest_')
@@ -357,8 +360,9 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         # This mostly tests UNC paths on Windows for path names > 260 chars.
         # Currently, only makedirs, copyfile, and various open methods are
         # verified to support UNC paths.
-        long_path = self.fs.join(self.generic_test_dir, 'x' * 100, 'y' * 100,
-                                 'z' * 100)
+        long_path = self.fs.join(
+            self.generic_test_dir, 'x' * 100, 'y' * 100, 'z' * 100
+        )
         self.fs.maybe_make_directory(long_path)
         file1 = self.fs.join(long_path, 'foo')
         file2 = self.fs.join(long_path, 'bar')
@@ -371,8 +375,9 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
 
         # On Windows, rmtree can handle trees containing long paths as long as
         # the root is not a long path.
-        long_path1 = self.fs.join(self.generic_test_dir, 'a' * 100,
-                                  'b' * 100 + " 'b")
+        long_path1 = self.fs.join(
+            self.generic_test_dir, 'a' * 100, 'b' * 100 + " 'b"
+        )
         long_path2 = self.fs.join(long_path1, 'c' * 100)
         self.fs.maybe_make_directory(long_path2)
         file1 = self.fs.join(long_path2, 'foo')

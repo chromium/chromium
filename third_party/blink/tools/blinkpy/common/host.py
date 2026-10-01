@@ -61,11 +61,13 @@ class Host(SystemHost):
         self.remote_branch = None
 
     def git(self, path: os.PathLike | None = None) -> Git | None:
-        return _cached_git(cwd=path,
-                           executive=self.executive,
-                           filesystem=self.filesystem,
-                           platform=self.platform,
-                           remote_branch=self.remote_branch)
+        return _cached_git(
+            cwd=path,
+            executive=self.executive,
+            filesystem=self.filesystem,
+            platform=self.platform,
+            remote_branch=self.remote_branch,
+        )
 
 
 @functools.cache

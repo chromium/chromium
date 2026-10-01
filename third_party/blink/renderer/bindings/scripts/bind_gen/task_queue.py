@@ -43,8 +43,9 @@ class TaskQueue(object):
                 # TODO(crbug.com/1190269) - we can't use more than 56
                 # cores on Windows or Python3 may hang.
                 self._pool_size = min(self._pool_size, 56)
-            self._pool = multiprocessing.Pool(self._pool_size,
-                                              package_initializer().init)
+            self._pool = multiprocessing.Pool(
+                self._pool_size, package_initializer().init
+            )
         self._requested_tasks = []  # List of _Task
         self._did_run = False
 
@@ -82,9 +83,9 @@ class TaskQueue(object):
         assert not self._did_run
         self._did_run = True
 
-        self._requested_tasks = sorted(self._requested_tasks,
-                                       key=lambda task: task.workload,
-                                       reverse=True)
+        self._requested_tasks = sorted(
+            self._requested_tasks, key=lambda task: task.workload, reverse=True
+        )
 
         if self._single_process:
             self._run_in_sequence(report_progress)
@@ -101,7 +102,8 @@ class TaskQueue(object):
         worker_tasks = []  # List of multiprocessing.pool.AsyncResult
         for task in self._requested_tasks:
             worker_tasks.append(
-                self._pool.apply_async(task.func, task.args, task.kwargs))
+                self._pool.apply_async(task.func, task.args, task.kwargs)
+            )
         self._pool.close()
 
         def report_worker_task_progress():
@@ -109,7 +111,9 @@ class TaskQueue(object):
                 return
             done_count = functools.reduce(
                 lambda count, worker_task: count + bool(worker_task.ready()),
-                worker_tasks, 0)
+                worker_tasks,
+                0,
+            )
             report_progress(len(worker_tasks), done_count)
 
         timeout_in_sec = 1

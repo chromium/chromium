@@ -12,14 +12,15 @@ from blinkpy.common.system.executive import ScriptError
 
 
 class MockGitCL:
-
-    def __init__(self,
-                 host,
-                 try_job_results={},
-                 status='closed',
-                 issue_number=1234,
-                 time_out=False,
-                 git_error_output=None):
+    def __init__(
+        self,
+        host,
+        try_job_results={},
+        status='closed',
+        issue_number=1234,
+        time_out=False,
+        git_error_output=None,
+    ):
         """Constructs a fake GitCL with canned return values.
 
         Args:
@@ -73,19 +74,19 @@ class MockGitCL:
         return CLSummary(status, self.filter_latest(self._try_job_results))
 
     def wait_for_closed_status(
-            self,
-            poll_delay_seconds: float = 2 * 60,
-            timeout_seconds: float = 30 * 60,
-            issue: Optional[int] = None,
-            start: Optional[float] = None) -> Optional[CLStatus]:
+        self,
+        poll_delay_seconds: float = 2 * 60,
+        timeout_seconds: float = 30 * 60,
+        issue: Optional[int] = None,
+        start: Optional[float] = None,
+    ) -> Optional[CLStatus]:
         if self._time_out:
             return None
         return CLStatus.CLOSED
 
-    def latest_try_jobs(self,
-                        issue_number: Optional[str] = None,
-                        builder_names=None,
-                        **_):
+    def latest_try_jobs(
+        self, issue_number: Optional[str] = None, builder_names=None, **_
+    ):
         if builder_names:
             jobs = {
                 build: status

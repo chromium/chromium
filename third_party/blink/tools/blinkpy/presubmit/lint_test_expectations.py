@@ -35,14 +35,18 @@
 
 def PresubmitCheckTestExpectations(input_api, output_api):
     os_path = input_api.os_path
-    lint_path = os_path.join(os_path.dirname(os_path.abspath(__file__)),
-                             os_path.pardir, os_path.pardir,
-                             'lint_test_expectations.py')
+    lint_path = os_path.join(
+        os_path.dirname(os_path.abspath(__file__)),
+        os_path.pardir,
+        os_path.pardir,
+        'lint_test_expectations.py',
+    )
 
     subproc = input_api.subprocess.Popen(
         [input_api.python3_executable, lint_path],
         stdout=input_api.subprocess.PIPE,
-        stderr=input_api.subprocess.PIPE)
+        stderr=input_api.subprocess.PIPE,
+    )
     errs = ''
     try:
         _, errs = subproc.communicate(timeout=300)

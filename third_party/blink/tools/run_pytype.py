@@ -9,13 +9,14 @@ import sys
 
 BLINK_TOOLS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(BLINK_TOOLS_DIR, '..', '..', '..'))
+    os.path.join(BLINK_TOOLS_DIR, '..', '..', '..')
+)
 
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
 from pytype_common import pytype_runner
 
-EXTRA_PATHS_COMPONENTS = [('testing', )]
+EXTRA_PATHS_COMPONENTS = [('testing',)]
 EXTRA_PATHS = [
     os.path.join(CHROMIUM_SRC_DIR, *p) for p in EXTRA_PATHS_COMPONENTS
 ]
@@ -33,9 +34,13 @@ TEST_LOCATION = "//third_party/blink/tools/run_pytype.py"
 
 
 def main() -> int:
-    return pytype_runner.run_pytype(TEST_NAME, TEST_LOCATION,
-                                    FILES_AND_DIRECTORIES_TO_CHECK,
-                                    EXTRA_PATHS, BLINK_TOOLS_DIR)
+    return pytype_runner.run_pytype(
+        TEST_NAME,
+        TEST_LOCATION,
+        FILES_AND_DIRECTORIES_TO_CHECK,
+        EXTRA_PATHS,
+        BLINK_TOOLS_DIR,
+    )
 
 
 if __name__ == '__main__':

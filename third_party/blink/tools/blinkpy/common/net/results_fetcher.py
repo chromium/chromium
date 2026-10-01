@@ -41,7 +41,9 @@ from blinkpy.web_tests.builder_list import BuilderList
 
 _log = logging.getLogger(__name__)
 
-RESULTS_SUMMARY_URL_BASE = 'https://storage.googleapis.com/chromium-layout-test-archives'
+RESULTS_SUMMARY_URL_BASE = (
+    'https://storage.googleapis.com/chromium-layout-test-archives'
+)
 
 
 class TestResultsFetcher:
@@ -52,12 +54,12 @@ class TestResultsFetcher:
         https://www.chromium.org/developers/the-json-test-results-format
     """
 
-
     # Matches either:
     # ://\:blink_web_tests!webtest::accessibility#option-removed-from-shadow-dom-crash.html
     # ninja://:blink_web_tests/accessibility/option-removed-from-shadow-dom-crash.html
     _test_id_pattern = re.compile(
-        r'(ninja)?://\S+_(web_tests|wpt(|_\w+))(/|\S+::)(?P<name>\S+)')
+        r'(ninja)?://\S+_(web_tests|wpt(|_\w+))(/|\S+::)(?P<name>\S+)'
+    )
 
     def __init__(self, web, luci_auth):
         self.web = web
@@ -68,11 +70,13 @@ class TestResultsFetcher:
         return cls(host.web, LuciAuth(host))
 
     @memoized
-    def gather_results(self,
-                       build: Build,
-                       suite: str,
-                       exclude_exonerated: bool = False,
-                       only_unexpected: bool = True) -> WebTestResults:
+    def gather_results(
+        self,
+        build: Build,
+        suite: str,
+        exclude_exonerated: bool = False,
+        only_unexpected: bool = True,
+    ) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, f'{build} must set a build ID'
         assert not suite.endswith('(with patch)'), suite
@@ -93,9 +97,11 @@ class TestResultsFetcher:
         }
         read_mask = ['name', 'testId', 'tags', 'status', 'expected']
         test_results = self._resultdb_client.query_test_results(
-            [build.build_id], test_result_predicate, read_mask)
+            [build.build_id], test_result_predicate, read_mask
+        )
         test_results_by_name = self._group_test_results_by_test_name(
-            test_results)
+            test_results
+        )
         # TODO(crbug.com/1428727): Once the bug is fixed, use `expectancy` to
         # filter results server-side instead.
         if only_unexpected:
@@ -105,30 +111,34 @@ class TestResultsFetcher:
                 if not any(result.get('expected') for result in raw_results)
             }
         artifacts = self._resultdb_client.query_artifacts(
-            [build.build_id], {
+            [build.build_id],
+            {
                 'testResultPredicate': test_result_predicate,
-                'artifactIdRegexp': 'actual_.*'
-            })
+                'artifactIdRegexp': 'actual_.*',
+            },
+        )
         artifacts_by_run = self._group_artifacts_by_test_run(artifacts)
-        return WebTestResults.from_rdb_responses(test_results_by_name,
-                                                 artifacts_by_run,
-                                                 step_name=suite,
-                                                 build=build)
+        return WebTestResults.from_rdb_responses(
+            test_results_by_name, artifacts_by_run, step_name=suite, build=build
+        )
 
     def _group_test_results_by_test_name(self, test_results):
         test_results_by_name = collections.defaultdict(list)
         for test_result in test_results:
             test_id_match = self._test_id_pattern.fullmatch(
-                test_result['testId'])
+                test_result['testId']
+            )
             if not test_id_match:
                 continue
-            test_results_by_name[test_id_match['name'].replace(
-                '#', '/')].append(test_result)
+            test_results_by_name[
+                test_id_match['name'].replace('#', '/')
+            ].append(test_result)
         return test_results_by_name
 
     def _group_artifacts_by_test_run(self, artifacts):
         test_run_pattern = re.compile(
-            r'invocations/[^/\s]+/tests/[^/\s]+/results/[^/\s]+')
+            r'invocations/[^/\s]+/tests/[^/\s]+/results/[^/\s]+'
+        )
         artifacts_by_run = collections.defaultdict(list)
         for artifact in artifacts:
             test_run_match = test_run_pattern.match(artifact['name'])
@@ -155,8 +165,9 @@ class TestResultsFetcher:
         that failed only with the patch ("failures"), and tests that failed
         both with and without ("ignored").
         """
-        url_base = self.get_full_builder_url(RESULTS_SUMMARY_URL_BASE,
-                                             build.builder_name)
+        url_base = self.get_full_builder_url(
+            RESULTS_SUMMARY_URL_BASE, build.builder_name
+        )
         url_base = '%s/%s' % (url_base, build.build_number)
         # NOTE(crbug.com/1082907): We used to fetch retry_with_patch_summary.json from
         # test-results.appspot.com. The file has been renamed and can no longer be
@@ -164,9 +175,9 @@ class TestResultsFetcher:
         # There is still a bug in uploading this json file for other platforms than linux.
         # see https://crbug.com/1157202
         file_name = test_suite + '_' + 'test_results_summary.json'
-        return self.web.get_binary('%s/%s' %
-                                   (url_base, file_name),
-                                   return_none_on_404=True)
+        return self.web.get_binary(
+            '%s/%s' % (url_base, file_name), return_none_on_404=True
+        )
 
     def fetch_wpt_report_urls(self, *build_ids):
         """Get a list of URLs pointing to a given build's wptreport artifacts.
@@ -194,17 +205,20 @@ class TestResultsFetcher:
         """
         return self._fetch_artifact_urls(build_ids, r'wpt_screenshots\.txt')
 
-    def _fetch_artifact_urls(self, build_ids: Sequence[str],
-                             id_pattern: str) -> list[str]:
+    def _fetch_artifact_urls(
+        self, build_ids: Sequence[str], id_pattern: str
+    ) -> list[str]:
         if not build_ids:
             return []
         artifacts = self._resultdb_client.query_artifacts(
-            list(build_ids), {
+            list(build_ids),
+            {
                 'followEdges': {
                     'includedInvocations': True,
                 },
                 'artifactIdRegexp': id_pattern,
-            })
+            },
+        )
         artifacts.sort(key=lambda artifact: artifact['artifactId'])
         return [artifact['fetchUrl'] for artifact in artifacts]
 
@@ -225,7 +239,8 @@ def filter_latest_builds(builds):
     for build in builds:
         builder = build.builder_name
         if builder not in latest_builds or (
-                build.build_number
-                and build.build_number > latest_builds[builder].build_number):
+            build.build_number
+            and build.build_number > latest_builds[builder].build_number
+        ):
             latest_builds[builder] = build
     return sorted(latest_builds.values())

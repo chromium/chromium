@@ -13,12 +13,14 @@ def _setup_sys_path():
 
     this_dir = os.path.dirname(__file__)
     root_dir = os.path.abspath(
-        os.path.join(this_dir, *(['..'] * expected_path.count('/'))))
+        os.path.join(this_dir, *(['..'] * expected_path.count('/')))
+    )
 
     module_dirs = (
         # //third_party/blink/renderer/build/scripts/blinkbuild
-        os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'build',
-                     'scripts'),
+        os.path.join(
+            root_dir, 'third_party', 'blink', 'renderer', 'build', 'scripts'
+        ),
         # //third_party/ply
         os.path.join(root_dir, 'third_party'),
         # //third_party/pyjson5/src/json5

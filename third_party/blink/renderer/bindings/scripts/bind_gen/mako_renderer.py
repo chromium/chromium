@@ -26,7 +26,8 @@ class MakoTemplate(object):
         template = self._mako_template_cache.get(template_text)
         if template is None:
             template = mako.template.Template(
-                text=template_text, **template_params)
+                text=template_text, **template_params
+            )
             self._mako_template_cache[template_text] = template
         self._template = template
 
@@ -53,8 +54,11 @@ class MakoRenderer(object):
         self._is_invalidated = False
 
     def is_rendering_complete(self):
-        return not (self._is_invalidated or self._text_buffer is None
-                    or self._caller_stack)
+        return not (
+            self._is_invalidated
+            or self._text_buffer is None
+            or self._caller_stack
+        )
 
     def invalidate_rendering_result(self):
         self._is_invalidated = True
@@ -85,27 +89,35 @@ class MakoRenderer(object):
 
         try:
             mako_template = template.mako_template(
-                pass_key=_MAKO_TEMPLATE_PASS_KEY)
-            mako_context = mako.runtime.Context(self._text_buffer,
-                                                **template_vars)
+                pass_key=_MAKO_TEMPLATE_PASS_KEY
+            )
+            mako_context = mako.runtime.Context(
+                self._text_buffer, **template_vars
+            )
             mako_template.render_context(mako_context)
         except:
             # Print stacktrace of template rendering.
             sys.stderr.write("\n")
             sys.stderr.write("==== template rendering error ====\n")
-            sys.stderr.write("  * name: {}, type: {}\n".format(
-                _guess_caller_name(self.last_caller), type(self.last_caller)))
-            sys.stderr.write("  * depth: {}, module_id: {}\n".format(
-                len(self._caller_stack), mako_template.module_id))
+            sys.stderr.write(
+                "  * name: {}, type: {}\n".format(
+                    _guess_caller_name(self.last_caller), type(self.last_caller)
+                )
+            )
+            sys.stderr.write(
+                "  * depth: {}, module_id: {}\n".format(
+                    len(self._caller_stack), mako_template.module_id
+                )
+            )
             sys.stderr.write("---- template source ----\n")
             sys.stderr.write(mako_template.source)
 
             # Save the error state at the deepest call.
             current = self._caller_stack
             on_error = self._caller_stack_on_error
-            if (len(current) <= len(on_error)
-                    and all(current[i] == on_error[i]
-                            for i in range(len(current)))):
+            if len(current) <= len(on_error) and all(
+                current[i] == on_error[i] for i in range(len(current))
+            ):
                 pass  # Error happened in a deeper caller.
             else:
                 self._caller_stack_on_error = list(self._caller_stack)

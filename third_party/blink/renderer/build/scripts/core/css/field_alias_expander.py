@@ -16,9 +16,9 @@ class FieldAliasExpander(object):
 
     def __init__(self, file_path):
         loaded_file = json5_generator.Json5File.load_from_files([file_path])
-        self._field_aliases = dict([
-            (alias["name"], alias) for alias in loaded_file.name_dictionaries
-        ])
+        self._field_aliases = dict(
+            [(alias["name"], alias) for alias in loaded_file.name_dictionaries]
+        )
 
     def expand_field_alias(self, property_):
         """
@@ -30,5 +30,6 @@ class FieldAliasExpander(object):
                 if field == 'name':
                     continue
                 assert hasattr(property_, field)
-                setattr(property_, field,
-                        self._field_aliases[alias_template][field])
+                setattr(
+                    property_, field, self._field_aliases[alias_template][field]
+                )

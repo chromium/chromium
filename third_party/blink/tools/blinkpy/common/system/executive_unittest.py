@@ -35,8 +35,8 @@ import unittest
 # Since we execute this script directly as part of the unit tests, we need to
 # ensure that blink/tools is in sys.path for the next imports to work correctly.
 script_dir = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
 
@@ -48,26 +48,31 @@ class ScriptErrorTest(unittest.TestCase):
         error = ScriptError('My custom message!', '', -1)
         self.assertEqual(error.message_with_output(), 'My custom message!')
         error = ScriptError('My custom message!', '', -1, 'My output.')
-        self.assertEqual(error.message_with_output(),
-                         'My custom message!\n\noutput: My output.')
-        error = ScriptError('', 'my_command!', -1, 'My output.',
-                            '/Users/username/blah')
         self.assertEqual(
             error.message_with_output(),
-            'Failed to run "\'my_command!\'" exit_code: -1 cwd: /Users/username/blah\n\noutput: My output.'
+            'My custom message!\n\noutput: My output.',
+        )
+        error = ScriptError(
+            '', 'my_command!', -1, 'My output.', '/Users/username/blah'
+        )
+        self.assertEqual(
+            error.message_with_output(),
+            'Failed to run "\'my_command!\'" exit_code: -1 cwd: /Users/username/blah\n\noutput: My output.',
         )
         error = ScriptError('', 'my_command!', -1, 'ab' + '1' * 499)
         self.assertEqual(
             error.message_with_output(),
             'Failed to run "\'my_command!\'" exit_code: -1\n\noutput: Last 500 characters of output:\nb'
-            + '1' * 499)
+            + '1' * 499,
+        )
 
     def test_message_with_tuple(self):
-        error = ScriptError('', ('my', 'command'), -1, 'My output.',
-                            '/Users/username/blah')
+        error = ScriptError(
+            '', ('my', 'command'), -1, 'My output.', '/Users/username/blah'
+        )
         self.assertEqual(
             error.message_with_output(),
-            'Failed to run "(\'my\', \'command\')" exit_code: -1 cwd: /Users/username/blah\n\noutput: My output.'
+            'Failed to run "(\'my\', \'command\')" exit_code: -1 cwd: /Users/username/blah\n\noutput: My output.',
         )
 
 
@@ -88,9 +93,11 @@ def command_line(cmd, *args):
 class ExecutiveTest(unittest.TestCase):
     def test_run_command_with_bad_command(self):
         def run_bad_command():
-            Executive().run_command(['foo_bar_command_blah'],
-                                    error_handler=Executive.ignore_error,
-                                    return_exit_code=True)
+            Executive().run_command(
+                ['foo_bar_command_blah'],
+                error_handler=Executive.ignore_error,
+                return_exit_code=True,
+            )
 
         with self.assertRaises(OSError):
             run_bad_command()
@@ -113,14 +120,17 @@ class ExecutiveTest(unittest.TestCase):
     def test_print_command_unicode(self):
         executive = Executive()
         expected_result = 'echo 1 a\\xac'
-        self.assertEqual(expected_result,
-                         executive.command_for_printing(['echo', 1, 'a\xac']))
+        self.assertEqual(
+            expected_result,
+            executive.command_for_printing(['echo', 1, 'a\xac']),
+        )
 
     def test_popen_args(self):
         executive = Executive()
         # Explicitly naming the 'args' argument should not throw an exception.
         executive.popen(
-            args=command_line('echo', 1), stdout=executive.PIPE).wait()
+            args=command_line('echo', 1), stdout=executive.PIPE
+        ).wait()
 
     @unittest.skipIf(sys.platform == 'win32', 'crbug.com/40218265')
     def test_run_command_with_unicode(self):
@@ -128,7 +138,7 @@ class ExecutiveTest(unittest.TestCase):
         to Executive.run* methods, and they will return unicode()
         objects by default unless decode_output=False
         """
-        unicode_tor_input = "WebKit \u2661 Tor Arne Vestb\u00F8!"
+        unicode_tor_input = "WebKit \u2661 Tor Arne Vestb\u00f8!"
         encoding = 'utf-8'
         encoded_tor = unicode_tor_input.encode(encoding)
         # We expect a lossless roundtrip.
@@ -137,31 +147,36 @@ class ExecutiveTest(unittest.TestCase):
         executive = Executive()
 
         output = executive.run_command(
-            command_line('cat'), input=unicode_tor_input)
+            command_line('cat'), input=unicode_tor_input
+        )
         self.assertEqual(output, unicode_tor_output)
 
         output = executive.run_command(command_line('echo', unicode_tor_input))
         self.assertEqual(output, unicode_tor_output)
 
         output = executive.run_command(
-            command_line('echo', unicode_tor_input), decode_output=False)
+            command_line('echo', unicode_tor_input), decode_output=False
+        )
         self.assertEqual(output, encoded_tor)
 
         # Make sure that str() input also works.
         output = executive.run_command(
-            command_line('cat'), input=encoded_tor, decode_output=False)
+            command_line('cat'), input=encoded_tor, decode_output=False
+        )
         self.assertEqual(output, encoded_tor)
 
     def test_kill_process(self):
         executive = Executive()
         if sys.platform == 'win32':
             process = subprocess.Popen(
-                never_ending_command(), stdout=subprocess.PIPE)
+                never_ending_command(), stdout=subprocess.PIPE
+            )
         else:
             process = subprocess.Popen(
                 never_ending_command(),
                 stdout=subprocess.PIPE,
-                preexec_fn=lambda: os.setpgid(0, 0))
+                preexec_fn=lambda: os.setpgid(0, 0),
+            )
 
         self.assertEqual(process.poll(), None)  # Process is running
         executive.kill_process(process.pid)
@@ -175,7 +190,8 @@ class ExecutiveTest(unittest.TestCase):
 
         def timeout():
             executive.run_command(
-                command_line('sleep', 'infinity'), timeout_seconds=0.01)
+                command_line('sleep', 'infinity'), timeout_seconds=0.01
+            )
 
         with self.assertRaises(ScriptError):
             timeout()
@@ -186,7 +202,8 @@ class ExecutiveTest(unittest.TestCase):
         exit_code = executive.run_command(
             command_line('sleep', 'infinity'),
             timeout_seconds=0.01,
-            return_exit_code=True)
+            return_exit_code=True,
+        )
         self.assertNotEqual(exit_code, 0)
 
     def test_timeout_satisfied(self):
@@ -213,6 +230,7 @@ class ExecutiveTest(unittest.TestCase):
 def main(platform, stdin, stdout, cmd, args):
     if platform == 'win32' and hasattr(stdout, 'fileno'):
         import msvcrt
+
         msvcrt.setmode(stdout.fileno(), os.O_BINARY)
     if cmd == '--cat':
         stdout.write(stdin.read())
@@ -221,7 +239,11 @@ def main(platform, stdin, stdout, cmd, args):
     return 0
 
 
-if __name__ == '__main__' and len(sys.argv) > 1 and sys.argv[1] in ('--cat',
-                                                                    '--echo'):
+if (
+    __name__ == '__main__'
+    and len(sys.argv) > 1
+    and sys.argv[1] in ('--cat', '--echo')
+):
     sys.exit(
-        main(sys.platform, sys.stdin, sys.stdout, sys.argv[1], sys.argv[2:]))
+        main(sys.platform, sys.stdin, sys.stdout, sys.argv[1], sys.argv[2:])
+    )

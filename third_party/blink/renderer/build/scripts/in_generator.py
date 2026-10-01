@@ -84,9 +84,12 @@ class Writer(GenericWriter):
         if isinstance(in_files, basestring):
             in_files = [in_files]
         if in_files:
-            self.in_file = InFile.load_from_files(in_files, self.defaults,
-                                                  self.valid_values,
-                                                  self.default_parameters)
+            self.in_file = InFile.load_from_files(
+                in_files,
+                self.defaults,
+                self.valid_values,
+                self.default_parameters,
+            )
         else:
             self.in_file = None
 

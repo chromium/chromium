@@ -22,15 +22,12 @@ class MockCommit(NamedTuple):
 
 
 class MockGit:
-
     # Arguments are listed below, even if they're unused, in order to match
     # the Git class. pylint: disable=unused-argument
 
-    def __init__(self,
-                 cwd=None,
-                 filesystem=None,
-                 executive=None,
-                 platform=None):
+    def __init__(
+        self, cwd=None, filesystem=None, executive=None, platform=None
+    ):
         self.checkout_root = '/mock-checkout'
         self.cwd = cwd or self.checkout_root
         self.added_paths = set()
@@ -43,12 +40,14 @@ class MockGit:
         self.tracking_branch = 'origin/main'
         self._branch_positions = {}
 
-    def run(self,
-            command_args,
-            cwd=None,
-            stdin=None,
-            decode_output=True,
-            return_exit_code=False):
+    def run(
+        self,
+        command_args,
+        cwd=None,
+        stdin=None,
+        decode_output=True,
+        return_exit_code=False,
+    ):
         full_command_args = [self._executable_name] + command_args
         cwd = cwd or self.checkout_root
         return self._executive.run_command(
@@ -56,7 +55,8 @@ class MockGit:
             cwd=cwd,
             input=stdin,
             return_exit_code=return_exit_code,
-            decode_output=decode_output)
+            decode_output=decode_output,
+        )
 
     def add(self, destination_path, return_exit_code=False):
         self.add_list([destination_path], return_exit_code)
@@ -119,11 +119,13 @@ class MockGit:
     def commit_locally_with_message(self, message):
         self._local_commits.append(MockCommit(message, dict(self._staging)))
 
-    def most_recent_log_matching(self,
-                                 grep_str: str,
-                                 path: Optional[str] = None,
-                                 commits: Union[None, str, CommitRange] = None,
-                                 format_pattern: Optional[str] = None) -> str:
+    def most_recent_log_matching(
+        self,
+        grep_str: str,
+        path: Optional[str] = None,
+        commits: Union[None, str, CommitRange] = None,
+        format_pattern: Optional[str] = None,
+    ) -> str:
         start, end = 0, len(self._local_commits)
         if isinstance(commits, str):
             end = self._get_commit_position(commits) + 1
@@ -142,10 +144,14 @@ class MockGit:
                     'H': hex(position)[2:].zfill(40),
                     's': commit.message.splitlines()[0],
                 }
-                return re.sub(
-                    '%(?P<specifier>[a-zA-Z])',
-                    lambda match: format_specifiers[match['specifier']],
-                    format_pattern) + '\n'
+                return (
+                    re.sub(
+                        '%(?P<specifier>[a-zA-Z])',
+                        lambda match: format_specifiers[match['specifier']],
+                        format_pattern,
+                    )
+                    + '\n'
+                )
         return ''
 
     def local_commits(self):
@@ -170,7 +176,8 @@ class MockGit:
     def move(self, origin, destination):
         if self._filesystem:
             self._filesystem.move(
-                self.absolute_path(origin), self.absolute_path(destination))
+                self.absolute_path(origin), self.absolute_path(destination)
+            )
 
     def changed_files(
         self,
@@ -207,7 +214,8 @@ class MockGit:
                 status = FileStatusType.MODIFY
             if status & diff_filter:
                 path_from_checkout_root = self._filesystem.relpath(
-                    path, self.checkout_root)
+                    path, self.checkout_root
+                )
                 changed_files[path_from_checkout_root] = FileStatus(status)
         return changed_files
 
@@ -215,10 +223,12 @@ class MockGit:
         if ref == '@{u}':
             return self._branch_positions[self.tracking_branch]
         match = re.fullmatch(
-            r'(?P<base>HEAD|[\da-fA-F]{40})(~(?P<offset>\d+))?', ref)
+            r'(?P<base>HEAD|[\da-fA-F]{40})(~(?P<offset>\d+))?', ref
+        )
         if not match:
             raise NotImplementedError(
-                'only the `(HEAD|<sha1>)(~<n>)?` syntax is supported')
+                'only the `(HEAD|<sha1>)(~<n>)?` syntax is supported'
+            )
         if match['base'] == 'HEAD':
             base_position = len(self._local_commits) - 1
         else:

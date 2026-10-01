@@ -94,4 +94,5 @@ class MemoizedTest(unittest.TestCase):
             self.assertEqual(
                 str(error),
                 'Cannot call memoized function memoized_add_one with '
-                'unhashable arguments: unhashable type: \'list\'')
+                'unhashable arguments: unhashable type: \'list\'',
+            )

@@ -50,17 +50,21 @@ class MacPort(base.Port):
     FALLBACK_PATHS = {}
 
     FALLBACK_PATHS['mac26'] = ['mac']
-    FALLBACK_PATHS['mac26-arm64'] = ['mac-mac26-arm64'
-                                     ] + FALLBACK_PATHS['mac26']
+    FALLBACK_PATHS['mac26-arm64'] = ['mac-mac26-arm64'] + FALLBACK_PATHS[
+        'mac26'
+    ]
     FALLBACK_PATHS['mac15'] = ['mac-mac15'] + FALLBACK_PATHS['mac26']
-    FALLBACK_PATHS['mac15-arm64'] = ['mac-mac15-arm64'
-                                     ] + FALLBACK_PATHS['mac26-arm64']
+    FALLBACK_PATHS['mac15-arm64'] = ['mac-mac15-arm64'] + FALLBACK_PATHS[
+        'mac26-arm64'
+    ]
     FALLBACK_PATHS['mac14'] = ['mac-mac14'] + FALLBACK_PATHS['mac15']
-    FALLBACK_PATHS['mac14-arm64'] = ['mac-mac14-arm64'
-                                     ] + FALLBACK_PATHS['mac15-arm64']
+    FALLBACK_PATHS['mac14-arm64'] = ['mac-mac14-arm64'] + FALLBACK_PATHS[
+        'mac15-arm64'
+    ]
     FALLBACK_PATHS['mac13'] = ['mac-mac13'] + FALLBACK_PATHS['mac14']
-    FALLBACK_PATHS['mac13-arm64'] = ['mac-mac13-arm64'
-                                     ] + FALLBACK_PATHS['mac14-arm64']
+    FALLBACK_PATHS['mac13-arm64'] = ['mac-mac13-arm64'] + FALLBACK_PATHS[
+        'mac14-arm64'
+    ]
 
     CONTENT_SHELL_NAME = 'Content Shell'
     CHROME_NAME = 'Chromium'
@@ -84,7 +88,7 @@ class MacPort(base.Port):
     def __init__(self, host, port_name, **kwargs):
         super(MacPort, self).__init__(host, port_name, **kwargs)
 
-        self._version = port_name[port_name.index('mac-') + len('mac-'):]
+        self._version = port_name[port_name.index('mac-') + len('mac-') :]
 
         if self._version.endswith('arm64'):
             self._architecture = 'arm64'
@@ -111,25 +115,33 @@ class MacPort(base.Port):
 
     def path_to_apache(self):
         import platform
+
         if platform.machine() == 'arm64':
-            return self._path_from_chromium_base('third_party',
-                                                 'apache-mac-arm64', 'bin',
-                                                 'httpd')
+            return self._path_from_chromium_base(
+                'third_party', 'apache-mac-arm64', 'bin', 'httpd'
+            )
         return self._path_from_chromium_base(
-            'third_party', 'apache-mac', 'bin', 'httpd')
+            'third_party', 'apache-mac', 'bin', 'httpd'
+        )
 
     def path_to_apache_config_file(self):
-        config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
-        return self._filesystem.join(self.apache_config_directory(), config_file_basename)
+        config_file_basename = 'apache2-httpd-%s-php7.conf' % (
+            self._apache_version(),
+        )
+        return self._filesystem.join(
+            self.apache_config_directory(), config_file_basename
+        )
 
     def path_to_driver(self, target=None):
         if self.driver_name() == self.HEADLESS_SHELL_NAME:
             return super().path_to_driver(target)
-        return self.build_path(self.driver_name() + '.app',
-                               'Contents',
-                               'MacOS',
-                               self.driver_name(),
-                               target=target)
+        return self.build_path(
+            self.driver_name() + '.app',
+            'Contents',
+            'MacOS',
+            self.driver_name(),
+            target=target,
+        )
 
     def path_to_smoke_tests_file(self):
         config_name = self.flag_specific_config_name()
@@ -137,5 +149,6 @@ class MacPort(base.Port):
             _, smoke_file = self.flag_specific_configs()[config_name]
             return self._filesystem.join(self.web_tests_dir(), smoke_file)
 
-        return self._filesystem.join(self.web_tests_dir(), 'TestLists',
-                                     'MacOld.txt')
+        return self._filesystem.join(
+            self.web_tests_dir(), 'TestLists', 'MacOld.txt'
+        )

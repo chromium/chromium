@@ -8,7 +8,10 @@ from core.css.field_alias_expander import FieldAliasExpander
 import json5_generator
 from make_origin_trials import OriginTrialsWriter
 from name_utilities import enum_key_for_css_property, id_for_css_property
-from name_utilities import enum_key_for_css_property_alias, id_for_css_property_alias
+from name_utilities import (
+    enum_key_for_css_property_alias,
+    id_for_css_property_alias,
+)
 import dataclasses
 import typing
 import copy
@@ -16,8 +19,14 @@ import copy
 # These values are converted using CSSPrimitiveValue in the setter function,
 # if applicable.
 PRIMITIVE_TYPES = [
-    'short', 'unsigned short', 'int', 'unsigned int', 'unsigned', 'float',
-    'LineClampValue', 'uint16_t'
+    'short',
+    'unsigned short',
+    'int',
+    'unsigned int',
+    'unsigned',
+    'float',
+    'LineClampValue',
+    'uint16_t',
 ]
 
 
@@ -35,62 +44,100 @@ def validate_property(prop, props_by_name):
     """
     name = prop.name
     has_method = lambda x: x in prop.property_methods
-    assert prop.is_property or prop.is_descriptor, \
+    assert prop.is_property or prop.is_descriptor, (
         'Entry must be a property, descriptor, or both [%s]' % name
-    assert not prop.interpolable or prop.is_longhand, \
+    )
+    assert not prop.interpolable or prop.is_longhand, (
         'Only longhands can be interpolable [%s]' % name
-    assert not has_method('ParseSingleValue') or prop.is_longhand, \
+    )
+    assert not has_method('ParseSingleValue') or prop.is_longhand, (
         'Only longhands can implement ParseSingleValue [%s]' % name
-    assert not has_method('ParseShorthand') or prop.is_shorthand, \
+    )
+    assert not has_method('ParseShorthand') or prop.is_shorthand, (
         'Only shorthands can implement ParseShorthand [%s]' % name
-    assert not prop.field_template or prop.is_longhand, \
+    )
+    assert not prop.field_template or prop.is_longhand, (
         'Only longhands can have a field_template [%s]' % name
-    assert not prop.valid_for_first_letter or prop.is_longhand, \
+    )
+    assert not prop.valid_for_first_letter or prop.is_longhand, (
         'Only longhands can be valid_for_first_letter [%s]' % name
-    assert not prop.valid_for_first_line or prop.is_longhand, \
+    )
+    assert not prop.valid_for_first_line or prop.is_longhand, (
         'Only longhands can be valid_for_first_line [%s]' % name
-    assert not prop.valid_for_cue or prop.is_longhand, \
+    )
+    assert not prop.valid_for_cue or prop.is_longhand, (
         'Only longhands can be valid_for_cue [%s]' % name
-    assert not prop.valid_for_marker or prop.is_longhand, \
+    )
+    assert not prop.valid_for_marker or prop.is_longhand, (
         'Only longhands can be valid_for_marker [%s]' % name
-    assert not prop.valid_for_highlight or prop.is_longhand, \
+    )
+    assert not prop.valid_for_highlight or prop.is_longhand, (
         'Only longhands can be valid_for_highlight [%s]' % name
-    assert not prop.tracks_animated_source or prop.is_longhand, \
+    )
+    assert not prop.tracks_animated_source or prop.is_longhand, (
         'Only longhands can have tracks_animated_source [%s]' % name
-    assert not prop.is_internal or prop.computable is None, \
+    )
+    assert not prop.is_internal or prop.computable is None, (
         'Internal properties are always non-computable [%s]' % name
-    assert not has_method('ParseSingleValue') or not prop.field_template == 'keyword', \
-        'When using the keyword template, implement parsing in css_parser_fast_paths.cc [%s]' % name
+    )
+    assert (
+        not has_method('ParseSingleValue')
+        or not prop.field_template == 'keyword'
+    ), (
+        'When using the keyword template, implement parsing in css_parser_fast_paths.cc [%s]'
+        % name
+    )
     if prop.supports_incremental_style:
-        assert not prop.is_animation_property, \
+        assert not prop.is_animation_property, (
             'Animation properties can not be applied incrementally [%s]' % name
-        assert prop.idempotent, \
+        )
+        assert prop.idempotent, (
             'Incrementally applied properties must be idempotent [%s]' % name
+        )
         if prop.is_shorthand:
             for subprop_name in prop.longhands:
                 subprop = props_by_name[subprop_name]
-                assert subprop.supports_incremental_style, \
-                    '%s must be incrementally applicable when its shorthand %s is' % (subprop_name, name)
+                assert subprop.supports_incremental_style, (
+                    '%s must be incrementally applicable when its shorthand %s is'
+                    % (subprop_name, name)
+                )
     if prop.alias_for:
-        assert not prop.is_internal, \
+        assert not prop.is_internal, (
             'Internal aliases not supported [%s]' % name
-    assert not prop.mutable or \
-        (prop.field_template in ['derived_flag', 'monotonic_flag'] ),\
-        'mutable requires field_template:derived_flag or monotonic_flag [%s]' % name
-    assert not prop.in_origin_trial or prop.runtime_flag,\
+        )
+    assert not prop.mutable or (
+        prop.field_template in ['derived_flag', 'monotonic_flag']
+    ), (
+        'mutable requires field_template:derived_flag or monotonic_flag [%s]'
+        % name
+    )
+    assert not prop.in_origin_trial or prop.runtime_flag, (
         'Property participates in origin trial, but has no runtime flag'
+    )
     custom_functions = set(prop.computed_style_custom_functions)
     protected_functions = set(set(prop.computed_style_protected_functions))
-    assert not custom_functions.intersection(protected_functions), \
-        'Functions must be specified as either protected or custom, not both [%s]' % name
+    assert not custom_functions.intersection(protected_functions), (
+        'Functions must be specified as either protected or custom, not both [%s]'
+        % name
+    )
     if prop.field_template == 'derived_flag':
         assert prop.mutable, 'Derived flags must be mutable [%s]' % name
-        assert not prop.field_group, 'Derived flags may not have field groups [%s]' % name
-        assert prop.reset_on_new_style, 'Derived flags must have reset_on_new_style [%s]' % name
+        assert not prop.field_group, (
+            'Derived flags may not have field groups [%s]' % name
+        )
+        assert prop.reset_on_new_style, (
+            'Derived flags must have reset_on_new_style [%s]' % name
+        )
     if prop.is_logical:
-        assert not prop.field_group, 'Logical properties can not have fields [%s]' % name
+        assert not prop.field_group, (
+            'Logical properties can not have fields [%s]' % name
+        )
     if prop.is_animation_property:
-        assert prop.is_animation_affecting, 'Animation properties must always be animation-affecting [%s]' % name
+        assert prop.is_animation_affecting, (
+            'Animation properties must always be animation-affecting [%s]'
+            % name
+        )
+
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -113,9 +160,10 @@ def needs_style_builders(property_):
 
 
 def verify_file_path(file_paths, index, expected):
-    assert len(file_paths) > index and file_paths[index].endswith(expected), \
-        'Unexpected file path at index %s (expected path that ends with %s, got .../%s)' \
-            % (index, expected, file_paths[index])
+    assert len(file_paths) > index and file_paths[index].endswith(expected), (
+        'Unexpected file path at index %s (expected path that ends with %s, got .../%s)'
+        % (index, expected, file_paths[index])
+    )
     return file_paths[index]
 
 
@@ -162,9 +210,11 @@ class PropertyBase(object):
     @property
     def known_exposed(self):
         """True if the property is unconditionally web-exposed."""
-        return not self.is_internal \
-            and not self.runtime_flag \
+        return (
+            not self.is_internal
+            and not self.runtime_flag
             and not self.alternative
+        )
 
     @property
     def effective_is_animation_affecting(self):
@@ -177,7 +227,7 @@ class PropertyBase(object):
     @property
     def ultimate_property(self):
         """Returns the ultimate property, which is the final property
-            in the alternative_of chain."""
+        in the alternative_of chain."""
         if self.alternative_of:
             return self.alternative_of.ultimate_property
         return self
@@ -203,12 +253,14 @@ class PropertyBase(object):
 
         Notably, this excludes everything marked may_be_affected_by_transition_all
         (it is exclusive). See TransitionAllWithDiscreteDiff() for why."""
-        return \
-           not self.effective_is_animation_affecting \
-           and not self.is_shorthand \
-           and not self.is_internal \
-           and not self.is_extra_field \
-           and not self.may_be_affected_by_transition_all
+        return (
+            not self.effective_is_animation_affecting
+            and not self.is_shorthand
+            and not self.is_internal
+            and not self.is_extra_field
+            and not self.may_be_affected_by_transition_all
+        )
+
 
 def generate_property_field(default):
     # Must use 'default_factory' rather than 'default' for list/dict.
@@ -226,8 +278,9 @@ def generate_property_class(parameters):
     See documentation about "parameters" in json5_generator.py.
     """
     # Fields and their default values, as specified in a json5-file:
-    fields = [(name, spec.get('default', None))
-              for name, spec in parameters.items()]
+    fields = [
+        (name, spec.get('default', None)) for name, spec in parameters.items()
+    ]
 
     # Additional defaults not specified in json5:
     additional = {
@@ -243,31 +296,43 @@ def generate_property_class(parameters):
 
     fields += additional.items()
 
-    return dataclasses.make_dataclass('Property', \
-        [(name, typing.Any, generate_property_field(default)) for name, default in fields], \
-        bases=(PropertyBase,))
+    return dataclasses.make_dataclass(
+        'Property',
+        [
+            (name, typing.Any, generate_property_field(default))
+            for name, default in fields
+        ],
+        bases=(PropertyBase,),
+    )
 
 
 class CSSProperties(object):
     def __init__(self, file_paths):
-        assert len(
-            file_paths) <= 4, 'Superfluous arguments: %s' % file_paths[4:]
+        assert len(file_paths) <= 4, (
+            'Superfluous arguments: %s' % file_paths[4:]
+        )
 
-        css_properties_path = verify_file_path(file_paths, 0,
-                                               'css_properties.json5')
+        css_properties_path = verify_file_path(
+            file_paths, 0, 'css_properties.json5'
+        )
         computed_style_field_aliases_path = verify_file_path(
-            file_paths, 1, 'computed_style_field_aliases.json5')
+            file_paths, 1, 'computed_style_field_aliases.json5'
+        )
         runtime_enabled_features_path = verify_file_path(
-            file_paths, 2, 'runtime_enabled_features.json5')
+            file_paths, 2, 'runtime_enabled_features.json5'
+        )
         # Extra fields are optional:
         computed_style_extra_fields_path = (
-            len(file_paths) > 3) and verify_file_path(
-                file_paths, 3, 'computed_style_extra_fields.json5')
+            len(file_paths) > 3
+        ) and verify_file_path(
+            file_paths, 3, 'computed_style_extra_fields.json5'
+        )
 
         # computed_style_field_aliases.json5. Used to expand out parameters used
         # in the various generators for ComputedStyle.
         self._field_alias_expander = FieldAliasExpander(
-            computed_style_field_aliases_path)
+            computed_style_field_aliases_path
+        )
 
         # _alias_offset is updated in add_properties().
         self._alias_offset = -1
@@ -286,17 +351,18 @@ class CSSProperties(object):
         # Add default data in css_properties.json5. This must be consistent
         # across instantiations of this class.
         css_properties_file = json5_generator.Json5File.load_from_files(
-            [css_properties_path])
+            [css_properties_path]
+        )
         self._default_parameters = css_properties_file.parameters
 
         Property = generate_property_class(self._default_parameters)
 
         # TODO(crbug/1031309): Refactor OriginTrialsWriter to reuse logic here.
         origin_trials_writer = OriginTrialsWriter(
-            [runtime_enabled_features_path], "")
+            [runtime_enabled_features_path], ""
+        )
         self._origin_trial_features = {
-            str(f['name'])
-            for f in origin_trials_writer.origin_trial_features
+            str(f['name']) for f in origin_trials_writer.origin_trial_features
         }
 
         properties = [
@@ -308,7 +374,8 @@ class CSSProperties(object):
         if computed_style_extra_fields_path:
             fields = json5_generator.Json5File.load_from_files(
                 [computed_style_extra_fields_path],
-                default_parameters=self._default_parameters)
+                default_parameters=self._default_parameters,
+            )
             self._extra_fields = [
                 Property(**x) for x in fields.name_dictionaries
             ]
@@ -323,8 +390,9 @@ class CSSProperties(object):
 
         self.add_properties(properties)
 
-        self._last_unresolved_property_id = max(property_.enum_value
-                                                for property_ in self._aliases)
+        self._last_unresolved_property_id = max(
+            property_.enum_value for property_ in self._aliases
+        )
 
     def add_properties(self, properties):
         self._aliases = [
@@ -334,7 +402,8 @@ class CSSProperties(object):
             property_ for property_ in properties if property_.longhands
         ]
         self._longhands = [
-            property_ for property_ in properties
+            property_
+            for property_ in properties
             if (not property_.alias_for and not property_.longhands)
         ]
 
@@ -348,22 +417,27 @@ class CSSProperties(object):
                 name_without_leading_dash = name_without_leading_dash[1:]
             internal_visited_order = 1
             if name_without_leading_dash.startswith(
-                    'internal-visited-'
+                'internal-visited-'
             ) or name_without_leading_dash.startswith(
-                    'internal-forced-visited-'):
+                'internal-forced-visited-'
+            ):
                 internal_visited_order = 0
-            property_.sorting_key = (-property_.priority,
-                                     internal_visited_order,
-                                     name_without_leading_dash)
+            property_.sorting_key = (
+                -property_.priority,
+                internal_visited_order,
+                name_without_leading_dash,
+            )
 
         sorting_keys = {}
         for property_ in self._longhands + self._shorthands:
             key = property_.sorting_key
-            assert key not in sorting_keys, \
-                ('Collision detected - two properties have the same name and '
-                 'priority, a potentially non-deterministic ordering can '
-                 'occur: {}, {} and {}'.format(
-                     key, property_.name.original, sorting_keys[key]))
+            assert key not in sorting_keys, (
+                'Collision detected - two properties have the same name and '
+                'priority, a potentially non-deterministic ordering can '
+                'occur: {}, {} and {}'.format(
+                    key, property_.name.original, sorting_keys[key]
+                )
+            )
             sorting_keys[key] = property_.name.original
         self._longhands.sort(key=lambda p: p.sorting_key)
         self._shorthands.sort(key=lambda p: p.sorting_key)
@@ -373,24 +447,27 @@ class CSSProperties(object):
             property_.enum_value = self._last_used_enum_value
             self._last_used_enum_value += 1
             # Add the new property into the map of properties.
-            assert property_.property_id not in self._properties_by_id, \
-                ('property with ID {} appears more than once in the '
-                 'properties list'.format(property_.property_id))
+            assert property_.property_id not in self._properties_by_id, (
+                'property with ID {} appears more than once in the '
+                'properties list'.format(property_.property_id)
+            )
             self._properties_by_id[property_.property_id] = property_
             if property_.priority > 0:
                 self._last_high_priority_property = property_
 
         self._alias_offset = self._last_used_enum_value
         self.expand_aliases()
-        self._properties_including_aliases = self._longhands + \
-            self._shorthands + self._aliases
+        self._properties_including_aliases = (
+            self._longhands + self._shorthands + self._aliases
+        )
         self._properties_with_alternatives = list(
-            filter(lambda p: p.alternative,
-                   self._properties_including_aliases))
+            filter(lambda p: p.alternative, self._properties_including_aliases)
+        )
 
     def get_property(self, name):
-        assert name in self._properties_by_name, \
+        assert name in self._properties_by_name, (
             'No property with that name [%s]' % name
+        )
         return self._properties_by_name[name]
 
     def set_derived_visited_attributes(self, property_):
@@ -402,8 +479,9 @@ class CSSProperties(object):
         # The visited property needs a link to the unvisited counterpart.
         property_.unvisited_property = unvisited_property
         # The unvisited property needs a link to the visited counterpart.
-        assert not unvisited_property.visited_property, \
+        assert not unvisited_property.visited_property, (
             'A property may not have multiple visited properties'
+        )
         unvisited_property.visited_property = property_
         # NOTE: Currently, we note that a property is valid for :visited
         # iff it has a corresponding -internal-visited-* property
@@ -415,11 +493,13 @@ class CSSProperties(object):
     def set_derived_surrogate_attributes(self, property_):
         if not property_.surrogate_for:
             return
-        assert property_.surrogate_for in self._properties_by_name, \
+        assert property_.surrogate_for in self._properties_by_name, (
             'surrogate_for must name a property'
+        )
         # Upgrade 'surrogate_for' to property reference.
         property_.surrogate_for = self._properties_by_name[
-            property_.surrogate_for]
+            property_.surrogate_for
+        ]
 
     def set_derived_alternative_attributes(self, property_):
         if not property_.alternative_of:
@@ -427,31 +507,34 @@ class CSSProperties(object):
         main_property = self.get_property(property_.alternative_of)
         # Upgrade 'alternative_of' to a property reference.
         property_.alternative_of = main_property
-        assert not main_property.alternative, \
+        assert not main_property.alternative, (
             'A property may not have multiple alternatives'
+        )
         main_property.alternative = property_
 
     def expand_aliases(self):
         for i, alias in enumerate(self._aliases):
-            aliased_property = self._properties_by_id[id_for_css_property(
-                alias.alias_for)]
+            aliased_property = self._properties_by_id[
+                id_for_css_property(alias.alias_for)
+            ]
             aliased_property.aliases.append(alias.name.original)
             updated_alias = copy.deepcopy(aliased_property)
             updated_alias.name = alias.name
             updated_alias.alias_for = alias.alias_for
             updated_alias.alternative_of = alias.alternative_of
             updated_alias.alternative = alias.alternative
-            updated_alias.aliased_property = aliased_property.name.to_upper_camel_case(
+            updated_alias.aliased_property = (
+                aliased_property.name.to_upper_camel_case()
             )
             updated_alias.computable = alias.computable
             updated_alias.property_id = id_for_css_property_alias(alias.name)
-            updated_alias.enum_key = enum_key_for_css_property_alias(
-                alias.name)
+            updated_alias.enum_key = enum_key_for_css_property_alias(alias.name)
             updated_alias.enum_value = self._alias_offset + i
             updated_alias.aliased_enum_value = aliased_property.enum_value
             updated_alias.superclass = 'CSSUnresolvedProperty'
-            updated_alias.namespace_group = \
+            updated_alias.namespace_group = (
                 'Shorthand' if aliased_property.longhands else 'Longhand'
+            )
             self._aliases[i] = updated_alias
 
         updated_aliases_by_name = {a.name: a for a in self._aliases}
@@ -461,12 +544,17 @@ class CSSProperties(object):
         # must be updated to point to the respective "updated" aliases.
         def update_alternatives(properties):
             for _property in properties:
-                if _property.alternative_of and _property.alternative_of.alias_for:
+                if (
+                    _property.alternative_of
+                    and _property.alternative_of.alias_for
+                ):
                     _property.alternative_of = updated_aliases_by_name[
-                        _property.alternative_of.name]
+                        _property.alternative_of.name
+                    ]
                 if _property.alternative and _property.alternative.alias_for:
                     _property.alternative = updated_aliases_by_name[
-                        _property.alternative.name]
+                        _property.alternative.name
+                    ]
 
         update_alternatives(self.longhands)
         update_alternatives(self.shorthands)
@@ -509,12 +597,15 @@ class CSSProperties(object):
         set_if_none(property_, 'name_for_methods', method_name)
         set_if_none(property_, 'type_name', 'E' + method_name)
         set_if_none(
-            property_, 'getter', method_name
-            if simple_type_name != method_name else 'Get' + method_name)
+            property_,
+            'getter',
+            method_name
+            if simple_type_name != method_name
+            else 'Get' + method_name,
+        )
         set_if_none(property_, 'setter', 'Set' + method_name)
         if property_.inherited:
-            property_.is_inherited_setter = ('Set' + method_name +
-                                             'IsInherited')
+            property_.is_inherited_setter = 'Set' + method_name + 'IsInherited'
 
         property_.is_logical = False
 
@@ -523,13 +614,28 @@ class CSSProperties(object):
             assert 'name' in group, 'name option is required'
             assert 'resolver' in group, 'resolver option is required'
             logicals = {
-                'block', 'inline', 'block-start', 'block-end', 'inline-start',
-                'inline-end', 'start-start', 'start-end', 'end-start',
-                'end-end'
+                'block',
+                'inline',
+                'block-start',
+                'block-end',
+                'inline-start',
+                'inline-end',
+                'start-start',
+                'start-end',
+                'end-start',
+                'end-end',
             }
             physicals = {
-                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right',
-                'top-left', 'top-right', 'bottom-right', 'bottom-left'
+                'vertical',
+                'horizontal',
+                'top',
+                'bottom',
+                'left',
+                'right',
+                'top-left',
+                'top-right',
+                'bottom-right',
+                'bottom-left',
             }
             if group['resolver'] in logicals:
                 group['is_logical'] = True
@@ -547,8 +653,11 @@ class CSSProperties(object):
         for x in ['initial', 'inherit', 'value']:
             suppressed = x in property_.style_builder_custom_functions
             declared = property_.style_builder_declare
-            setattr(property_, 'style_builder_generate_%s' % x,
-                    (declared and not suppressed))
+            setattr(
+                property_,
+                'style_builder_generate_%s' % x,
+                (declared and not suppressed),
+            )
 
         # Expand StyleBuilderConverter params where necessary.
         if property_.type_name in PRIMITIVE_TYPES:
@@ -571,22 +680,33 @@ class CSSProperties(object):
             self._field_alias_expander.expand_field_alias(property_)
 
             type_name = property_.type_name
-            if (property_.field_template
-                    in ('keyword', 'keyword_custom', 'multi_keyword',
-                        'bitset_keyword')):
-                default_value = (type_name + '::' + NameStyleConverter(
-                    property_.default_value).to_enum_value())
-            elif (property_.field_template == 'external'
-                  or property_.field_template == 'primitive'
-                  or property_.field_template == 'pointer'):
+            if property_.field_template in (
+                'keyword',
+                'keyword_custom',
+                'multi_keyword',
+                'bitset_keyword',
+            ):
+                default_value = (
+                    type_name
+                    + '::'
+                    + NameStyleConverter(
+                        property_.default_value
+                    ).to_enum_value()
+                )
+            elif (
+                property_.field_template == 'external'
+                or property_.field_template == 'primitive'
+                or property_.field_template == 'pointer'
+            ):
                 default_value = property_.default_value
             elif property_.field_template == 'derived_flag':
                 property_.type_name = 'unsigned'
                 default_value = '0'
             else:
-                assert property_.field_template == 'monotonic_flag', \
-                    "Please put a valid value for field_template; got " + \
-                    str(property_.field_template)
+                assert property_.field_template == 'monotonic_flag', (
+                    "Please put a valid value for field_template; got "
+                    + str(property_.field_template)
+                )
                 property_.type_name = 'bool'
                 default_value = 'false'
             property_.default_value = default_value
@@ -596,19 +716,23 @@ class CSSProperties(object):
                 assert property_.field_template in ['pointer', 'external']
                 if property_.field_template == 'external':
                     property_.type_name = '{}<{}>'.format(
-                        property_.wrapper_pointer_name, type_name)
+                        property_.wrapper_pointer_name, type_name
+                    )
 
         # Default values for extra parameters in computed_style_extra_fields.json5.
         set_if_none(property_, 'reset_on_new_style', False)
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
 
-        property_.in_origin_trial = property_.runtime_flag and \
-            property_.runtime_flag in self._origin_trial_features
+        property_.in_origin_trial = (
+            property_.runtime_flag
+            and property_.runtime_flag in self._origin_trial_features
+        )
 
-        assert not property_.is_shorthand or not property_.in_origin_trial, \
-            'Shorthand property [%s] cannot be controlled by an origin trial. See https://crbug.com/425974279' \
+        assert not property_.is_shorthand or not property_.in_origin_trial, (
+            'Shorthand property [%s] cannot be controlled by an origin trial. See https://crbug.com/425974279'
             % property_.name
+        )
 
         self.set_derived_visited_attributes(property_)
         self.set_derived_surrogate_attributes(property_)
@@ -633,8 +757,7 @@ class CSSProperties(object):
         is_not_prefixed = lambda p: not is_prefixed(p)
 
         prefixed = filter(is_prefixed, self._properties_including_aliases)
-        unprefixed = filter(is_not_prefixed,
-                            self._properties_including_aliases)
+        unprefixed = filter(is_not_prefixed, self._properties_including_aliases)
 
         def is_computable(p):
             if p.is_internal:
@@ -652,8 +775,9 @@ class CSSProperties(object):
         prefixed = filter(is_computable, prefixed)
         unprefixed = filter(is_computable, unprefixed)
 
-        return sorted(unprefixed, key=sorting_name) + \
-            sorted(prefixed, key=sorting_name)
+        return sorted(unprefixed, key=sorting_name) + sorted(
+            prefixed, key=sorting_name
+        )
 
     @property
     def includes_currentcolor(self):
@@ -704,8 +828,7 @@ class CSSProperties(object):
         have the same web-facing name as the main property.
         """
         non_alternative = lambda p: not p.alternative_of
-        return list(filter(non_alternative,
-                           self._properties_including_aliases))
+        return list(filter(non_alternative, self._properties_including_aliases))
 
     @property
     def first_property_id(self):

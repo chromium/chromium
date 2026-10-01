@@ -33,12 +33,17 @@ from blinkpy.web_tests.models.test_configuration import TestConfiguration
 
 def make_mock_all_test_configurations_set():
     all_test_configurations = set()
-    for version, architecture in (('snowleopard',
-                                   'x86'), ('win7', 'x86'), ('vista', 'x86'),
-                                  ('precise', 'x86_64'), ('trusty', 'x86_64')):
+    for version, architecture in (
+        ('snowleopard', 'x86'),
+        ('win7', 'x86'),
+        ('vista', 'x86'),
+        ('precise', 'x86_64'),
+        ('trusty', 'x86_64'),
+    ):
         for build_type in ('debug', 'release'):
             all_test_configurations.add(
-                TestConfiguration(version, architecture, build_type))
+                TestConfiguration(version, architecture, build_type)
+            )
     return all_test_configurations
 
 
@@ -55,11 +60,10 @@ class TestConfigurationTest(unittest.TestCase):
         result_config_dict = {}
         for category, specifier in config.items():
             result_config_dict[category] = specifier
-        self.assertEqual({
-            'version': 'win7',
-            'architecture': 'x86',
-            'build_type': 'release'
-        }, result_config_dict)
+        self.assertEqual(
+            {'version': 'win7', 'architecture': 'x86', 'build_type': 'release'},
+            result_config_dict,
+        )
 
     def test_keys(self):
         config = TestConfiguration('win7', 'x86', 'release')
@@ -68,7 +72,8 @@ class TestConfigurationTest(unittest.TestCase):
             result_config_keys.append(category)
         self.assertEqual(
             set(['version', 'architecture', 'build_type']),
-            set(result_config_keys))
+            set(result_config_keys),
+        )
 
     def test_str(self):
         config = TestConfiguration('win7', 'x86', 'release')
@@ -78,14 +83,16 @@ class TestConfigurationTest(unittest.TestCase):
         config = TestConfiguration('win7', 'x86', 'release')
         self.assertEqual(
             "TestConfig(version='win7', architecture='x86', build_type='release')",
-            repr(config))
+            repr(config),
+        )
 
     def test_hash(self):
         config_dict = {}
         config_dict[TestConfiguration('win7', 'x86', 'release')] = True
         self.assertIn(TestConfiguration('win7', 'x86', 'release'), config_dict)
-        self.assertTrue(config_dict[TestConfiguration('win7', 'x86',
-                                                      'release')])
+        self.assertTrue(
+            config_dict[TestConfiguration('win7', 'x86', 'release')]
+        )
 
         def query_unknown_key():
             return config_dict[TestConfiguration('win7', 'x86', 'debug')]
@@ -93,12 +100,11 @@ class TestConfigurationTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             query_unknown_key()
         self.assertIn(TestConfiguration('win7', 'x86', 'release'), config_dict)
-        self.assertNotIn(
-            TestConfiguration('win7', 'x86', 'debug'), config_dict)
+        self.assertNotIn(TestConfiguration('win7', 'x86', 'debug'), config_dict)
         configs_list = [
             TestConfiguration('win7', 'x86', 'release'),
             TestConfiguration('win7', 'x86', 'debug'),
-            TestConfiguration('win7', 'x86', 'debug')
+            TestConfiguration('win7', 'x86', 'debug'),
         ]
         self.assertEqual(len(configs_list), 3)
         self.assertEqual(len(set(configs_list)), 2)
@@ -106,10 +112,12 @@ class TestConfigurationTest(unittest.TestCase):
     def test_eq(self):
         self.assertEqual(
             TestConfiguration('win7', 'x86', 'release'),
-            TestConfiguration('win7', 'x86', 'release'))
+            TestConfiguration('win7', 'x86', 'release'),
+        )
         self.assertNotEquals(
             TestConfiguration('win7', 'x86', 'release'),
-            TestConfiguration('win7', 'x86', 'debug'))
+            TestConfiguration('win7', 'x86', 'debug'),
+        )
 
     def test_values(self):
         config = TestConfiguration('win7', 'x86', 'release')
@@ -117,4 +125,5 @@ class TestConfigurationTest(unittest.TestCase):
         for value in config.values():
             result_config_values.append(value)
         self.assertEqual(
-            set(['win7', 'x86', 'release']), set(result_config_values))
+            set(['win7', 'x86', 'release']), set(result_config_values)
+        )

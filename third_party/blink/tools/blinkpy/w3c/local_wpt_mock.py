@@ -5,11 +5,13 @@
 
 
 class MockLocalWPT(object):
-    def __init__(self,
-                 test_patch=None,
-                 apply_patch=None,
-                 change_ids=None,
-                 commit_positions=None):
+    def __init__(
+        self,
+        test_patch=None,
+        apply_patch=None,
+        change_ids=None,
+        commit_positions=None,
+    ):
         """Initializes the mock with pre-populated responses.
 
         Args:

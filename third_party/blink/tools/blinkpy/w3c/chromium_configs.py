@@ -4,7 +4,10 @@
 """Contains all project-specific configuration for Chromium/WPT host."""
 
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
-from blinkpy.w3c.chromium_finder import absolute_chromium_dir, absolute_chromium_wpt_dir
+from blinkpy.w3c.chromium_finder import (
+    absolute_chromium_dir,
+    absolute_chromium_wpt_dir,
+)
 from blinkpy.w3c.common import WPT_REVISION_FOOTER
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.wpt_github import WPTGitHub
@@ -60,8 +63,10 @@ class ChromiumWPTConfig(ProjectConfig):
 
     @property
     def pr_updated_comment_template(self):
-        return ('Successfully updated WPT GitHub pull request with '
-                'new revision "{subject}": {pr_url}')
+        return (
+            'Successfully updated WPT GitHub pull request with '
+            'new revision "{subject}": {pr_url}'
+        )
 
     @property
     def inflight_cl_comment_template(self):
@@ -73,4 +78,5 @@ class ChromiumWPTConfig(ProjectConfig):
             'ecosystem-infra@ team will triage the failures and may contact you.\n\n'
             'WPT Export docs:\n'
             'https://chromium.googlesource.com/chromium/src/+/main'
-            '/docs/testing/web_platform_tests.md#Automatic-export-process')
+            '/docs/testing/web_platform_tests.md#Automatic-export-process'
+        )

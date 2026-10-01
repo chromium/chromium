@@ -34,7 +34,9 @@ import os.path
 import re
 import sys
 
-from blinkpy.common.system.log_utils import configure_logging as _configure_logging
+from blinkpy.common.system.log_utils import (
+    configure_logging as _configure_logging,
+)
 from blinkpy.style.checkers.common import CarriageReturnChecker
 from blinkpy.style.checkers.common import categories as CommonCategories
 from blinkpy.style.checkers.cpp import CppChecker
@@ -79,7 +81,6 @@ _BASE_FILTER_RULES = [
     '-runtime/virtual',  # virtual dtor
     '-runtime/printf',
     '-runtime/threadsafe_fn',
-
     # FIXME: Move the pylint rules from the pylintrc to here. This will
     # also require us to re-work lint_blinkpy.py to produce the equivalent
     # output.
@@ -103,17 +104,18 @@ _PATH_RULES_SPECIFIER = [
             # than style of the machine-generated code itself.
             'renderer/bindings/tests/results'
         ],
-        ['-']),
+        ['-'],
+    ),
     (
         [  # Due to historical reasons scheduler uses Chromium style instead of
             # Blink style.
             'renderer/platform/scheduler',
-            'public/platform/scheduler'
+            'public/platform/scheduler',
         ],
-        ['-readability/control_flow']),
-
+        ['-readability/control_flow'],
+    ),
     # perf_tests contains a lot of third-party files.
-    (['perf_tests/'], ['-whitespace/tab'])
+    (['perf_tests/'], ['-whitespace/tab']),
 ]
 
 _CPP_FILE_EXTENSIONS = [
@@ -158,8 +160,15 @@ _PNG_FILE_EXTENSION = 'png'
 # with FileType.NONE are automatically skipped without warning.
 _SKIPPED_FILES_WITHOUT_WARNING = [
     'web_tests' + os.path.sep,
-    'third_party' + os.path.sep + 'blink' + os.path.sep + 'renderer' +
-    os.path.sep + 'devtools' + os.path.sep + 'protocol.json',
+    'third_party'
+    + os.path.sep
+    + 'blink'
+    + os.path.sep
+    + 'renderer'
+    + os.path.sep
+    + 'devtools'
+    + os.path.sep
+    + 'protocol.json',
 ]
 
 # Extensions of files which are allowed to contain carriage returns.
@@ -187,7 +196,8 @@ def _check_blink_style_defaults():
     """Return the default command-line options for check_blink_style.py."""
     return DefaultCommandOptionValues(
         min_confidence=_DEFAULT_MIN_CONFIDENCE,
-        output_format=_DEFAULT_OUTPUT_FORMAT)
+        output_format=_DEFAULT_OUTPUT_FORMAT,
+    )
 
 
 # This function assists in optparser not having to import from checker.
@@ -197,7 +207,8 @@ def check_blink_style_parser():
     return ArgumentParser(
         all_categories=all_categories,
         base_filter_rules=_BASE_FILTER_RULES,
-        default_options=default_options)
+        default_options=default_options,
+    )
 
 
 def check_blink_style_configuration(options):
@@ -209,14 +220,16 @@ def check_blink_style_configuration(options):
     filter_configuration = FilterConfiguration(
         base_rules=_BASE_FILTER_RULES,
         path_specific=_PATH_RULES_SPECIFIER,
-        user_rules=options.filter_rules)
+        user_rules=options.filter_rules,
+    )
 
     return StyleProcessorConfiguration(
         filter_configuration=filter_configuration,
         max_reports_per_category=_MAX_REPORTS_PER_CATEGORY,
         min_confidence=options.min_confidence,
         output_format=options.output_format,
-        stderr_write=sys.stderr.write)
+        stderr_write=sys.stderr.write,
+    )
 
 
 def _create_log_handlers(stream):
@@ -299,14 +312,14 @@ def configure_logging(stream, logger=None, is_verbose=False):
         handlers = _create_log_handlers(stream)
 
     handlers = _configure_logging(
-        logging_level=logging_level, logger=logger, handlers=handlers)
+        logging_level=logging_level, logger=logger, handlers=handlers
+    )
 
     return handlers
 
 
 # Enum-like idiom
 class FileType:
-
     NONE = 0  # FileType.NONE evaluates to False.
     # Alphabetize remaining types
     # CHANGELOG = 1
@@ -346,8 +359,10 @@ class CheckerDispatcher(object):
         return False
 
     def should_check_and_strip_carriage_returns(self, file_path):
-        return (self._file_extension(file_path) not in
-                _CARRIAGE_RETURN_ALLOWED_FILE_EXTENSIONS)
+        return (
+            self._file_extension(file_path)
+            not in _CARRIAGE_RETURN_ALLOWED_FILE_EXTENSIONS
+        )
 
     def _file_type(self, file_path):
         """Return the file type corresponding to the given file."""
@@ -367,20 +382,22 @@ class CheckerDispatcher(object):
             return FileType.XML
         elif file_extension == _PNG_FILE_EXTENSION:
             return FileType.PNG
-        elif (file_extension in _TEXT_FILE_EXTENSIONS):
+        elif file_extension in _TEXT_FILE_EXTENSIONS:
             return FileType.TEXT
         else:
             return FileType.NONE
 
-    def _create_checker(self, file_type, file_path, handle_style_error,
-                        min_confidence):
+    def _create_checker(
+        self, file_type, file_path, handle_style_error, min_confidence
+    ):
         """Instantiate and return a style checker based on file type."""
         if file_type == FileType.NONE:
             checker = None
         elif file_type == FileType.CPP:
             file_extension = self._file_extension(file_path)
-            checker = CppChecker(file_path, file_extension, handle_style_error,
-                                 min_confidence)
+            checker = CppChecker(
+                file_path, file_extension, handle_style_error, min_confidence
+            )
         elif file_type == FileType.JSON:
             checker = JSONChecker(file_path, handle_style_error)
         elif file_type == FileType.XML:
@@ -392,12 +409,14 @@ class CheckerDispatcher(object):
         else:
             raise ValueError(
                 'Invalid file type "%(file_type)s": the only valid file types '
-                'are %(NONE)s, %(CPP)s, and %(TEXT)s.' % {
+                'are %(NONE)s, %(CPP)s, and %(TEXT)s.'
+                % {
                     'file_type': file_type,
                     'NONE': FileType.NONE,
                     'CPP': FileType.CPP,
-                    'TEXT': FileType.TEXT
-                })
+                    'TEXT': FileType.TEXT,
+                }
+            )
 
         return checker
 
@@ -405,8 +424,9 @@ class CheckerDispatcher(object):
         """Instantiate and return a style checker based on file path."""
         file_type = self._file_type(file_path)
 
-        checker = self._create_checker(file_type, file_path,
-                                       handle_style_error, min_confidence)
+        checker = self._create_checker(
+            file_type, file_path, handle_style_error, min_confidence
+        )
         return checker
 
 
@@ -426,8 +446,14 @@ class StyleProcessorConfiguration(object):
                     serves as stderr.write.
     """
 
-    def __init__(self, filter_configuration, max_reports_per_category,
-                 min_confidence, output_format, stderr_write):
+    def __init__(
+        self,
+        filter_configuration,
+        max_reports_per_category,
+        min_confidence,
+        output_format,
+        stderr_write,
+    ):
         """Create a StyleProcessorConfiguration instance.
 
         Args:
@@ -475,16 +501,19 @@ class StyleProcessorConfiguration(object):
 
         return self._filter_configuration.should_check(category, file_path)
 
-    def write_style_error(self, category, confidence_in_error, file_path,
-                          line_number, message):
+    def write_style_error(
+        self, category, confidence_in_error, file_path, line_number, message
+    ):
         """Write a style error to the configured stderr."""
         if self._output_format == 'vs7':
             format_string = '%s(%s):  %s  [%s] [%d]\n'
         else:
             format_string = '%s:%s:  %s  [%s] [%d]\n'
 
-        self.stderr_write(format_string % (file_path, line_number, message,
-                                           category, confidence_in_error))
+        self.stderr_write(
+            format_string
+            % (file_path, line_number, message, category, confidence_in_error)
+        )
 
 
 class ProcessorBase(object):
@@ -524,11 +553,13 @@ class StyleProcessor(ProcessorBase):
                    errors for the lifetime of this instance.
     """
 
-    def __init__(self,
-                 configuration,
-                 mock_dispatcher=None,
-                 mock_increment_error_count=None,
-                 mock_carriage_checker_class=None):
+    def __init__(
+        self,
+        configuration,
+        mock_dispatcher=None,
+        mock_increment_error_count=None,
+        mock_carriage_checker_class=None,
+    ):
         """Create an instance.
 
         Args:
@@ -548,6 +579,7 @@ class StyleProcessor(ProcessorBase):
             dispatcher = mock_dispatcher
 
         if mock_increment_error_count is None:
+
             def increment_error_count():
                 """Increment the total count of reported errors."""
                 self.error_count += 1
@@ -594,7 +626,8 @@ class StyleProcessor(ProcessorBase):
             configuration=self._configuration,
             file_path=file_path,
             increment_error_count=self._increment_error_count,
-            line_numbers=line_numbers)
+            line_numbers=line_numbers,
+        )
 
         carriage_checker = self._carriage_checker_class(style_error_handler)
 
@@ -603,12 +636,12 @@ class StyleProcessor(ProcessorBase):
             lines = carriage_checker.check(lines)
 
         min_confidence = self._configuration.min_confidence
-        checker = self._dispatcher.dispatch(file_path, style_error_handler,
-                                            min_confidence)
+        checker = self._dispatcher.dispatch(
+            file_path, style_error_handler, min_confidence
+        )
 
         if checker is None:
-            raise AssertionError(
-                "File should not be checked: '%s'" % file_path)
+            raise AssertionError("File should not be checked: '%s'" % file_path)
 
         _log.debug('Using class: ' + checker.__class__.__name__)
 

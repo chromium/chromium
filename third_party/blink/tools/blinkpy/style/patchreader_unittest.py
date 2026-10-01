@@ -39,7 +39,9 @@ class PatchReaderTest(unittest.TestCase):
         def __init__(self):
             # A list of (file_path, line_numbers) pairs.
             self.passed_to_process_file = []
-            self.delete_only_file_count = 0  # A number of times count_delete_only_file() called.
+            self.delete_only_file_count = (
+                0  # A number of times count_delete_only_file() called.
+            )
 
         def process_file(self, file_path, line_numbers):
             self.passed_to_process_file.append((file_path, line_numbers))
@@ -51,10 +53,12 @@ class PatchReaderTest(unittest.TestCase):
         self._file_reader = self.MockTextFileReader()
 
     def _assert_checked(self, passed_to_process_file, delete_only_file_count):
-        self.assertEqual(self._file_reader.passed_to_process_file,
-                         passed_to_process_file)
-        self.assertEqual(self._file_reader.delete_only_file_count,
-                         delete_only_file_count)
+        self.assertEqual(
+            self._file_reader.passed_to_process_file, passed_to_process_file
+        )
+        self.assertEqual(
+            self._file_reader.delete_only_file_count, delete_only_file_count
+        )
 
     def test_check_patch(self):
         PatchReader(self._file_reader).check(
@@ -64,10 +68,12 @@ class PatchReaderTest(unittest.TestCase):
             '+++ b/__init__.py\n'
             '@@ -1,1 +1,2 @@\n'
             ' # Required for Python to search this directory for module files\n'
-            '+# New line\n')
+            '+# New line\n'
+        )
         self._assert_checked(
             passed_to_process_file=[('__init__.py', [2])],
-            delete_only_file_count=0)
+            delete_only_file_count=0,
+        )
 
     def test_check_patch_with_deletion(self):
         PatchReader(self._file_reader).check(
@@ -77,16 +83,20 @@ class PatchReaderTest(unittest.TestCase):
             '--- a/__init__.py\n'
             '+++ /dev/null\n'
             '@@ -1 +0,0 @@\n'
-            '-foobar\n')
+            '-foobar\n'
+        )
         # The deleted file isn't be processed.
         self._assert_checked(
-            passed_to_process_file=[], delete_only_file_count=1)
+            passed_to_process_file=[], delete_only_file_count=1
+        )
 
     def test_check_patch_with_png_deletion(self):
         PatchReader(self._file_reader).check(
             'diff --git a/foo-expected.png b/foo-expected.png\n'
             'deleted file mode 100644\n'
             'index ef65bee..0000000\n'
-            'Binary files a/foo-expected.png and /dev/null differ\n')
+            'Binary files a/foo-expected.png and /dev/null differ\n'
+        )
         self._assert_checked(
-            passed_to_process_file=[], delete_only_file_count=1)
+            passed_to_process_file=[], delete_only_file_count=1
+        )

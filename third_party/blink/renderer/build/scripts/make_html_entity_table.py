@@ -63,8 +63,11 @@ def check_ascii(entity_string):
     for ch in entity_string:
         code = ord(ch)
         assert 0 <= code <= 127, (
-            ch + " is not ASCII. Need to change type " +
-            "of storage from LChar to UChar to support " + "this entity.")
+            ch
+            + " is not ASCII. Need to change type "
+            + "of storage from LChar to UChar to support "
+            + "this entity."
+        )
 
 
 def build_storage_and_offsets(entries):
@@ -108,8 +111,9 @@ def build_storage_and_offsets(entries):
             chunks.append(data_to_add)
             all_data += data_to_add
             entity_offset += len(data_to_add)
-        assert len(
-            entry) == 2, "We will use slot [2] in the list for the offset."
+        assert len(entry) == 2, (
+            "We will use slot [2] in the list for the offset."
+        )
         assert this_offset < 32768  # Stored in a 16 bit short.
         entry.append(this_offset)
     return chunks
@@ -132,8 +136,9 @@ def build_template_params(input_path):
     storage_lines = [', '.join("'%s'" % c for c in chunk) for chunk in chunks]
     # Commas separate chunks; the final chunk is followed by the closing
     # brace on the same line, matching the historical hand-rolled layout.
-    storage_lines = [line + ',' for line in storage_lines[:-1]
-                     ] + [storage_lines[-1] + '};']
+    storage_lines = [line + ',' for line in storage_lines[:-1]] + [
+        storage_lines[-1] + '};'
+    ]
 
     # Build the per-starting-letter index used by EntriesStartingWith().
     index = {}
@@ -145,16 +150,14 @@ def build_template_params(input_path):
     # kUppercaseOffset has one entry per upper letter A..Z plus the index
     # of the first lowercase entry (used as the upper bound for 'Z').
     uppercase_offsets = [
-        index[chr(letter)] for letter in range(ord('A'),
-                                               ord('Z') + 1)
+        index[chr(letter)] for letter in range(ord('A'), ord('Z') + 1)
     ]
     uppercase_offsets.append(index['a'])
 
     # kLowercaseOffset has one entry per lower letter a..z plus the total
     # entry count (used as the upper bound for 'z').
     lowercase_offsets = [
-        index[chr(letter)] for letter in range(ord('a'),
-                                               ord('z') + 1)
+        index[chr(letter)] for letter in range(ord('a'), ord('z') + 1)
     ]
     lowercase_offsets.append(len(entries))
 
@@ -162,18 +165,17 @@ def build_template_params(input_path):
     for entry in entries:
         values = entry[VALUE].split(' ')
         assert len(values) <= 2, values
-        template_entries.append({
-            'name':
-            entry[ENTITY],
-            'first_value':
-            convert_value_to_int(values[0]),
-            'second_value':
-            convert_value_to_int(values[1] if len(values) >= 2 else ""),
-            'offset':
-            entry[2],
-            'length':
-            len(entry[ENTITY]),
-        })
+        template_entries.append(
+            {
+                'name': entry[ENTITY],
+                'first_value': convert_value_to_int(values[0]),
+                'second_value': convert_value_to_int(
+                    values[1] if len(values) >= 2 else ""
+                ),
+                'offset': entry[2],
+                'length': len(entry[ENTITY]),
+            }
+        )
 
     return {
         'storage_lines': storage_lines,
@@ -186,8 +188,7 @@ def build_template_params(input_path):
 def main():
     program_name = os.path.basename(__file__)
     if len(sys.argv) < 4 or sys.argv[1] != "-o":
-        sys.stderr.write("Usage: %s -o OUTPUT_FILE INPUT_FILE\n" %
-                         program_name)
+        sys.stderr.write("Usage: %s -o OUTPUT_FILE INPUT_FILE\n" % program_name)
         exit(1)
 
     output_path = sys.argv[2]
@@ -195,7 +196,8 @@ def main():
 
     params = build_template_params(input_path)
     rendered = template_expander.apply_template(
-        'templates/html_entity_table.cc.tmpl', params)
+        'templates/html_entity_table.cc.tmpl', params
+    )
 
     with open(output_path, "w") as output_file:
         output_file.write(rendered)

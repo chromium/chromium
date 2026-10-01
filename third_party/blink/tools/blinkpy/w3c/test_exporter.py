@@ -15,7 +15,9 @@ from blinkpy.w3c.common import (
     LINK_FOOTER,
     read_credentials,
 )
-from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
+from blinkpy.w3c.chromium_exportable_commits import (
+    exportable_commits_over_last_n_commits,
+)
 from blinkpy.w3c.export_notifier import ExportNotifier, ExportNotifierError
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
 from blinkpy.w3c.graphql import GraphQL
@@ -42,7 +44,6 @@ PREventsByType = MutableMapping[PREventType, Set[int]]
 
 
 class TestExporter:
-
     def __init__(self, host):
         self.host = host
         self.project_config = host.project_config
@@ -55,7 +56,8 @@ class TestExporter:
         self.local_repo = None
         self.surface_failures_to_gerrit = False
         self.create_draft_pr = (
-            self.project_config.gerrit_project == 'chromium/src')
+            self.project_config.gerrit_project == 'chromium/src'
+        )
 
     def main(self, argv=None):
         """Creates PRs for in-flight CLs and merges changes that land on main.
@@ -76,23 +78,34 @@ class TestExporter:
 
         credentials = read_credentials(self.host, options.credentials_json)
         if not (credentials.get('GH_USER') and credentials.get('GH_TOKEN')):
-            _log.error('You must provide your GitHub credentials for this '
-                       'script to work.')
-            _log.error('See https://chromium.googlesource.com/chromium/src'
-                       '/+/main/docs/testing/web_platform_tests.md'
-                       '#GitHub-credentials for instructions on how to set '
-                       'your credentials up.')
+            _log.error(
+                'You must provide your GitHub credentials for this '
+                'script to work.'
+            )
+            _log.error(
+                'See https://chromium.googlesource.com/chromium/src'
+                '/+/main/docs/testing/web_platform_tests.md'
+                '#GitHub-credentials for instructions on how to set '
+                'your credentials up.'
+            )
             return False
         self.github = self.github or self.project_config.github_factory(
             host=self.host,
             user=credentials['GH_USER'],
-            token=credentials['GH_TOKEN'])
+            token=credentials['GH_TOKEN'],
+        )
         self.gerrit = self.gerrit or GerritAPI.from_credentials(
-            self.host, credentials)
-        self.notifier = ExportNotifier(self.host, self.github, self.gerrit,
-                                       self.dry_run)
-        self.local_repo = self.local_repo or self.project_config.local_repo_factory(
-            host=self.host, gh_token=credentials['GH_TOKEN'])
+            self.host, credentials
+        )
+        self.notifier = ExportNotifier(
+            self.host, self.github, self.gerrit, self.dry_run
+        )
+        self.local_repo = (
+            self.local_repo
+            or self.project_config.local_repo_factory(
+                host=self.host, gh_token=credentials['GH_TOKEN']
+            )
+        )
 
         if self.create_draft_pr:
             self.graphql = GraphQL(credentials['GH_TOKEN'])
@@ -112,7 +125,8 @@ class TestExporter:
         if git_errors:
             _log.info(
                 'Attention: The following errors have prevented some commits from being '
-                'exported:')
+                'exported:'
+            )
             for error in git_errors:
                 _log.error(error)
 
@@ -125,11 +139,13 @@ class TestExporter:
 
             if self.surface_failures_to_gerrit:
                 _log.info(
-                    'Starting surfacing cross-browser failures to Gerrit.')
+                    'Starting surfacing cross-browser failures to Gerrit.'
+                )
                 prs_by_change_id = self.notifier.main()
                 pr_events[PREventType.BLOCKED].update(
                     pr_status.pr_number
-                    for pr_status in prs_by_change_id.values())
+                    for pr_status in prs_by_change_id.values()
+                )
 
             return True
         except ExportNotifierError as error:
@@ -138,7 +154,8 @@ class TestExporter:
         finally:
             if options.summary_markdown:
                 with self.host.filesystem.open_text_file_for_writing(
-                        options.summary_markdown) as summary_file:
+                    options.summary_markdown
+                ) as summary_file:
                     self.summarize(summary_file, pr_events)
 
     def summarize(self, summary_file: TextIO, pr_events: PREventsByType):
@@ -149,8 +166,7 @@ class TestExporter:
             PREventType.CREATED: 'Pull requests created',
             PREventType.UPDATED: 'Pull requests updated to a new revision',
             PREventType.BLOCKED: 'Pull requests that failed to merge',
-            PREventType.MARKED_READY:
-            'Pull requests marked as ready for review',
+            PREventType.MARKED_READY: 'Pull requests marked as ready for review',
             PREventType.MERGED: 'Pull requests merged',
         }
         for event_type in PREventType:
@@ -168,28 +184,33 @@ class TestExporter:
             '-v',
             '--verbose',
             action='store_true',
-            help='log extra details that may be helpful when debugging')
+            help='log extra details that may be helpful when debugging',
+        )
         parser.add_argument(
             '--dry-run',
             action='store_true',
             help='See what would be done without actually creating or merging '
-            'any pull requests.')
+            'any pull requests.',
+        )
         parser.add_argument(
             '--credentials-json',
             help='A JSON file with an object containing zero or more of the '
-            'following keys: GH_USER, GH_TOKEN, GERRIT_USER, GERRIT_TOKEN')
+            'following keys: GH_USER, GH_TOKEN, GERRIT_USER, GERRIT_TOKEN',
+        )
         parser.add_argument(
             '--surface-failures-to-gerrit',
             action='store_true',
             help='Indicates whether to run the service that surfaces GitHub '
-            'faliures to Gerrit through comments.')
+            'faliures to Gerrit through comments.',
+        )
         parser.add_argument(
             '--summary-markdown',
-            help='Write a summary of PR updates to this markdown file.')
+            help='Write a summary of PR updates to this markdown file.',
+        )
         return parser.parse_args(argv)
 
     def export_in_flight_changes(self, pr_events: PREventsByType) -> bool:
-        """ Search and export in-flight changes from Gerrit.
+        """Search and export in-flight changes from Gerrit.
         Returns:
             A boolean: True if there was an error, False otherwise.
         """
@@ -200,7 +221,8 @@ class TestExporter:
             open_gerrit_cls = self.gerrit.query_exportable_cls()
         except GerritError as e:
             _log.info(
-                'In-flight CLs cannot be exported due to the following error:')
+                'In-flight CLs cannot be exported due to the following error:'
+            )
             _log.error(str(e))
             # TODO(crbug.com/346392205) change this back to True once the bug is fixed
             # We do not need to mark the exporter run as failed due to this. Instead
@@ -230,10 +252,12 @@ class TestExporter:
             pr_url = f'{self.github.url}pull/{pull_request.number}'
             _log.info('In-flight PR found: %s', pr_url)
             pr_cl_revision = self.github.extract_metadata(
-                self.project_config.revision_footer, pull_request.body)
+                self.project_config.revision_footer, pull_request.body
+            )
             if cl.current_revision_sha == pr_cl_revision:
                 _log.info(
-                    'PR revision matches CL revision. Nothing to do here.')
+                    'PR revision matches CL revision. Nothing to do here.'
+                )
                 return None
 
             _log.info('New revision found, updating PR...')
@@ -243,16 +267,20 @@ class TestExporter:
             _log.info('No in-flight PR found for CL. Creating...')
             return self.create_or_update_pr_from_inflight_cl(cl)
 
-    def process_chromium_commits(self, exportable_commits,
-                                 pr_events: PREventsByType):
+    def process_chromium_commits(
+        self, exportable_commits, pr_events: PREventsByType
+    ):
         for commit in exportable_commits:
             maybe_event = self.process_chromium_commit(commit)
             if maybe_event:
                 pr_events[maybe_event.event_type].add(maybe_event.number)
 
     def process_chromium_commit(self, commit) -> Optional[PREvent]:
-        _log.info('Found exportable Chromium commit: %s %s', commit.subject(),
-                  commit.sha)
+        _log.info(
+            'Found exportable Chromium commit: %s %s',
+            commit.subject(),
+            commit.sha,
+        )
 
         pull_request = self.github.pr_for_chromium_commit(commit)
         if pull_request:
@@ -265,14 +293,18 @@ class TestExporter:
 
             if self.create_draft_pr:
                 if self.dry_run:
-                    _log.info(f'[dry_run] Would have marked PR with node ID '
-                              '{pull_request.node_id!r} as ready for review.')
+                    _log.info(
+                        f'[dry_run] Would have marked PR with node ID '
+                        '{pull_request.node_id!r} as ready for review.'
+                    )
                 else:
                     pr_response = self.graphql.mark_ready_for_review(
-                        pull_request.node_id)
+                        pull_request.node_id
+                    )
                     _log.info(
                         f'Marked PR with node ID {pull_request.node_id!r} '
-                        'as ready for review.')
+                        'as ready for review.'
+                    )
 
             if self.github.provisional_pr_label in pull_request.labels:
                 # If the PR was created from a Gerrit in-flight CL, update the
@@ -281,7 +313,8 @@ class TestExporter:
                 # to avoid unnecessary Travis runs.
                 _log.info('Updating PR with the final checked-in change...')
                 self.create_or_update_pr_from_landed_commit(
-                    commit, pull_request)
+                    commit, pull_request
+                )
                 self.remove_provisional_pr_label(pull_request)
                 # Updating the patch triggers Travis, which will block merge.
                 # Return early and merge next time.
@@ -302,10 +335,9 @@ class TestExporter:
         # Exportable commits that cannot apply cleanly are logged, and will be
         # retried next time. A common case is that a commit depends on an
         # earlier commit, and can only be exported after the earlier one.
-        return exportable_commits_over_last_n_commits(self.host,
-                                                      self.local_repo,
-                                                      self.github,
-                                                      require_clean=True)
+        return exportable_commits_over_last_n_commits(
+            self.host, self.local_repo, self.github, require_clean=True
+        )
 
     def remove_provisional_pr_label(self, pull_request):
         if self.dry_run:
@@ -313,10 +345,13 @@ class TestExporter:
                 '[dry_run] Would have attempted to remove the provisional PR label'
             )
             return
-        _log.info('Removing provisional label "%s"...',
-                  self.github.provisional_pr_label)
-        self.github.remove_label(pull_request.number,
-                                 self.github.provisional_pr_label)
+        _log.info(
+            'Removing provisional label "%s"...',
+            self.github.provisional_pr_label,
+        )
+        self.github.remove_label(
+            pull_request.number, self.github.provisional_pr_label
+        )
 
     def merge_pull_request(self, pull_request) -> Optional[PREvent]:
         if self.dry_run:
@@ -331,14 +366,16 @@ class TestExporter:
 
         try:
             self.github.merge_pr(pull_request.number)
-            change_id = self.github.extract_metadata(CHANGE_ID_FOOTER,
-                                                     pull_request.body)
+            change_id = self.github.extract_metadata(
+                CHANGE_ID_FOOTER, pull_request.body
+            )
             if change_id:
                 cl = GerritCL(data={'change_id': change_id}, api=self.gerrit)
                 pr_url = f'{self.github.url}pull/{pull_request.number}'
                 cl.post_comment(
                     f'The {self.local_repo.name} PR for this CL has been '
-                    f'merged upstream! {pr_url}')
+                    f'merged upstream! {pr_url}'
+                )
                 return PREvent(pull_request.number, PREventType.MERGED)
         except MergeError:
             _log.warn('Could not merge PR.')
@@ -360,11 +397,13 @@ class TestExporter:
         """
         if pull_request:
             return self.create_or_update_pr_from_commit(
-                commit, provisional=False, pr_number=pull_request.number)
+                commit, provisional=False, pr_number=pull_request.number
+            )
         else:
             branch_name = 'chromium-export-' + commit.short_sha
             return self.create_or_update_pr_from_commit(
-                commit, provisional=False, pr_branch_name=branch_name)
+                commit, provisional=False, pr_branch_name=branch_name
+            )
 
     def create_or_update_pr_from_inflight_cl(
         self,
@@ -385,8 +424,7 @@ class TestExporter:
         if not success:
             _log.error('Gerrit CL patch did not apply cleanly:')
             _log.error(error)
-            _log.debug(
-                'First 500 characters of patch: << END_OF_PATCH_EXCERPT')
+            _log.debug('First 500 characters of patch: << END_OF_PATCH_EXCERPT')
             _log.debug(patch[0:500])
             _log.debug('END_OF_PATCH_EXCERPT')
             return None
@@ -396,9 +434,11 @@ class TestExporter:
         # (https://crbug.com/gerrit/12244). We need to add it back. And we've
         # asserted that cl.change_id is present in GerritCL.
         has_change_id = bool(
-            self.github.extract_metadata(CHANGE_ID_FOOTER, commit.message()))
+            self.github.extract_metadata(CHANGE_ID_FOOTER, commit.message())
+        )
         has_link = bool(
-            self.github.extract_metadata(LINK_FOOTER, commit.message()))
+            self.github.extract_metadata(LINK_FOOTER, commit.message())
+        )
         if not has_change_id and not has_link:
             _log.warn('Adding missing Change-Id back to %s', cl.url)
             footer += '{}{}\n'.format(CHANGE_ID_FOOTER, cl.change_id)
@@ -406,15 +446,17 @@ class TestExporter:
         # but a link to code review is useful so we add it manually.
         footer += 'Reviewed-on: {}\n'.format(cl.url)
         # WPT_REVISION_FOOTER is used by the exporter to check the CL revision.
-        footer += '{}{}'.format(self.project_config.revision_footer,
-                                cl.current_revision_sha)
+        footer += '{}{}'.format(
+            self.project_config.revision_footer, cl.current_revision_sha
+        )
 
         if pull_request:
             maybe_event = self.create_or_update_pr_from_commit(
                 commit,
                 provisional=True,
                 pr_number=pull_request.number,
-                pr_footer=footer)
+                pr_footer=footer,
+            )
 
             # When surface_failures_to_gerrit is enabled, the pull request update comment below
             # is ignored.
@@ -423,30 +465,35 @@ class TestExporter:
                 pr_url = f'{self.github.url}pull/{maybe_event.number}'
                 cl.post_comment(
                     self.project_config.pr_updated_comment_template.format(
-                        subject=cl.current_revision_description,
-                        pr_url=pr_url))
+                        subject=cl.current_revision_description, pr_url=pr_url
+                    )
+                )
         else:
             branch_name = 'chromium-export-cl-{}'.format(cl.number)
             maybe_event = self.create_or_update_pr_from_commit(
                 commit,
                 provisional=True,
                 pr_footer=footer,
-                pr_branch_name=branch_name)
+                pr_branch_name=branch_name,
+            )
             if maybe_event:
                 pr_url = f'{self.github.url}pull/{maybe_event.number}'
                 cl.post_comment(
                     self.project_config.inflight_cl_comment_template.format(
-                        pr_url=pr_url))
+                        pr_url=pr_url
+                    )
+                )
 
         return maybe_event
 
     def create_or_update_pr_from_commit(
-            self,
-            commit,
-            provisional,
-            pr_number=None,
-            pr_footer='',
-            pr_branch_name=None) -> Optional[PREvent]:
+        self,
+        commit,
+        provisional,
+        pr_number=None,
+        pr_footer='',
+        pr_branch_name=None,
+    ) -> Optional[PREvent]:
         """Creates or updates a PR from a Chromium commit.
 
         The commit can be either landed or in-flight. The exportable portion of
@@ -479,14 +526,19 @@ class TestExporter:
         updating = bool(pr_number)
         pr_description = body + pr_footer
         if not pr_branch_name:
-            assert pr_number, 'pr_number and pr_branch_name cannot be both absent.'
+            assert pr_number, (
+                'pr_number and pr_branch_name cannot be both absent.'
+            )
             pr_branch_name = self.github.get_pr_branch(pr_number)
 
         if self.dry_run:
             action_str = 'updating' if updating else 'creating'
             origin_str = 'CL' if provisional else 'Chromium commit'
-            _log.info('[dry_run] Stopping before %s PR from %s', action_str,
-                      origin_str)
+            _log.info(
+                '[dry_run] Stopping before %s PR from %s',
+                action_str,
+                origin_str,
+            )
             _log.info('\n\n[dry_run] message:')
             _log.info(message)
             _log.debug(
@@ -496,20 +548,20 @@ class TestExporter:
             _log.debug('END_OF_PATCH_EXCERPT')
             return None
 
-        self.local_repo.create_branch_with_patch(pr_branch_name,
-                                                 message,
-                                                 patch,
-                                                 author,
-                                                 force_push=True)
+        self.local_repo.create_branch_with_patch(
+            pr_branch_name, message, patch, author, force_push=True
+        )
 
         if updating:
             self.github.update_pr(pr_number, subject, pr_description)
             return PREvent(pr_number, PREventType.UPDATED)
         else:
-            pr_number = self.github.create_pr(pr_branch_name, subject,
-                                              pr_description)
+            pr_number = self.github.create_pr(
+                pr_branch_name, subject, pr_description
+            )
             self.github.add_label(pr_number, self.github.export_pr_label)
             if provisional:
-                self.github.add_label(pr_number,
-                                      self.github.provisional_pr_label)
+                self.github.add_label(
+                    pr_number, self.github.provisional_pr_label
+                )
             return PREvent(pr_number, PREventType.CREATED)

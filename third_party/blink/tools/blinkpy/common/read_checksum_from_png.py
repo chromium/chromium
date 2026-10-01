@@ -38,4 +38,4 @@ def read_checksum(filehandle):
         return
 
     checksum_pos = comment_pos + len(comment_key)
-    return data[checksum_pos:checksum_pos + 32]
+    return data[checksum_pos : checksum_pos + 32]

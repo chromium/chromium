@@ -32,45 +32,20 @@ class WPTServe(server_base.ServerBase):
         webtransport_h3_port = 11000
 
         self._name = 'wptserve'
-        self._log_prefixes = ('wptserve_stderr', )
-        self._mappings = [{
-            'port': http_port,
-            'scheme': 'http'
-        }, {
-            'port': http_alt_port,
-            'scheme': 'http'
-        }, {
-            'port': http_local_port,
-            'scheme': 'http'
-        }, {
-            'port': http_public_port,
-            'scheme': 'http'
-        }, {
-            'port': https_port,
-            'scheme': 'https',
-            'sslcert': True
-        }, {
-            'port': https_alt_port,
-            'scheme': 'https',
-            'sslcert': True
-        }, {
-            'port': https_local_port,
-            'scheme': 'https'
-        }, {
-            'port': https_public_port,
-            'scheme': 'https'
-        }, {
-            'port': h2_port,
-            'scheme': 'https',
-            'sslcert': True
-        }, {
-            'port': ws_port,
-            'scheme': 'ws'
-        }, {
-            'port': wss_port,
-            'scheme': 'wss',
-            'sslcert': True
-        }]
+        self._log_prefixes = ('wptserve_stderr',)
+        self._mappings = [
+            {'port': http_port, 'scheme': 'http'},
+            {'port': http_alt_port, 'scheme': 'http'},
+            {'port': http_local_port, 'scheme': 'http'},
+            {'port': http_public_port, 'scheme': 'http'},
+            {'port': https_port, 'scheme': 'https', 'sslcert': True},
+            {'port': https_alt_port, 'scheme': 'https', 'sslcert': True},
+            {'port': https_local_port, 'scheme': 'https'},
+            {'port': https_public_port, 'scheme': 'https'},
+            {'port': h2_port, 'scheme': 'https', 'sslcert': True},
+            {'port': ws_port, 'scheme': 'ws'},
+            {'port': wss_port, 'scheme': 'wss', 'sslcert': True},
+        ]
 
         # TODO(burnik): We can probably avoid PID files for WPT in the future.
         fs = self._filesystem
@@ -79,9 +54,11 @@ class WPTServe(server_base.ServerBase):
 
         finder = PathFinder(fs)
         path_to_pywebsocket = finder.path_from_chromium_base(
-            'third_party', 'pywebsocket3', 'src')
+            'third_party', 'pywebsocket3', 'src'
+        )
         self.path_to_wpt_support = finder.path_from_chromium_base(
-            'third_party', 'wpt_tools')
+            'third_party', 'wpt_tools'
+        )
         path_to_wpt_root = fs.join(self.path_to_wpt_support, 'wpt')
         wpt_script = fs.join(path_to_wpt_root, 'wpt')
         start_cmd = [
@@ -101,14 +78,14 @@ class WPTServe(server_base.ServerBase):
         ]
 
         path_to_ws_handlers = finder.path_from_wpt_tests(
-            'websockets', 'handlers')
+            'websockets', 'handlers'
+        )
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
             start_cmd += ['--ws_doc_root', path_to_ws_handlers]
 
-        self._mappings.append({
-            'port': webtransport_h3_port,
-            'scheme': 'webtransport-h3'
-        })
+        self._mappings.append(
+            {'port': webtransport_h3_port, 'scheme': 'webtransport-h3'}
+        )
         start_cmd.append('--webtransport-h3')
 
         # TODO(burnik): We should stop setting the CWD once WPT can be run without it.
@@ -117,17 +94,21 @@ class WPTServe(server_base.ServerBase):
         self._env.update({'PYTHONPATH': path_to_pywebsocket})
         self._start_cmd = start_cmd
 
-        self._error_log_path = self._filesystem.join(output_dir,
-                                                     'wptserve_stderr.txt')
-        self._output_log_path = self._filesystem.join(output_dir,
-                                                      'wptserve_stdout.txt')
+        self._error_log_path = self._filesystem.join(
+            output_dir, 'wptserve_stderr.txt'
+        )
+        self._output_log_path = self._filesystem.join(
+            output_dir, 'wptserve_stdout.txt'
+        )
 
         expiration_date = datetime.date(2033, 2, 22)
         if datetime.date.today() > expiration_date - datetime.timedelta(30):
             _log.error(
                 'Pre-generated keys and certificates are going to be expired at %s.'
                 ' Please re-generate them by following steps in %s/README.md.',
-                expiration_date.strftime('%b %d %Y'), self.path_to_wpt_support)
+                expiration_date.strftime('%b %d %Y'),
+                self.path_to_wpt_support,
+            )
 
     def _prepare_config(self):
         fs = self._filesystem
@@ -137,12 +118,12 @@ class WPTServe(server_base.ServerBase):
         for alias in config['aliases']:
             if alias['url-path'] == "/resources/testdriver-vendor.js":
                 alias['local-dir'] = "resources"
-        config['aliases'].append({
-            'url-path':
-            '/gen/',
-            'local-dir':
-            self._port_obj.generated_sources_directory()
-        })
+        config['aliases'].append(
+            {
+                'url-path': '/gen/',
+                'local-dir': self._port_obj.generated_sources_directory(),
+            }
+        )
 
         with fs.open_text_file_for_writing(self._config_file) as f:
             json.dump(config, f)
@@ -180,8 +161,9 @@ class WPTServe(server_base.ServerBase):
 
         # Polls the process in case it has died; otherwise, the process might be
         # defunct and check_running_pid can still succeed.
-        if (self._process and self._process.poll()) or \
-                (not self._executive.check_running_pid(self._pid)):
+        if (self._process and self._process.poll()) or (
+            not self._executive.check_running_pid(self._pid)
+        ):
             _log.debug('pid %d is not running', self._pid)
             return True
 

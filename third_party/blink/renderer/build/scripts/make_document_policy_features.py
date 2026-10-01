@@ -12,18 +12,17 @@ class DocumentPolicyFeatureWriter(json5_generator.Writer):
 
     def __init__(self, json5_file_path, output_dir):
         super(DocumentPolicyFeatureWriter, self).__init__(
-            json5_file_path, output_dir)
+            json5_file_path, output_dir
+        )
 
         @template_expander.use_jinja(
-            'templates/' + self.file_basename + '.cc.tmpl')
+            'templates/' + self.file_basename + '.cc.tmpl'
+        )
         def generate_implementation():
             return {
-                'input_files':
-                self._input_files,
-                'features':
-                self.json5_file.name_dictionaries,
-                'parse_default_value':
-                parse_default_value
+                'input_files': self._input_files,
+                'features': self.json5_file.name_dictionaries,
+                'parse_default_value': parse_default_value,
             }
 
         self._outputs = {

@@ -6,14 +6,18 @@
 import difflib
 
 
-def unified_diff(expected_text, actual_text, expected_filename,
-                 actual_filename):
+def unified_diff(
+    expected_text, actual_text, expected_filename, actual_filename
+):
     """Returns a string containing the diff of the two text strings
     in 'unified diff' format.
     """
-    diff = difflib.unified_diff(expected_text.splitlines(True),
-                                actual_text.splitlines(True),
-                                expected_filename, actual_filename)
+    diff = difflib.unified_diff(
+        expected_text.splitlines(True),
+        actual_text.splitlines(True),
+        expected_filename,
+        actual_filename,
+    )
     return ''.join(_diff_fixup(diff))
 
 

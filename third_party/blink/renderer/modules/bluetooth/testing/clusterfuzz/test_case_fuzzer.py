@@ -39,16 +39,14 @@ TOKENS = [
     ],
     [
         '  return device.gatt.connect();',
-        '})'
-        '.then(gatt => {',
+        '}).then(gatt => {',
     ],
     [
         '  gatt.connect();',
     ],
     [
         '  return gatt.connect();',
-        '})'
-        '.then(gatt => {',
+        '}).then(gatt => {',
     ],
     # GetPrimaryService(s) Tokens
     [
@@ -59,13 +57,11 @@ TOKENS = [
     ],
     [
         '  return device.gatt.TRANSFORM_GET_PRIMARY_SERVICES;',
-        '})'
-        '.then(services => {',
+        '}).then(services => {',
     ],
     [
         '  return gatt.TRANSFORM_GET_PRIMARY_SERVICES;',
-        '})'
-        '.then(services => {',
+        '}).then(services => {',
     ],
     # GetCharacteristic(s) Tokens
     [
@@ -228,5 +224,8 @@ def GenerateTestFile(template_file_data):
         collection.
     """
 
-    return FillInParameter('TRANSFORM_RANDOM_TOKENS',
-                           _GenerateSequenceOfRandomTokens, template_file_data)
+    return FillInParameter(
+        'TRANSFORM_RANDOM_TOKENS',
+        _GenerateSequenceOfRandomTokens,
+        template_file_data,
+    )

@@ -42,46 +42,56 @@ _log = logging.getLogger(__name__)
 
 def ParseArgs() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=('Script to check and analysis slowness for web tests'))
+        description=('Script to check and analysis slowness for web tests')
+    )
     parser.add_argument(
         '--project',
         default='chrome-unexpected-pass-data',
-        help=('The billing project to use for BigQuery queries. '
-              'Must have access to the ResultDB BQ tables, e.g. '
-              '"luci-resultdb.chromium.web_tests_ci_test_results".'))
+        help=(
+            'The billing project to use for BigQuery queries. '
+            'Must have access to the ResultDB BQ tables, e.g. '
+            '"luci-resultdb.chromium.web_tests_ci_test_results".'
+        ),
+    )
     parser.add_argument(
         '--slow-result-ratio-threshold',
         default=0.9,
         type=float,
         help="A float denoting what fraction of results need to be slow"
         " for a test to be considered slow. Both thresholds must be"
-        " hit for a test to be considered slow.")
+        " hit for a test to be considered slow.",
+    )
     parser.add_argument(
         '--timeout-result-threshold',
         type=int,
         default=5,
         help="An int denoting the number of timeout results necessary"
         " for a test to be considered slow. Both thresholds must "
-        "be hit for a test to be considered slow.")
-    parser.add_argument('--sample-period',
-                        type=int,
-                        default=1,
-                        choices=range(1, 30),
-                        help='The number of days to sample data from, '
-                        'must be within 30 days.')
+        "be hit for a test to be considered slow.",
+    )
+    parser.add_argument(
+        '--sample-period',
+        type=int,
+        default=1,
+        choices=range(1, 30),
+        help='The number of days to sample data from, must be within 30 days.',
+    )
     parser.add_argument(
         '--test-path',
-        help='The test path that contains the tests to do slowness analysis.')
+        help='The test path that contains the tests to do slowness analysis.',
+    )
     parser.add_argument(
         '--check-bugs-only',
         action='store_true',
         help='Only checks the slow tests result on existing bugs in the'
-        ' LUCI analysis database.')
+        ' LUCI analysis database.',
+    )
     parser.add_argument(
         '--attach-analysis-result',
         action='store_true',
         help='Attach the slow test analysis result to the corresponding bug.'
-        ' Only used with --check-bugs-only flag.')
+        ' Only used with --check-bugs-only flag.',
+    )
     args = parser.parse_args()
     return args
 
@@ -111,24 +121,30 @@ def main() -> int:
 
     results_processor = results.ResultProcessor()
     slowness_analyzer = analyzer.SlowTestAnalyzer(
-        args.slow_result_ratio_threshold, args.timeout_result_threshold)
+        args.slow_result_ratio_threshold, args.timeout_result_threshold
+    )
     bug_ids = []
     for bug_id, test_list in bugs.items():
         bug_result_string = ''
         for test_path in test_list:
-            query_results = (
-                querier_instance.get_overall_slowness_ci_tests(test_path))
+            query_results = querier_instance.get_overall_slowness_ci_tests(
+                test_path
+            )
             aggregated_results = (
-                results_processor.aggregate_test_slowness_results(
-                    query_results))
+                results_processor.aggregate_test_slowness_results(query_results)
+            )
             bug_result_string += analyze_aggregated_results(
-                aggregated_results, slowness_analyzer, bug_id,
-                args.attach_analysis_result)
+                aggregated_results,
+                slowness_analyzer,
+                bug_id,
+                args.attach_analysis_result,
+            )
         # Attach the analysis result for this bug.
         if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
             if RESULT_TITLE not in str(
-                    buganizer_api.GetIssueComments(int(bug_id))):
+                buganizer_api.GetIssueComments(int(bug_id))
+            ):
                 buganizer_api.NewComment(int(bug_id), bug_result_string)
                 bug_ids.append(bug_id)
                 _log.info('Successfully attach result to bug: %s', bug_id)
@@ -136,26 +152,29 @@ def main() -> int:
     # Insert bug attachment results to database.
     if bug_ids:
         querier_instance.insert_web_test_analyzer_result(
-            data_types.SLOW_TEST_ANALYZER, data_types.BUGANIZER, bug_ids)
+            data_types.SLOW_TEST_ANALYZER, data_types.BUGANIZER, bug_ids
+        )
 
     return 0
 
 
 def analyze_aggregated_results(
-        aggregated_results: data_types.AggregatedSlownessResultsType,
-        slowness_analyzer: analyzer.SlowTestAnalyzer, bug_id: str,
-        attach_analysis_result: bool) -> str:
+    aggregated_results: data_types.AggregatedSlownessResultsType,
+    slowness_analyzer: analyzer.SlowTestAnalyzer,
+    bug_id: str,
+    attach_analysis_result: bool,
+) -> str:
     """Analyze the input slow test results.
 
-        Args:
-          aggregated_results: Slow test results.
-          slowness_analyzer: The analyzer to check slowness of results.
-          bug_id: The bug id of test results.
-          attach_analysis_result: Attach the result to bug or not.
+    Args:
+      aggregated_results: Slow test results.
+      slowness_analyzer: The analyzer to check slowness of results.
+      bug_id: The bug id of test results.
+      attach_analysis_result: Attach the result to bug or not.
 
-        Returns:
-          A string of the final analysis result.
-        """
+    Returns:
+      A string of the final analysis result.
+    """
     res = ''
     for test_name, test_data in aggregated_results.items():
         test_analysis_result = slowness_analyzer.run_analyzer(test_data)
@@ -163,14 +182,18 @@ def analyze_aggregated_results(
             result_string = ''
             if bug_id and not attach_analysis_result:
                 result_string = result_string + f'\nBug number: {bug_id}'
-            dashboard_link = (DASHBOARD_BASE_URL + '?f=test_name_h4s6v6:re:' +
-                              urllib.parse.quote(test_name, safe=''))
+            dashboard_link = (
+                DASHBOARD_BASE_URL
+                + '?f=test_name_h4s6v6:re:'
+                + urllib.parse.quote(test_name, safe='')
+            )
             result_string = result_string + (
                 f'\nTest name: {test_name}'
                 f'\nTest Result: {test_analysis_result.analysis_result}'
                 f'\nTest is slow, suggested to make the test smaller or add'
                 f' this test to SlowTests.'
-                f'\nDashboard link: {dashboard_link}\n')
+                f'\nDashboard link: {dashboard_link}\n'
+            )
             if not attach_analysis_result:
                 print(result_string)
             else:

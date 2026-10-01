@@ -13,11 +13,13 @@ class KnownExportedChangeIdsSetTest(unittest.TestCase):
     def test_init_and_contains(self):
         """Tests that the set is initialized correctly and performs case-insensitive containment checks."""
         # Instantiate with mixed-case initial IDs
-        checker = KnownExportedChangeIdsSet({
-            'IdtestId1',
-            'IDTESTID2',
-            'IDtEsTId3',
-        })
+        checker = KnownExportedChangeIdsSet(
+            {
+                'IdtestId1',
+                'IDTESTID2',
+                'IDtEsTId3',
+            }
+        )
 
         # Test containment with various casings: all should return True
         self.assertIn('IdtestId1', checker)

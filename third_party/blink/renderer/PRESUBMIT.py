@@ -18,18 +18,29 @@ def CheckChange(input_api, output_api):
         sys.path.append(input_api.change.RepositoryRoot())
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from build.ios import presubmit_support
+
         results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'core/testing/data/core_test_bundle_data',
-            'core/')
+            input_api,
+            output_api,
+            'core/testing/data/core_test_bundle_data',
+            'core/',
+        )
         results += presubmit_support.CheckBundleData(
-            input_api, output_api,
-            'core/paint/test_data/paint_test_bundle_data', 'core/')
+            input_api,
+            output_api,
+            'core/paint/test_data/paint_test_bundle_data',
+            'core/',
+        )
         results += presubmit_support.CheckBundleData(
-            input_api, output_api,
-            'core/animation/test_data/animation_test_bundle_data', 'core/')
+            input_api,
+            output_api,
+            'core/animation/test_data/animation_test_bundle_data',
+            'core/',
+        )
         results += presubmit_support.CheckBundleData(
-            input_api, output_api,
-            'modules/accessibility/testing/data/selection/accessibility_selection_test_bundle_data'
+            input_api,
+            output_api,
+            'modules/accessibility/testing/data/selection/accessibility_selection_test_bundle_data',
         )
     finally:
         sys.path = old_sys_path

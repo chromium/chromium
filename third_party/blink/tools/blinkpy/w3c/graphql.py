@@ -40,25 +40,32 @@ class GraphQL:
         return {"Authorization": f"token {self.token}"}
 
     def run_mutation(self, mutation):
-        response = requests.post('https://api.github.com/graphql',
-                                 json={'query': mutation},
-                                 headers=self.headers())
+        response = requests.post(
+            'https://api.github.com/graphql',
+            json={'query': mutation},
+            headers=self.headers(),
+        )
         if response.status_code == 200:
             return response.json()
         else:
             raise GraphQLError(
                 "Query failed to run by returning code of {}. {}".format(
-                    response.status_code, mutation))
+                    response.status_code, mutation
+                )
+            )
 
     def mark_ready_for_review(self, pull_request_id):
         """Idempotently mark a PR as "ready for review" (non-draft state)."""
-        mutation = """
+        mutation = (
+            """
            mutation {
               markPullRequestReadyForReview(input:{pullRequestId: "%s"}) {
                   pullRequest{id, isDraft}
               }
            }
-        """ % pull_request_id
+        """
+            % pull_request_id
+        )
         # See https://spec.graphql.org/June2018/#sec-Response-Format for the
         # response payload format, which is unwrapped here.
         payload = self.run_mutation(mutation)
@@ -72,7 +79,6 @@ class GraphQL:
 
 
 class GraphQLError(Exception):
-
     def __init__(self, msg: str, errors: Optional[List[Any]] = None):
         super().__init__(msg, errors or [])
 

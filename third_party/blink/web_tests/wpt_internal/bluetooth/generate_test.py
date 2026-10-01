@@ -16,7 +16,8 @@ import generate
 
 UPDATE_TIP = (
     'To update the generated tests, run:\n'
-    '$ python third_party/blink/web_tests/wpt_internal/bluetooth/generate.py')
+    '$ python third_party/blink/web_tests/wpt_internal/bluetooth/generate.py'
+)
 
 
 def main():
@@ -33,8 +34,11 @@ def main():
                     return -1
         except IOError as e:
             if e.errno == 2:
-                print('Missing generated test:\n{}\nFor template:\n{}'.format(
-                    generated_test.path, generated_test.template))
+                print(
+                    'Missing generated test:\n{}\nFor template:\n{}'.format(
+                        generated_test.path, generated_test.template
+                    )
+                )
                 print(UPDATE_TIP)
                 return -1
 

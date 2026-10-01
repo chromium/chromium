@@ -70,8 +70,9 @@ class DumpReaderMultipart(DumpReader):
         f.close()
 
         cmd = [
-            self._path_to_minidump_stackwalk(), temp_name,
-            self._symbols_dir()
+            self._path_to_minidump_stackwalk(),
+            temp_name,
+            self._symbols_dir(),
         ]
         try:
             stack = self._host.executive.run_command(cmd, stderr=None)
@@ -83,8 +84,7 @@ class DumpReaderMultipart(DumpReader):
         return stack
 
     def _read_dump(self, dump_file):
-        with self._host.filesystem.open_binary_file_for_reading(
-                dump_file) as f:
+        with self._host.filesystem.open_binary_file_for_reading(dump_file) as f:
             # The cgi module was removed in Python 3.13.
             # The replacement is to use the email.parser module. The multipart
             # format is defined by RFC 2046 and is the same for email and HTTP.
@@ -103,7 +103,11 @@ class DumpReaderMultipart(DumpReader):
             content = f.read()
             content = content.replace(boundary, safe_boundary)
 
-            headers = b'Content-Type: multipart/form-data; boundary="' + safe_boundary + b'"'
+            headers = (
+                b'Content-Type: multipart/form-data; boundary="'
+                + safe_boundary
+                + b'"'
+            )
             parser = BytesParser()
             try:
                 message = parser.parsebytes(headers + b'\r\n\r\n' + content)
@@ -115,8 +119,9 @@ class DumpReaderMultipart(DumpReader):
                         data.setdefault(name, []).append(payload)
                     else:
                         # Other fields are expected to be strings.
-                        data.setdefault(name,
-                                        []).append(payload.decode('utf-8'))
+                        data.setdefault(name, []).append(
+                            payload.decode('utf-8')
+                        )
                 return data
             except:
                 pass
@@ -149,17 +154,19 @@ class DumpReaderMultipart(DumpReader):
         return self._breakpad_tools_available
 
     def _path_to_minidump_stackwalk(self):
-        return self._host.filesystem.join(self._build_dir,
-                                          'minidump_stackwalk')
+        return self._host.filesystem.join(self._build_dir, 'minidump_stackwalk')
 
     def _path_to_generate_breakpad_symbols(self):
         return self._path_finder.path_from_chromium_base(
-            'components', 'crash', 'content', 'tools',
-            'generate_breakpad_symbols.py')
+            'components',
+            'crash',
+            'content',
+            'tools',
+            'generate_breakpad_symbols.py',
+        )
 
     def _symbols_dir(self):
-        return self._host.filesystem.join(self._build_dir,
-                                          'content_shell.syms')
+        return self._host.filesystem.join(self._build_dir, 'content_shell.syms')
 
     def _generate_breakpad_symbols_if_necessary(self):
         if self._generated_symbols:
@@ -168,7 +175,7 @@ class DumpReaderMultipart(DumpReader):
 
         _log.debug('Generating breakpad symbols')
         queue = Queue()
-        thread = threading.Thread(target=_symbolize_keepalive, args=(queue, ))
+        thread = threading.Thread(target=_symbolize_keepalive, args=(queue,))
         thread.start()
         try:
             for binary in self._binaries_to_symbolize():

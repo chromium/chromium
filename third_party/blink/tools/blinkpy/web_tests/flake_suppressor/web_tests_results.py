@@ -8,6 +8,7 @@ from flake_suppressor_common import results as results_module
 
 
 class WebTestsResultProcessor(results_module.ResultProcessor):
-    def GetTestSuiteAndNameFromResultDbName(self, result_db_name: str
-                                            ) -> Tuple[str, str]:
+    def GetTestSuiteAndNameFromResultDbName(
+        self, result_db_name: str
+    ) -> Tuple[str, str]:
         return '', result_db_name

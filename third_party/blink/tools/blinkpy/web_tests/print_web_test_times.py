@@ -29,7 +29,9 @@
 import json
 import optparse
 
-from blinkpy.web_tests.layout_package.json_results_generator import convert_times_trie_to_flat_paths
+from blinkpy.web_tests.layout_package.json_results_generator import (
+    convert_times_trie_to_flat_paths,
+)
 from blinkpy.web_tests.port.base import Port
 
 
@@ -40,18 +42,21 @@ def main(host, argv):
         '--forward',
         action='store',
         type='int',
-        help='group times by first N directories of test')
+        help='group times by first N directories of test',
+    )
     parser.add_option(
         '-b',
         '--backward',
         action='store',
         type='int',
-        help='group times by last N directories of test')
+        help='group times by last N directories of test',
+    )
     parser.add_option(
         '--fastest',
         action='store',
         type='float',
-        help='print a list of tests that will take N % of the time')
+        help='print a list of tests that will take N % of the time',
+    )
 
     epilog = """
        You can print out aggregate times per directory using the -f and -b
@@ -70,8 +75,9 @@ def main(host, argv):
     if args and args[0]:
         times_ms_path = args[0]
     else:
-        times_ms_path = host.filesystem.join(port.artifacts_directory(),
-                                             'times_ms.json')
+        times_ms_path = host.filesystem.join(
+            port.artifacts_directory(), 'times_ms.json'
+        )
 
     times_trie = json.loads(host.filesystem.read_text_file(times_ms_path))
 

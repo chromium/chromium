@@ -64,8 +64,10 @@ class DatabaseBody(object):
             self._defs[kind] = {}
 
     def register(self, kind, user_defined_type):
-        assert isinstance(user_defined_type,
-                          (ObservableArray, Typedef, Union, UserDefinedType))
+        assert isinstance(
+            user_defined_type,
+            (ObservableArray, Typedef, Union, UserDefinedType),
+        )
         assert kind in DatabaseBody.Kind.values()
         try:
             self.find_by_identifier(user_defined_type.identifier)

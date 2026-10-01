@@ -13,7 +13,8 @@ def main(request, response):
     response.headers.set(b"Content-Type", b"application/javascript")
 
     # Supports both dedicated workers (onmessage) and shared workers (onconnect).
-    return b"""
+    return (
+        b"""
 const kScriptLoadHadGpcHeader = %s;
 
 self.onmessage = () => {
@@ -26,4 +27,6 @@ self.onconnect = (event) => {
     port.postMessage(kScriptLoadHadGpcHeader);
   };
 };
-""" % gpc_literal
+"""
+        % gpc_literal
+    )

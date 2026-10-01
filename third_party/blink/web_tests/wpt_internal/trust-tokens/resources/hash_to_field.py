@@ -7,6 +7,7 @@ this pseudorandom byte string as one or more elements of F.
 
 This code is adapted from https://github.com/cfrg/draft-irtf-cfrg-hash-to-curve/blob/main/poc/hash_to_field.py.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -85,12 +86,12 @@ def OS2IP(octets: bytes, skip_assert: bool = False) -> int:
 
 
 def hash_to_field(
-        msg: Union[bytes, str],
-        count: int,
-        modulus: int,
-        degree: int,
-        blen: int,
-        expander: Expander,
+    msg: Union[bytes, str],
+    count: int,
+    modulus: int,
+    degree: int,
+    blen: int,
+    expander: Expander,
 ) -> List[List[int]]:
     """Hashes a byte string of any length into one or more elements of a field
     F. It is defined in https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-07#section-5
@@ -113,18 +114,18 @@ def hash_to_field(
         e_vals = []
         for j in range(degree):
             elm_offset = blen * (j + i * degree)
-            tv = uniform_bytes[elm_offset:(elm_offset + blen)]
+            tv = uniform_bytes[elm_offset : (elm_offset + blen)]
             e_vals.append(OS2IP(tv) % modulus)
         u_vals.append(e_vals)
     return u_vals
 
 
 def expand_message_xmd(
-        msg: Union[bytes, str],
-        dst: bytes,
-        len_in_bytes: int,
-        hash_fn: Any,
-        security_param: int,
+    msg: Union[bytes, str],
+    dst: bytes,
+    len_in_bytes: int,
+    hash_fn: Any,
+    security_param: int,
 ) -> bytes:
     """Produces a pseudorandom byte string using a cryptographic hash function H
     that outputs b bits.
@@ -173,8 +174,8 @@ def expand_message_xmd(
     b_vals[0] = hash_fn(b_0 + I2OSP(1, 1) + dst_prime).digest()
     for i in range(1, ell):
         b_vals[i] = hash_fn(
-            _strxor(b_0, b_vals[i - 1]) + I2OSP(i + 1, 1) +
-            dst_prime).digest()
+            _strxor(b_0, b_vals[i - 1]) + I2OSP(i + 1, 1) + dst_prime
+        ).digest()
 
     # assemble output
     uniform_bytes = (b"").join(b_vals)
@@ -194,8 +195,14 @@ class Expander(ABC):
         security_param: The target security level in bits.
     """
 
-    def __init__(self, name: str, dst: str, dst_prime: bytes, hash_fn: Any,
-                 security_param: int):
+    def __init__(
+        self,
+        name: str,
+        dst: str,
+        dst_prime: bytes,
+        hash_fn: Any,
+        security_param: int,
+    ):
         self.name = name
         self.dst = dst
         self.dst_prime = dst_prime
@@ -203,8 +210,9 @@ class Expander(ABC):
         self.security_param = security_param
 
     @abstractmethod
-    def expand_message(self, msg: Union[bytes, str],
-                       len_in_bytes: int) -> bytes:
+    def expand_message(
+        self, msg: Union[bytes, str], len_in_bytes: int
+    ) -> bytes:
         """Generates a pseudorandom byte string from an input string.
 
         Args:
@@ -228,13 +236,17 @@ class XMDExpander(Expander):
         if len(dst_prime) > 255:
             # https://cfrg.github.io/draft-irtf-cfrg-hash-to-curve/draft-irtf-cfrg-hash-to-curve.html#name-using-dsts-longer-than-255-
             dst_prime = hash_fn(
-                _as_bytes("H2C-OVERSIZE-DST-") + _as_bytes(dst)).digest()
+                _as_bytes("H2C-OVERSIZE-DST-") + _as_bytes(dst)
+            ).digest()
         else:
             dst_prime = _as_bytes(dst)
-        super(XMDExpander, self).__init__("expand_message_xmd", dst, dst_prime,
-                                          hash_fn, security_param)
+        super(XMDExpander, self).__init__(
+            "expand_message_xmd", dst, dst_prime, hash_fn, security_param
+        )
 
-    def expand_message(self, msg: Union[bytes, str],
-                       len_in_bytes: int) -> bytes:
-        return expand_message_xmd(msg, self.dst_prime, len_in_bytes,
-                                  self.hash_fn, self.security_param)
+    def expand_message(
+        self, msg: Union[bytes, str], len_in_bytes: int
+    ) -> bytes:
+        return expand_message_xmd(
+            msg, self.dst_prime, len_in_bytes, self.hash_fn, self.security_param
+        )

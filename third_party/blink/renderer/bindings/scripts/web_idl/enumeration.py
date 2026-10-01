@@ -11,24 +11,37 @@ from .make_copy import make_copy
 from .user_defined_type import UserDefinedType
 
 
-class Enumeration(UserDefinedType, WithExtendedAttributes,
-                  WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
+class Enumeration(
+    UserDefinedType,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-enums"""
 
-    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     values,
-                     extended_attributes=None,
-                     code_generator_info=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        IRMap.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            values,
+            extended_attributes=None,
+            code_generator_info=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(values, (list, tuple))
             assert all(isinstance(value, str) for value in values)
 
             IRMap.IR.__init__(
-                self, identifier=identifier, kind=IRMap.IR.Kind.ENUMERATION)
+                self, identifier=identifier, kind=IRMap.IR.Kind.ENUMERATION
+            )
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithCodeGeneratorInfo.__init__(self, code_generator_info)
             WithComponent.__init__(self, component)

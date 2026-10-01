@@ -68,8 +68,11 @@ def ustring_to_string(ptr, length=None):
     else:
         length = int(length)
     char_vals = [int((ptr + i).dereference()) for i in range(length)]
-    string = struct.pack('H' * length, *char_vals).decode(
-        'utf-16', 'replace').encode('utf-8')
+    string = (
+        struct.pack('H' * length, *char_vals)
+        .decode('utf-16', 'replace')
+        .encode('utf-8')
+    )
     return string + error_message.encode('utf-8')
 
 
@@ -97,9 +100,9 @@ def dereference_member(obj):
         return obj
 
     inner_type = obj.type.template_argument(0)
-    decompressed_ptr = (gdb.parse_and_eval(
-        "_cppgc_internal_Uncompress_Member((void*){})".format(
-            obj.address)).cast(inner_type.pointer()))
+    decompressed_ptr = gdb.parse_and_eval(
+        "_cppgc_internal_Uncompress_Member((void*){})".format(obj.address)
+    ).cast(inner_type.pointer())
 
     # The sentinel pointer is used when stored in a hash set to indicate
     # deleted entries.
@@ -153,10 +156,12 @@ class BlinkStringImplPrinter(StringPrinter):
         if self.is_8bit():
             return lstring_to_string(
                 chars_start.cast(gdb.lookup_type('char').pointer()),
-                self.get_length())
+                self.get_length(),
+            )
         return ustring_to_string(
             chars_start.cast(gdb.lookup_type('UChar').pointer()),
-            self.get_length())
+            self.get_length(),
+        )
 
     def is_8bit(self):
         return int(str(self.val['hash_and_flags_'])) % 2
@@ -172,7 +177,8 @@ class BlinkStringPrinter(StringPrinter):
         if not self.stringimpl_ptr():
             return 0
         return BlinkStringImplPrinter(
-            self.stringimpl_ptr().dereference()).get_length()
+            self.stringimpl_ptr().dereference()
+        ).get_length()
 
     def to_string(self):
         if not self.stringimpl_ptr():
@@ -204,8 +210,10 @@ class blinkFixedPointPrinter:
         self.val = val
 
     def to_string(self):
-        return "%.14gpx" % (float(self.val['value_']) /
-                            float(self.val['kFixedPointDenominator']))
+        return "%.14gpx" % (
+            float(self.val['value_'])
+            / float(self.val['kFixedPointDenominator'])
+        )
 
 
 class blinkLayoutPointPrinter:
@@ -215,9 +223,10 @@ class blinkLayoutPointPrinter:
         self.val = val
 
     def to_string(self):
-        return 'LayoutPoint(%s, %s)' % (blinkLayoutUnitPrinter(
-            self.val['x_']).to_string(), blinkLayoutUnitPrinter(
-                self.val['y_']).to_string())
+        return 'LayoutPoint(%s, %s)' % (
+            blinkLayoutUnitPrinter(self.val['x_']).to_string(),
+            blinkLayoutUnitPrinter(self.val['y_']).to_string(),
+        )
 
 
 class blinkQualifiedNamePrinter(StringPrinter):
@@ -229,13 +238,18 @@ class blinkQualifiedNamePrinter(StringPrinter):
         self.length = 0
         if self.val['impl_']:
             self.prefix_printer = BlinkStringPrinter(
-                self.val['impl_']['ptr_']['prefix_']['string_'])
+                self.val['impl_']['ptr_']['prefix_']['string_']
+            )
             self.local_name_printer = BlinkStringPrinter(
-                self.val['impl_']['ptr_']['local_name_']['string_'])
+                self.val['impl_']['ptr_']['local_name_']['string_']
+            )
             self.prefix_length = self.prefix_printer.get_length()
             if self.prefix_length > 0:
-                self.length = (self.prefix_length + 1 +
-                               self.local_name_printer.get_length())
+                self.length = (
+                    self.prefix_length
+                    + 1
+                    + self.local_name_printer.get_length()
+                )
             else:
                 self.length = self.local_name_printer.get_length()
 
@@ -247,8 +261,11 @@ class blinkQualifiedNamePrinter(StringPrinter):
             return "(null)"
         else:
             if self.prefix_length > 0:
-                return (self.prefix_printer.to_string() + ":" +
-                        self.local_name_printer.to_string())
+                return (
+                    self.prefix_printer.to_string()
+                    + ":"
+                    + self.local_name_printer.to_string()
+                )
             else:
                 return self.local_name_printer.to_string()
 
@@ -373,8 +390,11 @@ class BlinkVectorPrinter:
         return self.Iterator(start, start + self.val['size_'])
 
     def to_string(self):
-        return ('%s of length %d, capacity %d' %
-                ('blink::Vector', self.val['size_'], self.val['capacity_']))
+        return '%s of length %d, capacity %d' % (
+            'blink::Vector',
+            self.val['size_'],
+            self.val['capacity_'],
+        )
 
     def display_hint(self):
         return 'array'
@@ -393,7 +413,6 @@ class BlinkHashTablePrinter:
     """
 
     class Iterator:
-
         def __init__(self, start, finish, is_keyval):
             self.item = start
             self.finish = finish
@@ -439,8 +458,10 @@ class BlinkHashTablePrinter:
         return self.Iterator(start, start + self.val['table_size_'], is_keyval)
 
     def to_string(self):
-        return ('%s with %d elements' %
-                ('blink::HashTable', self.val['key_count_']))
+        return '%s with %d elements' % (
+            'blink::HashTable',
+            self.val['key_count_'],
+        )
 
     def display_hint(self):
         return 'array'
@@ -473,8 +494,10 @@ class BlinkJSONValuePrinter:
     def to_string(self):
         s = str(
             gdb.parse_and_eval(
-                "((blink::JSONValue*) %s)->ToPrettyJSONString().Utf8(0)" %
-                self.val.address))
+                "((blink::JSONValue*) %s)->ToPrettyJSONString().Utf8(0)"
+                % self.val.address
+            )
+        )
         return s.replace("\\n", "\n").replace('\\"', '"')
 
 
@@ -484,8 +507,8 @@ class CcPaintOpBufferPrinter:
 
     def to_string(self):
         return gdb.parse_and_eval(
-            "blink::RecordAsJSON(*((cc::PaintOpBuffer*) %s))" %
-            self.val.address)
+            "blink::RecordAsJSON(*((cc::PaintOpBuffer*) %s))" % self.val.address
+        )
 
 
 def add_pretty_printers():
@@ -497,8 +520,7 @@ def add_pretty_printers():
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
-        (re.compile("^blink::PixelsAndPercent$"),
-         BlinkPixelsAndPercentPrinter),
+        (re.compile("^blink::PixelsAndPercent$"), BlinkPixelsAndPercentPrinter),
         (re.compile("^blink::String$"), BlinkStringPrinter),
         (re.compile("^blink::StringImpl$"), BlinkStringImplPrinter),
         (re.compile("^blink::Vector<.*>$"), BlinkVectorPrinter),
@@ -545,7 +567,8 @@ class PrintPathToRootCommand(gdb.Command):
 
     def __init__(self):
         super(PrintPathToRootCommand, self).__init__(
-            "printpathtoroot", gdb.COMMAND_SUPPORT, gdb.COMPLETE_NONE)
+            "printpathtoroot", gdb.COMMAND_SUPPORT, gdb.COMPLETE_NONE
+        )
 
     def invoke(self, arg, from_tty):
         element_type = gdb.lookup_type('blink::Element')
@@ -561,10 +584,14 @@ class PrintPathToRootCommand(gdb.Command):
         if target_type == str(node_type):
             stack = []
             while val:
-                stack.append([
-                    val,
-                    val.cast(element_type.pointer()).dereference()['tag_name_']
-                ])
+                stack.append(
+                    [
+                        val,
+                        val.cast(element_type.pointer()).dereference()[
+                            'tag_name_'
+                        ],
+                    ]
+                )
                 val = val.dereference()['parent_']
 
             padding = ''
@@ -573,8 +600,7 @@ class PrintPathToRootCommand(gdb.Command):
                 print(padding, pair[1], pair[0])
                 padding = padding + '  '
         else:
-            print(
-                'Sorry: I don\'t know how to deal with %s yet.' % target_type)
+            print('Sorry: I don\'t know how to deal with %s yet.' % target_type)
 
 
 PrintPathToRootCommand()

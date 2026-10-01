@@ -10,12 +10,14 @@ import template_expander
 
 
 class RunTimeFeatureStateOverrideContextWriter(
-        make_runtime_features.BaseRuntimeFeatureWriter):
+    make_runtime_features.BaseRuntimeFeatureWriter
+):
     file_basename = "runtime_feature_state_override_context"
 
     def __init__(self, json5_file_path, output_dir):
-        super(RunTimeFeatureStateOverrideContextWriter,
-              self).__init__(json5_file_path, output_dir)
+        super(RunTimeFeatureStateOverrideContextWriter, self).__init__(
+            json5_file_path, output_dir
+        )
         self._outputs = {
             (self.file_basename + '.cc'): self.generate_implementation,
             (self.file_basename + '.h'): self.generate_header,

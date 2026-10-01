@@ -20,8 +20,10 @@ from blinkpy.w3c.wpt_github import GitHubError
 
 _log = logging.getLogger(__name__)
 RELEVANT_TASKCLUSTER_CHECKS = [
-    'wpt-chrome-dev-stability', 'wpt-firefox-nightly-stability', 'lint',
-    'infrastructure/ tests'
+    'wpt-chrome-dev-stability',
+    'wpt-firefox-nightly-stability',
+    'lint',
+    'infrastructure/ tests',
 ]
 
 
@@ -52,12 +54,14 @@ class ExportNotifier(object):
             _log.info('Searching for recent failing chromium exports.')
             prs = self.wpt_github.recent_failing_chromium_exports()
         except GitHubError as e:
-            raise ExportNotifierError('Surfacing Taskcluster failures '
-                                      f'could not be completed: {e}') from e
+            raise ExportNotifierError(
+                f'Surfacing Taskcluster failures could not be completed: {e}'
+            ) from e
 
         if len(prs) > 100:
             raise ExportNotifierError(
-                f'Too many open failing PRs: {len(prs)}; abort.')
+                f'Too many open failing PRs: {len(prs)}; abort.'
+            )
 
         _log.info('Found %d failing PRs.', len(prs))
         for pr in prs:
@@ -65,64 +69,73 @@ class ExportNotifier(object):
             if not check_runs:
                 continue
 
-            checks_results = self.get_relevant_failed_taskcluster_checks(check_runs)
+            checks_results = self.get_relevant_failed_taskcluster_checks(
+                check_runs
+            )
             if not checks_results:
                 continue
 
-            gerrit_id = self.wpt_github.extract_metadata(
-                'Change-Id: ', pr.body)
+            gerrit_id = self.wpt_github.extract_metadata('Change-Id: ', pr.body)
             if not gerrit_id:
                 _log.warning('Can not retrieve Change-Id for %s.', pr.number)
                 continue
 
             gerrit_sha = self.wpt_github.extract_metadata(
-                WPT_REVISION_FOOTER, pr.body)
-            prs_by_change_id[gerrit_id] = PRStatusInfo(checks_results,
-                                                       pr.number, gerrit_sha)
+                WPT_REVISION_FOOTER, pr.body
+            )
+            prs_by_change_id[gerrit_id] = PRStatusInfo(
+                checks_results, pr.number, gerrit_sha
+            )
 
         self.process_failing_prs(prs_by_change_id)
         return prs_by_change_id
 
     def notify_gerrit_of_blocked_pr(self, pull_request):
-        change_id = self.wpt_github.extract_metadata(CHANGE_ID_FOOTER,
-                                                     pull_request.body)
+        change_id = self.wpt_github.extract_metadata(
+            CHANGE_ID_FOOTER, pull_request.body
+        )
         if not change_id:
-            _log.warning('Could not find Change-Id for PR #%d',
-                         pull_request.number)
+            _log.warning(
+                'Could not find Change-Id for PR #%d', pull_request.number
+            )
             return
 
         # Detect if the PR is pending owner approval. This is based on whether a
         # review is requested from an owners team.
         requested_team_slugs = {
-            team.get('slug')
-            for team in pull_request.requested_teams
+            team.get('slug') for team in pull_request.requested_teams
         }
         approving_teams = self.OWNERS_TEAMS.intersection(requested_team_slugs)
 
         if not approving_teams:
-            _log.info('PR #%d is blocked, but not pending owner approval.',
-                      pull_request.number)
+            _log.info(
+                'PR #%d is blocked, but not pending owner approval.',
+                pull_request.number,
+            )
             return
 
-        message = ('The exported PR for this CL requires approval from the ' +
-                   ', '.join(sorted(approving_teams)) +
-                   ' team(s) on GitHub. Please see the PR for details: ' +
-                   f'{self.wpt_github.url}pull/{pull_request.number}')
+        message = (
+            'The exported PR for this CL requires approval from the '
+            + ', '.join(sorted(approving_teams))
+            + ' team(s) on GitHub. Please see the PR for details: '
+            + f'{self.wpt_github.url}pull/{pull_request.number}'
+        )
 
         try:
             cl = self.gerrit.query_cl_comments_and_revisions(change_id)
             if any(message in m['message'] for m in cl.messages):
                 _log.info(
                     'A notification for pending approval already exists on CL %s.',
-                    change_id)
+                    change_id,
+                )
                 return
         except (GerritError, KeyError):
-            _log.exception('Could not retrieve comments for CL %s.',
-                           change_id)
+            _log.exception('Could not retrieve comments for CL %s.', change_id)
             return
 
-        _log.info('Posting notification for pending approval to CL %s.',
-                  change_id)
+        _log.info(
+            'Posting notification for pending approval to CL %s.', change_id
+        )
         if not self.dry_run:
             cl.post_comment(message)
 
@@ -143,14 +156,17 @@ class ExportNotifier(object):
 
     def process_failing_prs(self, prs_by_change_id):
         """Processes and comments on CLs with failed Tackcluster checks."""
-        _log.info('Processing %d CLs with failed Taskcluster checks.',
-                  len(prs_by_change_id))
+        _log.info(
+            'Processing %d CLs with failed Taskcluster checks.',
+            len(prs_by_change_id),
+        )
         for change_id, pr_status_info in prs_by_change_id.items():
             _log.info('Change-Id: %s', change_id)
             try:
                 cl = self.gerrit.query_cl_comments_and_revisions(change_id)
                 has_commented = self.has_latest_taskcluster_status_commented(
-                    cl.messages, pr_status_info)
+                    cl.messages, pr_status_info
+                )
                 if has_commented:
                     _log.info('Comment is up-to-date. Nothing to do here.')
                     continue
@@ -158,24 +174,26 @@ class ExportNotifier(object):
                 revision = cl.revisions.get(pr_status_info.gerrit_sha)
                 if revision:
                     cl_comment = pr_status_info.to_gerrit_comment(
-                        revision['_number'])
+                        revision['_number']
+                    )
                 else:
                     cl_comment = pr_status_info.to_gerrit_comment()
 
                 if self.dry_run:
-                    _log.info('[dry_run] Would have commented on CL %s\n',
-                              change_id)
+                    _log.info(
+                        '[dry_run] Would have commented on CL %s\n', change_id
+                    )
                     _log.debug('Comments are:\n%s\n', cl_comment)
                 else:
                     _log.info('Commenting on CL %s\n', change_id)
                     cl.post_comment(cl_comment)
             except GerritError as e:
-                _log.error('Could not process Gerrit CL %s: %s', change_id,
-                           str(e))
+                _log.error(
+                    'Could not process Gerrit CL %s: %s', change_id, str(e)
+                )
                 continue
 
-    def has_latest_taskcluster_status_commented(self, messages,
-                                                pr_status_info):
+    def has_latest_taskcluster_status_commented(self, messages, pr_status_info):
         """Determines if the Taskcluster status has already been commented on the messages of a CL.
 
         Args:
@@ -184,7 +202,8 @@ class ExportNotifier(object):
         """
         for message in reversed(messages):
             cl_gerrit_sha = PRStatusInfo.get_gerrit_sha_from_comment(
-                message['message'])
+                message['message']
+            )
             if cl_gerrit_sha:
                 _log.debug('Found latest comment: %s', message['message'])
                 return cl_gerrit_sha == pr_status_info.gerrit_sha
@@ -205,7 +224,8 @@ class ExportNotifier(object):
         checks_results = {}
         for check in check_runs:
             if (check['conclusion'] == 'failure') and (
-                    check['name'] in RELEVANT_TASKCLUSTER_CHECKS):
+                check['name'] in RELEVANT_TASKCLUSTER_CHECKS
+            ):
                 result_url = '{}runs/{}'.format(WPT_GH_URL, check['id'])
                 checks_results[check['name']] = result_url
 
@@ -236,7 +256,7 @@ class PRStatusInfo(object):
     def get_gerrit_sha_from_comment(comment):
         for line in comment.splitlines():
             if line.startswith(PRStatusInfo.CL_SHA_TAG):
-                return line[len(PRStatusInfo.CL_SHA_TAG):]
+                return line[len(PRStatusInfo.CL_SHA_TAG) :]
 
         return None
 
@@ -257,12 +277,15 @@ class PRStatusInfo(object):
             'sheriff after this CL has been landed in Chromium; if you '
             'need earlier help please contact blink-dev@chromium.org.\n\n'
             'Any suggestions to improve this service are welcome; '
-            'crbug.com/1027618.').format(
-                '%spull/%d' % (WPT_GH_URL, self.pr_number),
-                self._checks_results_as_comment())
+            'crbug.com/1027618.'
+        ).format(
+            '%spull/%d' % (WPT_GH_URL, self.pr_number),
+            self._checks_results_as_comment(),
+        )
 
-        comment += ('\n\n{}{}').format(PRStatusInfo.CL_SHA_TAG,
-                                       self._gerrit_sha)
+        comment += ('\n\n{}{}').format(
+            PRStatusInfo.CL_SHA_TAG, self._gerrit_sha
+        )
         if patchset is not None:
             comment += ('\n{}{}').format(PRStatusInfo.PATCHSET_TAG, patchset)
 

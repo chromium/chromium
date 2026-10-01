@@ -67,17 +67,20 @@ def compare_output_dir(reference_dir, output_dir):
     :returns {bool}: Whether files in output dir matches files in ref dir
     """
     ref_content = {
-        f[:-4]
-        for f in os.listdir(reference_dir) if f.endswith('.ref')
+        f[:-4] for f in os.listdir(reference_dir) if f.endswith('.ref')
     }
     output_content = set(os.listdir(output_dir))
 
     if ref_content != output_content:
         print('Output files does not match.')
-        print('Following files are extra: {}'.format(output_content -
-                                                     ref_content))
-        print('Following files are missing: {}'.format(ref_content -
-                                                       output_content))
+        print(
+            'Following files are extra: {}'.format(output_content - ref_content)
+        )
+        print(
+            'Following files are missing: {}'.format(
+                ref_content - output_content
+            )
+        )
         return False
 
     for file_name in ref_content:

@@ -14,12 +14,13 @@ DEFAULT_COMMIT_HISTORY_WINDOW = 20_000
 
 
 def exportable_commits_over_last_n_commits(
-        host,
-        local_wpt,
-        wpt_github,
-        number=DEFAULT_COMMIT_HISTORY_WINDOW,
-        require_clean=True,
-        verify_merged_pr=False):
+    host,
+    local_wpt,
+    wpt_github,
+    number=DEFAULT_COMMIT_HISTORY_WINDOW,
+    require_clean=True,
+    verify_merged_pr=False,
+):
     """Lists exportable commits after a certain point.
 
     Exportable commits contain changes in the wpt directory and have not been
@@ -51,16 +52,24 @@ def exportable_commits_over_last_n_commits(
         cleanly, both in chronological order.
     """
     start_commit = 'HEAD~{}'.format(number + 1)
-    return _exportable_commits_since(start_commit, host, local_wpt, wpt_github,
-                                     require_clean, verify_merged_pr)
+    return _exportable_commits_since(
+        start_commit,
+        host,
+        local_wpt,
+        wpt_github,
+        require_clean,
+        verify_merged_pr,
+    )
 
 
-def _exportable_commits_since(chromium_commit_hash,
-                              host,
-                              local_wpt,
-                              wpt_github,
-                              require_clean=True,
-                              verify_merged_pr=False):
+def _exportable_commits_since(
+    chromium_commit_hash,
+    host,
+    local_wpt,
+    wpt_github,
+    require_clean=True,
+    verify_merged_pr=False,
+):
     """Lists exportable commits after the given commit.
 
     Args:
@@ -71,40 +80,50 @@ def _exportable_commits_since(chromium_commit_hash,
     """
     chromium_repo_root = host.executive.run_command(
         ['git', 'rev-parse', '--show-toplevel'],
-        host.project_config.project_root).strip()
-    wpt_path = chromium_repo_root + '/' + host.project_config.relative_tests_path
+        host.project_config.project_root,
+    ).strip()
+    wpt_path = (
+        chromium_repo_root + '/' + host.project_config.relative_tests_path
+    )
     commit_range = '{}..HEAD'.format(chromium_commit_hash)
     skipped_revs = ['^' + rev for rev in wpt_github.skipped_revisions]
-    command = (['git', 'rev-list', commit_range] + skipped_revs +
-               ['--reverse', '--', wpt_path])
+    command = (
+        ['git', 'rev-list', commit_range]
+        + skipped_revs
+        + ['--reverse', '--', wpt_path]
+    )
     commit_hashes = host.executive.run_command(
-        command, cwd=host.project_config.project_root).splitlines()
+        command, cwd=host.project_config.project_root
+    ).splitlines()
     chromium_commits = [ChromiumCommit(host, sha=sha) for sha in commit_hashes]
     exportable_commits = []
     errors = []
     for commit in chromium_commits:
-        state, error = get_commit_export_state(commit, local_wpt, wpt_github,
-                                               verify_merged_pr)
+        state, error = get_commit_export_state(
+            commit, local_wpt, wpt_github, verify_merged_pr
+        )
         _log.info('Commit %s has export state: "%s"', commit.short_sha, state)
 
         if require_clean:
             success = state == CommitExportState.EXPORTABLE_CLEAN
         else:
-            success = state in (CommitExportState.EXPORTABLE_CLEAN,
-                                CommitExportState.EXPORTABLE_DIRTY)
+            success = state in (
+                CommitExportState.EXPORTABLE_CLEAN,
+                CommitExportState.EXPORTABLE_DIRTY,
+            )
         if success:
             exportable_commits.append(commit)
         elif error != '':
             errors.append(
-                'The following commit did not apply cleanly:\nSubject: %s (%s)\n%s' % \
-                    (commit.subject(), commit.url(), error))
+                'The following commit did not apply cleanly:\nSubject: %s (%s)\n%s'
+                % (commit.subject(), commit.url(), error)
+            )
     return exportable_commits, errors
 
 
-def get_commit_export_state(chromium_commit,
-                            local_wpt,
-                            wpt_github,
-                            verify_merged_pr=False):
+def get_commit_export_state(
+    chromium_commit, local_wpt, wpt_github, verify_merged_pr=False
+):
     """Determines the exportability state of a Chromium commit.
 
     Args:
@@ -128,37 +147,48 @@ def get_commit_export_state(chromium_commit,
     if not patch:
         return CommitExportState.NO_PATCH, ''
 
-    if _is_commit_exported(chromium_commit, local_wpt, wpt_github,
-                           verify_merged_pr):
+    if _is_commit_exported(
+        chromium_commit, local_wpt, wpt_github, verify_merged_pr
+    ):
         return CommitExportState.EXPORTED, ''
 
     success, error = local_wpt.test_patch(patch)
-    return ((CommitExportState.EXPORTABLE_CLEAN, '') if success else
-            (CommitExportState.EXPORTABLE_DIRTY, error))
+    return (
+        (CommitExportState.EXPORTABLE_CLEAN, '')
+        if success
+        else (CommitExportState.EXPORTABLE_DIRTY, error)
+    )
 
 
-def _is_commit_exported(chromium_commit, local_wpt, wpt_github,
-                        verify_merged_pr):
+def _is_commit_exported(
+    chromium_commit, local_wpt, wpt_github, verify_merged_pr
+):
     change_id = chromium_commit.change_id()
     if change_id and change_id in KNOWN_EXPORTED_CHANGE_IDS:
         _log.info(
             'Checking if commit is exported: '
             'Commit %s (Change-Id: %s) is considered exported via manual override list.',
-            chromium_commit.short_sha, change_id)
+            chromium_commit.short_sha,
+            change_id,
+        )
         return True
 
     pull_request = wpt_github.pr_for_chromium_commit(chromium_commit)
     if not pull_request:
         _log.info(
-            'Checking if commit is exported: no existing PR found. '
-            'Commit: %s', chromium_commit.short_sha)
+            'Checking if commit is exported: no existing PR found. Commit: %s',
+            chromium_commit.short_sha,
+        )
         return False
 
     if pull_request.state != 'closed':
         _log.info(
             'Checking if commit is exported: pull request is not closed. '
             'Commit: %s, PR number: %s, PR state: %s',
-            chromium_commit.short_sha, pull_request.number, pull_request.state)
+            chromium_commit.short_sha,
+            pull_request.number,
+            pull_request.state,
+        )
         return False
 
     # A closed PR can either be merged or abandoned:
@@ -176,19 +206,24 @@ def _is_commit_exported(chromium_commit, local_wpt, wpt_github,
         return True
 
     found_in_upstream = bool(
-        local_wpt.seek_change_id(change_id) if change_id else local_wpt.
-        seek_commit_position(chromium_commit.position))
+        local_wpt.seek_change_id(change_id)
+        if change_id
+        else local_wpt.seek_commit_position(chromium_commit.position)
+    )
     if not found_in_upstream:
         needle = change_id if change_id else chromium_commit.position
         _log.info(
             'Checking if commit is exported: failed to find change in local '
-            'WPT checkout. Searched for: %s', needle)
+            'WPT checkout. Searched for: %s',
+            needle,
+        )
 
     return found_in_upstream
 
 
 class CommitExportState(object):
     """An enum class for exportability states of a Chromium commit."""
+
     # pylint: disable=pointless-string-statement
     # String literals are used as attribute docstrings (PEP 257).
 

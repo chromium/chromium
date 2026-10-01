@@ -44,12 +44,14 @@ The callback has to take three arguments: filesystem, dirname and filename.
 import itertools
 
 
-def find(filesystem,
-         base_dir,
-         paths=None,
-         skipped_directories=None,
-         file_filter=None,
-         directory_sort_key=None):
+def find(
+    filesystem,
+    base_dir,
+    paths=None,
+    skipped_directories=None,
+    file_filter=None,
+    directory_sort_key=None,
+):
     """Finds the set of tests under a given list of sub-paths.
 
     Args:
@@ -68,8 +70,13 @@ def find(filesystem,
     paths = paths or ['*']
     skipped_directories = skipped_directories or set()
     absolute_paths = _normalize(filesystem, base_dir, paths)
-    return _normalized_find(filesystem, absolute_paths, skipped_directories,
-                            file_filter, directory_sort_key)
+    return _normalized_find(
+        filesystem,
+        absolute_paths,
+        skipped_directories,
+        file_filter,
+        directory_sort_key,
+    )
 
 
 def _normalize(filesystem, base_dir, paths):
@@ -78,8 +85,9 @@ def _normalize(filesystem, base_dir, paths):
     ]
 
 
-def _normalized_find(filesystem, paths, skipped_directories, file_filter,
-                     directory_sort_key):
+def _normalized_find(
+    filesystem, paths, skipped_directories, file_filter, directory_sort_key
+):
     """Finds the set of tests under the given list of paths."""
     paths_to_walk = itertools.chain(*(filesystem.glob(path) for path in paths))
 
@@ -88,6 +96,11 @@ def _normalized_find(filesystem, paths, skipped_directories, file_filter,
             files_list.sort(key=directory_sort_key)
         return files_list
 
-    return itertools.chain(*(sort_by_directory_key(
-        filesystem.files_under(path, skipped_directories, file_filter))
-                             for path in paths_to_walk))
+    return itertools.chain(
+        *(
+            sort_by_directory_key(
+                filesystem.files_under(path, skipped_directories, file_filter)
+            )
+            for path in paths_to_walk
+        )
+    )

@@ -9,6 +9,7 @@ import dataclasses
 @dataclasses.dataclass(frozen=True)
 class IncludeDefinition:
     """Definition for an #include statement."""
+
     filename: str  # Header filename to include.
     annotation: Optional[str] = None  # End-of-line comment (e.g. IWYU pragma).
 
@@ -30,25 +31,33 @@ class CodeGenAccumulator(object):
         self._struct_decls = set()
 
     def total_size(self):
-        return (len(self.include_headers) + len(self.class_decls) +
-                len(self.struct_decls) + len(self.stdcpp_include_headers))
+        return (
+            len(self.include_headers)
+            + len(self.class_decls)
+            + len(self.struct_decls)
+            + len(self.stdcpp_include_headers)
+        )
 
     @property
     def include_headers(self) -> Set[IncludeDefinition]:
         return self._include_headers
 
-    def add_include_headers(self, headers: Sequence[Union[str,
-                                                          IncludeDefinition]]):
+    def add_include_headers(
+        self, headers: Sequence[Union[str, IncludeDefinition]]
+    ):
         """Add a list of headers to include. Individual headers can be specified
         either as a filename string, or as an IncludeDefinition instance (useful
         to add IWYU pragma annotations)."""
         self._include_headers.update(
             IncludeDefinition(header) if isinstance(header, str) else header
-            for header in headers if header)
+            for header in headers
+            if header
+        )
 
     @staticmethod
-    def require_include_headers(headers: Sequence[Union[str,
-                                                        IncludeDefinition]]):
+    def require_include_headers(
+        headers: Sequence[Union[str, IncludeDefinition]],
+    ):
         return lambda accumulator: accumulator.add_include_headers(headers)
 
     @property
@@ -56,19 +65,24 @@ class CodeGenAccumulator(object):
         return self._stdcpp_include_headers
 
     def add_stdcpp_include_headers(
-            self, headers: Sequence[Union[str, IncludeDefinition]]):
+        self, headers: Sequence[Union[str, IncludeDefinition]]
+    ):
         """Add a list of standard headers to include. Individual headers can
         be specified either as a filename string, or as an IncludeDefinition
         instance (useful to add IWYU pragma annotations)."""
         self._stdcpp_include_headers.update(
             IncludeDefinition(header) if isinstance(header, str) else header
-            for header in headers if header)
+            for header in headers
+            if header
+        )
 
     @staticmethod
     def require_stdcpp_include_headers(
-            headers: Sequence[Union[str, IncludeDefinition]]):
+        headers: Sequence[Union[str, IncludeDefinition]],
+    ):
         return lambda accumulator: accumulator.add_stdcpp_include_headers(
-            headers)
+            headers
+        )
 
     @property
     def class_decls(self):

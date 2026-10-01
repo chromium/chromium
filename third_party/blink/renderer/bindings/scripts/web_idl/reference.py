@@ -11,10 +11,12 @@ class Proxy(object):
     Proxies attribute access on this object to the target object.
     """
 
-    def __init__(self,
-                 target_object=None,
-                 target_attrs=None,
-                 target_attrs_with_priority=None):
+    def __init__(
+        self,
+        target_object=None,
+        target_attrs=None,
+        target_attrs_with_priority=None,
+    ):
         """
         Creates a new proxy to |target_object|.
 
@@ -52,7 +54,8 @@ class Proxy(object):
         try:
             target_object = object.__getattribute__(self, '_target_object')
             target_attrs = object.__getattribute__(
-                self, '_target_attrs_with_priority')
+                self, '_target_attrs_with_priority'
+            )
         except AttributeError:
             # When unpickling, __init__ does not get called.  _target_object is
             # not defined yet during unpickling.  Then, just fallback to the
@@ -81,10 +84,13 @@ class Proxy(object):
             return set.union(*attrs_sets)
 
         assert isinstance(target_class, type)
-        return sorted([
-            attr for attr in collect_attrs_recursively(target_class)
-            if not attr.startswith('_')
-        ])
+        return sorted(
+            [
+                attr
+                for attr in collect_attrs_recursively(target_class)
+                if not attr.startswith('_')
+            ]
+        )
 
     def make_copy(self, memo):
         return self
@@ -112,19 +118,22 @@ class RefById(Proxy, WithIdentifier):
     can treat this reference as if the object itself.
     """
 
-    def __init__(self,
-                 identifier,
-                 debug_info=None,
-                 target_attrs=None,
-                 target_attrs_with_priority=None,
-                 pass_key=None):
+    def __init__(
+        self,
+        identifier,
+        debug_info=None,
+        target_attrs=None,
+        target_attrs_with_priority=None,
+        pass_key=None,
+    ):
         assert debug_info is None or isinstance(debug_info, DebugInfo)
         assert pass_key is _REF_BY_ID_PASS_KEY
 
         Proxy.__init__(
             self,
             target_attrs=target_attrs,
-            target_attrs_with_priority=target_attrs_with_priority)
+            target_attrs_with_priority=target_attrs_with_priority,
+        )
         WithIdentifier.__init__(self, identifier)
         self._ref_own_debug_info = debug_info
 
@@ -167,7 +176,8 @@ class RefByIdFactory(object):
             debug_info=debug_info,
             target_attrs=self._target_attrs,
             target_attrs_with_priority=self._target_attrs_with_priority,
-            pass_key=_REF_BY_ID_PASS_KEY)
+            pass_key=_REF_BY_ID_PASS_KEY,
+        )
         self._references.append(ref)
         return ref
 
@@ -184,7 +194,8 @@ class RefByIdFactory(object):
             debug_info=debug_info,
             target_attrs=self._target_attrs,
             target_attrs_with_priority=self._target_attrs_with_priority,
-            pass_key=_REF_BY_ID_PASS_KEY)
+            pass_key=_REF_BY_ID_PASS_KEY,
+        )
         self._references.append(instance)
 
     def for_each(self, callback):

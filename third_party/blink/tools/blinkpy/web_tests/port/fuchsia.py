@@ -49,18 +49,33 @@ from blinkpy.web_tests.port import server_process
 # Imports Fuchsia runner modules. This is done dynamically only when FuchsiaPort
 # is instantiated to avoid dependency on Fuchsia runner on other platforms.
 def _import_fuchsia_runner():
-    sys.path.insert(0,
-                    os.path.join(get_chromium_src_dir(), 'build/fuchsia/test'))
+    sys.path.insert(
+        0, os.path.join(get_chromium_src_dir(), 'build/fuchsia/test')
+    )
 
     # pylint: disable=import-error
     # pylint: disable=invalid-name
     # pylint: disable=redefined-outer-name
-    global SDK_ROOT, SDK_TOOLS_DIR, get_ssh_address, run_continuous_ffx_command, run_ffx_command
-    from common import SDK_ROOT, SDK_TOOLS_DIR, get_ssh_address, run_continuous_ffx_command, run_ffx_command
+    global \
+        SDK_ROOT, \
+        SDK_TOOLS_DIR, \
+        get_ssh_address, \
+        run_continuous_ffx_command, \
+        run_ffx_command
+    from common import (
+        SDK_ROOT,
+        SDK_TOOLS_DIR,
+        get_ssh_address,
+        run_continuous_ffx_command,
+        run_ffx_command,
+    )
+
     global get_host_arch, get_ssh_prefix
     from compatible_utils import get_host_arch, get_ssh_prefix
+
     global ports_forward, port_forward
     from test_server import ports_forward, port_forward
+
     global run_symbolizer
     from ffx_integration import run_symbolizer
     # pylint: enable=import-error
@@ -101,7 +116,8 @@ class SubprocessOutputLogger(object):
     def __init__(self, process, prefix):
         self._process = process
         self._thread = threading.Thread(
-            target=_subprocess_log_thread, args=(process.stdout, prefix))
+            target=_subprocess_log_thread, args=(process.stdout, prefix)
+        )
         self._thread.daemon = True
         self._thread.start()
 
@@ -113,7 +129,6 @@ class SubprocessOutputLogger(object):
 
 
 class _TargetHost(object):
-
     def __init__(self, ports, target_id):
         self._target_id = target_id
         # Tell SSH to forward all server ports from the Fuchsia device to
@@ -127,20 +142,24 @@ class _TargetHost(object):
 
     def run_command(self, command):
         ssh_prefix = get_ssh_prefix(self._host_port_pair)
-        return subprocess.Popen(ssh_prefix + command,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+        return subprocess.Popen(
+            ssh_prefix + command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
     def run_test_component(self, url, cmd_line):
         # TODO(crbug.com/1381116): migrate off of `ffx test run` when possible
         command = ['test', 'run', url, '--']
         command.extend(cmd_line)
-        return run_continuous_ffx_command(command,
-                                          self._target_id,
-                                          encoding=None,
-                                          stdout=subprocess.PIPE,
-                                          stderr=subprocess.STDOUT)
+        return run_continuous_ffx_command(
+            command,
+            self._target_id,
+            encoding=None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
 
     def setup_forwarded_port(self, port):
         return port_forward(self._host_port_pair, port)
@@ -149,11 +168,10 @@ class _TargetHost(object):
 class FuchsiaPort(base.Port):
     port_name = 'fuchsia'
 
-    SUPPORTED_VERSIONS = ('fuchsia', )
+    SUPPORTED_VERSIONS = ('fuchsia',)
 
     FALLBACK_PATHS = {
-        'fuchsia':
-        ['fuchsia'] + linux.LinuxPort.latest_platform_fallback_path()
+        'fuchsia': ['fuchsia'] + linux.LinuxPort.latest_platform_fallback_path()
     }
 
     def __init__(self, host, port_name, target_host=None, **kwargs):
@@ -197,12 +215,15 @@ class FuchsiaPort(base.Port):
             self._target_host = _TargetHost(self.SERVER_PORTS, target_id)
 
             klog_proc = self._target_host.run_command(['dlog', '-f'])
-            symbolized_klog_proc = run_symbolizer([self.get_build_ids_path()],
-                                                  klog_proc.stdout,
-                                                  subprocess.PIPE,
-                                                  raw_bytes=True)
+            symbolized_klog_proc = run_symbolizer(
+                [self.get_build_ids_path()],
+                klog_proc.stdout,
+                subprocess.PIPE,
+                raw_bytes=True,
+            )
             self._zircon_logger = SubprocessOutputLogger(
-                symbolized_klog_proc, 'Zircon')
+                symbolized_klog_proc, 'Zircon'
+            )
         except:
             return exit_codes.NO_DEVICES_EXIT_STATUS
 
@@ -225,23 +246,30 @@ class FuchsiaPort(base.Port):
         return 20000
 
     def start_http_server(self, additional_dirs, number_of_drivers):
-        additional_dirs['/third_party/blink/PerformanceTests'] = \
+        additional_dirs['/third_party/blink/PerformanceTests'] = (
             self._perf_tests_dir()
-        additional_dirs[WEB_TESTS_PATH_PREFIX] = \
+        )
+        additional_dirs[WEB_TESTS_PATH_PREFIX] = (
             self._path_finder.web_tests_dir()
+        )
         additional_dirs['/gen'] = self.generated_sources_directory()
-        additional_dirs['/third_party/blink'] = \
-            self._path_from_chromium_base('third_party', 'blink')
-        super(FuchsiaPort, self).start_http_server(additional_dirs,
-                                                   number_of_drivers)
+        additional_dirs['/third_party/blink'] = self._path_from_chromium_base(
+            'third_party', 'blink'
+        )
+        super(FuchsiaPort, self).start_http_server(
+            additional_dirs, number_of_drivers
+        )
         # Wait for the ssh proxy to be ready.
         for _ in range(5):
-            if self.get_target_host().run_command(
-                ['curl', 'http://127.0.0.1:8000/']).wait() == 0:
+            if (
+                self.get_target_host()
+                .run_command(['curl', 'http://127.0.0.1:8000/'])
+                .wait()
+                == 0
+            ):
                 break
             time.sleep(1)
         # But still continue the tests if it's not working.
-
 
     def operating_system(self):
         return self._operating_system
@@ -265,8 +293,9 @@ class FuchsiaPort(base.Port):
 
 class ChromiumFuchsiaDriver(driver.Driver):
     def __init__(self, port, worker_number, no_timeout=False):
-        super(ChromiumFuchsiaDriver, self).__init__(port, worker_number,
-                                                    no_timeout)
+        super(ChromiumFuchsiaDriver, self).__init__(
+            port, worker_number, no_timeout
+        )
 
     def _initialize_server_process(self, server_name, cmd_line, environment):
         self._server_process = self._port.server_process_constructor(
@@ -274,7 +303,8 @@ class ChromiumFuchsiaDriver(driver.Driver):
             server_name,
             cmd_line,
             environment,
-            more_logging=self._port.get_option('driver_logging'))
+            more_logging=self._port.get_option('driver_logging'),
+        )
 
     def _base_cmd_line(self):
         return [
@@ -288,27 +318,31 @@ class ChromiumFuchsiaDriver(driver.Driver):
         ]
 
     def _command_from_driver_input(self, driver_input):
-        command = super(ChromiumFuchsiaDriver,
-                        self)._command_from_driver_input(driver_input)
+        command = super(ChromiumFuchsiaDriver, self)._command_from_driver_input(
+            driver_input
+        )
         if command.startswith('/'):
-            relative_test_filename = \
-                os.path.relpath(command,
-                                self._port._path_finder.chromium_base())
+            relative_test_filename = os.path.relpath(
+                command, self._port._path_finder.chromium_base()
+            )
             command = 'http://127.0.0.1:8000' + '/' + relative_test_filename
         return command
 
 
 # Custom version of ServerProcess that runs processes on a remote device.
 class FuchsiaServerProcess(server_process.ServerProcess):
-    def __init__(self,
-                 port_obj,
-                 name,
-                 cmd,
-                 env=None,
-                 treat_no_data_as_crash=False,
-                 more_logging=False):
+    def __init__(
+        self,
+        port_obj,
+        name,
+        cmd,
+        env=None,
+        treat_no_data_as_crash=False,
+        more_logging=False,
+    ):
         super(FuchsiaServerProcess, self).__init__(
-            port_obj, name, cmd, env, treat_no_data_as_crash, more_logging)
+            port_obj, name, cmd, env, treat_no_data_as_crash, more_logging
+        )
         self._symbolizer_proc = None
 
     def _start(self):
@@ -329,16 +363,19 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
         stdio_port = int(listen_socket.getsockname()[1])
-        forwarded_stdio_port = \
+        forwarded_stdio_port = (
             self._port.get_target_host().setup_forwarded_port(stdio_port)
+        )
 
-        command = self._cmd + \
-            ['--no-sandbox',
-             '--stdio-redirect=127.0.0.1:%d' % forwarded_stdio_port]
+        command = self._cmd + [
+            '--no-sandbox',
+            '--stdio-redirect=127.0.0.1:%d' % forwarded_stdio_port,
+        ]
 
         proc = self._port.get_target_host().run_test_component(
             "fuchsia-pkg://fuchsia.com/content_shell#meta/content_shell.cm",
-            command)
+            command,
+        )
 
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()
@@ -347,7 +384,8 @@ class FuchsiaServerProcess(server_process.ServerProcess):
             listen_socket.close()
             proc.kill()
             raise driver.DeviceFailure(
-                'Timed out waiting connection from content_shell.')
+                'Timed out waiting connection from content_shell.'
+            )
 
         # Python's interfaces for sockets and pipes are different. To masquerade
         # the socket as a pipe dup() the file descriptor and pass it to
@@ -373,14 +411,16 @@ class FuchsiaServerProcess(server_process.ServerProcess):
             [self._port.get_build_ids_path()],
             merged_stdout_stderr,
             subprocess.PIPE,
-            raw_bytes=True)
+            raw_bytes=True,
+        )
         proc.stderr = self._symbolizer_proc.stdout
 
         self._set_proc(proc)
 
     def stop(self, timeout_secs=0.0, kill_tree=False, send_sigterm=False):
-        result = super(FuchsiaServerProcess,
-                       self).stop(timeout_secs, kill_tree, send_sigterm)
+        result = super(FuchsiaServerProcess, self).stop(
+            timeout_secs, kill_tree, send_sigterm
+        )
         if self._symbolizer_proc:
             self._symbolizer_proc.kill()
         return result

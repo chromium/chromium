@@ -41,16 +41,19 @@ class AbspathTest(unittest.TestCase):
     def test_abspath_to_uri_unixy(self):
         self.assertEqual(
             path.abspath_to_uri(MockPlatformInfo(), '/foo/bar.html'),
-            'file:///foo/bar.html')
+            'file:///foo/bar.html',
+        )
 
     def test_abspath_to_uri_win(self):
         if sys.platform != 'win32':
             return
         self.assertEqual(
             path.abspath_to_uri(self.platform_info(), 'c:\\foo\\bar.html'),
-            'file:///c:/foo/bar.html')
+            'file:///c:/foo/bar.html',
+        )
 
     def test_abspath_to_uri_escaping_unixy(self):
         self.assertEqual(
             path.abspath_to_uri(MockPlatformInfo(), '/foo/bar + baz%?.html'),
-            'file:///foo/bar%20+%20baz%25%3F.html')
+            'file:///foo/bar%20+%20baz%25%3F.html',
+        )

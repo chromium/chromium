@@ -25,7 +25,8 @@ def api_func(*args):
 def api_func_f(format_string, *args, **kwargs):
     """Applies the style of Blink implementation function names for Web API."""
     return raw.lower_camel_case(
-        _format(raw.upper_camel_case, format_string, *args, **kwargs))
+        _format(raw.upper_camel_case, format_string, *args, **kwargs)
+    )
 
 
 def arg(*args):
@@ -56,7 +57,8 @@ def constant(*args):
 def constant_f(format_string, *args, **kwargs):
     """Applies the style of constant names."""
     return "k" + raw.upper_camel_case(
-        _format(raw.upper_camel_case, format_string, *args, **kwargs))
+        _format(raw.upper_camel_case, format_string, *args, **kwargs)
+    )
 
 
 def file(*args):

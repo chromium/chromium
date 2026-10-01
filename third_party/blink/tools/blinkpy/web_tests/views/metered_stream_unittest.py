@@ -50,8 +50,9 @@ class RegularTest(unittest.TestCase):
         # add a dummy time counter for a default behavior.
         self.times = list(range(10))
 
-        self.meter = MeteredStream(self.stream, self.verbose, self.logger,
-                                   self.time_fn, 8675)
+        self.meter = MeteredStream(
+            self.stream, self.verbose, self.logger, self.time_fn, 8675
+        )
 
     def tearDown(self):
         if self.meter:
@@ -71,8 +72,9 @@ class RegularTest(unittest.TestCase):
         root_logger.addHandler(handler)
         root_logger.setLevel(logging.DEBUG)
         try:
-            self.meter = MeteredStream(self.stream, self.verbose, None,
-                                       self.time_fn, 8675)
+            self.meter = MeteredStream(
+                self.stream, self.verbose, None, self.time_fn, 8675
+            )
             self.meter.write_throttled_update('foo')
             self.meter.write_update('bar')
             self.meter.write('baz')
@@ -115,23 +117,32 @@ class TtyTest(RegularTest):
 
     def test_basic(self):
         buflist = self._basic([0, 1, 1.05, 1.1, 2])
-        self.assertEqual(buflist, [
-            'foo' + MeteredStream._erasure('foo') + 'bar' +
-            MeteredStream._erasure('bar') + 'baz 2' +
-            MeteredStream._erasure('baz 2') + 'done'
-        ])
+        self.assertEqual(
+            buflist,
+            [
+                'foo'
+                + MeteredStream._erasure('foo')
+                + 'bar'
+                + MeteredStream._erasure('bar')
+                + 'baz 2'
+                + MeteredStream._erasure('baz 2')
+                + 'done'
+            ],
+        )
 
     def test_log_after_update(self):
         buflist = self._log_after_update()
-        self.assertEqual(buflist,
-                         ['foo' + MeteredStream._erasure('foo') + 'bar'])
+        self.assertEqual(
+            buflist, ['foo' + MeteredStream._erasure('foo') + 'bar']
+        )
 
     def test_bytestream(self):
         self.meter.write('German umlauts: \xe4\xf6\xfc')
         self.meter.write('German umlauts: \xe4\xf6\xfc')
         self.assertEqual(
             self.stream.getvalue().splitlines(),
-            ['German umlauts: \xe4\xf6\xfc' + 'German umlauts: \xe4\xf6\xfc'])
+            ['German umlauts: \xe4\xf6\xfc' + 'German umlauts: \xe4\xf6\xfc'],
+        )
 
 
 class VerboseTest(RegularTest):

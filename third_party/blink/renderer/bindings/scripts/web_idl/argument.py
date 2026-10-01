@@ -14,8 +14,9 @@ class Argument(WithIdentifier, WithOwner):
         def __init__(self, identifier, index, idl_type, default_value=None):
             assert isinstance(index, int)
             assert isinstance(idl_type, IdlType)
-            assert (default_value is None
-                    or isinstance(default_value, LiteralConstant))
+            assert default_value is None or isinstance(
+                default_value, LiteralConstant
+            )
 
             WithIdentifier.__init__(self, identifier)
 

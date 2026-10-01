@@ -8,7 +8,9 @@ import logging
 import socket
 import time
 
-from blinkpy.web_tests.port.tvos_simulator_server_process import TVOSSimulatorServerProcess
+from blinkpy.web_tests.port.tvos_simulator_server_process import (
+    TVOSSimulatorServerProcess,
+)
 from blinkpy.web_tests.port import base
 from blinkpy.web_tests.port import driver
 from blinkpy.web_tests.port import mac
@@ -20,7 +22,7 @@ DEFAULT_SDK_VERSION = '26.0'
 
 
 class TVOSPort(base.Port):
-    SUPPORTED_VERSIONS = ('tvos26-simulator', )
+    SUPPORTED_VERSIONS = ('tvos26-simulator',)
 
     port_name = 'tvos'
 
@@ -28,8 +30,9 @@ class TVOSPort(base.Port):
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['tvos26-simulator'] = (
-        ['tvos'] + mac.MacPort.latest_platform_fallback_path())
+    FALLBACK_PATHS['tvos26-simulator'] = [
+        'tvos'
+    ] + mac.MacPort.latest_platform_fallback_path()
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/ios/build_instructions.md#Blink-for-tvOS-builds-and-running'
 
@@ -43,7 +46,7 @@ class TVOSPort(base.Port):
     def __init__(self, host, port_name, **kwargs):
         super(TVOSPort, self).__init__(host, port_name, **kwargs)
         self.server_process_constructor = TVOSSimulatorServerProcess
-        self._version = port_name[port_name.index('tvos-') + len('tvos-'):]
+        self._version = port_name[port_name.index('tvos-') + len('tvos-') :]
         self._stdio_redirect_port = self._get_available_port()
 
     def check_build(self, needs_http, printer):
@@ -57,10 +60,18 @@ class TVOSPort(base.Port):
 
     def reinstall_cmd_line(self):
         return [
-            self.path_to_simulator(), '-d',
-            self.device_name(), '-x', 'tvos', '-s',
-            self.sdk_version(), '-k', 'never', '-c', '--prepare-web-tests',
-            self.path_to_driver()
+            self.path_to_simulator(),
+            '-d',
+            self.device_name(),
+            '-x',
+            'tvos',
+            '-s',
+            self.sdk_version(),
+            '-k',
+            'never',
+            '-c',
+            '--prepare-web-tests',
+            self.path_to_driver(),
         ]
 
     def path_to_driver(self, target=None):
@@ -99,27 +110,37 @@ class TVOSPort(base.Port):
         if len(devices) == 0:
             raise RuntimeError('No available device in the tvOS simulator.')
         runtime_identifier = self._get_target_runtime()['identifier']
-        return next((d for d in devices['devices'][runtime_identifier]
-                     if d['name'] == device_name), None)
+        return next(
+            (
+                d
+                for d in devices['devices'][runtime_identifier]
+                if d['name'] == device_name
+            ),
+            None,
+        )
 
     def _get_target_runtime(self):
         valid_runtimes = self._get_valid_runtimes()
         # Check if the default SDK is installed on the testing environment.
         for runtime in valid_runtimes:
-            if (runtime['version'] == DEFAULT_SDK_VERSION):
+            if runtime['version'] == DEFAULT_SDK_VERSION:
                 return runtime
 
         # Sort valid runtimes to return the latest runtime.
-        valid_runtimes.sort(key=lambda runtime: runtime['version'],
-                            reverse=True)
+        valid_runtimes.sort(
+            key=lambda runtime: runtime['version'], reverse=True
+        )
         return valid_runtimes[0]
 
     def _get_valid_runtimes(self):
         runtimes = json.loads(self._run_simctl('list -j runtimes available'))
         valid_runtimes = [
-            runtime for runtime in runtimes['runtimes']
-            if 'identifier' in runtime and runtime['identifier'].startswith(
-                'com.apple.CoreSimulator.SimRuntime')
+            runtime
+            for runtime in runtimes['runtimes']
+            if 'identifier' in runtime
+            and runtime['identifier'].startswith(
+                'com.apple.CoreSimulator.SimRuntime'
+            )
         ]
 
         if len(valid_runtimes) == 0:
@@ -153,7 +174,7 @@ class TVOSPort(base.Port):
         flags = super(TVOSPort, self).additional_driver_flags()
         flags += [
             '--no-sandbox',
-            '--stdio-redirect=127.0.0.1:%s' % self._stdio_redirect_port
+            '--stdio-redirect=127.0.0.1:%s' % self._stdio_redirect_port,
         ]
         return flags
 
@@ -162,18 +183,22 @@ class TVOSPort(base.Port):
 
     def path_to_apache(self):
         import platform
+
         if platform.machine() == 'arm64':
-            return self._path_from_chromium_base('third_party',
-                                                 'apache-mac-arm64', 'bin',
-                                                 'httpd')
-        return self._path_from_chromium_base('third_party', 'apache-mac',
-                                             'bin', 'httpd')
+            return self._path_from_chromium_base(
+                'third_party', 'apache-mac-arm64', 'bin', 'httpd'
+            )
+        return self._path_from_chromium_base(
+            'third_party', 'apache-mac', 'bin', 'httpd'
+        )
 
     def path_to_apache_config_file(self):
         config_file_basename = 'apache2-httpd-%s-php7.conf' % (
-            self._apache_version(), )
-        return self._filesystem.join(self.apache_config_directory(),
-                                     config_file_basename)
+            self._apache_version(),
+        )
+        return self._filesystem.join(
+            self.apache_config_directory(), config_file_basename
+        )
 
     def setup_test_run(self):
         super(TVOSPort, self).setup_test_run()
@@ -189,20 +214,22 @@ class TVOSPort(base.Port):
 
     def used_expectations_files(self):
         files = super(TVOSPort, self).used_expectations_files()
-        ios_expectations_file = self._filesystem.join(self.web_tests_dir(),
-                                                      'IOSTestExpectations')
+        ios_expectations_file = self._filesystem.join(
+            self.web_tests_dir(), 'IOSTestExpectations'
+        )
         tvos_additional_expectations_files = self._filesystem.join(
-            self.web_tests_dir(), 'TVOSTestExpectations')
+            self.web_tests_dir(), 'TVOSTestExpectations'
+        )
         files.append(ios_expectations_file)
         files.append(tvos_additional_expectations_files)
         return files
 
 
 class ChromiumTVOSDriver(driver.Driver):
-
     def __init__(self, port, worker_number, no_timeout=False):
-        super(ChromiumTVOSDriver, self).__init__(port, worker_number,
-                                                 no_timeout)
+        super(ChromiumTVOSDriver, self).__init__(
+            port, worker_number, no_timeout
+        )
 
     def _web_tests_driver_flags(self):
         flags = self._port.additional_driver_flags()

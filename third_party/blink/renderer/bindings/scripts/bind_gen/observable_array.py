@@ -42,24 +42,45 @@ def bind_local_vars(code_node, cg_context):
     S = SymbolNode
 
     local_vars = [
-        S("backing_list_instance_object_template",
-          ("v8::Local<v8::ObjectTemplate> "
-           "${backing_list_instance_object_template} = "
-           "${backing_list_interface_function_template}"
-           "->InstanceTemplate();")),
-        S("backing_list_interface_function_template",
-          ("v8::Local<v8::FunctionTemplate> "
-           "${backing_list_interface_function_template} = "
-           "${backing_list_template}.As<v8::FunctionTemplate>();")),
-        S("isolate",
-          "v8::Isolate* ${isolate} = ${script_state}->GetIsolate();"),
-        S("per_isolate_data", ("V8PerIsolateData* ${per_isolate_data} = "
-                               "V8PerIsolateData::From(${isolate});")),
-        S("world",
-          "const DOMWrapperWorld& ${world} = ${script_state}->World();"),
-        S("wrapper_type_info",
-          ("const WrapperTypeInfo* const ${wrapper_type_info} = "
-           "${class_name}::GetStaticWrapperTypeInfo();")),
+        S(
+            "backing_list_instance_object_template",
+            (
+                "v8::Local<v8::ObjectTemplate> "
+                "${backing_list_instance_object_template} = "
+                "${backing_list_interface_function_template}"
+                "->InstanceTemplate();"
+            ),
+        ),
+        S(
+            "backing_list_interface_function_template",
+            (
+                "v8::Local<v8::FunctionTemplate> "
+                "${backing_list_interface_function_template} = "
+                "${backing_list_template}.As<v8::FunctionTemplate>();"
+            ),
+        ),
+        S(
+            "isolate",
+            "v8::Isolate* ${isolate} = ${script_state}->GetIsolate();",
+        ),
+        S(
+            "per_isolate_data",
+            (
+                "V8PerIsolateData* ${per_isolate_data} = "
+                "V8PerIsolateData::From(${isolate});"
+            ),
+        ),
+        S(
+            "world",
+            "const DOMWrapperWorld& ${world} = ${script_state}->World();",
+        ),
+        S(
+            "wrapper_type_info",
+            (
+                "const WrapperTypeInfo* const ${wrapper_type_info} = "
+                "${class_name}::GetStaticWrapperTypeInfo();"
+            ),
+        ),
     ]
 
     # Arguments have priority over local vars.
@@ -72,7 +93,8 @@ def make_wrapper_type_info(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     member_var_def = TextNode(
-        "static const WrapperTypeInfo wrapper_type_info_body_;")
+        "static const WrapperTypeInfo wrapper_type_info_body_;"
+    )
 
     wrapper_type_info_def = TextNode("""\
 // static
@@ -95,8 +117,7 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
 const WrapperTypeInfo& ${class_name}::wrapper_type_info_ =
     ${class_name}::wrapper_type_info_body_;
 """)
-    wrapper_type_info_def.set_base_template_vars(
-        cg_context.template_bindings())
+    wrapper_type_info_def.set_base_template_vars(cg_context.template_bindings())
 
     return member_var_def, wrapper_type_info_def
 
@@ -104,24 +125,34 @@ const WrapperTypeInfo& ${class_name}::wrapper_type_info_ =
 def make_handler_class(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    base_class_name = ("bindings::ObservableArrayExoticObjectHandler<"
-                       "{backing_list_wrappable}, {element_idl_type}>".format(
-                           backing_list_wrappable=cg_context.class_name,
-                           element_idl_type=native_value_tag(
-                               cg_context.observable_array.element_type)))
+    base_class_name = (
+        "bindings::ObservableArrayExoticObjectHandler<"
+        "{backing_list_wrappable}, {element_idl_type}>".format(
+            backing_list_wrappable=cg_context.class_name,
+            element_idl_type=native_value_tag(
+                cg_context.observable_array.element_type
+            ),
+        )
+    )
 
-    decls = ListNode([
-        TextNode("class Handler;"),
-        TextNode("friend class {};".format(base_class_name)),
-    ])
+    decls = ListNode(
+        [
+            TextNode("class Handler;"),
+            TextNode("friend class {};".format(base_class_name)),
+        ]
+    )
 
-    defs = ListNode([
-        TextNode("template class {};".format(base_class_name)),
-        EmptyNode(),
-        CxxClassDefNode("{}::Handler".format(cg_context.class_name),
-                        base_class_names=[base_class_name],
-                        final=True),
-    ])
+    defs = ListNode(
+        [
+            TextNode("template class {};".format(base_class_name)),
+            EmptyNode(),
+            CxxClassDefNode(
+                "{}::Handler".format(cg_context.class_name),
+                base_class_names=[base_class_name],
+                final=True,
+            ),
+        ]
+    )
 
     return decls, defs
 
@@ -137,7 +168,8 @@ def make_constructors(cg_context):
             "DeleteAlgorithmCallback delete_algorithm_callback",
         ],
         return_type="",
-        explicit=True)
+        explicit=True,
+    )
     func_def = CxxFuncDefNode(
         name=cg_context.class_name,
         arg_decls=[
@@ -151,7 +183,8 @@ def make_constructors(cg_context):
             "BaseClass(platform_object)",
             "set_algorithm_callback_(set_algorithm_callback)",
             "delete_algorithm_callback_(delete_algorithm_callback)",
-        ])
+        ],
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
 
     return func_decl, func_def
@@ -160,32 +193,37 @@ def make_constructors(cg_context):
 def make_attribute_set_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_decl = CxxFuncDeclNode(name="PerformAttributeSet",
-                                arg_decls=[
-                                    "ScriptState* script_state",
-                                    "v8::Local<v8::Value> v8_value",
-                                ],
-                                return_type="void")
+    func_decl = CxxFuncDeclNode(
+        name="PerformAttributeSet",
+        arg_decls=[
+            "ScriptState* script_state",
+            "v8::Local<v8::Value> v8_value",
+        ],
+        return_type="void",
+    )
 
-    func_def = CxxFuncDefNode(name="PerformAttributeSet",
-                              arg_decls=[
-                                  "ScriptState* script_state",
-                                  "v8::Local<v8::Value> v8_value",
-                              ],
-                              return_type="void",
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name="PerformAttributeSet",
+        arg_decls=[
+            "ScriptState* script_state",
+            "v8::Local<v8::Value> v8_value",
+        ],
+        return_type="void",
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
 
     body = func_def.body
-    body.add_template_vars({
-        "script_state": "script_state",
-        "v8_value": "v8_value"
-    })
+    body.add_template_vars(
+        {"script_state": "script_state", "v8_value": "v8_value"}
+    )
     bind_local_vars(body, cg_context)
 
     body.append(
-        TextNode("Handler::PerformAttributeSet("
-                 "${script_state}, *this, ${v8_value});"))
+        TextNode(
+            "Handler::PerformAttributeSet(${script_state}, *this, ${v8_value});"
+        )
+    )
 
     return func_decl, func_def
 
@@ -195,44 +233,59 @@ def make_handler_template_function(cg_context):
 
     T = TextNode
 
-    func_decl = CxxFuncDeclNode(name="GetProxyHandlerFunctionTemplate",
-                                arg_decls=[
-                                    "ScriptState* script_state",
-                                ],
-                                return_type="v8::Local<v8::FunctionTemplate>",
-                                override=True)
+    func_decl = CxxFuncDeclNode(
+        name="GetProxyHandlerFunctionTemplate",
+        arg_decls=[
+            "ScriptState* script_state",
+        ],
+        return_type="v8::Local<v8::FunctionTemplate>",
+        override=True,
+    )
 
-    func_def = CxxFuncDefNode(name="GetProxyHandlerFunctionTemplate",
-                              arg_decls=[
-                                  "ScriptState* script_state",
-                              ],
-                              return_type="v8::Local<v8::FunctionTemplate>",
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name="GetProxyHandlerFunctionTemplate",
+        arg_decls=[
+            "ScriptState* script_state",
+        ],
+        return_type="v8::Local<v8::FunctionTemplate>",
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
 
     body = func_def.body
-    body.add_template_vars({
-        "script_state": "script_state",
-    })
+    body.add_template_vars(
+        {
+            "script_state": "script_state",
+        }
+    )
     bind_local_vars(body, cg_context)
 
-    body.extend([
-        T("// Make `template_key` unique for `FindV8Template`."),
-        T("static const char kTemplateKeyTag = 0;"),
-        T("const void* const template_key = &kTemplateKeyTag;"),
-        EmptyNode(),
-        T("v8::Local<v8::Template> v8_template = "
-          "${per_isolate_data}->FindV8Template(${world}, template_key);"),
-        CxxLikelyIfNode(
-            cond="!v8_template.IsEmpty()",
-            attribute=None,
-            body=T("return v8_template.As<v8::FunctionTemplate>();")),
-        EmptyNode(),
-        T("v8::Local<v8::FunctionTemplate> constructor_template = "
-          "v8::FunctionTemplate::New(${isolate});"),
-        T("v8::Local<v8::ObjectTemplate> instance_object_template = "
-          "constructor_template->InstanceTemplate();"),
-    ])
+    body.extend(
+        [
+            T("// Make `template_key` unique for `FindV8Template`."),
+            T("static const char kTemplateKeyTag = 0;"),
+            T("const void* const template_key = &kTemplateKeyTag;"),
+            EmptyNode(),
+            T(
+                "v8::Local<v8::Template> v8_template = "
+                "${per_isolate_data}->FindV8Template(${world}, template_key);"
+            ),
+            CxxLikelyIfNode(
+                cond="!v8_template.IsEmpty()",
+                attribute=None,
+                body=T("return v8_template.As<v8::FunctionTemplate>();"),
+            ),
+            EmptyNode(),
+            T(
+                "v8::Local<v8::FunctionTemplate> constructor_template = "
+                "v8::FunctionTemplate::New(${isolate});"
+            ),
+            T(
+                "v8::Local<v8::ObjectTemplate> instance_object_template = "
+                "constructor_template->InstanceTemplate();"
+            ),
+        ]
+    )
 
     traps = [
         "defineProperty",
@@ -252,14 +305,20 @@ def make_handler_template_function(cg_context):
                 "v8::FunctionTemplate::New("
                 "${isolate}, Handler::{trap_func}));",
                 trap_name=trap,
-                trap_func=name_style.func("trap", trap)))
+                trap_func=name_style.func("trap", trap),
+            )
+        )
 
-    body.extend([
-        EmptyNode(),
-        T("${per_isolate_data}->AddV8Template("
-          "${world}, template_key, constructor_template);"),
-        T("return constructor_template;"),
-    ])
+    body.extend(
+        [
+            EmptyNode(),
+            T(
+                "${per_isolate_data}->AddV8Template("
+                "${world}, template_key, constructor_template);"
+            ),
+            T("return constructor_template;"),
+        ]
+    )
 
     return func_decl, func_def
 
@@ -267,17 +326,21 @@ def make_handler_template_function(cg_context):
 def make_trace_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_decl = CxxFuncDeclNode(name="Trace",
-                                arg_decls=["Visitor* visitor"],
-                                return_type="void",
-                                const=True,
-                                override=True)
+    func_decl = CxxFuncDeclNode(
+        name="Trace",
+        arg_decls=["Visitor* visitor"],
+        return_type="void",
+        const=True,
+        override=True,
+    )
 
-    func_def = CxxFuncDefNode(name="Trace",
-                              arg_decls=["Visitor* visitor"],
-                              return_type="void",
-                              class_name=cg_context.class_name,
-                              const=True)
+    func_def = CxxFuncDefNode(
+        name="Trace",
+        arg_decls=["Visitor* visitor"],
+        return_type="void",
+        class_name=cg_context.class_name,
+        const=True,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
 
@@ -297,7 +360,8 @@ def make_install_backing_list_template_function(cg_context):
             "v8::Local<v8::Template> backing_list_template",
         ],
         return_type="void",
-        static=True)
+        static=True,
+    )
 
     func_def = CxxFuncDefNode(
         name="InstallObservableArrayBackingListTemplate",
@@ -307,22 +371,28 @@ def make_install_backing_list_template_function(cg_context):
             "v8::Local<v8::Template> backing_list_template",
         ],
         return_type="void",
-        class_name=cg_context.class_name)
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
 
     body = func_def.body
-    body.add_template_vars({
-        "isolate": "isolate",
-        "world": "world",
-        "backing_list_template": "backing_list_template",
-    })
+    body.add_template_vars(
+        {
+            "isolate": "isolate",
+            "world": "world",
+            "backing_list_template": "backing_list_template",
+        }
+    )
     bind_local_vars(body, cg_context)
 
     body.append(
-        TextNode("bindings::SetupIDLObservableArrayBackingListTemplate("
-                 "${isolate}, ${wrapper_type_info}, "
-                 "${backing_list_instance_object_template}, "
-                 "${backing_list_interface_function_template});"))
+        TextNode(
+            "bindings::SetupIDLObservableArrayBackingListTemplate("
+            "${isolate}, ${wrapper_type_info}, "
+            "${backing_list_instance_object_template}, "
+            "${backing_list_interface_function_template});"
+        )
+    )
 
     return func_decl, func_def
 
@@ -330,17 +400,23 @@ def make_install_backing_list_template_function(cg_context):
 def make_name_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_def = CxxFuncDefNode(name="ObservableArrayNameInIDL",
-                              arg_decls=[],
-                              return_type="const char*",
-                              static=True,
-                              constexpr=True)
+    func_def = CxxFuncDefNode(
+        name="ObservableArrayNameInIDL",
+        arg_decls=[],
+        return_type="const char*",
+        static=True,
+        constexpr=True,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
 
     body.append(
-        TextNode("return \"{}\";".format(
-            cg_context.observable_array.idl_type.syntactic_form)))
+        TextNode(
+            "return \"{}\";".format(
+                cg_context.observable_array.idl_type.syntactic_form
+            )
+        )
+    )
 
     return func_def, None
 
@@ -359,11 +435,14 @@ def generate_observable_array(observable_array_identifier):
     # Class names
     class_name = blink_class_name(observable_array)
     base_class_name = "bindings::ObservableArrayImplHelper<{}>".format(
-        blink_type_info(observable_array.element_type).member_t)
+        blink_type_info(observable_array.element_type).member_t
+    )
 
-    cg_context = CodeGenContext(observable_array=observable_array,
-                                class_name=class_name,
-                                base_class_name=base_class_name)
+    cg_context = CodeGenContext(
+        observable_array=observable_array,
+        class_name=class_name,
+        base_class_name=base_class_name,
+    )
 
     # Filepaths
     header_path = path_manager.api_path(ext="h")
@@ -382,66 +461,86 @@ def generate_observable_array(observable_array_identifier):
     source_blink_ns = CxxNamespaceNode(name_style.namespace("blink"))
 
     # Class definition
-    class_def = CxxClassDefNode(cg_context.class_name,
-                                base_class_names=[cg_context.base_class_name],
-                                final=True,
-                                export=component_export(
-                                    api_component, for_testing))
+    class_def = CxxClassDefNode(
+        cg_context.class_name,
+        base_class_names=[cg_context.base_class_name],
+        final=True,
+        export=component_export(api_component, for_testing),
+    )
     class_def.set_base_template_vars(cg_context.template_bindings())
 
     # Implementation parts
     wrapper_type_info_var_def, wrapper_type_info_init = make_wrapper_type_info(
-        cg_context)
+        cg_context
+    )
     handler_class_decls, handler_class_defs = make_handler_class(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     attr_set_decls, attr_set_defs = make_attribute_set_function(cg_context)
     handler_func_decls, handler_func_defs = make_handler_template_function(
-        cg_context)
+        cg_context
+    )
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
     install_backing_list_decls, install_backing_list_defs = (
-        make_install_backing_list_template_function(cg_context))
+        make_install_backing_list_template_function(cg_context)
+    )
     name_func_decls, name_func_defs = make_name_function(cg_context)
 
     # Header part (copyright, include directives, and forward declarations)
-    header_node.extend([
-        make_copyright_header(),
-        EmptyNode(),
-        enclose_with_header_guard(
-            ListNode([
-                make_header_include_directives(header_node.accumulator),
-                EmptyNode(),
-                header_blink_ns,
-            ]), name_style.header_guard(header_path)),
-    ])
-    header_blink_ns.body.extend([
-        make_forward_declarations(header_node.accumulator),
-        EmptyNode(),
-    ])
-    source_node.extend([
-        make_copyright_header(),
-        EmptyNode(),
-        TextNode("#include \"{}\"".format(header_path)),
-        EmptyNode(),
-        make_header_include_directives(source_node.accumulator),
-        EmptyNode(),
-        source_blink_ns,
-    ])
-    source_blink_ns.body.extend([
-        make_forward_declarations(source_node.accumulator),
-        EmptyNode(),
-    ])
+    header_node.extend(
+        [
+            make_copyright_header(),
+            EmptyNode(),
+            enclose_with_header_guard(
+                ListNode(
+                    [
+                        make_header_include_directives(header_node.accumulator),
+                        EmptyNode(),
+                        header_blink_ns,
+                    ]
+                ),
+                name_style.header_guard(header_path),
+            ),
+        ]
+    )
+    header_blink_ns.body.extend(
+        [
+            make_forward_declarations(header_node.accumulator),
+            EmptyNode(),
+        ]
+    )
+    source_node.extend(
+        [
+            make_copyright_header(),
+            EmptyNode(),
+            TextNode("#include \"{}\"".format(header_path)),
+            EmptyNode(),
+            make_header_include_directives(source_node.accumulator),
+            EmptyNode(),
+            source_blink_ns,
+        ]
+    )
+    source_blink_ns.body.extend(
+        [
+            make_forward_declarations(source_node.accumulator),
+            EmptyNode(),
+        ]
+    )
 
     # Assemble the parts.
-    header_node.accumulator.add_include_headers([
-        component_export_header(api_component, for_testing),
-        "third_party/blink/renderer/bindings/core/v8/idl_types.h",
-        "third_party/blink/renderer/platform/bindings/observable_array.h",
-    ])
-    source_node.accumulator.add_include_headers([
-        "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
-        "third_party/blink/renderer/bindings/core/v8/observable_array_exotic_object_handler.h",
-        "third_party/blink/renderer/platform/bindings/v8_binding.h",
-    ])
+    header_node.accumulator.add_include_headers(
+        [
+            component_export_header(api_component, for_testing),
+            "third_party/blink/renderer/bindings/core/v8/idl_types.h",
+            "third_party/blink/renderer/platform/bindings/observable_array.h",
+        ]
+    )
+    source_node.accumulator.add_include_headers(
+        [
+            "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+            "third_party/blink/renderer/bindings/core/v8/observable_array_exotic_object_handler.h",
+            "third_party/blink/renderer/platform/bindings/v8_binding.h",
+        ]
+    )
     (
         header_forward_decls,
         header_include_headers,
@@ -449,11 +548,13 @@ def generate_observable_array(observable_array_identifier):
         source_forward_decls,
         source_include_headers,
     ) = collect_forward_decls_and_include_headers(
-        [observable_array.element_type])
+        [observable_array.element_type]
+    )
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
     header_node.accumulator.add_stdcpp_include_headers(
-        header_stdcpp_include_headers)
+        header_stdcpp_include_headers
+    )
     source_node.accumulator.add_class_decls(source_forward_decls)
     source_node.accumulator.add_include_headers(source_include_headers)
 
@@ -461,7 +562,9 @@ def generate_observable_array(observable_array_identifier):
     handler_fwd_decls.body.append(
         TextNode(
             "template <typename BackingListWrappable, typename ElementIdlType> "
-            "class ObservableArrayExoticObjectHandler;"))
+            "class ObservableArrayExoticObjectHandler;"
+        )
+    )
     header_blink_ns.body.append(handler_fwd_decls)
     header_blink_ns.body.append(EmptyNode())
 
@@ -470,23 +573,30 @@ def generate_observable_array(observable_array_identifier):
 
     class_def.top_section.append(TextNode("DEFINE_WRAPPERTYPEINFO();"))
     class_def.top_section.append(
-        TextNode("using BaseClass = {};".format(base_class_name)))
+        TextNode("using BaseClass = {};".format(base_class_name))
+    )
 
     class_def.public_section.append(
-        TextNode("using SetAlgorithmCallback = "
-                 "void (*)("
-                 "GarbageCollectedMixin* platform_object, "
-                 "ScriptState* script_state, "
-                 "{}& observable_array, "
-                 "size_type index, "
-                 "value_type& value);".format(cg_context.class_name)))
+        TextNode(
+            "using SetAlgorithmCallback = "
+            "void (*)("
+            "GarbageCollectedMixin* platform_object, "
+            "ScriptState* script_state, "
+            "{}& observable_array, "
+            "size_type index, "
+            "value_type& value);".format(cg_context.class_name)
+        )
+    )
     class_def.public_section.append(
-        TextNode("using DeleteAlgorithmCallback = "
-                 "void (*)("
-                 "GarbageCollectedMixin* platform_object, "
-                 "ScriptState* script_state, "
-                 "{}& observable_array, "
-                 "size_type index);".format(cg_context.class_name)))
+        TextNode(
+            "using DeleteAlgorithmCallback = "
+            "void (*)("
+            "GarbageCollectedMixin* platform_object, "
+            "ScriptState* script_state, "
+            "{}& observable_array, "
+            "size_type index);".format(cg_context.class_name)
+        )
+    )
     class_def.public_section.append(EmptyNode())
 
     class_def.private_section.append(wrapper_type_info_var_def)
@@ -531,11 +641,14 @@ def generate_observable_array(observable_array_identifier):
 
     class_def.private_section.append(TextNode("// [[SetAlgorithm]]"))
     class_def.private_section.append(
-        TextNode("SetAlgorithmCallback set_algorithm_callback_ = nullptr;"))
+        TextNode("SetAlgorithmCallback set_algorithm_callback_ = nullptr;")
+    )
     class_def.private_section.append(TextNode("// [[DeleteAlgorithm]]"))
     class_def.private_section.append(
         TextNode(
-            "DeleteAlgorithmCallback delete_algorithm_callback_ = nullptr;"))
+            "DeleteAlgorithmCallback delete_algorithm_callback_ = nullptr;"
+        )
+    )
 
     # Write down to the files.
     write_code_node_to_file(header_node, path_manager.gen_path_to(header_path))
@@ -548,5 +661,6 @@ def generate_observable_arrays(task_queue):
     web_idl_database = package_initializer().web_idl_database()
 
     for observable_array in web_idl_database.observable_arrays:
-        task_queue.post_task(generate_observable_array,
-                             observable_array.identifier)
+        task_queue.post_task(
+            generate_observable_array, observable_array.identifier
+        )

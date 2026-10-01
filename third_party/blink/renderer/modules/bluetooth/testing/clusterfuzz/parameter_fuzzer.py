@@ -21,61 +21,88 @@ def FuzzParameters(test_file_data):
       parameters replaced.
     """
 
-    test_file_data = FillInParameter('TRANSFORM_BASIC_BASE',
-                                     constraints.GetBasicBase, test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_BASIC_BASE', constraints.GetBasicBase, test_file_data
+    )
 
-    test_file_data = FillInParameter('TRANSFORM_DEVICE_DISCOVERY_BASE',
-                                     constraints.GetDeviceDiscoveryBase,
-                                     test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_DEVICE_DISCOVERY_BASE',
+        constraints.GetDeviceDiscoveryBase,
+        test_file_data,
+    )
 
-    test_file_data = FillInParameter('TRANSFORM_CONNECTABLE_BASE',
-                                     constraints.GetConnectableBase,
-                                     test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_CONNECTABLE_BASE',
+        constraints.GetConnectableBase,
+        test_file_data,
+    )
 
-    test_file_data = FillInParameter('TRANSFORM_SERVICES_RETRIEVED_BASE',
-                                     constraints.get_services_retrieved_base,
-                                     test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_SERVICES_RETRIEVED_BASE',
+        constraints.get_services_retrieved_base,
+        test_file_data,
+    )
 
     test_file_data = FillInParameter(
         'TRANSFORM_CHARACTERISTICS_RETRIEVED_BASE',
-        constraints.get_characteristics_retrieved_base, test_file_data)
+        constraints.get_characteristics_retrieved_base,
+        test_file_data,
+    )
 
     test_file_data = FillInParameter(
         'TRANSFORM_DESCRIPTORS_RETRIEVED_BASE',
-        constraints.get_descriptors_retrieved_base, test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_REQUEST_DEVICE_OPTIONS',
-                                     constraints.GetRequestDeviceOptions,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_GET_PRIMARY_SERVICES',
-                                     constraints.get_get_primary_services_call,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_GET_CHARACTERISTICS',
-                                     constraints.get_characteristics_call,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_GET_DESCRIPTORS',
-                                     constraints.get_descriptors_call,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_PICK_A_SERVICE',
-                                     constraints.get_pick_a_service,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_PICK_A_CHARACTERISTIC',
-                                     constraints.get_pick_a_characteristic,
-                                     test_file_data)
-
-    test_file_data = FillInParameter('TRANSFORM_PICK_A_DESCRIPTOR',
-                                     constraints.get_pick_a_descriptor,
-                                     test_file_data)
+        constraints.get_descriptors_retrieved_base,
+        test_file_data,
+    )
 
     test_file_data = FillInParameter(
-        'TRANSFORM_VALUE', constraints.get_buffer_source, test_file_data)
+        'TRANSFORM_REQUEST_DEVICE_OPTIONS',
+        constraints.GetRequestDeviceOptions,
+        test_file_data,
+    )
 
-    test_file_data = FillInParameter('TRANSFORM_RELOAD_ID',
-                                     constraints.get_reload_id, test_file_data)
+    test_file_data = FillInParameter(
+        'TRANSFORM_GET_PRIMARY_SERVICES',
+        constraints.get_get_primary_services_call,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_GET_CHARACTERISTICS',
+        constraints.get_characteristics_call,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_GET_DESCRIPTORS',
+        constraints.get_descriptors_call,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_PICK_A_SERVICE',
+        constraints.get_pick_a_service,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_PICK_A_CHARACTERISTIC',
+        constraints.get_pick_a_characteristic,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_PICK_A_DESCRIPTOR',
+        constraints.get_pick_a_descriptor,
+        test_file_data,
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_VALUE', constraints.get_buffer_source, test_file_data
+    )
+
+    test_file_data = FillInParameter(
+        'TRANSFORM_RELOAD_ID', constraints.get_reload_id, test_file_data
+    )
 
     return test_file_data

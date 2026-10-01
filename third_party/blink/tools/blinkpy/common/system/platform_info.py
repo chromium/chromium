@@ -46,8 +46,9 @@ class PlatformInfo:
     newer than one known to the code.
     """
 
-    def __init__(self, sys_module, platform_module, filesystem_module,
-                 executive):
+    def __init__(
+        self, sys_module, platform_module, filesystem_module, executive
+    ):
         self._executive = executive
         self._filesystem = filesystem_module
         self._platform_module = platform_module
@@ -59,10 +60,12 @@ class PlatformInfo:
             self.os_version = 'linux'
         if self.os_name.startswith('mac'):
             self.os_version = self._determine_mac_version(
-                self._raw_mac_version(platform_module))
+                self._raw_mac_version(platform_module)
+            )
         if self.os_name.startswith('win'):
             self.os_version = self._determine_win_version(
-                self._win_version_tuple())
+                self._win_version_tuple()
+            )
         self.interactive = sys_module.stdin.isatty()
         self._processor = platform_module.processor() or ""
 
@@ -94,7 +97,8 @@ class PlatformInfo:
     def total_bytes_memory(self):
         if self.is_mac():
             return int(
-                self._executive.run_command(['sysctl', '-n', 'hw.memsize']))
+                self._executive.run_command(['sysctl', '-n', 'hw.memsize'])
+            )
         return None
 
     def terminal_width(self):
@@ -103,14 +107,18 @@ class PlatformInfo:
             if self.is_win():
                 # From http://code.activestate.com/recipes/440694-determine-size-of-console-window-on-windows/
                 from ctypes import windll, create_string_buffer
+
                 handle = windll.kernel32.GetStdHandle(-12)  # -12 == stderr
                 # 22 == sizeof(console_screen_buffer_info)
                 console_screen_buffer_info = create_string_buffer(22)
                 if windll.kernel32.GetConsoleScreenBufferInfo(
-                        handle, console_screen_buffer_info):
+                    handle, console_screen_buffer_info
+                ):
                     import struct
+
                     _, _, _, _, _, left, _, right, _, _, _ = struct.unpack(
-                        'hhhhHhhhhhh', console_screen_buffer_info.raw)
+                        'hhhhHhhhhhh', console_screen_buffer_info.raw
+                    )
                     # Note that we return 1 less than the width since writing into the rightmost column
                     # automatically performs a line feed.
                     return right - left
@@ -119,8 +127,10 @@ class PlatformInfo:
                 import fcntl
                 import struct
                 import termios
-                packed = fcntl.ioctl(sys.stderr.fileno(), termios.TIOCGWINSZ,
-                                     '\0' * 8)
+
+                packed = fcntl.ioctl(
+                    sys.stderr.fileno(), termios.TIOCGWINSZ, '\0' * 8
+                )
                 _, columns, _, _ = struct.unpack('HHHH', packed)
                 return columns
         except Exception:  # pylint: disable=broad-except
@@ -149,15 +159,15 @@ class PlatformInfo:
             return 'linux'
         if sys_platform == 'win32':
             return 'win'
-        raise AssertionError(
-            'unrecognized platform string "%s"' % sys_platform)
+        raise AssertionError('unrecognized platform string "%s"' % sys_platform)
 
     def _determine_mac_version(self, mac_version_string):
         major_release = int(mac_version_string.split('.')[0])
         minor_release = int(mac_version_string.split('.')[1])
-        assert 13 <= major_release, 'Unsupported mac OS version: %s' % mac_version_string
-        return 'mac{major_release}'.format(
-            major_release=min(26, major_release))
+        assert 13 <= major_release, (
+            'Unsupported mac OS version: %s' % mac_version_string
+        )
+        return 'mac{major_release}'.format(major_release=min(26, major_release))
 
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):
@@ -166,10 +176,11 @@ class PlatformInfo:
                 return '11'
             else:
                 return '10.20h2'
-        assert (win_version_tuple[0] > 10
-                or win_version_tuple[0] == 10 and win_version_tuple[1] > 0), (
-                    'Unrecognized Windows version tuple: "%s"' %
-                    (win_version_tuple, ))
+        assert (
+            win_version_tuple[0] > 10
+            or win_version_tuple[0] == 10
+            and win_version_tuple[1] > 0
+        ), 'Unrecognized Windows version tuple: "%s"' % (win_version_tuple,)
         return 'future'
 
     def _win_version_tuple(self):
@@ -182,9 +193,13 @@ class PlatformInfo:
     @memoized
     def _win_version_tuple_from_cmd(self):
         # Note that this should only ever be called on windows, so this should always work.
-        ver_output = self._executive.run_command(['cmd', '/c', 'ver'],
-                                                 decode_output=False)
+        ver_output = self._executive.run_command(
+            ['cmd', '/c', 'ver'], decode_output=False
+        )
         match_object = re.search(
-            r'(?P<major>\d+)\.(?P<minor>\d)\.(?P<build>\d+)', ver_output)
-        assert match_object, 'cmd returned an unexpected version string: ' + ver_output
+            r'(?P<major>\d+)\.(?P<minor>\d)\.(?P<build>\d+)', ver_output
+        )
+        assert match_object, (
+            'cmd returned an unexpected version string: ' + ver_output
+        )
         return tuple(map(int, match_object.groups()))

@@ -25,17 +25,22 @@ def parse_options():
     parser.add_option(
         '--idl_list_file',
         type='string',
-        help="a file path which lists IDL file paths to process")
+        help="a file path which lists IDL file paths to process",
+    )
     parser.add_option(
         '--component',
         type='choice',
         choices=_VALID_COMPONENTS,
-        help="specify a component name")
+        help="specify a component name",
+    )
     parser.add_option(
         '--for_testing',
         action='store_true',
-        help=("specify this option if the IDL definitions are meant for "
-              "testing only"))
+        help=(
+            "specify this option if the IDL definitions are meant for "
+            "testing only"
+        ),
+    )
     parser.add_option('--output', type='string', help="the output file path")
     options, args = parser.parse_args()
 
@@ -59,7 +64,8 @@ def main():
     parser = idl_parser.IDLParser(lexer)
     ast_group = web_idl.AstGroup(
         component=web_idl.Component(options.component),
-        for_testing=bool(options.for_testing))
+        for_testing=bool(options.for_testing),
+    )
     for filepath in filepaths:
         ast_group.add_ast_node(idl_parser.ParseFile(parser, filepath))
     ast_group.write_to_file(options.output)

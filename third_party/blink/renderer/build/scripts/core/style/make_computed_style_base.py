@@ -106,7 +106,7 @@ ALIGNMENT_ORDER = [
     'StyleHyphenateLimitChars',
     'TextBoxEdge',
     # Aligns like bool (8 bits)
-    'bool'
+    'bool',
 ]
 
 
@@ -115,10 +115,12 @@ def _check_unused_alignment_types(fields):
     not used by any fields.
     """
     diff = set(ALIGNMENT_ORDER).difference(
-        {field.alignment_type
-         for field in fields})
-    assert len(diff) == 0, \
+        {field.alignment_type for field in fields}
+    )
+    assert len(diff) == 0, (
         "Unused alignment types in ALIGNMENT_ORDER: {}".format(list(diff))
+    )
+
 
 # FIXME: Improve documentation and add docstrings.
 
@@ -139,8 +141,9 @@ def _get_include_paths(properties):
 
 
 def hash_name(name):
-    return struct.unpack('>I',
-                         hashlib.md5(name.encode('utf-8')).digest()[:4])[0]
+    return struct.unpack('>I', hashlib.md5(name.encode('utf-8')).digest()[:4])[
+        0
+    ]
 
 
 def _create_groups(properties):
@@ -179,7 +182,8 @@ def _create_groups(properties):
         if property_.field_group:
             for group_name in property_.field_group.split('->'):
                 current_group_dict[group_name] = current_group_dict.get(
-                    group_name, {None: []})
+                    group_name, {None: []}
+                )
                 current_group_dict = current_group_dict[group_name]
         field, flag_field = _create_fields(property_)
         if field is not None:
@@ -205,7 +209,7 @@ def _mark_builder_flags(group):
 
 def _create_builder_groups(properties):
     """Like _create_groups, but all fields returned by this function has
-       the builder flag set to True."""
+    the builder flag set to True."""
     groups = _create_groups(properties)
     _mark_builder_flags(groups)
     return groups
@@ -217,32 +221,37 @@ def _create_enums(properties):
     for property_ in properties:
         # Only generate enums for keyword properties that do not
         # require includes.
-        if (property_.field_template in ('keyword', 'keyword_custom',
-                                         'multi_keyword', 'bitset_keyword')
-                and len(property_.include_paths) == 0):
+        if (
+            property_.field_template
+            in ('keyword', 'keyword_custom', 'multi_keyword', 'bitset_keyword')
+            and len(property_.include_paths) == 0
+        ):
             if property_.field_template == 'multi_keyword':
                 set_type = 'multi'
             elif property_.field_template == 'bitset_keyword':
                 set_type = 'bitset'
             else:
                 set_type = None
-            enum = Enum(property_.type_name,
-                        property_.keywords,
-                        set_type=set_type)
+            enum = Enum(
+                property_.type_name, property_.keywords, set_type=set_type
+            )
             if property_.field_template == 'multi_keyword':
-                assert property_.keywords[0] == 'none', \
-                    "First keyword in a 'multi_keyword' field must be " \
+                assert property_.keywords[0] == 'none', (
+                    "First keyword in a 'multi_keyword' field must be "
                     "'none' in '{}'.".format(property_.name)
+                )
 
             if enum.type_name in enums:
                 # There's an enum with the same name, check if the enum
                 # values are the same
-                assert set(enums[enum.type_name].values) == set(enum.values), \
-                    "'{}' can't have type_name '{}' because it was used by " \
-                    "a previous property, but with a different set of " \
-                    "keywords. Either give it a different name or ensure " \
+                assert set(enums[enum.type_name].values) == set(enum.values), (
+                    "'{}' can't have type_name '{}' because it was used by "
+                    "a previous property, but with a different set of "
+                    "keywords. Either give it a different name or ensure "
                     "the keywords are the same.".format(
-                        property_.name, enum.type_name)
+                        property_.name, enum.type_name
+                    )
+                )
             else:
                 enums[enum.type_name] = enum
 
@@ -252,9 +261,10 @@ def _create_enums(properties):
 
 def _find_size_for_property(property_):
     if property_.field_template in ('keyword', 'keyword_custom'):
-        assert property_.field_size is None, \
-            ("'" + property_.name + "' is a keyword field, "
-             "so it should not specify a field_size")
+        assert property_.field_size is None, (
+            "'" + property_.name + "' is a keyword field, "
+            "so it should not specify a field_size"
+        )
         return int(math.ceil(math.log(len(property_.keywords), 2)))
     elif property_.field_template == 'multi_keyword':
         return len(property_.keywords) - 1  # Subtract 1 for 'none' keyword
@@ -270,8 +280,9 @@ def _find_size_for_property(property_):
     elif property_.field_template == 'derived_flag':
         return 2
     else:
-        assert property_.field_template == 'monotonic_flag', \
+        assert property_.field_template == 'monotonic_flag', (
             "Please use a valid value for field_template"
+        )
         return 1
 
 
@@ -281,42 +292,40 @@ def _create_property_field(property_):
     """
     name_for_methods = property_.name_for_methods
 
-    assert property_.default_value is not None, \
-        'MakeComputedStyleBase requires an default value for all fields, ' \
+    assert property_.default_value is not None, (
+        'MakeComputedStyleBase requires an default value for all fields, '
         'none specified for property ' + property_.name
+    )
 
     size = _find_size_for_property(property_)
 
-    return Field('property',
-                 name_for_methods,
-                 property_name=property_.name.original,
-                 inherited=property_.inherited,
-                 independent=property_.independent,
-                 semi_independent_variable=property_.semi_independent_variable,
-                 type_name=property_.type_name,
-                 wrapper_pointer_name=property_.wrapper_pointer_name,
-                 field_template=property_.field_template,
-                 size=size,
-                 default_value=property_.default_value,
-                 invalidate=property_.invalidate,
-                 derived_from=property_.derived_from,
-                 reset_on_new_style=property_.reset_on_new_style,
-                 custom_compare=property_.custom_compare,
-                 highlight_style_comes_from_originating_element=property_.
-                 highlight_style_comes_from_originating_element,
-                 mutable=property_.mutable,
-                 getter_method_name=property_.getter,
-                 setter_method_name=property_.setter,
-                 initial_method_name=property_.initial,
-                 computed_style_custom_functions=property_.
-                 computed_style_custom_functions,
-                 computed_style_protected_functions=property_.
-                 computed_style_protected_functions,
-                 may_be_affected_by_transition_all=property_.
-                 may_be_affected_by_transition_all,
-                 may_be_affected_by_transition_all_discrete=property_.
-                 may_be_affected_by_transition_all_discrete,
-                 is_extra_field=property_.is_extra_field)
+    return Field(
+        'property',
+        name_for_methods,
+        property_name=property_.name.original,
+        inherited=property_.inherited,
+        independent=property_.independent,
+        semi_independent_variable=property_.semi_independent_variable,
+        type_name=property_.type_name,
+        wrapper_pointer_name=property_.wrapper_pointer_name,
+        field_template=property_.field_template,
+        size=size,
+        default_value=property_.default_value,
+        invalidate=property_.invalidate,
+        derived_from=property_.derived_from,
+        reset_on_new_style=property_.reset_on_new_style,
+        custom_compare=property_.custom_compare,
+        highlight_style_comes_from_originating_element=property_.highlight_style_comes_from_originating_element,
+        mutable=property_.mutable,
+        getter_method_name=property_.getter,
+        setter_method_name=property_.setter,
+        initial_method_name=property_.initial,
+        computed_style_custom_functions=property_.computed_style_custom_functions,
+        computed_style_protected_functions=property_.computed_style_protected_functions,
+        may_be_affected_by_transition_all=property_.may_be_affected_by_transition_all,
+        may_be_affected_by_transition_all_discrete=property_.may_be_affected_by_transition_all_discrete,
+        is_extra_field=property_.is_extra_field,
+    )
 
 
 def _create_inherited_flag_field(property_):
@@ -325,8 +334,8 @@ def _create_inherited_flag_field(property_):
     property, and return the Field object.
     """
     name_for_methods = NameStyleConverter(
-        property_.name_for_methods).to_function_name(
-            suffix=['is', 'inherited'])
+        property_.name_for_methods
+    ).to_function_name(suffix=['is', 'inherited'])
     name_source = NameStyleConverter(name_for_methods)
     return Field(
         'inherited_flag',
@@ -346,10 +355,8 @@ def _create_inherited_flag_field(property_):
         getter_method_name=name_source.to_function_name(),
         setter_method_name=name_source.to_function_name(prefix='set'),
         initial_method_name=name_source.to_function_name(prefix='initial'),
-        computed_style_custom_functions=property_.
-        computed_style_custom_functions,
-        computed_style_protected_functions=property_.
-        computed_style_protected_functions,
+        computed_style_custom_functions=property_.computed_style_custom_functions,
+        computed_style_protected_functions=property_.computed_style_protected_functions,
         may_be_affected_by_transition_all=False,
         may_be_affected_by_transition_all_discrete=False,
         is_extra_field=False,
@@ -399,8 +406,9 @@ def _reorder_bit_fields(bit_fields):
     # We also try to group together inherited and non-inherited fields
     # if possible, so that the compiler can generate cleaner bit masks
     # when dealing with them as a group.
-    for field in sorted(bit_fields,
-                        key=lambda f: (f.is_inherited, -f.size, f.name)):
+    for field in sorted(
+        bit_fields, key=lambda f: (f.is_inherited, -f.size, f.name)
+    ):
         added_to_bucket = False
         # Go through each bucket and add this field if it will not increase
         # the bucket's size to larger than 32 bits. Otherwise, make a new
@@ -420,13 +428,16 @@ def _reorder_non_bit_fields(non_bit_fields):
     # A general rule of thumb is to sort members by their alignment requirement
     # (from biggest aligned to smallest).
     for field in non_bit_fields:
-        assert field.alignment_type in ALIGNMENT_ORDER, \
-            "Type {} has unknown alignment. Please update ALIGNMENT_ORDER " \
+        assert field.alignment_type in ALIGNMENT_ORDER, (
+            "Type {} has unknown alignment. Please update ALIGNMENT_ORDER "
             "to include it.".format(field.name)
+        )
     return list(
         sorted(
             non_bit_fields,
-            key=lambda f: ALIGNMENT_ORDER.index(f.alignment_type)))
+            key=lambda f: ALIGNMENT_ORDER.index(f.alignment_type),
+        )
+    )
 
 
 def _reorder_fields(fields):
@@ -439,7 +450,8 @@ def _reorder_fields(fields):
 
     # Non bit fields go first, then the bit fields.
     return _reorder_non_bit_fields(non_bit_fields) + _reorder_bit_fields(
-        bit_fields)
+        bit_fields
+    )
 
 
 def _evaluate_misc_group(properties, bitfield_properties, inherited):
@@ -457,8 +469,11 @@ def _evaluate_misc_group(properties, bitfield_properties, inherited):
 
     i = 0
     for prop in properties:
-        if (prop.field_group is not None and prop.field_group == "*"
-                and prop.inherited == inherited):
+        if (
+            prop.field_group is not None
+            and prop.field_group == "*"
+            and prop.inherited == inherited
+        ):
             if prop.name.original in bitfield_properties:
                 # Putting a small (usually 1-bit, but we allow up to 7-bit) field
                 # into a deep misc group is a very risky business. Essentially,
@@ -479,8 +494,9 @@ def _evaluate_misc_group(properties, bitfield_properties, inherited):
                 # by size. (We used to have a popularity-based system, but it was no better
                 # than this and much more complex.)
                 group_size = 16
-                prop.field_group = base_name + "->" + base_name + str(
-                    i // group_size + 1)
+                prop.field_group = (
+                    base_name + "->" + base_name + str(i // group_size + 1)
+                )
                 i += 1
 
 
@@ -493,7 +509,8 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         # Reads css_properties.json5, computed_style_field_aliases.json5,
         # runtime_enabled_features.json5 and computed_style_extra_fields.json5
         self._css_properties = css_properties.CSSProperties(
-            json5_file_paths[0:4])
+            json5_file_paths[0:4]
+        )
 
         # We sort the enum values based on each value's position in
         # the keywords as listed in css_properties.json5. This will ensure that
@@ -503,29 +520,36 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         # css_properties.json5 and we can get the longest continuous segment.
         # Thereby reduce the switch case statement to the minimum.
         properties = keyword_utils.sort_keyword_properties_by_canonical_order(
-            self._css_properties.longhands, json5_file_paths[4],
-            self.default_parameters)
+            self._css_properties.longhands,
+            json5_file_paths[4],
+            self.default_parameters,
+        )
         self._properties = properties + self._css_properties.extra_fields
         self._longhands = [p for p in properties if p.is_longhand]
 
         self._generated_enums = _create_enums(self._properties)
         self._diff_enum = [
             NameStyleConverter(value).to_enum_value()
-            for value in self._css_properties.default_parameters["invalidate"]
-            ["valid_values"]
+            for value in self._css_properties.default_parameters["invalidate"][
+                "valid_values"
+            ]
         ]
 
         # Organise fields into a tree structure where the root group
         # is ComputedStyleBase.
-        group_parameters = dict([
-            (conf["name"], conf["cumulative_distribution"])
-            for conf in json5_generator.Json5File.load_from_files(
-                [json5_file_paths[5]]).name_dictionaries
-        ])
+        group_parameters = dict(
+            [
+                (conf["name"], conf["cumulative_distribution"])
+                for conf in json5_generator.Json5File.load_from_files(
+                    [json5_file_paths[5]]
+                ).name_dictionaries
+            ]
+        )
 
         bitfield_properties = {
             p.name.original
-            for p in self._properties if p.field_template is not None
+            for p in self._properties
+            if p.field_template is not None
             and int(_find_size_for_property(p) or 64) < 8
         }
 
@@ -544,22 +568,17 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
 
         self._include_paths = _get_include_paths(self._properties)
         self._outputs = {
-            'computed_style_base.h':
-            self.generate_base_computed_style_h,
-            'computed_style_base.cc':
-            self.generate_base_computed_style_cpp,
-            'computed_style_base_constants.h':
-            self.generate_base_computed_style_constants_h,
-            'computed_style_base_constants.cc':
-            self.generate_base_computed_style_constants_cc,
+            'computed_style_base.h': self.generate_base_computed_style_h,
+            'computed_style_base.cc': self.generate_base_computed_style_cpp,
+            'computed_style_base_constants.h': self.generate_base_computed_style_constants_h,
+            'computed_style_base_constants.cc': self.generate_base_computed_style_constants_cc,
         }
 
     @template_expander.use_jinja(
         'core/style/templates/computed_style_base.h.tmpl',
         filters={'hash_name': hash_name},
-        tests={
-            'in': lambda a, b: a in b
-        })
+        tests={'in': lambda a, b: a in b},
+    )
     def generate_base_computed_style_h(self):
         return {
             'input_files': self._input_files,
@@ -574,9 +593,8 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
 
     @template_expander.use_jinja(
         'core/style/templates/computed_style_base.cc.tmpl',
-        tests={
-            'in': lambda a, b: a in b
-        })
+        tests={'in': lambda a, b: a in b},
+    )
     def generate_base_computed_style_cpp(self):
         return {
             'input_files': self._input_files,
@@ -587,7 +605,8 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         }
 
     @template_expander.use_jinja(
-        'core/style/templates/computed_style_base_constants.h.tmpl')
+        'core/style/templates/computed_style_base_constants.h.tmpl'
+    )
     def generate_base_computed_style_constants_h(self):
         return {
             'input_files': self._input_files,
@@ -596,7 +615,8 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         }
 
     @template_expander.use_jinja(
-        'core/style/templates/computed_style_base_constants.cc.tmpl')
+        'core/style/templates/computed_style_base_constants.cc.tmpl'
+    )
     def generate_base_computed_style_constants_cc(self):
         return {
             'input_files': self._input_files,

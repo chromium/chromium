@@ -34,7 +34,7 @@ def _single_trie(string_to_value_pairs, index):
         if len(d) == 1:
             string = d[0][0]
             value = d[0][1]
-            output[char] = {string[index + 1:]: value}
+            output[char] = {string[index + 1 :]: value}
         else:
             output[char] = _single_trie(d, index + 1)
 

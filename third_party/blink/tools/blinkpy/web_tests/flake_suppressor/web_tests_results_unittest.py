@@ -31,12 +31,15 @@ class WebTestsResultsUnittest(unittest.TestCase):
     def setUp(self) -> None:
         common_tag_utils.SetTagUtilsImplementation(tag_utils.WebTestsTagUtils)
         expectations_processor = (
-            web_tests_expectations.WebTestsExpectationProcessor())
+            web_tests_expectations.WebTestsExpectationProcessor()
+        )
         self._results = web_tests_results.WebTestsResultProcessor(
-            expectations_processor)
+            expectations_processor
+        )
         self._local_patcher = mock.patch(
             'flake_suppressor_common.results.expectations.'
-            'ExpectationProcessor.GetLocalCheckoutExpectationFileContents')
+            'ExpectationProcessor.GetLocalCheckoutExpectationFileContents'
+        )
         self._local_mock = self._local_patcher.start()
         self._local_mock.return_value = {}
         self.addCleanup(self._local_patcher.stop)
@@ -83,8 +86,9 @@ class AggregateResultsUnittest(WebTestsResultsUnittest):
                 },
             },
         }
-        self.assertEqual(self._results.AggregateResults(query_results),
-                         expected_output)
+        self.assertEqual(
+            self._results.AggregateResults(query_results), expected_output
+        )
 
 
 class ConvertJsonResultsToResultObjectsUnittest(WebTestsResultsUnittest):
@@ -103,13 +107,21 @@ class ConvertJsonResultsToResultObjectsUnittest(WebTestsResultsUnittest):
             },
         ]
         expected_results = [
-            data_types.Result('',
-                              'conformance/textures/misc/video-rotation.html',
-                              tuple(['win']), '1111'),
-            data_types.Result('',
-                              'conformance/textures/misc/video-rotation.html',
-                              tuple(['win']), '1111'),
+            data_types.Result(
+                '',
+                'conformance/textures/misc/video-rotation.html',
+                tuple(['win']),
+                '1111',
+            ),
+            data_types.Result(
+                '',
+                'conformance/textures/misc/video-rotation.html',
+                tuple(['win']),
+                '1111',
+            ),
         ]
 
-        self.assertEqual(self._results._ConvertJsonResultsToResultObjects(r),
-                         expected_results)
+        self.assertEqual(
+            self._results._ConvertJsonResultsToResultObjects(r),
+            expected_results,
+        )

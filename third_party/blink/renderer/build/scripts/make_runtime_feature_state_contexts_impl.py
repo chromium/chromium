@@ -10,18 +10,21 @@ import template_expander
 
 
 class RunTimeFeatureStateContextImplWriter(
-        make_runtime_features.BaseRuntimeFeatureWriter):
+    make_runtime_features.BaseRuntimeFeatureWriter
+):
     file_basename = "runtime_feature_state_context"
 
     def __init__(self, json5_file_path, output_dir):
-        super(RunTimeFeatureStateContextImplWriter,
-              self).__init__(json5_file_path, output_dir)
+        super(RunTimeFeatureStateContextImplWriter, self).__init__(
+            json5_file_path, output_dir
+        )
         self._outputs = {
             (self.file_basename + '.cc'): self.generate_implementation,
         }
 
         self._browser_read_access_features = util.browser_read_access(
-            self._features)
+            self._features
+        )
 
     def _template_inputs(self):
         return {

@@ -47,13 +47,15 @@ class DiffParserTest(unittest.TestCase):
         self.assertEqual((47, 47), diff.lines[0][0:2])
         self.assertEqual('', diff.lines[0][2])
         self.assertEqual((48, 48), diff.lines[1][0:2])
-        self.assertEqual('    unsigned align : 3; // EBoxAlignment',
-                         diff.lines[1][2])
+        self.assertEqual(
+            '    unsigned align : 3; // EBoxAlignment', diff.lines[1][2]
+        )
 
         # The deleted line.
         self.assertEqual((50, 0), diff.lines[3][0:2])
-        self.assertEqual('    unsigned orient: 1; // EBoxOrient',
-                         diff.lines[3][2])
+        self.assertEqual(
+            '    unsigned orient: 1; // EBoxOrient', diff.lines[3][2]
+        )
 
         # The first file looks OK. Let's check the next, more complicated file.
         self.assertIn('WebCore/style/StyleRareInheritedData.cpp', parser.files)
@@ -80,7 +82,8 @@ class DiffParserTest(unittest.TestCase):
 
         # Check if a newly added file is correctly handled.
         diff = parser.files[
-            'web_tests/platform/mac/fast/flexbox/box-orient-button-expected.checksum']
+            'web_tests/platform/mac/fast/flexbox/box-orient-button-expected.checksum'
+        ]
         self.assertEqual(1, len(diff.lines))
         self.assertEqual((0, 1), diff.lines[0][0:2])
 

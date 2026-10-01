@@ -13,14 +13,14 @@ class CodeGenTracing(object):
     """
 
     class _CallFrame(object):
-
         def __init__(self, qualname, lineno):
             self._qualname = qualname
             self._lineno = lineno
 
         def __str__(self):
-            return "  /* {func}:{line} */".format(func=self._qualname,
-                                                  line=self._lineno)
+            return "  /* {func}:{line} */".format(
+                func=self._qualname, line=self._lineno
+            )
 
     _is_code_generation_tracing_enabled = False
     _modules_to_be_ignored = []
@@ -57,8 +57,9 @@ class CodeGenTracing(object):
                 frame = frame.f_back
                 continue
 
-            return cls._CallFrame(qualname=frame.f_code.co_qualname,
-                                  lineno=frame.f_lineno)
+            return cls._CallFrame(
+                qualname=frame.f_code.co_qualname, lineno=frame.f_lineno
+            )
         return cls._CallFrame(qualname="<unknown>", lineno=0)
 
 

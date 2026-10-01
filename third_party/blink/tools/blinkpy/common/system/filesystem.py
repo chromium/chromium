@@ -30,6 +30,7 @@
 A FileSystem object can be used to represent dependency on the
 filesystem, and can be replaced with a MockFileSystem in tests.
 """
+
 from __future__ import unicode_literals
 
 import glob
@@ -58,6 +59,7 @@ class FileSystem(object):
     Unless otherwise noted, all paths are allowed to be either absolute
     or relative.
     """
+
     sep = os.sep
     pardir = os.pardir
 
@@ -79,7 +81,7 @@ class FileSystem(object):
         """
         if sys.platform == 'win32' and len(path) >= self.WINDOWS_MAX_PATH:
             assert not path.startswith(r'\\'), "must not already be UNC"
-            return r'\\?\%s' % (self.abspath(path), )
+            return r'\\?\%s' % (self.abspath(path),)
         return path
 
     def abspath(self, path):
@@ -108,7 +110,8 @@ class FileSystem(object):
     def copyfile(self, source, destination):
         # shutil.copyfile() uses open() underneath, which supports UNC paths.
         shutil.copyfile(
-            self._path_for_access(source), self._path_for_access(destination))
+            self._path_for_access(source), self._path_for_access(destination)
+        )
 
     def dirname(self, path):
         return os.path.dirname(path)
@@ -145,7 +148,7 @@ class FileSystem(object):
         if self.basename(path) in dirs_to_skip:
             return []
 
-        for (dirpath, dirnames, filenames) in os.walk(path):
+        for dirpath, dirnames, filenames in os.walk(path):
             for d in dirs_to_skip:
                 if d in dirnames:
                     dirnames.remove(d)
@@ -180,7 +183,8 @@ class FileSystem(object):
 
     def walk(self, top, topdown=True, onerror=None, followlinks=False):
         return os.walk(
-            top, topdown=topdown, onerror=onerror, followlinks=followlinks)
+            top, topdown=topdown, onerror=onerror, followlinks=followlinks
+        )
 
     def mkdtemp(self, **kwargs):
         """Creates and returns a uniquely-named directory.
@@ -268,22 +272,19 @@ class FileSystem(object):
         return f, temp_name
 
     def open_text_file_for_reading(self, path):
-        return open(self._path_for_access(path),
-                    'r',
-                    encoding='utf8',
-                    newline='')
+        return open(
+            self._path_for_access(path), 'r', encoding='utf8', newline=''
+        )
 
     def open_text_file_for_writing(self, path):
-        return open(self._path_for_access(path),
-                    'w',
-                    encoding='utf8',
-                    newline='')
+        return open(
+            self._path_for_access(path), 'w', encoding='utf8', newline=''
+        )
 
     def open_text_file_for_appending(self, path):
-        return open(self._path_for_access(path),
-                    'a',
-                    encoding='utf8',
-                    newline='')
+        return open(
+            self._path_for_access(path), 'a', encoding='utf8', newline=''
+        )
 
     def read_text_file(self, path):
         """Returns the contents of the file as a Unicode string.
@@ -346,8 +347,9 @@ class FileSystem(object):
             # Ensure the root of the tree being rmtree'd is not a long path.
             # We can't convert it to a long path (using _path_for_access),
             # because long paths are not supported in 'rmdir' on Windows 7.
-            assert len(path_abs) < self.WINDOWS_MAX_PATH, \
+            assert len(path_abs) < self.WINDOWS_MAX_PATH, (
                 'root path is too long'
+            )
 
             # Ensure (hopefully) that the quoting done on the next line is safe.
             assert '"' not in path_abs, 'path contains a quotation mark (")'
@@ -394,8 +396,13 @@ class FileSystem(object):
 
     def make_executable(self, file_path):
         os.chmod(
-            file_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
-            | stat.S_IRGRP | stat.S_IXGRP)
+            file_path,
+            stat.S_IRUSR
+            | stat.S_IWUSR
+            | stat.S_IXUSR
+            | stat.S_IRGRP
+            | stat.S_IXGRP,
+        )
 
     def symlink(self, source, link_name):
         """Create a symbolic link. Unix only."""
@@ -473,13 +480,14 @@ def _remove_contents(fs, dirname, sleep=time.sleep):
 
     _log.warning('Unable to remove %s', dirname)
     for dirpath, dirnames, filenames in fs.walk(
-            dirname, onerror=onerror, topdown=False):
+        dirname, onerror=onerror, topdown=False
+    ):
         for fname in filenames:
-            _log.warning('File %s still in output dir.', fs.join(
-                dirpath, fname))
+            _log.warning(
+                'File %s still in output dir.', fs.join(dirpath, fname)
+            )
         for dname in dirnames:
-            _log.warning('Dir %s still in output dir.', fs.join(
-                dirpath, dname))
+            _log.warning('Dir %s still in output dir.', fs.join(dirpath, dname))
 
     return False
 

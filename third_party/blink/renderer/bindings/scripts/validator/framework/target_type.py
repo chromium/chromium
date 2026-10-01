@@ -30,7 +30,8 @@ def _get_debug_info_list(target):
             break
         visited_objects.add(target)
         if hasattr(target, "debug_info") and (
-                target.debug_info.location.filepath not in visited_filepaths):
+            target.debug_info.location.filepath not in visited_filepaths
+        ):
             debug_infos.append(target.debug_info)
             visited_filepaths.add(target.debug_info.location.filepath)
         if not hasattr(target, "owner"):
@@ -40,11 +41,13 @@ def _get_debug_info_list(target):
 
 
 class TargetType(object):
-    def __init__(self,
-                 name,
-                 get_target_objects,
-                 get_target_path=_get_target_path,
-                 get_debug_info_list=_get_debug_info_list):
+    def __init__(
+        self,
+        name,
+        get_target_objects,
+        get_target_path=_get_target_path,
+        get_debug_info_list=_get_debug_info_list,
+    ):
         """
         Args:
           name:

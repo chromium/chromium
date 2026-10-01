@@ -29,22 +29,35 @@ def _make_typedefs_to_unions(typedefs, component_selector):
 
     new_and_old_names = list(
         map(
-            lambda typedef:
-            (blink_class_name(typedef),
-             blink_class_name(typedef.idl_type.union_definition_object)),
+            lambda typedef: (
+                blink_class_name(typedef),
+                blink_class_name(typedef.idl_type.union_definition_object),
+            ),
             filter(
                 lambda typedef: component_selector(
-                    [typedef, typedef.idl_type.union_definition_object]),
+                    [typedef, typedef.idl_type.union_definition_object]
+                ),
                 filter(
-                    lambda typedef: typedef.idl_type.is_union and not typedef.
-                    idl_type.is_phantom, typedefs))))
-    node = ListNode([
-        TextNode("using {} = {};".format(new_name, old_name))
-        for new_name, old_name in new_and_old_names
-    ])
+                    lambda typedef: (
+                        typedef.idl_type.is_union
+                        and not typedef.idl_type.is_phantom
+                    ),
+                    typedefs,
+                ),
+            ),
+        )
+    )
+    node = ListNode(
+        [
+            TextNode("using {} = {};".format(new_name, old_name))
+            for new_name, old_name in new_and_old_names
+        ]
+    )
     node.accumulate(
         CodeGenAccumulator.require_class_decls(
-            [old_name for _, old_name in new_and_old_names]))
+            [old_name for _, old_name in new_and_old_names]
+        )
+    )
     return node
 
 
@@ -53,10 +66,12 @@ def make_typedefs(typedefs, component_selector):
     assert all(isinstance(typedef, web_idl.Typedef) for typedef in typedefs)
     assert callable(component_selector)
 
-    return ListNode([
-        TextNode("// Typedefs to IDL unions"),
-        _make_typedefs_to_unions(typedefs, component_selector),
-    ])
+    return ListNode(
+        [
+            TextNode("// Typedefs to IDL unions"),
+            _make_typedefs_to_unions(typedefs, component_selector),
+        ]
+    )
 
 
 def _make_unions_of_typedefed_member_types(unions, component_selector):
@@ -80,7 +95,8 @@ def _make_unions_of_typedefed_member_types(unions, component_selector):
                 def_objs.append(body_type.typedef_object)
             else:
                 pieces.append(
-                    body_type.type_name_with_extended_attribute_key_values)
+                    body_type.type_name_with_extended_attribute_key_values
+                )
         if not component_selector(def_objs):
             return None
         pieces = sorted(pieces)
@@ -100,7 +116,13 @@ def _make_unions_of_typedefed_member_types(unions, component_selector):
                     None,
                     map(
                         lambda idl_type: union_name_of_typedefed_members(
-                            idl_type, union), union.idl_types))))
+                            idl_type, union
+                        ),
+                        union.idl_types,
+                    ),
+                )
+            )
+        )
         old_name = blink_class_name(union)
         for new_name in new_names:
             node.append(TextNode("using {} = {};".format(new_name, old_name)))
@@ -116,10 +138,12 @@ def make_unions(unions, component_selector):
     assert all(isinstance(union, web_idl.Union) for union in unions)
     assert callable(component_selector)
 
-    return ListNode([
-        TextNode("// Unions including typedef'ed member types"),
-        _make_unions_of_typedefed_member_types(unions, component_selector),
-    ])
+    return ListNode(
+        [
+            TextNode("// Unions including typedef'ed member types"),
+            _make_unions_of_typedefed_member_types(unions, component_selector),
+        ]
+    )
 
 
 def generate_typedefs_all(filepath_basename):
@@ -136,7 +160,8 @@ def generate_typedefs_all(filepath_basename):
     header_path = {}
     for component in components:
         header_path[component] = PathManager.component_path(
-            component, "{}.h".format(filepath_basename))
+            component, "{}.h".format(filepath_basename)
+        )
 
     # Root nodes
     header_node = {}
@@ -154,21 +179,30 @@ def generate_typedefs_all(filepath_basename):
 
     # Header part (copyright, include directives, and forward declarations)
     for component in components:
-        header_node[component].extend([
-            make_copyright_header(),
-            EmptyNode(),
-            enclose_with_header_guard(
-                ListNode([
-                    make_header_include_directives(
-                        header_node[component].accumulator),
-                    EmptyNode(),
-                    header_blink_ns[component],
-                ]), name_style.header_guard(header_path[component])),
-        ])
-        header_blink_ns[component].body.extend([
-            make_forward_declarations(header_node[component].accumulator),
-            EmptyNode(),
-        ])
+        header_node[component].extend(
+            [
+                make_copyright_header(),
+                EmptyNode(),
+                enclose_with_header_guard(
+                    ListNode(
+                        [
+                            make_header_include_directives(
+                                header_node[component].accumulator
+                            ),
+                            EmptyNode(),
+                            header_blink_ns[component],
+                        ]
+                    ),
+                    name_style.header_guard(header_path[component]),
+                ),
+            ]
+        )
+        header_blink_ns[component].body.extend(
+            [
+                make_forward_declarations(header_node[component].accumulator),
+                EmptyNode(),
+            ]
+        )
 
     # Implementation parts
     component_selectors = {
@@ -176,27 +210,32 @@ def generate_typedefs_all(filepath_basename):
         c2: lambda xs: any(c2 in x.components for x in xs),
     }
 
-    all_typedefs = sorted(web_idl_database.typedefs,
-                          key=lambda x: x.identifier)
+    all_typedefs = sorted(web_idl_database.typedefs, key=lambda x: x.identifier)
     for component in components:
-        header_blink_ns[component].body.extend([
-            make_typedefs(all_typedefs, component_selectors[component]),
-            EmptyNode(),
-        ])
+        header_blink_ns[component].body.extend(
+            [
+                make_typedefs(all_typedefs, component_selectors[component]),
+                EmptyNode(),
+            ]
+        )
 
-    all_unions = sorted(web_idl_database.union_types,
-                        key=lambda x: x.identifier)
+    all_unions = sorted(
+        web_idl_database.union_types, key=lambda x: x.identifier
+    )
     for component in components:
-        header_blink_ns[component].body.extend([
-            make_unions(all_unions, component_selectors[component]),
-            EmptyNode(),
-        ])
+        header_blink_ns[component].body.extend(
+            [
+                make_unions(all_unions, component_selectors[component]),
+                EmptyNode(),
+            ]
+        )
 
     # Write down to the files.
     for component in components:
         write_code_node_to_file(
             header_node[component],
-            PathManager.gen_path_to(header_path[component]))
+            PathManager.gen_path_to(header_path[component]),
+        )
 
 
 def generate_typedefs(task_queue):

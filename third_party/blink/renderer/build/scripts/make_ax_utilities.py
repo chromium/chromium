@@ -24,7 +24,9 @@ class AttributeEntry(TypedDict):
     is_global: bool  # If True, supported_roles should be empty.
     supported_roles: List[str]  # e.g. ["button", "checkbox", ...]
     prevented_roles: List[str]  # e.g. ["caption", "code", ...] (empty if none)
-    has_role_specific_values: bool  # True if any role has implicit value for this
+    has_role_specific_values: (
+        bool  # True if any role has implicit value for this
+    )
 
 
 class AttributeTypeInfo(TypedDict):
@@ -41,7 +43,8 @@ class RoleEntry(TypedDict):
     internalRole: str  # e.g. "kListBox"
     implicitValues: Dict[str, str]  # e.g. {"aria-orientation": "vertical"}
     nameFrom: List[
-        str]  # e.g. ["author"], ["contents", "author"], ["prohibited"]
+        str
+    ]  # e.g. ["author"], ["contents", "author"], ["prohibited"]
 
 
 class MakeAxUtilitiesWriter(json5_generator.Writer):
@@ -72,14 +75,10 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
         self._extract_attributes()
 
         self._outputs: Dict[str, Callable[[], str]] = {
-            "ax_utilities_generated.h":
-            self.generate_header,
-            "ax_utilities_generated_attributes.cc":
-            self.generate_implementation_attributes,
-            "ax_utilities_generated_roles.cc":
-            self.generate_implementation_roles,
-            "ax_utilities_generated_naming.cc":
-            self.generate_implementation_naming,
+            "ax_utilities_generated.h": self.generate_header,
+            "ax_utilities_generated_attributes.cc": self.generate_implementation_attributes,
+            "ax_utilities_generated_roles.cc": self.generate_implementation_roles,
+            "ax_utilities_generated_naming.cc": self.generate_implementation_naming,
         }
 
         header = self._relative_output_dir + "ax_utilities_generated.h"
@@ -90,8 +89,7 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
             "attributes_by_type": self._attributes_by_type,
             "current_roles": self._current_roles,
             "deprecated_roles": self._deprecated_roles,
-            "additional_internal_role_mappings":
-            self._additional_internal_role_mappings,
+            "additional_internal_role_mappings": self._additional_internal_role_mappings,
             "this_include_path": header,
         }
 
@@ -115,8 +113,6 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
         attributes_by_type: Dict[str, AttributeTypeInfo] = {}
 
         for attr in self.aria_reader.attributes():
-
-
             # Use same logic as `make_qualified_names.py` so that any generated
             # functions which include ARIA attributes use the correct qualified
             # name. This base name will also be used to generate functions like
@@ -132,7 +128,8 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
                 }
                 type_name = type_name_overrides.get(
                     attr_type,
-                    NameStyleConverter(attr_type).to_upper_camel_case())
+                    NameStyleConverter(attr_type).to_upper_camel_case(),
+                )
 
                 attributes_by_type[attr_type] = {
                     "type_name": type_name,
@@ -152,11 +149,13 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
             if is_global:
                 assert not supported_roles, (
                     f"Global attribute '{attr['name']}' must not have "
-                    f"supportedOnRoles")
+                    f"supportedOnRoles"
+                )
             else:
                 assert supported_roles, (
                     f"Non-global attribute '{attr['name']}' must have "
-                    f"supportedOnRoles")
+                    f"supportedOnRoles"
+                )
 
             # Get default value and convert booleans to lowercase strings
             default_value = attr.get("default", "")
@@ -165,24 +164,19 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
             else:
                 default_value = str(default_value) if default_value else ""
 
-            attributes_by_type[attr_type]["attributes"].append({
-                "name":
-                attr["name"],
-                "base_name":
-                base_name,
-                "enum_values":
-                attr.get("enum", []),
-                "default_value":
-                default_value,
-                "supported_roles":
-                supported_roles,
-                "prevented_roles":
-                prevented_roles,
-                "is_global":
-                is_global,
-                "has_role_specific_values":
-                attr["name"] in attrs_with_role_values,
-            })
+            attributes_by_type[attr_type]["attributes"].append(
+                {
+                    "name": attr["name"],
+                    "base_name": base_name,
+                    "enum_values": attr.get("enum", []),
+                    "default_value": default_value,
+                    "supported_roles": supported_roles,
+                    "prevented_roles": prevented_roles,
+                    "is_global": is_global,
+                    "has_role_specific_values": attr["name"]
+                    in attrs_with_role_values,
+                }
+            )
 
         self._attributes_by_type = attributes_by_type
 
@@ -205,7 +199,8 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
                 continue
 
             internal_roles: List[str] = role.get(
-                "internalRoles", [f"k{role['name'].capitalize()}"])
+                "internalRoles", [f"k{role['name'].capitalize()}"]
+            )
 
             # Convert implicit values to strings for consistency
             implicit_values = {}
@@ -238,12 +233,13 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
                 }
                 additional_internal_role_mappings.append(additional_entry)
 
-        self._current_roles = sorted(current_roles,
-                                     key=lambda x: x["ariaRole"])
-        self._deprecated_roles = sorted(deprecated_roles,
-                                        key=lambda x: x["ariaRole"])
+        self._current_roles = sorted(current_roles, key=lambda x: x["ariaRole"])
+        self._deprecated_roles = sorted(
+            deprecated_roles, key=lambda x: x["ariaRole"]
+        )
         self._additional_internal_role_mappings = sorted(
-            additional_internal_role_mappings, key=lambda x: x["ariaRole"])
+            additional_internal_role_mappings, key=lambda x: x["ariaRole"]
+        )
 
     @template_expander.use_jinja("templates/ax_utilities_generated.h.tmpl")
     def generate_header(self) -> dict:
@@ -252,21 +248,24 @@ class MakeAxUtilitiesWriter(json5_generator.Writer):
         return self._template_context
 
     @template_expander.use_jinja(
-        "templates/ax_utilities_generated_attributes.cc.tmpl")
+        "templates/ax_utilities_generated_attributes.cc.tmpl"
+    )
     def generate_implementation_attributes(self) -> dict:
         """Generate the implementation file with ARIA attribute utility definitions."""
 
         return self._template_context
 
     @template_expander.use_jinja(
-        "templates/ax_utilities_generated_roles.cc.tmpl")
+        "templates/ax_utilities_generated_roles.cc.tmpl"
+    )
     def generate_implementation_roles(self) -> dict:
         """Generate the implementation file with ARIA role mapping utilities."""
 
         return self._template_context
 
     @template_expander.use_jinja(
-        "templates/ax_utilities_generated_naming.cc.tmpl")
+        "templates/ax_utilities_generated_naming.cc.tmpl"
+    )
     def generate_implementation_naming(self) -> dict:
         """Generate the implementation file with ARIA naming support utilities."""
 

@@ -6,16 +6,17 @@ import hashlib
 
 
 class MockChromiumCommit:
-
-    def __init__(self,
-                 host,
-                 position='refs/heads/master@{#123}',
-                 change_id='Iba5eba11',
-                 link='',
-                 author='Fake author',
-                 subject='Fake subject',
-                 body='Fake body',
-                 patch='Fake patch contents'):
+    def __init__(
+        self,
+        host,
+        position='refs/heads/master@{#123}',
+        change_id='Iba5eba11',
+        link='',
+        author='Fake author',
+        subject='Fake subject',
+        body='Fake body',
+        patch='Fake patch contents',
+    ):
         self.host = host
         self.position = position
         self.sha = hashlib.sha1(position.encode('utf-8')).hexdigest()

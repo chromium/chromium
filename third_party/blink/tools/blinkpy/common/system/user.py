@@ -48,7 +48,8 @@ class User(object):
         # We cannot get the PlatformInfo object from a SystemHost because
         # User is part of SystemHost itself.
         self._platform_info = platform_info or PlatformInfo(
-            sys, platform, FileSystem(), Executive())
+            sys, platform, FileSystem(), Executive()
+        )
 
     # FIXME: These are @classmethods because bugzilla.py doesn't have a Tool object (thus no User instance).
     @classmethod
@@ -60,13 +61,15 @@ class User(object):
         return response
 
     @classmethod
-    def _wait_on_list_response(cls, list_items, can_choose_multiple,
-                               input_func):
+    def _wait_on_list_response(
+        cls, list_items, can_choose_multiple, input_func
+    ):
         while True:
             if can_choose_multiple:
                 response = cls.prompt(
                     'Enter one or more numbers (comma-separated) or ranges (e.g. 3-7), or \'all\': ',
-                    input_func=input_func)
+                    input_func=input_func,
+                )
                 if not response.strip() or response == 'all':
                     return list_items
 
@@ -84,26 +87,30 @@ class User(object):
                 return [list_items[i] for i in indices]
             else:
                 try:
-                    result = int(
-                        cls.prompt('Enter a number: ',
-                                   input_func=input_func)) - 1
+                    result = (
+                        int(
+                            cls.prompt(
+                                'Enter a number: ', input_func=input_func
+                            )
+                        )
+                        - 1
+                    )
                 except ValueError:
                     continue
                 return list_items[result]
 
     @classmethod
-    def prompt_with_list(cls,
-                         list_title,
-                         list_items,
-                         can_choose_multiple=False,
-                         input_func=input):
+    def prompt_with_list(
+        cls, list_title, list_items, can_choose_multiple=False, input_func=input
+    ):
         print(list_title)
         i = 0
         for item in list_items:
             i += 1
             print('%2d. %s' % (i, item))
-        return cls._wait_on_list_response(list_items, can_choose_multiple,
-                                          input_func)
+        return cls._wait_on_list_response(
+            list_items, can_choose_multiple, input_func
+        )
 
     def confirm(self, message=None, default=DEFAULT_YES, input_func=input):
         if not message:
@@ -131,8 +138,10 @@ class User(object):
         # tends to autolaunch dbus: if this happens inside testing/xvfb.py, that
         # often causes problems when the autolaunched dbus exits, as dbus sends
         # a kill signal to all killable processes on exit (!!!).
-        if (self._platform_info.is_linux()
-                and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ):
+        if (
+            self._platform_info.is_linux()
+            and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ
+        ):
             _log.warning('dbus is not running, not showing results...')
             return False
         try:
@@ -140,7 +149,8 @@ class User(object):
             return True
         except webbrowser.Error:
             _log.warning(
-                'Failed to get default browser, not showing results...')
+                'Failed to get default browser, not showing results...'
+            )
             return False
 
     def open_url(self, url):

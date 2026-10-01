@@ -95,15 +95,20 @@ def _get_function_likes(target_store):
 def _get_idl_types(target_store):
     idl_types = []
     idl_types.extend(
-        list(map(lambda x: x.idl_type, target_store.get(ARGUMENTS))))
+        list(map(lambda x: x.idl_type, target_store.get(ARGUMENTS)))
+    )
     idl_types.extend(
-        list(map(lambda x: x.idl_type, target_store.get(ATTRIBUTES))))
+        list(map(lambda x: x.idl_type, target_store.get(ATTRIBUTES)))
+    )
     idl_types.extend(
-        list(map(lambda x: x.idl_type, target_store.get(CONSTANTS))))
+        list(map(lambda x: x.idl_type, target_store.get(CONSTANTS)))
+    )
     idl_types.extend(
-        list(map(lambda x: x.idl_type, target_store.get(DICTIONARY_MEMBERS))))
+        list(map(lambda x: x.idl_type, target_store.get(DICTIONARY_MEMBERS)))
+    )
     idl_types.extend(
-        list(map(lambda x: x.return_type, target_store.get(FUNCTION_LIKES))))
+        list(map(lambda x: x.return_type, target_store.get(FUNCTION_LIKES)))
+    )
     return idl_types
 
 
@@ -176,8 +181,9 @@ ARGUMENTS = TargetType("arguments", _get_arguments)
 ASYNC_ITERABLES = TargetType("async_iterables", _get_async_iterables)
 ATTRIBUTES = TargetType("attributes", _get_attributes)
 CALLBACK_FUNCTIONS = TargetType("callback_functions", _get_callback_functions)
-CALLBACK_INTERFACES = TargetType("callback_interfaces",
-                                 _get_callback_interfaces)
+CALLBACK_INTERFACES = TargetType(
+    "callback_interfaces", _get_callback_interfaces
+)
 CONSTANTS = TargetType("constants", _get_constants)
 DICTIONARIES = TargetType("dictionaries", _get_dictionaries)
 DICTIONARY_MEMBERS = TargetType("dictionary_members", _get_dictionary_members)
@@ -186,12 +192,14 @@ FUNCTION_LIKES = TargetType("function_likes", _get_function_likes)
 IDL_TYPES = TargetType("idl_types", _get_idl_types)
 INTERFACES = TargetType("interfaces", _get_interfaces)
 ITERABLES = TargetType("iterables", _get_iterables)
-LEGACY_WINDOW_ALIASES = TargetType("legacy_window_aliases",
-                                   _get_legacy_window_aliases)
+LEGACY_WINDOW_ALIASES = TargetType(
+    "legacy_window_aliases", _get_legacy_window_aliases
+)
 MAP_LIKES = TargetType("map_likes", _get_map_likes)
 NAMESPACES = TargetType("namespaces", _get_namespaces)
 # Target objects which have extended attributes except for web_idl.IdlType
 OBJECTS_WITH_EXTENDED_ATTRIBUTES = TargetType(
-    "objects_with_extended_attributes", _get_objects_with_extended_attributes)
+    "objects_with_extended_attributes", _get_objects_with_extended_attributes
+)
 OBSERVABLE_ARRAYS = TargetType("observable_arrays", _get_observable_arrays)
 SET_LIKES = TargetType("set_likes", _get_set_likes)

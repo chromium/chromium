@@ -12,24 +12,32 @@ from .composition_parts import WithIdentifier
 from .idl_type import IdlType
 
 
-class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
-                      WithDebugInfo):
+class ObservableArray(
+    WithIdentifier, WithCodeGeneratorInfo, WithComponent, WithDebugInfo
+):
     """https://webidl.spec.whatwg.org/#idl-observable-array"""
 
     def __init__(self, idl_type, attributes, for_testing):
         assert isinstance(idl_type, IdlType)
         assert isinstance(attributes, (list, tuple)) and all(
-            isinstance(attribute, Attribute) for attribute in attributes)
+            isinstance(attribute, Attribute) for attribute in attributes
+        )
         assert idl_type.is_observable_array
 
-        identifier = Identifier('ObservableArray_{}'.format(
-            (idl_type.element_type.type_name_with_extended_attribute_key_values
-             )))
+        identifier = Identifier(
+            'ObservableArray_{}'.format(
+                (
+                    idl_type.element_type.type_name_with_extended_attribute_key_values
+                )
+            )
+        )
 
         components = []
         element_type = idl_type.element_type.unwrap()
-        component_object = (element_type.type_definition_object
-                            or element_type.union_definition_object)
+        component_object = (
+            element_type.type_definition_object
+            or element_type.union_definition_object
+        )
         if component_object:
             components.append(component_object.components[0])
 
@@ -37,9 +45,7 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
         code_generator_info.set_for_testing(for_testing)
 
         WithIdentifier.__init__(self, identifier)
-        WithCodeGeneratorInfo.__init__(self,
-                                       code_generator_info,
-                                       readonly=True)
+        WithCodeGeneratorInfo.__init__(self, code_generator_info, readonly=True)
         WithComponent.__init__(self, components, readonly=True)
         WithDebugInfo.__init__(self, idl_type.debug_info)
 

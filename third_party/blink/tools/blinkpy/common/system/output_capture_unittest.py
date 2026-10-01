@@ -39,8 +39,7 @@ class OutputCaptureTest(unittest.TestCase):
         _log.critical('CRITICAL')
 
     def assert_logged(self, expected_logs):
-        actual_stdout, actual_stderr, actual_logs = self.output.restore_output(
-        )
+        actual_stdout, actual_stderr, actual_logs = self.output.restore_output()
         self.assertEqual('', actual_stdout)
         self.assertEqual('', actual_stderr)
         self.assertMultiLineEqual(expected_logs, actual_logs)

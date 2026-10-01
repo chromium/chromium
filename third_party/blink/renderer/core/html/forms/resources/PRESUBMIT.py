@@ -5,7 +5,8 @@
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
     return input_api.canned_checks.CheckPatchFormatted(
-        input_api, output_api, check_js=True)
+        input_api, output_api, check_js=True
+    )
 
 
 def CheckChangeOnUpload(input_api, output_api):

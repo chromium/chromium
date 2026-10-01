@@ -10,8 +10,9 @@ from blinkpy.web_tests.stale_expectation_removal import constants
 
 from unexpected_passes_common import expectations
 
-MAIN_EXPECTATION_FILE = os.path.join(constants.WEB_TEST_ROOT_DIR,
-                                     'TestExpectations')
+MAIN_EXPECTATION_FILE = os.path.join(
+    constants.WEB_TEST_ROOT_DIR, 'TestExpectations'
+)
 
 TOP_LEVEL_EXPECTATION_FILES = {
     'ASANExpectations',
@@ -46,12 +47,15 @@ class WebTestExpectations(expectations.Expectations):
             self._expectation_filepaths = []
             for ef in self._GetTopLevelExpectationFiles():
                 self._expectation_filepaths.append(
-                    os.path.join(constants.WEB_TEST_ROOT_DIR, ef))
-            flag_directory = os.path.join(constants.WEB_TEST_ROOT_DIR,
-                                          'FlagExpectations')
+                    os.path.join(constants.WEB_TEST_ROOT_DIR, ef)
+                )
+            flag_directory = os.path.join(
+                constants.WEB_TEST_ROOT_DIR, 'FlagExpectations'
+            )
             for ef in self._GetFlagSpecificExpectationFiles():
                 self._expectation_filepaths.append(
-                    os.path.join(flag_directory, ef))
+                    os.path.join(flag_directory, ef)
+                )
 
         return self._expectation_filepaths
 
@@ -61,8 +65,9 @@ class WebTestExpectations(expectations.Expectations):
     def _GetFlagSpecificExpectationFiles(self) -> Set[str]:
         if self._flag_specific_expectation_files is None:
             self._flag_specific_expectation_files = set()
-            flag_directory = os.path.join(constants.WEB_TEST_ROOT_DIR,
-                                          'FlagExpectations')
+            flag_directory = os.path.join(
+                constants.WEB_TEST_ROOT_DIR, 'FlagExpectations'
+            )
             for ef in os.listdir(flag_directory):
                 if ef != 'README.txt':
                     self._flag_specific_expectation_files.add(ef)
@@ -88,7 +93,8 @@ class WebTestExpectations(expectations.Expectations):
             self._known_tags = set()
             for f in self.GetExpectationFilepaths():
                 list_parser = expectations.ParseTaggedTestListContent(
-                    self._GetExpectationFileTagHeader(f))
+                    self._GetExpectationFileTagHeader(f)
+                )
                 for ts in list_parser.tag_sets:
                     self._known_tags |= ts
             self._known_tags = {t.lower() for t in self._known_tags}

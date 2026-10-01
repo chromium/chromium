@@ -22,15 +22,19 @@ def web_socket_transfer_data(request):
 
     for test_number, expected_message in enumerate(expected_messages):
         frame = _retrieve_frame(request.ws_stream)
-        if (frame.opcode == common.OPCODE_BINARY and
-                frame.payload == expected_message and frame.fin):
+        if (
+            frame.opcode == common.OPCODE_BINARY
+            and frame.payload == expected_message
+            and frame.fin
+        ):
             msgutil.send_message(request, 'PASS: Message #%d.' % test_number)
         else:
             msgutil.send_message(
                 request,
                 'FAIL: Message #%d: Received unexpected frame: opcode = %r, '
                 'payload = %r, final = %r'
-                % (test_number, frame.opcode, frame.payload, frame.fin))
+                % (test_number, frame.opcode, frame.payload, frame.fin),
+            )
 
 
 def all_distinct_bytes():

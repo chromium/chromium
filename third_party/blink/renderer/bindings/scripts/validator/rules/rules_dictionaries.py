@@ -15,23 +15,33 @@ from validator.framework import target
 class ForbiddenNullableDictionaryTypeForArguments(RuleBase):
     def validate(self, assert_, argument):
         assert_(
-            not (argument.idl_type.is_nullable
-                 and argument.idl_type.unwrap().is_dictionary),
-            ("Nullable dictionary type is forbidden as "
-             "an argument type."))
+            not (
+                argument.idl_type.is_nullable
+                and argument.idl_type.unwrap().is_dictionary
+            ),
+            ("Nullable dictionary type is forbidden as an argument type."),
+        )
 
 
 class ForbiddenNullableDictionaryTypeForDictionaryMembers(RuleBase):
     def validate(self, assert_, dictionary_member):
         assert_(
-            not (dictionary_member.idl_type.is_nullable
-                 and dictionary_member.idl_type.unwrap().is_dictionary),
-            ("Nullable dictionary type is forbidden as "
-             "a dictionary member type."))
+            not (
+                dictionary_member.idl_type.is_nullable
+                and dictionary_member.idl_type.unwrap().is_dictionary
+            ),
+            (
+                "Nullable dictionary type is forbidden as "
+                "a dictionary member type."
+            ),
+        )
 
 
 def register_rules(rule_store):
-    rule_store.register(target.ARGUMENTS,
-                        ForbiddenNullableDictionaryTypeForArguments())
-    rule_store.register(target.DICTIONARY_MEMBERS,
-                        ForbiddenNullableDictionaryTypeForDictionaryMembers())
+    rule_store.register(
+        target.ARGUMENTS, ForbiddenNullableDictionaryTypeForArguments()
+    )
+    rule_store.register(
+        target.DICTIONARY_MEMBERS,
+        ForbiddenNullableDictionaryTypeForDictionaryMembers(),
+    )

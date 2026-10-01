@@ -92,20 +92,23 @@ class ParseError(Exception):
 @dataclass
 class ExpectationsChange:
     lines_added: List[typ_types.ExpectationType] = field(default_factory=list)
-    lines_removed: List[typ_types.ExpectationType] = field(
-        default_factory=list)
+    lines_removed: List[typ_types.ExpectationType] = field(default_factory=list)
 
     def __add__(self, other: 'ExpectationsChange') -> 'ExpectationsChange':
         lines_added = {line.to_string(): line for line in self.lines_added}
         lines_removed = {line.to_string(): line for line in self.lines_removed}
         self._add_delta(other.lines_added, lines_removed, lines_added)
         self._add_delta(other.lines_removed, lines_added, lines_removed)
-        return ExpectationsChange(list(lines_added.values()),
-                                  list(lines_removed.values()))
+        return ExpectationsChange(
+            list(lines_added.values()), list(lines_removed.values())
+        )
 
-    def _add_delta(self, lines: Collection[typ_types.ExpectationType],
-                   negative: Dict[str, typ_types.ExpectationType],
-                   positive: Dict[str, typ_types.ExpectationType]):
+    def _add_delta(
+        self,
+        lines: Collection[typ_types.ExpectationType],
+        negative: Dict[str, typ_types.ExpectationType],
+        positive: Dict[str, typ_types.ExpectationType],
+    ):
         for line in lines:
             formatted_line = line.to_string()
             if formatted_line in negative:
@@ -122,7 +125,8 @@ def _exp_order(exp: typ_types.ExpectationType):
 
 
 def _copy_expectation(
-        line: typ_types.ExpectationType) -> typ_types.ExpectationType:
+    line: typ_types.ExpectationType,
+) -> typ_types.ExpectationType:
     """Creates a fast defensive copy of an Expectation or _NotExpectation line.
 
     This avoids the significant recursive reflection overhead of copy.deepcopy.
@@ -131,10 +135,12 @@ def _copy_expectation(
     are shallow-copied so caller mutations do not corrupt internal state.
     """
     exp = line.__class__.__new__(line.__class__)
-    exp.__dict__.update({
-        k: v.copy() if isinstance(v, (list, set, dict)) else v
-        for k, v in line.__dict__.items()
-    })
+    exp.__dict__.update(
+        {
+            k: v.copy() if isinstance(v, (list, set, dict)) else v
+            for k, v in line.__dict__.items()
+        }
+    )
     return exp
 
 
@@ -144,7 +150,8 @@ class TestExpectations:
         self._system_condition_tags = self._port.get_platform_tags()
         self._expectations = []
         self._expectations_dict = OrderedDict(
-            expectations_dict or port.expectations_dict())
+            expectations_dict or port.expectations_dict()
+        )
         filesystem = self._port.host.filesystem
         expectation_errors = []
 
@@ -159,18 +166,22 @@ class TestExpectations:
 
         for path, content in self._expectations_dict.items():
             test_expectations = typ_types.TestExpectations(
-                tags=self._system_condition_tags)
+                tags=self._system_condition_tags
+            )
             ret, errors = test_expectations.parse_tagged_list(
                 content,
                 file_name=filesystem.abspath(path),
-                tags_conflict=self._tags_conflict)
+                tags_conflict=self._tags_conflict,
+            )
             if ret:
                 expectation_errors.append(
-                    'Parsing file %s produced following errors\n%s' % (path,
-                                                                       errors))
+                    'Parsing file %s produced following errors\n%s'
+                    % (path, errors)
+                )
             self._expectations.append(test_expectations)
             flag_match = re.match(
-                '.*' + port.FLAG_EXPECTATIONS_PREFIX + '(.*)', path)
+                '.*' + port.FLAG_EXPECTATIONS_PREFIX + '(.*)', path
+            )
 
             self._reset_lines(path)
 
@@ -187,7 +198,8 @@ class TestExpectations:
             content = '# results: [ Skip ]\n'
             for pattern in set(port.get_option('ignore_tests', [])):
                 if filesystem.isdir(
-                        filesystem.join(self._port.web_tests_dir(), pattern)):
+                    filesystem.join(self._port.web_tests_dir(), pattern)
+                ):
                     pattern += '*'
                 content += '%s [ Skip ]\n' % pattern
             test_expectations = typ_types.TestExpectations()
@@ -195,7 +207,8 @@ class TestExpectations:
             if ret:
                 expectation_errors.append(
                     'Parsing patterns passed through --ignore produced the following errors\n%s'
-                    % errors)
+                    % errors
+                )
             self._expectations.append(test_expectations)
         if expectation_errors:
             raise ParseError(expectation_errors)
@@ -214,9 +227,14 @@ class TestExpectations:
             lines: Array which contains Expectation instances for each line in an
                    expectations file."""
         # remove comments associated with deleted expectation
-        while (lines and lines[-1].to_string().strip().startswith('#')
-               and not any(lines[-1].to_string().strip().startswith(prefix)
-                           for prefix in SPECIAL_PREFIXES)):
+        while (
+            lines
+            and lines[-1].to_string().strip().startswith('#')
+            and not any(
+                lines[-1].to_string().strip().startswith(prefix)
+                for prefix in SPECIAL_PREFIXES
+            )
+        ):
             lines.pop()
 
         # remove spaces above expectation
@@ -243,15 +261,18 @@ class TestExpectations:
         # Store Expectation instances for each line
         lineno_to_exps = defaultdict(list)
 
-        for pattern_to_exps in (typ_expectations.individual_exps,
-                                typ_expectations.glob_exps):
+        for pattern_to_exps in (
+            typ_expectations.individual_exps,
+            typ_expectations.glob_exps,
+        ):
             for test in sorted(pattern_to_exps):
                 exps = pattern_to_exps[test]
                 for exp in exps:
                     lineno_to_exps[exp.lineno].append(exp)
 
-        removed_linenos = (self._expectation_file_linenos[path] -
-                           set(lineno_to_exps.keys()))
+        removed_linenos = self._expectation_file_linenos[path] - set(
+            lineno_to_exps.keys()
+        )
         content_lines = content.splitlines()
 
         for lineno, line in enumerate(content_lines, 1):
@@ -283,19 +304,23 @@ class TestExpectations:
         if lineno_to_exps:
             lines.append(_NotExpectation('', len(content_lines) + 1))
 
-            for line in sorted(reduce(lambda x, y: x + y,
-                                      list(lineno_to_exps.values())),
-                               key=lambda e: e.test):
+            for line in sorted(
+                reduce(lambda x, y: x + y, list(lineno_to_exps.values())),
+                key=lambda e: e.test,
+            ):
                 if line.lineno:
                     raise ValueError(
                         "Expectation '%s' was given a line number that "
                         "is greater than the total line count of file %s."
-                        % (line.to_string(), path))
+                        % (line.to_string(), path)
+                    )
                 lines.append(line)
 
         self._expectation_file_linenos[path] = {
-            line.lineno for line in lines
-            if not isinstance(line, _NotExpectation)}
+            line.lineno
+            for line in lines
+            if not isinstance(line, _NotExpectation)
+        }
 
         return lines
 
@@ -305,8 +330,7 @@ class TestExpectations:
         methods"""
         for path in self._expectations_dict:
             exp_lines = self._reset_lines(path)
-            new_content = '\n'.join(
-                [e.to_string() for e in exp_lines]) + '\n'
+            new_content = '\n'.join([e.to_string() for e in exp_lines]) + '\n'
 
             self._expectations_dict[path] = new_content
             self._expectation_file_linenos[path] = set()
@@ -337,8 +361,10 @@ class TestExpectations:
     @memoized
     def _os_to_version(self):
         os_to_version = {}
-        for os, os_versions in \
-            self._port.configuration_specifier_macros().items():
+        for (
+            os,
+            os_versions,
+        ) in self._port.configuration_specifier_macros().items():
             for version in os_versions:
                 os_to_version[version.lower()] = os.lower()
         return os_to_version
@@ -372,8 +398,10 @@ class TestExpectations:
             # results will show an expected per test field with PASS and whatever the
             # expected results in the second file are.
             if not expected_results.is_default_pass:
-                if expected_results.conflict_resolution == \
-                        expectations_parser.ConflictResolutionTypes.OVERRIDE:
+                if (
+                    expected_results.conflict_resolution
+                    == expectations_parser.ConflictResolutionTypes.OVERRIDE
+                ):
                     results.clear()
                     reasons.clear()
                     is_slow_test = False
@@ -388,11 +416,13 @@ class TestExpectations:
 
         # If the results set is empty then the Expectation constructor
         # will set the expected result to Pass.
-        return typ_types.Expectation(test=original_test or test,
-                                     results=results,
-                                     is_slow_test=is_slow_test,
-                                     reason=' '.join(reasons),
-                                     trailing_comments=trailing_comments)
+        return typ_types.Expectation(
+            test=original_test or test,
+            results=results,
+            is_slow_test=is_slow_test,
+            reason=' '.join(reasons),
+            trailing_comments=trailing_comments,
+        )
 
     def get_expectations_from_file(self, path, test_name):
         idx = list(self._expectations_dict.keys()).index(path)
@@ -407,40 +437,43 @@ class TestExpectations:
         override.is_slow_test |= fallback.is_slow_test
         return override
 
-    def _get_expectations_with_fallback(self,
-                                        expectations,
-                                        fallback_expectations,
-                                        test,
-                                        original_test=None):
+    def _get_expectations_with_fallback(
+        self, expectations, fallback_expectations, test, original_test=None
+    ):
         exp = self._override_or_fallback_expectations(
             self._get_expectations(expectations, test, original_test),
-            self._get_expectations(fallback_expectations, test, original_test))
+            self._get_expectations(fallback_expectations, test, original_test),
+        )
         base_test = self.port.lookup_virtual_test_base(test)
         if base_test:
             return self._override_or_fallback_expectations(
                 exp,
-                self._get_expectations_with_fallback(expectations,
-                                                     fallback_expectations,
-                                                     base_test, test))
+                self._get_expectations_with_fallback(
+                    expectations, fallback_expectations, base_test, test
+                ),
+            )
         return exp
 
     @memoized
     def get_expectations(self, test):
-        return self._get_expectations_with_fallback(self._flag_expectations,
-                                                    self._expectations, test)
+        return self._get_expectations_with_fallback(
+            self._flag_expectations, self._expectations, test
+        )
 
     @memoized
     def get_flag_expectations(self, test):
-        exp = self._get_expectations_with_fallback(self._flag_expectations, [],
-                                                   test)
+        exp = self._get_expectations_with_fallback(
+            self._flag_expectations, [], test
+        )
         if exp.is_default_pass:
             return None
         return exp
 
     @memoized
     def get_base_expectations(self, test):
-        return self._get_expectations_with_fallback(self._base_expectations,
-                                                    [], test)
+        return self._get_expectations_with_fallback(
+            self._base_expectations, [], test
+        )
 
     def get_tests_with_expected_result(self, result):
         """This method will return a list of tests and directories which
@@ -451,10 +484,13 @@ class TestExpectations:
         tests = []
         for test_exp in self._expectations:
             tests.extend(test_exp.individual_exps)
-            tests.extend([
-                dir_name[:-1] for dir_name in test_exp.glob_exps.keys()
-                if self.port.test_isdir(dir_name[:-1])
-            ])
+            tests.extend(
+                [
+                    dir_name[:-1]
+                    for dir_name in test_exp.glob_exps.keys()
+                    if self.port.test_isdir(dir_name[:-1])
+                ]
+            )
         return {
             test_name
             for test_name in tests
@@ -483,10 +519,9 @@ class TestExpectations:
                 pattern_to_exps.pop(exp.test)
         return ExpectationsChange(lines_removed=exps)
 
-    def add_expectations(self,
-                         path: str,
-                         exps: List[typ_types.ExpectationType],
-                         lineno: int = 0) -> ExpectationsChange:
+    def add_expectations(
+        self, path: str, exps: List[typ_types.ExpectationType], lineno: int = 0
+    ) -> ExpectationsChange:
         """This method adds Expectation instances to an expectations file. It will
         add the new instances after the line number passed through the lineno parameter.
         If the lineno is set to a value outside the range of line numbers in the file
@@ -513,12 +548,14 @@ class TestExpectations:
             if exp.is_glob:
                 typ_expectations.glob_exps.setdefault(exp.test, []).append(exp)
             else:
-                typ_expectations.individual_exps.setdefault(exp.test,
-                                                            []).append(exp)
+                typ_expectations.individual_exps.setdefault(
+                    exp.test, []
+                ).append(exp)
 
         if added_glob:
-            glob_exps = reduce(lambda x, y: x + y,
-                               list(typ_expectations.glob_exps.values()))
+            glob_exps = reduce(
+                lambda x, y: x + y, list(typ_expectations.glob_exps.values())
+            )
             glob_exps.sort(key=lambda e: len(e.test), reverse=True)
             typ_expectations.glob_exps = OrderedDict()
             for exp in glob_exps:
@@ -529,14 +566,17 @@ class TestExpectations:
 class SystemConfigurationEditor:
     ALL_SYSTEMS: ClassVar[str] = ''  # Sentinel value to indicate no tag
 
-    def __init__(self,
-                 test_expectations: TestExpectations,
-                 exp_path: Optional[str] = None,
-                 macros: Optional[Mapping[str, Collection[str]]] = None):
+    def __init__(
+        self,
+        test_expectations: TestExpectations,
+        exp_path: Optional[str] = None,
+        macros: Optional[Mapping[str, Collection[str]]] = None,
+    ):
         self._test_expectations = test_expectations
         macros = (
             macros
-            or self._test_expectations.port.configuration_specifier_macros())
+            or self._test_expectations.port.configuration_specifier_macros()
+        )
         self._versions_by_os = {
             os.lower(): frozenset(version.lower() for version in os_versions)
             for os, os_versions in macros.items()
@@ -547,11 +587,12 @@ class SystemConfigurationEditor:
             for version in versions
         }
         port = self._test_expectations.port
-        self._exp_path = (exp_path
-                          or port.path_to_generic_test_expectations_file())
+        self._exp_path = (
+            exp_path or port.path_to_generic_test_expectations_file()
+        )
         self._tags_in_file = self._tags_in_expectation_file(
-            self._exp_path,
-            port.host.filesystem.read_text_file(self._exp_path))
+            self._exp_path, port.host.filesystem.read_text_file(self._exp_path)
+        )
 
     @property
     def _os_specifiers(self) -> FrozenSet[str]:
@@ -563,8 +604,7 @@ class SystemConfigurationEditor:
 
     def _tags_in_expectation_file(self, path, content):
         test_expectations = typ_types.TestExpectations()
-        ret, errors = test_expectations.parse_tagged_list(
-            content, path)
+        ret, errors = test_expectations.parse_tagged_list(content, path)
         if not ret:
             return set().union(*test_expectations.tag_sets)
         return set()
@@ -581,15 +621,16 @@ class SystemConfigurationEditor:
         maybe_version = tags & self._version_specifiers
         maybe_os = tags & self._os_specifiers
         if maybe_version:
-            (version, ) = maybe_version
+            (version,) = maybe_version
             return version
         elif maybe_os:
-            (os, ) = maybe_os
+            (os,) = maybe_os
             return os
         return self.ALL_SYSTEMS
 
-    def _simplify_versions(self,
-                           versions: FrozenSet[str]) -> Dict[str, Set[str]]:
+    def _simplify_versions(
+        self, versions: FrozenSet[str]
+    ) -> Dict[str, Set[str]]:
         """Find a minimal set of system specifiers to write.
 
         Returns:
@@ -604,7 +645,8 @@ class SystemConfigurationEditor:
             if os_versions <= versions:
                 system_specifiers[os].update(os_versions)
         for version in versions - frozenset().union(
-                *system_specifiers.values()):
+            *system_specifiers.values()
+        ):
             system_specifiers[version].add(version)
         if set(system_specifiers) >= self._os_specifiers:
             return {self.ALL_SYSTEMS: set(versions)}
@@ -615,13 +657,15 @@ class SystemConfigurationEditor:
             if new_tag in self._tags_in_file and old_tags
         }
 
-    def update_versions(self,
-                        test_name: str,
-                        versions: Collection[str],
-                        results: Collection[ResultType],
-                        reason: str = '',
-                        marker: Optional[str] = None,
-                        autotriage: bool = True) -> ExpectationsChange:
+    def update_versions(
+        self,
+        test_name: str,
+        versions: Collection[str],
+        results: Collection[ResultType],
+        reason: str = '',
+        marker: Optional[str] = None,
+        autotriage: bool = True,
+    ) -> ExpectationsChange:
         """Update TestExpectations safely.
 
         Arguments:
@@ -639,14 +683,18 @@ class SystemConfigurationEditor:
         versions = frozenset(version.lower() for version in versions)
         change = self.remove_os_versions(test_name, versions)
         expectations = self._test_expectations.get_expectations_from_file(
-            self._exp_path, test_name)
+            self._exp_path, test_name
+        )
         if autotriage:
             # Get expectations for this test with all specifiers matching except
             # for the system tag.
             expectations = [
-                exp for exp in expectations
-                if not ({tag.lower()
-                         for tag in exp.tags} - {self._system_tag(exp.tags)})
+                exp
+                for exp in expectations
+                if not (
+                    {tag.lower() for tag in exp.tags}
+                    - {self._system_tag(exp.tags)}
+                )
                 and exp.results == results
             ]
         else:
@@ -665,16 +713,19 @@ class SystemConfigurationEditor:
                 reason=(reason or anchor_exp.reason),
                 test=test_name,
                 lineno=anchor_exp.lineno,
-                trailing_comments=anchor_exp.trailing_comments)
+                trailing_comments=anchor_exp.trailing_comments,
+            )
             change += self._test_expectations.add_expectations(
-                self._exp_path, [new_exp], anchor_exp.lineno)
+                self._exp_path, [new_exp], anchor_exp.lineno
+            )
         return change
 
     def merge_versions(self, test_name: str) -> ExpectationsChange:
         """Merge test expectations for systems with the same results."""
         change = ExpectationsChange()
         expectations = self._test_expectations.get_expectations_from_file(
-            self._exp_path, test_name)
+            self._exp_path, test_name
+        )
         exps_by_other_tags = defaultdict(list)
         for exp in expectations:
             other_tags = frozenset(tag.lower() for tag in exp.tags)
@@ -684,14 +735,17 @@ class SystemConfigurationEditor:
         # Try to collapse the group along the system tag dimension.
         for (other_tags, _), exp_group in exps_by_other_tags.items():
             exps_by_system_tags = {
-                self._system_tag(exp.tags): exp
-                for exp in exp_group
+                self._system_tag(exp.tags): exp for exp in exp_group
             }
             system_tags = self._simplify_versions(
-                frozenset(exps_by_system_tags))
+                frozenset(exps_by_system_tags)
+            )
             for new_tag, old_tags in system_tags.items():
-                exps_to_remove.extend(exps_by_system_tags[tag]
-                                      for tag in old_tags if tag != new_tag)
+                exps_to_remove.extend(
+                    exps_by_system_tags[tag]
+                    for tag in old_tags
+                    if tag != new_tag
+                )
                 if new_tag not in old_tags:
                     new_tags = set(other_tags)
                     if new_tag != self.ALL_SYSTEMS:
@@ -699,13 +753,16 @@ class SystemConfigurationEditor:
                     old_exps = [exps_by_system_tags[tag] for tag in old_tags]
                     new_exp = self._merge_expectations(old_exps, new_tags)
                     change += self._test_expectations.add_expectations(
-                        self._exp_path, [new_exp], new_exp.lineno)
+                        self._exp_path, [new_exp], new_exp.lineno
+                    )
         change += self._test_expectations.remove_expectations(
-            self._exp_path, exps_to_remove)
+            self._exp_path, exps_to_remove
+        )
         return change
 
-    def _merge_expectations(self, exps: List[typ_types.ExpectationType],
-                            tags: FrozenSet[str]) -> typ_types.ExpectationType:
+    def _merge_expectations(
+        self, exps: List[typ_types.ExpectationType], tags: FrozenSet[str]
+    ) -> typ_types.ExpectationType:
         reasons = {exp.reason.strip() for exp in exps}
         comments = set()
         for exp in exps:
@@ -724,11 +781,12 @@ class SystemConfigurationEditor:
             trailing_comments=new_comment,
             test=exps[0].test,
             results=exps[0].results,
-            tags=tags)
+            tags=tags,
+        )
 
-    def _find_marker(self,
-                     marker: Optional[str] = None
-                     ) -> typ_types.ExpectationType:
+    def _find_marker(
+        self, marker: Optional[str] = None
+    ) -> typ_types.ExpectationType:
         lines = self._test_expectations.get_updated_lines(self._exp_path)
         if marker:
             for line in lines:
@@ -741,8 +799,8 @@ class SystemConfigurationEditor:
         return lines[-1]
 
     def remove_os_versions(
-            self, test_name: str,
-            versions_to_remove: Collection[str]) -> ExpectationsChange:
+        self, test_name: str, versions_to_remove: Collection[str]
+    ) -> ExpectationsChange:
         """Remove system specifiers (e.g., `Mac10.10`) from expectations.
 
         This method will also split an expectation with no OS or OS version
@@ -752,39 +810,49 @@ class SystemConfigurationEditor:
         """
         change = ExpectationsChange()
         versions_to_remove = frozenset(
-            specifier.lower() for specifier in versions_to_remove)
+            specifier.lower() for specifier in versions_to_remove
+        )
         if not versions_to_remove:
             # This will prevent making changes to test expectations which
             # have no OS versions to remove.
             return change
 
         expectations = self._test_expectations.get_expectations_from_file(
-            self._exp_path, test_name)
+            self._exp_path, test_name
+        )
         for exp in expectations:
             tags = frozenset(tag.lower() for tag in exp.tags)
             versions = self._resolve_versions(tags)
             if not versions & versions_to_remove:
                 continue
             versions -= versions_to_remove
-            other_specifiers = (tags - self._os_specifiers -
-                                self._version_specifiers)
+            other_specifiers = (
+                tags - self._os_specifiers - self._version_specifiers
+            )
             systems = self._simplify_versions(versions)
-            tag_sets = [({system} if system != self.ALL_SYSTEMS else set())
-                        | other_specifiers for system in sorted(systems)]
+            tag_sets = [
+                ({system} if system != self.ALL_SYSTEMS else set())
+                | other_specifiers
+                for system in sorted(systems)
+            ]
             residual_exps = [
-                typ_types.Expectation(tags=tags,
-                                      results=exp.results,
-                                      is_slow_test=exp.is_slow_test,
-                                      reason=exp.reason,
-                                      test=exp.test,
-                                      lineno=exp.lineno,
-                                      trailing_comments=exp.trailing_comments)
+                typ_types.Expectation(
+                    tags=tags,
+                    results=exp.results,
+                    is_slow_test=exp.is_slow_test,
+                    reason=exp.reason,
+                    test=exp.test,
+                    lineno=exp.lineno,
+                    trailing_comments=exp.trailing_comments,
+                )
                 for tags in tag_sets
             ]
             change += self._test_expectations.remove_expectations(
-                self._exp_path, [exp])
+                self._exp_path, [exp]
+            )
             change += self._test_expectations.add_expectations(
-                self._exp_path, residual_exps, exp.lineno)
+                self._exp_path, residual_exps, exp.lineno
+            )
         return change
 
     def update_expectations(self):

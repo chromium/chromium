@@ -53,4 +53,5 @@ cli_wrapper.main(
     apache_http.ApacheHTTP,
     additional_dirs={},
     number_of_servers=4,
-    description=__doc__)
+    description=__doc__,
+)

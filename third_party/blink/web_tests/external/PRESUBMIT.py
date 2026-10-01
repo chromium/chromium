@@ -16,11 +16,13 @@ def _LintWPT(input_api, output_api):
     See https://web-platform-tests.org/writing-tests/lint-tool.html for more
     information about the lint tool.
     """
-    tools_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                        'third_party', 'blink', 'tools')
+    tools_path = input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'third_party', 'blink', 'tools'
+    )
     if tools_path not in input_api.sys.path:
         input_api.sys.path.insert(0, tools_path)
     from blinkpy.presubmit.common_checks import lint_wpt_root
+
     wpt_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt')
     return lint_wpt_root(input_api, output_api, wpt_path)
 
@@ -34,17 +36,21 @@ def _DontModifyIDLFiles(input_api, output_api):
 
     See https://crbug.com/1016354
     """
-    interfaces_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt', 'interfaces')
+    interfaces_path = input_api.os_path.join(
+        input_api.PresubmitLocalPath(), 'wpt', 'interfaces'
+    )
 
     def is_generated_idl_file(f):
         abs_path = f.AbsoluteLocalPath()
         if not abs_path.endswith(
-                input_api.os_path.relpath(abs_path, interfaces_path)):
+            input_api.os_path.relpath(abs_path, interfaces_path)
+        ):
             return False
         # WPT's tools/ci/interfaces_update.sh replaces all files that end in
         # .idl but do not end in .tentative.idl .
-        return (abs_path.endswith(".idl")
-                and not abs_path.endswith(".tentative.idl"))
+        return abs_path.endswith(".idl") and not abs_path.endswith(
+            ".tentative.idl"
+        )
 
     idl_files = [
         f.LocalPath()
@@ -58,7 +64,8 @@ def _DontModifyIDLFiles(input_api, output_api):
             'This CL touches generated IDL files. Manual modifications to these files will\n'
             'likely be overwritten upstream; please contact ecosystem-infra@chromium.org if\n'
             'you wish to change them. Files:',
-            items=idl_files)
+            items=idl_files,
+        )
     ]
 
 

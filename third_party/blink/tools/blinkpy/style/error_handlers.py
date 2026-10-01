@@ -50,11 +50,9 @@ Methods:
 class DefaultStyleErrorHandler(object):
     """The default style error handler."""
 
-    def __init__(self,
-                 file_path,
-                 configuration,
-                 increment_error_count,
-                 line_numbers=None):
+    def __init__(
+        self, file_path, configuration, increment_error_count, line_numbers=None
+    ):
         """Create a default style error handler.
 
         Args:
@@ -127,11 +125,9 @@ class DefaultStyleErrorHandler(object):
     def turn_off_line_filtering(self):
         self._line_numbers = None
 
-    def __call__(self,
-                 line_number=0,
-                 category='error',
-                 confidence='1',
-                 message=''):
+    def __call__(
+        self, line_number=0, category='error', confidence='1', message=''
+    ):
         """Handle the occurrence of a style error.
 
         See the docstring of this module for more information.
@@ -140,9 +136,10 @@ class DefaultStyleErrorHandler(object):
             return False
 
         if not self._configuration.is_reportable(
-                category=category,
-                confidence_in_error=confidence,
-                file_path=self._file_path):
+            category=category,
+            confidence_in_error=confidence,
+            file_path=self._file_path,
+        ):
             return False
 
         category_total = self._add_reportable_error(category)
@@ -158,9 +155,10 @@ class DefaultStyleErrorHandler(object):
             confidence_in_error=confidence,
             file_path=self._file_path,
             line_number=line_number,
-            message=message)
+            message=message,
+        )
         if category_total == max_reports:
             self._configuration.stderr_write(
-                'Suppressing further [%s] reports '
-                'for this file.\n' % category)
+                'Suppressing further [%s] reports for this file.\n' % category
+            )
         return True

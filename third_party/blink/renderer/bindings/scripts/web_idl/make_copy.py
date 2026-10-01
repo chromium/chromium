@@ -46,8 +46,13 @@ def make_copy(obj, memo=None):
 
     if isinstance(obj, dict):
         return memoize(
-            cls([(make_copy(key, memo), make_copy(value, memo))
-                 for key, value in obj.items()]))
+            cls(
+                [
+                    (make_copy(key, memo), make_copy(value, memo))
+                    for key, value in obj.items()
+                ]
+            )
+        )
 
     if hasattr(obj, '__dict__'):
         copy = memoize(cls.__new__(cls))

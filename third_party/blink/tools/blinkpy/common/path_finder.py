@@ -87,7 +87,8 @@ def bootstrap_wpt_imports():
     # This WPT detection is admittedly crude, but it's meant to detect
     # `/tmp/wpt` created by `LocalWPT`.
     if path not in sys.path and not any(
-            os.path.basename(path).lower() == 'wpt' for path in sys.path):
+        os.path.basename(path).lower() == 'wpt' for path in sys.path
+    ):
         sys.path.insert(0, path)
     # This module is under `//third_party/wpt_tools/wpt/tools`, and has the side
     # effect of inserting wpt-related directories into `sys.path`.
@@ -107,7 +108,9 @@ def get_bindings_scripts_dir():
 def get_blink_dir():
     return os.path.dirname(
         os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+            os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+        )
+    )
 
 
 def get_chromium_src_dir():
@@ -119,8 +122,9 @@ def get_depot_tools_dir():
 
 
 def get_source_dir():
-    return os.path.join(get_chromium_src_dir(), 'third_party', 'blink',
-                        'renderer')
+    return os.path.join(
+        get_chromium_src_dir(), 'third_party', 'blink', 'renderer'
+    )
 
 
 def get_testing_dir():
@@ -132,13 +136,15 @@ def get_build_android_dir():
 
 
 def get_build_ios_dir():
-    return os.path.join(get_chromium_src_dir(), 'ios', 'build', 'bots',
-                        'scripts')
+    return os.path.join(
+        get_chromium_src_dir(), 'ios', 'build', 'bots', 'scripts'
+    )
 
 
 def get_typ_dir():
-    return os.path.join(get_chromium_src_dir(), 'third_party', 'catapult',
-                        'third_party', 'typ')
+    return os.path.join(
+        get_chromium_src_dir(), 'third_party', 'catapult', 'third_party', 'typ'
+    )
 
 
 def get_blinkpy_thirdparty_dir():
@@ -146,13 +152,13 @@ def get_blinkpy_thirdparty_dir():
 
 
 def get_blink_tools_dir():
-    return os.path.join(get_chromium_src_dir(), 'third_party', 'blink',
-                        'tools')
+    return os.path.join(get_chromium_src_dir(), 'third_party', 'blink', 'tools')
 
 
 def get_wpt_tools_wpt_dir():
-    return os.path.join(get_chromium_src_dir(), 'third_party', 'wpt_tools',
-                        'wpt')
+    return os.path.join(
+        get_chromium_src_dir(), 'third_party', 'wpt_tools', 'wpt'
+    )
 
 
 def get_build_scripts_dir():
@@ -182,7 +188,8 @@ class PathFinder(object):
     @memoized
     def chromium_base(self):
         return self._filesystem.dirname(
-            self._filesystem.dirname(self._blink_base()))
+            self._filesystem.dirname(self._blink_base())
+        )
 
     @memoized
     def is_cog(self) -> bool:
@@ -193,16 +200,17 @@ class PathFinder(object):
         return self._filesystem.getcwd().startswith('/google/cog/cloud')
 
     def web_tests_dir(self):
-        return self.path_from_chromium_base('third_party', 'blink',
-                                            'web_tests')
+        return self.path_from_chromium_base('third_party', 'blink', 'web_tests')
 
     def wpt_tests_dir(self):
-        return self.path_from_chromium_base('third_party', 'blink',
-                                            'web_tests', 'external', 'wpt')
+        return self.path_from_chromium_base(
+            'third_party', 'blink', 'web_tests', 'external', 'wpt'
+        )
 
     def perf_tests_dir(self):
-        return self.path_from_chromium_base('third_party', 'blink',
-                                            'perf_tests')
+        return self.path_from_chromium_base(
+            'third_party', 'blink', 'perf_tests'
+        )
 
     def wpt_prefix(self):
         # Always use '/' instead of the platform dependent separator.
@@ -214,23 +222,29 @@ class PathFinder(object):
         """Returns the absolute path to the top of the Blink directory."""
         module_path = self._filesystem.path_to_module(self.__module__)
         tools_index = module_path.rfind('tools')
-        assert tools_index != -1, 'could not find location of this checkout from %s' % module_path
-        return self._filesystem.normpath(module_path[0:tools_index - 1])
+        assert tools_index != -1, (
+            'could not find location of this checkout from %s' % module_path
+        )
+        return self._filesystem.normpath(module_path[0 : tools_index - 1])
 
     def path_from_chromium_base(self, *comps):
         return self._filesystem.join(self.chromium_base(), *comps)
 
     def _blink_source_dir(self):
-        return self._filesystem.join(self.chromium_base(), 'third_party',
-                                     'blink', 'renderer')
+        return self._filesystem.join(
+            self.chromium_base(), 'third_party', 'blink', 'renderer'
+        )
 
     def path_from_blink_source(self, *comps):
         return self._filesystem.join(self._blink_source_dir(), *comps)
 
     def path_from_blink_tools(self, *comps):
         return self._filesystem.join(
-            self._filesystem.join(self.chromium_base(), 'third_party', 'blink',
-                                  'tools'), *comps)
+            self._filesystem.join(
+                self.chromium_base(), 'third_party', 'blink', 'tools'
+            ),
+            *comps,
+        )
 
     def path_from_web_tests(self, *comps):
         return self._filesystem.join(self.web_tests_dir(), *comps)
@@ -241,7 +255,7 @@ class PathFinder(object):
     def strip_web_tests_path(self, web_test_abs_path):
         web_tests_path = self.path_from_web_tests('')
         if web_test_abs_path.startswith(web_tests_path):
-            return web_test_abs_path[len(web_tests_path):]
+            return web_test_abs_path[len(web_tests_path) :]
         return web_test_abs_path
 
     def strip_wpt_path(self, wpt_path):
@@ -253,7 +267,7 @@ class PathFinder(object):
         path fragment.
         """
         if self.is_wpt_path(wpt_path):
-            return wpt_path[len(self.wpt_prefix()):]
+            return wpt_path[len(self.wpt_prefix()) :]
         # Path is absolute or does not start with the prefix.
         # Assume the path already points to a valid WPT and pass through.
         return wpt_path
@@ -268,8 +282,7 @@ class PathFinder(object):
         Expects depot_tools to be //third_party/depot_tools.
         src.git's DEPS defines depot_tools to be there.
         """
-        depot_tools = self.path_from_chromium_base('third_party',
-                                                   'depot_tools')
+        depot_tools = self.path_from_chromium_base('third_party', 'depot_tools')
         return depot_tools if self._filesystem.isdir(depot_tools) else None
 
     def path_from_depot_tools_base(self, *comps):

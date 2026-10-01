@@ -86,7 +86,10 @@ def change_directory(filesystem, checkout_root, paths):
 
   Pass only files below the checkout root to ensure correct results.
   See the help documentation for more info.
-""", path, checkout_root)
+""",
+                    path,
+                    checkout_root,
+                )
 
                 return paths
             rel_paths.append(rel_path)
@@ -107,7 +110,10 @@ class CheckBlinkStyle(object):
         # bytes to the specified stream (this fix copied from cpplint.py).
         stderr = codecs.StreamReaderWriter(
             getattr(sys.stderr, 'buffer', sys.stderr),
-            codecs.getreader('utf8'), codecs.getwriter('utf8'), 'replace')
+            codecs.getreader('utf8'),
+            codecs.getwriter('utf8'),
+            'replace',
+        )
 
         # Setting an "encoding" attribute on the stream is necessary to
         # prevent the logging module from raising an error.  See
@@ -144,17 +150,17 @@ class CheckBlinkStyle(object):
 
         chromium_src_dir = get_chromium_src_dir()
         paths = change_directory(
-            host.filesystem,
-            checkout_root=chromium_src_dir,
-            paths=paths)
+            host.filesystem, checkout_root=chromium_src_dir, paths=paths
+        )
 
         if git := host.git():
             if paths and not options.diff_files:
                 file_reader.process_paths(paths)
             else:
                 changed_files = paths if options.diff_files else None
-                patch = git.create_patch(options.git_commit,
-                                         changed_files=changed_files)
+                patch = git.create_patch(
+                    options.git_commit, changed_files=changed_files
+                )
                 # create_patch intentionally returns binary data, but we have to
                 # decode it because patch_checker.check assumes str data.
                 patch = patch.decode()
@@ -167,7 +173,6 @@ class CheckBlinkStyle(object):
         file_count = file_reader.file_count
         delete_only_file_count = file_reader.delete_only_file_count
 
-        _log.info('Total errors found: %d in %d files', error_count,
-                  file_count)
+        _log.info('Total errors found: %d in %d files', error_count, file_count)
         # We fail when style errors are found.
         return error_count > 0

@@ -39,15 +39,23 @@ import template_expander
 #
 # https://dom.spec.whatwg.org/#dom-document-createevent
 def create_event_ignore_case_list(name):
-    return (name == 'HTMLEvents' or name == 'Event' or name == 'Events'
-            or name.startswith('UIEvent') or name.startswith('CustomEvent')
-            or name == 'KeyboardEvent' or name == 'MessageEvent'
-            or name.startswith('MouseEvent') or name == 'TouchEvent')
+    return (
+        name == 'HTMLEvents'
+        or name == 'Event'
+        or name == 'Events'
+        or name.startswith('UIEvent')
+        or name.startswith('CustomEvent')
+        or name == 'KeyboardEvent'
+        or name == 'MessageEvent'
+        or name.startswith('MouseEvent')
+        or name == 'TouchEvent'
+    )
 
 
 # All events that require ScriptState passed to their Create method.
 def needs_script_state(name):
     return name == 'ErrorEvent'
+
 
 # All events on the following list are matched case-insensitively in createEvent
 # and are measured using UseCounter.
@@ -56,27 +64,40 @@ def needs_script_state(name):
 # to the spec and moved to the above list (causing them to be matched
 # case-insensitively) or be deprecated/removed.
 def create_event_ignore_case_and_measure_list(name):
-    return (name == 'BeforeUnloadEvent' or name == 'CompositionEvent'
-            or name == 'DeviceMotionEvent' or name == 'DeviceOrientationEvent'
-            or name == 'DragEvent' or name == 'FocusEvent'
-            or name == 'HashChangeEvent' or name == 'StorageEvent'
-            or name == 'SVGEvents' or name == 'TextEvent')
+    return (
+        name == 'BeforeUnloadEvent'
+        or name == 'CompositionEvent'
+        or name == 'DeviceMotionEvent'
+        or name == 'DeviceOrientationEvent'
+        or name == 'DragEvent'
+        or name == 'FocusEvent'
+        or name == 'HashChangeEvent'
+        or name == 'StorageEvent'
+        or name == 'SVGEvents'
+        or name == 'TextEvent'
+    )
 
 
 # This events removed behind the RemoveNonAllowlistedCreateEvent flag.
 # https://issues.chromium.org/issues/41228793#comment38
 def create_event_removed_by_flag(name):
-    return (name == 'AnimationEvent' or name == 'CloseEvent'
-            or name == 'ErrorEvent' or name == 'IDBVersionChangeEvent'
-            or name == 'PageTransitionEvent' or name == 'PopStateEvent'
-            or name == 'TrackEvent' or name == 'WebGLContextEvent'
-            or name == 'WheelEvent')
+    return (
+        name == 'AnimationEvent'
+        or name == 'CloseEvent'
+        or name == 'ErrorEvent'
+        or name == 'IDBVersionChangeEvent'
+        or name == 'PageTransitionEvent'
+        or name == 'PopStateEvent'
+        or name == 'TrackEvent'
+        or name == 'WebGLContextEvent'
+        or name == 'WheelEvent'
+    )
 
 
 # This events deprecated in M148, to be removed in M151.
 # https://issues.chromium.org/issues/41228793#comment38
 def create_event_deprecated(name):
-    return (name == 'KeyboardEvents' or name == 'TransitionEvent')
+    return name == 'KeyboardEvents' or name == 'TransitionEvent'
 
 
 def measure_name(name):
@@ -107,13 +128,13 @@ class EventFactoryWriter(json5_generator.Writer):
     def __init__(self, json5_file_path, output_dir):
         super(EventFactoryWriter, self).__init__(json5_file_path, output_dir)
         self.namespace = self.json5_file.metadata['namespace'].strip('"')
-        assert self.namespace == 'event_interface_names', \
+        assert self.namespace == 'event_interface_names', (
             'namespace field should be "event_interface_names".'
+        )
         self.suffix = self.json5_file.metadata['suffix'].strip('"')
         snake_suffix = (self.suffix.lower() + '_') if self.suffix else ''
         self._outputs = {
-            ('event_%sfactory.cc' % snake_suffix):
-            self.generate_implementation,
+            ('event_%sfactory.cc' % snake_suffix): self.generate_implementation,
         }
 
     def _fatal(self, message):
@@ -124,8 +145,12 @@ class EventFactoryWriter(json5_generator.Writer):
         path = entry['interfaceHeaderDir']
         if not path:
             return None
-        return path + '/' + self.get_file_basename(
-            name_utilities.cpp_name(entry)) + '.h'
+        return (
+            path
+            + '/'
+            + self.get_file_basename(name_utilities.cpp_name(entry))
+            + '.h'
+        )
 
     def _headers_header_includes(self, entries):
         includes = {
@@ -138,18 +163,25 @@ class EventFactoryWriter(json5_generator.Writer):
         return sorted([x for x in includes if x])
 
     @template_expander.use_jinja(
-        'templates/event_factory.cc.tmpl', filters=filters)
+        'templates/event_factory.cc.tmpl', filters=filters
+    )
     def generate_implementation(self):
         target_events = [
-            event for event in self.json5_file.name_dictionaries if
-            (create_event_ignore_case_list(event['name'].original) or
-             create_event_ignore_case_and_measure_list(event['name'].original)
-             or create_event_removed_by_flag(event['name'].original)
-             or create_event_deprecated(event['name'].original))
+            event
+            for event in self.json5_file.name_dictionaries
+            if (
+                create_event_ignore_case_list(event['name'].original)
+                or create_event_ignore_case_and_measure_list(
+                    event['name'].original
+                )
+                or create_event_removed_by_flag(event['name'].original)
+                or create_event_deprecated(event['name'].original)
+            )
         ]
         return {
-            'include_header_paths':
-            self._headers_header_includes(target_events),
+            'include_header_paths': self._headers_header_includes(
+                target_events
+            ),
             'input_files': self._input_files,
             'suffix': self.suffix,
             'events': target_events,

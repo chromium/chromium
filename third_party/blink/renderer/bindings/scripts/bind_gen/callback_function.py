@@ -50,31 +50,59 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
 
     local_vars = []
 
-    local_vars.extend([
-        S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
-        S("script_state",
-          "ScriptState* ${script_state} = CallbackRelevantScriptState();"),
-    ])
+    local_vars.extend(
+        [
+            S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
+            S(
+                "script_state",
+                "ScriptState* ${script_state} = CallbackRelevantScriptState();",
+            ),
+        ]
+    )
 
     if cg_context.callback_function:
         local_vars.append(
-            S("class_like_name", ("const char* const ${class_like_name} = "
-                                  "\"${callback_function.identifier}\";")))
+            S(
+                "class_like_name",
+                (
+                    "const char* const ${class_like_name} = "
+                    "\"${callback_function.identifier}\";"
+                ),
+            )
+        )
         if is_construct_call:
             local_vars.append(
-                S("property_name",
-                  "const char* const ${property_name} = \"construct\";"))
+                S(
+                    "property_name",
+                    "const char* const ${property_name} = \"construct\";",
+                )
+            )
         else:
             local_vars.append(
-                S("property_name",
-                  "const char* const ${property_name} = \"invoke\";"))
+                S(
+                    "property_name",
+                    "const char* const ${property_name} = \"invoke\";",
+                )
+            )
     elif cg_context.callback_interface:
-        local_vars.extend([
-            S("class_like_name", ("const char* const ${class_like_name} = "
-                                  "\"${callback_interface.identifier}\";")),
-            S("property_name", ("const char* const ${property_name} = "
-                                "\"${property.identifier}\";")),
-        ])
+        local_vars.extend(
+            [
+                S(
+                    "class_like_name",
+                    (
+                        "const char* const ${class_like_name} = "
+                        "\"${callback_interface.identifier}\";"
+                    ),
+                ),
+                S(
+                    "property_name",
+                    (
+                        "const char* const ${property_name} = "
+                        "\"${property.identifier}\";"
+                    ),
+                ),
+            ]
+        )
 
     code_node.register_code_symbols(local_vars)
 
@@ -101,12 +129,13 @@ def make_factory_methods(cg_context):
         name="Create",
         arg_decls=["v8::Local<v8::Object> callback_object"],
         return_type="${class_name}*",
-        static=True)
+        static=True,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
 
     func_def.body.append(
-        TextNode("return MakeGarbageCollected<${class_name}>("
-                 "callback_object);"))
+        TextNode("return MakeGarbageCollected<${class_name}>(callback_object);")
+    )
 
     return func_def, None
 
@@ -114,20 +143,26 @@ def make_factory_methods(cg_context):
 def make_constructors(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    decls = ListNode([
-        CxxFuncDefNode(name=cg_context.class_name,
-                       arg_decls=["v8::Local<v8::Object> callback_object"],
-                       return_type="",
-                       explicit=True,
-                       member_initializer_list=[
-                           "${base_class_name}(callback_object)",
-                       ]),
-        CxxFuncDeclNode(name="~${class_name}",
-                        arg_decls=[],
-                        return_type="",
-                        override=True,
-                        default=True),
-    ])
+    decls = ListNode(
+        [
+            CxxFuncDefNode(
+                name=cg_context.class_name,
+                arg_decls=["v8::Local<v8::Object> callback_object"],
+                return_type="",
+                explicit=True,
+                member_initializer_list=[
+                    "${base_class_name}(callback_object)",
+                ],
+            ),
+            CxxFuncDeclNode(
+                name="~${class_name}",
+                arg_decls=[],
+                return_type="",
+                override=True,
+                default=True,
+            ),
+        ]
+    )
 
     return decls, None
 
@@ -135,27 +170,33 @@ def make_constructors(cg_context):
 def make_nameclient_implementation(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_decl = CxxFuncDeclNode(name="GetHumanReadableName",
-                                arg_decls=[],
-                                return_type="const char*",
-                                const=True,
-                                override=True)
+    func_decl = CxxFuncDeclNode(
+        name="GetHumanReadableName",
+        arg_decls=[],
+        return_type="const char*",
+        const=True,
+        override=True,
+    )
 
-    func_def = CxxFuncDefNode(name="GetHumanReadableName",
-                              arg_decls=[],
-                              return_type="const char*",
-                              class_name=cg_context.class_name,
-                              const=True)
+    func_def = CxxFuncDefNode(
+        name="GetHumanReadableName",
+        arg_decls=[],
+        return_type="const char*",
+        class_name=cg_context.class_name,
+        const=True,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     func_def.body.append(TextNode("return \"${class_name}\";"))
 
     return func_decl, func_def
 
 
-def make_callback_invocation_function(cg_context,
-                                      function_name,
-                                      skip_runnability_check=False,
-                                      is_construct_call=False):
+def make_callback_invocation_function(
+    cg_context,
+    function_name,
+    skip_runnability_check=False,
+    is_construct_call=False,
+):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
     assert isinstance(skip_runnability_check, bool)
@@ -165,8 +206,11 @@ def make_callback_invocation_function(cg_context,
     F = FormatNode
 
     func_like = cg_context.function_like
-    return_type = ("void" if func_like.return_type.unwrap().is_undefined else
-                   blink_type_info(func_like.return_type).value_t)
+    return_type = (
+        "void"
+        if func_like.return_type.unwrap().is_undefined
+        else blink_type_info(func_like.return_type).value_t
+    )
     maybe_return_type = "v8::Maybe<{}>".format(return_type)
     arg_type_and_names = _make_arg_type_and_names(func_like)
     arg_decls = [
@@ -175,15 +219,18 @@ def make_callback_invocation_function(cg_context,
     ]
     if not is_construct_call:
         arg_decls.insert(
-            0, "bindings::V8ValueOrScriptWrappableAdapter arg0_receiver")
+            0, "bindings::V8ValueOrScriptWrappableAdapter arg0_receiver"
+        )
 
     decls = SequenceNode()
     defs = SequenceNode()
 
-    func_def = CxxFuncDefNode(name=function_name,
-                              arg_decls=arg_decls,
-                              return_type=maybe_return_type,
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=arg_decls,
+        return_type=maybe_return_type,
+        class_name=cg_context.class_name,
+    )
     func_decl = func_def.make_decl(nodiscard=True)
     if cg_context.callback_function:
         if is_construct_call:
@@ -201,15 +248,19 @@ def make_callback_invocation_function(cg_context,
 // Performs "call a user object's operation".
 // https://webidl.spec.whatwg.org/#call-a-user-objects-operation\
 """)
-    decls.extend([
-        comment,
-        func_decl,
-    ])
+    decls.extend(
+        [
+            comment,
+            func_decl,
+        ]
+    )
 
-    func_def = CxxFuncDefNode(name=function_name,
-                              arg_decls=arg_decls,
-                              return_type=maybe_return_type,
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=arg_decls,
+        return_type=maybe_return_type,
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     defs.append(func_def)
     body = func_def.body
@@ -225,7 +276,8 @@ def make_callback_invocation_function(cg_context,
         text = "v8::JustVoid()"
     else:
         text = "helper.Result<{}, {}>()".format(
-            native_value_tag(func_like.return_type), return_type)
+            native_value_tag(func_like.return_type), return_type
+        )
     body.add_template_var("return_value_on_success", text)
     text = "v8::Nothing<{}>()".format(return_type)
     body.add_template_var("return_value_on_failure", text)
@@ -238,64 +290,84 @@ ScriptState* callback_relevant_script_state =
 if (!callback_relevant_script_state) {
   return ${return_value_on_failure};
 }
-"""))
+""")
+    )
 
     if not skip_runnability_check:
-        body.extend([
-            CxxUnlikelyIfNode(
-                cond=("!IsCallbackFunctionRunnable("
-                      "callback_relevant_script_state, "
-                      "IncumbentScriptState())"),
-                attribute=None,
-                body=[
-                    T("v8::HandleScope handle_scope(${isolate});"),
-                    T("v8::Context::Scope context_scope("
-                      "callback_relevant_script_state->GetContext());"),
-                    T("V8ThrowException::ThrowError(${isolate},"
-                      "\"The provided callback is no longer runnable.\");"),
-                    T("return ${return_value_on_failure};"),
-                ]),
-            EmptyNode(),
-        ])
+        body.extend(
+            [
+                CxxUnlikelyIfNode(
+                    cond=(
+                        "!IsCallbackFunctionRunnable("
+                        "callback_relevant_script_state, "
+                        "IncumbentScriptState())"
+                    ),
+                    attribute=None,
+                    body=[
+                        T("v8::HandleScope handle_scope(${isolate});"),
+                        T(
+                            "v8::Context::Scope context_scope("
+                            "callback_relevant_script_state->GetContext());"
+                        ),
+                        T(
+                            "V8ThrowException::ThrowError(${isolate},"
+                            "\"The provided callback is no longer runnable.\");"
+                        ),
+                        T("return ${return_value_on_failure};"),
+                    ],
+                ),
+                EmptyNode(),
+            ]
+        )
 
     if cg_context.callback_function:
         template_params = ["${base_class_name}"]
         if is_construct_call:
             template_params.append(
-                "bindings::CallbackInvokeHelperMode::kConstructorCall")
+                "bindings::CallbackInvokeHelperMode::kConstructorCall"
+            )
         elif "LegacyTreatNonObjectAsNull" in func_like.extended_attributes:
             template_params.append(
                 "bindings::"
-                "CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull")
+                "CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull"
+            )
         else:
             template_params.append(
-                "bindings::CallbackInvokeHelperMode::kDefault")
+                "bindings::CallbackInvokeHelperMode::kDefault"
+            )
         if func_like.return_type.unwrap(typedef=True).is_promise:
             template_params.append(
-                "bindings::CallbackReturnTypeIsPromise::kYes")
+                "bindings::CallbackReturnTypeIsPromise::kYes"
+            )
         else:
-            template_params.append(
-                "bindings::CallbackReturnTypeIsPromise::kNo")
+            template_params.append("bindings::CallbackReturnTypeIsPromise::kNo")
     elif cg_context.callback_interface:
         template_params = ["CallbackInterfaceBase"]
-    body.extend([
-        F("""\
+    body.extend(
+        [
+            F(
+                """\
 bindings::CallbackInvokeHelper<{template_params}> helper(
     this, ${class_like_name}, ${property_name});\
 """,
-          template_params=", ".join(template_params)),
-        CxxUnlikelyIfNode(cond="!helper.PrepareForCall(${arg0_receiver})",
-                          attribute="[[unlikely]]",
-                          body=[
-                              CxxLikelyIfNode(
-                                  cond="helper.V8Result().IsEmpty()",
-                                  attribute=None,
-                                  body=[
-                                      T("return ${return_value_on_failure};"),
-                                  ]),
-                              T("return ${return_value_on_success};"),
-                          ]),
-    ])
+                template_params=", ".join(template_params),
+            ),
+            CxxUnlikelyIfNode(
+                cond="!helper.PrepareForCall(${arg0_receiver})",
+                attribute="[[unlikely]]",
+                body=[
+                    CxxLikelyIfNode(
+                        cond="helper.V8Result().IsEmpty()",
+                        attribute=None,
+                        body=[
+                            T("return ${return_value_on_failure};"),
+                        ],
+                    ),
+                    T("return ${return_value_on_success};"),
+                ],
+            ),
+        ]
+    )
 
     # The maximum number of arguments to a variadic function that we're willing
     # to allocate on the stack. If the function takes more, we'll use the heap
@@ -315,56 +387,77 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
         body.append(T("base::span<v8::Local<v8::Value>> argv;"))
     elif not is_variadic:
         body.append(
-            T("v8::Local<v8::Value> argv_arr[{}];".format(len(arguments))))
+            T("v8::Local<v8::Value> argv_arr[{}];".format(len(arguments)))
+        )
         body.append(T("base::span<v8::Local<v8::Value>> argv(argv_arr);"))
     else:
         # Forward declare both possible representations of argv so they're in
         # scope for the rest of the function. We use a span to hide the
         # difference from the type system.
-        body.append(
-            T("v8::Local<v8::Value> argv_arr[{}];".format(
-                max_stack_array_length))),
-        body.append(T("v8::LocalVector<v8::Value> argv_vec(GetIsolate());")),
-        body.append(T("base::span<v8::Local<v8::Value>> argv;")),
+        (
+            body.append(
+                T(
+                    "v8::Local<v8::Value> argv_arr[{}];".format(
+                        max_stack_array_length
+                    )
+                )
+            ),
+        )
+        (body.append(T("v8::LocalVector<v8::Value> argv_vec(GetIsolate());")),)
+        (body.append(T("base::span<v8::Local<v8::Value>> argv;")),)
 
         body.append(
-            T("const size_t argc = {} + {}.size();".format(
-                len(arguments) - 1, variadic_arg_name)))
+            T(
+                "const size_t argc = {} + {}.size();".format(
+                    len(arguments) - 1, variadic_arg_name
+                )
+            )
+        )
         body.append(
             CxxIfElseNode(
                 cond=T("argc <= {}".format(max_stack_array_length)),
                 attribute=None,
                 # If argc is small, just use argv-arr
                 then=SymbolScopeNode(
-                    code_nodes=[T("argv = base::span(argv_arr, argc);")]),
+                    code_nodes=[T("argv = base::span(argv_arr, argc);")]
+                ),
                 then_likeliness=Likeliness.LIKELY,
                 # If argc is large, create a vector instead
-                else_=SymbolScopeNode(code_nodes=[
-                    T("argv_vec.resize(argc);"),
-                    T("argv = argv_vec;"),
-                ]),
-                else_likeliness=Likeliness.UNLIKELY))
+                else_=SymbolScopeNode(
+                    code_nodes=[
+                        T("argv_vec.resize(argc);"),
+                        T("argv = argv_vec;"),
+                    ]
+                ),
+                else_likeliness=Likeliness.UNLIKELY,
+            )
+        )
 
     for index, arg_type_and_name in enumerate(arg_type_and_names):
         if arguments[index].is_variadic:
             break
         _, arg_name = arg_type_and_name
-        v8_arg_name = name_style.local_var_f("v8_arg{}_{}", index + 1,
-                                             arguments[index].identifier)
+        v8_arg_name = name_style.local_var_f(
+            "v8_arg{}_{}", index + 1, arguments[index].identifier
+        )
         body.register_code_symbol(
-            make_blink_to_v8_value(v8_arg_name,
-                                   arg_name,
-                                   arguments[index].idl_type,
-                                   argument=arguments[index],
-                                   error_exit_return_statement=(
-                                       "return ${return_value_on_failure};")))
+            make_blink_to_v8_value(
+                v8_arg_name,
+                arg_name,
+                arguments[index].idl_type,
+                argument=arguments[index],
+                error_exit_return_statement=(
+                    "return ${return_value_on_failure};"
+                ),
+            )
+        )
         body.append(
-            F("argv[{index}] = ${{{v8_arg}}};",
-              index=index,
-              v8_arg=v8_arg_name))
+            F("argv[{index}] = ${{{v8_arg}}};", index=index, v8_arg=v8_arg_name)
+        )
     if is_variadic:
-        v8_arg_name = name_style.local_var_f("v8_arg{}_{}", len(arguments),
-                                             arguments[-1].identifier)
+        v8_arg_name = name_style.local_var_f(
+            "v8_arg{}_{}", len(arguments), arguments[-1].identifier
+        )
         body.register_code_symbol(
             make_blink_to_v8_value(
                 v8_arg_name,
@@ -372,26 +465,38 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
                 arguments[-1].idl_type.unwrap(variadic=True),
                 argument=arguments[-1],
                 error_exit_return_statement=(
-                    "return ${return_value_on_failure};")))
+                    "return ${return_value_on_failure};"
+                ),
+            )
+        )
         body.append(
             CxxForLoopNode(
-                cond=F("wtf_size_t i = 0; i < {var_arg}.size(); ++i",
-                       var_arg=variadic_arg_name),
+                cond=F(
+                    "wtf_size_t i = 0; i < {var_arg}.size(); ++i",
+                    var_arg=variadic_arg_name,
+                ),
                 body=[
-                    F("argv[{non_var_arg_size} + i] = ${{{v8_arg}}};",
-                      non_var_arg_size=len(arguments) - 1,
-                      v8_arg=v8_arg_name),
+                    F(
+                        "argv[{non_var_arg_size} + i] = ${{{v8_arg}}};",
+                        non_var_arg_size=len(arguments) - 1,
+                        v8_arg=v8_arg_name,
+                    ),
                 ],
-                weak_dep_syms=["isolate", "script_state"]))
-    body.extend([
-        CxxUnlikelyIfNode(
-            cond="!helper.Call(static_cast<int>(argv.size()), argv.data())",
-            attribute=None,
-            body=[
-                T("return ${return_value_on_failure};"),
-            ]),
-        T("return ${return_value_on_success};"),
-    ])
+                weak_dep_syms=["isolate", "script_state"],
+            )
+        )
+    body.extend(
+        [
+            CxxUnlikelyIfNode(
+                cond="!helper.Call(static_cast<int>(argv.size()), argv.data())",
+                attribute=None,
+                body=[
+                    T("return ${return_value_on_failure};"),
+                ],
+            ),
+            T("return ${return_value_on_success};"),
+        ]
+    )
 
     return decls, defs
 
@@ -405,8 +510,10 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     F = FormatNode
 
     func_like = cg_context.function_like
-    if not (func_like.return_type.unwrap().is_undefined
-            or func_like.identifier == "Function"):
+    if not (
+        func_like.return_type.unwrap().is_undefined
+        or func_like.identifier == "Function"
+    ):
         return None, None
 
     arg_type_and_names = _make_arg_type_and_names(func_like)
@@ -418,9 +525,9 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     decls = SequenceNode()
     defs = SequenceNode()
 
-    func_decl = CxxFuncDeclNode(name=function_name,
-                                arg_decls=arg_decls,
-                                return_type="void")
+    func_decl = CxxFuncDeclNode(
+        name=function_name, arg_decls=arg_decls, return_type="void"
+    )
     if cg_context.callback_function:
         comment = T("""\
 // Performs "invoke" and then reports an exception if any to the global
@@ -431,37 +538,47 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
 // Performs "call a user object's operation" and then reports an exception
 // if any to the global error handler such as DevTools console.\
 """)
-    decls.extend([
-        comment,
-        func_decl,
-    ])
+    decls.extend(
+        [
+            comment,
+            func_decl,
+        ]
+    )
 
-    func_def = CxxFuncDefNode(name=function_name,
-                              arg_decls=arg_decls,
-                              return_type="void",
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=arg_decls,
+        return_type="void",
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     defs.append(func_def)
     body = func_def.body
     bind_local_vars(body, cg_context)
 
-    arg_names = ["arg0_receiver"
-                 ] + [arg_name for arg_type, arg_name in arg_type_and_names]
+    arg_names = ["arg0_receiver"] + [
+        arg_name for arg_type, arg_name in arg_type_and_names
+    ]
 
-    body.extend([
-        T("v8::TryCatch try_catch(${isolate});"),
-        T("try_catch.SetVerbose(true);"),
-        EmptyNode(),
-        F("std::ignore = {api_func_name}({arg_names});",
-          api_func_name=api_func_name,
-          arg_names=", ".join(arg_names)),
-    ])
+    body.extend(
+        [
+            T("v8::TryCatch try_catch(${isolate});"),
+            T("try_catch.SetVerbose(true);"),
+            EmptyNode(),
+            F(
+                "std::ignore = {api_func_name}({arg_names});",
+                api_func_name=api_func_name,
+                arg_names=", ".join(arg_names),
+            ),
+        ]
+    )
 
     return decls, defs
 
 
-def make_invoke_and_catch_function(cg_context, function_name,
-                                   invoke_function_name):
+def make_invoke_and_catch_function(
+    cg_context, function_name, invoke_function_name
+):
     assert isinstance(cg_context, CodeGenContext)
     assert cg_context.callback_function
 
@@ -470,40 +587,54 @@ def make_invoke_and_catch_function(cg_context, function_name,
 
     func_like = cg_context.function_like
     is_void = func_like.return_type.unwrap().is_undefined
-    result_type = ("void" if is_void else blink_type_info(
-        func_like.return_type).value_t)
+    result_type = (
+        "void" if is_void else blink_type_info(func_like.return_type).value_t
+    )
     return_type = "base::expected<{}, ScriptValue>".format(result_type)
     arg_type_and_names = _make_arg_type_and_names(func_like)
     arg_decls = ["bindings::V8ValueOrScriptWrappableAdapter arg0_receiver"] + [
         "{} {}".format(arg_type, arg_name)
         for arg_type, arg_name in arg_type_and_names
     ]
-    arg_names = ["arg0_receiver"
-                 ] + [arg_name for arg_type, arg_name in arg_type_and_names]
+    arg_names = ["arg0_receiver"] + [
+        arg_name for arg_type, arg_name in arg_type_and_names
+    ]
 
     decls = SequenceNode()
     defs = SequenceNode()
 
-    func_def = CxxFuncDefNode(name=function_name,
-                              arg_decls=arg_decls,
-                              return_type=return_type,
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=arg_decls,
+        return_type=return_type,
+        class_name=cg_context.class_name,
+    )
     func_decl = func_def.make_decl(nodiscard=True)
 
     body = func_def.body
-    body.extend([
-        T("v8::TryCatch try_catch(GetIsolate());"),
-        EmptyNode(),
-        F("auto result = {api_func_name}({arg_names});",
-          api_func_name=invoke_function_name,
-          arg_names=", ".join(arg_names)),
-        CxxLikelyIfNode(cond="result.IsJust()",
-                        attribute="[[likely]]",
-                        body=T("return base::ok({});".format(
-                            "" if is_void else "result.FromJust()"))),
-        T("return base::unexpected(ScriptValue(GetIsolate(), try_catch.Exception()));"
-          )
-    ])
+    body.extend(
+        [
+            T("v8::TryCatch try_catch(GetIsolate());"),
+            EmptyNode(),
+            F(
+                "auto result = {api_func_name}({arg_names});",
+                api_func_name=invoke_function_name,
+                arg_names=", ".join(arg_names),
+            ),
+            CxxLikelyIfNode(
+                cond="result.IsJust()",
+                attribute="[[likely]]",
+                body=T(
+                    "return base::ok({});".format(
+                        "" if is_void else "result.FromJust()"
+                    )
+                ),
+            ),
+            T(
+                "return base::unexpected(ScriptValue(GetIsolate(), try_catch.Exception()));"
+            ),
+        ]
+    )
 
     return func_decl, func_def
 
@@ -517,36 +648,45 @@ def make_is_runnable_or_throw_exception(cg_context, function_name):
     decls = SequenceNode()
     defs = SequenceNode()
 
-    ignore_pause_def = ListNode([
-        T("enum class IgnorePause {"),
-        T("  kDontIgnore,"),
-        T("  kIgnore,"),
-        T("};"),
-    ])
-    func_decl = CxxFuncDeclNode(name=function_name,
-                                arg_decls=["IgnorePause ignore_pause"],
-                                return_type="bool")
-    decls.extend([
-        T("""\
+    ignore_pause_def = ListNode(
+        [
+            T("enum class IgnorePause {"),
+            T("  kDontIgnore,"),
+            T("  kIgnore,"),
+            T("};"),
+        ]
+    )
+    func_decl = CxxFuncDeclNode(
+        name=function_name,
+        arg_decls=["IgnorePause ignore_pause"],
+        return_type="bool",
+    )
+    decls.extend(
+        [
+            T("""\
 // Returns true if the callback is runnable, otherwise returns false and
 // throws an exception.\
 """),
-        ignore_pause_def,
-        func_decl,
-    ])
+            ignore_pause_def,
+            func_decl,
+        ]
+    )
 
-    func_def = CxxFuncDefNode(name=function_name,
-                              arg_decls=["IgnorePause ignore_pause"],
-                              return_type="bool",
-                              class_name=cg_context.class_name)
+    func_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=["IgnorePause ignore_pause"],
+        return_type="bool",
+        class_name=cg_context.class_name,
+    )
     func_def.set_base_template_vars(cg_context.template_bindings())
     defs.append(func_def)
     body = func_def.body
     body.add_template_var("ignore_pause", "ignore_pause")
     bind_local_vars(body, cg_context)
 
-    body.extend([
-        T("""\
+    body.extend(
+        [
+            T("""\
 ScriptState* callback_relevant_script_state = CallbackRelevantScriptState();
 
 const bool is_runnable =
@@ -558,13 +698,14 @@ const bool is_runnable =
 if (is_runnable)
   return true;
 """),
-        T("ScriptState::Scope scope(callback_relevant_script_state);"),
-        T("""\
+            T("ScriptState::Scope scope(callback_relevant_script_state);"),
+            T("""\
 V8ThrowException::ThrowError(
     ${isolate}, "The provided callback is no longer runnable.");
 return false;\
 """),
-    ])
+        ]
+    )
 
     return decls, defs
 
@@ -588,9 +729,11 @@ def generate_callback_function(callback_function_identifier):
     else:
         base_class_name = "CallbackFunctionBase"
 
-    cg_context = CodeGenContext(callback_function=callback_function,
-                                class_name=class_name,
-                                base_class_name=base_class_name)
+    cg_context = CodeGenContext(
+        callback_function=callback_function,
+        class_name=class_name,
+        base_class_name=base_class_name,
+    )
 
     # Filepaths
     header_path = path_manager.api_path(ext="h")
@@ -609,41 +752,51 @@ def generate_callback_function(callback_function_identifier):
     source_blink_ns = CxxNamespaceNode(name_style.namespace("blink"))
 
     # Class definition
-    class_def = CxxClassDefNode(cg_context.class_name,
-                                base_class_names=[base_class_name],
-                                final=True,
-                                export=component_export(
-                                    api_component, for_testing))
+    class_def = CxxClassDefNode(
+        cg_context.class_name,
+        base_class_names=[base_class_name],
+        final=True,
+        export=component_export(api_component, for_testing),
+    )
     class_def.set_base_template_vars(cg_context.template_bindings())
 
     # Implementation parts
     factory_decls, factory_defs = make_factory_methods(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     nameclient_decls, nameclient_defs = make_nameclient_implementation(
-        cg_context)
+        cg_context
+    )
 
     cgc = cg_context.make_copy(callback_function=callback_function)
 
     invoke_decls, invoke_defs = make_callback_invocation_function(
-        cgc, name_style.func("Invoke"), is_construct_call=False)
+        cgc, name_style.func("Invoke"), is_construct_call=False
+    )
     construct_decls, construct_defs = make_callback_invocation_function(
-        cgc, name_style.func("Construct"), is_construct_call=True)
+        cgc, name_style.func("Construct"), is_construct_call=True
+    )
 
-    (invoke_and_report_decls,
-     invoke_and_report_defs) = make_invoke_and_report_function(
-         cgc, name_style.func("InvokeAndReportException"),
-         name_style.func("Invoke"))
+    (invoke_and_report_decls, invoke_and_report_defs) = (
+        make_invoke_and_report_function(
+            cgc,
+            name_style.func("InvokeAndReportException"),
+            name_style.func("Invoke"),
+        )
+    )
 
-    (invoke_and_catch_decls,
-     invoke_and_catch_defs) = make_invoke_and_catch_function(
-         cgc, name_style.func("InvokeAndCatch"), name_style.func("Invoke"))
+    (invoke_and_catch_decls, invoke_and_catch_defs) = (
+        make_invoke_and_catch_function(
+            cgc, name_style.func("InvokeAndCatch"), name_style.func("Invoke")
+        )
+    )
 
     event_handler_decls, event_handler_defs = None, None
     if callback_function.identifier == "EventHandlerNonNull":
         event_handler_decls = SequenceNode()
         event_handler_defs = SequenceNode()
         (decls, defs) = make_is_runnable_or_throw_exception(
-            cgc, name_style.func("IsRunnableOrThrowException"))
+            cgc, name_style.func("IsRunnableOrThrowException")
+        )
         event_handler_decls.append(decls)
         event_handler_defs.append(defs)
         event_handler_decls.append(EmptyNode())
@@ -651,55 +804,74 @@ def generate_callback_function(callback_function_identifier):
         (decls, defs) = make_callback_invocation_function(
             cgc,
             name_style.func("InvokeWithoutRunnabilityCheck"),
-            skip_runnability_check=True)
+            skip_runnability_check=True,
+        )
         event_handler_decls.append(decls)
         event_handler_defs.append(defs)
 
     # Header part (copyright, include directives, and forward declarations)
-    header_node.extend([
-        make_copyright_header(),
-        EmptyNode(),
-        enclose_with_header_guard(
-            ListNode([
-                make_header_include_directives(header_node.accumulator),
-                EmptyNode(),
-                header_blink_ns,
-            ]), name_style.header_guard(header_path)),
-    ])
-    header_blink_ns.body.extend([
-        make_forward_declarations(header_node.accumulator),
-        EmptyNode(),
-    ])
-    source_node.extend([
-        make_copyright_header(),
-        EmptyNode(),
-        TextNode("#include \"{}\"".format(header_path)),
-        EmptyNode(),
-        make_header_include_directives(source_node.accumulator),
-        EmptyNode(),
-        source_blink_ns,
-    ])
-    source_blink_ns.body.extend([
-        make_forward_declarations(source_node.accumulator),
-        EmptyNode(),
-    ])
+    header_node.extend(
+        [
+            make_copyright_header(),
+            EmptyNode(),
+            enclose_with_header_guard(
+                ListNode(
+                    [
+                        make_header_include_directives(header_node.accumulator),
+                        EmptyNode(),
+                        header_blink_ns,
+                    ]
+                ),
+                name_style.header_guard(header_path),
+            ),
+        ]
+    )
+    header_blink_ns.body.extend(
+        [
+            make_forward_declarations(header_node.accumulator),
+            EmptyNode(),
+        ]
+    )
+    source_node.extend(
+        [
+            make_copyright_header(),
+            EmptyNode(),
+            TextNode("#include \"{}\"".format(header_path)),
+            EmptyNode(),
+            make_header_include_directives(source_node.accumulator),
+            EmptyNode(),
+            source_blink_ns,
+        ]
+    )
+    source_blink_ns.body.extend(
+        [
+            make_forward_declarations(source_node.accumulator),
+            EmptyNode(),
+        ]
+    )
 
     # Assemble the parts.
-    header_node.accumulator.add_include_headers([
-        component_export_header(api_component, for_testing),
-        "third_party/blink/renderer/platform/bindings/callback_function_base.h",
-        "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
-        "base/types/expected.h",
-    ])
-    source_node.accumulator.add_stdcpp_include_headers([
-        "tuple",
-    ])
-    source_node.accumulator.add_include_headers([
-        "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
-        "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
-        "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
-        "base/containers/span.h",
-    ])
+    header_node.accumulator.add_include_headers(
+        [
+            component_export_header(api_component, for_testing),
+            "third_party/blink/renderer/platform/bindings/callback_function_base.h",
+            "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
+            "base/types/expected.h",
+        ]
+    )
+    source_node.accumulator.add_stdcpp_include_headers(
+        [
+            "tuple",
+        ]
+    )
+    source_node.accumulator.add_include_headers(
+        [
+            "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
+            "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+            "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
+            "base/containers/span.h",
+        ]
+    )
     (
         header_forward_decls,
         header_include_headers,
@@ -707,13 +879,16 @@ def generate_callback_function(callback_function_identifier):
         source_forward_decls,
         source_include_headers,
     ) = collect_forward_decls_and_include_headers(
-        [callback_function.return_type] + list(
-            map(lambda argument: argument.idl_type,
-                callback_function.arguments)))
+        [callback_function.return_type]
+        + list(
+            map(lambda argument: argument.idl_type, callback_function.arguments)
+        )
+    )
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
     header_node.accumulator.add_stdcpp_include_headers(
-        header_stdcpp_include_headers)
+        header_stdcpp_include_headers
+    )
     source_node.accumulator.add_class_decls(source_forward_decls)
     source_node.accumulator.add_include_headers(source_include_headers)
 
@@ -773,10 +948,12 @@ def generate_callback_functions(task_queue):
 
     for callback_function in web_idl_database.callback_functions:
         if callback_function.identifier in (
-                "OnErrorEventHandlerNonNull",
-                "OnBeforeUnloadEventHandlerNonNull"):
+            "OnErrorEventHandlerNonNull",
+            "OnBeforeUnloadEventHandlerNonNull",
+        ):
             # OnErrorEventHandlerNonNull and OnBeforeUnloadEventHandlerNonNull
             # are unified into EventHandlerNonNull, and they won't be used.
             continue
-        task_queue.post_task(generate_callback_function,
-                             callback_function.identifier)
+        task_queue.post_task(
+            generate_callback_function, callback_function.identifier
+        )

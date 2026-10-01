@@ -51,8 +51,10 @@ class AggregateResultsUnittest(BaseResultsUnittest):
         ]
         expected_output = {
             'conformance/textures/misc/video-rotation.html': {
-                tuple(['win']): [(10, 40, 'http://ci.chromium.org/b/1111'),
-                                 (15, 42, 'http://ci.chromium.org/b/2222')],
+                tuple(['win']): [
+                    (10, 40, 'http://ci.chromium.org/b/1111'),
+                    (15, 42, 'http://ci.chromium.org/b/2222'),
+                ],
                 tuple(['linux']): [(10, 40, 'http://ci.chromium.org/b/3333')],
             },
             'conformance/textures/misc/texture-npot-video.html': {
@@ -61,7 +63,8 @@ class AggregateResultsUnittest(BaseResultsUnittest):
         }
         self.assertEqual(
             self._result_processor.aggregate_results(query_results),
-            expected_output)
+            expected_output,
+        )
 
 
 class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
@@ -84,15 +87,24 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
             },
         ]
         expected_results = [
-            data_types.Result('conformance/textures/misc/video-rotation.html',
-                              ('win', 'x86'), (10, 40), '1111'),
-            data_types.Result('conformance/textures/misc/video-rotation.html',
-                              ('win', 'x86'), (12, 45), '1111'),
+            data_types.Result(
+                'conformance/textures/misc/video-rotation.html',
+                ('win', 'x86'),
+                (10, 40),
+                '1111',
+            ),
+            data_types.Result(
+                'conformance/textures/misc/video-rotation.html',
+                ('win', 'x86'),
+                (12, 45),
+                '1111',
+            ),
         ]
 
         self.assertEqual(
             self._result_processor._convert_json_results_to_result_objects(r),
-            expected_results)
+            expected_results,
+        )
 
 
 class AggregateSlownessResultsUnittest(BaseResultsUnittest):
@@ -137,11 +149,16 @@ class AggregateSlownessResultsUnittest(BaseResultsUnittest):
             },
         ]
         expected_output = {
-            'test1': [('builder1', 1, 40, 1.2, 0, 6),
-                      ('builder2', 100, 0, 5.9, 20, 6)],
+            'test1': [
+                ('builder1', 1, 40, 1.2, 0, 6),
+                ('builder2', 100, 0, 5.9, 20, 6),
+            ],
             'test2': [('builder2', 10, 4, 5.2, 3, 6)],
             'test3': [('builder1', 0, 100, 0.2, 0, 6)],
         }
         self.assertEqual(
             self._result_processor.aggregate_test_slowness_results(
-                query_results), expected_output)
+                query_results
+            ),
+            expected_output,
+        )

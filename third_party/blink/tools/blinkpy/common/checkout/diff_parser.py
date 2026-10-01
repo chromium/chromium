@@ -34,7 +34,8 @@ _log = logging.getLogger(__name__)
 
 INDEX_PATTERN = re.compile(r'^diff --git \w/(.+) \w/(?P<FilePath>.+)')
 LINES_CHANGED_PATTERN = re.compile(
-    r"^@@ -(?P<OldStartLine>\d+)(,\d+)? \+(?P<NewStartLine>\d+)(,\d+)? @@")
+    r"^@@ -(?P<OldStartLine>\d+)(,\d+)? \+(?P<NewStartLine>\d+)(,\d+)? @@"
+)
 
 _INITIAL_STATE = 1
 _DECLARED_FILE_PATH = 2
@@ -112,7 +113,8 @@ class DiffParser(object):
                 if state != _DECLARED_FILE_PATH and state != _PROCESSING_CHUNK:
                     _log.error(
                         'Unexpected line change without file path declaration: %r',
-                        line)
+                        line,
+                    )
                 old_diff_line = int(lines_changed.group('OldStartLine'))
                 new_diff_line = int(lines_changed.group('NewStartLine'))
                 state = _PROCESSING_CHUNK
@@ -126,8 +128,9 @@ class DiffParser(object):
                     current_file.add_deleted_line(old_diff_line, line[1:])
                     old_diff_line += 1
                 elif line.startswith(' '):
-                    current_file.add_unchanged_line(old_diff_line,
-                                                    new_diff_line, line[1:])
+                    current_file.add_unchanged_line(
+                        old_diff_line, new_diff_line, line[1:]
+                    )
                     old_diff_line += 1
                     new_diff_line += 1
                 elif line == '\\ No newline at end of file':
@@ -135,6 +138,6 @@ class DiffParser(object):
                     pass
                 else:
                     _log.error(
-                        'Unexpected diff format when parsing a chunk: %r',
-                        line)
+                        'Unexpected diff format when parsing a chunk: %r', line
+                    )
         return files

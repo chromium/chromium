@@ -5,7 +5,11 @@
 import logging
 import unittest
 
-from blinkpy.common.system.log_testing import LoggingTestCase, LogTesting, TestLogStream
+from blinkpy.common.system.log_testing import (
+    LoggingTestCase,
+    LogTesting,
+    TestLogStream,
+)
 
 
 class TestLogStreamTest(unittest.TestCase):
@@ -36,7 +40,8 @@ class LogTestingTest(unittest.TestCase):
 
     def test_log_level_warning(self):
         log_testing_instance = LogTesting.setUp(
-            self, logging_level=logging.WARNING)
+            self, logging_level=logging.WARNING
+        )
         logger = logging.getLogger('test.logger')
         logger.info('my message')
         log_testing_instance.assertMessages([])
@@ -45,10 +50,12 @@ class LogTestingTest(unittest.TestCase):
 class LoggingTestCaseTest(LoggingTestCase):
     def test_basic(self):
         self.example_logging_code()
-        self.assertLog([
-            'INFO: Informative message\n',
-            'WARNING: Warning message\n',
-        ])
+        self.assertLog(
+            [
+                'INFO: Informative message\n',
+                'WARNING: Warning message\n',
+            ]
+        )
 
     @staticmethod
     def example_logging_code():

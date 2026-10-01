@@ -27,9 +27,12 @@ def lstrip(string):
 
 
 def element(name):
-    namespace = ("http://www.w3.org/1999/xhtml"
-                 if isinstance(name, str) else name["namespace"])
-    name = (name if isinstance(name, str) else name["name"])
+    namespace = (
+        "http://www.w3.org/1999/xhtml"
+        if isinstance(name, str)
+        else name["namespace"]
+    )
+    name = name if isinstance(name, str) else name["name"]
     return ELEMENT_CPP_MAP[(namespace, name)]
 
 
@@ -54,9 +57,9 @@ def table_name(name):
 def generate_nameset_table(name, default_config, formatter_fn, output):
     if default_config.get(name):
         print(
-            f"  static const QualifiedName* const {table_name(name)}[] = "
-            "{",
-            file=output)
+            f"  static const QualifiedName* const {table_name(name)}[] = {{",
+            file=output,
+        )
         for item in default_config.get(name):
             print(f"      &{formatter_fn(item)},", file=output)
         print("  };\n", file=output)
@@ -66,8 +69,9 @@ def generate_nameset_arg(name, default_config, output):
     if name not in default_config:
         print(f"  /* {name} */ nullptr,", file=output)
     elif not default_config.get(name):
-        print(f"  /* {name} */ std::make_unique<SanitizerNameSet>(),",
-              file=output)
+        print(
+            f"  /* {name} */ std::make_unique<SanitizerNameSet>(),", file=output
+        )
     else:
         print(f"  /* {name} */ MakeNameSet({table_name(name)}),", file=output)
 
@@ -87,9 +91,9 @@ def generate_namemap_tables(key, subkey, default_config, output):
         if elem.get(subkey):
             print(f"  /* {elem['name']} */", file=output)
             print(
-                f"  static const QualifiedName* const {table}_{index}[] = "
-                "{",
-                file=output)
+                f"  static const QualifiedName* const {table}_{index}[] = {{",
+                file=output,
+            )
             for attr in elem.get(subkey):
                 print(f"      &{attribute(attr)},", file=output)
             print("  };\n", file=output)
@@ -108,7 +112,8 @@ def generate_namemap_arg(key, subkey, default_config, output):
         print(
             f"  /* {key}[{subkey}] */ "
             f"MakeNameMap({namemap_table_name(key, subkey)}),",
-            file=output)
+            file=output,
+        )
     else:
         print(f"  /* {key}[{subkey}] */ SanitizerNameMap(),", file=output)
 
@@ -129,14 +134,17 @@ def generate_stringset(name, default_config, output):
 def generate_tables(default_config, output):
     generate_nameset_table("elements", default_config, element, output)
     generate_nameset_table("removeElements", default_config, element, output)
-    generate_nameset_table("replaceWithChildrenElements", default_config,
-                           element, output)
+    generate_nameset_table(
+        "replaceWithChildrenElements", default_config, element, output
+    )
     generate_nameset_table("attributes", default_config, attribute, output)
-    generate_nameset_table("removeAttributes", default_config, attribute,
-                           output)
+    generate_nameset_table(
+        "removeAttributes", default_config, attribute, output
+    )
     generate_namemap_tables("elements", "attributes", default_config, output)
-    generate_namemap_tables("elements", "removeAttributes", default_config,
-                            output)
+    generate_namemap_tables(
+        "elements", "removeAttributes", default_config, output
+    )
 
 
 def generate_config(default_config, output):
@@ -146,20 +154,21 @@ def generate_config(default_config, output):
     generate_nameset_arg("attributes", default_config, output)
     generate_nameset_arg("removeAttributes", default_config, output)
     generate_namemap_arg("elements", "attributes", default_config, output)
-    generate_namemap_arg("elements", "removeAttributes", default_config,
-                         output)
+    generate_namemap_arg("elements", "removeAttributes", default_config, output)
     generate_stringset("processingInstructions", default_config, output)
     generate_stringset("removeProcessingInstructions", default_config, output)
-    print(f"  /* comments */ {bool(default_config.get('comments'))},",
-          file=output)
     print(
-        "  /* dataAttributes */ "
-        f"{bool(default_config.get('dataAttributes'))}",
-        file=output)
+        f"  /* comments */ {bool(default_config.get('comments'))},", file=output
+    )
+    print(
+        f"  /* dataAttributes */ {bool(default_config.get('dataAttributes'))}",
+        file=output,
+    )
 
 
 def generate_file(name, default_config, output):
-    print(lstrip(f"""
+    print(
+        lstrip(f"""
         // Copyright 2024 The Chromium Authors
         // Use of this source code is governed by a BSD-style license that can be
         // found in the LICENSE file.
@@ -183,18 +192,22 @@ def generate_file(name, default_config, output):
         namespace sanitizer_generated_builtins {{
 
         Sanitizer* {name}() {{"""),
-          file=output)
+        file=output,
+    )
     generate_tables(default_config, output)
-    print("  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>(",
-          file=output)
+    print(
+        "  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>(", file=output
+    )
     generate_config(default_config, output)
-    print(lstrip("""
+    print(
+        lstrip("""
           );
           return sanitizer;
         }
         }  // namespace sanitizer_generated_builtins
         }  // namespace blink"""),
-          file=output)
+        file=output,
+    )
 
 
 def set_elements_cpp_mapping(all_known):
@@ -205,18 +218,19 @@ def set_elements_cpp_mapping(all_known):
         "annotation-xml": "AnnotationXml",
         "mpath": "MPath",
         "svg": "SVG",
-        "tspan": "TSpan"
+        "tspan": "TSpan",
     }
     for elem in all_known["elements"]:
         cppname = elem["name"]
         # Normalize to match C++ style. Unfortunately, some C++ names are not
         # regularly formed so we use a small table of exceptions.
         cppname = CPP_NAME_EXCEPTIONS.get(cppname, cppname)
-        if cppname.startswith("fe") and cppname not in ("fencedframe", ):
+        if cppname.startswith("fe") and cppname not in ("fencedframe",):
             cppname = "FE" + cppname[2:]
         cppname = cppname[0].upper() + cppname[1:]
         ELEMENT_CPP_MAP[(elem["namespace"], elem["name"])] = (
-            f"{elem['cppnamespace'].lower()}_names::k{cppname}Tag")
+            f"{elem['cppnamespace'].lower()}_names::k{cppname}Tag"
+        )
 
 
 def set_attributes_cpp_mapping(all_known):
@@ -228,10 +242,12 @@ def set_attributes_cpp_mapping(all_known):
         cppname = cppname[0].upper() + cppname[1:]
         while '-' in cppname:
             pos = cppname.index("-")
-            cppname = cppname[0:pos] + cppname[pos + 1].upper() + cppname[pos +
-                                                                          2:]
+            cppname = (
+                cppname[0:pos] + cppname[pos + 1].upper() + cppname[pos + 2 :]
+            )
         ATTRIBUTE_CPP_MAP[(attr["namespace"], attr["name"].lower())] = (
-            f"{attr['cppnamespace'].lower()}_names::k{cppname}Attr")
+            f"{attr['cppnamespace'].lower()}_names::k{cppname}Attr"
+        )
 
 
 def set_cpp_mapping(all_known):
@@ -261,14 +277,20 @@ def main(argv):
         all_known = json.load(open(options.all_known, "r"))
         set_cpp_mapping(all_known)
     except BaseException as err:
-        error("Cannod load table of all known elements/attribuutes.",
-              options.allknown, err)
+        error(
+            "Cannod load table of all known elements/attribuutes.",
+            options.allknown,
+            err,
+        )
 
     try:
         default_config = json.load(open(options.default_configuration, "r"))
     except BaseException as err:
-        error("Cannot load default config as JSON.",
-              options.default_configuration, err)
+        error(
+            "Cannot load default config as JSON.",
+            options.default_configuration,
+            err,
+        )
     try:
         with open(options.out, "w") as output:
             try:

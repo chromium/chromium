@@ -26,15 +26,27 @@ test_template = """<!DOCTYPE html>
 <script>testSVGInObjectWithPlaceholder({}, {}, {});</script>
 """
 
-intrinsicRatios = [{'type': 'no-intrinsic-ratio', 'value': 'null'},
-                   {'type': 'intrinsic-ratio', 'value': '"0 0 100 200"'}];
-
-lengths = [{'type': 'auto', 'value': 'null'},
-           {'type': 'fixed', 'value': '"100"'},
-           {'type': 'percentage', 'value': '"50%"'}]
+intrinsicRatios = [
+    {'type': 'no-intrinsic-ratio', 'value': 'null'},
+    {'type': 'intrinsic-ratio', 'value': '"0 0 100 200"'},
+]
+lengths = [
+    {'type': 'auto', 'value': 'null'},
+    {'type': 'fixed', 'value': '"100"'},
+    {'type': 'percentage', 'value': '"50%"'},
+]
 
 for intrinsicRatio in intrinsicRatios:
     for w in lengths:
         for h in lengths:
-            with open("svg-in-object-placeholder-{}-{}-{}.html".format(w['type'], h['type'], intrinsicRatio['type']), "w") as f:
-                f.write(test_template.format(w['value'], h['value'], intrinsicRatio['value']))
+            with open(
+                "svg-in-object-placeholder-{}-{}-{}.html".format(
+                    w['type'], h['type'], intrinsicRatio['type']
+                ),
+                "w",
+            ) as f:
+                f.write(
+                    test_template.format(
+                        w['value'], h['value'], intrinsicRatio['value']
+                    )
+                )

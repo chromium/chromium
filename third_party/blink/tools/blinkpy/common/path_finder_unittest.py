@@ -18,60 +18,76 @@ class TestPathFinder(unittest.TestCase):
         finder = PathFinder(MockFileSystem())
         self.assertEqual(
             finder.path_from_chromium_base('foo', 'bar.baz'),
-            '/mock-checkout/foo/bar.baz')
+            '/mock-checkout/foo/bar.baz',
+        )
 
     def test_web_tests_dir(self):
         finder = PathFinder(MockFileSystem())
-        self.assertEqual(finder.web_tests_dir(),
-                         '/mock-checkout/' + RELATIVE_WEB_TESTS[:-1])
+        self.assertEqual(
+            finder.web_tests_dir(), '/mock-checkout/' + RELATIVE_WEB_TESTS[:-1]
+        )
 
     def test_web_tests_dir_with_backslash_sep(self):
         filesystem = MockFileSystem()
         filesystem.sep = '\\'
-        filesystem.path_to_module = \
-            lambda _: ('C:\\mock-checkout\\third_party\\blink\\tools\\blinkpy\\foo.py')
+        filesystem.path_to_module = lambda _: (
+            'C:\\mock-checkout\\third_party\\blink\\tools\\blinkpy\\foo.py'
+        )
         finder = PathFinder(filesystem)
-        self.assertEqual(finder.web_tests_dir(),
-                         'C:\\mock-checkout\\third_party\\blink\\web_tests')
+        self.assertEqual(
+            finder.web_tests_dir(),
+            'C:\\mock-checkout\\third_party\\blink\\web_tests',
+        )
 
     def test_perf_tests_dir(self):
         finder = PathFinder(MockFileSystem())
-        self.assertEqual(finder.perf_tests_dir(),
-                         '/mock-checkout/third_party/blink/perf_tests')
+        self.assertEqual(
+            finder.perf_tests_dir(),
+            '/mock-checkout/third_party/blink/perf_tests',
+        )
 
     def test_path_from_web_tests(self):
         finder = PathFinder(MockFileSystem())
         self.assertEqual(
             finder.path_from_web_tests('external', 'wpt'),
-            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt')
+            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt',
+        )
 
     def test_depot_tools_base_not_found(self):
         filesystem = MockFileSystem()
-        filesystem.path_to_module = \
-            lambda _: ('/mock-checkout/third_party/blink/tools/blinkpy/common/'
-                       'path_finder.py')
+        filesystem.path_to_module = lambda _: (
+            '/mock-checkout/third_party/blink/tools/blinkpy/common/'
+            'path_finder.py'
+        )
         finder = PathFinder(filesystem)
         self.assertIsNone(finder.depot_tools_base())
 
     def test_depot_tools_base_exists(self):
         filesystem = MockFileSystem()
-        filesystem.path_to_module = \
-            lambda _: ('/checkout/third_party/blink/tools/blinkpy/common/'
-                       'path_finder.py')
+        filesystem.path_to_module = lambda _: (
+            '/checkout/third_party/blink/tools/blinkpy/common/path_finder.py'
+        )
         filesystem.maybe_make_directory('/checkout/third_party/depot_tools')
         finder = PathFinder(filesystem)
-        self.assertEqual(finder.depot_tools_base(),
-                         '/checkout/third_party/depot_tools')
+        self.assertEqual(
+            finder.depot_tools_base(), '/checkout/third_party/depot_tools'
+        )
 
     def test_strip_web_tests_path(self):
         finder = PathFinder(MockFileSystem())
-        path_with_web_tests = '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt'
+        path_with_web_tests = (
+            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt'
+        )
         self.assertEqual(
-            finder.strip_web_tests_path(path_with_web_tests), 'external/wpt')
-        path_without_web_tests = '/checkout/' + RELATIVE_WEB_TESTS + 'external/wpt'
+            finder.strip_web_tests_path(path_with_web_tests), 'external/wpt'
+        )
+        path_without_web_tests = (
+            '/checkout/' + RELATIVE_WEB_TESTS + 'external/wpt'
+        )
         self.assertEqual(
             finder.strip_web_tests_path(path_without_web_tests),
-            path_without_web_tests)
+            path_without_web_tests,
+        )
 
     def test_is_cog(self):
         fs = MockFileSystem()

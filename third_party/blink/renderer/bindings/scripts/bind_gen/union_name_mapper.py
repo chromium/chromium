@@ -12,14 +12,15 @@ class UnionNameMapper(object):
     occasionally needed for unions with large number of variants.
     See union_name_map.conf for documentation on file format.
     """
+
     _instance = None
 
     class Entry:
-
         def __init__(self, alias, class_name, file_name):
             self.class_name = class_name or ("V8" + alias)
-            self.file_name = file_name or ("v8_union_" +
-                                           name_style.raw.snake_case(alias))
+            self.file_name = file_name or (
+                "v8_union_" + name_style.raw.snake_case(alias)
+            )
 
     @classmethod
     def init(cls, filename, database):
@@ -42,9 +43,9 @@ class UnionNameMapper(object):
 
         # This is only called from the config being parsed.
         def MapUnionName(idl_name, class_name=None, file_name=None):
-            assert (isinstance(idl_name, str))
-            assert (class_name is None or isinstance(class_name, str))
-            assert (file_name is None or isinstance(file_name, str))
+            assert isinstance(idl_name, str)
+            assert class_name is None or isinstance(class_name, str)
+            assert file_name is None or isinstance(file_name, str)
             idl_typedef = database.find(idl_name)
             if not idl_typedef:
                 raise KeyError(idl_typedef)
@@ -53,8 +54,9 @@ class UnionNameMapper(object):
                 raise TypeError(idl_typedef + " does not refer to a union")
             union = idl_type.union_definition_object
             assert union
-            map[id(union)] = UnionNameMapper.Entry(idl_name, class_name,
-                                                   file_name)
+            map[id(union)] = UnionNameMapper.Entry(
+                idl_name, class_name, file_name
+            )
 
         globals = {
             '__builtins__': None,

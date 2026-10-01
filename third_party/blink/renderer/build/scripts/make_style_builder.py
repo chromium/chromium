@@ -32,11 +32,12 @@ import json5_generator
 
 
 def calculate_apply_functions_to_declare(property_):
-    property_.should_declare_functions = \
-        not property_.longhands \
-        and property_.is_property
-    property_.use_property_class_in_stylebuilder = \
+    property_.should_declare_functions = (
+        not property_.longhands and property_.is_property
+    )
+    property_.use_property_class_in_stylebuilder = (
         property_.should_declare_functions
+    )
 
 
 class StyleBuilderWriter(json5_generator.Writer):
@@ -44,10 +45,12 @@ class StyleBuilderWriter(json5_generator.Writer):
         super(StyleBuilderWriter, self).__init__([], output_dir)
 
         self._json5_properties = css_properties.CSSProperties(
-            json5_file_paths[:3])
+            json5_file_paths[:3]
+        )
         self._input_files = json5_file_paths
-        self._properties = self._json5_properties.longhands + \
-            self._json5_properties.shorthands
+        self._properties = (
+            self._json5_properties.longhands + self._json5_properties.shorthands
+        )
         for property_ in self._properties:
             calculate_apply_functions_to_declare(property_)
 

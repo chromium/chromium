@@ -28,29 +28,37 @@ from .interface import generate_class_like
 def make_constructors(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    decls = ListNode([
-        CxxFuncDefNode(name=cg_context.class_name,
-                       arg_decls=["IterationSourceBase* source", "Kind kind"],
-                       return_type="",
-                       explicit=True,
-                       member_initializer_list=[
-                           "${base_class_name}(source, kind)",
-                       ]),
-        CxxFuncDeclNode(name="~SyncIterator",
-                        arg_decls=[],
-                        return_type="",
-                        override=True,
-                        default=True),
-    ])
+    decls = ListNode(
+        [
+            CxxFuncDefNode(
+                name=cg_context.class_name,
+                arg_decls=["IterationSourceBase* source", "Kind kind"],
+                return_type="",
+                explicit=True,
+                member_initializer_list=[
+                    "${base_class_name}(source, kind)",
+                ],
+            ),
+            CxxFuncDeclNode(
+                name="~SyncIterator",
+                arg_decls=[],
+                return_type="",
+                override=True,
+                default=True,
+            ),
+        ]
+    )
 
     return decls, None
 
 
-def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
-                                            api_component=None,
-                                            for_testing=None,
-                                            header_blink_ns=None,
-                                            source_blink_ns=None):
+def generate_sync_iterator_blink_impl_class(
+    iterator_class_like=None,
+    api_component=None,
+    for_testing=None,
+    header_blink_ns=None,
+    source_blink_ns=None,
+):
     assert isinstance(iterator_class_like, web_idl.SyncIterator)
     assert api_component is not None
     assert for_testing is not None
@@ -59,19 +67,25 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
 
     # SyncIterator<InterfaceClass> (ScriptWrappable) definition
     sync_iterator = iterator_class_like
-    cg_context = CodeGenContext(sync_iterator=sync_iterator,
-                                class_name=blink_class_name(sync_iterator),
-                                base_class_name="bindings::SyncIteratorBase")
-    class_def = CxxClassDefNode(cg_context.class_name,
-                                base_class_names=[cg_context.base_class_name],
-                                template_params=[],
-                                final=True,
-                                export=component_export(
-                                    api_component, for_testing))
+    cg_context = CodeGenContext(
+        sync_iterator=sync_iterator,
+        class_name=blink_class_name(sync_iterator),
+        base_class_name="bindings::SyncIteratorBase",
+    )
+    class_def = CxxClassDefNode(
+        cg_context.class_name,
+        base_class_names=[cg_context.base_class_name],
+        template_params=[],
+        final=True,
+        export=component_export(api_component, for_testing),
+    )
     class_def.set_base_template_vars(cg_context.template_bindings())
 
-    key_type = (sync_iterator.key_type.unwrap(
-        typedef=True) if sync_iterator.key_type else None)
+    key_type = (
+        sync_iterator.key_type.unwrap(typedef=True)
+        if sync_iterator.key_type
+        else None
+    )
     value_type = sync_iterator.value_type.unwrap(typedef=True)
     key_value_type_list = tuple(filter(None, [key_type, value_type]))
 
@@ -84,19 +98,26 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
     ) = collect_forward_decls_and_include_headers(key_value_type_list)
     class_def.accumulate(
         CodeGenAccumulator.require_class_decls(
-            set.union(header_forward_decls, source_forward_decls)))
-    headers = set([
-        "third_party/blink/renderer/platform/bindings/sync_iterator_base.h",
-    ])
+            set.union(header_forward_decls, source_forward_decls)
+        )
+    )
+    headers = set(
+        [
+            "third_party/blink/renderer/platform/bindings/sync_iterator_base.h",
+        ]
+    )
     headers.update(header_include_headers)
     for idl_type in key_value_type_list:
         if idl_type.is_numeric or idl_type.is_string or idl_type.is_nullable:
             headers.add(
-                "third_party/blink/renderer/bindings/core/v8/idl_types.h")
+                "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+            )
     class_def.accumulate(CodeGenAccumulator.require_include_headers(headers))
     class_def.accumulate(
         CodeGenAccumulator.require_stdcpp_include_headers(
-            header_stdcpp_include_headers))
+            header_stdcpp_include_headers
+        )
+    )
 
     ctor_decls, ctor_defs = make_constructors(cg_context)
 
@@ -106,17 +127,29 @@ def generate_sync_iterator_blink_impl_class(iterator_class_like=None,
     class_def.top_section.append(TextNode("DEFINE_WRAPPERTYPEINFO();"))
 
     class_def.public_section.append(
-        TextNode("using IDLKeyType = {};".format(
-            native_value_tag(key_type) if key_type else "void")))
+        TextNode(
+            "using IDLKeyType = {};".format(
+                native_value_tag(key_type) if key_type else "void"
+            )
+        )
+    )
     class_def.public_section.append(
-        TextNode("using IDLValueType = {};".format(
-            native_value_tag(value_type))))
+        TextNode(
+            "using IDLValueType = {};".format(native_value_tag(value_type))
+        )
+    )
     class_def.public_section.append(
-        TextNode("using KeyType = {};".format(
-            blink_type_info(key_type).value_t if key_type else "void")))
+        TextNode(
+            "using KeyType = {};".format(
+                blink_type_info(key_type).value_t if key_type else "void"
+            )
+        )
+    )
     class_def.public_section.append(
-        TextNode("using ValueType = {};".format(
-            blink_type_info(value_type).value_t)))
+        TextNode(
+            "using ValueType = {};".format(blink_type_info(value_type).value_t)
+        )
+    )
     class_def.public_section.append(EmptyNode())
 
     class_def.public_section.append(ctor_decls)
@@ -131,9 +164,12 @@ def generate_sync_iterator(sync_iterator_identifier):
     web_idl_database = package_initializer().web_idl_database()
     sync_iterator = web_idl_database.find(sync_iterator_identifier)
 
-    generate_class_like(sync_iterator,
-                        generate_iterator_blink_impl_class_callback=(
-                            generate_sync_iterator_blink_impl_class))
+    generate_class_like(
+        sync_iterator,
+        generate_iterator_blink_impl_class_callback=(
+            generate_sync_iterator_blink_impl_class
+        ),
+    )
 
 
 def generate_sync_iterators(task_queue):

@@ -10,11 +10,12 @@ from blinkpy.w3c.common import is_file_exportable
 
 
 class ChromiumCommit:
-
-    def __init__(self,
-                 host: Host,
-                 sha: Optional[str] = None,
-                 position: Optional[str] = None):
+    def __init__(
+        self,
+        host: Host,
+        sha: Optional[str] = None,
+        position: Optional[str] = None,
+    ):
         """Initializes a ChomiumCommit object, given a sha or commit position.
 
         Args:
@@ -34,14 +35,16 @@ class ChromiumCommit:
 
         if position:
             if position.startswith('Cr-Commit-Position: '):
-                position = position[len('Cr-Commit-Position: '):]
+                position = position[len('Cr-Commit-Position: ') :]
 
             sha = self.position_to_sha(position)
         else:
             position = self.sha_to_position(sha)
 
         assert len(sha) == 40, 'Expected SHA-1 hash, got {}'.format(sha)
-        assert sha and position, 'ChromiumCommit should have sha and position after __init__'
+        assert sha and position, (
+            'ChromiumCommit should have sha and position after __init__'
+        )
         self.sha = sha
         self.position = position
 
@@ -58,10 +61,13 @@ class ChromiumCommit:
         It is inclusive of this commit and of the latest commit.
         """
         return len(
-            self._git.run([
-                'rev-list',
-                f'{self.sha}..origin/{self.host.project_config.gerrit_branch}',
-            ]).splitlines())
+            self._git.run(
+                [
+                    'rev-list',
+                    f'{self.sha}..origin/{self.host.project_config.gerrit_branch}',
+                ]
+            ).splitlines()
+        )
 
     def position_to_sha(self, commit_position: str) -> str:
         return self._git.run(['crrev-parse', commit_position]).strip()
@@ -78,15 +84,17 @@ class ChromiumCommit:
                 raise
 
     def subject(self) -> str:
-        return self._git.run(['show', '--format=%s', '--no-patch',
-                              self.sha]).strip()
+        return self._git.run(
+            ['show', '--format=%s', '--no-patch', self.sha]
+        ).strip()
 
     def body(self) -> str:
         return self._git.run(['show', '--format=%b', '--no-patch', self.sha])
 
     def author(self) -> str:
         return self._git.run(
-            ['show', '--format=%aN <%aE>', '--no-patch', self.sha]).strip()
+            ['show', '--format=%aN <%aE>', '--no-patch', self.sha]
+        ).strip()
 
     def message(self) -> str:
         """Returns a string with a commit's subject and body."""
@@ -94,8 +102,9 @@ class ChromiumCommit:
 
     def change_id(self) -> str:
         """Returns the Change-Id footer if it is present."""
-        return self._git.run(['footers', '--key', 'Change-Id',
-                              self.sha]).strip()
+        return self._git.run(
+            ['footers', '--key', 'Change-Id', self.sha]
+        ).strip()
 
     def link(self) -> str:
         """Returns the Link footer if it is present."""
@@ -103,17 +112,20 @@ class ChromiumCommit:
 
     def filtered_changed_files(self) -> List[str]:
         """Returns a list of modified exportable files."""
-        changed_files = self._git.run([
-            'diff-tree',
-            '--name-only',
-            '--no-commit-id',
-            '-r',
-            self.sha,
-            '--',
-            self.test_root,
-        ]).splitlines()
+        changed_files = self._git.run(
+            [
+                'diff-tree',
+                '--name-only',
+                '--no-commit-id',
+                '-r',
+                self.sha,
+                '--',
+                self.test_root,
+            ]
+        ).splitlines()
         return [
-            f for f in changed_files
+            f
+            for f in changed_files
             if is_file_exportable(f, self.project_config)
         ]
 

@@ -51,7 +51,8 @@ class ConfigureLoggingTestBase(unittest.TestCase):
             logging_level=logging_level,
             logger=logger,
             stream=log_stream,
-            include_time=False)
+            include_time=False,
+        )
         self._log = logger
         self._log_stream = log_stream
 

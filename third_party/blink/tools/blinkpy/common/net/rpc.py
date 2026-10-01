@@ -52,6 +52,7 @@ class Build(NamedTuple):
     If the build number is absent, this represents the latest build for a given
     builder.
     """
+
     builder_name: str
     build_number: Optional[int] = None
     build_id: Optional[str] = None
@@ -69,6 +70,7 @@ class BuildStatus(enum.Flag):
 
     [0]: https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/common.proto
     """
+
     SCHEDULED = enum.auto()
     STARTED = enum.auto()
     SUCCESS = enum.auto()
@@ -127,13 +129,15 @@ class BaseRPC:
 
     @memoized
     def _make_url(self, method):
-        return urlunsplit((
-            'https',
-            self._hostname,
-            '/prpc/%s/%s' % (self._service, method),
-            '',  # No query params
-            '',  # No fragment
-        ))
+        return urlunsplit(
+            (
+                'https',
+                self._hostname,
+                '/prpc/%s/%s' % (self._service, method),
+                '',  # No query params
+                '',  # No fragment
+            )
+        )
 
     def _luci_rpc(self, method, data):
         """Fetches json data through Luci RPCs
@@ -155,26 +159,20 @@ class BaseRPC:
         }
         url = self._make_url(method)
         body = json.dumps(data, separators=(',', ':')).encode()
-        make_request = functools.partial(self._web.request_and_read,
-                                         'POST',
-                                         url,
-                                         data=body,
-                                         headers=headers)
+        make_request = functools.partial(
+            self._web.request_and_read, 'POST', url, data=body, headers=headers
+        )
         try:
             response_body = NetworkTransaction().run(make_request)
             if response_body.startswith(RESPONSE_PREFIX):
-                response_body = response_body[len(RESPONSE_PREFIX):]
+                response_body = response_body[len(RESPONSE_PREFIX) :]
             return json.loads(response_body)
         except NetworkTimeout:
             _log.error('RPC request timed out. URL: %s', url)
             _log.debug('Full RPC request: %s', json.dumps(data, indent=2))
             return None
 
-    def _luci_rpc_paginated(self,
-                            method,
-                            data,
-                            field,
-                            count=1000):
+    def _luci_rpc_paginated(self, method, data, field, count=1000):
         """Retrieve entities from a pRPC method with paginated results.
 
         Some methods receive a request like:
@@ -206,8 +204,9 @@ class BaseRPC:
         """
         entities = []
         data['pageSize'] = count if count > 0 else 1000
-        while data.get('pageToken', True) and (count == 0
-                                               or count - len(entities) > 0):
+        while data.get('pageToken', True) and (
+            count == 0 or count - len(entities) > 0
+        ):
             response = self._luci_rpc(method, data)
             if not isinstance(response, dict):
                 break
@@ -217,11 +216,13 @@ class BaseRPC:
 
 
 class BuildbucketClient(BaseRPC):
-    def __init__(self,
-                 web,
-                 luci_auth,
-                 hostname='cr-buildbucket.appspot.com',
-                 service='buildbucket.v2.Builds'):
+    def __init__(
+        self,
+        web,
+        luci_auth,
+        hostname='cr-buildbucket.appspot.com',
+        service='buildbucket.v2.Builds',
+    ):
         super().__init__(web, luci_auth, hostname, service)
         self._batch_requests = []
 
@@ -233,12 +234,14 @@ class BuildbucketClient(BaseRPC):
             request['builder'] = {
                 'project': 'chromium',
                 'bucket': build.bucket,
-                'builder': build.builder_name
+                'builder': build.builder_name,
             }
             request['buildNumber'] = build.build_number
         else:
-            raise ValueError('bad GetBuild request: must provide either '
-                             'build ID or (builder and build number)')
+            raise ValueError(
+                'bad GetBuild request: must provide either '
+                'build ID or (builder and build number)'
+            )
         if build_fields:
             # The `builds.*` prefix is not needed for retrieving an individual
             # build.
@@ -248,33 +251,45 @@ class BuildbucketClient(BaseRPC):
     def _make_search_builds_body(self, predicate, build_fields=None):
         request = {'predicate': predicate}
         if build_fields:
-            request['fields'] = ','.join('builds.*.%s' % field
-                                         for field in build_fields)
+            request['fields'] = ','.join(
+                'builds.*.%s' % field for field in build_fields
+            )
         return request
 
     def get_build(self, build=None, build_fields=None):
-        return self._luci_rpc('GetBuild',
-                              self._make_get_build_body(build, build_fields))
+        return self._luci_rpc(
+            'GetBuild', self._make_get_build_body(build, build_fields)
+        )
 
     def search_builds(self, predicate, build_fields=None, count=0):
-        return self._luci_rpc_paginated('SearchBuilds',
-                                        self._make_search_builds_body(
-                                            predicate, build_fields),
-                                        'builds',
-                                        count=count)
+        return self._luci_rpc_paginated(
+            'SearchBuilds',
+            self._make_search_builds_body(predicate, build_fields),
+            'builds',
+            count=count,
+        )
 
     def add_get_build_req(self, build=None, build_fields=None):
         self._batch_requests.append(
-            ('getBuild', self._make_get_build_body(build,
-                                                   build_fields), None, None))
+            (
+                'getBuild',
+                self._make_get_build_body(build, build_fields),
+                None,
+                None,
+            )
+        )
 
     def add_search_builds_req(self, predicate, build_fields=None, count=1000):
         # Just try to extract the repeated field and truncate it to `count`
         # items, at most.
         self._batch_requests.append(
-            ('searchBuilds',
-             self._make_search_builds_body(predicate,
-                                           build_fields), 'builds', count))
+            (
+                'searchBuilds',
+                self._make_search_builds_body(predicate, build_fields),
+                'builds',
+                count,
+            )
+        )
 
     def execute_batch(self):
         """Execute the current batch request and yield the results.
@@ -289,9 +304,9 @@ class BuildbucketClient(BaseRPC):
             return
         batch_requests, self._batch_requests = self._batch_requests, []
         batch_request_body = {
-            'requests': [{
-                method: body
-            } for method, body, _, _ in batch_requests]
+            'requests': [
+                {method: body} for method, body, _, _ in batch_requests
+            ]
         }
         batch_response = self._luci_rpc('Batch', batch_request_body) or {}
         responses = batch_response.get('responses') or []
@@ -302,12 +317,19 @@ class BuildbucketClient(BaseRPC):
                 message = error.get('message', 'unknown error')
                 # Avoid the built-in `str.capitalize`, since it lowercases the
                 # remaining letters.
-                raise RPCError(message, method[0].upper() + method[1:],
-                               request_body, error.get('code'))
+                raise RPCError(
+                    message,
+                    method[0].upper() + method[1:],
+                    request_body,
+                    error.get('code'),
+                )
             unwrapped_response = response_body[method]
             if field:
-                yield from unwrapped_response[
-                    field][:count] if count > 0 else unwrapped_response[field]
+                yield from (
+                    unwrapped_response[field][:count]
+                    if count > 0
+                    else unwrapped_response[field]
+                )
             else:
                 yield unwrapped_response
 
@@ -317,38 +339,40 @@ class BuildbucketClient(BaseRPC):
 
 
 class ResultDBClient(BaseRPC):
-    def __init__(self,
-                 web,
-                 luci_auth,
-                 hostname='results.api.cr.dev',
-                 service='luci.resultdb.v1.ResultDB'):
+    def __init__(
+        self,
+        web,
+        luci_auth,
+        hostname='results.api.cr.dev',
+        service='luci.resultdb.v1.ResultDB',
+    ):
         super().__init__(web, luci_auth, hostname, service)
 
     def _get_invocations(self, build_ids):
         return ['invocations/build-%s' % build_id for build_id in build_ids]
 
-    def query_test_results(self,
-                           build_ids,
-                           predicate,
-                           read_mask: Optional[List[str]] = None,
-                           count=0):
+    def query_test_results(
+        self,
+        build_ids,
+        predicate,
+        read_mask: Optional[List[str]] = None,
+        count=0,
+    ):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
         }
         if read_mask:
             request['readMask'] = ','.join(read_mask)
-        return self._luci_rpc_paginated('QueryTestResults',
-                                        request,
-                                        'testResults',
-                                        count=count)
+        return self._luci_rpc_paginated(
+            'QueryTestResults', request, 'testResults', count=count
+        )
 
     def query_artifacts(self, build_ids, predicate, count=0):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
         }
-        return self._luci_rpc_paginated('QueryArtifacts',
-                                        request,
-                                        'artifacts',
-                                        count=count)
+        return self._luci_rpc_paginated(
+            'QueryArtifacts', request, 'artifacts', count=count
+        )

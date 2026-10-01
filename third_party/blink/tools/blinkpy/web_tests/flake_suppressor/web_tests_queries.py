@@ -12,7 +12,8 @@ SUBMITTED_BUILDS_SUBQUERY = """\
 SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY = """\
   sheriff_rotations_ci_builds AS ({chromium_builds}
   ),""".format(
-    chromium_builds=queries_module.SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE)
+    chromium_builds=queries_module.SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE
+)
 
 # Gets all failures from the past |sample_period| days from CI bots that did not
 # already have an associated test suppression when the test ran.
@@ -183,7 +184,8 @@ INNER JOIN passed_tests pt
 ON bf.name = pt.name AND bf.builder = pt.builder AND bf.test_suite = pt.test_suite
 GROUP BY bf.name, bf.id, bf.status, bf.builder, bf.test_suite, bf.date, bf.typ_expectations_string, bf.typ_tags_string;
 """.format(
-    sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY)
+    sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY
+)
 
 # Gets the failing input build names culprit results from the past
 # |sample_period| days from CI bots that did not already have an associated test
@@ -431,15 +433,19 @@ class WebTestsBigQueryQuerier(queries_module.BigQueryQuerier):
     def GetFailingBuildCulpritFromCiQuery(self) -> str:
         return CI_FAILED_BUILD_CULPRIT_TEST_QUERY
 
-    def GetFlakyOrFailingFromCIBuildersQuery(self,
-                                             builder_names: List[str]) -> str:
+    def GetFlakyOrFailingFromCIBuildersQuery(
+        self, builder_names: List[str]
+    ) -> str:
         return CI_FAILED_TEST_FROM_BUILDERS_QUERY.format(
-            builder_names=builder_names)
+            builder_names=builder_names
+        )
 
     def GetFailingBuildCulpritFromCIBuildersQuery(
-            self, builder_names: List[str]) -> str:
+        self, builder_names: List[str]
+    ) -> str:
         return CI_FAILED_BUILD_CULPRIT_FROM_BUILDERS_QUERY.format(
-            builder_names=builder_names)
+            builder_names=builder_names
+        )
 
     def GetFlakyOrFailingTryQuery(self) -> str:
         return TRY_FAILED_TEST_QUERY
@@ -450,7 +456,9 @@ class WebTestsBigQueryQuerier(queries_module.BigQueryQuerier):
     def GetResultCountTryQuery(self) -> str:
         return TRY_RESULT_COUNT_QUERY
 
-    def GetResultCountFromCIBuildersQuery(self,
-                                          builder_names: List[str]) -> str:
+    def GetResultCountFromCIBuildersQuery(
+        self, builder_names: List[str]
+    ) -> str:
         return CI_RESULT_COUNT_FROM_BUILDERS_QUERY.format(
-            builder_names=builder_names)
+            builder_names=builder_names
+        )

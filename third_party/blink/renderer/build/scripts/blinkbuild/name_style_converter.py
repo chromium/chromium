@@ -83,8 +83,7 @@ _TOKEN_PATTERNS = [
     '[0-9]+',
 ]
 
-_TOKEN_RE = re.compile(r'(' + '|'.join(SPECIAL_TOKENS + _TOKEN_PATTERNS) +
-                       r')')
+_TOKEN_RE = re.compile(r'(' + '|'.join(SPECIAL_TOKENS + _TOKEN_PATTERNS) + r')')
 
 
 def tokenize_name(name):
@@ -107,18 +106,20 @@ def tokenize_name(name):
     # In case |name| is written in lowerCamelCase, we try to match special
     # tokens that contains numbers ignoring cases only at the first step.
     tokens = []
-    match = re.search(r'^(' + '|'.join(_SPECIAL_TOKENS_WITH_NUMBERS) + r')',
-                      name, re.IGNORECASE)
+    match = re.search(
+        r'^(' + '|'.join(_SPECIAL_TOKENS_WITH_NUMBERS) + r')',
+        name,
+        re.IGNORECASE,
+    )
     if match:
         tokens.append(match.group(0))
-        name = name[match.end(0):]
+        name = name[match.end(0) :]
 
     return tokens + _TOKEN_RE.findall(name)
 
 
 class NameStyleConverter(object):
-    """Converts names from camelCase to various other styles.
-    """
+    """Converts names from camelCase to various other styles."""
 
     def __init__(self, name):
         self.tokens = tokenize_name(name)
@@ -145,21 +146,21 @@ class NameStyleConverter(object):
 
     def to_snake_case(self):
         """Snake case is the file and variable name style per Google C++ Style
-           Guide:
-           https://google.github.io/styleguide/cppguide.html#Variable_Names
+        Guide:
+        https://google.github.io/styleguide/cppguide.html#Variable_Names
 
-           Also known as the hacker case.
-           https://en.wikipedia.org/wiki/Snake_case
+        Also known as the hacker case.
+        https://en.wikipedia.org/wiki/Snake_case
         """
         return '_'.join([token.lower() for token in self.tokens])
 
     def to_upper_camel_case(self):
         """Upper-camel case is the class and function name style per
-           Google C++ Style Guide:
-           https://google.github.io/styleguide/cppguide.html#Function_Names
+        Google C++ Style Guide:
+        https://google.github.io/styleguide/cppguide.html#Function_Names
 
-           Also known as the PascalCase.
-           https://en.wikipedia.org/wiki/Camel_case.
+        Also known as the PascalCase.
+        https://en.wikipedia.org/wiki/Camel_case.
         """
         tokens = self.tokens
         # If the first token is one of SPECIAL_TOKENS, we should replace the
@@ -175,18 +176,19 @@ class NameStyleConverter(object):
 
     def to_lower_camel_case(self):
         """Lower camel case is the name style for attribute names and operation
-           names in web platform APIs.
-           e.g. 'addEventListener', 'documentURI', 'fftSize'
-           https://en.wikipedia.org/wiki/Camel_case.
+        names in web platform APIs.
+        e.g. 'addEventListener', 'documentURI', 'fftSize'
+        https://en.wikipedia.org/wiki/Camel_case.
         """
         if not self.tokens:
             return ''
         return self.tokens[0].lower() + ''.join(
-            [token[0].upper() + token[1:] for token in self.tokens[1:]])
+            [token[0].upper() + token[1:] for token in self.tokens[1:]]
+        )
 
     def to_macro_case(self):
         """Macro case is the macro name style per Google C++ Style Guide:
-           https://google.github.io/styleguide/cppguide.html#Macro_Names
+        https://google.github.io/styleguide/cppguide.html#Macro_Names
         """
         return '_'.join([token.upper() for token in self.tokens])
 

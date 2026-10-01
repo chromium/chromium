@@ -31,11 +31,14 @@ Result = json_results.Result
 ResultType = json_results.ResultType
 FailureReason = json_results.FailureReason
 # Automatically apply Blink's encoding/decoding to test names.
-Expectation = functools.partial(expectations_parser.Expectation,
-                                encode_func=_uri_encode_spaces)
-TestExpectations = functools.partial(expectations_parser.TestExpectations,
-                                     encode_func=_uri_encode_spaces,
-                                     decode_func=_uri_decode_spaces)
+Expectation = functools.partial(
+    expectations_parser.Expectation, encode_func=_uri_encode_spaces
+)
+TestExpectations = functools.partial(
+    expectations_parser.TestExpectations,
+    encode_func=_uri_encode_spaces,
+    decode_func=_uri_decode_spaces,
+)
 # Type aliases for use with type hinting since the class references are
 # overridden with partials.
 ExpectationType = expectations_parser.Expectation

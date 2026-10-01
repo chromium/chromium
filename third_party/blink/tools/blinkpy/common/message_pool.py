@@ -88,10 +88,12 @@ class Worker(MessageHandler):
         """
 
 
-def get(caller: MessageHandler,
-        worker_factory: Callable[['_WorkerProcess'], Worker],
-        num_workers: int,
-        host: Optional[Host] = None):
+def get(
+    caller: MessageHandler,
+    worker_factory: Callable[['_WorkerProcess'], Worker],
+    num_workers: int,
+    host: Optional[Host] = None,
+):
     """Make a message pool object.
 
     Returns:
@@ -110,7 +112,7 @@ class _MessagePool(object):
         self._workers_stopped = set()
         self._host = host
         self._name = 'manager'
-        self._running_inline = (self._num_workers == 1)
+        self._running_inline = self._num_workers == 1
         # When both `_messages_to_*` queues are saturated, further `put()`s on
         # either will block. The `_producer_thread` avoids the deadlock by
         # asynchronously feeding the workers, which frees up `run()` to handle
@@ -140,9 +142,10 @@ class _MessagePool(object):
         else:
             self._producer_thread = threading.Thread(
                 target=self._message_workers,
-                args=(messages, ),
+                args=(messages,),
                 name='message-pool-producer',
-                daemon=True)
+                daemon=True,
+            )
             self._producer_thread.start()
 
         self.wait()
@@ -151,11 +154,9 @@ class _MessagePool(object):
         for message in messages:
             self._messages_to_worker.put(
                 _Message(
-                    self._name,
-                    message[0],
-                    message[1:],
-                    from_user=True,
-                    logs=()))
+                    self._name, message[0], message[1:], from_user=True, logs=()
+                )
+            )
 
         for _ in range(self._num_workers):
             self._messages_to_worker.put(
@@ -164,7 +165,9 @@ class _MessagePool(object):
                     'stop',
                     message_args=(),
                     from_user=False,
-                    logs=()))
+                    logs=(),
+                )
+            )
 
     def _start_workers(self):
         assert not self._workers
@@ -174,12 +177,16 @@ class _MessagePool(object):
             host = self._host
 
         for worker_number in range(self._num_workers):
-            worker = _WorkerProcess(host, self._messages_to_manager,
-                                    self._messages_to_worker,
-                                    self._worker_factory, worker_number,
-                                    self._running_inline,
-                                    self if self._running_inline else None,
-                                    self._worker_log_level())
+            worker = _WorkerProcess(
+                host,
+                self._messages_to_manager,
+                self._messages_to_worker,
+                self._worker_factory,
+                worker_number,
+                self._running_inline,
+                self if self._running_inline else None,
+                self._worker_log_level(),
+            )
             self._workers.append(worker)
             worker.start()
 
@@ -232,7 +239,8 @@ class _MessagePool(object):
             producer_thread.join(10)
             if producer_thread.is_alive():
                 raise WorkerException(
-                    "message pool producer thread didn't join in time")
+                    "message pool producer thread didn't join in time"
+                )
 
     def _log_messages(self, messages):
         for message in messages:
@@ -262,8 +270,9 @@ class _MessagePool(object):
                 message = self._messages_to_manager.get(block)
                 self._log_messages(message.logs)
                 if message.from_user:
-                    self._caller.handle(message.name, message.src,
-                                        *message.args)
+                    self._caller.handle(
+                        message.name, message.src, *message.args
+                    )
                     continue
                 method = getattr(self, '_handle_' + message.name)
                 assert method, 'bad message %s' % repr(message)
@@ -286,13 +295,26 @@ class _Message(object):
 
     def __repr__(self):
         return '_Message(src=%s, name=%s, args=%s, from_user=%s, logs=%s)' % (
-            self.src, self.name, self.args, self.from_user, self.logs)
+            self.src,
+            self.name,
+            self.args,
+            self.from_user,
+            self.logs,
+        )
 
 
 class _WorkerProcess(multiprocessing.Process):
-    def __init__(self, host, messages_to_manager, messages_to_worker,
-                 worker_factory, worker_number, running_inline, manager,
-                 log_level):
+    def __init__(
+        self,
+        host,
+        messages_to_manager,
+        messages_to_worker,
+        worker_factory,
+        worker_number,
+        running_inline,
+        manager,
+        log_level,
+    ):
         super().__init__()
         self.host = host
         self.worker_number = worker_number
@@ -358,7 +380,8 @@ class _WorkerProcess(multiprocessing.Process):
                     self._yield_to_manager()
                 else:
                     assert message.name == 'stop', 'bad message %s' % repr(
-                        message)
+                        message
+                    )
                     break
 
             _log.debug('%s exiting', self.name)
@@ -391,7 +414,8 @@ class _WorkerProcess(multiprocessing.Process):
         log_messages = self.log_messages
         self.log_messages = []
         self._messages_to_manager.put(
-            _Message(self.name, name, args, from_user, log_messages))
+            _Message(self.name, name, args, from_user, log_messages)
+        )
 
     def _raise(self, exc_info):
         exception_type, exception_value, exception_traceback = exc_info
@@ -402,16 +426,20 @@ class _WorkerProcess(multiprocessing.Process):
             _log.debug('%s: interrupted, exiting', self.name)
             stack_utils.log_traceback(_log.debug, exception_traceback)
         else:
-            _log.error("%s: %s('%s') raised:",
-                       self.name, exception_value.__class__.__name__,
-                       str(exception_value))
+            _log.error(
+                "%s: %s('%s') raised:",
+                self.name,
+                exception_value.__class__.__name__,
+                str(exception_value),
+            )
             stack_utils.log_traceback(_log.error, exception_traceback)
         # Since tracebacks aren't picklable, send the extracted stack instead.
         stack = traceback.extract_tb(exception_traceback)
         self._post(
             name='worker_exception',
             args=(exception_type, exception_value, stack),
-            from_user=False)
+            from_user=False,
+        )
 
     def _set_up_logging(self):
         self._logger = logging.getLogger()

@@ -26,41 +26,58 @@ from .reference import RefById
 from .user_defined_type import UserDefinedType
 
 
-class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
-                WithExposure, WithComponent, WithDebugInfo):
+class Interface(
+    UserDefinedType,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-interfaces"""
 
-    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     is_partial,
-                     is_mixin,
-                     inherited=None,
-                     attributes=None,
-                     constants=None,
-                     constructors=None,
-                     legacy_factory_functions=None,
-                     operations=None,
-                     async_iterable=None,
-                     iterable=None,
-                     maplike=None,
-                     setlike=None,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        IRMap.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            is_partial,
+            is_mixin,
+            inherited=None,
+            attributes=None,
+            constants=None,
+            constructors=None,
+            legacy_factory_functions=None,
+            operations=None,
+            async_iterable=None,
+            iterable=None,
+            maplike=None,
+            setlike=None,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(is_partial, bool)
             assert isinstance(is_mixin, bool)
             assert inherited is None or isinstance(inherited, RefById)
             assert attributes is None or isinstance(attributes, (list, tuple))
             assert constants is None or isinstance(constants, (list, tuple))
-            assert constructors is None or isinstance(constructors,
-                                                      (list, tuple))
+            assert constructors is None or isinstance(
+                constructors, (list, tuple)
+            )
             assert legacy_factory_functions is None or isinstance(
-                legacy_factory_functions, (list, tuple))
+                legacy_factory_functions, (list, tuple)
+            )
             assert operations is None or isinstance(operations, (list, tuple))
             assert async_iterable is None or isinstance(
-                async_iterable, AsyncIterable.IR)
+                async_iterable, AsyncIterable.IR
+            )
             assert iterable is None or isinstance(iterable, Iterable.IR)
             assert maplike is None or isinstance(maplike, Maplike.IR)
             assert setlike is None or isinstance(setlike, Setlike.IR)
@@ -71,19 +88,22 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             legacy_factory_functions = legacy_factory_functions or []
             operations = operations or []
             assert all(
-                isinstance(attribute, Attribute.IR)
-                for attribute in attributes)
+                isinstance(attribute, Attribute.IR) for attribute in attributes
+            )
             assert all(
-                isinstance(constant, Constant.IR) for constant in constants)
+                isinstance(constant, Constant.IR) for constant in constants
+            )
             assert all(
                 isinstance(constructor, Constructor.IR)
-                for constructor in constructors)
+                for constructor in constructors
+            )
             assert all(
                 isinstance(legacy_factory_function, Constructor.IR)
-                for legacy_factory_function in legacy_factory_functions)
+                for legacy_factory_function in legacy_factory_functions
+            )
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             kind = None
             if is_partial:
@@ -178,85 +198,126 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         self._is_mixin = ir.is_mixin
         self._inherited = ir.inherited
         self._subclasses = tuple(ir.subclasses)
-        self._attributes = tuple([
-            Attribute(attribute_ir, owner=self)
-            for attribute_ir in ir.attributes
-        ])
-        self._constants = tuple([
-            Constant(constant_ir, owner=self) for constant_ir in ir.constants
-        ])
-        self._constructors = tuple([
-            Constructor(constructor_ir, owner=self)
-            for constructor_ir in ir.constructors
-        ])
-        self._constructor_groups = tuple([
-            ConstructorGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._constructors)),
-                owner=self) for group_ir in ir.constructor_groups
-        ])
+        self._attributes = tuple(
+            [
+                Attribute(attribute_ir, owner=self)
+                for attribute_ir in ir.attributes
+            ]
+        )
+        self._constants = tuple(
+            [Constant(constant_ir, owner=self) for constant_ir in ir.constants]
+        )
+        self._constructors = tuple(
+            [
+                Constructor(constructor_ir, owner=self)
+                for constructor_ir in ir.constructors
+            ]
+        )
+        self._constructor_groups = tuple(
+            [
+                ConstructorGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._constructors,
+                        )
+                    ),
+                    owner=self,
+                )
+                for group_ir in ir.constructor_groups
+            ]
+        )
         assert len(self._constructor_groups) <= 1
-        self._legacy_factory_functions = tuple([
-            Constructor(legacy_factory_function_ir, owner=self)
-            for legacy_factory_function_ir in ir.legacy_factory_functions
-        ])
-        self._legacy_factory_function_groups = tuple([
-            ConstructorGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._legacy_factory_functions)),
-                owner=self) for group_ir in ir.legacy_factory_function_groups
-        ])
-        self._operations = tuple([
-            Operation(operation_ir, owner=self)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(group_ir,
-                           list(
-                               filter(
-                                   lambda x: x.is_static == group_ir.is_static
-                                   and x.identifier == group_ir.identifier,
-                                   self._operations)),
-                           owner=self) for group_ir in ir.operation_groups
-        ])
+        self._legacy_factory_functions = tuple(
+            [
+                Constructor(legacy_factory_function_ir, owner=self)
+                for legacy_factory_function_ir in ir.legacy_factory_functions
+            ]
+        )
+        self._legacy_factory_function_groups = tuple(
+            [
+                ConstructorGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._legacy_factory_functions,
+                        )
+                    ),
+                    owner=self,
+                )
+                for group_ir in ir.legacy_factory_function_groups
+            ]
+        )
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=self)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: (
+                                x.is_static == group_ir.is_static
+                                and x.identifier == group_ir.identifier
+                            ),
+                            self._operations,
+                        )
+                    ),
+                    owner=self,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
         self._exposed_constructs = tuple(ir.exposed_constructs)
         self._legacy_window_aliases = tuple(ir.legacy_window_aliases)
         self._indexed_and_named_properties = None
         indexed_and_named_property_operations = list(
-            filter(lambda x: x.is_indexed_or_named_property_operation,
-                   self._operations))
+            filter(
+                lambda x: x.is_indexed_or_named_property_operation,
+                self._operations,
+            )
+        )
         if indexed_and_named_property_operations:
             self._indexed_and_named_properties = IndexedAndNamedProperties(
-                indexed_and_named_property_operations, owner=self)
+                indexed_and_named_property_operations, owner=self
+            )
         self._stringifier = None
         stringifier_operation_irs = list(
-            filter(lambda x: x.is_stringifier, ir.operations))
+            filter(lambda x: x.is_stringifier, ir.operations)
+        )
         if stringifier_operation_irs:
             assert len(stringifier_operation_irs) == 1
             op_ir = make_copy(stringifier_operation_irs[0])
             if not op_ir.code_generator_info.property_implemented_as:
                 if op_ir.identifier:
                     op_ir.code_generator_info.set_property_implemented_as(
-                        str(op_ir.identifier))
+                        str(op_ir.identifier)
+                    )
                 op_ir.change_identifier(Identifier('toString'))
             operation = Operation(op_ir, owner=self)
             attribute = None
             if operation.stringifier_attribute:
                 attr_id = operation.stringifier_attribute
                 attributes = list(
-                    filter(lambda x: x.identifier == attr_id,
-                           self._attributes))
+                    filter(lambda x: x.identifier == attr_id, self._attributes)
+                )
                 assert len(attributes) == 1
                 attribute = attributes[0]
             self._stringifier = Stringifier(operation, attribute, owner=self)
-        self._async_iterable = (AsyncIterable(ir.async_iterable, owner=self)
-                                if ir.async_iterable else None)
-        self._iterable = (Iterable(ir.iterable, owner=self)
-                          if ir.iterable else None)
+        self._async_iterable = (
+            AsyncIterable(ir.async_iterable, owner=self)
+            if ir.async_iterable
+            else None
+        )
+        self._iterable = (
+            Iterable(ir.iterable, owner=self) if ir.iterable else None
+        )
         self._maplike = Maplike(ir.maplike, owner=self) if ir.maplike else None
         self._setlike = Setlike(ir.setlike, owner=self) if ir.setlike else None
         self._async_iterator = ir.async_iterator
@@ -369,7 +430,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         Returns a list of the constructs that are exposed on this global object.
         """
         return tuple(
-            map(lambda ref: ref.target_object, self._exposed_constructs))
+            map(lambda ref: ref.target_object, self._exposed_constructs)
+        )
 
     @property
     def legacy_window_aliases(self):
@@ -442,7 +504,8 @@ class LegacyWindowAlias(WithIdentifier, WithExtendedAttributes, WithExposure):
 
         WithIdentifier.__init__(self, identifier)
         WithExtendedAttributes.__init__(
-            self, extended_attributes, readonly=True)
+            self, extended_attributes, readonly=True
+        )
         WithExposure.__init__(self, exposure, readonly=True)
 
         self._original = original
@@ -463,8 +526,7 @@ class IndexedAndNamedProperties(WithOwner):
 
     def __init__(self, operations, owner):
         assert isinstance(operations, (list, tuple))
-        assert all(
-            isinstance(operation, Operation) for operation in operations)
+        assert all(isinstance(operation, Operation) for operation in operations)
 
         WithOwner.__init__(self, owner)
 
@@ -511,10 +573,12 @@ class IndexedAndNamedProperties(WithOwner):
     @property
     def is_named_property_enumerable(self):
         named_getter = self.named_getter
-        return bool(named_getter
-                    and 'NotEnumerable' not in named_getter.extended_attributes
-                    and 'LegacyUnenumerableNamedProperties' not in self.owner.
-                    extended_attributes)
+        return bool(
+            named_getter
+            and 'NotEnumerable' not in named_getter.extended_attributes
+            and 'LegacyUnenumerableNamedProperties'
+            not in self.owner.extended_attributes
+        )
 
     @property
     def indexed_getter(self):
@@ -589,24 +653,28 @@ class Stringifier(WithOwner):
 
 class AsyncIterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-async-iterable"""
+
     class IR(WithExtendedAttributes, WithExposure, WithDebugInfo):
-        def __init__(self,
-                     key_type=None,
-                     value_type=None,
-                     operations=None,
-                     arguments=None,
-                     extended_attributes=None,
-                     debug_info=None):
+        def __init__(
+            self,
+            key_type=None,
+            value_type=None,
+            operations=None,
+            arguments=None,
+            extended_attributes=None,
+            debug_info=None,
+        ):
             assert key_type is None or isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
             assert isinstance(operations, (list, tuple))
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
             assert arguments is None or isinstance(arguments, (list, tuple))
             arguments = arguments or []
             assert all(
-                isinstance(argument, Argument.IR) for argument in arguments)
+                isinstance(argument, Argument.IR) for argument in arguments
+            )
 
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithExposure.__init__(self)
@@ -628,20 +696,30 @@ class AsyncIterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
 
         self._key_type = ir.key_type
         self._value_type = ir.value_type
-        self._operations = tuple([
-            Operation(operation_ir, owner=owner)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=owner) for group_ir in ir.operation_groups
-        ])
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=owner)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._operations,
+                        )
+                    ),
+                    owner=owner,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
         self._arguments = tuple(
-            [Argument(arg_ir, self) for arg_ir in ir.arguments])
+            [Argument(arg_ir, self) for arg_ir in ir.arguments]
+        )
 
     @property
     def key_type(self):
@@ -681,19 +759,21 @@ class Iterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-iterable"""
 
     class IR(WithExtendedAttributes, WithExposure, WithDebugInfo):
-        def __init__(self,
-                     key_type=None,
-                     value_type=None,
-                     operations=None,
-                     extended_attributes=None,
-                     debug_info=None):
+        def __init__(
+            self,
+            key_type=None,
+            value_type=None,
+            operations=None,
+            extended_attributes=None,
+            debug_info=None,
+        ):
             assert key_type is None or isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
             assert operations is None or isinstance(operations, (list, tuple))
             operations = operations or []
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithExposure.__init__(self)
@@ -714,18 +794,27 @@ class Iterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
 
         self._key_type = ir.key_type
         self._value_type = ir.value_type
-        self._operations = tuple([
-            Operation(operation_ir, owner=owner)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=owner) for group_ir in ir.operation_groups
-        ])
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=owner)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._operations,
+                        )
+                    ),
+                    owner=owner,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
 
     @property
     def key_type(self):
@@ -760,13 +849,15 @@ class Maplike(WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-maplike"""
 
     class IR(WithDebugInfo):
-        def __init__(self,
-                     key_type,
-                     value_type,
-                     is_readonly,
-                     attributes=None,
-                     operations=None,
-                     debug_info=None):
+        def __init__(
+            self,
+            key_type,
+            value_type,
+            is_readonly,
+            attributes=None,
+            operations=None,
+            debug_info=None,
+        ):
             assert isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
             assert isinstance(is_readonly, bool)
@@ -775,11 +866,11 @@ class Maplike(WithDebugInfo):
             attributes = attributes or []
             operations = operations or []
             assert all(
-                isinstance(attribute, Attribute.IR)
-                for attribute in attributes)
+                isinstance(attribute, Attribute.IR) for attribute in attributes
+            )
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             WithDebugInfo.__init__(self, debug_info)
 
@@ -799,22 +890,33 @@ class Maplike(WithDebugInfo):
         self._key_type = ir.key_type
         self._value_type = ir.value_type
         self._is_readonly = ir.is_readonly
-        self._attributes = tuple([
-            Attribute(attribute_ir, owner=owner)
-            for attribute_ir in ir.attributes
-        ])
-        self._operations = tuple([
-            Operation(operation_ir, owner=owner)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=owner) for group_ir in ir.operation_groups
-        ])
+        self._attributes = tuple(
+            [
+                Attribute(attribute_ir, owner=owner)
+                for attribute_ir in ir.attributes
+            ]
+        )
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=owner)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._operations,
+                        )
+                    ),
+                    owner=owner,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
 
     @property
     def key_type(self):
@@ -854,12 +956,14 @@ class Setlike(WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-setlike"""
 
     class IR(WithDebugInfo):
-        def __init__(self,
-                     value_type,
-                     is_readonly,
-                     attributes=None,
-                     operations=None,
-                     debug_info=None):
+        def __init__(
+            self,
+            value_type,
+            is_readonly,
+            attributes=None,
+            operations=None,
+            debug_info=None,
+        ):
             assert isinstance(value_type, IdlType)
             assert isinstance(is_readonly, bool)
             assert attributes is None or isinstance(attributes, (list, tuple))
@@ -867,11 +971,11 @@ class Setlike(WithDebugInfo):
             attributes = attributes or []
             operations = operations or []
             assert all(
-                isinstance(attribute, Attribute.IR)
-                for attribute in attributes)
+                isinstance(attribute, Attribute.IR) for attribute in attributes
+            )
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             WithDebugInfo.__init__(self, debug_info)
 
@@ -890,22 +994,33 @@ class Setlike(WithDebugInfo):
 
         self._value_type = ir.value_type
         self._is_readonly = ir.is_readonly
-        self._attributes = tuple([
-            Attribute(attribute_ir, owner=owner)
-            for attribute_ir in ir.attributes
-        ])
-        self._operations = tuple([
-            Operation(operation_ir, owner=owner)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=owner) for group_ir in ir.operation_groups
-        ])
+        self._attributes = tuple(
+            [
+                Attribute(attribute_ir, owner=owner)
+                for attribute_ir in ir.attributes
+            ]
+        )
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=owner)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._operations,
+                        )
+                    ),
+                    owner=owner,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
 
     @property
     def key_type(self):

@@ -40,11 +40,13 @@ class NetworkTimeout(Exception):
 
 
 class NetworkTransaction(object):
-    def __init__(self,
-                 initial_backoff_seconds=10,
-                 grown_factor=1.5,
-                 timeout_seconds=60,
-                 return_none_on_404=False):
+    def __init__(
+        self,
+        initial_backoff_seconds=10,
+        grown_factor=1.5,
+        timeout_seconds=60,
+        return_none_on_404=False,
+    ):
         self._initial_backoff_seconds = initial_backoff_seconds
         self._grown_factor = grown_factor
         self._timeout_seconds = timeout_seconds
@@ -64,13 +66,17 @@ class NetworkTransaction(object):
                 if response is not None:
                     if self._return_none_on_404 and response.status_code == 404:
                         return None
-                    _log.warning('Received HTTP status %s loading "%s": %s. ',
-                                 response.status_code, response.url,
-                                 response.reason)
+                    _log.warning(
+                        'Received HTTP status %s loading "%s": %s. ',
+                        response.status_code,
+                        response.url,
+                        response.reason,
+                    )
                 else:
                     _log.warning('Received RequestException: %s ...', error)
-                _log.warning('Retrying in %.3f seconds...',
-                             self._backoff_seconds)
+                _log.warning(
+                    'Retrying in %.3f seconds...', self._backoff_seconds
+                )
                 self._check_for_timeout()
                 self._sleep()
             retry_index += 1

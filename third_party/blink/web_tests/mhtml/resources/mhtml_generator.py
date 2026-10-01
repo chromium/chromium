@@ -41,21 +41,25 @@ import os.path
 import quopri
 import sys
 
+
 class ArgumentError(Exception):
     pass
 
+
 def _encode_quopri(msg):
     """Own version of quopri isntead of email.encoders.quopri which seems to
-       be buggy in python3"""
+    be buggy in python3"""
     orig = msg.get_payload()
     encdata = quopri.encodestring(orig, quotetabs=True)
     encdata.replace(b' ', b'=20')
     msg.set_payload(encdata.decode('ascii', 'surrogateescape'))
     msg['Content-Transfer-Encoding'] = 'quoted-printable'
 
+
 def _encode_binary(msg):
     email.encoders.encode_noop(msg)
     msg['Content-Transfer-Encoding'] = 'binary'
+
 
 TRANSFER_ENCODINGS = {
     "8bit": email.encoders.encode_7or8bit,
@@ -63,9 +67,11 @@ TRANSFER_ENCODINGS = {
     "base64": email.encoders.encode_base64,
     "binary": _encode_binary,
     "none": email.encoders.encode_noop,
-    "quoted-printable": _encode_quopri}
+    "quoted-printable": _encode_quopri,
+}
 
 BASE = "http://test/"
+
 
 def generate_message(parts):
     """Generate a mime message from the given parts"""
@@ -82,6 +88,7 @@ def generate_message(parts):
             main.attach(sub)
 
     return main
+
 
 def parse_arguments(args):
     """Parse arguments to extract file, transfer encoding, mime pairs"""
@@ -109,14 +116,16 @@ def parse_arguments(args):
 
     return parts
 
+
 def main():
     PARTS = parse_arguments(sys.argv[1:])
     MESSAGE = generate_message(PARTS)
 
-    GENERATOR = email.generator.Generator(sys.stdout, mangle_from_=True,
-                                          maxheaderlen=1000)
+    GENERATOR = email.generator.Generator(
+        sys.stdout, mangle_from_=True, maxheaderlen=1000
+    )
     GENERATOR.flatten(MESSAGE, linesep="\r\n")
+
 
 if __name__ == "__main__":
     main()
-

@@ -50,11 +50,9 @@ class ManagerTest(unittest.TestCase):
             port = host.port_factory.get('test-mac-mac10.10')
             manager = Manager(
                 port,
-                options=optparse.Values({
-                    'http': True,
-                    'max_locked_shards': 1
-                }),
-                printer=FakePrinter())
+                options=optparse.Values({'http': True, 'max_locked_shards': 1}),
+                printer=FakePrinter(),
+            )
             return manager
 
         manager = get_manager()
@@ -67,11 +65,9 @@ class ManagerTest(unittest.TestCase):
         def get_manager(port):
             manager = Manager(
                 port,
-                options=optparse.Values({
-                    'http': True,
-                    'max_locked_shards': 1
-                }),
-                printer=FakePrinter())
+                options=optparse.Values({'http': True, 'max_locked_shards': 1}),
+                printer=FakePrinter(),
+            )
             return manager
 
         def start_http_server(additional_dirs, number_of_drivers):
@@ -93,7 +89,9 @@ class ManagerTest(unittest.TestCase):
         port.stop_http_server = stop_http_server
         port.stop_websocket_server = stop_websocket_server
 
-        self.http_started = self.http_stopped = self.websocket_started = self.websocket_stopped = False
+        self.http_started = self.http_stopped = self.websocket_started = (
+            self.websocket_stopped
+        ) = False
         manager = get_manager(port)
         manager._start_servers(['http/tests/foo.html'])
         self.assertEqual(self.http_started, True)
@@ -102,7 +100,9 @@ class ManagerTest(unittest.TestCase):
         self.assertEqual(self.http_stopped, True)
         self.assertEqual(self.websocket_stopped, False)
 
-        self.http_started = self.http_stopped = self.websocket_started = self.websocket_stopped = False
+        self.http_started = self.http_stopped = self.websocket_started = (
+            self.websocket_stopped
+        ) = False
         manager._start_servers(['http/tests/websocket/foo.html'])
         self.assertEqual(self.http_started, True)
         self.assertEqual(self.websocket_started, True)
@@ -110,7 +110,9 @@ class ManagerTest(unittest.TestCase):
         self.assertEqual(self.http_stopped, True)
         self.assertEqual(self.websocket_stopped, True)
 
-        self.http_started = self.http_stopped = self.websocket_started = self.websocket_stopped = False
+        self.http_started = self.http_stopped = self.websocket_started = (
+            self.websocket_stopped
+        ) = False
         manager._start_servers(['fast/html/foo.html'])
         self.assertEqual(self.http_started, False)
         self.assertEqual(self.websocket_started, False)
@@ -124,12 +126,11 @@ class ManagerTest(unittest.TestCase):
             port = host.port_factory.get('test-mac-mac10.10')
             manager = Manager(
                 port,
-                options=optparse.Values({
-                    'test_list': None,
-                    'http': True,
-                    'max_locked_shards': 1
-                }),
-                printer=FakePrinter())
+                options=optparse.Values(
+                    {'test_list': None, 'http': True, 'max_locked_shards': 1}
+                ),
+                printer=FakePrinter(),
+            )
             return manager
 
         host = MockHost()
@@ -145,30 +146,31 @@ class ManagerTest(unittest.TestCase):
         port = host.port_factory.get('test-mac-mac10.10')
 
         def get_manager():
-            manager = Manager(port,
-                              options=optparse.Values({'max_locked_shards':
-                                                       1}),
-                              printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({'max_locked_shards': 1}),
+                printer=FakePrinter(),
+            )
             return manager
 
         manager = get_manager()
         paths = [
             "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
             "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
-            "fast/backgrounds/size/backgroundSize-*"
+            "fast/backgrounds/size/backgroundSize-*",
         ]
         # As returned by base.tests()
         test_names = [
             "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
             "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
             "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html",
-            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html"
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
         ]
         expected_order = [
             "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
             "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
             "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
-            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html"
+            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html",
         ]
         test_names_restored = manager._restore_order(paths, test_names)
         self.assertEqual(expected_order, test_names_restored)

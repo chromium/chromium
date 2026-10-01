@@ -37,47 +37,58 @@ _log = logging.getLogger(__name__)
 
 
 def ParseArgs() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=(
-        'Script to fuzzy diff analyzer for flaky image comparison web tests'))
+    parser = argparse.ArgumentParser(
+        description=(
+            'Script to fuzzy diff analyzer for flaky image comparison web tests'
+        )
+    )
     parser.add_argument(
         '--project',
         default='chrome-unexpected-pass-data',
-        help=('The billing project to use for BigQuery queries. '
-              'Must have access to the ResultDB BQ tables, e.g. '
-              '"luci-resultdb.chromium.web_tests_ci_test_results".'))
+        help=(
+            'The billing project to use for BigQuery queries. '
+            'Must have access to the ResultDB BQ tables, e.g. '
+            '"luci-resultdb.chromium.web_tests_ci_test_results".'
+        ),
+    )
     parser.add_argument(
         '--image-diff-num-threshold',
         default=3,
         action="store",
-        help=
-        "Threshold for the number of image diff data, must have this number "
-        "to analyze the fuzzy diff range.")
+        help="Threshold for the number of image diff data, must have this number "
+        "to analyze the fuzzy diff range.",
+    )
     parser.add_argument(
         '--distinct-diff-num-threshold',
         default=3,
         action="store",
         help="Threshold for the number of distinct image diff data, must this"
-        "number to furtuher provide prcentile data.")
-    parser.add_argument('--sample-period',
-                        type=int,
-                        default=1,
-                        help='The number of days to sample data from.')
+        "number to furtuher provide prcentile data.",
+    )
+    parser.add_argument(
+        '--sample-period',
+        type=int,
+        default=1,
+        help='The number of days to sample data from.',
+    )
     parser.add_argument(
         '--test-path',
-        help='The test path that contains the tests to do fuzzy diff analyzer.'
+        help='The test path that contains the tests to do fuzzy diff analyzer.',
     )
     parser.add_argument(
         '--check-bugs-only',
         action='store_true',
         default=False,
         help='Only checks the image diff tests result on existing bugs in the'
-        ' LUCI analysis database.')
+        ' LUCI analysis database.',
+    )
     parser.add_argument(
         '--attach-analysis-result',
         action='store_true',
         default=False,
         help='Attach the fuzzy diff analysis result to the corresponding bug.'
-        ' Only used with --check-bugs-only flag.')
+        ' Only used with --check-bugs-only flag.',
+    )
     args = parser.parse_args()
     return args
 
@@ -107,24 +118,31 @@ def main() -> int:
 
     results_processor = results.ResultProcessor()
     matching_analyzer = analyzer.FuzzyMatchingAnalyzer(
-        args.image_diff_num_threshold, args.distinct_diff_num_threshold)
+        args.image_diff_num_threshold, args.distinct_diff_num_threshold
+    )
     bug_ids = []
     for bug_id, test_list in bugs.items():
         bug_result_string = ''
         for test_path in test_list:
-            query_results = (querier_instance.
-                             get_failed_image_comparison_ci_tests(test_path))
+            query_results = (
+                querier_instance.get_failed_image_comparison_ci_tests(test_path)
+            )
             aggregated_results = results_processor.aggregate_results(
-                query_results)
+                query_results
+            )
             bug_result_string += analyze_aggregated_results(
-                aggregated_results, matching_analyzer, bug_id,
-                args.attach_analysis_result)
+                aggregated_results,
+                matching_analyzer,
+                bug_id,
+                args.attach_analysis_result,
+            )
 
         # Attach the analysis result for this bug.
         if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
             if RESULT_TITLE not in str(
-                    buganizer_api.GetIssueComments(int(bug_id))):
+                buganizer_api.GetIssueComments(int(bug_id))
+            ):
                 buganizer_api.NewComment(int(bug_id), bug_result_string)
                 bug_ids.append(bug_id)
                 _log.info('Successfully attach result to bug: %s', bug_id)
@@ -132,15 +150,18 @@ def main() -> int:
     # Insert bug attachment results to database.
     if bug_ids:
         querier_instance.insert_web_test_analyzer_result(
-            data_types.FUZZY_DIFF_ANALYZER, data_types.BUGANIZER, bug_ids)
+            data_types.FUZZY_DIFF_ANALYZER, data_types.BUGANIZER, bug_ids
+        )
 
     return 0
 
 
 def analyze_aggregated_results(
-        aggregated_results: data_types.AggregatedSlownessResultsType,
-        matching_analyzer: analyzer.FuzzyMatchingAnalyzer, bug_id: str,
-        attach_analysis_result: bool) -> str:
+    aggregated_results: data_types.AggregatedSlownessResultsType,
+    matching_analyzer: analyzer.FuzzyMatchingAnalyzer,
+    bug_id: str,
+    attach_analysis_result: bool,
+) -> str:
     """Analyze the input image test results.
 
     Args:
@@ -159,12 +180,16 @@ def analyze_aggregated_results(
             result_string = ''
             if bug_id and not attach_analysis_result:
                 result_string = result_string + f'\nBug number: {bug_id}'
-            dashboard_link = (DASHBOARD_BASE_URL + '?f=test_name_cgk78f:re:' +
-                              urllib.parse.quote(test_name, safe=''))
+            dashboard_link = (
+                DASHBOARD_BASE_URL
+                + '?f=test_name_cgk78f:re:'
+                + urllib.parse.quote(test_name, safe='')
+            )
             result_string = result_string + (
                 f'\nTest name: {test_name}'
                 f'\nTest Result: {test_analysis_result.analysis_result}'
-                f'\nDashboard link: {dashboard_link}\n')
+                f'\nDashboard link: {dashboard_link}\n'
+            )
             if not attach_analysis_result:
                 print(result_string)
             else:

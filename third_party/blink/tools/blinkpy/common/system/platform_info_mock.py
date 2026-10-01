@@ -28,12 +28,14 @@
 
 
 class MockPlatformInfo(object):
-    def __init__(self,
-                 os_name='mac',
-                 os_version='mac15',
-                 machine=None,
-                 interactive=True,
-                 processor=''):
+    def __init__(
+        self,
+        os_name='mac',
+        os_version='mac15',
+        machine=None,
+        interactive=True,
+        processor='',
+    ):
         self.os_name = os_name
         self.os_version = os_version
         self.interactive = interactive
@@ -56,7 +58,9 @@ class MockPlatformInfo(object):
         return 'MockPlatform 1.0'
 
     def total_bytes_memory(self):
-        return 3 * 1024 * 1024 * 1024  # 3GB is a reasonable amount of ram to mock.
+        return (
+            3 * 1024 * 1024 * 1024
+        )  # 3GB is a reasonable amount of ram to mock.
 
     def terminal_width(self):
         return 80

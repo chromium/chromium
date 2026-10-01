@@ -62,7 +62,6 @@ TEMPLATES_DIR = 'script-tests'
 
 
 class GeneratedTest:
-
     def __init__(self, data, path, template):
         self.data = data
         self.path = path
@@ -75,8 +74,11 @@ def GetGeneratedTests():
 
     # Read Base Test Template.
     base_template_file_handle = open(
-        os.path.join(bluetooth_tests_dir, TEMPLATES_DIR,
-                     'base_test_js.template'), 'r')
+        os.path.join(
+            bluetooth_tests_dir, TEMPLATES_DIR, 'base_test_js.template'
+        ),
+        'r',
+    )
     base_template_file_data = base_template_file_handle.read()
     base_template_file_handle.close()
 
@@ -101,54 +103,65 @@ def GetGeneratedTests():
 
         # Find function names in multiline pattern: CALLS( [ function_name,function_name2[UUID] ])
         result = re.search(
-            r'CALLS\(' +  # CALLS(
-            r'[^\[]*' +  # Any characters not [, allowing for new lines.
-            r'\[' +  # [
-            r'(.*?)' +  # group matching: function_name(), function_name2[UUID]
-            r'\]\)',  # adjacent closing characters: ])
+            r'CALLS\('  # CALLS(
+            + r'[^\[]*'  # Any characters not [, allowing for new lines.
+            + r'\['  # [
+            + r'(.*?)'  # group matching: function_name(), function_name2[UUID]
+            + r'\]\)',  # adjacent closing characters: ])
             template_file_data,
-            re.MULTILINE | re.DOTALL)
+            re.MULTILINE | re.DOTALL,
+        )
 
         if result is None:
             raise Exception('Template must contain \'CALLS\' tokens')
 
         new_test_file_data = base_template_file_data.replace(
-            'TEST', template_file_data)
+            'TEST', template_file_data
+        )
         # Replace CALLS([...]) with CALLS so that we don't have to replace the
         # CALLS([...]) for every new test file.
-        new_test_file_data = new_test_file_data.replace(
-            result.group(), 'CALLS')
+        new_test_file_data = new_test_file_data.replace(result.group(), 'CALLS')
 
         # Replace 'PREVIOUS_CALL' with 'CALLS' so that we can replace it while
         # replacing CALLS.
         new_test_file_data = new_test_file_data.replace(
-            'PREVIOUS_CALL', 'CALLS')
+            'PREVIOUS_CALL', 'CALLS'
+        )
 
         for call in result.group(1).split('|'):
             # Parse call
             call = call.strip()
             function_name, args, uuid_suffix = re.search(
-                r'(.*?)\((.*)\)(\[UUID\])?', call).groups()
+                r'(.*?)\((.*)\)(\[UUID\])?', call
+            ).groups()
 
             # Replace template tokens
             call_test_file_data = new_test_file_data
             call_test_file_data = call_test_file_data.replace(
-                'CALLS', '{}({})'.format(function_name, args))
+                'CALLS', '{}({})'.format(function_name, args)
+            )
             call_test_file_data = call_test_file_data.replace(
-                'FUNCTION_NAME', function_name)
+                'FUNCTION_NAME', function_name
+            )
 
             # Get test file name
             group_dir = os.path.basename(
-                os.path.abspath(os.path.join(template, os.pardir)))
+                os.path.abspath(os.path.join(template, os.pardir))
+            )
 
             call_test_file_name = 'gen-{}{}.https.window.js'.format(
-                template_name, '-with-uuid' if uuid_suffix else '')
-            call_test_file_path = os.path.join(bluetooth_tests_dir, group_dir,
-                                               function_name,
-                                               call_test_file_name)
+                template_name, '-with-uuid' if uuid_suffix else ''
+            )
+            call_test_file_path = os.path.join(
+                bluetooth_tests_dir,
+                group_dir,
+                function_name,
+                call_test_file_name,
+            )
 
-            yield GeneratedTest(call_test_file_data, call_test_file_path,
-                                template)
+            yield GeneratedTest(
+                call_test_file_data, call_test_file_path, template
+            )
 
 
 def main():
@@ -164,8 +177,10 @@ def main():
         prev_len = len(generated_files)
         generated_files.add(generated_test.path)
         if prev_len == len(generated_files):
-            logging.info('Generated the same test twice for template:\n%s',
-                         generated_test.template)
+            logging.info(
+                'Generated the same test twice for template:\n%s',
+                generated_test.template,
+            )
 
         # Create or open test file
         directory = os.path.dirname(generated_test.path)

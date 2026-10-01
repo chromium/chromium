@@ -20,10 +20,17 @@ class TestIOSSimulatorServerProcess(unittest.TestCase):
     def _is_ios_simulator_installed(self):
         try:
             devices = json.loads(
-                subprocess.check_output([
-                    '/usr/bin/xcrun', 'simctl', 'list', '-j', 'devices',
-                    'available'
-                ]))
+                subprocess.check_output(
+                    [
+                        '/usr/bin/xcrun',
+                        'simctl',
+                        'list',
+                        '-j',
+                        'devices',
+                        'available',
+                    ]
+                )
+            )
 
             if len(devices) != 0:
                 return True
@@ -33,8 +40,8 @@ class TestIOSSimulatorServerProcess(unittest.TestCase):
             return False
 
     def _start_simulator_server(
-            self,
-            proc: ios_simulator_server_process.IOSSimulatorServerProcess):
+        self, proc: ios_simulator_server_process.IOSSimulatorServerProcess
+    ):
         proc.write(TEST_FILE_NAME)
 
     def test_write(self):
@@ -43,18 +50,22 @@ class TestIOSSimulatorServerProcess(unittest.TestCase):
             return
 
         cmd = [
-            sys.executable, '-c',
-            'import sys; import time; time.sleep(0.02); print "stdout"; sys.stdout.flush(); print >>sys.stderr, "stderr"'
+            sys.executable,
+            '-c',
+            'import sys; import time; time.sleep(0.02); print "stdout"; sys.stdout.flush(); print >>sys.stderr, "stderr"',
         ]
         host = SystemHost()
         factory = PortFactory(host)
         port = factory.get('ios')
         proc = ios_simulator_server_process.IOSSimulatorServerProcess(
-            port, 'python', cmd)
-        server = threading.Thread(target=self._start_simulator_server,
-                                  args=(proc, ),
-                                  name='simulator-server',
-                                  daemon=True)
+            port, 'python', cmd
+        )
+        server = threading.Thread(
+            target=self._start_simulator_server,
+            args=(proc,),
+            name='simulator-server',
+            daemon=True,
+        )
         # Start to the simulator server, and it sends a test file name to the
         # client.
         server.start()

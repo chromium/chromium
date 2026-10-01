@@ -40,19 +40,22 @@ _log = logging.getLogger(__name__)
 class LinuxPort(base.Port):
     port_name = 'linux'
 
-    SUPPORTED_VERSIONS = ('linux', )
+    SUPPORTED_VERSIONS = ('linux',)
 
     FALLBACK_PATHS = {}
-    FALLBACK_PATHS['linux'] = (['linux'] +
-                               win.WinPort.latest_platform_fallback_path())
+    FALLBACK_PATHS['linux'] = [
+        'linux'
+    ] + win.WinPort.latest_platform_fallback_path()
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
 
-    XVFB_START_STOP_TIMEOUT = 5.0  # Wait up to 5 seconds for Xvfb to start or stop.
+    XVFB_START_STOP_TIMEOUT = (
+        5.0  # Wait up to 5 seconds for Xvfb to start or stop.
+    )
 
     def __init__(self, host, port_name, **kwargs):
         super(LinuxPort, self).__init__(host, port_name, **kwargs)
-        (self._version, ) = self.SUPPORTED_VERSIONS
+        (self._version,) = self.SUPPORTED_VERSIONS
         self._architecture = 'x86_64'
 
         if not self.get_option('disable_breakpad'):
@@ -65,10 +68,12 @@ class LinuxPort(base.Port):
 
         # See //testing/xvfb.py for an explanation of parsing -help output.
         try:
-            output = self.host.executive.run_command(['Xvfb', '-help'],
-                                                     debug_logging=False)
-            self._xvfb_supports_maxclients = (type(output) is str
-                                              and '-maxclients' in output)
+            output = self.host.executive.run_command(
+                ['Xvfb', '-help'], debug_logging=False
+            )
+            self._xvfb_supports_maxclients = (
+                type(output) is str and '-maxclients' in output
+            )
         except Exception:
             self._xvfb_supports_maxclients = False
 
@@ -77,8 +82,8 @@ class LinuxPort(base.Port):
         if not self.get_option('disable_breakpad'):
             flags += [
                 '--enable-crash-reporter',
-                '--crash-dumps-dir=%s' %
-                self._dump_reader.crash_dumps_directory()
+                '--crash-dumps-dir=%s'
+                % self._dump_reader.crash_dumps_directory(),
             ]
         return flags
 
@@ -102,7 +107,8 @@ class LinuxPort(base.Port):
         if self.get_option('disable_breakpad'):
             return None
         return self._dump_reader.look_for_new_crash_logs(
-            crashed_processes, start_time)
+            crashed_processes, start_time
+        )
 
     def clobber_old_port_specific_results(self):
         if not self.get_option('disable_breakpad'):
@@ -112,8 +118,10 @@ class LinuxPort(base.Port):
         return 'linux'
 
     def use_system_httpd(self):
-        if (self.host.platform.is_linux() and
-                self.host.platform.get_machine() == 'x86_64'):
+        if (
+            self.host.platform.is_linux()
+            and self.host.platform.get_machine() == 'x86_64'
+        ):
             return False
         # use the system httpd on linux-arm64 and freebsd
         return True
@@ -121,7 +129,8 @@ class LinuxPort(base.Port):
     def path_to_apache(self):
         if not self.use_system_httpd():
             return self._path_from_chromium_base(
-                'third_party', 'apache-linux', 'bin', 'httpd')
+                'third_party', 'apache-linux', 'bin', 'httpd'
+            )
         # The Apache binary path can vary depending on OS and distribution
         # See http://wiki.apache.org/httpd/DistrosDefaultLayout
         for path in ['/usr/sbin/httpd', '/usr/sbin/apache2']:
@@ -161,7 +170,8 @@ class LinuxPort(base.Port):
         # When using a dummy home directory, CIPD cache directory needs to be
         # specified explicitly to make vpython work.
         self.host.environ['CIPD_CACHE_DIR'] = os.path.join(
-            dummy_home, '.vpython_cipd_cache')
+            dummy_home, '.vpython_cipd_cache'
+        )
         self._setup_files_in_dummy_home_dir(dummy_home)
 
     def _setup_files_in_dummy_home_dir(self, dummy_home):
@@ -205,8 +215,9 @@ class LinuxPort(base.Port):
         # See: https://crbug.com/715848
         env = self.host.environ.copy()
         if env.get('TMPDIR') and env['TMPDIR'] != '/tmp':
-            _log.info('Overriding TMPDIR to "/tmp" for Xvfb, was: %s',
-                      env['TMPDIR'])
+            _log.info(
+                'Overriding TMPDIR to "/tmp" for Xvfb, was: %s', env['TMPDIR']
+            )
             env['TMPDIR'] = '/tmp'
 
         _log.debug('Starting Xvfb with display "%s".', display)
@@ -216,7 +227,8 @@ class LinuxPort(base.Port):
             ['Xvfb', display] + self.xvfb_flags(),
             stdout=self._xvfb_stdout,
             stderr=self._xvfb_stderr,
-            env=env)
+            env=env,
+        )
 
         # By setting DISPLAY here, the individual worker processes will
         # get the right DISPLAY. Note, if this environment could be passed
@@ -233,22 +245,28 @@ class LinuxPort(base.Port):
                 break
             # We don't explicitly set the display, as we want to check the
             # environment value.
-            exit_code = self.host.executive.run_command(['xdpyinfo'],
-                                                        return_exit_code=True)
+            exit_code = self.host.executive.run_command(
+                ['xdpyinfo'], return_exit_code=True
+            )
             if exit_code == 0:
-                _log.debug('Successfully started Xvfb with display "%s".',
-                           display)
+                _log.debug(
+                    'Successfully started Xvfb with display "%s".', display
+                )
                 return True
             _log.warn(
                 'xdpyinfo check failed with exit code %s while starting Xvfb on "%s".',
-                exit_code, display)
+                exit_code,
+                display,
+            )
             self.host.sleep(0.1)
 
         retcode = self._xvfb_process.poll()
         self._stop_xvfb(save_logs=True)
         _log.critical(
             'Failed to start Xvfb on display "%s" (xvfb retcode: %r).',
-            display, retcode)
+            display,
+            retcode,
+        )
         return False
 
     def xvfb_flags(self):
@@ -267,7 +285,8 @@ class LinuxPort(base.Port):
                 continue
             display = ':%d' % display_number
             exit_code = self.host.executive.run_command(
-                ['xdpyinfo', '-display', display], return_exit_code=True)
+                ['xdpyinfo', '-display', display], return_exit_code=True
+            )
             if exit_code == 1:
                 return display
         return None
@@ -280,18 +299,22 @@ class LinuxPort(base.Port):
             start_time = self.host.time()
             while self.host.time() - start_time < self.XVFB_START_STOP_TIMEOUT:
                 if self._xvfb_process.poll() is not None:
-                    _log.debug('Xvfb exited with code %d.',
-                               self._xvfb_process.poll())
+                    _log.debug(
+                        'Xvfb exited with code %d.', self._xvfb_process.poll()
+                    )
                     break
                 self.host.sleep(0.1)
             else:
-                _log.debug('Killing Xvfb process pid %d.',
-                           self._xvfb_process.pid)
+                _log.debug(
+                    'Killing Xvfb process pid %d.', self._xvfb_process.pid
+                )
                 self._xvfb_process.kill()
                 self._xvfb_process.wait()
 
-        for name, tmp_file in [('stdout', self._xvfb_stdout),
-                               ('stderr', self._xvfb_stderr)]:
+        for name, tmp_file in [
+            ('stdout', self._xvfb_stdout),
+            ('stderr', self._xvfb_stderr),
+        ]:
             if not tmp_file:
                 continue
             tmp_file.close()
@@ -299,7 +322,8 @@ class LinuxPort(base.Port):
                 continue
             if save_logs:
                 with self.host.filesystem.open_text_file_for_reading(
-                        tmp_file.name) as log:
+                    tmp_file.name
+                ) as log:
                     for line in log:
                         _log.warn('Xvfb %s: %s', name, line)
             self.host.filesystem.remove(tmp_file.name)

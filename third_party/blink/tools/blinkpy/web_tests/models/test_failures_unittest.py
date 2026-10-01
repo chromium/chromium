@@ -32,19 +32,24 @@ from blinkpy.web_tests.models.typ_types import Artifacts
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import DriverOutput
 
-from blinkpy.web_tests.models.test_failures import (ALL_FAILURE_CLASSES,
-                                                    PassWithStderr,
-                                                    FailureCrash,
-                                                    FailureTimeout,
-                                                    TestFailure, FailureText)
+from blinkpy.web_tests.models.test_failures import (
+    ALL_FAILURE_CLASSES,
+    PassWithStderr,
+    FailureCrash,
+    FailureTimeout,
+    TestFailure,
+    FailureText,
+)
 
 
 class TestFailuresTest(unittest.TestCase):
     def setUp(self):
         self._actual_output = DriverOutput(
-            text=None, image=None, image_hash=None, audio=None)
+            text=None, image=None, image_hash=None, audio=None
+        )
         self._expected_output = DriverOutput(
-            text=None, image=None, image_hash=None, audio=None)
+            text=None, image=None, image_hash=None, audio=None
+        )
 
     def assert_loads(self, cls):
         failure_obj = cls(self._actual_output, self._expected_output)
@@ -67,14 +72,19 @@ class TestFailuresTest(unittest.TestCase):
             self.assert_loads(c)
 
     def test_equals(self):
-        self.assertEqual(FailureCrash(self._actual_output),
-                         FailureCrash(self._actual_output))
-        self.assertNotEqual(FailureCrash(self._actual_output),
-                            FailureTimeout(self._actual_output))
-        crash_set = set([
+        self.assertEqual(
+            FailureCrash(self._actual_output), FailureCrash(self._actual_output)
+        )
+        self.assertNotEqual(
             FailureCrash(self._actual_output),
-            FailureCrash(self._actual_output)
-        ])
+            FailureTimeout(self._actual_output),
+        )
+        crash_set = set(
+            [
+                FailureCrash(self._actual_output),
+                FailureCrash(self._actual_output),
+            ]
+        )
         self.assertEqual(len(crash_set), 1)
         # The hash happens to be the name of the class, but sets still work:
         crash_set = set([FailureCrash(self._actual_output), 'FailureCrash'])
@@ -82,13 +92,14 @@ class TestFailuresTest(unittest.TestCase):
 
     def test_crashes(self):
         self.assertEqual(
-            FailureCrash(self._actual_output).message(),
-            'content_shell crashed')
+            FailureCrash(self._actual_output).message(), 'content_shell crashed'
+        )
         self.assertEqual(
             FailureCrash(
-                self._actual_output,
-                process_name='foo',
-                pid=1234).message(), 'foo crashed [pid=1234]')
+                self._actual_output, process_name='foo', pid=1234
+            ).message(),
+            'foo crashed [pid=1234]',
+        )
 
     def test_repeated_test_artifacts(self):
         host = MockSystemHost()
@@ -102,35 +113,43 @@ class TestFailuresTest(unittest.TestCase):
             test_failure.result_directory = '/dir'
 
         pass_with_stderr = PassWithStderr(
-            DriverOutput(None, None, None, None, error=b'pass with stderr'))
+            DriverOutput(None, None, None, None, error=b'pass with stderr')
+        )
         init_test_failure(pass_with_stderr)
         crash = FailureCrash(
-            DriverOutput(None,
-                         None,
-                         None,
-                         None,
-                         crash=True,
-                         error=b'crash stderr'))
+            DriverOutput(
+                None, None, None, None, crash=True, error=b'crash stderr'
+            )
+        )
         init_test_failure(crash)
         timeout = FailureTimeout(
-            DriverOutput(None, None, None, None, error=b'timeout with stderr'))
+            DriverOutput(None, None, None, None, error=b'timeout with stderr')
+        )
         init_test_failure(timeout)
 
         pass_with_stderr.create_artifacts(artifacts)
-        self.assertEqual('pass with stderr',
-                         host.filesystem.read_text_file('/dir/foo-stderr.txt'))
+        self.assertEqual(
+            'pass with stderr',
+            host.filesystem.read_text_file('/dir/foo-stderr.txt'),
+        )
 
         crash.create_artifacts(artifacts)
-        self.assertEqual('crash stderr',
-                         host.filesystem.read_text_file('/dir/foo-stderr.txt'))
+        self.assertEqual(
+            'crash stderr',
+            host.filesystem.read_text_file('/dir/foo-stderr.txt'),
+        )
 
         timeout.create_artifacts(artifacts)
-        self.assertEqual('timeout with stderr',
-                         host.filesystem.read_text_file('/dir/foo-stderr.txt'))
+        self.assertEqual(
+            'timeout with stderr',
+            host.filesystem.read_text_file('/dir/foo-stderr.txt'),
+        )
 
         pass_with_stderr.create_artifacts(artifacts)
-        self.assertEqual('timeout with stderr',
-                         host.filesystem.read_text_file('/dir/foo-stderr.txt'))
+        self.assertEqual(
+            'timeout with stderr',
+            host.filesystem.read_text_file('/dir/foo-stderr.txt'),
+        )
 
     def test_failure_reason_crash(self):
         # stderr tell us the cause of the crash.
@@ -144,8 +163,10 @@ class TestFailuresTest(unittest.TestCase):
         failure_reason = failure.failure_reason()
 
         self.assertIsNotNone(failure_reason)
-        self.assertEqual(failure_reason.primary_error_message,
-                         'multiplex_router.cc(181): Check failed: !client_.')
+        self.assertEqual(
+            failure_reason.primary_error_message,
+            'multiplex_router.cc(181): Check failed: !client_.',
+        )
 
     def test_failure_reason_crash_none(self):
         # stderr does not tell us the cause of the crash.
@@ -177,7 +198,8 @@ Harness: the test ran to completion."""
             failure_reason.primary_error_message,
             'Tests that the document gets overscroll event with right'
             ' deltaX/Y attributes. promise_test: Unhandled rejection with'
-            ' value: "Document did not receive scrollend event."')
+            ' value: "Document did not receive scrollend event."',
+        )
 
     def test_failure_reason_text_diff(self):
         expected_text = """retained line 1
@@ -203,7 +225,8 @@ new line 2
             'Unexpected Diff (+got, -want):\n'
             '+new line 1\n'
             '-deleted line 1\n'
-            '-deleted line 2')
+            '-deleted line 2',
+        )
 
     def test_failure_reason_empty_text_diff(self):
         # Construct a scenario in which the difference between the actual

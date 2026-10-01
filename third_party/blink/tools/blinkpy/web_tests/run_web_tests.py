@@ -51,6 +51,7 @@ def main(argv, stderr):
         # to run tests against the test platform interactively, which is useful for
         # debugging test failures.
         from blinkpy.common.host_mock import MockHost
+
         host = MockHost()
     else:
         host = Host()
@@ -87,24 +88,30 @@ def main(argv, stderr):
 def parse_args(args):
     parser = command_line.ArgumentParser(
         usage='%(prog)s [options] [tests]',
-        description=('Runs Blink web tests as described in '
-                     '//docs/testing/web_tests.md'))
+        description=(
+            'Runs Blink web tests as described in //docs/testing/web_tests.md'
+        ),
+    )
 
     command_line.add_platform_options_group(parser)
     command_line.add_configuration_options_group(parser)
     printing.add_print_options_group(parser)
 
     fuchsia_group = parser.add_argument_group('Fuchsia-specific Options')
-    fuchsia_group.add_argument('--fuchsia-out-dir',
-                               help='Path to Fuchsia build output directory.')
+    fuchsia_group.add_argument(
+        '--fuchsia-out-dir', help='Path to Fuchsia build output directory.'
+    )
     fuchsia_group.add_argument(
         '--custom-image',
-        help='Specify an image used for booting up the emulator.')
+        help='Specify an image used for booting up the emulator.',
+    )
     fuchsia_group.add_argument(
         '--fuchsia-target-id',
-        help='The node-name of the device to boot or deploy to.')
-    fuchsia_group.add_argument('--logs-dir',
-                               help='Location of diagnostics logs')
+        help='The node-name of the device to boot or deploy to.',
+    )
+    fuchsia_group.add_argument(
+        '--logs-dir', help='Location of diagnostics logs'
+    )
 
     command_line.add_results_options_group(parser)
     command_line.add_testing_options_group(parser)
@@ -114,20 +121,25 @@ def parse_args(args):
     json_group.add_argument(
         '--step-name',
         default='blink_web_tests',
-        help='The name of the step in a build running this script.')
+        help='The name of the step in a build running this script.',
+    )
     json_group.add_argument(
         '--build-number',
         default='DUMMY_BUILD_NUMBER',
-        help='The build number of the builder running this script.')
+        help='The build number of the builder running this script.',
+    )
     json_group.add_argument(
         '--builder-name',
         default='',
-        help=('The name of the builder shown on the waterfall running '
-              'this script, e.g. "Mac10.13 Tests".'))
+        help=(
+            'The name of the builder shown on the waterfall running '
+            'this script, e.g. "Mac10.13 Tests".'
+        ),
+    )
 
-    parser.add_argument('tests',
-                        nargs='*',
-                        help='Paths to test files or directories to run')
+    parser.add_argument(
+        'tests', nargs='*', help='Paths to test files or directories to run'
+    )
     params = vars(parser.parse_args(args))
     args = params.pop('tests')
     options = optparse.Values(params)
@@ -157,12 +169,17 @@ def _set_up_derived_options(port, options, args):
 
     if not options.child_processes:
         options.child_processes = int(
-            port.host.environ.get('WEBKIT_TEST_CHILD_PROCESSES',
-                                  port.default_child_processes()))
+            port.host.environ.get(
+                'WEBKIT_TEST_CHILD_PROCESSES', port.default_child_processes()
+            )
+        )
     if not options.max_locked_shards:
         options.max_locked_shards = int(
-            port.host.environ.get('WEBKIT_TEST_MAX_LOCKED_SHARDS',
-                                  str(port.default_max_locked_shards())))
+            port.host.environ.get(
+                'WEBKIT_TEST_MAX_LOCKED_SHARDS',
+                str(port.default_max_locked_shards()),
+            )
+        )
 
     if not options.configuration:
         options.configuration = port.get_option('configuration')
@@ -180,7 +197,8 @@ def _set_up_derived_options(port, options, args):
         additional_platform_directories = []
         for path in options.additional_platform_directory:
             additional_platform_directories.append(
-                port.host.filesystem.abspath(path))
+                port.host.filesystem.abspath(path)
+            )
         options.additional_platform_directory = additional_platform_directories
 
     # Tests named via --gtest_filter are explicitly specified tests, so they

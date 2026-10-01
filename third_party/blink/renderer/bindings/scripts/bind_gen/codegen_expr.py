@@ -87,7 +87,8 @@ def _binary_op(op, terms):
     assert isinstance(terms, (list, tuple))
     assert all(isinstance(term, CodeGenExpr) for term in terms)
     assert all(
-        not (term.is_always_false or term.is_always_true) for term in terms)
+        not (term.is_always_false or term.is_always_true) for term in terms
+    )
 
     return _Expr(op.join(map(str, terms)), is_compound=True)
 
@@ -145,9 +146,9 @@ def expr_uniq(terms):
     return uniq_terms
 
 
-def expr_from_exposure(exposure,
-                       global_names=None,
-                       may_use_feature_selector=False):
+def expr_from_exposure(
+    exposure, global_names=None, may_use_feature_selector=False
+):
     """
     Returns an expression to determine whether this property should be exposed
     or not.
@@ -160,9 +161,10 @@ def expr_from_exposure(exposure,
             the exposure is context dependent.
     """
     assert isinstance(exposure, web_idl.Exposure)
-    assert (global_names is None
-            or (isinstance(global_names, (list, tuple))
-                and all(isinstance(name, str) for name in global_names)))
+    assert global_names is None or (
+        isinstance(global_names, (list, tuple))
+        and all(isinstance(name, str) for name in global_names)
+    )
     assert isinstance(may_use_feature_selector, bool)
 
     # The property exposures are categorized into three.
@@ -216,35 +218,48 @@ def expr_from_exposure(exposure,
 
     def ref_enabled(feature):
         arg = "${execution_context}" if feature.is_context_dependent else ""
-        return _Expr("RuntimeEnabledFeatures::{}Enabled({})".format(
-            feature, arg))
+        return _Expr(
+            "RuntimeEnabledFeatures::{}Enabled({})".format(feature, arg)
+        )
 
     def ref_selected(features):
         feature_tokens = map(
             lambda feature: "mojom::blink::OriginTrialFeature::k{}".format(
-                feature), features)
-        return _Expr("${{feature_selector}}.IsAnyOf({})".format(
-            ", ".join(feature_tokens)))
+                feature
+            ),
+            features,
+        )
+        return _Expr(
+            "${{feature_selector}}.IsAnyOf({})".format(
+                ", ".join(feature_tokens)
+            )
+        )
 
     # [CrossOriginIsolated], [CrossOriginIsolatedOrRuntimeEnabled]
     if exposure.only_in_coi_contexts:
         cross_origin_isolated_term = _Expr("${is_cross_origin_isolated}")
     elif exposure.only_in_coi_contexts_or_runtime_enabled_features:
-        cross_origin_isolated_term = expr_or([
-            _Expr("${is_cross_origin_isolated}"),
-            expr_or(
-                list(
-                    map(
-                        ref_enabled, exposure.
-                        only_in_coi_contexts_or_runtime_enabled_features)))
-        ])
+        cross_origin_isolated_term = expr_or(
+            [
+                _Expr("${is_cross_origin_isolated}"),
+                expr_or(
+                    list(
+                        map(
+                            ref_enabled,
+                            exposure.only_in_coi_contexts_or_runtime_enabled_features,
+                        )
+                    )
+                ),
+            ]
+        )
     else:
         cross_origin_isolated_term = _Expr(True)
 
     # [InjectionMitigated]
     if exposure.only_in_injection_mitigated_contexts:
         injection_mitigated_context_term = _Expr(
-            "${is_in_injection_mitigated_context}")
+            "${is_in_injection_mitigated_context}"
+        )
     else:
         injection_mitigated_context_term = _Expr(True)
 
@@ -262,8 +277,8 @@ def expr_from_exposure(exposure,
     else:
         terms = list(map(ref_enabled, exposure.only_in_secure_contexts))
         secure_context_term = expr_or(
-            [_Expr("${is_in_secure_context}"),
-             expr_not(expr_and(terms))])
+            [_Expr("${is_in_secure_context}"), expr_not(expr_and(terms))]
+        )
 
     # [Exposed]
     GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST = {
@@ -296,8 +311,9 @@ def expr_from_exposure(exposure,
                 cond_exposed_terms.append(ref_enabled(entry.feature))
                 if entry.feature.is_origin_trial:
                     feature_selector_names.append(entry.feature)
-        assert (not exposure.global_names_and_features
-                or matched_global_count > 0)
+        assert (
+            not exposure.global_names_and_features or matched_global_count > 0
+        )
     else:
         for entry in exposure.global_names_and_features:
             if entry.global_name == "*":
@@ -308,7 +324,8 @@ def expr_from_exposure(exposure,
                 continue
             try:
                 execution_context_check = GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[
-                    entry.global_name]
+                    entry.global_name
+                ]
             except KeyError:
                 # We don't currently have a general way of checking the exposure
                 # of [TargetOfExposed] exposure. If this is actually a global,
@@ -318,25 +335,30 @@ def expr_from_exposure(exposure,
                 return _Expr(
                     "(::logging::NotReachedError::NotReached("
                     "base::NotFatalUntil::NoSpecifiedMilestoneInternal) << "
-                    "\"{} exposure test is not supported at runtime\", false)".
-                    format(entry.global_name))
+                    "\"{} exposure test is not supported at runtime\", false)".format(
+                        entry.global_name
+                    )
+                )
 
             pred_term = _Expr(
-                "${{execution_context}}->{}()".format(execution_context_check))
+                "${{execution_context}}->{}()".format(execution_context_check)
+            )
             if not entry.feature:
                 uncond_exposed_terms.append(pred_term)
             else:
                 cond_exposed_terms.append(
-                    expr_and([pred_term, ref_enabled(entry.feature)]))
+                    expr_and([pred_term, ref_enabled(entry.feature)])
+                )
                 if entry.feature.is_origin_trial:
                     exposed_selector_terms.append(
-                        expr_and([pred_term,
-                                  ref_selected([entry.feature])]))
+                        expr_and([pred_term, ref_selected([entry.feature])])
+                    )
 
     # [RuntimeEnabled]
     if exposure.runtime_enabled_features:
         feature_enabled_terms.extend(
-            map(ref_enabled, exposure.runtime_enabled_features))
+            map(ref_enabled, exposure.runtime_enabled_features)
+        )
         if exposure.origin_trial_features:
             feature_selector_names.extend(exposure.origin_trial_features)
 
@@ -346,10 +368,15 @@ def expr_from_exposure(exposure,
             map(
                 lambda feature: _Expr(
                     "${{context_feature_settings}}->is{}Enabled()".format(
-                        feature)), exposure.context_enabled_features))
+                        feature
+                    )
+                ),
+                exposure.context_enabled_features,
+            )
+        )
         context_enabled_terms.append(
-            expr_and([_Expr("${context_feature_settings}"),
-                      expr_or(terms)]))
+            expr_and([_Expr("${context_feature_settings}"), expr_or(terms)])
+        )
 
     # Build an expression.
     top_level_terms = []
@@ -360,8 +387,9 @@ def expr_from_exposure(exposure,
     if uncond_exposed_terms:
         top_level_terms.append(expr_or(uncond_exposed_terms))
 
-    if not (may_use_feature_selector
-            and exposure.is_context_dependent(global_names)):
+    if not (
+        may_use_feature_selector and exposure.is_context_dependent(global_names)
+    ):
         if cond_exposed_terms:
             top_level_terms.append(expr_or(cond_exposed_terms))
         if feature_enabled_terms:
@@ -386,8 +414,7 @@ def expr_from_exposure(exposure,
         selector_terms.append(expr_or(exposed_selector_terms))
     if feature_selector_names:
         # Remove duplicates
-        selector_terms.append(ref_selected(sorted(
-            set(feature_selector_names))))
+        selector_terms.append(ref_selected(sorted(set(feature_selector_names))))
 
     terms = []
     terms.append(expr_and(all_enabled_terms))

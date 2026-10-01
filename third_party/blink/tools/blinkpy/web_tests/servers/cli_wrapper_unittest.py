@@ -30,8 +30,10 @@ class CliWrapperTest(unittest.TestCase):
     def setUp(self):
         self.server = None
 
-    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
-                     "Failing on macOS 12; see crbug.com/474036848")
+    @unittest.skipIf(
+        platform.mac_ver()[0].startswith('12'),
+        "Failing on macOS 12; see crbug.com/474036848",
+    )
     def test_main_success(self):
         def mock_server_constructor(*args, **kwargs):
             self.server = MockServer(args, kwargs)
@@ -44,8 +46,10 @@ class CliWrapperTest(unittest.TestCase):
         self.assertTrue(self.server.start_called)
         self.assertTrue(self.server.stop_called)
 
-    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
-                     "Failing on macOS 12; see crbug.com/474036848")
+    @unittest.skipIf(
+        platform.mac_ver()[0].startswith('12'),
+        "Failing on macOS 12; see crbug.com/474036848",
+    )
     def test_main_server_error_after_start(self):
         def mock_server_constructor(*args, **kwargs):
             self.server = MockServer(args, kwargs)
@@ -54,8 +58,8 @@ class CliWrapperTest(unittest.TestCase):
         def server_error():
             self.server.is_alive = False
 
-        cli_wrapper.main(mock_server_constructor,
-                         sleep_fn=server_error,
-                         argv=[])
+        cli_wrapper.main(
+            mock_server_constructor, sleep_fn=server_error, argv=[]
+        )
         self.assertTrue(self.server.start_called)
         self.assertTrue(self.server.stop_called)

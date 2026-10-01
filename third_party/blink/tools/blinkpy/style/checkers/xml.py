@@ -41,5 +41,6 @@ class XMLChecker(object):
                 parser.Parse('\n')
             parser.Parse('', True)
         except expat.ExpatError as error:
-            self._handle_style_error(error.lineno, 'xml/syntax', 5,
-                                     expat.ErrorString(error.code))
+            self._handle_style_error(
+                error.lineno, 'xml/syntax', 5, expat.ErrorString(error.code)
+            )

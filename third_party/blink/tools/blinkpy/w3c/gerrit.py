@@ -29,6 +29,7 @@ class OutputOption(enum.Flag):
 
     [0]: https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#query-options
     """
+
     CURRENT_FILES = enum.auto()
     CURRENT_REVISION = enum.auto()
     COMMIT_FOOTERS = enum.auto()
@@ -52,10 +53,12 @@ class GerritAPI:
     Wraps the API for Chromium's Gerrit instance at chromium-review.googlesource.com.
     """
 
-    DEFAULT_OUTPUT = (OutputOption.CURRENT_FILES
-                      | OutputOption.CURRENT_REVISION
-                      | OutputOption.COMMIT_FOOTERS
-                      | OutputOption.DETAILED_ACCOUNTS)
+    DEFAULT_OUTPUT = (
+        OutputOption.CURRENT_FILES
+        | OutputOption.CURRENT_REVISION
+        | OutputOption.COMMIT_FOOTERS
+        | OutputOption.DETAILED_ACCOUNTS
+    )
 
     def __init__(self, host, user, token):
         self.host = host
@@ -64,21 +67,27 @@ class GerritAPI:
         self.token = token
 
     @classmethod
-    def from_credentials(cls, host: Host,
-                         credentials: Mapping[str, str]) -> 'GerritAPI':
-        return cls(host, credentials['GERRIT_USER'],
-                   credentials['GERRIT_TOKEN'])
+    def from_credentials(
+        cls, host: Host, credentials: Mapping[str, str]
+    ) -> 'GerritAPI':
+        return cls(
+            host, credentials['GERRIT_USER'], credentials['GERRIT_TOKEN']
+        )
 
-    def get(self,
-            path: str,
-            query_params: List[Tuple[str, str]],
-            raw: bool = False,
-            return_none_on_404: bool = False):
+    def get(
+        self,
+        path: str,
+        query_params: List[Tuple[str, str]],
+        raw: bool = False,
+        return_none_on_404: bool = False,
+    ):
         query_str = urlencode(query_params, safe='":')
         url = urlunsplit(
-            (URL_BASE.scheme, URL_BASE.netloc, path, query_str, ''))
+            (URL_BASE.scheme, URL_BASE.netloc, path, query_str, '')
+        )
         raw_data = self.host.web.get_binary(
-            url, return_none_on_404=return_none_on_404, trace='b346392205')
+            url, return_none_on_404=return_none_on_404, trace='b346392205'
+        )
         if raw:
             return raw_data
 
@@ -94,26 +103,30 @@ class GerritAPI:
         The path has to be prefixed with '/a/':
         https://gerrit-review.googlesource.com/Documentation/rest-api.html#authentication
         """
-        assert path.startswith('/a/'), \
+        assert path.startswith('/a/'), (
             'POST requests need to use authenticated routes.'
+        )
         url = urlunsplit((URL_BASE.scheme, URL_BASE.netloc, path, '', ''))
-        assert self.user and self.token, 'Gerrit user and token required for authenticated routes.'
+        assert self.user and self.token, (
+            'Gerrit user and token required for authenticated routes.'
+        )
 
-        b64auth = base64.b64encode('{}:{}'.format(self.user,
-                                                  self.token).encode('utf-8'))
+        b64auth = base64.b64encode(
+            '{}:{}'.format(self.user, self.token).encode('utf-8')
+        )
         headers = {
             'Authorization': 'Basic {}'.format(b64auth.decode('utf-8')),
             'Content-Type': 'application/json',
         }
-        return self.host.web.request('POST',
-                                     url,
-                                     data=json.dumps(data).encode('utf-8'),
-                                     headers=headers)
+        return self.host.web.request(
+            'POST', url, data=json.dumps(data).encode('utf-8'), headers=headers
+        )
 
     def query_cl_comments_and_revisions(self, change_id: str) -> 'GerritCL':
         """Queries a CL with comments and revisions information."""
         return self.query_cl(
-            change_id, OutputOption.MESSAGES | OutputOption.ALL_REVISIONS)
+            change_id, OutputOption.MESSAGES | OutputOption.ALL_REVISIONS
+        )
 
     def query_cl(
         self,
@@ -123,7 +136,8 @@ class GerritAPI:
         """Queries a commit information from Gerrit."""
         path = (
             f'/changes/{self.escaped_repo}~{self.project_config.gerrit_branch}'
-            f'~{change_id}')
+            f'~{change_id}'
+        )
         query_params = [('o', option.name) for option in output_options]
         try:
             cl_data = self.get(path, query_params, return_none_on_404=True)
@@ -166,21 +180,27 @@ class GerritAPI:
         limit: int = 200,
         output_options: OutputOption = DEFAULT_OUTPUT,
     ) -> List['GerritCL']:
-        query = ' '.join([
-            f'project:"{self.project_config.gerrit_project}"',
-            f'branch:{self.project_config.gerrit_branch}',
-            '-is:wip',
-        ])
-        open_cls = self.query_cls(query, limit,
-                                  output_options | OutputOption.SUBMITTABLE)
+        query = ' '.join(
+            [
+                f'project:"{self.project_config.gerrit_project}"',
+                f'branch:{self.project_config.gerrit_branch}',
+                '-is:wip',
+            ]
+        )
+        open_cls = self.query_cls(
+            query, limit, output_options | OutputOption.SUBMITTABLE
+        )
 
         def is_submittable_or_forces_export(cl):
-            force_wpt_export = ('Force-WPT-Export: true'
-                                in cl.current_revision['commit_with_footers'])
+            force_wpt_export = (
+                'Force-WPT-Export: true'
+                in cl.current_revision['commit_with_footers']
+            )
             return cl.submittable or force_wpt_export
 
         return [
-            cl for cl in open_cls
+            cl
+            for cl in open_cls
             if is_submittable_or_forces_export(cl) and cl.is_exportable()
         ]
 
@@ -252,8 +272,9 @@ class GerritCL(object):
     def updated(self):
         # Timestamps are given in UTC and have the format "'yyyy-mm-dd hh:mm:ss.fffffffff'"
         # where "'ffffffffff'" represents nanoseconds.
-        return datetime.strptime(self._data["updated"][:-3] + " +0000",
-                                 "%Y-%m-%d %H:%M:%S.%f %z")
+        return datetime.strptime(
+            self._data["updated"][:-3] + " +0000", "%Y-%m-%d %H:%M:%S.%f %z"
+        )
 
     @property
     def messages(self):
@@ -274,7 +295,8 @@ class GerritCL(object):
             return self.api.post(path, {'message': message})
         except HTTPError as e:
             message = 'Failed to post a comment to issue {}'.format(
-                self.change_id)
+                self.change_id
+            )
             if hasattr(e, 'response'):
                 message += ' (code {})'.format(e.response.status_code)
             else:
@@ -291,8 +313,11 @@ class GerritCL(object):
 
         # Guard against accidental CLs that touch thousands of files.
         if len(files) > 1000:
-            _log.info('Rejecting CL with over 1000 files: %s (ID: %s) ',
-                      self.subject, self.change_id)
+            _log.info(
+                'Rejecting CL with over 1000 files: %s (ID: %s) ',
+                self.subject,
+                self.change_id,
+            )
             return False
 
         if 'No-Export: true' in self.current_revision['commit_with_footers']:
@@ -306,7 +331,8 @@ class GerritCL(object):
             return False
 
         exportable_files = [
-            f for f in files_in_wpt
+            f
+            for f in files_in_wpt
             if is_file_exportable(f, self.api.project_config)
         ]
 
@@ -339,9 +365,11 @@ class GerritCL(object):
 
 class GerritError(Exception):
     """Raised when Gerrit returns a non-OK response or times out."""
+
     pass
 
 
 class GerritNotFoundError(GerritError):
     """Raised when Gerrit returns a resource not found response."""
+
     pass

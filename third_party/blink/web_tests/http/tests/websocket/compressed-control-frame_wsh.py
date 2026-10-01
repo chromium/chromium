@@ -38,8 +38,9 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    compress = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED,
-                                -zlib.MAX_WBITS)
+    compress = zlib.compressobj(
+        zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -zlib.MAX_WBITS
+    )
     compressed_message = compress.compress(b'close message')
     compressed_message += compress.flush(zlib.Z_SYNC_FLUSH)
     compressed_message = compressed_message[:-4]
@@ -50,5 +51,6 @@ def web_socket_transfer_data(request):
         rsv1=1,
         rsv2=0,
         rsv3=0,
-        mask=False)
+        mask=False,
+    )
     request.connection.write(header + compressed_message)

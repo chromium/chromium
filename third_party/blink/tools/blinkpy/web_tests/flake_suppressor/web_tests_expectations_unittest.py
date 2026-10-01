@@ -18,20 +18,23 @@ from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 class GetExpectationFileForSuiteUnittest(unittest.TestCase):
     def setUp(self) -> None:
         self.expectations = (
-            web_tests_expectations.WebTestsExpectationProcessor())
+            web_tests_expectations.WebTestsExpectationProcessor()
+        )
 
     def testRegularExpectationFile(self) -> None:
         """Tests that a regular expectation file is found properly."""
         expected_filepath = os.path.join(
             web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-            'TestExpectations')
+            'TestExpectations',
+        )
         actual_filepath = self.expectations.GetExpectationFileForSuite(
-            'pixel_integration_test', tuple(['arm-64']))
+            'pixel_integration_test', tuple(['arm-64'])
+        )
         self.assertEqual(actual_filepath, expected_filepath)
 
 
 class GetOriginExpectationFileContentsUnittest(unittest.TestCase):
-    class FakeRequestResult():
+    class FakeRequestResult:
         def __init__(self):
             self.text = ''
 
@@ -40,9 +43,11 @@ class GetOriginExpectationFileContentsUnittest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.expectations = (
-            web_tests_expectations.WebTestsExpectationProcessor())
+            web_tests_expectations.WebTestsExpectationProcessor()
+        )
         self._get_patcher = mock.patch(
-            'flake_suppressor_common.expectations.urllib.request.urlopen')
+            'flake_suppressor_common.expectations.urllib.request.urlopen'
+        )
         self._get_mock = self._get_patcher.start()
         self.addCleanup(self._get_patcher.stop)
 
@@ -50,10 +55,11 @@ class GetOriginExpectationFileContentsUnittest(unittest.TestCase):
         """Tests basic functionality along the happy path."""
 
         def SideEffect(
-                url: str
+            url: str,
         ) -> GetOriginExpectationFileContentsUnittest.FakeRequestResult:
             request_result = (
-                GetOriginExpectationFileContentsUnittest.FakeRequestResult())
+                GetOriginExpectationFileContentsUnittest.FakeRequestResult()
+            )
             text = ''
             if url.endswith('web_tests?format=TEXT'):
                 text = """\
@@ -71,12 +77,15 @@ mode type hash bar_tests.txt"""
         self._get_mock.side_effect = SideEffect
         test_exp = os.path.join(
             web_tests_expectations.RELATIVE_EXPECTATION_FILE_DIRECTORY,
-            'TestExpectations')
+            'TestExpectations',
+        )
         expected_contents = {
             test_exp: 'TestExpectations content',
         }
-        self.assertEqual(self.expectations.GetOriginExpectationFileContents(),
-                         expected_contents)
+        self.assertEqual(
+            self.expectations.GetOriginExpectationFileContents(),
+            expected_contents,
+        )
         self.assertEqual(self._get_mock.call_count, 2)
 
     def testNonOkStatusCodesSurfaced(self) -> None:
@@ -91,40 +100,51 @@ mode type hash bar_tests.txt"""
 
 
 class GetLocalCheckoutExpectationFileContentsUnittest(
-        fake_filesystem_unittest.TestCase):
+    fake_filesystem_unittest.TestCase
+):
     def setUp(self) -> None:
         self.expectations = (
-            web_tests_expectations.WebTestsExpectationProcessor())
+            web_tests_expectations.WebTestsExpectationProcessor()
+        )
         self.setUpPyfakefs()
 
     def testBasic(self) -> None:
         """Tests basic functionality."""
         os.makedirs(web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
         with open(
-                os.path.join(
-                    web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                    'TestExpectations'), 'w') as outfile:
+            os.path.join(
+                web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                'TestExpectations',
+            ),
+            'w',
+        ) as outfile:
             outfile.write('foo.txt contents')
         with open(
-                os.path.join(
-                    web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                    'bar.txt'), 'w') as outfile:
+            os.path.join(
+                web_tests_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                'bar.txt',
+            ),
+            'w',
+        ) as outfile:
             outfile.write('bar.txt contents')
         test_exp = os.path.join(
             web_tests_expectations.RELATIVE_EXPECTATION_FILE_DIRECTORY,
-            'TestExpectations')
+            'TestExpectations',
+        )
         expected_contents = {
             test_exp: 'foo.txt contents',
         }
         self.assertEqual(
             self.expectations.GetLocalCheckoutExpectationFileContents(),
-            expected_contents)
+            expected_contents,
+        )
 
 
 class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
     def setUp(self) -> None:
         self._expectations = (
-            web_tests_expectations.WebTestsExpectationProcessor())
+            web_tests_expectations.WebTestsExpectationProcessor()
+        )
         self.setUpPyfakefs()
         with tempfile.NamedTemporaryFile(delete=False) as tf:
             self.expectation_file = tf.name
@@ -140,10 +160,16 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
         with open(self.expectation_file, 'w') as outfile:
             outfile.write(expectation_file_contents)
 
-        tags = ('tag1_least_specific', 'tag1_middle_specific',
-                'tag1_most_specific', 'tag2_middle_specific',
-                'tag2_least_specific')
+        tags = (
+            'tag1_least_specific',
+            'tag1_middle_specific',
+            'tag1_most_specific',
+            'tag2_middle_specific',
+            'tag2_least_specific',
+        )
         filtered_tags = self._expectations.FilterToMostSpecificTypTags(
-            tags, self.expectation_file)
-        self.assertEqual(filtered_tags,
-                         ('tag1_most_specific', 'tag2_middle_specific'))
+            tags, self.expectation_file
+        )
+        self.assertEqual(
+            filtered_tags, ('tag1_most_specific', 'tag2_middle_specific')
+        )

@@ -23,40 +23,42 @@ class CxxBlockNode(CompositeNode):
         template_format = (
             "{{\n"  #
             "  {body}\n"
-            "}}")
+            "}}"
+        )
 
         CompositeNode.__init__(
             self,
             template_format,
-            body=_to_symbol_scope_node(body, Likeliness.ALWAYS))
+            body=_to_symbol_scope_node(body, Likeliness.ALWAYS),
+        )
 
 
 class CxxIfNode(CompositeNode):
-
     def __init__(self, cond, attribute, body, likeliness):
         attribute = attribute + ' ' if (attribute is not None) else ''
         template_format = (
             "if ({cond}) {attribute}{{\n"  #
             "  {body}\n"
-            "}}")
+            "}}"
+        )
 
-        CompositeNode.__init__(self,
-                               template_format,
-                               cond=_to_conditional_node(cond),
-                               attribute=_to_maybe_text_node(attribute),
-                               body=_to_symbol_scope_node(body, likeliness))
+        CompositeNode.__init__(
+            self,
+            template_format,
+            cond=_to_conditional_node(cond),
+            attribute=_to_maybe_text_node(attribute),
+            body=_to_symbol_scope_node(body, likeliness),
+        )
 
 
 class CxxIfElseNode(CompositeNode):
-
-    def __init__(self, cond, attribute, then, then_likeliness, else_,
-                 else_likeliness):
+    def __init__(
+        self, cond, attribute, then, then_likeliness, else_, else_likeliness
+    ):
         attribute = attribute + ' ' if (attribute is not None) else ''
-        template_format = ("if ({cond}) {attribute}{{\n"
-                           "  {then}\n"
-                           "}} else {{\n"
-                           "  {else_}\n"
-                           "}}")
+        template_format = (
+            "if ({cond}) {attribute}{{\n  {then}\n}} else {{\n  {else_}\n}}"
+        )
 
         CompositeNode.__init__(
             self,
@@ -64,17 +66,16 @@ class CxxIfElseNode(CompositeNode):
             cond=_to_conditional_node(cond),
             attribute=_to_maybe_text_node(attribute),
             then=_to_symbol_scope_node(then, then_likeliness),
-            else_=_to_symbol_scope_node(else_, else_likeliness))
+            else_=_to_symbol_scope_node(else_, else_likeliness),
+        )
 
 
 class CxxLikelyIfNode(CxxIfNode):
-
     def __init__(self, cond, attribute, body):
         CxxIfNode.__init__(self, cond, attribute, body, Likeliness.LIKELY)
 
 
 class CxxUnlikelyIfNode(CxxIfNode):
-
     def __init__(self, cond, attribute, body):
         CxxIfNode.__init__(self, cond, attribute, body, Likeliness.UNLIKELY)
 
@@ -110,11 +111,13 @@ if (${{{clause}.cond}}) \\
 % endfor\
 """,
             clause=CodeNode.gensym(),
-            clauses=clauses_gensym)
+            clauses=clauses_gensym,
+        )
         template_vars = {clauses_gensym: clauses}
 
         CodeNode.__init__(
-            self, template_text=template_text, template_vars=template_vars)
+            self, template_text=template_text, template_vars=template_vars
+        )
 
         self._clauses = clauses
 
@@ -179,7 +182,8 @@ switch (${{{cond}}}) {{
             cond=cond_gensym,
             clause=CodeNode.gensym(),
             clauses=clauses_gensym,
-            default_clauses=default_clauses_gensym)
+            default_clauses=default_clauses_gensym,
+        )
         template_vars = {
             cond_gensym: cond,
             clauses_gensym: clauses,
@@ -187,16 +191,15 @@ switch (${{{cond}}}) {{
         }
 
         CodeNode.__init__(
-            self, template_text=template_text, template_vars=template_vars)
+            self, template_text=template_text, template_vars=template_vars
+        )
 
         self._clauses = clauses
         self._default_clauses = default_clauses
 
-    def append(self,
-               case,
-               body,
-               should_add_break=True,
-               likeliness=Likeliness.LIKELY):
+    def append(
+        self, case, body, should_add_break=True, likeliness=Likeliness.LIKELY
+    ):
         """
         Args:
             case: Constant expression of 'case' label, or None for 'default'
@@ -216,13 +219,13 @@ switch (${{{cond}}}) {{
         else:
             assert not self._default_clauses
             self._default_clauses.append(
-                self._Clause(case, body, should_add_break))
+                self._Clause(case, body, should_add_break)
+            )
 
 
 class CxxForLoopNode(CompositeNode):
     def __init__(self, cond, body, weak_dep_syms=None):
-        assert weak_dep_syms is None or isinstance(weak_dep_syms,
-                                                   (list, tuple))
+        assert weak_dep_syms is None or isinstance(weak_dep_syms, (list, tuple))
 
         if weak_dep_syms is None:
             weak_deps = EmptyNode()
@@ -233,42 +236,47 @@ class CxxForLoopNode(CompositeNode):
             "{weak_deps}"  #
             "for ({cond}) {{\n"
             "  {body}\n"
-            "}}\n")
-
-        CompositeNode.__init__(self,
-                               template_format,
-                               weak_deps=weak_deps,
-                               cond=_to_conditional_node(cond),
-                               body=_to_symbol_scope_node(
-                                   body, Likeliness.LIKELY))
-
-
-class CxxBreakableBlockNode(CompositeNode):
-    def __init__(self, body, likeliness=Likeliness.LIKELY):
-        template_format = ("do {{  // Dummy loop for use of 'break'.\n"
-                           "  {body}\n"
-                           "}} while (false);")
+            "}}\n"
+        )
 
         CompositeNode.__init__(
             self,
             template_format,
-            body=_to_symbol_scope_node(body, likeliness))
+            weak_deps=weak_deps,
+            cond=_to_conditional_node(cond),
+            body=_to_symbol_scope_node(body, Likeliness.LIKELY),
+        )
+
+
+class CxxBreakableBlockNode(CompositeNode):
+    def __init__(self, body, likeliness=Likeliness.LIKELY):
+        template_format = (
+            "do {{  // Dummy loop for use of 'break'.\n"
+            "  {body}\n"
+            "}} while (false);"
+        )
+
+        CompositeNode.__init__(
+            self, template_format, body=_to_symbol_scope_node(body, likeliness)
+        )
 
 
 class CxxFuncDeclNode(CompositeNode):
-    def __init__(self,
-                 name,
-                 arg_decls,
-                 return_type,
-                 template_params=None,
-                 static=False,
-                 explicit=False,
-                 constexpr=False,
-                 const=False,
-                 override=False,
-                 default=False,
-                 delete=False,
-                 nodiscard=False):
+    def __init__(
+        self,
+        name,
+        arg_decls,
+        return_type,
+        template_params=None,
+        static=False,
+        explicit=False,
+        constexpr=False,
+        const=False,
+        override=False,
+        default=False,
+        delete=False,
+        nodiscard=False,
+    ):
         """
         Args:
             name: Function name.
@@ -295,15 +303,17 @@ class CxxFuncDeclNode(CompositeNode):
         assert not (default and delete)
         assert isinstance(nodiscard, bool)
 
-        template_format = ("{template}"
-                           "{nodiscard_result}"
-                           "{static}{explicit}{constexpr}"
-                           "{return_type} "
-                           "{name}({arg_decls})"
-                           "{const}"
-                           "{override}"
-                           "{default_or_delete}"
-                           ";")
+        template_format = (
+            "{template}"
+            "{nodiscard_result}"
+            "{static}{explicit}{constexpr}"
+            "{return_type} "
+            "{name}({arg_decls})"
+            "{const}"
+            "{override}"
+            "{default_or_delete}"
+            ";"
+        )
 
         if template_params is None:
             template = ""
@@ -320,39 +330,43 @@ class CxxFuncDeclNode(CompositeNode):
             default_or_delete = " = delete"
         else:
             default_or_delete = ""
-        nodiscard_result = ("[[nodiscard]] " if nodiscard else "")
+        nodiscard_result = "[[nodiscard]] " if nodiscard else ""
 
-        CompositeNode.__init__(self,
-                               template_format,
-                               name=_to_maybe_text_node(name),
-                               arg_decls=ListNode(map(_to_maybe_text_node,
-                                                      arg_decls),
-                                                  separator=", "),
-                               return_type=_to_maybe_text_node(return_type),
-                               template=template,
-                               static=static,
-                               explicit=explicit,
-                               constexpr=constexpr,
-                               const=const,
-                               override=override,
-                               default_or_delete=default_or_delete,
-                               nodiscard_result=nodiscard_result)
+        CompositeNode.__init__(
+            self,
+            template_format,
+            name=_to_maybe_text_node(name),
+            arg_decls=ListNode(
+                map(_to_maybe_text_node, arg_decls), separator=", "
+            ),
+            return_type=_to_maybe_text_node(return_type),
+            template=template,
+            static=static,
+            explicit=explicit,
+            constexpr=constexpr,
+            const=const,
+            override=override,
+            default_or_delete=default_or_delete,
+            nodiscard_result=nodiscard_result,
+        )
 
 
 class CxxFuncDefNode(CompositeNode):
-    def __init__(self,
-                 name,
-                 arg_decls,
-                 return_type,
-                 class_name=None,
-                 template_params=None,
-                 static=False,
-                 inline=False,
-                 explicit=False,
-                 constexpr=False,
-                 const=False,
-                 override=False,
-                 member_initializer_list=None):
+    def __init__(
+        self,
+        name,
+        arg_decls,
+        return_type,
+        class_name=None,
+        template_params=None,
+        static=False,
+        inline=False,
+        explicit=False,
+        constexpr=False,
+        const=False,
+        override=False,
+        member_initializer_list=None,
+    ):
         """
         Args:
             name: Function name.
@@ -383,18 +397,21 @@ class CxxFuncDefNode(CompositeNode):
 
         # Presence of some attributes only makes sense on inline defitintions,
         # in which case a separate declaration does not make sense.
-        self._inhibit_make_decl = (template_params or inline or explicit
-                                   or constexpr)
+        self._inhibit_make_decl = (
+            template_params or inline or explicit or constexpr
+        )
 
-        template_format = ("{template}"
-                           "{static}{inline}{explicit}{constexpr}"
-                           "{return_type} "
-                           "{class_name}{name}({arg_decls})"
-                           "{const}"
-                           "{override}"
-                           "{member_initializer_list} {{\n"
-                           "  {body}\n"
-                           "}}")
+        template_format = (
+            "{template}"
+            "{static}{inline}{explicit}{constexpr}"
+            "{return_type} "
+            "{class_name}{name}({arg_decls})"
+            "{const}"
+            "{override}"
+            "{member_initializer_list} {{\n"
+            "  {body}\n"
+            "}}"
+        )
 
         if class_name is None:
             class_name = ""
@@ -419,7 +436,8 @@ class CxxFuncDefNode(CompositeNode):
             member_initializer_list = ListNode(
                 map(_to_maybe_text_node, member_initializer_list),
                 separator=", ",
-                head=" : ")
+                head=" : ",
+            )
 
         self._body_node = SymbolScopeNode()
 
@@ -428,7 +446,8 @@ class CxxFuncDefNode(CompositeNode):
             template_format,
             name=_to_maybe_text_node(name),
             arg_decls=ListNode(
-                map(_to_maybe_text_node, arg_decls), separator=", "),
+                map(_to_maybe_text_node, arg_decls), separator=", "
+            ),
             return_type=_to_maybe_text_node(return_type),
             class_name=class_name,
             template=template,
@@ -439,7 +458,8 @@ class CxxFuncDefNode(CompositeNode):
             const=const,
             override=override,
             member_initializer_list=member_initializer_list,
-            body=self._body_node)
+            body=self._body_node,
+        )
 
     @property
     def function_name(self):
@@ -449,28 +469,31 @@ class CxxFuncDefNode(CompositeNode):
     def body(self):
         return self._body_node
 
-    def make_decl(self,
-                  static=False,
-                  explicit=False,
-                  override=False,
-                  nodiscard=False):
+    def make_decl(
+        self, static=False, explicit=False, override=False, nodiscard=False
+    ):
         assert not self._inhibit_make_decl
-        return CxxFuncDeclNode(name=self._function_name,
-                               arg_decls=self._arg_decls,
-                               return_type=self._return_type,
-                               const=self._const,
-                               static=static,
-                               explicit=explicit,
-                               override=override,
-                               nodiscard=nodiscard)
+        return CxxFuncDeclNode(
+            name=self._function_name,
+            arg_decls=self._arg_decls,
+            return_type=self._return_type,
+            const=self._const,
+            static=static,
+            explicit=explicit,
+            override=override,
+            nodiscard=nodiscard,
+        )
+
 
 class CxxClassDefNode(CompositeNode):
-    def __init__(self,
-                 name,
-                 base_class_names=None,
-                 template_params=None,
-                 final=False,
-                 export=None):
+    def __init__(
+        self,
+        name,
+        base_class_names=None,
+        template_params=None,
+        final=False,
+        export=None,
+    ):
         """
         Args:
             name: The class name to be defined.
@@ -481,14 +504,16 @@ class CxxClassDefNode(CompositeNode):
         """
         assert isinstance(final, bool)
 
-        template_format = ("{template}"
-                           "class{export} {name}{final}{base_clause} {{\n"
-                           "  {top_section}\n"
-                           "  {public_section}\n"
-                           "  {protected_section}\n"
-                           "  {private_section}\n"
-                           "  {bottom_section}\n"
-                           "}};")
+        template_format = (
+            "{template}"
+            "class{export} {name}{final}{base_clause} {{\n"
+            "  {top_section}\n"
+            "  {public_section}\n"
+            "  {protected_section}\n"
+            "  {private_section}\n"
+            "  {bottom_section}\n"
+            "}};"
+        )
 
         if template_params is None:
             template = ""
@@ -508,11 +533,13 @@ class CxxClassDefNode(CompositeNode):
             base_specifier_list = [
                 CompositeNode(
                     "public {base_class_name}",
-                    base_class_name=_to_maybe_text_node(base_class_name))
+                    base_class_name=_to_maybe_text_node(base_class_name),
+                )
                 for base_class_name in base_class_names
             ]
             base_clause = ListNode(
-                base_specifier_list, separator=", ", head=" : ")
+                base_specifier_list, separator=", ", head=" : "
+            )
 
         self._top_section = ListNode(tail="\n")
         self._public_section = ListNode(head="public:\n", tail="\n")
@@ -520,18 +547,20 @@ class CxxClassDefNode(CompositeNode):
         self._private_section = ListNode(head="private:\n", tail="\n")
         self._bottom_section = ListNode()
 
-        CompositeNode.__init__(self,
-                               template_format,
-                               name=_to_maybe_text_node(name),
-                               base_clause=base_clause,
-                               template=template,
-                               final=final,
-                               export=export,
-                               top_section=self._top_section,
-                               public_section=self._public_section,
-                               protected_section=self._protected_section,
-                               private_section=self._private_section,
-                               bottom_section=self._bottom_section)
+        CompositeNode.__init__(
+            self,
+            template_format,
+            name=_to_maybe_text_node(name),
+            base_clause=base_clause,
+            template=template,
+            final=final,
+            export=export,
+            top_section=self._top_section,
+            public_section=self._public_section,
+            protected_section=self._protected_section,
+            private_section=self._private_section,
+            bottom_section=self._bottom_section,
+        )
 
     @property
     def top_section(self):
@@ -556,11 +585,9 @@ class CxxClassDefNode(CompositeNode):
 
 class CxxNamespaceNode(CompositeNode):
     def __init__(self, name="", body=None):
-        template_format = ("namespace {name} {{\n"
-                           "\n"
-                           "{body}\n"
-                           "\n"
-                           "}}  // namespace {name}")
+        template_format = (
+            "namespace {name} {{\n\n{body}\n\n}}  // namespace {name}"
+        )
 
         if body is None:
             self._body = ListNode()
@@ -568,7 +595,8 @@ class CxxNamespaceNode(CompositeNode):
             self._body = _to_list_node(body)
 
         CompositeNode.__init__(
-            self, template_format, name=name, body=self._body)
+            self, template_format, name=name, body=self._body
+        )
 
     @property
     def body(self):

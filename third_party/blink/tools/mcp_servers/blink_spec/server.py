@@ -58,7 +58,9 @@ def get_github_issue_with_comments(issue_url: str) -> str:
     """
 
     if not GITHUB_API_KEY:
-        return "Error: BLINK_SPEC_GITHUB_API_KEY environment variable is not set."
+        return (
+            "Error: BLINK_SPEC_GITHUB_API_KEY environment variable is not set."
+        )
 
     pattern = r"https://github\.com/([^/]+)/([^/]+)/issues/(\d+)"
     match = re.match(pattern, issue_url)
@@ -69,44 +71,50 @@ def get_github_issue_with_comments(issue_url: str) -> str:
 
     owner, repo, issue_number = match.groups()
 
-    issue_api_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}"
+    issue_api_url = (
+        f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}"
+    )
     headers = {
         "Authorization": f"Bearer {GITHUB_API_KEY}",
         "Accept": "application/vnd.github.v3+json",
-        "X-GitHub-Api-Version": "2022-11-28"
+        "X-GitHub-Api-Version": "2022-11-28",
     }
 
     all_posts = []
 
     try:
         # Get the original post.
-        issue_response = requests.get(issue_api_url,
-                                      headers=headers,
-                                      timeout=10)
+        issue_response = requests.get(
+            issue_api_url, headers=headers, timeout=10
+        )
         issue_response.raise_for_status()
         issue_data = issue_response.json()
 
-        all_posts.append({
-            "author": issue_data['user']['login'],
-            "date": issue_data['created_at'],
-            "comment": issue_data['body'] or ""
-        })
+        all_posts.append(
+            {
+                "author": issue_data['user']['login'],
+                "date": issue_data['created_at'],
+                "comment": issue_data['body'] or "",
+            }
+        )
 
         # Get comments.
         comments_url = issue_api_url + "/comments"
         while comments_url:
-            comments_response = requests.get(comments_url,
-                                             headers=headers,
-                                             timeout=10)
+            comments_response = requests.get(
+                comments_url, headers=headers, timeout=10
+            )
             comments_response.raise_for_status()
             comments_data = comments_response.json()
 
             for comment in comments_data:
-                all_posts.append({
-                    "author": comment['user']['login'],
-                    "date": comment['created_at'],
-                    "comment": comment['body'] or ""
-                })
+                all_posts.append(
+                    {
+                        "author": comment['user']['login'],
+                        "date": comment['created_at'],
+                        "comment": comment['body'] or "",
+                    }
+                )
 
             # Handle pagination.
             comments_url = None
@@ -124,8 +132,9 @@ def get_github_issue_with_comments(issue_url: str) -> str:
                 break
     except requests.exceptions.HTTPError as e:
         response_json = e.response.json()
-        api_message = response_json.get('message',
-                                        'No message field in API response.')
+        api_message = response_json.get(
+            'message', 'No message field in API response.'
+        )
         error_msg = f"Error: API request failed with status {e.response.status_code}. API Message: {api_message}"
         return error_msg
     except requests.exceptions.RequestException as e:
@@ -140,7 +149,8 @@ if __name__ == '__main__':
     if GITHUB_API_KEY == "":
         print(
             "Warning: BLINK_SPEC_GITHUB_API_KEY not set. Some tools will not work. See //agents/extensions/blink_spec/README.md",
-            file=sys.stderr)
+            file=sys.stderr,
+        )
     else:
         print("Starting Blink Spec MCP server", file=sys.stderr)
     mcp.run()

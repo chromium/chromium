@@ -50,15 +50,18 @@ class TestDumpReaderWin(unittest.TestCase):
         dump_file = '/crash-dumps/dump.txt'
         expected_pid = '4711'
         with host.filesystem.open_text_file_for_writing(dump_file) as f:
-            f.write('channel:\npid:%s\nplat:Win32\nprod:content_shell\n' %
-                    expected_pid)
+            f.write(
+                'channel:\npid:%s\nplat:Win32\nprod:content_shell\n'
+                % expected_pid
+            )
         build_dir = "/mock-checkout/out/Debug"
         host.filesystem.maybe_make_directory(build_dir)
         dump_reader = DumpReaderWin(host, build_dir)
 
         self.assertTrue(dump_reader.check_is_functional())
-        self.assertEqual(expected_pid,
-                         dump_reader._get_pid_from_dump(dump_file))
+        self.assertEqual(
+            expected_pid, dump_reader._get_pid_from_dump(dump_file)
+        )
 
     def test_get_stack_from_dump(self):
         host = MockHost()
@@ -73,8 +76,10 @@ class TestDumpReaderWin(unittest.TestCase):
 
         self.assertTrue(dump_reader.check_is_functional())
         host.executive.full_calls = []
-        self.assertEqual("MOCK output of child process",
-                         dump_reader._get_stack_from_dump(dump_file))
+        self.assertEqual(
+            "MOCK output of child process",
+            dump_reader._get_stack_from_dump(dump_file),
+        )
         self.assertEqual(1, len(host.executive.calls))
         cmd_line = " ".join(host.executive.calls[0])
         self.assertIn('cdb.exe', cmd_line)

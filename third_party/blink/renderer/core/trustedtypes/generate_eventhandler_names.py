@@ -33,12 +33,12 @@ def main(argv):
     options, args = parser.parse_args(argv[1:])
 
     for option in (
-            "out",
-            "webidl",
-            "event_handler_names",
-            "html_attribute_names",
-            "svg_attribute_names",
-            "mathml_attribute_names",
+        "out",
+        "webidl",
+        "event_handler_names",
+        "html_attribute_names",
+        "svg_attribute_names",
+        "mathml_attribute_names",
     ):
         if not getattr(options, option):
             parser.error(f"--{option} is required.")
@@ -59,18 +59,18 @@ def main(argv):
             event_handlers.add(f"on{entry.lower()}")
 
     for path in (
-            options.html_attribute_names,
-            options.svg_attribute_names,
-            options.mathml_attribute_names,
+        options.html_attribute_names,
+        options.svg_attribute_names,
+        options.mathml_attribute_names,
     ):
         with open(path) as f:
             attribute_data = json5.load(f)
             for entry in attribute_data["data"]:
-                name = entry if isinstance(entry, str) else entry.get(
-                    "name", "")
+                name = (
+                    entry if isinstance(entry, str) else entry.get("name", "")
+                )
                 if name.lower().startswith("on"):
                     event_handlers.add(name.lower())
-
 
     license_and_header = """\
 // Copyright 2022 The Chromium Authors
@@ -80,8 +80,10 @@ def main(argv):
 
     with open(options.out, "w") as out:
         print(license_and_header, file=out)
-        print("// Generated from WebIDL database. Don't edit, just generate.",
-              file=out)
+        print(
+            "// Generated from WebIDL database. Don't edit, just generate.",
+            file=out,
+        )
         print("//", file=out)
         print(f"// Generator: {argv[0]}", file=out)
         print("", file=out)

@@ -11,9 +11,17 @@ from unexpected_passes_common import unittest_utils as uu
 
 
 # id_ is used instead of id since id is a python built-in.
-def FakeQueryResult(builder_name: str, id_: str, test_id: str, test_name: str,
-                    status: str, typ_tags: Iterable[str], step_name: str,
-                    duration: str, timeout: str) -> common_queries.QueryResult:
+def FakeQueryResult(
+    builder_name: str,
+    id_: str,
+    test_id: str,
+    test_name: str,
+    status: str,
+    typ_tags: Iterable[str],
+    step_name: str,
+    duration: str,
+    timeout: str,
+) -> common_queries.QueryResult:
     return common_queries.QueryResult(
         data={
             'builder_name': builder_name,
@@ -25,13 +33,16 @@ def FakeQueryResult(builder_name: str, id_: str, test_id: str, test_name: str,
             'step_name': step_name,
             'duration': duration,
             'timeout': timeout,
-        })
+        }
+    )
 
 
-def CreateGenericWebTestQuerier(*args,
-                                **kwargs) -> queries.WebTestBigQueryQuerier:
+def CreateGenericWebTestQuerier(
+    *args, **kwargs
+) -> queries.WebTestBigQueryQuerier:
     return typing.cast(
         queries.WebTestBigQueryQuerier,
-        uu.CreateGenericQuerier(cls=queries.WebTestBigQueryQuerier,
-                                *args,
-                                **kwargs))
+        uu.CreateGenericQuerier(
+            cls=queries.WebTestBigQueryQuerier, *args, **kwargs
+        ),
+    )

@@ -33,8 +33,9 @@ class AstGroup(object):
     def add_ast_node(self, node):
         assert isinstance(node, idl_node.IDLNode)
         assert node.GetClass() == 'File', (
-            'Root node of an AST must be a File node, but is %s.' %
-            node.GetClass())
+            'Root node of an AST must be a File node, but is %s.'
+            % node.GetClass()
+        )
         self._nodes.append(node)
 
     @property

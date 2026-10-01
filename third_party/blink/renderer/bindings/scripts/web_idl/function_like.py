@@ -9,10 +9,10 @@ from .idl_type import IdlType
 
 class FunctionLike(WithIdentifier):
     class IR(WithIdentifier):
-        def __init__(self, identifier, arguments, return_type,
-                     is_static=False):
+        def __init__(self, identifier, arguments, return_type, is_static=False):
             assert isinstance(arguments, (list, tuple)) and all(
-                isinstance(arg, Argument.IR) for arg in arguments)
+                isinstance(arg, Argument.IR) for arg in arguments
+            )
             assert isinstance(return_type, IdlType)
             assert isinstance(is_static, bool)
 
@@ -27,7 +27,8 @@ class FunctionLike(WithIdentifier):
         WithIdentifier.__init__(self, ir.identifier)
         self._overload_group = None
         self._arguments = tuple(
-            [Argument(arg_ir, self) for arg_ir in ir.arguments])
+            [Argument(arg_ir, self) for arg_ir in ir.arguments]
+        )
         self._return_type = ir.return_type
         self._is_static = ir.is_static
 
@@ -72,8 +73,12 @@ class FunctionLike(WithIdentifier):
         """Returns the number of required arguments."""
         return len(
             list(
-                filter(lambda arg: not (arg.is_optional or arg.is_variadic),
-                       self.arguments)))
+                filter(
+                    lambda arg: not (arg.is_optional or arg.is_variadic),
+                    self.arguments,
+                )
+            )
+        )
 
 
 class OverloadGroup(WithIdentifier):
@@ -81,12 +86,12 @@ class OverloadGroup(WithIdentifier):
         def __init__(self, functions):
             assert isinstance(functions, (list, tuple))
             assert all(
-                isinstance(function, FunctionLike.IR)
-                for function in functions)
-            assert len(set(
-                [function.identifier for function in functions])) == 1
-            assert len(set(
-                [function.is_static for function in functions])) == 1
+                isinstance(function, FunctionLike.IR) for function in functions
+            )
+            assert (
+                len(set([function.identifier for function in functions])) == 1
+            )
+            assert len(set([function.is_static for function in functions])) == 1
 
             WithIdentifier.__init__(self, functions[0].identifier)
             self.functions = list(functions)
@@ -112,7 +117,8 @@ class OverloadGroup(WithIdentifier):
             assert isinstance(opt_list, (list, tuple))
             assert all(
                 isinstance(optionality, IdlType.Optionality.Type)
-                for optionality in opt_list)
+                for optionality in opt_list
+            )
 
             self._function_like = function_like
             self._type_list = tuple(type_list)
@@ -132,8 +138,7 @@ class OverloadGroup(WithIdentifier):
 
     def __init__(self, functions):
         assert isinstance(functions, (list, tuple))
-        assert all(
-            isinstance(function, FunctionLike) for function in functions)
+        assert all(isinstance(function, FunctionLike) for function in functions)
         assert len(set([function.identifier for function in functions])) == 1
         assert len(set([function.is_static for function in functions])) == 1
 
@@ -188,8 +193,11 @@ class OverloadGroup(WithIdentifier):
 
             S.append(
                 OverloadGroup.EffectiveOverloadItem(
-                    X, list(map(lambda arg: arg.idl_type, X.arguments)),
-                    list(map(lambda arg: arg.optionality, X.arguments))))
+                    X,
+                    list(map(lambda arg: arg.idl_type, X.arguments)),
+                    list(map(lambda arg: arg.optionality, X.arguments)),
+                )
+            )
 
             if X.is_variadic:
                 for i in range(n, max(maxarg, N)):
@@ -219,14 +227,16 @@ class OverloadGroup(WithIdentifier):
         assert isinstance(items, (list, tuple))
         assert all(
             isinstance(item, OverloadGroup.EffectiveOverloadItem)
-            for item in items)
+            for item in items
+        )
         assert len(items) > 1
 
         for index in range(len(items[0].type_list)):
             # Assume that the given items are valid, and we only need to test
             # the two types.
             if OverloadGroup.are_distinguishable_types(
-                    items[0].type_list[index], items[1].type_list[index]):
+                items[0].type_list[index], items[1].type_list[index]
+            ):
                 return index
         assert False
 
@@ -242,10 +252,13 @@ class OverloadGroup(WithIdentifier):
         # step 1. If one type includes a nullable type and the other type either
         #   includes a nullable type, is a union type with flattened member
         #   types including a dictionary type, or is a dictionary type, ...
-        if ((idl_type1.does_include_nullable_type
-             and idl_type2.does_include_nullable_or_dict)
-                or (idl_type2.does_include_nullable_type
-                    and idl_type1.does_include_nullable_or_dict)):
+        if (
+            idl_type1.does_include_nullable_type
+            and idl_type2.does_include_nullable_or_dict
+        ) or (
+            idl_type2.does_include_nullable_type
+            and idl_type1.does_include_nullable_or_dict
+        ):
             return False
 
         type1 = idl_type1.unwrap()
@@ -257,7 +270,8 @@ class OverloadGroup(WithIdentifier):
             for member1 in type1.member_types:
                 for member2 in type2.member_types:
                     if not OverloadGroup.are_distinguishable_types(
-                            member1, member2):
+                        member1, member2
+                    ):
                         return False
             return True
 
@@ -278,17 +292,28 @@ class OverloadGroup(WithIdentifier):
             return idl_type.is_interface or idl_type.is_buffer_source_type
 
         def is_dictionary_like(idl_type):
-            return (idl_type.is_dictionary or idl_type.is_record
-                    or idl_type.is_callback_interface)
+            return (
+                idl_type.is_dictionary
+                or idl_type.is_record
+                or idl_type.is_callback_interface
+            )
 
         def is_sequence_like(idl_type):
             return idl_type.is_sequence or idl_type.is_frozen_array
 
-        if not (type2.is_undefined or type2.is_boolean or type2.is_numeric
-                or type2.is_bigint or type2.is_string or type2.is_object
-                or type2.is_symbol or is_interface_like(type2)
-                or type2.is_callback_function or is_dictionary_like(type2)
-                or is_sequence_like(type2)):
+        if not (
+            type2.is_undefined
+            or type2.is_boolean
+            or type2.is_numeric
+            or type2.is_bigint
+            or type2.is_string
+            or type2.is_object
+            or type2.is_symbol
+            or is_interface_like(type2)
+            or type2.is_callback_function
+            or is_dictionary_like(type2)
+            or is_sequence_like(type2)
+        ):
             return False  # Out of the table
 
         if type1.is_undefined:
@@ -304,9 +329,14 @@ class OverloadGroup(WithIdentifier):
         if is_string_type(type1):
             return not is_string_type(type2)
         if type1.is_object:
-            return (type2.is_undefined or type2.is_boolean or type2.is_numeric
-                    or type2.is_bigint or is_string_type(type2)
-                    or type2.is_symbol)
+            return (
+                type2.is_undefined
+                or type2.is_boolean
+                or type2.is_numeric
+                or type2.is_bigint
+                or is_string_type(type2)
+                or type2.is_symbol
+            )
         if type1.is_symbol:
             return not type2.is_symbol
         if is_interface_like(type1):
@@ -323,7 +353,8 @@ class OverloadGroup(WithIdentifier):
             interface2 = type2.type_definition_object
             return not (
                 interface1 in interface2.inclusive_inherited_interfaces
-                or interface2 in interface1.inclusive_inherited_interfaces)
+                or interface2 in interface1.inclusive_inherited_interfaces
+            )
         if type1.is_callback_function:
             if type2.is_object or type2.is_callback_function:
                 return False
@@ -332,19 +363,26 @@ class OverloadGroup(WithIdentifier):
             # Additional requirements: A callback function that does not have
             # [LegacyTreatNonObjectAsNull] extended attribute is
             # distinguishable from a type in the dictionary-like category.
-            return ("LegacyTreatNonObjectAsNull"
-                    not in type1.type_definition_object.extended_attributes)
+            return (
+                "LegacyTreatNonObjectAsNull"
+                not in type1.type_definition_object.extended_attributes
+            )
         if is_dictionary_like(type1):
-            if (type2.is_undefined or type2.is_object
-                    or is_dictionary_like(type2)):
+            if (
+                type2.is_undefined
+                or type2.is_object
+                or is_dictionary_like(type2)
+            ):
                 return False
             if not type2.is_callback_function:
                 return True
             # Additional requirements: A callback function that does not have
             # [LegacyTreatNonObjectAsNull] extended attribute is
             # distinguishable from a type in the dictionary-like category.
-            return ("LegacyTreatNonObjectAsNull"
-                    not in type2.type_definition_object.extended_attributes)
+            return (
+                "LegacyTreatNonObjectAsNull"
+                not in type2.type_definition_object.extended_attributes
+            )
         if is_sequence_like(type1):
             return not (type2.is_object or is_sequence_like(type2))
         return False  # Out of the table

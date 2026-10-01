@@ -144,7 +144,8 @@ class FilterConfigurationTest(unittest.TestCase):
         return FilterConfiguration(
             base_rules=base_rules,
             path_specific=path_specific,
-            user_rules=user_rules)
+            user_rules=user_rules,
+        )
 
     def test_init(self):
         """Test __init__ method."""
@@ -183,11 +184,14 @@ class FilterConfigurationTest(unittest.TestCase):
         user_rules = ["+"]
 
         self.assertFalse(
-            config.__eq__(FilterConfiguration(base_rules=base_rules)))
+            config.__eq__(FilterConfiguration(base_rules=base_rules))
+        )
         self.assertFalse(
-            config.__eq__(FilterConfiguration(path_specific=path_specific)))
+            config.__eq__(FilterConfiguration(path_specific=path_specific))
+        )
         self.assertFalse(
-            config.__eq__(FilterConfiguration(user_rules=user_rules)))
+            config.__eq__(FilterConfiguration(user_rules=user_rules))
+        )
 
     def test_ne(self):
         """Test __ne__ method."""

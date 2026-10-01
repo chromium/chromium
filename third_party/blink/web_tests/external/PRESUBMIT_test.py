@@ -28,8 +28,9 @@ class MockInputApi(object):
         self.logging = PrintLogger()
         self.change = MockChange()
         self.no_diffs = False
-        self.presubmit_local_path = (presubmit_local_path or os.path.abspath(
-            os.path.dirname(__file__)))
+        self.presubmit_local_path = presubmit_local_path or os.path.abspath(
+            os.path.dirname(__file__)
+        )
 
     def AbsoluteLocalPaths(self):
         return self.affected_paths
@@ -38,7 +39,10 @@ class MockInputApi(object):
         return self.presubmit_local_path
 
     def AffectedSourceFiles(self, filter_func):
-        all_files = [MockFile(self.PresubmitLocalPath(), path) for path in self.affected_paths]
+        all_files = [
+            MockFile(self.PresubmitLocalPath(), path)
+            for path in self.affected_paths
+        ]
         return filter(lambda f: filter_func(f), all_files)
 
 
@@ -107,6 +111,7 @@ class LintWPTTest(unittest.TestCase):
 
     This prevents concurrent manifest scans from observing temporary files.
     """
+
     def setUp(self):
         temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(temp_dir.cleanup)
@@ -115,8 +120,10 @@ class LintWPTTest(unittest.TestCase):
         os.mkdir(wpt_dir)
         # `wpt lint` requires lint.ignore at the repository root.
         real_wpt_dir = os.path.join(os.path.dirname(__file__), 'wpt')
-        shutil.copyfile(os.path.join(real_wpt_dir, 'lint.ignore'),
-                        os.path.join(wpt_dir, 'lint.ignore'))
+        shutil.copyfile(
+            os.path.join(real_wpt_dir, 'lint.ignore'),
+            os.path.join(wpt_dir, 'lint.ignore'),
+        )
         self._test_file = os.path.join(wpt_dir, 'test.html')
         self._ignored_directory = os.path.join(wpt_dir, 'css', '_DNS_')
 
@@ -158,7 +165,11 @@ class DontModifyIDLFilesTest(unittest.TestCase):
     def testModifiesIDL(self):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
-        mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'interfaces', 'test.idl')]
+        mock_input.affected_paths = [
+            os.path.join(
+                mock_input.PresubmitLocalPath(), 'wpt', 'interfaces', 'test.idl'
+            )
+        ]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(len(errors), 1)
         self.assertTrue(isinstance(errors[0], MockPresubmitWarning))
@@ -166,14 +177,25 @@ class DontModifyIDLFilesTest(unittest.TestCase):
     def testModifiesNonIDLFiles(self):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
-        mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'css', 'foo.html')]
+        mock_input.affected_paths = [
+            os.path.join(
+                mock_input.PresubmitLocalPath(), 'wpt', 'css', 'foo.html'
+            )
+        ]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(errors, [])
 
     def testModifiesInterfaceDirOutsideOfWPT(self):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
-        mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'other', 'interfaces', 'test.idl')]
+        mock_input.affected_paths = [
+            os.path.join(
+                mock_input.PresubmitLocalPath(),
+                'other',
+                'interfaces',
+                'test.idl',
+            )
+        ]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(errors, [])
 
@@ -181,8 +203,12 @@ class DontModifyIDLFilesTest(unittest.TestCase):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
         mock_input.affected_paths = [
-            os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'interfaces',
-                         'test.tentative.idl')
+            os.path.join(
+                mock_input.PresubmitLocalPath(),
+                'wpt',
+                'interfaces',
+                'test.tentative.idl',
+            )
         ]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(errors, [])

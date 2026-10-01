@@ -72,9 +72,10 @@ class MakeNamesWriter(json5_generator.Writer):
             raise ValueError('A namespace is required.')
         # https://google.github.io/styleguide/cppguide.html#Namespace_Names
         if namespace.lower() != namespace:
-            raise ValueError('The namespace field should be lower-cased. ' +
-                             '"%s" is specified in %s.' %
-                             (namespace, json5_file_path))
+            raise ValueError(
+                'The namespace field should be lower-cased. '
+                + '"%s" is specified in %s.' % (namespace, json5_file_path)
+            )
 
         entries = self.json5_file.name_dictionaries
         if self.json5_file.metadata['allowDuplicates']:
@@ -99,13 +100,13 @@ class MakeNamesWriter(json5_generator.Writer):
             'this_include_path': qualified_header,
         }
 
-    @template_expander.use_jinja(
-        "templates/make_names.h.tmpl", filters=filters)
+    @template_expander.use_jinja("templates/make_names.h.tmpl", filters=filters)
     def generate_header(self):
         return self._template_context
 
     @template_expander.use_jinja(
-        "templates/make_names.cc.tmpl", filters=filters)
+        "templates/make_names.cc.tmpl", filters=filters
+    )
     def generate_implementation(self):
         return self._template_context
 

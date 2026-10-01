@@ -42,19 +42,23 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
     port_name = full_port_name = 'linux'
     port_maker = linux.LinuxPort
 
-    def assert_version_properties(self,
-                                  port_name,
-                                  os_version,
-                                  expected_name,
-                                  expected_version,
-                                  driver_file_output=None):
+    def assert_version_properties(
+        self,
+        port_name,
+        os_version,
+        expected_name,
+        expected_version,
+        driver_file_output=None,
+    ):
         host = MockSystemHost(
-            os_name=self.os_name, os_version=(os_version or self.os_version))
+            os_name=self.os_name, os_version=(os_version or self.os_version)
+        )
         host.filesystem.isfile = lambda x: 'content_shell' in x
         if driver_file_output:
             host.executive = MockExecutive(driver_file_output)
         port = self.make_port(
-            host=host, port_name=port_name, os_version=os_version)
+            host=host, port_name=port_name, os_version=os_version
+        )
         self.assertEqual(port.name(), expected_name)
         self.assertEqual(port.version(), expected_version)
 
@@ -62,21 +66,25 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertIn(self.make_port().name(), {'linux'})
         self.assert_version_properties('linux', None, 'linux', 'linux')
         with self.assertRaises(AssertionError):
-            self.assert_version_properties('linux-utopic', None, 'ignored',
-                                           'ignored', 'ignored')
+            self.assert_version_properties(
+                'linux-utopic', None, 'ignored', 'ignored', 'ignored'
+            )
 
     def assert_baseline_paths(self, port_name, os_version, *expected_paths):
         port = self.make_port(port_name=port_name, os_version=os_version)
-        self.assertEqual(port.baseline_version_dir(),
-                         port._absolute_baseline_path(expected_paths[0]))  # pylint: disable=protected-access
+        self.assertEqual(
+            port.baseline_version_dir(),
+            port._absolute_baseline_path(expected_paths[0]),
+        )  # pylint: disable=protected-access
         self.assertEqual(len(port.baseline_search_path()), len(expected_paths))
         for i, path in enumerate(expected_paths):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))
 
     def test_get_platform_tags(self):
         port = self.make_port()
-        self.assertEqual(port.get_platform_tags(),
-                         {'linux', 'x86_64', 'release'})
+        self.assertEqual(
+            port.get_platform_tags(), {'linux', 'x86_64', 'release'}
+        )
 
     def test_baseline_paths(self):
         self.assert_baseline_paths('linux', None, 'linux', '/win')
@@ -86,17 +94,19 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
 
     def test_driver_name_option(self):
         self.assertTrue(
-            self.make_port().path_to_driver().endswith('content_shell'))
+            self.make_port().path_to_driver().endswith('content_shell')
+        )
         port = self.make_port(
-            options=optparse.Values({
-                'driver_name': 'OtherDriver'
-            }))
+            options=optparse.Values({'driver_name': 'OtherDriver'})
+        )
         self.assertTrue(port.path_to_driver().endswith('OtherDriver'))
 
     def test_path_to_image_diff(self):
         # pylint: disable=protected-access
-        self.assertEqual(self.make_port()._path_to_image_diff(),
-                         '/mock-checkout/out/Release/image_diff')
+        self.assertEqual(
+            self.make_port()._path_to_image_diff(),
+            '/mock-checkout/out/Release/image_diff',
+        )
 
     def test_dummy_home_dir_is_created_and_cleaned_up(self):
         def run_command_fake(args):
@@ -116,7 +126,9 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertTrue(port.host.filesystem.isdir(temp_home_dir))
         self.assertTrue(
             port.host.filesystem.isfile(
-                port.host.filesystem.join(temp_home_dir, '.Xauthority')))
+                port.host.filesystem.join(temp_home_dir, '.Xauthority')
+            )
+        )
 
         # Clean up; HOME should be reset and the temp dir should be cleaned up.
         port.clean_up_test_run()
@@ -126,13 +138,24 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
     def test_xvfb_flags(self):
         port = self.make_port()
         port._xvfb_supports_maxclients = False
-        self.assertEqual(port.xvfb_flags(),
-                         ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96'])
+        self.assertEqual(
+            port.xvfb_flags(),
+            ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96'],
+        )
         port._xvfb_supports_maxclients = True
-        self.assertEqual(port.xvfb_flags(), [
-            '-screen', '0', '1280x800x24', '-ac', '-dpi', '96', '-maxclients',
-            '1024'
-        ])
+        self.assertEqual(
+            port.xvfb_flags(),
+            [
+                '-screen',
+                '0',
+                '1280x800x24',
+                '-ac',
+                '-dpi',
+                '96',
+                '-maxclients',
+                '1024',
+            ],
+        )
 
     def test_setup_test_run_starts_xvfb(self):
         def run_command_fake(args):
@@ -144,11 +167,14 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         port.host.executive = MockExecutive(run_command_fn=run_command_fake)
 
         self.assertIsNone(port.setup_test_run())
-        self.assertEqual(port.host.executive.calls, [
-            ['xdpyinfo', '-display', ':99'],
-            ['Xvfb', ':99'] + port.xvfb_flags(),
-            ['xdpyinfo'],
-        ])
+        self.assertEqual(
+            port.host.executive.calls,
+            [
+                ['xdpyinfo', '-display', ':99'],
+                ['Xvfb', ':99'] + port.xvfb_flags(),
+                ['xdpyinfo'],
+            ],
+        )
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':99')
 
@@ -163,14 +189,18 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         port.host.executive = MockExecutive(run_command_fn=run_command_fake)
 
         self.assertIsNone(port.setup_test_run())
-        self.assertEqual(port.host.executive.calls, [
-            ['xdpyinfo', '-display', ':99'],
-            ['Xvfb', ':99'] + port.xvfb_flags(),
-            ['xdpyinfo'],
-        ])
+        self.assertEqual(
+            port.host.executive.calls,
+            [
+                ['xdpyinfo', '-display', ':99'],
+                ['Xvfb', ':99'] + port.xvfb_flags(),
+                ['xdpyinfo'],
+            ],
+        )
         self.assertEqual(
             port.host.executive.full_calls[1].kwargs['env'].get('TMPDIR'),
-            '/tmp')
+            '/tmp',
+        )
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':99')
 
@@ -194,7 +224,8 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
                 ['xdpyinfo', '-display', ':102'],
                 ['Xvfb', ':102'] + port.xvfb_flags(),
                 ['xdpyinfo'],
-            ])
+            ],
+        )
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':102')
 
@@ -215,14 +246,17 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         port.host.executive = MockExecutive(run_command_fn=run_command_fake)
 
         self.assertIsNone(port.setup_test_run())
-        self.assertEqual(port.host.executive.calls, [
-            ['xdpyinfo', '-display', ':99'],
-            ['Xvfb', ':99'] + port.xvfb_flags(),
-            ['xdpyinfo'],
-            ['xdpyinfo'],
-            ['xdpyinfo'],
-            ['xdpyinfo'],
-        ])
+        self.assertEqual(
+            port.host.executive.calls,
+            [
+                ['xdpyinfo', '-display', ':99'],
+                ['Xvfb', ':99'] + port.xvfb_flags(),
+                ['xdpyinfo'],
+                ['xdpyinfo'],
+                ['xdpyinfo'],
+                ['xdpyinfo'],
+            ],
+        )
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':99')
 
@@ -238,18 +272,27 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.set_logging_level(logging.DEBUG)
 
         self.assertEqual(port.setup_test_run(), SYS_DEPS_EXIT_STATUS)
-        self.assertEqual(port.host.executive.calls, [
-            ['xdpyinfo', '-display', ':99'],
-            ['Xvfb', ':99'] + port.xvfb_flags(),
-        ] + [['xdpyinfo']] * 51)
+        self.assertEqual(
+            port.host.executive.calls,
+            [
+                ['xdpyinfo', '-display', ':99'],
+                ['Xvfb', ':99'] + port.xvfb_flags(),
+            ]
+            + [['xdpyinfo']] * 51,
+        )
         env = port.setup_environ_for_server()
         self.assertEqual(env['DISPLAY'], ':99')
-        self.assertLog(['DEBUG: Starting Xvfb with display ":99".\n'] + [
-            'WARNING: xdpyinfo check failed with exit code 1 while starting Xvfb on ":99".\n'
-        ] * 51 + [
-            'DEBUG: Killing Xvfb process pid 42.\n',
-            'CRITICAL: Failed to start Xvfb on display ":99" (xvfb retcode: None).\n',
-        ])
+        self.assertLog(
+            ['DEBUG: Starting Xvfb with display ":99".\n']
+            + [
+                'WARNING: xdpyinfo check failed with exit code 1 while starting Xvfb on ":99".\n'
+            ]
+            * 51
+            + [
+                'DEBUG: Killing Xvfb process pid 42.\n',
+                'CRITICAL: Failed to start Xvfb on display ":99" (xvfb retcode: None).\n',
+            ]
+        )
 
     def test_setup_test_runs_terminates_if_xvfb_proc_fails(self):
         def run_command_fake(args):
@@ -264,14 +307,21 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         # exited with return code 1 immediately.
         proc = MockProcess(['Xvfb'], stdout='', stderr='', returncode=3)
         port.host.executive = MockExecutive(
-            run_command_fn=run_command_fake, proc=proc)
+            run_command_fn=run_command_fake, proc=proc
+        )
         self.set_logging_level(logging.DEBUG)
 
         self.assertEqual(port.setup_test_run(), SYS_DEPS_EXIT_STATUS)
-        self.assertEqual(port.host.executive.calls,
-                         [['xdpyinfo', '-display', ':99'],
-                          ['Xvfb', ':99'] + port.xvfb_flags()])
-        self.assertLog([
-            'DEBUG: Starting Xvfb with display ":99".\n',
-            'CRITICAL: Failed to start Xvfb on display ":99" (xvfb retcode: 3).\n'
-        ])
+        self.assertEqual(
+            port.host.executive.calls,
+            [
+                ['xdpyinfo', '-display', ':99'],
+                ['Xvfb', ':99'] + port.xvfb_flags(),
+            ],
+        )
+        self.assertLog(
+            [
+                'DEBUG: Starting Xvfb with display ":99".\n',
+                'CRITICAL: Failed to start Xvfb on display ":99" (xvfb retcode: 3).\n',
+            ]
+        )

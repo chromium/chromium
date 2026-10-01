@@ -39,14 +39,16 @@ class CarriageReturnCheckerTest(unittest.TestCase):
 
     _category = 'whitespace/carriage_return'
     _confidence = 1
-    _expected_message = ('One or more unexpected \\r (^M) found; '
-                         'better to use only a \\n')
+    _expected_message = (
+        'One or more unexpected \\r (^M) found; better to use only a \\n'
+    )
 
     def setUp(self):
         self._style_errors = []  # The list of accumulated style errors.
 
-    def _mock_style_error_handler(self, line_number, category, confidence,
-                                  message):
+    def _mock_style_error_handler(
+        self, line_number, category, confidence, message
+    ):
         """Append the error information to the list of style errors."""
         error = (line_number, category, confidence, message)
         self._style_errors.append(error)
@@ -61,32 +63,43 @@ class CarriageReturnCheckerTest(unittest.TestCase):
         # Check both the return value and error messages.
         self.assertEqual(output_lines, expected_lines)
 
-        expected_errors = [(line_number, self._category, self._confidence,
-                            self._expected_message)
-                           for line_number in error_lines]
+        expected_errors = [
+            (
+                line_number,
+                self._category,
+                self._confidence,
+                self._expected_message,
+            )
+            for line_number in error_lines
+        ]
         self.assertEqual(self._style_errors, expected_errors)
 
     def test_ends_with_carriage(self):
-        self.assert_carriage_return(['carriage return\r'], ['carriage return'],
-                                    [1])
+        self.assert_carriage_return(
+            ['carriage return\r'], ['carriage return'], [1]
+        )
 
     def test_ends_with_nothing(self):
-        self.assert_carriage_return(['no carriage return'],
-                                    ['no carriage return'], [])
+        self.assert_carriage_return(
+            ['no carriage return'], ['no carriage return'], []
+        )
 
     def test_ends_with_newline(self):
-        self.assert_carriage_return(['no carriage return\n'],
-                                    ['no carriage return\n'], [])
+        self.assert_carriage_return(
+            ['no carriage return\n'], ['no carriage return\n'], []
+        )
 
     def test_carriage_in_middle(self):
         # The CarriageReturnChecker checks only the final character
         # of each line.
-        self.assert_carriage_return(['carriage\r in a string'],
-                                    ['carriage\r in a string'], [])
+        self.assert_carriage_return(
+            ['carriage\r in a string'], ['carriage\r in a string'], []
+        )
 
     def test_multiple_errors(self):
-        self.assert_carriage_return(['line1', 'line2\r', 'line3\r'],
-                                    ['line1', 'line2', 'line3'], [2, 3])
+        self.assert_carriage_return(
+            ['line1', 'line2\r', 'line3\r'], ['line1', 'line2', 'line3'], [2, 3]
+        )
 
 
 class TabCheckerTest(unittest.TestCase):

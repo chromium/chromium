@@ -59,14 +59,13 @@ class MockWeb(object):
     def append_prpc_response(self, payload, status_code=200, headers=None):
         headers = headers or {}
         headers.setdefault('Content-Type', 'application/json')
-        self.responses.append({
-            'status_code':
-            200,
-            'body':
-            RESPONSE_PREFIX + json.dumps(payload).encode(),
-            'headers':
-            headers,
-        })
+        self.responses.append(
+            {
+                'status_code': 200,
+                'body': RESPONSE_PREFIX + json.dumps(payload).encode(),
+                'headers': headers,
+            }
+        )
 
 
 class MockResponse(object):
@@ -82,7 +81,8 @@ class MockResponse(object):
             response = Response()
             response.status_code = self.status_code
             response.reason = 'Received error status code: {}'.format(
-                self.status_code)
+                self.status_code
+            )
             response.url = self.url
             raise HTTPError(response=response)
 

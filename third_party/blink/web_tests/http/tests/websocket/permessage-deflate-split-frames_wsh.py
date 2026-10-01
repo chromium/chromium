@@ -36,7 +36,8 @@ def web_socket_transfer_data(request):
         rsv1=1,
         rsv2=0,
         rsv3=0,
-        mask=False)
+        mask=False,
+    )
     request.ws_stream._write(header + payload)
 
     header = create_header(
@@ -46,7 +47,8 @@ def web_socket_transfer_data(request):
         rsv1=0,
         rsv2=0,
         rsv3=0,
-        mask=False)
+        mask=False,
+    )
     request.ws_stream._write(header + stripped)
 
 

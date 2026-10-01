@@ -5,24 +5,31 @@ import os
 import sys
 
 from blinkpy.common.host import Host
-from blinkpy.web_tests.port.factory import platform_options, configuration_options
+from blinkpy.web_tests.port.factory import (
+    platform_options,
+    configuration_options,
+)
 
 
 def main(argv):
     parser = optparse.OptionParser(usage='%prog [path-to-results.json]')
     parser.add_option(
-        '--failures', action='store_true', help='show failing tests')
+        '--failures', action='store_true', help='show failing tests'
+    )
     parser.add_option('--flakes', action='store_true', help='show flaky tests')
     parser.add_option(
         '--expected',
         action='store_true',
-        help='include expected results along with unexpected')
+        help='include expected results along with unexpected',
+    )
     parser.add_option(
-        '--passes', action='store_true', help='show passing tests')
+        '--passes', action='store_true', help='show passing tests'
+    )
     parser.add_option(
         '--ignored-failures-path',
         action='store',
-        help='ignore failures seen in a previous run')
+        help='ignore failures seen in a previous run',
+    )
     parser.add_options(platform_options())
     parser.add_options(configuration_options())
     options, args = parser.parse_args(argv)
@@ -41,7 +48,9 @@ def main(argv):
         txt = host.filesystem.read_text_file(
             host.filesystem.join(
                 host.port_factory.get(options=options).artifacts_directory(),
-                'full_results.json'))
+                'full_results.json',
+            )
+        )
 
     if txt.startswith('ADD_RESULTS(') and txt.endswith(');'):
         txt = txt[12:-2]  # ignore optional JSONP wrapper
@@ -83,7 +92,7 @@ def decode_results(results, include_expected=False):
     failures = {}
     flakes = {}
     passes = {}
-    for (test, result) in tests.items():
+    for test, result in tests.items():
         if include_expected or result.get('is_unexpected'):
             actual_results = result['actual'].split()
             expected_results = result['expected'].split()

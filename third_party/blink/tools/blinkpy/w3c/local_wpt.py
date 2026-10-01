@@ -27,19 +27,21 @@ class PatchPathRename(NamedTuple):
 
 
 class LocalRepo(object):
-    def __init__(self,
-                 name,
-                 gh_org,
-                 gh_repo_name,
-                 gh_ssh_url_template,
-                 mirror_url,
-                 default_committer_email,
-                 default_committer_name,
-                 patch_path_renames,
-                 host,
-                 gh_token=None,
-                 path=None,
-                 main_branch=None):
+    def __init__(
+        self,
+        name,
+        gh_org,
+        gh_repo_name,
+        gh_ssh_url_template,
+        mirror_url,
+        default_committer_email,
+        default_committer_name,
+        patch_path_renames,
+        host,
+        gh_token=None,
+        path=None,
+        main_branch=None,
+    ):
         """An interface to a local repo for interacting with it. This is the
         local countarpart of GitHubRepo.
         Args:
@@ -65,19 +67,27 @@ class LocalRepo(object):
     def fetch(self, depth: int | None = None):
         """Fetches a copy of the web-platform-tests repo in `self.path`."""
         if self.host.filesystem.exists(self.path):
-            _log.info('%s checkout exists at %s, fetching latest', self.name,
-                      self.path)
+            _log.info(
+                '%s checkout exists at %s, fetching latest',
+                self.name,
+                self.path,
+            )
             self.run(['git', 'fetch', 'origin'])
             self.run(['git', 'reset', '--hard', f'origin/{self.main_branch}'])
             return
-        _log.info('Cloning GitHub %s/%s into %s', self.gh_org,
-                  self.gh_repo_name, self.path)
+        _log.info(
+            'Cloning GitHub %s/%s into %s',
+            self.gh_org,
+            self.gh_repo_name,
+            self.path,
+        )
         if self.gh_token:
             remote_url = self.gh_ssh_url_template.format(self.gh_token)
         else:
             remote_url = self.mirror_url
-            _log.info('No credentials given, using %s mirror URL.',
-                      self.name.lower())
+            _log.info(
+                'No credentials given, using %s mirror URL.', self.name.lower()
+            )
             _log.info(
                 'It is possible for the mirror to be delayed; see https://crbug.com/698272.'
             )
@@ -95,8 +105,7 @@ class LocalRepo(object):
     def run(self, command, **kwargs):
         """Runs a command in the local repo directory."""
         # TODO(robertma): Migrate to blinkpy.common.checkout.Git. (crbug.com/676399)
-        return self.host.executive.run_command(
-            command, cwd=self.path, **kwargs)
+        return self.host.executive.run_command(command, cwd=self.path, **kwargs)
 
     def clean(self):
         """Resets git to a clean state, on origin/master with no changed files."""
@@ -104,12 +113,9 @@ class LocalRepo(object):
         self.run(['git', 'clean', '-fdx'])
         self.run(['git', 'checkout', f'origin/{self.main_branch}'])
 
-    def create_branch_with_patch(self,
-                                 branch_name,
-                                 message,
-                                 patch: bytes,
-                                 author,
-                                 force_push=False):
+    def create_branch_with_patch(
+        self, branch_name, message, patch: bytes, author, force_push=False
+    ):
         """Commits the given patch and pushes to the upstream repo.
 
         Args:
@@ -194,7 +200,7 @@ class LocalRepo(object):
             A string containing error messages from git, empty if the patch applies cleanly.
         """
         # TODO(liviurau): Maybe provide a clean patch at the call site.
-        patch =  self.rename_patch_paths(patch)
+        patch = self.rename_patch_paths(patch)
         try:
             self.run(['git', 'apply', '-'], input=patch)
             self.run(['git', 'add', '.'])
@@ -209,8 +215,10 @@ class LocalRepo(object):
         commit is on the the master branch.
         """
         return len(
-            self.run(['git', 'rev-list',
-                      '{}..origin/master'.format(commit)]).splitlines())
+            self.run(
+                ['git', 'rev-list', '{}..origin/master'.format(commit)]
+            ).splitlines()
+        )
 
     def _most_recent_log_matching(self, grep_str):
         """Finds the most recent commit whose message contains the given pattern.
@@ -236,7 +244,8 @@ class LocalRepo(object):
         """
         revision_range = revision_start + '..' + revision_end
         output = self.run(
-            ['git', 'rev-list', '--pretty=oneline', revision_range])
+            ['git', 'rev-list', '--pretty=oneline', revision_range]
+        )
         commits = []
         for line in output.splitlines():
             # Split at the first space.
@@ -245,11 +254,19 @@ class LocalRepo(object):
 
     def is_commit_affecting_directory(self, commit, directory):
         """Checks if a commit affects a directory."""
-        exit_code = self.run([
-            'git', 'diff-tree', '--quiet', '--no-commit-id', '-r', commit,
-            '--', directory
-        ],
-                             return_exit_code=True)
+        exit_code = self.run(
+            [
+                'git',
+                'diff-tree',
+                '--quiet',
+                '--no-commit-id',
+                '-r',
+                commit,
+                '--',
+                directory,
+            ],
+            return_exit_code=True,
+        )
         return exit_code == 1
 
     # Note: the regexes in the two following methods use the start-of-line
@@ -272,14 +289,22 @@ class LocalRepo(object):
             A string of the matched commit log, empty if not found.
         """
         return self._most_recent_log_matching(
-            '^Cr-Commit-Position: %s' % commit_position)
+            '^Cr-Commit-Position: %s' % commit_position
+        )
 
 
 class LocalWPT(LocalRepo):
     def __init__(self, host, gh_token=None, path='/tmp/wpt'):
-        super().__init__('WPT', WPT_GH_ORG, WPT_GH_REPO_NAME,
-                         WPT_GH_SSH_URL_TEMPLATE, WPT_MIRROR_URL,
-                         DEFAULT_WPT_COMMITTER_EMAIL,
-                         DEFAULT_WPT_COMMITTER_NAME,
-                         [PatchPathRename(RELATIVE_WPT_TESTS.encode(), b'')],
-                         host, gh_token, path)
+        super().__init__(
+            'WPT',
+            WPT_GH_ORG,
+            WPT_GH_REPO_NAME,
+            WPT_GH_SSH_URL_TEMPLATE,
+            WPT_MIRROR_URL,
+            DEFAULT_WPT_COMMITTER_EMAIL,
+            DEFAULT_WPT_COMMITTER_NAME,
+            [PatchPathRename(RELATIVE_WPT_TESTS.encode(), b'')],
+            host,
+            gh_token,
+            path,
+        )

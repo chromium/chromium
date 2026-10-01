@@ -77,7 +77,8 @@ class LiteralConstant(object):
         if idl_type.is_union:
             return any(
                 self.is_type_compatible_with(member_type)
-                for member_type in idl_type.flattened_member_types)
+                for member_type in idl_type.flattened_member_types
+            )
 
         if self.idl_type.is_sequence:
             return idl_type.is_sequence

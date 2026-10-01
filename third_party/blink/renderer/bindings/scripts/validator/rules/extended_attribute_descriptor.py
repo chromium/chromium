@@ -32,23 +32,34 @@ class ExtendedAttributeDescriptor(object):
         ARG_LIST = enum.auto()  # [ExtAttr(V1L V1R, ...)]
         NAMED_ARG_LIST = enum.auto()  # [ExtAttr=Name(V1L V1R, ...)]
 
-    def __init__(self,
-                 name,
-                 applicable_to=None,
-                 forms=None,
-                 values=None,
-                 post_validate=None):
+    def __init__(
+        self,
+        name,
+        applicable_to=None,
+        forms=None,
+        values=None,
+        post_validate=None,
+    ):
         assert isinstance(name, str)
         assert isinstance(applicable_to, list) and all(
             isinstance(target, ExtendedAttributeDescriptor.Target)
-            for target in applicable_to)
-        assert forms is None or isinstance(
-            forms, ExtendedAttributeDescriptor.Form) or (isinstance(
-                forms, list) and all(
+            for target in applicable_to
+        )
+        assert (
+            forms is None
+            or isinstance(forms, ExtendedAttributeDescriptor.Form)
+            or (
+                isinstance(forms, list)
+                and all(
                     isinstance(form, ExtendedAttributeDescriptor.Form)
-                    for form in forms))
-        assert values is None or (isinstance(values, list) and all(
-            isinstance(value, str) for value in values))
+                    for form in forms
+                )
+            )
+        )
+        assert values is None or (
+            isinstance(values, list)
+            and all(isinstance(value, str) for value in values)
+        )
         assert post_validate is None or callable(post_validate)
 
         self._name = name
@@ -66,8 +77,10 @@ class ExtendedAttributeDescriptor(object):
         if values is None:
             self._values = None
         else:
-            assert (ExtendedAttributeDescriptor.Form.IDENT in self._forms or
-                    ExtendedAttributeDescriptor.Form.IDENT_LIST in self._forms)
+            assert (
+                ExtendedAttributeDescriptor.Form.IDENT in self._forms
+                or ExtendedAttributeDescriptor.Form.IDENT_LIST in self._forms
+            )
             self._values = values
         # self._post_validate is a callable or None.
         self._post_validate = post_validate
@@ -88,22 +101,29 @@ class ExtendedAttributeDescriptor(object):
                 assert_(condition, text, *args, **kwargs)
 
         # applicable_to
-        _assert(isinstance(target_object, self._applicable_to),
-                "[{}] is not applicable to {}.", self._name,
-                target_object.__class__.__name__)
+        _assert(
+            isinstance(target_object, self._applicable_to),
+            "[{}] is not applicable to {}.",
+            self._name,
+            target_object.__class__.__name__,
+        )
 
         # forms
         if ext_attr.has_values:
             if not ext_attr.values:
-                _assert(F.NO_ARGS in self._forms,
-                        "[{}] needs an identifier or an argument list.",
-                        self._name)
+                _assert(
+                    F.NO_ARGS in self._forms,
+                    "[{}] needs an identifier or an argument list.",
+                    self._name,
+                )
             elif F.IDENT_LIST in self._forms:
                 pass
             elif F.IDENT in self._forms:
                 _assert(
                     len(ext_attr.values) == 1,
-                    "[{}] doesn't take an identifier list.", self._name)
+                    "[{}] doesn't take an identifier list.",
+                    self._name,
+                )
             elif F.ARG_LIST in self._forms or F.NAMED_ARG_LIST in self._forms:
                 _assert(False, "[{}] needs an argument list.", self._name)
             else:  # F.NO_ARGS only
@@ -111,16 +131,25 @@ class ExtendedAttributeDescriptor(object):
         if ext_attr.has_arguments:
             _assert(
                 F.ARG_LIST in self._forms or F.NAMED_ARG_LIST in self._forms,
-                "[{}] doesn't take an argument list.", self._name)
+                "[{}] doesn't take an argument list.",
+                self._name,
+            )
         if ext_attr.has_name:
-            _assert(F.NAMED_ARG_LIST in self._forms,
-                    "[{}] doesn't take an named argument list.", self._name)
+            _assert(
+                F.NAMED_ARG_LIST in self._forms,
+                "[{}] doesn't take an named argument list.",
+                self._name,
+            )
 
         # values
         if self._values:
             for value in ext_attr.values:
-                _assert(value in self._values, "[{}={}] is not supported.",
-                        self._name, value)
+                _assert(
+                    value in self._values,
+                    "[{}={}] is not supported.",
+                    self._name,
+                    value,
+                )
 
         # post_validate
         if self._post_validate:

@@ -53,35 +53,42 @@ def _is_comment(line):
 
 
 class InFile(object):
-    def __init__(self,
-                 file_paths,
-                 lines,
-                 defaults,
-                 valid_values=None,
-                 default_parameters=None):
+    def __init__(
+        self,
+        file_paths,
+        lines,
+        defaults,
+        valid_values=None,
+        default_parameters=None,
+    ):
         self.file_paths = file_paths
         self.name_dictionaries = []
         self.parameters = copy.deepcopy(
-            default_parameters if default_parameters else {})
+            default_parameters if default_parameters else {}
+        )
         self._defaults = defaults
-        self._valid_values = copy.deepcopy(
-            valid_values if valid_values else {})
+        self._valid_values = copy.deepcopy(valid_values if valid_values else {})
         self._parse(list(map(str.strip, lines)))
 
     @classmethod
-    def load_from_files(self, file_paths, defaults, valid_values,
-                        default_parameters):
+    def load_from_files(
+        self, file_paths, defaults, valid_values, default_parameters
+    ):
         lines = []
         for path in file_paths:
             assert path.endswith(".in")
             with open(os.path.abspath(path)) as in_file:
                 lines += in_file.readlines()
-        return InFile(file_paths, lines, defaults, valid_values,
-                      default_parameters)
+        return InFile(
+            file_paths, lines, defaults, valid_values, default_parameters
+        )
 
     def _is_sequence(self, arg):
-        return (not hasattr(arg, "strip") and hasattr(arg, "__getitem__")
-                or hasattr(arg, "__iter__"))
+        return (
+            not hasattr(arg, "strip")
+            and hasattr(arg, "__getitem__")
+            or hasattr(arg, "__iter__")
+        )
 
     def _parse(self, lines):
         parsing_parameters = True
@@ -99,7 +106,8 @@ class InFile(object):
                 name = entry['name']
                 if name in indices:
                     entry = self._merge_entries(
-                        entry, self.name_dictionaries[indices[name]])
+                        entry, self.name_dictionaries[indices[name]]
+                    )
                     entry['name'] = name
                     self.name_dictionaries[indices[name]] = entry
                 else:
@@ -111,7 +119,8 @@ class InFile(object):
         for key in one:
             if key not in two:
                 self._fatal(
-                    "Expected key '%s' not found in entry: %s" % (key, two))
+                    "Expected key '%s' not found in entry: %s" % (key, two)
+                )
             if one[key] and two[key]:
                 val_one = one[key]
                 val_two = two[key]
@@ -142,8 +151,9 @@ class InFile(object):
             name, value = line, True
         if not name in self.parameters:
             self._fatal(
-                "Unknown parameter: '%s' in line:\n%s\nKnown parameters: %s" %
-                (name, line, self.parameters.keys()))
+                "Unknown parameter: '%s' in line:\n%s\nKnown parameters: %s"
+                % (name, line, self.parameters.keys())
+            )
         self.parameters[name] = value
 
     def _parse_line(self, line):
@@ -163,12 +173,14 @@ class InFile(object):
             if arg_name not in self._defaults:
                 self._fatal(
                     "Unknown argument: '%s' in line:\n%s\nKnown arguments: %s"
-                    % (arg_name, line, self._defaults.keys()))
+                    % (arg_name, line, self._defaults.keys())
+                )
             valid_values = self._valid_values.get(arg_name)
             if valid_values and arg_value not in valid_values:
                 self._fatal(
-                    "Unknown value: '%s' in line:\n%s\nKnown values: %s" %
-                    (arg_value, line, valid_values))
+                    "Unknown value: '%s' in line:\n%s\nKnown values: %s"
+                    % (arg_value, line, valid_values)
+                )
             if self._is_sequence(args[arg_name]):
                 args[arg_name].extend(self._parse_value_sequence(arg_value))
             else:

@@ -42,17 +42,21 @@ _log = logging.getLogger(__name__)
 
 
 class ScriptError(Exception):
-    def __init__(self,
-                 message=None,
-                 script_args=None,
-                 exit_code=None,
-                 output=None,
-                 cwd=None,
-                 output_limit=500):
+    def __init__(
+        self,
+        message=None,
+        script_args=None,
+        exit_code=None,
+        output=None,
+        cwd=None,
+        output_limit=500,
+    ):
         shortened_output = output
         if output and output_limit and len(output) > output_limit:
             shortened_output = 'Last %s characters of output:\n%s' % (
-                output_limit, output[-output_limit:])
+                output_limit,
+                output[-output_limit:],
+            )
 
         if not message:
             message = 'Failed to run "%s"' % repr(script_args)
@@ -88,9 +92,9 @@ class Executive:
 
     def __init__(self, error_output_limit=500):
         """Args:
-            error_output_limit: The maximum length of output included in the
-                message of ScriptError when run_command sees a non-zero exit
-                code. None means no limit.
+        error_output_limit: The maximum length of output included in the
+            message of ScriptError when run_command sees a non-zero exit
+            code. None means no limit.
         """
         self.error_output_limit = error_output_limit
 
@@ -154,8 +158,11 @@ class Executive:
             if error.errno == errno.ECHILD:
                 # Can't wait on a non-child process, but the kill worked.
                 return
-            if error.errno == errno.EPERM and \
-                    kill_tree and sys.platform == 'darwin':
+            if (
+                error.errno == errno.EPERM
+                and kill_tree
+                and sys.platform == 'darwin'
+            ):
                 # Calling killpg on a process group whose leader is defunct
                 # causes a permission error on macOS, in which case we try to
                 # collect the defunct process.
@@ -165,19 +172,23 @@ class Executive:
 
     def _win32_check_running_pid(self, pid):
         class PROCESSENTRY32(ctypes.Structure):
-            _fields_ = [('dwSize', ctypes.c_ulong), ('cntUsage',
-                                                     ctypes.c_ulong),
-                        ('th32ProcessID', ctypes.c_ulong),
-                        ('th32DefaultHeapID', ctypes.POINTER(ctypes.c_ulong)),
-                        ('th32ModuleID', ctypes.c_ulong),
-                        ('cntThreads', ctypes.c_ulong),
-                        ('th32ParentProcessID', ctypes.c_ulong),
-                        ('pcPriClassBase', ctypes.c_ulong),
-                        ('dwFlags', ctypes.c_ulong),
-                        ('szExeFile', ctypes.c_char * 260)]
+            _fields_ = [
+                ('dwSize', ctypes.c_ulong),
+                ('cntUsage', ctypes.c_ulong),
+                ('th32ProcessID', ctypes.c_ulong),
+                ('th32DefaultHeapID', ctypes.POINTER(ctypes.c_ulong)),
+                ('th32ModuleID', ctypes.c_ulong),
+                ('cntThreads', ctypes.c_ulong),
+                ('th32ParentProcessID', ctypes.c_ulong),
+                ('pcPriClassBase', ctypes.c_ulong),
+                ('dwFlags', ctypes.c_ulong),
+                ('szExeFile', ctypes.c_char * 260),
+            ]
 
         # Follow the Win32 API naming style. pylint: disable=invalid-name
-        CreateToolhelp32Snapshot = ctypes.windll.kernel32.CreateToolhelp32Snapshot
+        CreateToolhelp32Snapshot = (
+            ctypes.windll.kernel32.CreateToolhelp32Snapshot
+        )
         Process32First = ctypes.windll.kernel32.Process32First
         Process32Next = ctypes.windll.kernel32.Process32Next
         CloseHandle = ctypes.windll.kernel32.CloseHandle
@@ -215,18 +226,19 @@ class Executive:
     def _running_processes(self):
         processes = []
         if sys.platform == 'win32':
-            tasklist_process = self.popen(['tasklist', '/fo', 'csv'],
-                                          stdout=self.PIPE,
-                                          stderr=self.PIPE)
+            tasklist_process = self.popen(
+                ['tasklist', '/fo', 'csv'], stdout=self.PIPE, stderr=self.PIPE
+            )
             stdout, _ = tasklist_process.communicate()
             stdout_reader = csv.reader(
-                stdout.decode('utf8', 'replace').splitlines())
+                stdout.decode('utf8', 'replace').splitlines()
+            )
             for line in stdout_reader:
                 processes.append([column for column in line])
         else:
-            ps_process = self.popen(['ps', '-eo', 'pid,comm'],
-                                    stdout=self.PIPE,
-                                    stderr=self.PIPE)
+            ps_process = self.popen(
+                ['ps', '-eo', 'pid,comm'], stdout=self.PIPE, stderr=self.PIPE
+            )
             stdout, _ = ps_process.communicate()
             for line in stdout.splitlines():
                 # In some cases the line can contain one or more
@@ -251,10 +263,9 @@ class Executive:
 
         return sorted(running_pids)
 
-    def wait_limited(self,
-                     pid,
-                     limit_in_seconds=None,
-                     check_frequency_in_seconds=None):
+    def wait_limited(
+        self, pid, limit_in_seconds=None, check_frequency_in_seconds=None
+    ):
         seconds_left = limit_in_seconds or 10
         sleep_length = check_frequency_in_seconds or 1
         while seconds_left > 0 and self.check_running_pid(pid):
@@ -330,17 +341,18 @@ class Executive:
         return ' '.join(escaped_args)
 
     def run_command(
-            self,
-            args,
-            cwd=None,
-            env=None,
-            input=None,  # pylint: disable=redefined-builtin
-            timeout_seconds=None,
-            error_handler=None,
-            return_exit_code=False,
-            stderr=STDOUT,
-            decode_output=True,
-            debug_logging=True):
+        self,
+        args,
+        cwd=None,
+        env=None,
+        input=None,  # pylint: disable=redefined-builtin
+        timeout_seconds=None,
+        error_handler=None,
+        return_exit_code=False,
+        stderr=STDOUT,
+        decode_output=True,
+        debug_logging=True,
+    ):
         """Popen wrapper for convenience and to work around python bugs.
 
         By default, run_command will expect a zero exit code and will return the
@@ -378,15 +390,18 @@ class Executive:
             stderr=stderr,
             cwd=cwd,
             env=env,
-            close_fds=self._should_close_fds())
+            close_fds=self._should_close_fds(),
+        )
 
         stdout_data, stderr_data = b'', b''
         try:
             stdout_data, stderr_data = process.communicate(
-                string_to_communicate, timeout_seconds)
+                string_to_communicate, timeout_seconds
+            )
         except subprocess.TimeoutExpired:
-            _log.error('Error: Command timed out after %s seconds',
-                       timeout_seconds)
+            _log.error(
+                'Error: Command timed out after %s seconds', timeout_seconds
+            )
         finally:
             process.kill()
 
@@ -395,8 +410,11 @@ class Executive:
         exit_code = process.wait()
 
         if debug_logging:
-            _log.debug('"%s" took %.2fs', self.command_for_printing(args),
-                       time.time() - start_time)
+            _log.debug(
+                '"%s" took %.2fs',
+                self.command_for_printing(args),
+                time.time() - start_time,
+            )
 
         if return_exit_code:
             return exit_code
@@ -404,17 +422,20 @@ class Executive:
         if exit_code:
             # `stderr_data` may be `None` if `stderr` was not `PIPE`.
             output = stdout_data + (stderr_data or b'')
-            script_error = ScriptError(script_args=args,
-                                       exit_code=exit_code,
-                                       output=output.decode(errors='replace'),
-                                       cwd=cwd,
-                                       output_limit=self.error_output_limit)
+            script_error = ScriptError(
+                script_args=args,
+                exit_code=exit_code,
+                output=output.decode(errors='replace'),
+                cwd=cwd,
+                output_limit=self.error_output_limit,
+            )
             (error_handler or self.default_error_handler)(script_error)
 
         # run_command automatically decodes to str() unless explicitly told not to.
         if decode_output:
-            return stdout_data.decode(self._child_process_encoding(),
-                                      errors='replace')
+            return stdout_data.decode(
+                self._child_process_encoding(), errors='replace'
+            )
         return stdout_data
 
     def _child_process_encoding(self):
@@ -487,6 +508,7 @@ def _run_command_thunk(cmd_line_and_cwd):
     # Note that this needs to be a bare module (and hence Picklable) method to work with multiprocessing.Pool.
     (cmd_line, cwd) = cmd_line_and_cwd
     proc = subprocess.Popen(
-        cmd_line, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd_line, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     stdout, stderr = proc.communicate()
     return (proc.returncode, stdout, stderr)

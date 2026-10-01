@@ -33,6 +33,7 @@ import sys
 
 from blinkpy.common import path_finder
 from blinkpy.common.system.filesystem import FileSystem
+
 path_finder.add_typ_dir_to_sys_path()
 
 import typ
@@ -62,8 +63,9 @@ def main():
         ],
         path=[
             path_finder.get_blinkpy_thirdparty_dir(),
-            finder.path_from_chromium_base('third_party', 'pyjson5', 'src')
-        ])
+            finder.path_from_chromium_base('third_party', 'pyjson5', 'src'),
+        ],
+    )
 
 
 if __name__ == "__main__":

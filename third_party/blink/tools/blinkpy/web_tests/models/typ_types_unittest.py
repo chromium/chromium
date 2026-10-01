@@ -8,28 +8,32 @@ from blinkpy.web_tests.models import typ_types
 
 
 class ExpectationUnittest(unittest.TestCase):
-
     def testSpaceEncoding(self):
-        e = typ_types.Expectation(reason='crbug.com/1234',
-                                  test='test.html?foo bar',
-                                  tags=['win'],
-                                  results={typ_types.ResultType.Failure})
+        e = typ_types.Expectation(
+            reason='crbug.com/1234',
+            test='test.html?foo bar',
+            tags=['win'],
+            results={typ_types.ResultType.Failure},
+        )
         self.assertEqual(
             e.to_string(),
-            'crbug.com/1234 [ Win ] test.html?foo%20bar [ Failure ]')
+            'crbug.com/1234 [ Win ] test.html?foo%20bar [ Failure ]',
+        )
 
     def testPercentEncoding(self):
-        e = typ_types.Expectation(reason='crbug.com/1234',
-                                  test='test.html?foo%bar',
-                                  tags=['win'],
-                                  results={typ_types.ResultType.Failure})
+        e = typ_types.Expectation(
+            reason='crbug.com/1234',
+            test='test.html?foo%bar',
+            tags=['win'],
+            results={typ_types.ResultType.Failure},
+        )
         self.assertEqual(
             e.to_string(),
-            'crbug.com/1234 [ Win ] test.html?foo%25bar [ Failure ]')
+            'crbug.com/1234 [ Win ] test.html?foo%25bar [ Failure ]',
+        )
 
 
 class TestExpectationsUnittest(unittest.TestCase):
-
     def testSpaceDecoding(self):
         content = """\
 # tags: [ Mac ]
@@ -46,9 +50,12 @@ crbug.com/123 [ Mac ] http://google.com/Foo%20Bar [ Skip ]
             test='http://google.com/Foo Bar',
             tags=['mac'],
             results={typ_types.ResultType.Skip},
-            lineno=3)
-        self.assertEqual(te.individual_exps['http://google.com/Foo Bar'],
-                         [expected_expectation])
+            lineno=3,
+        )
+        self.assertEqual(
+            te.individual_exps['http://google.com/Foo Bar'],
+            [expected_expectation],
+        )
 
     def testPercentDecoding(self):
         content = """\
@@ -66,6 +73,9 @@ crbug.com/123 [ Mac ] http://google.com/Foo%2520Bar [ Skip ]
             test='http://google.com/Foo%20Bar',
             tags=['mac'],
             results={typ_types.ResultType.Skip},
-            lineno=3)
-        self.assertEqual(te.individual_exps['http://google.com/Foo%20Bar'],
-                         [expected_expectation])
+            lineno=3,
+        )
+        self.assertEqual(
+            te.individual_exps['http://google.com/Foo%20Bar'],
+            [expected_expectation],
+        )

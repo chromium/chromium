@@ -12,8 +12,9 @@ class WebRuntimeFeaturesWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     file_basename = 'platform/web_runtime_features_base'
 
     def __init__(self, json5_file_path, output_dir):
-        super(WebRuntimeFeaturesWriter, self).__init__(json5_file_path,
-                                                       output_dir)
+        super(WebRuntimeFeaturesWriter, self).__init__(
+            json5_file_path, output_dir
+        )
         self._outputs = {
             (self.file_basename + '.h'): self.generate_header,
         }
@@ -61,8 +62,7 @@ class WebOriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     file_basename = 'web/web_origin_trials'
 
     def __init__(self, json5_file_path, output_dir):
-        super(WebOriginTrialsWriter, self).__init__(json5_file_path,
-                                                    output_dir)
+        super(WebOriginTrialsWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {
             (self.file_basename + '.h'): self.generate_header,
         }

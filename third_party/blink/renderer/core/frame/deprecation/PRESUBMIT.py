@@ -20,6 +20,7 @@ EXEMPTED_FROM_RENDERER_GENERATION = {
     "RelatedWebsiteSets": True,
 }
 
+
 # pyright: reportMissingImports=false
 def _LoadDeprecation(input_api, filename):
     """Returns the deprecations present in the specified JSON5 file."""
@@ -28,11 +29,19 @@ def _LoadDeprecation(input_api, filename):
     # roundabout construct to import json5 because this file is
     # eval-ed and thus doesn't have __file__.
     try:
-        json5_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                            '..', '..', '..', '..', '..',
-                                            'pyjson5', 'src')
+        json5_path = input_api.os_path.join(
+            input_api.PresubmitLocalPath(),
+            '..',
+            '..',
+            '..',
+            '..',
+            '..',
+            'pyjson5',
+            'src',
+        )
         sys.path.append(json5_path)
         import json5
+
         return json5.load(open(filename, encoding='utf-8'))['data']
     finally:
         # Restore sys.path to what it was before.
@@ -40,11 +49,9 @@ def _LoadDeprecation(input_api, filename):
 
 
 def _CheckDeprecation(input_api, output_api):
-    """Check: deprecation.json5 is well formed.
-    """
+    """Check: deprecation.json5 is well formed."""
     # Read deprecation.json5 using the JSON5 parser.
-    filename = os.path.join(input_api.PresubmitLocalPath(),
-                            'deprecation.json5')
+    filename = os.path.join(input_api.PresubmitLocalPath(), 'deprecation.json5')
     deprecations = _LoadDeprecation(input_api, filename)
 
     # Parse deprecations for correctness.
@@ -69,8 +76,10 @@ def _CheckDeprecation(input_api, output_api):
                     'deprecation.json5 items must all contain fully ascii "message" values.'
                 )
             ]
-        if 'translation_note' not in deprecation or not deprecation[
-                'translation_note']:
+        if (
+            'translation_note' not in deprecation
+            or not deprecation['translation_note']
+        ):
             return [
                 output_api.PresubmitError(
                     'deprecation.json5 items must all contain a non-empty '
@@ -78,7 +87,8 @@ def _CheckDeprecation(input_api, output_api):
                 )
             ]
         if len(deprecation['translation_note']) != len(
-                deprecation['translation_note'].encode()):
+            deprecation['translation_note'].encode()
+        ):
             return [
                 output_api.PresubmitError(
                     'deprecation.json5 items must all contain fully ascii '
@@ -86,17 +96,20 @@ def _CheckDeprecation(input_api, output_api):
                 )
             ]
         if 'web_features' in deprecation and deprecation['web_features']:
-            sorted_web_features = sorted(deprecation['web_features'],
-                                         key=lambda s: s.lower())
+            sorted_web_features = sorted(
+                deprecation['web_features'], key=lambda s: s.lower()
+            )
             if deprecation['web_features'] != sorted_web_features:
                 differ = difflib.Differ()
-                diff = differ.compare(deprecation['web_features'],
-                                      sorted_web_features)
+                diff = differ.compare(
+                    deprecation['web_features'], sorted_web_features
+                )
                 return [
                     output_api.PresubmitError(
                         'deprecation.json5 items web_features must be sorted alphabetically. '
                         'Diff of web_features data order follows:',
-                        long_text='\n'.join(diff))
+                        long_text='\n'.join(diff),
+                    )
                 ]
         else:
             if deprecation['name'] not in EXEMPTED_FROM_RENDERER_GENERATION:
@@ -114,9 +127,10 @@ def _CheckDeprecation(input_api, output_api):
                         'but if included it must have a value.'
                     )
                 ]
-            if deprecation[
-                    'chrome_status_feature'] < 1000000000000000 or deprecation[
-                        'chrome_status_feature'] > 9999999999999999:
+            if (
+                deprecation['chrome_status_feature'] < 1000000000000000
+                or deprecation['chrome_status_feature'] > 9999999999999999
+            ):
                 return [
                     output_api.PresubmitError(
                         'deprecation.json5 items with a chrome_status_feature '
@@ -146,9 +160,10 @@ def _CheckDeprecation(input_api, output_api):
                         'included it must have a value.'
                     )
                 ]
-            if deprecation[
-                    'obsolete_to_be_removed_after_milestone'] < 1 or deprecation[
-                        'obsolete_to_be_removed_after_milestone'] > 1000:
+            if (
+                deprecation['obsolete_to_be_removed_after_milestone'] < 1
+                or deprecation['obsolete_to_be_removed_after_milestone'] > 1000
+            ):
                 return [
                     output_api.PresubmitError(
                         'deprecation.json5 items with an '
@@ -158,8 +173,9 @@ def _CheckDeprecation(input_api, output_api):
                 ]
 
     # Parse deprecations for ordering.
-    deprecation_names_sorted = sorted(deprecation_names,
-                                      key=lambda s: s.lower())
+    deprecation_names_sorted = sorted(
+        deprecation_names, key=lambda s: s.lower()
+    )
     if deprecation_names == deprecation_names_sorted:
         return []
     differ = difflib.Differ()
@@ -168,7 +184,8 @@ def _CheckDeprecation(input_api, output_api):
         output_api.PresubmitError(
             'deprecation.json5 items must be sorted alphabetically. '
             'Diff of deprecation data order follows:',
-            long_text='\n'.join(diff))
+            long_text='\n'.join(diff),
+        )
     ]
 
 

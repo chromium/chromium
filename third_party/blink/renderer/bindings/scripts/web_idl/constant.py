@@ -15,20 +15,36 @@ from .literal_constant import LiteralConstant
 from .make_copy import make_copy
 
 
-class Constant(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
-               WithExposure, WithOwner, WithOwnerMixin, WithComponent,
-               WithDebugInfo):
+class Constant(
+    WithIdentifier,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithOwner,
+    WithOwnerMixin,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-constants"""
 
-    class IR(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     idl_type,
-                     value,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        WithIdentifier,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithOwnerMixin,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            idl_type,
+            value,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(idl_type, IdlType)
             assert isinstance(value, LiteralConstant)
 

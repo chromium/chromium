@@ -29,10 +29,10 @@
 from pywebsocket3 import msgutil
 
 # Hello in Japanese
-_UNICODE_HELLO = u'\u3053\u3093\u306b\u3061\u306f'
+_UNICODE_HELLO = '\u3053\u3093\u306b\u3061\u306f'
 
 # Goodbye in Japanese
-_UNICODE_GOODBYE = u'\u3055\u3088\u3046\u306a\u3089'
+_UNICODE_GOODBYE = '\u3055\u3088\u3046\u306a\u3089'
 
 # Error message
 _ERROR_MESSAGE = 'What did you say?'

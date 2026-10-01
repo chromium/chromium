@@ -29,31 +29,21 @@ class CleanupWriter(Writer):
 class Json5FileTest(unittest.TestCase):
     def path_of_test_file(self, file_name):
         return os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'tests', file_name)
+            os.path.dirname(os.path.realpath(__file__)), 'tests', file_name
+        )
 
     def test_valid_dict_value_parse(self):
-        actual = Json5File.load_from_files([
-            self.path_of_test_file('json5_generator_valid_dict_value.json5')
-        ]).name_dictionaries
-        expected = [{
-            'name': 'item1',
-            'param1': {
-                'keys': 'valid',
-                'random': 'values'
-            }
-        }, {
-            'name': 'item2',
-            'param1': {
-                'random': 'values',
-                'default': 'valid'
-            }
-        }, {
-            'name': 'item3',
-            'param1': {
-                'keys': 'valid',
-                'default': 'values'
-            }
-        }]
+        actual = Json5File.load_from_files(
+            [self.path_of_test_file('json5_generator_valid_dict_value.json5')]
+        ).name_dictionaries
+        expected = [
+            {'name': 'item1', 'param1': {'keys': 'valid', 'random': 'values'}},
+            {
+                'name': 'item2',
+                'param1': {'random': 'values', 'default': 'valid'},
+            },
+            {'name': 'item3', 'param1': {'keys': 'valid', 'default': 'values'}},
+        ]
         self.assertEqual(len(actual), len(expected))
         for exp, act in zip(expected, actual):
             self.assertDictEqual(exp['param1'], act['param1'])
@@ -61,37 +51,24 @@ class Json5FileTest(unittest.TestCase):
 
     def test_valid_dict_value_parse_override(self):
         json5_file = Json5File.load_from_files(
-            [self.path_of_test_file('json5_generator_valid_dict_value.json5')])
+            [self.path_of_test_file('json5_generator_valid_dict_value.json5')]
+        )
         json5_file.load_override_file(
             self.path_of_test_file(
-                'json5_generator_valid_dict_value.override.json5'))
+                'json5_generator_valid_dict_value.override.json5'
+            )
+        )
 
         actual = json5_file.name_dictionaries
-        expected = [{
-            'name': 'item1',
-            'param1': {
-                'keys': 'valid',
-                'default': 'values'
-            }
-        }, {
-            'name': 'item2',
-            'param1': {
-                'random': 'values',
-                'default': 'valid'
-            }
-        }, {
-            'name': 'item3',
-            'param2': {
-                'key': 'single',
-                'default': 'value'
-            }
-        }, {
-            'name': 'item4',
-            'param1': {
-                'keys': 'valid',
-                'random': 'values'
-            }
-        }]
+        expected = [
+            {'name': 'item1', 'param1': {'keys': 'valid', 'default': 'values'}},
+            {
+                'name': 'item2',
+                'param1': {'random': 'values', 'default': 'valid'},
+            },
+            {'name': 'item3', 'param2': {'key': 'single', 'default': 'value'}},
+            {'name': 'item4', 'param1': {'keys': 'valid', 'random': 'values'}},
+        ]
         self.assertEqual(len(actual), len(expected))
         for exp, act in zip(expected, actual):
             param_name = 'param1'
@@ -100,23 +77,23 @@ class Json5FileTest(unittest.TestCase):
                 param_name = 'param2'
             self.assertDictEqual(exp[param_name], act[param_name])
 
-
     def test_no_valid_keys(self):
         with self.assertRaises(AssertionError):
-            Json5File.load_from_files([
-                self.path_of_test_file('json5_generator_no_valid_keys.json5')
-            ])
+            Json5File.load_from_files(
+                [self.path_of_test_file('json5_generator_no_valid_keys.json5')]
+            )
 
     def test_value_not_in_valid_values(self):
         with self.assertRaises(Exception):
-            Json5File.load_from_files([
-                self.path_of_test_file('json5_generator_invalid_value.json5')
-            ])
+            Json5File.load_from_files(
+                [self.path_of_test_file('json5_generator_invalid_value.json5')]
+            )
 
     def test_key_not_in_valid_keys(self):
         with self.assertRaises(Exception):
             Json5File.load_from_files(
-                [self.path_of_test_file('json5_generator_invalid_key.json5')])
+                [self.path_of_test_file('json5_generator_invalid_key.json5')]
+            )
 
     def test_cleanup_multiple_files(self):
         with tmp_dir() as tmp:

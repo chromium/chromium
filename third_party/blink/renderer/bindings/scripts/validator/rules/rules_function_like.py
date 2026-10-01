@@ -17,11 +17,16 @@ class VariadicArgumentMustBeLastArgument(RuleBase):
     def validate(self, assert_, function_like):
         for i, argument in enumerate(function_like.arguments):
             if argument.is_variadic:
-                assert_(i == len(function_like.arguments) - 1,
-                        ("A variadic argument must be written "
-                         "at the end of arguments."))
+                assert_(
+                    i == len(function_like.arguments) - 1,
+                    (
+                        "A variadic argument must be written "
+                        "at the end of arguments."
+                    ),
+                )
 
 
 def register_rules(rule_store):
-    rule_store.register(target.FUNCTION_LIKES,
-                        VariadicArgumentMustBeLastArgument())
+    rule_store.register(
+        target.FUNCTION_LIKES, VariadicArgumentMustBeLastArgument()
+    )

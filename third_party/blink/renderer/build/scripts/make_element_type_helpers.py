@@ -43,11 +43,13 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
 
     def __init__(self, json5_file_path, output_dir):
         super(MakeElementTypeHelpersWriter, self).__init__(
-            json5_file_path, output_dir)
+            json5_file_path, output_dir
+        )
 
         self.namespace = self.json5_file.metadata['namespace'].strip('"')
         self.fallback_interface = self.json5_file.metadata[
-            'fallbackInterfaceName'].strip('"')
+            'fallbackInterfaceName'
+        ].strip('"')
 
         assert self.namespace, 'A namespace is required.'
 
@@ -57,9 +59,12 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
             (basename + '_helpers.cc'): self.generate_helper_implementation,
         }
 
-        base_element_header = 'third_party/blink/renderer/core/{}/{}_element.h'.format(
-            self.namespace.lower(),
-            NameStyleConverter(self.namespace).to_snake_case())
+        base_element_header = (
+            'third_party/blink/renderer/core/{}/{}_element.h'.format(
+                self.namespace.lower(),
+                NameStyleConverter(self.namespace).to_snake_case(),
+            )
+        )
         self._template_context = {
             'base_element_header': base_element_header,
             'cpp_namespace': self.namespace.lower() + '_names',
@@ -83,15 +88,18 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
         for tag in tags:
             tag['multipleTagNames'] = (
                 interface_counts[tag['interface']] > 1
-                or tag['interface'] == self.fallback_interface)
+                or tag['interface'] == self.fallback_interface
+            )
 
     @template_expander.use_jinja(
-        "templates/element_type_helpers.h.tmpl", filters=filters)
+        "templates/element_type_helpers.h.tmpl", filters=filters
+    )
     def generate_helper_header(self):
         return self._template_context
 
     @template_expander.use_jinja(
-        "templates/element_type_helpers.cc.tmpl", filters=filters)
+        "templates/element_type_helpers.cc.tmpl", filters=filters
+    )
     def generate_helper_implementation(self):
         return self._template_context
 

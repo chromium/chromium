@@ -15,15 +15,21 @@ import web_idl
 
 def parse_options():
     parser = optparse.OptionParser()
-    parser.add_option("--web_idl_database",
-                      type="string",
-                      help="filepath of the input database")
-    parser.add_option("--idl_syntax_known_issues",
-                      type="string",
-                      help="filepath of the idl errors already known")
-    parser.add_option("--output",
-                      type="string",
-                      help="filepath of the file for the purpose of timestamp")
+    parser.add_option(
+        "--web_idl_database",
+        type="string",
+        help="filepath of the input database",
+    )
+    parser.add_option(
+        "--idl_syntax_known_issues",
+        type="string",
+        help="filepath of the idl errors already known",
+    )
+    parser.add_option(
+        "--output",
+        type="string",
+        help="filepath of the file for the purpose of timestamp",
+    )
     options, args = parser.parse_args()
 
     required_option_names = [
@@ -33,7 +39,8 @@ def parse_options():
     for required_option_name in required_option_names:
         if getattr(options, required_option_name) is None:
             parser.error(
-                "--{} is a required option.".format(required_option_name))
+                "--{} is a required option.".format(required_option_name)
+            )
 
     return options, args
 
@@ -52,8 +59,10 @@ def create_known_issues(filepath):
             assert len(blocks) == 2, (
                 "{}: {}\n"
                 "A line should have exactly 2 items, "
-                "RULE_NAME and DOTTED_IDL_NAME (except for a comment with '#')"
-                .format(filepath, line_number + 1))
+                "RULE_NAME and DOTTED_IDL_NAME (except for a comment with '#')".format(
+                    filepath, line_number + 1
+                )
+            )
             rule_name = blocks[0]
             target_path = blocks[1]
             known_issues.setdefault(target_path, []).append(rule_name)
@@ -78,16 +87,19 @@ def main():
             skipped_error_counts[0] += 1
         else:
             debug_infos = target_type.get_debug_info_list(target)
-            sys.stderr.write("violated rule: {}\n".format(
-                rule.__class__.__name__))
+            sys.stderr.write(
+                "violated rule: {}\n".format(rule.__class__.__name__)
+            )
             sys.stderr.write("target path  : {}\n".format(target_path))
             for i, debug_info in enumerate(debug_infos):
                 if i == 0:
-                    sys.stderr.write("related files: {}\n".format(
-                        str(debug_info.location)))
+                    sys.stderr.write(
+                        "related files: {}\n".format(str(debug_info.location))
+                    )
                 else:
-                    sys.stderr.write("               {}\n".format(
-                        str(debug_info.location)))
+                    sys.stderr.write(
+                        "               {}\n".format(str(debug_info.location))
+                    )
             sys.stderr.write("error message: {}\n\n".format(error_message))
 
     # Register rules
@@ -113,10 +125,14 @@ def main():
 
 """)
             file_obj.write("Command line arguments:\n")
-            file_obj.write("  --web_idl_database = {}\n".format(
-                options.web_idl_database))
-            file_obj.write("  --idl_syntax_known_issues = {}\n".format(
-                options.idl_syntax_known_issues))
+            file_obj.write(
+                "  --web_idl_database = {}\n".format(options.web_idl_database)
+            )
+            file_obj.write(
+                "  --idl_syntax_known_issues = {}\n".format(
+                    options.idl_syntax_known_issues
+                )
+            )
             file_obj.write("Results:\n  No new error\n")
 
 

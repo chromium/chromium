@@ -34,96 +34,98 @@ from blinkpy.web_tests.builder_list import BuilderList
 class BuilderListTest(unittest.TestCase):
     @staticmethod
     def sample_builder_list():
-        return BuilderList({
-            'some-wpt-bot': {
-                'port_name': 'port-c',
-                'specifiers': ['C', 'Release'],
-                'steps': {
-                    'wpt_tests_suite': {},
-                },
-                'is_try_builder': True,
-            },
-            'Blink A': {
-                'port_name': 'port-a',
-                'specifiers': ['A', 'Release']
-            },
-            'Blink B': {
-                'port_name': 'port-b',
-                'specifiers': ['B', 'Release']
-            },
-            'Blink B (dbg)': {
-                'port_name': 'port-b',
-                'specifiers': ['B', 'Debug']
-            },
-            'Blink C (dbg)': {
-                'port_name': 'port-c',
-                'specifiers': ['C', 'Release']
-            },
-            'Try A': {
-                'port_name': 'port-a',
-                'specifiers': ['A', 'Release'],
-                'steps': {
-                    'blink_web_tests': {},
-                },
-                'is_try_builder': True
-            },
-            'Try B': {
-                'port_name': 'port-b',
-                'specifiers': ['B', 'Release'],
-                'steps': {
-                    'blink_web_tests': {},
-                },
-                'is_try_builder': True
-            },
-            'CQ Try A': {
-                'bucket': 'bucket.a',
-                'port_name': 'port-a',
-                'specifiers': ['A', 'Release'],
-                'steps': {
-                    'blink_web_tests': {},
-                },
-                'is_try_builder': True,
-                'is_cq_builder': True
-            },
-            'CQ Try B': {
-                'bucket': 'bucket.b',
-                'port_name': 'port-b',
-                'specifiers': ['B', 'Release'],
-                'steps': {
-                    'blink_web_tests': {},
-                },
-                'is_try_builder': True,
-                'is_cq_builder': True
-            },
-            'CQ Try C': {
-                'bucket': 'bucket.c',
-                'port_name': 'port-c',
-                'specifiers': ['c', 'Release'],
-                'steps': {
-                    'blink_web_tests': {},
-                    'high_dpi_blink_web_tests': {
-                        'flag_specific': 'highdpi'
+        return BuilderList(
+            {
+                'some-wpt-bot': {
+                    'port_name': 'port-c',
+                    'specifiers': ['C', 'Release'],
+                    'steps': {
+                        'wpt_tests_suite': {},
                     },
-                    'blink_wpt_tests': {},
-                    'high_dpi_blink_wpt_tests': {
-                        'flag_specific': 'highdpi',
-                    },
+                    'is_try_builder': True,
                 },
-                'is_try_builder': True,
-                'is_cq_builder': True,
-                'main': "luci",
-            },
-            'Flag Specific C': {
-                'port_name': 'port-c',
-                'specifiers': ['C', 'Release'],
-                'steps': {
-                    'high_dpi_blink_web_tests': {
-                        'flag_specific': 'highdpi'
-                    },
+                'Blink A': {
+                    'port_name': 'port-a',
+                    'specifiers': ['A', 'Release'],
                 },
-                "is_try_builder": True
-            },
-        })
+                'Blink B': {
+                    'port_name': 'port-b',
+                    'specifiers': ['B', 'Release'],
+                },
+                'Blink B (dbg)': {
+                    'port_name': 'port-b',
+                    'specifiers': ['B', 'Debug'],
+                },
+                'Blink C (dbg)': {
+                    'port_name': 'port-c',
+                    'specifiers': ['C', 'Release'],
+                },
+                'Try A': {
+                    'port_name': 'port-a',
+                    'specifiers': ['A', 'Release'],
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                    'is_try_builder': True,
+                },
+                'Try B': {
+                    'port_name': 'port-b',
+                    'specifiers': ['B', 'Release'],
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                    'is_try_builder': True,
+                },
+                'CQ Try A': {
+                    'bucket': 'bucket.a',
+                    'port_name': 'port-a',
+                    'specifiers': ['A', 'Release'],
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                    'is_try_builder': True,
+                    'is_cq_builder': True,
+                },
+                'CQ Try B': {
+                    'bucket': 'bucket.b',
+                    'port_name': 'port-b',
+                    'specifiers': ['B', 'Release'],
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                    'is_try_builder': True,
+                    'is_cq_builder': True,
+                },
+                'CQ Try C': {
+                    'bucket': 'bucket.c',
+                    'port_name': 'port-c',
+                    'specifiers': ['c', 'Release'],
+                    'steps': {
+                        'blink_web_tests': {},
+                        'high_dpi_blink_web_tests': {
+                            'flag_specific': 'highdpi'
+                        },
+                        'blink_wpt_tests': {},
+                        'high_dpi_blink_wpt_tests': {
+                            'flag_specific': 'highdpi',
+                        },
+                    },
+                    'is_try_builder': True,
+                    'is_cq_builder': True,
+                    'main': "luci",
+                },
+                'Flag Specific C': {
+                    'port_name': 'port-c',
+                    'specifiers': ['C', 'Release'],
+                    'steps': {
+                        'high_dpi_blink_web_tests': {
+                            'flag_specific': 'highdpi'
+                        },
+                    },
+                    "is_try_builder": True,
+                },
+            }
+        )
 
     def test_constructor_validates_list(self):
         with self.assertRaises(AssertionError):
@@ -133,52 +135,70 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual([
-            'Blink A',
-            'Blink B',
-            'Blink B (dbg)',
-            'Blink C (dbg)',
-            'CQ Try A',
-            'CQ Try B',
-            'CQ Try C',
-            'Flag Specific C',
-            'Try A',
-            'Try B',
-            'some-wpt-bot',
-        ], builders.all_builder_names())
+        self.assertEqual(
+            [
+                'Blink A',
+                'Blink B',
+                'Blink B (dbg)',
+                'Blink C (dbg)',
+                'CQ Try A',
+                'CQ Try B',
+                'CQ Try C',
+                'Flag Specific C',
+                'Try A',
+                'Try B',
+                'some-wpt-bot',
+            ],
+            builders.all_builder_names(),
+        )
 
     def test_all_continuous_builder_names(self):
         builders = self.sample_builder_list()
         self.assertEqual(
             ['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)'],
-            builders.all_continuous_builder_names())
+            builders.all_continuous_builder_names(),
+        )
 
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual([
-            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Flag Specific C', 'Try A',
-            'Try B', 'some-wpt-bot'
-        ], builders.all_try_builder_names())
+        self.assertEqual(
+            [
+                'CQ Try A',
+                'CQ Try B',
+                'CQ Try C',
+                'Flag Specific C',
+                'Try A',
+                'Try B',
+                'some-wpt-bot',
+            ],
+            builders.all_try_builder_names(),
+        )
 
     def test_all_cq_try_builder_names(self):
         builders = self.sample_builder_list()
         self.assertEqual(
             ['CQ Try A', 'CQ Try B', 'CQ Try C'],
-            builders.all_cq_try_builder_names())
+            builders.all_cq_try_builder_names(),
+        )
 
     def test_all_flag_specific_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['CQ Try C', 'Flag Specific C'],
-                         builders.all_flag_specific_try_builder_names(
-                             flag_specific="highdpi"))
         self.assertEqual(
             ['CQ Try C', 'Flag Specific C'],
-            builders.all_flag_specific_try_builder_names(flag_specific="*"))
+            builders.all_flag_specific_try_builder_names(
+                flag_specific="highdpi"
+            ),
+        )
+        self.assertEqual(
+            ['CQ Try C', 'Flag Specific C'],
+            builders.all_flag_specific_try_builder_names(flag_specific="*"),
+        )
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['port-a', 'port-b', 'port-c'],
-                         builders.all_port_names())
+        self.assertEqual(
+            ['port-a', 'port-b', 'port-c'], builders.all_port_names()
+        )
 
     def test_all_flag_specific_options(self):
         builders = self.sample_builder_list()
@@ -202,53 +222,60 @@ class BuilderListTest(unittest.TestCase):
 
     def test_port_name_for_builder_name(self):
         builders = self.sample_builder_list()
-        self.assertEqual('port-b',
-                         builders.port_name_for_builder_name('Blink B'))
+        self.assertEqual(
+            'port-b', builders.port_name_for_builder_name('Blink B')
+        )
 
     def test_port_name_for_flag_specific_option(self):
         builders = self.sample_builder_list()
         self.assertEqual(
-            'port-c', builders.port_name_for_flag_specific_option('highdpi'))
+            'port-c', builders.port_name_for_flag_specific_option('highdpi')
+        )
 
     def test_flag_specific_options_for_port_name(self):
         builders = self.sample_builder_list()
         self.assertEqual(
-            set(), builders.flag_specific_options_for_port_name('port-a'))
+            set(), builders.flag_specific_options_for_port_name('port-a')
+        )
 
     def test_reject_flag_specific_multiple_ports(self):
         with self.assertRaises(ValueError):
-            BuilderList({
-                'Flag Specific A': {
-                    'port_name': 'port-a',
-                    'specifiers': ['A', 'Release'],
-                    'steps': {
-                        'blink_web_tests': {
-                            'flag_specific': 'highdpi',
+            BuilderList(
+                {
+                    'Flag Specific A': {
+                        'port_name': 'port-a',
+                        'specifiers': ['A', 'Release'],
+                        'steps': {
+                            'blink_web_tests': {
+                                'flag_specific': 'highdpi',
+                            },
                         },
+                        'is_try_builder': True,
                     },
-                    'is_try_builder': True
-                },
-                'Flag Specific B': {
-                    'port_name': 'port-b',
-                    'specifiers': ['B', 'Release'],
-                    'steps': {
-                        'blink_web_tests': {
-                            'flag_specific': 'highdpi',
+                    'Flag Specific B': {
+                        'port_name': 'port-b',
+                        'specifiers': ['B', 'Release'],
+                        'steps': {
+                            'blink_web_tests': {
+                                'flag_specific': 'highdpi',
+                            },
                         },
+                        'is_try_builder': True,
                     },
-                    'is_try_builder': True
-                },
-            })
+                }
+            )
 
     def test_specifiers_for_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['B', 'Release'],
-                         builders.specifiers_for_builder('Blink B'))
+        self.assertEqual(
+            ['B', 'Release'], builders.specifiers_for_builder('Blink B')
+        )
 
     def test_platform_specifier_for_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('B',
-                         builders.platform_specifier_for_builder('Blink B'))
+        self.assertEqual(
+            'B', builders.platform_specifier_for_builder('Blink B')
+        )
 
     def test_port_name_for_builder_name_with_missing_builder(self):
         builders = self.sample_builder_list()
@@ -262,23 +289,28 @@ class BuilderListTest(unittest.TestCase):
 
     def test_builder_name_for_port_name_with_no_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink A',
-                         builders.builder_name_for_port_name('port-a'))
+        self.assertEqual(
+            'Blink A', builders.builder_name_for_port_name('port-a')
+        )
 
     def test_builder_name_for_port_name_with_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink B',
-                         builders.builder_name_for_port_name('port-b'))
+        self.assertEqual(
+            'Blink B', builders.builder_name_for_port_name('port-b')
+        )
 
     def test_builder_name_for_port_name_with_only_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink C (dbg)',
-                         builders.builder_name_for_port_name('port-c'))
+        self.assertEqual(
+            'Blink C (dbg)', builders.builder_name_for_port_name('port-c')
+        )
 
     def test_version_specifier_for_port_name(self):
         builders = self.sample_builder_list()
-        self.assertEqual('A',
-                         builders.version_specifier_for_port_name('port-a'))
-        self.assertEqual('B',
-                         builders.version_specifier_for_port_name('port-b'))
+        self.assertEqual(
+            'A', builders.version_specifier_for_port_name('port-a')
+        )
+        self.assertEqual(
+            'B', builders.version_specifier_for_port_name('port-b')
+        )
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))

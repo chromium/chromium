@@ -8,4 +8,5 @@ import sys
 
 if __name__ == '__main__':
     from blinkpy.web_tests.merge_results import main
+
     main(sys.argv[1:])

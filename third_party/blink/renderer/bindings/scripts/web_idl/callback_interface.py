@@ -17,20 +17,33 @@ from .operation import OperationGroup
 from .user_defined_type import UserDefinedType
 
 
-class CallbackInterface(UserDefinedType, WithExtendedAttributes,
-                        WithCodeGeneratorInfo, WithExposure, WithComponent,
-                        WithDebugInfo):
+class CallbackInterface(
+    UserDefinedType,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-interfaces"""
 
-    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     constants=None,
-                     operations=None,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        IRMap.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            constants=None,
+            operations=None,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             if constants is None:
                 constants = []
             if operations is None:
@@ -38,15 +51,17 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
             assert isinstance(constants, (list, tuple))
             assert isinstance(operations, (list, tuple))
             assert all(
-                isinstance(constant, Constant.IR) for constant in constants)
+                isinstance(constant, Constant.IR) for constant in constants
+            )
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             IRMap.IR.__init__(
                 self,
                 identifier=identifier,
-                kind=IRMap.IR.Kind.CALLBACK_INTERFACE)
+                kind=IRMap.IR.Kind.CALLBACK_INTERFACE,
+            )
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithCodeGeneratorInfo.__init__(self)
             WithExposure.__init__(self)
@@ -88,22 +103,32 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
         WithExposure.__init__(self, ir, readonly=True)
         WithComponent.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
-        self._constants = tuple([
-            Constant(constant_ir, owner=self) for constant_ir in ir.constants
-        ])
-        self._operations = tuple([
-            Operation(operation_ir, owner=self)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(operation_group_ir,
-                           list(
-                               filter(
-                                   lambda x: x.identifier == operation_group_ir
-                                   .identifier, self._operations)),
-                           owner=self)
-            for operation_group_ir in ir.operation_groups
-        ])
+        self._constants = tuple(
+            [Constant(constant_ir, owner=self) for constant_ir in ir.constants]
+        )
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=self)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    operation_group_ir,
+                    list(
+                        filter(
+                            lambda x: (
+                                x.identifier == operation_group_ir.identifier
+                            ),
+                            self._operations,
+                        )
+                    ),
+                    owner=self,
+                )
+                for operation_group_ir in ir.operation_groups
+            ]
+        )
         self._tag = ir.tag
         self._max_subclass_tag = ir.max_subclass_tag
 

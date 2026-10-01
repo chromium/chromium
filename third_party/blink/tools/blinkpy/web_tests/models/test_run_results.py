@@ -85,8 +85,9 @@ class TestRunResults(object):
         self.failures_by_name = {}
 
         self.tests_by_expectation = {}
-        for expected_result in \
-            test_expectations.EXPECTATION_DESCRIPTIONS.keys():
+        for (
+            expected_result
+        ) in test_expectations.EXPECTATION_DESCRIPTIONS.keys():
             self.tests_by_expectation[expected_result] = set()
 
         self.slow_tests = set()
@@ -99,7 +100,8 @@ class TestRunResults(object):
     def add(self, test_result, test_is_slow):
         result_type_for_stats = test_result.type
         self.tests_by_expectation[result_type_for_stats].add(
-            test_result.test_name)
+            test_result.test_name
+        )
         if self.result_sink:
             self.result_sink.sink(test_result)
 
@@ -117,8 +119,7 @@ class TestRunResults(object):
             elif test_result.type != ResultType.Pass:
                 self.expected_failures += 1
         else:
-            self.unexpected_results_by_name[test_result.test_name] = \
-                test_result
+            self.unexpected_results_by_name[test_result.test_name] = test_result
             self.unexpected += 1
             if len(test_result.failures):
                 self.unexpected_failures += 1
@@ -131,12 +132,14 @@ class TestRunResults(object):
 
 
 class RunDetails(object):
-    def __init__(self,
-                 exit_code,
-                 summarized_full_results=None,
-                 summarized_failing_results=None,
-                 initial_results=None,
-                 all_retry_results=None):
+    def __init__(
+        self,
+        exit_code,
+        summarized_full_results=None,
+        summarized_failing_results=None,
+        initial_results=None,
+        all_retry_results=None,
+    ):
         self.exit_code = exit_code
         self.summarized_full_results = summarized_full_results
         self.summarized_failing_results = summarized_failing_results
@@ -155,11 +158,13 @@ def _interpret_test_failures(failures):
     if test_failures.FailureMissingResult in failure_types:
         test_dict['is_missing_text'] = True
 
-    if (test_failures.FailureMissingImage in failure_types
-            or test_failures.FailureMissingImageHash in failure_types
-            or test_failures.FailureReftestNoImageGenerated in failure_types
-            or test_failures.FailureReftestNoReferenceImageGenerated in
-            failure_types):
+    if (
+        test_failures.FailureMissingImage in failure_types
+        or test_failures.FailureMissingImageHash in failure_types
+        or test_failures.FailureReftestNoImageGenerated in failure_types
+        or test_failures.FailureReftestNoReferenceImageGenerated
+        in failure_types
+    ):
         test_dict['is_missing_image'] = True
 
     if test_failures.FailureTestHarnessAssertion in failure_types:
@@ -168,20 +173,22 @@ def _interpret_test_failures(failures):
     return test_dict
 
 
-def summarize_results(port_obj,
-                      options,
-                      expectations,
-                      initial_results,
-                      all_retry_results,
-                      only_include_failing=False):
+def summarize_results(
+    port_obj,
+    options,
+    expectations,
+    initial_results,
+    all_retry_results,
+    only_include_failing=False,
+):
     """Returns a dictionary containing a summary of the test runs, with the following fields:
-        'version': a version indicator
-        'fixable': The number of fixable tests (NOW - PASS)
-        'skipped': The number of skipped tests (NOW & SKIPPED)
-        'num_regressions': The number of non-flaky failures
-        'num_flaky': The number of flaky failures
-        'num_passes': The number of expected and unexpected passes
-        'tests': a dict of tests -> {'expected': '...', 'actual': '...'}
+    'version': a version indicator
+    'fixable': The number of fixable tests (NOW - PASS)
+    'skipped': The number of skipped tests (NOW & SKIPPED)
+    'num_regressions': The number of non-flaky failures
+    'num_flaky': The number of flaky failures
+    'num_passes': The number of expected and unexpected passes
+    'tests': a dict of tests -> {'expected': '...', 'actual': '...'}
     """
     results = {}
     results['version'] = 3
@@ -213,14 +220,19 @@ def summarize_results(port_obj,
         # all_results does not include SKIP, so we need results_by_name.
         for test_name, result in test_run_results.results_by_name.items():
             if result.type == ResultType.Skip:
-                is_unexpected = test_name in test_run_results.unexpected_results_by_name
-                merged_results_by_name[test_name].append((result,
-                                                          is_unexpected))
+                is_unexpected = (
+                    test_name in test_run_results.unexpected_results_by_name
+                )
+                merged_results_by_name[test_name].append(
+                    (result, is_unexpected)
+                )
 
         # results_by_name only includes the last result, so we need all_results.
         for result in test_run_results.all_results:
             test_name = result.test_name
-            is_unexpected = test_name in test_run_results.unexpected_results_by_name
+            is_unexpected = (
+                test_name in test_run_results.unexpected_results_by_name
+            )
             merged_results_by_name[test_name].append((result, is_unexpected))
 
     # Finally, compute the tests dict.
@@ -326,18 +338,21 @@ def summarize_results(port_obj,
         if len(crash_sites) > 0:
             test_dict['crash_site'] = crash_sites[0]
 
-        if test_failures.has_failure_type(test_failures.FailureTextMismatch,
-                                          initial_result.failures):
+        if test_failures.has_failure_type(
+            test_failures.FailureTextMismatch, initial_result.failures
+        ):
             for failure in initial_result.failures:
                 if isinstance(failure, test_failures.FailureTextMismatch):
-                    test_dict['text_mismatch'] = \
+                    test_dict['text_mismatch'] = (
                         failure.text_mismatch_category()
+                    )
                     break
 
         for failure in initial_result.failures:
             if isinstance(failure, test_failures.FailureImageHashMismatch):
-                test_dict['image_diff_stats'] = \
+                test_dict['image_diff_stats'] = (
                     failure.actual_driver_output.image_diff_stats
+                )
                 break
 
         # Note: is_unexpected and is_regression are intended to reflect the
@@ -358,11 +373,14 @@ def summarize_results(port_obj,
             # TODO(robertma): Why do we only update unexpected retry failures?
             if is_unexpected:
                 test_dict.update(
-                    _interpret_test_failures(retry_result.failures))
+                    _interpret_test_failures(retry_result.failures)
+                )
 
         for test_result, _ in merged_results:
-            for artifact_name, artifacts in \
-                test_result.artifacts.artifacts.items():
+            for (
+                artifact_name,
+                artifacts,
+            ) in test_result.artifacts.artifacts.items():
                 artifact_dict = test_dict.setdefault('artifacts', {})
                 artifact_dict.setdefault(artifact_name, []).extend(artifacts)
 
@@ -382,8 +400,7 @@ def summarize_results(port_obj,
         results['build_number'] = options.build_number
     if hasattr(options, 'builder_name'):
         results['builder_name'] = options.builder_name
-    if getattr(options, 'order', None) == 'random' and hasattr(
-            options, 'seed'):
+    if getattr(options, 'order', None) == 'random' and hasattr(options, 'seed'):
         results['random_order_seed'] = options.seed
     results['path_delimiter'] = '/'
 
@@ -403,7 +420,8 @@ def summarize_results(port_obj,
             _log.warning(
                 'Failed to determine chromium commit position for %s, '
                 'leaving "chromium_revision" key blank in full_results.json.',
-                path)
+                path,
+            )
 
     return results
 
@@ -464,8 +482,7 @@ def _test_result_as_dict(result, **kwargs):
         ret['failures'] = failures
     if result.failure_reason:
         ret['failure_reason'] = {
-            'primary_error_message':
-            result.failure_reason.primary_error_message
+            'primary_error_message': result.failure_reason.primary_error_message
         }
     for artifact_name, artifacts in result.artifacts.artifacts.items():
         artifact_dict = ret.setdefault('artifacts', {})
@@ -473,8 +490,9 @@ def _test_result_as_dict(result, **kwargs):
     return ret
 
 
-def test_run_histories(options, expectations, initial_results,
-                       all_retry_results):
+def test_run_histories(
+    options, expectations, initial_results, all_retry_results
+):
     """Returns a dictionary containing a flattened list of all test runs, with
     the following fields:
         'version': a version indicator.
@@ -486,8 +504,7 @@ def test_run_histories(options, expectations, initial_results,
     """
     ret = {}
     ret['version'] = 1
-    if getattr(options, 'order', None) == 'random' and hasattr(
-            options, 'seed'):
+    if getattr(options, 'order', None) == 'random' and hasattr(options, 'seed'):
         ret['random_order_seed'] = options.seed
 
     run_histories = []
@@ -498,17 +515,19 @@ def test_run_histories(options, expectations, initial_results,
                 continue
             exp = expectations.get_expectations(test_name)
             run_histories.append(
-                _test_result_as_dict(result,
-                                     expected_results=list(exp.results),
-                                     bugs=exp.reason))
+                _test_result_as_dict(
+                    result, expected_results=list(exp.results), bugs=exp.reason
+                )
+            )
 
         # results_by_name only includes the last result, so we need all_results.
         for result in test_run_results.all_results:
             exp = expectations.get_expectations(result.test_name)
             run_histories.append(
-                _test_result_as_dict(result,
-                                     expected_results=list(exp.results),
-                                     bugs=exp.reason))
+                _test_result_as_dict(
+                    result, expected_results=list(exp.results), bugs=exp.reason
+                )
+            )
     ret['run_histories'] = run_histories
 
     return ret

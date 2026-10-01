@@ -10,8 +10,9 @@ from typing import Optional
 def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
     """Run `wpt lint` against the specified directory."""
     repo_root = repo_root or input_api.PresubmitLocalPath()
-    wpt_root = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                      'third_party', 'wpt_tools', 'wpt')
+    wpt_root = input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'third_party', 'wpt_tools', 'wpt'
+    )
     wpt_executable = input_api.os_path.join(wpt_root, 'wpt')
 
     paths = []
@@ -54,9 +55,11 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
                 f.write(f'{path}\n')
 
     try:
-        proc = input_api.subprocess.Popen(args,
-                                          stdout=input_api.subprocess.PIPE,
-                                          stderr=input_api.subprocess.PIPE)
+        proc = input_api.subprocess.Popen(
+            args,
+            stdout=input_api.subprocess.PIPE,
+            stderr=input_api.subprocess.PIPE,
+        )
         stdout, stderr = proc.communicate()
     finally:
         if paths_name:
@@ -64,7 +67,8 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
 
     if proc.returncode != 0:
         return [
-            output_api.PresubmitError('`wpt lint` failed:',
-                                      long_text=(stdout + stderr).decode())
+            output_api.PresubmitError(
+                '`wpt lint` failed:', long_text=(stdout + stderr).decode()
+            )
         ]
     return []

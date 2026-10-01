@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Module to get random numbers, strings, etc.
 
-   The values returned by the various functions can be replaced in
-   templates to generate test cases.
+The values returned by the various functions can be replaced in
+templates to generate test cases.
 """
 
 import math
@@ -25,58 +25,68 @@ import wbt_fakes
 # Strings that are used to generate the beginning of a test. The replacement
 # fields are replaced by Get*Base() functions below to generate valid test
 # cases.
-BASIC_BASE = \
-    '  return setBluetoothFakeAdapter({fake_adapter_name})\n'\
+BASIC_BASE = (
+    '  return setBluetoothFakeAdapter({fake_adapter_name})\n'
     '    .then(() => {{\n'
+)
 
-DEVICE_DISCOVERY_BASE = BASIC_BASE + \
-    '      return requestDeviceWithKeyDown({{\n'\
-    '        filters: [{{services: [{service_uuid}]}}]}});\n'\
-    '    }})\n'\
+DEVICE_DISCOVERY_BASE = (
+    BASIC_BASE + '      return requestDeviceWithKeyDown({{\n'
+    '        filters: [{{services: [{service_uuid}]}}]}});\n'
+    '    }})\n'
     '    .then(device => {{\n'
+)
 
-CONNECTABLE_BASE = DEVICE_DISCOVERY_BASE + \
-    '      return device.gatt.connect();\n'\
-    '    }})\n'\
+CONNECTABLE_BASE = (
+    DEVICE_DISCOVERY_BASE + '      return device.gatt.connect();\n'
+    '    }})\n'
     '    .then(gatt => {{\n'
+)
 
-SERVICE_RETRIEVED_BASE = CONNECTABLE_BASE + \
-    '      return gatt.getPrimaryService({service_uuid});\n'\
-    '    }})\n'\
+SERVICE_RETRIEVED_BASE = (
+    CONNECTABLE_BASE + '      return gatt.getPrimaryService({service_uuid});\n'
+    '    }})\n'
     '    .then(services => {{\n'
+)
 
-SERVICES_RETRIEVED_BASE = CONNECTABLE_BASE + \
-    '      return gatt.getPrimaryServices({optional_service_uuid});\n'\
-    '    }})\n'\
+SERVICES_RETRIEVED_BASE = (
+    CONNECTABLE_BASE
+    + '      return gatt.getPrimaryServices({optional_service_uuid});\n'
+    '    }})\n'
     '    .then(services => {{\n'
+)
 
-CHARACTERISTIC_RETRIEVED_BASE = \
-    '      TRANSFORM_PICK_A_SERVICE;\n'\
-    '      return service.getCharacteristic({characteristic_uuid});\n'\
-    '    }})\n'\
+CHARACTERISTIC_RETRIEVED_BASE = (
+    '      TRANSFORM_PICK_A_SERVICE;\n'
+    '      return service.getCharacteristic({characteristic_uuid});\n'
+    '    }})\n'
     '    .then(characteristics => {{\n'
+)
 
-CHARACTERISTICS_RETRIEVED_BASE = \
-    '      TRANSFORM_PICK_A_SERVICE;\n'\
-    '      return service.getCharacteristics({optional_characteristic_uuid});\n'\
-    '    }})\n'\
+CHARACTERISTICS_RETRIEVED_BASE = (
+    '      TRANSFORM_PICK_A_SERVICE;\n'
+    '      return service.getCharacteristics({optional_characteristic_uuid});\n'
+    '    }})\n'
     '    .then(characteristics => {{\n'
+)
 
-DESCRIPTOR_RETRIEVED_BASE = \
-    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'\
-    '      return characteristic.getDescriptor({descriptor_uuid});\n'\
-    '    }})\n'\
+DESCRIPTOR_RETRIEVED_BASE = (
+    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'
+    '      return characteristic.getDescriptor({descriptor_uuid});\n'
+    '    }})\n'
     '    .then(descriptors => {{\n'
+)
 
-DESCRIPTORS_RETRIEVED_BASE = \
-    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'\
-    '      return characteristic.getDescriptors({optional_descriptor_uuid});\n'\
-    '    }})\n'\
+DESCRIPTORS_RETRIEVED_BASE = (
+    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'
+    '      return characteristic.getDescriptors({optional_descriptor_uuid});\n'
+    '    }})\n'
     '    .then(descriptors => {{\n'
+)
 
 
 def _ToJsStr(s):
-    return u'\'{}\''.format(s)
+    return '\'{}\''.format(s)
 
 
 def _get_random_number():
@@ -120,9 +130,12 @@ def _get_array_of_random_ints(max_length, max_value):
     """Returns an string with an array of random integer."""
     length = utils.UniformExpoInteger(0, math.log(max_length, 2))
     exp_max_value = math.log(max_value, 2)
-    return '[{}]'.format(', '.join(
-        str(utils.UniformExpoInteger(0, exp_max_value))
-        for _ in range(length)))
+    return '[{}]'.format(
+        ', '.join(
+            str(utils.UniformExpoInteger(0, exp_max_value))
+            for _ in range(length)
+        )
+    )
 
 
 def _get_typed_array():
@@ -152,27 +165,39 @@ def _get_typed_array():
       A string made up of a randomly chosen type and argument type from the
       lists above.
     """
-    array_type = random.choice([
-        'Int8Array', 'Int16Array', 'Int32Array', 'Uint8Array', 'Uint16Array',
-        'Uint32Array', 'Uint8ClampedArray', 'Float32Array', 'Float64Array'
-    ])
+    array_type = random.choice(
+        [
+            'Int8Array',
+            'Int16Array',
+            'Int32Array',
+            'Uint8Array',
+            'Uint16Array',
+            'Uint32Array',
+            'Uint8ClampedArray',
+            'Float32Array',
+            'Float64Array',
+        ]
+    )
 
     # Choose an argument type at random.
-    arguments = random.choice([
-        # length e.g. 293
-        # We choose 2**10 as the upper boundry because the max length allowed
-        # by WebBluetooth is 2**10.
-        lambda: utils.UniformExpoInteger(0, 10),
-        # typedArray e.g. new Uint8Array([1,2,3])
-        _get_typed_array,
-        # object e.g. [1,2,3]
-        lambda: _get_array_of_random_ints(max_length=1000, max_value=2**64),
-        # buffer e.g. new Uint8Array(10).buffer
-        lambda: _get_typed_array() + '.buffer',
-    ])
+    arguments = random.choice(
+        [
+            # length e.g. 293
+            # We choose 2**10 as the upper boundry because the max length allowed
+            # by WebBluetooth is 2**10.
+            lambda: utils.UniformExpoInteger(0, 10),
+            # typedArray e.g. new Uint8Array([1,2,3])
+            _get_typed_array,
+            # object e.g. [1,2,3]
+            lambda: _get_array_of_random_ints(max_length=1000, max_value=2**64),
+            # buffer e.g. new Uint8Array(10).buffer
+            lambda: _get_typed_array() + '.buffer',
+        ]
+    )
 
     return 'new {array_type}({arguments})'.format(
-        array_type=array_type, arguments=arguments())
+        array_type=array_type, arguments=arguments()
+    )
 
 
 def GetAdvertisedServiceUUIDFromFakes():
@@ -333,7 +358,8 @@ def GetDeviceDiscoveryBase():
     adapter, services = random.choice(wbt_fakes.ADAPTERS_WITH_DEVICES)
     return DEVICE_DISCOVERY_BASE.format(
         fake_adapter_name=_ToJsStr(adapter),
-        service_uuid=_ToJsStr(random.choice(services)))
+        service_uuid=_ToJsStr(random.choice(services)),
+    )
 
 
 def GetConnectableBase():
@@ -347,7 +373,8 @@ def GetConnectableBase():
     adapter, services = random.choice(wbt_fakes.ADAPTERS_WITH_DEVICES)
     return DEVICE_DISCOVERY_BASE.format(
         fake_adapter_name=_ToJsStr(adapter),
-        service_uuid=_ToJsStr(random.choice(services)))
+        service_uuid=_ToJsStr(random.choice(services)),
+    )
 
 
 def get_services_retrieved_base():
@@ -367,19 +394,20 @@ def get_services_retrieved_base():
     return base.format(
         fake_adapter_name=_ToJsStr(adapter),
         service_uuid=service_uuid,
-        optional_service_uuid=random.choice(['', service_uuid]))
+        optional_service_uuid=random.choice(['', service_uuid]),
+    )
 
 
 def get_characteristics_retrieved_base():
     """Returns a string that contains all steps to retrieve a characteristic.
 
-      Returns: A string that:
-        1. Sets an adapter to a fake adapter with a connectable device with
-           services.
-        2. Use one of the device's services to look for that device.
-        3. Connects to it.
-        4. Retrieve the device's service used in 2.
-        5. Retrieve a characteristic from that service.
+    Returns: A string that:
+      1. Sets an adapter to a fake adapter with a connectable device with
+         services.
+      2. Use one of the device's services to look for that device.
+      3. Connects to it.
+      4. Retrieve the device's service used in 2.
+      5. Retrieve a characteristic from that service.
     """
     adapter, services = random.choice(wbt_fakes.ADAPTERS_WITH_CHARACTERISTICS)
 
@@ -392,19 +420,23 @@ def get_characteristics_retrieved_base():
     optional_characteristic_uuid = random.choice(['', characteristic_uuid])
 
     services_base = random.choice(
-        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE])
+        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE]
+    )
 
-    characteristics_base = services_base + random.choice([
-        CHARACTERISTIC_RETRIEVED_BASE,
-        CHARACTERISTICS_RETRIEVED_BASE,
-    ])
+    characteristics_base = services_base + random.choice(
+        [
+            CHARACTERISTIC_RETRIEVED_BASE,
+            CHARACTERISTICS_RETRIEVED_BASE,
+        ]
+    )
 
     return characteristics_base.format(
         fake_adapter_name=_ToJsStr(adapter),
         service_uuid=service_uuid,
         optional_service_uuid=optional_service_uuid,
         characteristic_uuid=characteristic_uuid,
-        optional_characteristic_uuid=optional_characteristic_uuid)
+        optional_characteristic_uuid=optional_characteristic_uuid,
+    )
 
 
 def get_descriptors_retrieved_base():
@@ -422,17 +454,22 @@ def get_descriptors_retrieved_base():
     optional_descriptor_uuid = random.choice(['', descriptor_uuid])
 
     services_base = random.choice(
-        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE])
+        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE]
+    )
 
-    characteristics_base = services_base + random.choice([
-        CHARACTERISTIC_RETRIEVED_BASE,
-        CHARACTERISTICS_RETRIEVED_BASE,
-    ])
+    characteristics_base = services_base + random.choice(
+        [
+            CHARACTERISTIC_RETRIEVED_BASE,
+            CHARACTERISTICS_RETRIEVED_BASE,
+        ]
+    )
 
-    descriptors_base = characteristics_base + random.choice([
-        DESCRIPTOR_RETRIEVED_BASE,
-        DESCRIPTORS_RETRIEVED_BASE,
-    ])
+    descriptors_base = characteristics_base + random.choice(
+        [
+            DESCRIPTOR_RETRIEVED_BASE,
+            DESCRIPTORS_RETRIEVED_BASE,
+        ]
+    )
 
     return descriptors_base.format(
         fake_adapter_name=_ToJsStr(adapter),
@@ -441,76 +478,90 @@ def get_descriptors_retrieved_base():
         characteristic_uuid=characteristic_uuid,
         optional_characteristic_uuid=optional_characteristic_uuid,
         descriptor_uuid=descriptor_uuid,
-        optional_descriptor_uuid=optional_descriptor_uuid)
+        optional_descriptor_uuid=optional_descriptor_uuid,
+    )
 
 
 def get_get_primary_services_call():
-    call = random.choice([
-        u'getPrimaryService({service_uuid})',
-        u'getPrimaryServices({optional_service_uuid})'
-    ])
+    call = random.choice(
+        [
+            'getPrimaryService({service_uuid})',
+            'getPrimaryServices({optional_service_uuid})',
+        ]
+    )
 
     return call.format(
         service_uuid=get_service_uuid(),
-        optional_service_uuid=random.choice(['', get_service_uuid()]))
+        optional_service_uuid=random.choice(['', get_service_uuid()]),
+    )
 
 
 def get_characteristics_call():
-    call = random.choice([
-        u'getCharacteristic({characteristic_uuid})',
-        u'getCharacteristics({optional_characteristic_uuid})'
-    ])
+    call = random.choice(
+        [
+            'getCharacteristic({characteristic_uuid})',
+            'getCharacteristics({optional_characteristic_uuid})',
+        ]
+    )
 
     return call.format(
         characteristic_uuid=get_characteristic_uuid(),
         optional_characteristic_uuid=random.choice(
-            ['', get_characteristic_uuid()]))
+            ['', get_characteristic_uuid()]
+        ),
+    )
 
 
 def get_descriptors_call():
-    call = random.choice([
-        u'getDescriptor({descriptor_uuid})',
-        u'getDescriptors({optional_descriptor_uuid})',
-    ])
+    call = random.choice(
+        [
+            'getDescriptor({descriptor_uuid})',
+            'getDescriptors({optional_descriptor_uuid})',
+        ]
+    )
 
-    return call.format(descriptor_uuid=get_descriptor_uuid(),
-                       optional_descriptor_uuid=random.choice(
-                           ['', get_descriptor_uuid()]))
+    return call.format(
+        descriptor_uuid=get_descriptor_uuid(),
+        optional_descriptor_uuid=random.choice(['', get_descriptor_uuid()]),
+    )
 
 
 def get_pick_a_service():
     """Returns a string that picks a service from 'services'."""
     # 'services' may be defined by the GetPrimaryService(s) tokens.
-    string = \
-        'var service; '\
-        'if (typeof services !== \'undefined\') '\
-        ' service = Array.isArray(services)'\
-        ' ? services[{} % services.length]'\
+    string = (
+        'var service; '
+        'if (typeof services !== \'undefined\') '
+        ' service = Array.isArray(services)'
+        ' ? services[{} % services.length]'
         ' : services'
+    )
     return string.format(random.randint(0, sys.maxsize))
 
 
 def get_pick_a_characteristic():
     """Returns a string that picks a characteristic from 'characteristics'."""
     # 'characteristics' maybe be defined by the GetCharacteristic(s) tokens.
-    string = \
-        'var characteristic; '\
-        'if (typeof characteristics !== \'undefined\') '\
-        ' characteristic = Array.isArray(characteristics)'\
-        ' ? characteristics[{} % characteristics.length]'\
+    string = (
+        'var characteristic; '
+        'if (typeof characteristics !== \'undefined\') '
+        ' characteristic = Array.isArray(characteristics)'
+        ' ? characteristics[{} % characteristics.length]'
         ' : characteristics'
+    )
     return string.format(random.randint(0, sys.maxsize))
 
 
 def get_pick_a_descriptor():
     """Returns a string that picks a descriptor from 'descriptors'."""
     # 'descriptors' may be defined by the GetDescriptor(s) tokens.
-    string = \
-        'var descriptor; '\
-        'if (typeof descriptors !== \'undefined\') '\
-        ' descriptor = Array.isArray(descriptors)'\
-        ' ? descriptors[{} % descriptors.length]'\
+    string = (
+        'var descriptor; '
+        'if (typeof descriptors !== \'undefined\') '
+        ' descriptor = Array.isArray(descriptors)'
+        ' ? descriptors[{} % descriptors.length]'
         ' : descriptors'
+    )
     return string.format(random.randint(0, sys.maxsize))
 
 
@@ -529,9 +580,11 @@ def get_buffer_source():
         # We choose 2**10 as the upper boundry because the max length allowed
         # by WebBluetooth is 2**10.
         return 'new ArrayBuffer({length})'.format(
-            length=utils.UniformExpoInteger(0, 10))
+            length=utils.UniformExpoInteger(0, 10)
+        )
     if choice == 'DataView':
         return 'new DataView({typed_array}.buffer)'.format(
-            typed_array=_get_typed_array())
+            typed_array=_get_typed_array()
+        )
     if choice == 'TypedArray':
         return _get_typed_array()

@@ -4,7 +4,8 @@
 # found in the LICENSE file.
 
 from blinkpy.web_tests.stale_expectation_removal import (
-    remove_stale_expectations)
+    remove_stale_expectations,
+)
 
 import sys
 

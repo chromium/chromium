@@ -56,8 +56,9 @@ class ElementLookupTrieWriter(json5_generator.Writer):
     }
 
     def __init__(self, json5_file_paths, output_dir):
-        super(ElementLookupTrieWriter, self).__init__(json5_file_paths,
-                                                      output_dir)
+        super(ElementLookupTrieWriter, self).__init__(
+            json5_file_paths, output_dir
+        )
         self._tags = {}
         self._tag_symbols = {}
         self._runtimeEnabledWithoutOriginTrial = {}
@@ -66,9 +67,11 @@ class ElementLookupTrieWriter(json5_generator.Writer):
             self._tags[tagname] = tagname
             self._tag_symbols[tagname] = tag_symbol_for_entry(entry)
             if 'runtimeEnabled' in entry and not entry.get(
-                    'runtimeFlagHasOriginTrial', False):
+                'runtimeFlagHasOriginTrial', False
+            ):
                 self._runtimeEnabledWithoutOriginTrial[tagname] = entry[
-                    'runtimeEnabled']
+                    'runtimeEnabled'
+                ]
         self._namespace = self.json5_file.metadata['namespace'].strip('"')
         basename = self._namespace.lower() + '_element_lookup_trie'
         self._outputs = {
@@ -89,8 +92,7 @@ class ElementLookupTrieWriter(json5_generator.Writer):
             'input_files': self._input_files,
             'namespace': self._namespace,
             'length_tries': trie_builder.trie_list_by_str_length(self._tags),
-            'runtimeEnabledWithoutOriginTrial':
-            self._runtimeEnabledWithoutOriginTrial,
+            'runtimeEnabledWithoutOriginTrial': self._runtimeEnabledWithoutOriginTrial,
             'tag_symbols': self._tag_symbols,
         }
 

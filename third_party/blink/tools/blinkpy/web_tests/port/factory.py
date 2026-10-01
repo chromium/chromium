@@ -79,11 +79,11 @@ class PortFactory:
             raise NotImplementedError('unsupported platform: "%s"' % port_name)
 
         full_port_name = port_class.determine_full_port_name(
-            self._host, port_options, port_name)
-        return port_class(self._host,
-                          full_port_name,
-                          options=port_options,
-                          **kwargs)
+            self._host, port_options, port_name
+        )
+        return port_class(
+            self._host, full_port_name, options=port_options, **kwargs
+        )
 
     @classmethod
     def get_port_class(cls, port_name):
@@ -115,21 +115,21 @@ class PortFactory:
         return fnmatch.filter(self._host.builders.all_port_names(), platform)
 
     def get_from_builder_name(self, builder_name):
-        port_name = self._host.builders.port_name_for_builder_name(
-            builder_name)
+        port_name = self._host.builders.port_name_for_builder_name(builder_name)
         assert port_name, 'unrecognized builder name: "%s"' % builder_name
         return self.get(port_name, options=_builder_options(builder_name))
 
 
 def _builder_options(builder_name):
-    return optparse.Values({
-        'builder_name':
-        builder_name,
-        'configuration':
-        'Debug' if re.search(r'[d|D](ebu|b)g', builder_name) else 'Release',
-        'target':
-        None,
-    })
+    return optparse.Values(
+        {
+            'builder_name': builder_name,
+            'configuration': 'Debug'
+            if re.search(r'[d|D](ebu|b)g', builder_name)
+            else 'Release',
+            'target': None,
+        }
+    )
 
 
 def _update_configuration_and_target(host, options):
@@ -141,9 +141,11 @@ def _update_configuration_and_target(host, options):
     if gn_configuration:
         expected_configuration = getattr(options, 'configuration', None)
         if expected_configuration not in (None, gn_configuration):
-            raise ValueError('Configuration does not match the GN build args. '
-                             'Expected "%s" but got "%s".' %
-                             (expected_configuration, gn_configuration))
+            raise ValueError(
+                'Configuration does not match the GN build args. '
+                'Expected "%s" but got "%s".'
+                % (expected_configuration, gn_configuration)
+            )
         options.configuration = gn_configuration
         return
 
@@ -159,7 +161,8 @@ def _update_configuration_and_target(host, options):
             'Could not determine build configuration type.\n'
             'Either switch to one of the default target directories,\n'
             'use args.gn, or specify --debug or --release explicitly.\n'
-            'If the directory is out/<dir>, then pass -t <dir>.')
+            'If the directory is out/<dir>, then pass -t <dir>.'
+        )
 
 
 def _read_configuration_from_gn(fs, options):
@@ -167,8 +170,7 @@ def _read_configuration_from_gn(fs, options):
     build_directory = getattr(options, 'build_directory', None)
     finder = PathFinder(fs)
     if not build_directory:
-        build_directory = fs.join(finder.chromium_base(), 'out',
-                                  options.target)
+        build_directory = fs.join(finder.chromium_base(), 'out', options.target)
     path = fs.join(build_directory, 'args.gn')
     if not fs.exists(path):
         path = fs.join(build_directory, 'toolchain.ninja')

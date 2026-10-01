@@ -34,17 +34,18 @@ from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 from blinkpy.common.system.user_mock import MockUser
 
 
-
 class MockSystemHost(object):
-    def __init__(self,
-                 log_executive=False,
-                 os_name=None,
-                 os_version=None,
-                 machine=None,
-                 executive=None,
-                 filesystem=None,
-                 processor=None,
-                 time_return_val=123):
+    def __init__(
+        self,
+        log_executive=False,
+        os_name=None,
+        os_version=None,
+        machine=None,
+        executive=None,
+        filesystem=None,
+        processor=None,
+        time_return_val=123,
+    ):
         self.executable = 'python'
         self.executive = executive or MockExecutive(should_log=log_executive)
         self.filesystem = filesystem or MockFileSystem()

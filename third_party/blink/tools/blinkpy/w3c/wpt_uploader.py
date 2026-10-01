@@ -54,15 +54,19 @@ class WptReportUploader(object):
             _log.info("Uploading report for %s" % builder[2])
             build = self.fetch_latest_complete_build(*builder)
             if build:
-                _log.info("Find latest completed build %d" % build.get("number"))
+                _log.info(
+                    "Find latest completed build %d" % build.get("number")
+                )
 
                 # pylint: disable=unsubscriptable-object
                 urls = self._host.results_fetcher.fetch_wpt_report_urls(
-                    build["id"])
+                    build["id"]
+                )
                 for url in urls:
                     _log.info("Fetching wpt report from %s" % url)
-                    body = self._host.web.get_binary(url,
-                                                     return_none_on_404=True)
+                    body = self._host.web.get_binary(
+                        url, return_none_on_404=True
+                    )
                     if not body:
                         _log.error("Failed to fetch wpt report.")
                         continue
@@ -71,7 +75,8 @@ class WptReportUploader(object):
                     reports.append(initial_report)
 
                 urls = self._host.results_fetcher.fetch_wpt_screenshot_urls(
-                    build['id'])
+                    build['id']
+                )
                 for url in urls:
                     _log.info('Fetching wpt screenshots from %s', url)
                     screenshot_files.append(self._host.web.get_binary(url))
@@ -115,7 +120,8 @@ class WptReportUploader(object):
             "status": "SUCCESS",
         }
         builds = self._bb_client.search_builds(
-            predicate, ['builder.builder', 'number', 'status', 'id'], count=10)
+            predicate, ['builder.builder', 'number', 'status', 'id'], count=10
+        )
         return builds[0] if builds else None
 
     def get_password(self):
@@ -130,26 +136,43 @@ class WptReportUploader(object):
         location_id = 'global'
         key_ring_id = 'chrome-official'
         key_id = 'autoroller_key'
-        key_data = (b'CiQAcoZ22AXJttAoPI544QvH4C1jSnvVpe/XN+43vZan/RdbSmcSYyph'
-                    b'ChQKDLy9d1hq3L5Vr0veUBDI7oTJDBIvCifABA4GBbd+dfwbhbFAuQ5R'
-                    b'XZhu4Bl036JRYMtYZNrE4evBBMsO94YQ1qGnkggaGAoQ0eZ5gffcfN+M'
-                    b'YBfWzGxvtxDy6KSYBw==')
+        key_data = (
+            b'CiQAcoZ22AXJttAoPI544QvH4C1jSnvVpe/XN+43vZan/RdbSmcSYyph'
+            b'ChQKDLy9d1hq3L5Vr0veUBDI7oTJDBIvCifABA4GBbd+dfwbhbFAuQ5R'
+            b'XZhu4Bl036JRYMtYZNrE4evBBMsO94YQ1qGnkggaGAoQ0eZ5gffcfN+M'
+            b'YBfWzGxvtxDy6KSYBw=='
+        )
         ciphertext = base64.b64decode(key_data)
         ciphertext_crc32c = crc32c(ciphertext)
         client = kms.KeyManagementServiceClient()
-        key_name = client.crypto_key_path(project_id, location_id, key_ring_id, key_id)
+        key_name = client.crypto_key_path(
+            project_id, location_id, key_ring_id, key_id
+        )
         decrypt_response = client.decrypt(
-            request={'name': key_name, 'ciphertext': ciphertext, 'ciphertext_crc32c': ciphertext_crc32c})
-        if not decrypt_response.plaintext_crc32c == crc32c(decrypt_response.plaintext):
-            raise Exception('The response received from the server was corrupted in-transit.')
+            request={
+                'name': key_name,
+                'ciphertext': ciphertext,
+                'ciphertext_crc32c': ciphertext_crc32c,
+            }
+        )
+        if not decrypt_response.plaintext_crc32c == crc32c(
+            decrypt_response.plaintext
+        ):
+            raise Exception(
+                'The response received from the server was corrupted in-transit.'
+            )
         return decrypt_response.plaintext.decode('utf-8')
 
-    def encode_result_files(self, reports: list[bytes],
-                            screenshot_files: list[bytes]) -> FileFormData:
+    def encode_result_files(
+        self, reports: list[bytes], screenshot_files: list[bytes]
+    ) -> FileFormData:
         files, reports_total_size = [], 0
         for shard, report in enumerate(reports):
-            file_info = (f'result_{shard}.json.gz', gzip.compress(report),
-                         'application/gzip')
+            file_info = (
+                f'result_{shard}.json.gz',
+                gzip.compress(report),
+                'application/gzip',
+            )
             reports_total_size += len(file_info[1])
             files.append(('result_file', file_info))
 
@@ -169,15 +192,20 @@ class WptReportUploader(object):
         # [0]: https://cloud.google.com/appengine/docs/standard/how-requests-are-handled?tab=python#quotas_and_limits
         # [1]: https://github.com/web-platform-tests/wpt/blob/c498c7f6347671efddbc842d98c994f8899bc847/tools/wptrunner/wptrunner/formatters/wptscreenshot.py#L30
         screenshots_size_limit = 31_000_000 - reports_total_size
-        screenshots = self.merge_screenshots(screenshot_files,
-                                             screenshots_size_limit)
-        screenshot_file_info = ('screenshots.txt.gz',
-                                gzip.compress(screenshots), 'application/gzip')
+        screenshots = self.merge_screenshots(
+            screenshot_files, screenshots_size_limit
+        )
+        screenshot_file_info = (
+            'screenshots.txt.gz',
+            gzip.compress(screenshots),
+            'application/gzip',
+        )
         files.append(('screenshot_file', screenshot_file_info))
         return files
 
-    def merge_screenshots(self, files: list[bytes],
-                          size_limit: int) -> bytearray:
+    def merge_screenshots(
+        self, files: list[bytes], size_limit: int
+    ) -> bytearray:
         merged_screenshots = bytearray()
         for screenshot_file in files:
             for screenshot in screenshot_file.splitlines(keepends=True):
@@ -206,15 +234,20 @@ class WptReportUploader(object):
         session.auth = (username, password)
         res = session.post(url=url, params=params, files=files)
         if res.status_code == 200:
-            _log.info("Successfully uploaded wpt report with response: " +
-                      res.text.strip())
+            _log.info(
+                "Successfully uploaded wpt report with response: "
+                + res.text.strip()
+            )
             report_id = res.text.split()[1]
-            _log.info("Report uploaded to https://%s/results?run_id=%s" %
-                      (fqdn, report_id))
+            _log.info(
+                "Report uploaded to https://%s/results?run_id=%s"
+                % (fqdn, report_id)
+            )
             return 0
         else:
-            _log.error("Upload wpt report failed with status code: %d",
-                       res.status_code)
+            _log.error(
+                "Upload wpt report failed with status code: %d", res.status_code
+            )
             return 1
 
     def parse_args(self, argv):
@@ -223,12 +256,14 @@ class WptReportUploader(object):
             '-v',
             '--verbose',
             action='store_true',
-            help='log extra details that may be helpful when debugging')
+            help='log extra details that may be helpful when debugging',
+        )
         parser.add_argument(
             '--dry-run',
             action='store_true',
-            help='See what would be done without actually uploading any report.')
+            help='See what would be done without actually uploading any report.',
+        )
         parser.add_argument(
-            '--credentials-json',
-            help='A JSON file with wpt.fyi credentials')
+            '--credentials-json', help='A JSON file with wpt.fyi credentials'
+        )
         return parser.parse_args(argv)

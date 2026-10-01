@@ -1,0 +1,10 @@
+line-length = 80
+indent-width = 4
+extend-exclude = [
+  "*_pb2.py",
+  "tools/blinkpy/third_party/*",
+  "web_tests/external/wpt/*",
+]
+
+[format]
+quote-style = "preserve"

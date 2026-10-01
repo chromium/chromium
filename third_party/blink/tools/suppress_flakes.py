@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from blinkpy.web_tests.flake_suppressor import (suppress_flakes)
+from blinkpy.web_tests.flake_suppressor import suppress_flakes
 
 import sys
 

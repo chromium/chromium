@@ -8,7 +8,6 @@ from blinkpy.common.lru import LRUMapping
 
 
 class LRUMappingTest(unittest.TestCase):
-
     def test_reorder_get(self):
         mapping = LRUMapping(2)
         mapping[1] = 1

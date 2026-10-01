@@ -13,8 +13,9 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
     file_basename = 'policy_helper'
 
     def __init__(self, json5_file_path, output_dir):
-        super(PermissionsPolicyFeatureWriter,
-              self).__init__(json5_file_path, output_dir)
+        super(PermissionsPolicyFeatureWriter, self).__init__(
+            json5_file_path, output_dir
+        )
 
         for path in json5_file_path:
             file_root, file_ext = os.path.splitext(path)
@@ -32,17 +33,20 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
         document_policy_features = []
 
         def to_devtools_enum_format(permissions_policy_name):
-            """ Convert '-' separated permissions_policy_name to cammel case devtool enum name """
-            return ''.join([
-                name.capitalize()
-                for name in permissions_policy_name.split('-')
-            ])
+            """Convert '-' separated permissions_policy_name to cammel case devtool enum name"""
+            return ''.join(
+                [
+                    name.capitalize()
+                    for name in permissions_policy_name.split('-')
+                ]
+            )
 
         name_to_permissions_policy_map = {}
         for feature in self.json5_file.name_dictionaries:
             if feature['permissions_policy_name']:
                 feature['devtools_enum_name'] = to_devtools_enum_format(
-                    feature['permissions_policy_name'])
+                    feature['permissions_policy_name']
+                )
                 permissions_policy_features.append(feature)
                 name_to_permissions_policy_map[feature['name']] = feature
             elif feature['document_policy_name']:
@@ -60,42 +64,40 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
                 if str(dependency) in origin_trials_set:
                     if feature['permissions_policy_name']:
                         pp_origin_trial_dependency_map[feature['name']].append(
-                            dependency)
+                            dependency
+                        )
                     else:
                         dp_origin_trial_dependency_map[feature['name']].append(
-                            dependency)
+                            dependency
+                        )
                 else:
                     if feature['permissions_policy_name']:
                         runtime_to_permissions_policy_map[dependency].append(
-                            feature['name'])
+                            feature['name']
+                        )
                     else:
                         runtime_to_document_policy_map[dependency].append(
-                            feature['name'])
+                            feature['name']
+                        )
 
         self._outputs = {
-            self.file_basename + '.cc':
-            template_expander.use_jinja(
-                'templates/' + self.file_basename + '.cc.tmpl')(lambda: {
-                    'header_guard':
-                    self.make_header_guard(self._relative_output_dir + self.
-                                           file_basename + '.h'),
-                    'input_files':
-                    self._input_files,
-                    'permissions_policy_features':
-                    permissions_policy_features,
-                    'name_to_permissions_policy_map':
-                    name_to_permissions_policy_map,
-                    'document_policy_features':
-                    document_policy_features,
-                    'pp_origin_trial_dependency_map':
-                    pp_origin_trial_dependency_map,
-                    'dp_origin_trial_dependency_map':
-                    dp_origin_trial_dependency_map,
-                    'runtime_to_permissions_policy_map':
-                    runtime_to_permissions_policy_map,
-                    'runtime_to_document_policy_map':
-                    runtime_to_document_policy_map
-                }),
+            self.file_basename + '.cc': template_expander.use_jinja(
+                'templates/' + self.file_basename + '.cc.tmpl'
+            )(
+                lambda: {
+                    'header_guard': self.make_header_guard(
+                        self._relative_output_dir + self.file_basename + '.h'
+                    ),
+                    'input_files': self._input_files,
+                    'permissions_policy_features': permissions_policy_features,
+                    'name_to_permissions_policy_map': name_to_permissions_policy_map,
+                    'document_policy_features': document_policy_features,
+                    'pp_origin_trial_dependency_map': pp_origin_trial_dependency_map,
+                    'dp_origin_trial_dependency_map': dp_origin_trial_dependency_map,
+                    'runtime_to_permissions_policy_map': runtime_to_permissions_policy_map,
+                    'runtime_to_document_policy_map': runtime_to_document_policy_map,
+                }
+            ),
         }
 
 

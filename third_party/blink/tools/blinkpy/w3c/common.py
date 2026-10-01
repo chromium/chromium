@@ -11,15 +11,19 @@ WPT_GH_REPO_NAME = 'wpt'
 WPT_GH_URL = 'https://github.com/%s/%s/' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
 WPT_GH_RANGE_URL_TEMPLATE = '%scompare/{}...{}' % WPT_GH_URL
 WPT_MIRROR_URL = 'https://chromium.googlesource.com/external/github.com/web-platform-tests/wpt.git'
-WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % \
-    (WPT_GH_ORG, WPT_GH_REPO_NAME)
+WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % (
+    WPT_GH_ORG,
+    WPT_GH_REPO_NAME,
+)
 WPT_REVISION_FOOTER = 'WPT-Export-Revision: '
 CHANGE_ID_FOOTER = 'Change-Id: '
 LINK_FOOTER = 'Link: '
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 
-AUTOROLLER_EMAIL = 'wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com'
+AUTOROLLER_EMAIL = (
+    'wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com'
+)
 # These are only set in a new WPT checkout, and they should be consistent with
 # the bot's GitHub account (chromium-wpt-export-bot).
 DEFAULT_WPT_COMMITTER_NAME = 'Chromium WPT Sync'
@@ -53,8 +57,7 @@ def read_credentials(host, credentials_json):
     if not credentials_json:
         return env_credentials
     if not host.filesystem.exists(credentials_json):
-        _log.warning('Credentials JSON file not found at %s.',
-                     credentials_json)
+        _log.warning('Credentials JSON file not found at %s.', credentials_json)
         return {}
     credentials = {}
     contents = json.loads(host.filesystem.read_text_file(credentials_json))
@@ -87,8 +90,11 @@ def is_basename_skipped(basename):
         'DIR_METADATA',  # https://crbug.com/1103374
         'PRESUBMIT.py',
     ]
-    return (basename in skipped_basenames or is_testharness_baseline(basename)
-            or basename.startswith('.'))
+    return (
+        basename in skipped_basenames
+        or is_testharness_baseline(basename)
+        or basename.startswith('.')
+    )
 
 
 def is_file_exportable(path, project_config):
@@ -98,5 +104,5 @@ def is_file_exportable(path, project_config):
         path: A relative path from the root of Chromium repository.
     """
     assert path.startswith(project_config.relative_tests_path)
-    basename = path[path.rfind('/') + 1:]
+    basename = path[path.rfind('/') + 1 :]
     return path not in EXPORT_DENYLIST and not is_basename_skipped(basename)

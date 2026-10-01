@@ -46,7 +46,8 @@ class OriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
         self._implied_mappings = self._make_implied_mappings()
         self._trial_to_features_map = self._make_trial_to_features_map()
         self._max_features_per_trial = max(
-            len(features) for features in self._trial_to_features_map.values())
+            len(features) for features in self._trial_to_features_map.values()
+        )
         self._set_trial_types()
 
     @property
@@ -56,18 +57,20 @@ class OriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     def _make_implied_mappings(self):
         # Set up the implied_by relationships between trials.
         implied_mappings = dict()
-        for implied_feature in (feature
-                                for feature in self._origin_trial_features
-                                if feature['origin_trial_feature_name']
-                                and feature['implied_by']):
+        for implied_feature in (
+            feature
+            for feature in self._origin_trial_features
+            if feature['origin_trial_feature_name'] and feature['implied_by']
+        ):
             # An origin trial can only be implied by other features that also
             # have a trial defined.
             implied_by_trials = []
             for implied_by_name in implied_feature['implied_by']:
-                if any(implied_by_name == feature['name'].original
-                       and feature['origin_trial_feature_name']
-                       for feature in self._origin_trial_features):
-
+                if any(
+                    implied_by_name == feature['name'].original
+                    and feature['origin_trial_feature_name']
+                    for feature in self._origin_trial_features
+                ):
                     implied_by_trials.append(implied_by_name)
 
                     # Keep a set of origin trial features implied for each
@@ -86,8 +89,9 @@ class OriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     def _make_trial_to_features_map(self):
         trial_feature_mappings = {}
         for feature in [
-                feature for feature in self._origin_trial_features
-                if feature['origin_trial_feature_name']
+            feature
+            for feature in self._origin_trial_features
+            if feature['origin_trial_feature_name']
         ]:
             trial_name = feature['origin_trial_feature_name']
             if trial_name in trial_feature_mappings:
@@ -99,15 +103,18 @@ class OriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     def _set_trial_types(self):
         for feature in self._origin_trial_features:
             trial_type = feature['origin_trial_type']
-            if feature[
-                    'origin_trial_allows_insecure'] and trial_type != 'deprecation':
-                raise Exception('Origin trial must have type deprecation to '
-                                'specify origin_trial_allows_insecure: %s' %
-                                feature['name'])
+            if (
+                feature['origin_trial_allows_insecure']
+                and trial_type != 'deprecation'
+            ):
+                raise Exception(
+                    'Origin trial must have type deprecation to '
+                    'specify origin_trial_allows_insecure: %s' % feature['name']
+                )
             if trial_type:
-                feature[
-                    'origin_trial_type'] = name_utilities._upper_camel_case(
-                        trial_type)
+                feature['origin_trial_type'] = name_utilities._upper_camel_case(
+                    trial_type
+                )
 
     @template_expander.use_jinja('templates/' + file_basename + '.cc.tmpl')
     def generate_implementation(self):

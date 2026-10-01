@@ -57,7 +57,9 @@ from blinkpy.web_tests.models.testharness_results import (
     TestharnessLine,
 )
 from blinkpy.web_tests.models.test_expectations import TestExpectations
-from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
+from blinkpy.web_tests.models.test_run_results import (
+    convert_to_hierarchical_view,
+)
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
     ModuleScheme,
@@ -70,21 +72,26 @@ path_finder.bootstrap_wpt_imports()
 from wptrunner import wpttest
 
 _log = logging.getLogger(__name__)
-_status_mapping = collections.OrderedDict([
-    ('OK', ResultType.Pass),
-    ('FAIL', ResultType.Failure),
-    ('PASS', ResultType.Pass),
-    ('TIMEOUT', ResultType.Timeout),
-    ('ERROR', ResultType.Failure),
-    ('CRASH', ResultType.Crash),
-    ('PRECONDITION_FAILED', ResultType.Failure),
-    ('SKIP', ResultType.Skip),
-    ('NOTRUN', ResultType.Failure),
-])
-_WPT_DOC_URL: str = ('https://chromium.googlesource.com/chromium/src/+/HEAD'
-                     '/docs/testing/run_web_platform_tests.md')
+_status_mapping = collections.OrderedDict(
+    [
+        ('OK', ResultType.Pass),
+        ('FAIL', ResultType.Failure),
+        ('PASS', ResultType.Pass),
+        ('TIMEOUT', ResultType.Timeout),
+        ('ERROR', ResultType.Failure),
+        ('CRASH', ResultType.Crash),
+        ('PRECONDITION_FAILED', ResultType.Failure),
+        ('SKIP', ResultType.Skip),
+        ('NOTRUN', ResultType.Failure),
+    ]
+)
+_WPT_DOC_URL: str = (
+    'https://chromium.googlesource.com/chromium/src/+/HEAD'
+    '/docs/testing/run_web_platform_tests.md'
+)
 _WPT_BASE_FYI_URL: str = urlsplit(
-    'https://wpt.fyi/results/?label=experimental&label=master&aligned')
+    'https://wpt.fyi/results/?label=experimental&label=master&aligned'
+)
 
 RunInfo = Dict[str, Any]
 
@@ -98,7 +105,7 @@ def wpt_fyi_url(test: str) -> Optional[str]:
     if not test.startswith(prefix):
         return None
     scheme, netloc, path, query, fragment = _WPT_BASE_FYI_URL
-    path = posixpath.join(path, quote_plus(test[len(prefix):]))
+    path = posixpath.join(path, quote_plus(test[len(prefix) :]))
     return urlunsplit((scheme, netloc, path, query, fragment))
 
 
@@ -141,6 +148,7 @@ class WPTResult(Result):
      2. Handles subtests. See below for an explanation of status priority.
      3. Format (sub)test statuses and messages into baselines or logs.
     """
+
     STATUSES: ClassVar[List[str]] = [
         # Sorted from least to most "interesting" statuses. A status is more
         # "interesting" when it indicates the test did not run to completion.
@@ -151,13 +159,15 @@ class WPTResult(Result):
         ResultType.Crash,
     ]
 
-    def __init__(self,
-                 *args,
-                 test_type: Optional[str] = None,
-                 baseline: Optional[List[TestharnessLine]] = None,
-                 no_expectations: bool = False,
-                 sanitizer_mode: bool = False,
-                 **kwargs):
+    def __init__(
+        self,
+        *args,
+        test_type: Optional[str] = None,
+        baseline: Optional[List[TestharnessLine]] = None,
+        no_expectations: bool = False,
+        sanitizer_mode: bool = False,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.testharness_results = []
         self.test_type = test_type
@@ -177,13 +187,16 @@ class WPTResult(Result):
     @functools.cached_property
     def can_have_subtests(self) -> bool:
         return not self.sanitizer_mode and self.test_type in {
-            'testharness', 'wdspec'
+            'testharness',
+            'wdspec',
         }
 
-    def _maybe_add_testharness_result(self,
-                                      status: str,
-                                      message: Optional[str] = None,
-                                      subtest: Optional[str] = None):
+    def _maybe_add_testharness_result(
+        self,
+        status: str,
+        message: Optional[str] = None,
+        subtest: Optional[str] = None,
+    ):
         if not self.can_have_subtests:
             return
         try:
@@ -193,25 +206,25 @@ class WPTResult(Result):
             # contained in `Status` and take this early out.
             return
         line_type = LineType.SUBTEST if subtest else LineType.HARNESS_ERROR
-        result = TestharnessLine(line_type, frozenset([status]), message,
-                                 subtest)
+        result = TestharnessLine(
+            line_type, frozenset([status]), message, subtest
+        )
         if subtest:
             self.testharness_results.append(result)
         else:
             self.testharness_results.insert(0, result)
 
-    def update_from_subtest(self,
-                            subtest: str,
-                            status: str,
-                            message: Optional[str] = None):
+    def update_from_subtest(
+        self, subtest: str, status: str, message: Optional[str] = None
+    ):
         self._maybe_add_testharness_result(status, message, subtest)
 
     def update_from_test(self, status: str, message: Optional[str] = None):
         self._maybe_add_testharness_result(status, message)
         self.actual = wptrunner_to_chromium_status(status)
         if self.can_have_subtests and self.actual in {
-                ResultType.Pass,
-                ResultType.Failure,
+            ResultType.Pass,
+            ResultType.Failure,
         }:
             if self._baseline_matches():
                 self.actual = ResultType.Pass
@@ -228,15 +241,17 @@ class WPTResult(Result):
         # messages, and non-testharness output (e.g., console messages), ignore
         # them here to match wptrunner's pass/fail evaluation.
         expected_harness_error, expected_subtests = self._group_results(
-            self._baseline)
+            self._baseline
+        )
         actual_harness_error, actual_subtests = self._group_results(
-            self.testharness_results)
+            self.testharness_results
+        )
         for subtest, actual_subtest in actual_subtests.items():
-            default_subtest = TestharnessLine(LineType.SUBTEST,
-                                              frozenset([Status.PASS]),
-                                              subtest=subtest)
+            default_subtest = TestharnessLine(
+                LineType.SUBTEST, frozenset([Status.PASS]), subtest=subtest
+            )
             expected_subtest = expected_subtests.get(subtest, default_subtest)
-            (actual_status, ) = actual_subtest.statuses
+            (actual_status,) = actual_subtest.statuses
             if actual_status not in expected_subtest.statuses:
                 return False
             # Another difference with `run_web_tests.py` is that messages are
@@ -246,9 +261,11 @@ class WPTResult(Result):
                 Status.FAIL,
                 Status.PRECONDITION_FAILED,
             }
-            if (is_subtest_fail and expected_subtest.message
-                    and actual_subtest.message
-                    != expected_subtest.message.strip()):
+            if (
+                is_subtest_fail
+                and expected_subtest.message
+                and actual_subtest.message != expected_subtest.message.strip()
+            ):
                 return False
         unknown_subtests = set(expected_subtests) - set(actual_subtests)
         if unknown_subtests:
@@ -258,7 +275,8 @@ class WPTResult(Result):
             _log.warning(
                 f'Marking {self.name!r} as a failure because its '
                 f'*-expected.txt contains {len(unknown_subtests)} subtests '
-                "that didn't run.")
+                "that didn't run."
+            )
             return False
         return expected_harness_error == actual_harness_error
 
@@ -272,31 +290,43 @@ class WPTResult(Result):
                 if harness_error:
                     raise EventProcessingError(
                         f'{self.name!r} baseline cannot have more than one '
-                        'harness error')
+                        'harness error'
+                    )
                 harness_error = TestharnessLine(line.line_type, line.statuses)
             elif line.line_type == LineType.SUBTEST:
                 if line.subtest in subtests_by_name:
                     raise EventProcessingError(
                         f'duplicate subtest {line.subtest!r} in '
-                        f'{self.name!r} baseline')
+                        f'{self.name!r} baseline'
+                    )
                 subtests_by_name[line.subtest] = line
         return harness_error, subtests_by_name
 
     def format_baseline(self) -> str:
-        header = (LineType.TESTHARNESS_HEADER if self.test_type
-                  == 'testharness' else LineType.WDSPEC_HEADER)
-        if all(result.statuses <= {Status.PASS}
-               for result in self.testharness_results):
+        header = (
+            LineType.TESTHARNESS_HEADER
+            if self.test_type == 'testharness'
+            else LineType.WDSPEC_HEADER
+        )
+        if all(
+            result.statuses <= {Status.PASS}
+            for result in self.testharness_results
+        ):
             return make_all_pass_baseline(header)
         # Add an extra newline to baselines generated from this test result.
         # This avoids spurious failures if the test is run later with
         # `run_web_tests.py`, which checks `content_shell` output against
         # `-expected.txt` byte-for-byte.
-        return format_testharness_baseline([
-            TestharnessLine(header),
-            *self.testharness_results,
-            TestharnessLine(LineType.FOOTER),
-        ]) + '\n'
+        return (
+            format_testharness_baseline(
+                [
+                    TestharnessLine(header),
+                    *self.testharness_results,
+                    TestharnessLine(LineType.FOOTER),
+                ]
+            )
+            + '\n'
+        )
 
     def summarize(self, product: str) -> Optional[str]:
         """Generate a summary of this test result as sanitized HTML.
@@ -325,13 +355,16 @@ class WPTResult(Result):
 
     def count_bcd_features(self, raw_trace):
         binding_names = [
-            event['name'] for event in raw_trace
+            event['name']
+            for event in raw_trace
             if event.get('cat') == 'blink.bindings'
         ]
-        assert all(isinstance(name, str)
-                   for name in binding_names), binding_names
+        assert all(isinstance(name, str) for name in binding_names), (
+            binding_names
+        )
         self.bcd_counters.update(
-            map(binding_name_to_bcd_feature, binding_names))
+            map(binding_name_to_bcd_feature, binding_names)
+        )
 
     @property
     def properties(self):
@@ -341,10 +374,10 @@ class WPTResult(Result):
         # https://cloud.google.com/bigquery/docs/json-data#extract_arrays_from_json
         #
         # Save space with single letter keys.
-        bcd_counters = [{
-            'f': feature,
-            'c': count
-        } for feature, count in sorted(self.bcd_counters.items())]
+        bcd_counters = [
+            {'f': feature, 'c': count}
+            for feature, count in sorted(self.bcd_counters.items())
+        ]
         return {'bcd_counters': bcd_counters}
 
 
@@ -376,8 +409,10 @@ def binding_name_to_bcd_feature(binding: str, sep: str = '.') -> str:
         parts.pop()
     elif parts[-1] == 'constructor':
         if len(parts) < 2:
-            raise ValueError(f'constructor binding {binding!r} must have an '
-                             'associated interface')
+            raise ValueError(
+                f'constructor binding {binding!r} must have an '
+                'associated interface'
+            )
         # In BCD, constructors are named the same as the parent feature.
         parts[-1] = parts[-2]
     # We may need to blocklist more false positives that start with `on` but
@@ -429,6 +464,7 @@ class ReftestScreenshot(TypedDict):
 
     If the URL matches the test page, the screenshot is for the page under test.
     """
+
     url: str
     screenshot: str
 
@@ -446,6 +482,7 @@ class BrowserOutput:
             test URI).
         log: A running buffer of output (usually stderr) from that browser.
     """
+
     # TODO(crbug.com/41494889): Consider sharing a base class with
     # `DriverOutput` in `web_tests`.
     command: List[str] = field(default_factory=list)
@@ -461,23 +498,27 @@ class WPTResultsProcessor:
         'content_shell',
     ]
     _cmd_log_pattern: re.Pattern = re.compile(
-        'Launching \w+: (?P<command>.*?)(\s+data:\S+)?$')
+        'Launching \w+: (?P<command>.*?)(\s+data:\S+)?$'
+    )
 
-    def __init__(self,
-                 fs: FileSystem,
-                 port: Port,
-                 artifacts_dir: str = '',
-                 sink: Optional[ResultSinkReporter] = None,
-                 failure_threshold: Optional[int] = None,
-                 crash_timeout_threshold: Optional[int] = None,
-                 reset_results: bool = False,
-                 repeat_each: int = 1,
-                 processes: Optional[int] = None):
+    def __init__(
+        self,
+        fs: FileSystem,
+        port: Port,
+        artifacts_dir: str = '',
+        sink: Optional[ResultSinkReporter] = None,
+        failure_threshold: Optional[int] = None,
+        crash_timeout_threshold: Optional[int] = None,
+        reset_results: bool = False,
+        repeat_each: int = 1,
+        processes: Optional[int] = None,
+    ):
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
         self.sink = sink or ResultSinkReporter(
-            host=port.typ_host(), module_scheme=ModuleScheme.WEBTEST)
+            host=port.typ_host(), module_scheme=ModuleScheme.WEBTEST
+        )
         self.path_finder = path_finder.PathFinder(self.fs)
         self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
@@ -495,7 +536,8 @@ class WPTResultsProcessor:
         # producing logs, which will eventually be purged by output produced by
         # restarted browsers.
         self.browser_outputs: Dict[int, BrowserOutput] = LRUMapping(
-            processes or port.default_child_processes())
+            processes or port.default_child_processes()
+        )
         self._event_handlers = {
             'suite_start': self.suite_start,
             'test_start': self.test_start,
@@ -525,16 +567,20 @@ class WPTResultsProcessor:
     @property
     def num_initial_failures(self) -> int:
         failure_statuses = [
-            ResultType.Failure, ResultType.Crash, ResultType.Timeout
+            ResultType.Failure,
+            ResultType.Crash,
+            ResultType.Timeout,
         ]
-        return sum(self._num_failures_by_status[status]
-                   for status in failure_statuses)
+        return sum(
+            self._num_failures_by_status[status] for status in failure_statuses
+        )
 
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
         for file in files_to_copy:
             source = self.path_finder.path_from_blink_tools(
-                'blinkpy', 'web_tests', file)
+                'blinkpy', 'web_tests', file
+            )
             destination = self.fs.join(self.artifacts_dir, file)
             self.fs.copyfile(source, destination)
 
@@ -551,16 +597,18 @@ class WPTResultsProcessor:
         """
         final_result = self.create_final_results()
         results_serialized = json.dumps(final_result)
-        full_results_json = self.fs.join(self.artifacts_dir,
-                                         'full_results.json')
+        full_results_json = self.fs.join(
+            self.artifacts_dir, 'full_results.json'
+        )
         self.fs.write_text_file(full_results_json, results_serialized)
         if json_test_results:
             self.fs.copyfile(full_results_json, json_test_results)
 
         # JSONP paddings need to be the same as:
         # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=629;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
-        full_results_jsonp = self.fs.join(self.artifacts_dir,
-                                          'full_results_jsonp.js')
+        full_results_jsonp = self.fs.join(
+            self.artifacts_dir, 'full_results_jsonp.js'
+        )
         with self.fs.open_text_file_for_writing(full_results_jsonp) as dest:
             dest.write('ADD_FULL_RESULTS(')
             dest.write(results_serialized)
@@ -569,8 +617,9 @@ class WPTResultsProcessor:
         self.trim_to_regressions(final_result['tests'])
         # NOTE: Despite the name, this is actually a JSONP file.
         # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=636;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
-        failing_results_jsonp = self.fs.join(self.artifacts_dir,
-                                             'failing_results.json')
+        failing_results_jsonp = self.fs.join(
+            self.artifacts_dir, 'failing_results.json'
+        )
 
         with self.fs.open_text_file_for_writing(failing_results_jsonp) as dest:
             dest.write('ADD_RESULTS(')
@@ -580,8 +629,8 @@ class WPTResultsProcessor:
 
     @contextlib.contextmanager
     def stream_results(
-            self,
-            timeout: Optional[float] = None) -> Iterator[queue.SimpleQueue]:
+        self, timeout: Optional[float] = None
+    ) -> Iterator[queue.SimpleQueue]:
         """Asynchronously handle wptrunner test results.
 
         This context manager starts and cleans up a worker thread to write
@@ -599,10 +648,12 @@ class WPTResultsProcessor:
         """
         assert timeout is None or timeout >= 0, timeout
         events = queue.SimpleQueue()
-        worker = threading.Thread(target=self._consume_events,
-                                  args=(events, ),
-                                  name='results-stream-worker',
-                                  daemon=True)
+        worker = threading.Thread(
+            target=self._consume_events,
+            args=(events,),
+            name='results-stream-worker',
+            daemon=True,
+        )
         worker.start()
         try:
             yield events
@@ -639,9 +690,13 @@ class WPTResultsProcessor:
 
     def process_event(self, raw_event: Dict[str, Any]):
         raw_event = dict(raw_event)
-        event = Event(raw_event.pop('action'), raw_event.pop('time'),
-                      raw_event.pop('thread'), raw_event.pop('pid'),
-                      raw_event.pop('source'))
+        event = Event(
+            raw_event.pop('action'),
+            raw_event.pop('time'),
+            raw_event.pop('thread'),
+            raw_event.pop('pid'),
+            raw_event.pop('source'),
+        )
         test = raw_event.pop('test', None)
         subsuite = raw_event.pop('subsuite', '')
         if test:
@@ -656,11 +711,13 @@ class WPTResultsProcessor:
         if handler:
             handler(event, **raw_event)
 
-    def suite_start(self,
-                    event: Event,
-                    run_info: Optional[RunInfo] = None,
-                    tests: Optional[Dict[str, List[str]]] = None,
-                    **_):
+    def suite_start(
+        self,
+        event: Event,
+        run_info: Optional[RunInfo] = None,
+        tests: Optional[Dict[str, List[str]]] = None,
+        **_,
+    ):
         if run_info:
             self.run_info.update(run_info)
         if self._iteration > 0:
@@ -680,14 +737,15 @@ class WPTResultsProcessor:
         # Upload shard-level totals for debugging, not for consumption by other
         # systems.
         artifact_path = self.fs.join(self.artifacts_dir, 'bcd-totals.json')
-        with self.fs.open_text_file_for_writing(
-                artifact_path) as artifact_file:
+        with self.fs.open_text_file_for_writing(artifact_path) as artifact_file:
             json.dump(self._bcd_totals, artifact_file, separators=(',', ':'))
-        self.sink.report_invocation_level_artifacts({
-            self.fs.basename(artifact_path): {
-                'filePath': artifact_path,
-            },
-        })
+        self.sink.report_invocation_level_artifacts(
+            {
+                self.fs.basename(artifact_path): {
+                    'filePath': artifact_path,
+                },
+            }
+        )
 
     def _get_chromium_test_name(self, test: str, subsuite: str) -> str:
         test = test[1:] if test.startswith('/') else test
@@ -718,7 +776,8 @@ class WPTResultsProcessor:
             expected=expected,
             baseline=baseline,
             no_expectations=self.port.get_option('no_expectations'),
-            sanitizer_mode=self.port.get_option('enable_sanitizer'))
+            sanitizer_mode=self.port.get_option('enable_sanitizer'),
+        )
 
     def get_path_from_test_root(self, test: str) -> str:
         wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)
@@ -731,10 +790,12 @@ class WPTResultsProcessor:
         path_from_test_root = self.get_path_from_test_root(test)
         if not path_from_test_root:
             raise EventProcessingError(
-                'Test ID %r does not exist in the manifest' % test)
+                'Test ID %r does not exist in the manifest' % test
+            )
         wpt_dir, _ = self.port.split_wpt_dir(test)
-        return self.path_finder.path_from_web_tests(*posixpath.split(wpt_dir),
-                                                    path_from_test_root)
+        return self.path_finder.path_from_web_tests(
+            *posixpath.split(wpt_dir), path_from_test_root
+        )
 
     def get_test_type(self, test: str) -> str:
         _, test = self.port.get_suite_name_and_base_test(test)
@@ -742,27 +803,31 @@ class WPTResultsProcessor:
         manifest = self.port.wpt_manifest(wpt_dir)
         return manifest.get_test_type(url_from_wpt_dir)
 
-    def test_status(self,
-                    event: Event,
-                    test: str,
-                    subtest: str,
-                    status: str,
-                    expected: Set[str],
-                    message: Optional[str] = None,
-                    **_):
+    def test_status(
+        self,
+        event: Event,
+        test: str,
+        subtest: str,
+        status: str,
+        expected: Set[str],
+        message: Optional[str] = None,
+        **_,
+    ):
         result = self._results.get(test)
         if not result:
             raise EventProcessingError('Test not started: %s' % test)
         result.update_from_subtest(subtest, status, message)
 
-    def test_end(self,
-                 event: Event,
-                 test: str,
-                 status: str,
-                 expected: Set[str],
-                 message: Optional[str] = None,
-                 extra: Optional[Dict[str, Any]] = None,
-                 **_):
+    def test_end(
+        self,
+        event: Event,
+        test: str,
+        status: str,
+        expected: Set[str],
+        message: Optional[str] = None,
+        extra: Optional[Dict[str, Any]] = None,
+        **_,
+    ):
         result = self._results.pop(test, None)
         if not result:
             raise EventProcessingError('Test not started: %s' % test)
@@ -772,7 +837,8 @@ class WPTResultsProcessor:
         result.pid = (extra or {}).get('browser_pid', 0)
         result.update_from_test(status, message)
         artifacts, image_diff_stats = self._extract_artifacts(
-            result, message, extra or {})
+            result, message, extra or {}
+        )
         result.artifacts = artifacts.artifacts
         result.image_diff_stats = image_diff_stats
         if result.unexpected:
@@ -785,12 +851,19 @@ class WPTResultsProcessor:
             test_file_location=result.file_path,
             html_summary=result.summarize(product),
             additional_tags=self._tags(result),
-            properties=result.properties)
+            properties=result.properties,
+        )
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
-            'expected: %s, artifacts: %s)', result.name, self._iteration,
-            result.actual, ', '.join(sorted(result.expected)), ', '.join(
-                sorted(result.artifacts)) if result.artifacts else '<none>')
+            'expected: %s, artifacts: %s)',
+            result.name,
+            self._iteration,
+            result.actual,
+            ', '.join(sorted(result.expected)),
+            ', '.join(sorted(result.artifacts))
+            if result.artifacts
+            else '<none>',
+        )
 
         if self._iteration == 0:
             self._num_failures_by_status[result.actual] += 1
@@ -807,8 +880,12 @@ class WPTResultsProcessor:
         base_timeout *= self.port.get_option('timeout_multiplier') or 1
         tags = [('web_tests_base_timeout', str(base_timeout))]
         for exp_file in self.port.used_expectations_files():
-            tags.append(('web_tests_used_expectation_file',
-                         self.port.relative_test_filename(exp_file)))
+            tags.append(
+                (
+                    'web_tests_used_expectation_file',
+                    self.port.relative_test_filename(exp_file),
+                )
+            )
         return tags
 
     def _handle_unexpected_result(self, result: WPTResult):
@@ -817,10 +894,15 @@ class WPTResultsProcessor:
         elif result.actual in {ResultType.Crash, ResultType.Timeout}:
             self.crash_timeout_threshold -= 1
         if self.failure_threshold <= 0 or self.crash_timeout_threshold <= 0:
-            statuses = ('failures'
-                        if self.failure_threshold <= 0 else 'crashes/timeouts')
-            _log.error('Exiting early after exceeding threshold '
-                       f'for unexpected {statuses}.')
+            statuses = (
+                'failures'
+                if self.failure_threshold <= 0
+                else 'crashes/timeouts'
+            )
+            _log.error(
+                'Exiting early after exceeding threshold '
+                f'for unexpected {statuses}.'
+            )
             if self.port.host.platform.is_win():
                 signum = signal.CTRL_BREAK_EVENT
             else:
@@ -830,7 +912,8 @@ class WPTResultsProcessor:
     def shutdown(self, event: Event, **_):
         incomplete_tests = {
             test
-            for test, results in self._results_by_name.items() if not results
+            for test, results in self._results_by_name.items()
+            if not results
         }
         if incomplete_tests:
             _log.warning(f'{len(incomplete_tests)} test(s) never completed.')
@@ -842,7 +925,8 @@ class WPTResultsProcessor:
                 for test in incomplete_tests:
                     expected = chromium_to_wptrunner_statuses(
                         self._expectations.get_expectations(test).results,
-                        self.get_test_type(test))
+                        self.get_test_type(test),
+                    )
                     self.test_start(start_event, test)
                     self.test_end(end_event, test, 'SKIP', expected)
 
@@ -892,8 +976,9 @@ class WPTResultsProcessor:
             artifacts_across_retries = test_dict.setdefault('artifacts', {})
             for result in results:
                 for artifact_id, paths in result.artifacts.items():
-                    artifacts_across_retries.setdefault(artifact_id,
-                                                        []).extend(paths)
+                    artifacts_across_retries.setdefault(artifact_id, []).extend(
+                        paths
+                    )
 
             if has_stderr:
                 test_dict['has_stderr'] = True
@@ -904,7 +989,6 @@ class WPTResultsProcessor:
         final_results = {
             # There are some required fields that we just hard-code.
             'version': 3,
-
             # TODO: change this to the actual value
             'interrupted': False,
             'path_delimiter': '/',
@@ -919,8 +1003,9 @@ class WPTResultsProcessor:
         }
         return final_results
 
-    def process_output(self, event: Event, command: str, data: Any,
-                       process: str, **_):
+    def process_output(
+        self, event: Event, command: str, data: Any, process: str, **_
+    ):
         if not any(executable in command for executable in self._executables):
             return
         if not isinstance(data, str):
@@ -962,8 +1047,11 @@ class WPTResultsProcessor:
             # this special hardcoded rule. It relies on the assumption that
             # all arguments after the initial binary are switches prefixed with
             # `--`.
-            if (tokens and tokens[-1].startswith('--host-resolver-rules=')
-                    and not raw_token.startswith('--')):
+            if (
+                tokens
+                and tokens[-1].startswith('--host-resolver-rules=')
+                and not raw_token.startswith('--')
+            ):
                 tokens[-1] += f' {raw_token}'
             # Don't keep any headless option, since it will hide the browser
             # locally.
@@ -983,24 +1071,31 @@ class WPTResultsProcessor:
                 to paths mapping itself).
         """
         assert result.can_have_subtests, (
-            f'{result.name!r} cannot have a text baseline')
+            f'{result.name!r} cannot have a text baseline'
+        )
         actual_subpath = self.port.output_filename(
-            result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
+            result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt'
+        )
         expected_subpath = self.port.output_filename(
-            result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
+            result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt'
+        )
         actual_text = result.format_baseline()
-        artifacts.CreateArtifact('actual_text', actual_subpath,
-                                 actual_text.encode())
+        artifacts.CreateArtifact(
+            'actual_text', actual_subpath, actual_text.encode()
+        )
         if self.reset_results and self._iteration == 0:
             source = self.fs.join(self.artifacts_dir, actual_subpath)
             if self.port.flag_specific_config_name():
                 output_dir = self.fs.join(
                     self.port.baseline_flag_specific_dir(),
-                    self.fs.dirname(expected_subpath))
+                    self.fs.dirname(expected_subpath),
+                )
             else:
                 output_dir = self.fs.dirname(
                     self.port.expected_filename(
-                        result.name, '.txt', fallback_base_for_virtual=False))
+                        result.name, '.txt', fallback_base_for_virtual=False
+                    )
+                )
             dest = self.fs.join(output_dir, self.fs.basename(expected_subpath))
             self.fs.maybe_make_directory(output_dir)
             self.fs.copyfile(source, dest)
@@ -1008,27 +1103,37 @@ class WPTResultsProcessor:
         expected_text = self.port.expected_text(result.name)
         if expected_text:
             expected_text = expected_text.decode()
-            artifacts.CreateArtifact('expected_text', expected_subpath,
-                                     expected_text.encode())
+            artifacts.CreateArtifact(
+                'expected_text', expected_subpath, expected_text.encode()
+            )
 
         if not actual_text:
             return
         expected_text = expected_text or ''
-        diff_content = unified_diff(expected_text, actual_text,
-                                    expected_subpath, actual_subpath)
+        diff_content = unified_diff(
+            expected_text, actual_text, expected_subpath, actual_subpath
+        )
         diff_subpath = self.port.output_filename(
-            result.name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
-        artifacts.CreateArtifact('text_diff', diff_subpath,
-                                 diff_content.encode())
+            result.name, test_failures.FILENAME_SUFFIX_DIFF, '.txt'
+        )
+        artifacts.CreateArtifact(
+            'text_diff', diff_subpath, diff_content.encode()
+        )
         html_diff_content = html_diff(expected_text, actual_text)
         html_diff_subpath = self.port.output_filename(
-            result.name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
-        artifacts.CreateArtifact('pretty_text_diff', html_diff_subpath,
-                                 html_diff_content.encode())
+            result.name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html'
+        )
+        artifacts.CreateArtifact(
+            'pretty_text_diff', html_diff_subpath, html_diff_content.encode()
+        )
 
-    def _write_screenshots(self, test_name: str, artifacts: Artifacts,
-                           screenshot1: ReftestScreenshot,
-                           screenshot2: ReftestScreenshot):
+    def _write_screenshots(
+        self,
+        test_name: str,
+        artifacts: Artifacts,
+        screenshot1: ReftestScreenshot,
+        screenshot2: ReftestScreenshot,
+    ):
         """Write actual, expected, and diff screenshots to disk, if possible.
 
         Arguments:
@@ -1089,46 +1194,62 @@ class WPTResultsProcessor:
         assert expected
         expected_image = ReftestScreenshot.decode_image(expected)
         expected_subpath = self.port.output_filename(
-            test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.png')
-        artifacts.CreateArtifact('expected_image', expected_subpath,
-                                 expected_image)
+            test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.png'
+        )
+        artifacts.CreateArtifact(
+            'expected_image', expected_subpath, expected_image
+        )
 
         assert actual
         actual_image = ReftestScreenshot.decode_image(actual)
         actual_subpath = self.port.output_filename(
-            test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.png')
+            test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.png'
+        )
         artifacts.CreateArtifact('actual_image', actual_subpath, actual_image)
 
         diff_bytes, stats, error = self.port.diff_image(
-            expected_image, actual_image)
+            expected_image, actual_image
+        )
         if error:
             _log.error(
                 'Error creating diff image for %s '
-                '(error: %s, diff_bytes is None: %s)', test_name, error,
-                diff_bytes is None)
+                '(error: %s, diff_bytes is None: %s)',
+                test_name,
+                error,
+                diff_bytes is None,
+            )
         elif diff_bytes:
             diff_subpath = self.port.output_filename(
-                test_name, test_failures.FILENAME_SUFFIX_DIFF, '.png')
+                test_name, test_failures.FILENAME_SUFFIX_DIFF, '.png'
+            )
             artifacts.CreateArtifact('image_diff', diff_subpath, diff_bytes)
 
         return stats
 
-    def _write_log(self, test_name: str, artifacts: Artifacts,
-                   artifact_id: str, suffix: str, contents: str):
+    def _write_log(
+        self,
+        test_name: str,
+        artifacts: Artifacts,
+        artifact_id: str,
+        suffix: str,
+        contents: str,
+    ):
         log_subpath = self.port.output_filename(test_name, suffix, '.txt')
         artifacts.CreateArtifact(artifact_id, log_subpath, contents.encode())
 
-    def _extract_artifacts(self, result: WPTResult, message: Optional[str],
-                           extra: Dict[str, Any]) -> Tuple[Artifacts, str]:
+    def _extract_artifacts(
+        self, result: WPTResult, message: Optional[str], extra: Dict[str, Any]
+    ) -> Tuple[Artifacts, str]:
         # Ensure `artifacts_base_dir` (i.e., `layout-test-results`) is prepended
         # to `full_results_jsonp.js` paths so that `results.html` can correctly
         # fetch artifacts.
-        artifacts = Artifacts(self.fs.dirname(self.artifacts_dir),
-                              self.sink.host,
-                              iteration=self._iteration,
-                              artifacts_base_dir=self.fs.basename(
-                                  self.artifacts_dir),
-                              repeat_tests=(self.repeat_each > 1))
+        artifacts = Artifacts(
+            self.fs.dirname(self.artifacts_dir),
+            self.sink.host,
+            iteration=self._iteration,
+            artifacts_base_dir=self.fs.basename(self.artifacts_dir),
+            repeat_tests=(self.repeat_each > 1),
+        )
         image_diff_stats = None
         # Dump output for `--reset-results`, even if the test passes, as the
         # current port may fall back to a failing port.
@@ -1141,11 +1262,17 @@ class WPTResultsProcessor:
                 # screenshot objects.
                 screenshot1, _, screenshot2 = screenshots
                 image_diff_stats = self._write_screenshots(
-                    result.name, artifacts, screenshot1, screenshot2)
+                    result.name, artifacts, screenshot1, screenshot2
+                )
 
         if message:
-            self._write_log(result.name, artifacts, 'crash_log',
-                            test_failures.FILENAME_SUFFIX_CRASH_LOG, message)
+            self._write_log(
+                result.name,
+                artifacts,
+                'crash_log',
+                test_failures.FILENAME_SUFFIX_CRASH_LOG,
+                message,
+            )
 
         if leak_counters := extra.get('leak_counters'):
             leak_log = [
@@ -1154,13 +1281,18 @@ class WPTResultsProcessor:
             ]
             for name, (expected, actual) in sorted(leak_counters.items()):
                 leak_log.append(f'  {name}: Expected {expected}, got {actual}')
-            self._write_log(result.name, artifacts, 'leak_log',
-                            test_failures.FILENAME_SUFFIX_LEAK_LOG,
-                            '\n'.join(leak_log) + '\n')
+            self._write_log(
+                result.name,
+                artifacts,
+                'leak_log',
+                test_failures.FILENAME_SUFFIX_LEAK_LOG,
+                '\n'.join(leak_log) + '\n',
+            )
 
         if trace := extra.get('trace'):
             trace_subpath = self.port.output_filename(
-                result.name, test_failures.FILENAME_SUFFIX_TRACE, '.json')
+                result.name, test_failures.FILENAME_SUFFIX_TRACE, '.json'
+            )
             # Serialize JSON compactly by trimming whitespace.
             contents = json.dumps(trace, separators=(',', ':'))
             artifacts.CreateArtifact('trace', trace_subpath, contents.encode())
@@ -1172,18 +1304,28 @@ class WPTResultsProcessor:
         # next test that browser runs.
         output = self.browser_outputs.get(result.pid)
         if output:
-            self._write_log(result.name, artifacts, 'stderr',
-                            test_failures.FILENAME_SUFFIX_STDERR,
-                            output.log.getvalue())
+            self._write_log(
+                result.name,
+                artifacts,
+                'stderr',
+                test_failures.FILENAME_SUFFIX_STDERR,
+                output.log.getvalue(),
+            )
             output.log = io.StringIO()
 
         if output and output.command:
-            test_name = (self.port.lookup_virtual_test_base(result.name)
-                         or result.name)
+            test_name = (
+                self.port.lookup_virtual_test_base(result.name) or result.name
+            )
             uri = self._test_uri_mapper.test_to_uri(test_name)
             command = shlex.join([*output.command, uri])
-            self._write_log(result.name, artifacts, 'command',
-                            test_failures.FILENAME_SUFFIX_CMD, command)
+            self._write_log(
+                result.name,
+                artifacts,
+                'command',
+                test_failures.FILENAME_SUFFIX_CMD,
+                command,
+            )
 
         return artifacts, image_diff_stats
 
@@ -1217,19 +1359,23 @@ class WPTResultsProcessor:
         artifact_path = self.fs.join(self.artifacts_dir, report_filename)
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))
-        self.sink.report_invocation_level_artifacts({
-            report_filename: {
-                'filePath': artifact_path,
-            },
-        })
+        self.sink.report_invocation_level_artifacts(
+            {
+                report_filename: {
+                    'filePath': artifact_path,
+                },
+            }
+        )
 
     def upload_wpt_screenshots(self, screenshots_path: str):
         """Upload a `wptscreenshots.txt` file [0] for this shard.
 
         [0]: https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/formatters/wptscreenshot.py
         """
-        self.sink.report_invocation_level_artifacts({
-            self.fs.basename(screenshots_path): {
-                'filePath': screenshots_path,
-            },
-        })
+        self.sink.report_invocation_level_artifacts(
+            {
+                self.fs.basename(screenshots_path): {
+                    'filePath': screenshots_path,
+                },
+            }
+        )

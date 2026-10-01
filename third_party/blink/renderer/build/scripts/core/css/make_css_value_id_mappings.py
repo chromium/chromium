@@ -40,8 +40,10 @@ def _find_continuous_segment(numbers):
     for i in range(len(number_list_sorted) - 1):
         # continuous segment is a segment which the number in pair is 1 unit
         # more than the previous pair
-        if (number_list_sorted[i + 1][0] - number_list_sorted[i][0] != 1 or
-                number_list_sorted[i + 1][1] - number_list_sorted[i][1] != 1):
+        if (
+            number_list_sorted[i + 1][0] - number_list_sorted[i][0] != 1
+            or number_list_sorted[i + 1][1] - number_list_sorted[i][1] != 1
+        ):
             segments.append(i + 1)
     segments.append(len(number_list_sorted))
     return segments, number_list_sorted
@@ -62,8 +64,9 @@ def _find_largest_segment(segments):
     return max(segment_list, key=lambda x: x[1] - x[0])
 
 
-def _find_enum_longest_continuous_segment(property_,
-                                          name_to_position_dictionary):
+def _find_enum_longest_continuous_segment(
+    property_, name_to_position_dictionary
+):
     """Find the longest continuous segment in the list of keywords
     Finding the continuous segment will allows us to do the subtraction
     between keywords so that the distance between 2 keywords in this
@@ -102,11 +105,11 @@ def _find_enum_longest_continuous_segment(property_,
 
 class CSSValueIDMappingsWriter(make_style_builder.StyleBuilderWriter):
     def __init__(self, json5_file_paths, output_dir):
-        super(CSSValueIDMappingsWriter, self).__init__(json5_file_paths,
-                                                       output_dir)
+        super(CSSValueIDMappingsWriter, self).__init__(
+            json5_file_paths, output_dir
+        )
         self._outputs = {
-            'css_value_id_mappings_generated.h':
-            self.generate_css_value_mappings,
+            'css_value_id_mappings_generated.h': self.generate_css_value_mappings,
         }
         self.css_values_dictionary_file = json5_file_paths[3]
         css_properties = self.css_properties.longhands
@@ -116,33 +119,44 @@ class CSSValueIDMappingsWriter(make_style_builder.StyleBuilderWriter):
         # the generated enum will have the same order and continuity as
         # css_properties.json5 and we can get the longest continuous segment.
         # Thereby reduce the switch case statement to the minimum.
-        css_properties = keyword_utils.sort_keyword_properties_by_canonical_order(
-            css_properties, json5_file_paths[3], self.default_parameters)
+        css_properties = (
+            keyword_utils.sort_keyword_properties_by_canonical_order(
+                css_properties, json5_file_paths[3], self.default_parameters
+            )
+        )
 
     @template_expander.use_jinja(
-        'core/css/templates/css_value_id_mappings_generated.h.tmpl')
+        'core/css/templates/css_value_id_mappings_generated.h.tmpl'
+    )
     def generate_css_value_mappings(self):
         mappings = {}
         include_paths = set()
         css_values_dictionary = json5_generator.Json5File.load_from_files(
             [self.css_values_dictionary_file],
-            default_parameters=self.default_parameters).name_dictionaries
+            default_parameters=self.default_parameters,
+        ).name_dictionaries
         name_to_position_dictionary = dict(
-            zip([x['name'].original for x in css_values_dictionary],
-                range(len(css_values_dictionary))))
+            zip(
+                [x['name'].original for x in css_values_dictionary],
+                range(len(css_values_dictionary)),
+            )
+        )
 
         for property_ in self.css_properties.properties_including_aliases:
             include_paths.update(property_.include_paths)
             if property_.field_template in ('multi_keyword', 'bitset_keyword'):
                 mappings[property_.type_name] = {
-                    'default_value':
-                    property_.default_value,
-                    'mapping':
-                    [enum_key_for_css_keyword(k) for k in property_.keywords],
+                    'default_value': property_.default_value,
+                    'mapping': [
+                        enum_key_for_css_keyword(k) for k in property_.keywords
+                    ],
                 }
             elif property_.field_template in ('keyword', 'keyword_custom'):
-                enum_pair_list, enum_segment, p_segment = _find_enum_longest_continuous_segment(
-                    property_, name_to_position_dictionary)
+                enum_pair_list, enum_segment, p_segment = (
+                    _find_enum_longest_continuous_segment(
+                        property_, name_to_position_dictionary
+                    )
+                )
                 mappings[property_.type_name] = {
                     'default_value': property_.default_value,
                     'mapping': enum_pair_list,

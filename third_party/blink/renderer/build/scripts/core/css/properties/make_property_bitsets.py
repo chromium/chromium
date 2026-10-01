@@ -13,11 +13,14 @@ class PropertyBitsetsWriter(json5_generator.Writer):
         super(PropertyBitsetsWriter, self).__init__([], output_dir)
 
         self._input_files = json5_file_paths
-        properties = (css_properties.CSSProperties(json5_file_paths)
-                      ).properties_including_aliases
+        properties = (
+            css_properties.CSSProperties(json5_file_paths)
+        ).properties_including_aliases
 
         self._logical_group_properties = [
-            p.enum_key for p in properties if p.logical_property_group
+            p.enum_key
+            for p in properties
+            if p.logical_property_group
             and p.logical_property_group['is_logical']
         ]
 
@@ -30,14 +33,19 @@ class PropertyBitsetsWriter(json5_generator.Writer):
         ]
 
         self._animation_affecting_properties = [
-            p.enum_key for p in properties
-            if p.effective_is_animation_affecting
+            p.enum_key for p in properties if p.effective_is_animation_affecting
         ]
 
         self._surrogate_properties = [
-            p.enum_key for p in properties
-            if (p.surrogate_for or (p.logical_property_group and
-                                    p.logical_property_group['is_logical']))
+            p.enum_key
+            for p in properties
+            if (
+                p.surrogate_for
+                or (
+                    p.logical_property_group
+                    and p.logical_property_group['is_logical']
+                )
+            )
         ]
 
         self._outputs = {
@@ -45,15 +53,15 @@ class PropertyBitsetsWriter(json5_generator.Writer):
         }
 
     @template_expander.use_jinja(
-        'core/css/properties/templates/property_bitsets.cc.tmpl')
+        'core/css/properties/templates/property_bitsets.cc.tmpl'
+    )
     def generate_list(self):
         return {
             'input_files': self._input_files,
             'logical_group_properties': self._logical_group_properties,
             'properties_with_visited': self._properties_with_visited,
             'known_exposed_properties': self._known_exposed_properties,
-            'animation_affecting_properties':
-            self._animation_affecting_properties,
+            'animation_affecting_properties': self._animation_affecting_properties,
             'surrogate_properties': self._surrogate_properties,
         }
 

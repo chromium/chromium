@@ -34,6 +34,7 @@ from blinkpy.common.net.results_fetcher import TestResultsFetcher
 
 BuilderStep = namedtuple('BuilderStep', ['build', 'step_name'])
 
+
 # TODO(qyearsley): To be consistent with other fake ("mock") classes, this
 # could be changed so it's not a subclass of TestResultsFetcher.
 class MockTestResultsFetcher(TestResultsFetcher):
@@ -50,11 +51,13 @@ class MockTestResultsFetcher(TestResultsFetcher):
         if not results.build:
             results.build = build
 
-    def gather_results(self,
-                       build: Build,
-                       step_name: str,
-                       exclude_exonerated: bool = False,
-                       only_unexpected: bool = True) -> WebTestResults:
+    def gather_results(
+        self,
+        build: Build,
+        step_name: str,
+        exclude_exonerated: bool = False,
+        only_unexpected: bool = True,
+    ) -> WebTestResults:
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
         empty_results = WebTestResults([], build=build, step_name=step_name)

@@ -43,14 +43,18 @@ def build_test_result(driver_output, test_name, failures=None, **kwargs):
         failures.append(test_failures.PassWithStderr(driver_output))
     if driver_output.trace_file:
         failures.append(
-            test_failures.TraceFileArtifact(driver_output,
-                                            driver_output.trace_file,
-                                            '-trace'))
+            test_failures.TraceFileArtifact(
+                driver_output, driver_output.trace_file, '-trace'
+            )
+        )
     if driver_output.startup_trace_file:
         failures.append(
-            test_failures.TraceFileArtifact(driver_output,
-                                            driver_output.startup_trace_file,
-                                            '-startup-trace'))
+            test_failures.TraceFileArtifact(
+                driver_output,
+                driver_output.startup_trace_file,
+                '-startup-trace',
+            )
+        )
     kwargs.setdefault('command', driver_output.command)
     kwargs.setdefault('image_diff_stats', driver_output.image_diff_stats)
     kwargs.setdefault('test_type', driver_output.test_type)
@@ -59,57 +63,69 @@ def build_test_result(driver_output, test_name, failures=None, **kwargs):
 
 class TestResult(object):
     """Data object containing the results of a single test."""
+
     repeat_tests = True
     results_directory = ''
 
-    def __init__(self,
-                 test_name,
-                 retry_attempt=0,
-                 failures=None,
-                 expected=frozenset([ResultType.Pass]),
-                 test_run_time=None,
-                 reftest_type=None,
-                 pid=None,
-                 references=None,
-                 device_failed=False,
-                 crash_site=None,
-                 command=None,
-                 typ_host=None,
-                 image_diff_stats=None,
-                 test_type=None):
+    def __init__(
+        self,
+        test_name,
+        retry_attempt=0,
+        failures=None,
+        expected=frozenset([ResultType.Pass]),
+        test_run_time=None,
+        reftest_type=None,
+        pid=None,
+        references=None,
+        device_failed=False,
+        crash_site=None,
+        command=None,
+        typ_host=None,
+        image_diff_stats=None,
+        test_type=None,
+    ):
         self.test_name = test_name
         self.failures = failures or []
-        self.test_run_time = test_run_time or 0  # The time taken to execute the test itself.
+        self.test_run_time = (
+            test_run_time or 0
+        )  # The time taken to execute the test itself.
         self.has_stderr = any(failure.has_stderr for failure in self.failures)
         self.reftest_type = reftest_type or []
         self.pid = pid
         self.references = references or []
         self.device_failed = device_failed
         self.has_repaint_overlay = any(
-            failure.has_repaint_overlay for failure in self.failures)
+            failure.has_repaint_overlay for failure in self.failures
+        )
         self.crash_site = crash_site
         self.retry_attempt = retry_attempt
         self.command = command
         self.image_diff_stats = image_diff_stats
         self.test_type = test_type or set()
 
-        results = set([
-            f.result
-            for f in self.failures if f.result != test_failures.IGNORE_RESULT
-        ] or [ResultType.Pass])
+        results = set(
+            [
+                f.result
+                for f in self.failures
+                if f.result != test_failures.IGNORE_RESULT
+            ]
+            or [ResultType.Pass]
+        )
         assert len(results) <= 2, (
             'single_test_runner.py incorrectly reported results %s for test %s'
-            % (', '.join(results), test_name))
+            % (', '.join(results), test_name)
+        )
         if self.device_failed:
             self.type = ResultType.Timeout
         elif len(results) == 2:
-            assert results.issubset({ResultType.Timeout,
-                                     ResultType.Failure,
-                                     ResultType.Crash}), (
+            assert results.issubset(
+                {ResultType.Timeout, ResultType.Failure, ResultType.Crash}
+            ), (
                 'Allowed combination of 2 results are 1. TIMEOUT and FAIL '
                 '2. CRASH and FAIL 3. CRASH and TIMEOUT '
-                'Test %s reported the following results %s' %
-                (test_name, ', '.join(results)))
+                'Test %s reported the following results %s'
+                % (test_name, ', '.join(results))
+            )
             if ResultType.Timeout in results:
                 self.type = ResultType.Timeout
             else:
@@ -132,14 +148,18 @@ class TestResult(object):
         # These are set by the worker, not by the driver, so they are not passed to the constructor.
         self.worker_name = ''
         self.shard_name = ''
-        self.start_time = None  # Time in seconds since the epoch of test launched.
+        self.start_time = (
+            None  # Time in seconds since the epoch of test launched.
+        )
         self.total_run_time = 0  # The time taken to run the test plus any references, compute diffs, etc.
         self.test_number = None
-        self.artifacts = Artifacts(self.results_directory,
-                                   typ_host or SerializableTypHost(),
-                                   retry_attempt,
-                                   ARTIFACTS_SUB_DIR,
-                                   repeat_tests=self.repeat_tests)
+        self.artifacts = Artifacts(
+            self.results_directory,
+            typ_host or SerializableTypHost(),
+            retry_attempt,
+            ARTIFACTS_SUB_DIR,
+            repeat_tests=self.repeat_tests,
+        )
         # Default can be overwritten by the `WebTestRunner` (i.e., manager
         # process).
         self.expected = expected
@@ -160,11 +180,13 @@ class TestResult(object):
             failure.create_artifacts(self.artifacts)
 
     def __eq__(self, other):
-        return (self.test_name == other.test_name
-                and self.failures == other.failures
-                and self.test_run_time == other.test_run_time
-                and self.retry_attempt == other.retry_attempt
-                and self.results_directory == other.results_directory)
+        return (
+            self.test_name == other.test_name
+            and self.failures == other.failures
+            and self.test_run_time == other.test_run_time
+            and self.retry_attempt == other.retry_attempt
+            and self.results_directory == other.results_directory
+        )
 
     def __ne__(self, other):
         return not (self == other)

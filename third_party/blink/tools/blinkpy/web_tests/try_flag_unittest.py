@@ -21,7 +21,7 @@ class TryFlagTest(unittest.TestCase):
         self.mock_try_results = {
             self.linux_build: BuildStatus.SUCCESS,
             self.win_build: BuildStatus.SUCCESS,
-            self.mac_build: BuildStatus.SUCCESS
+            self.mac_build: BuildStatus.SUCCESS,
         }
         super(TryFlagTest, self).__init__(*args, **kwargs)
 
@@ -31,10 +31,10 @@ class TryFlagTest(unittest.TestCase):
         git_cl = MockGitCL(host)
         finder = PathFinder(host.filesystem)
 
-        flag_file = finder.path_from_web_tests(
-            'additional-driver-flag.setting')
+        flag_file = finder.path_from_web_tests('additional-driver-flag.setting')
         flag_expectations_file = finder.path_from_web_tests(
-            'FlagExpectations', 'foo')
+            'FlagExpectations', 'foo'
+        )
 
         cmd = ['trigger', '--flag=--foo']
         if regenerate:
@@ -42,26 +42,58 @@ class TryFlagTest(unittest.TestCase):
         TryFlag(cmd, host, git_cl).run()
 
         expected_added_paths = {flag_file}
-        expected_commits = [[
-            'Flag try job: force --foo for run_web_tests.py.'
-        ]]
+        expected_commits = [['Flag try job: force --foo for run_web_tests.py.']]
 
         if regenerate:
             expected_added_paths.add(flag_expectations_file)
             expected_commits.append(
-                ['Flag try job: clear expectations for --foo.'])
+                ['Flag try job: clear expectations for --foo.']
+            )
 
         self.assertEqual(git.added_paths, expected_added_paths)
         self.assertEqual(git.local_commits(), expected_commits)
 
-        self.assertEqual(git_cl.calls, [[
-            'git', 'cl', 'upload', '--bypass-hooks', '-f', '-m',
-            'Flag try job for --foo.'
-        ], [
-            'git', 'cl', 'try', '-B', 'luci.chromium.try', '-b', 'linux-rel'
-        ], [
-            'git', 'cl', 'try', '-B', 'luci.chromium.try', '-b', 'mac-rel'
-        ], ['git', 'cl', 'try', '-B', 'luci.chromium.try', '-b', 'win7-rel']])
+        self.assertEqual(
+            git_cl.calls,
+            [
+                [
+                    'git',
+                    'cl',
+                    'upload',
+                    '--bypass-hooks',
+                    '-f',
+                    '-m',
+                    'Flag try job for --foo.',
+                ],
+                [
+                    'git',
+                    'cl',
+                    'try',
+                    '-B',
+                    'luci.chromium.try',
+                    '-b',
+                    'linux-rel',
+                ],
+                [
+                    'git',
+                    'cl',
+                    'try',
+                    '-B',
+                    'luci.chromium.try',
+                    '-b',
+                    'mac-rel',
+                ],
+                [
+                    'git',
+                    'cl',
+                    'try',
+                    '-B',
+                    'luci.chromium.try',
+                    '-b',
+                    'win7-rel',
+                ],
+            ],
+        )
 
     def test_trigger(self):
         self._run_trigger_test(regenerate=False)
@@ -77,17 +109,19 @@ class TryFlagTest(unittest.TestCase):
                             'fail-everywhere.html': {
                                 'expected': 'FAIL',
                                 'actual': 'FAIL',
-                                'is_unexpected': True
+                                'is_unexpected': True,
                             },
                             'fail-win-and-linux.html': {
                                 'expected': 'FAIL',
                                 'actual': 'FAIL',
-                                'is_unexpected': True
-                            }
+                                'is_unexpected': True,
+                            },
                         }
                     }
                 },
-                step_name='blink_web_tests'))
+                step_name='blink_web_tests',
+            ),
+        )
         results_fetcher.set_results(
             self.win_build,
             WebTestResults.from_json(
@@ -97,17 +131,19 @@ class TryFlagTest(unittest.TestCase):
                             'fail-everywhere.html': {
                                 'expected': 'FAIL',
                                 'actual': 'FAIL',
-                                'is_unexpected': True
+                                'is_unexpected': True,
                             },
                             'fail-win-and-linux.html': {
                                 'expected': 'FAIL',
                                 'actual': 'FAIL',
-                                'is_unexpected': True
-                            }
+                                'is_unexpected': True,
+                            },
                         }
                     }
                 },
-                step_name='blink_web_tests'))
+                step_name='blink_web_tests',
+            ),
+        )
         results_fetcher.set_results(
             self.mac_build,
             WebTestResults.from_json(
@@ -117,17 +153,19 @@ class TryFlagTest(unittest.TestCase):
                             'pass-unexpectedly-mac.html': {
                                 'expected': 'FAIL',
                                 'actual': 'PASS',
-                                'is_unexpected': True
+                                'is_unexpected': True,
                             },
                             'fail-everywhere.html': {
                                 'expected': 'FAIL',
                                 'actual': 'FAIL',
-                                'is_unexpected': True
-                            }
+                                'is_unexpected': True,
+                            },
                         }
                     }
                 },
-                step_name='blink_web_tests'))
+                step_name='blink_web_tests',
+            ),
+        )
 
     def test_update(self):
         host = MockHost()
@@ -135,10 +173,11 @@ class TryFlagTest(unittest.TestCase):
         finder = PathFinder(filesystem)
 
         flag_expectations_file = finder.path_from_web_tests(
-            'FlagExpectations', 'foo')
+            'FlagExpectations', 'foo'
+        )
         filesystem.write_text_file(
             flag_expectations_file,
-            '# results: [ Failure ]\nsomething/pass-unexpectedly-mac.html [ Failure ]'
+            '# results: [ Failure ]\nsomething/pass-unexpectedly-mac.html [ Failure ]',
         )
 
         self._setup_mock_results(host.results_fetcher)
@@ -146,23 +185,34 @@ class TryFlagTest(unittest.TestCase):
         TryFlag(cmd, host, MockGitCL(host, self.mock_try_results)).run()
 
         self.assertEqual(
-            host.stdout.getvalue(), '\n'.join([
-                'Fetching results...', '', '### 1 unexpected passes:', '',
-                '[ Mac ] something/pass-unexpectedly-mac.html [ Pass ]', '',
-                '### 5 unexpected failures:', '',
-                '[ Linux ] something/fail-everywhere.html [ Failure ]',
-                '[ Mac ] something/fail-everywhere.html [ Failure ]',
-                '[ Win ] something/fail-everywhere.html [ Failure ]',
-                '[ Linux ] something/fail-win-and-linux.html [ Failure ]',
-                '[ Win ] something/fail-win-and-linux.html [ Failure ]', ''
-            ]))
+            host.stdout.getvalue(),
+            '\n'.join(
+                [
+                    'Fetching results...',
+                    '',
+                    '### 1 unexpected passes:',
+                    '',
+                    '[ Mac ] something/pass-unexpectedly-mac.html [ Pass ]',
+                    '',
+                    '### 5 unexpected failures:',
+                    '',
+                    '[ Linux ] something/fail-everywhere.html [ Failure ]',
+                    '[ Mac ] something/fail-everywhere.html [ Failure ]',
+                    '[ Win ] something/fail-everywhere.html [ Failure ]',
+                    '[ Linux ] something/fail-win-and-linux.html [ Failure ]',
+                    '[ Win ] something/fail-win-and-linux.html [ Failure ]',
+                    '',
+                ]
+            ),
+        )
 
     def test_update_irrelevant_unexpected_pass(self):
         host = MockHost()
         filesystem = host.filesystem
         finder = PathFinder(filesystem)
         flag_expectations_file = finder.path_from_web_tests(
-            'FlagExpectations', 'foo')
+            'FlagExpectations', 'foo'
+        )
         self._setup_mock_results(host.results_fetcher)
         cmd = ['update', '--flag=--foo']
 
@@ -176,5 +226,6 @@ class TryFlagTest(unittest.TestCase):
         host = MockHost()
         cmd = ['invalid', '--flag=--foo']
         TryFlag(cmd, host, MockGitCL(host)).run()
-        self.assertEqual(host.stderr.getvalue(),
-                         'specify "trigger" or "update"\n')
+        self.assertEqual(
+            host.stderr.getvalue(), 'specify "trigger" or "update"\n'
+        )

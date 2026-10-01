@@ -22,13 +22,13 @@ CopyOperation = Tuple[Optional[str], str]
 
 
 class BaselineCopier:
-
     def __init__(self, host: Host, default_port: Port):
         self._host = host
         self._fs = host.filesystem
         self._default_port = default_port
-        self._optimizer = BaselineOptimizer(host, self._default_port,
-                                            host.port_factory.all_port_names())
+        self._optimizer = BaselineOptimizer(
+            host, self._default_port, host.port_factory.all_port_names()
+        )
 
     def find_baselines_to_copy(
         self,
@@ -83,12 +83,16 @@ class BaselineCopier:
               are not. Therefore, 'b' is copied to the 'mac12' locations.
         """
         nonvirtual_test, virtual_tests = self._optimizer.get_tests_to_optimize(
-            test_name)
+            test_name
+        )
         paths = list(
-            self._optimizer.generate_search_paths(nonvirtual_test,
-                                                  virtual_tests))
+            self._optimizer.generate_search_paths(
+                nonvirtual_test, virtual_tests
+            )
+        )
         baseline_name = self._default_port.output_filename(
-            nonvirtual_test, self._default_port.BASELINE_SUFFIX, '.' + suffix)
+            nonvirtual_test, self._default_port.BASELINE_SUFFIX, '.' + suffix
+        )
 
         sources = self._resolve_sources(paths, baseline_name)
         # Simulate the optimizer's digest map if we were to give each location
@@ -138,17 +142,20 @@ class BaselineCopier:
             flag_specific = None
             if step_name:
                 flag_specific = self._host.builders.flag_specific_option(
-                    build.builder_name, step_name)
+                    build.builder_name, step_name
+                )
             port = self._optimizer.port(port_name, flag_specific)
             location = self._optimizer.location(
-                self._fs.join(port.baseline_version_dir(), test))
+                self._fs.join(port.baseline_version_dir(), test)
+            )
             maybe_test_file_path = self._fs.join(port.web_tests_dir(), test)
             # Coerce this location to a non-virtual one for physical tests under
             # a virtual directory. See crbug.com/1450725.
             if self._fs.exists(maybe_test_file_path):
                 location = BaselineLocation(
                     platform=location.platform,
-                    flag_specific=location.flag_specific)
+                    flag_specific=location.flag_specific,
+                )
             yield location
 
     def _resolve_sources(
@@ -170,14 +177,16 @@ class BaselineCopier:
             source = BaselineLocation.ALL_PASS
             for location in path:
                 if self._fs.exists(
-                        self._optimizer.path(location, baseline_name)):
+                    self._optimizer.path(location, baseline_name)
+                ):
                     source = location
                     break
             sources[path[0]] = source
         return sources
 
-    def _simulate_physical_copies(self, sources: SourceMap,
-                                  baseline_name: str) -> DigestMap:
+    def _simulate_physical_copies(
+        self, sources: SourceMap, baseline_name: str
+    ) -> DigestMap:
         """Simulate the digests of giving every location its own file."""
         digests = {}
         for location, source in sources.items():
@@ -190,12 +199,13 @@ class BaselineCopier:
                 # baselines, which is OK.
                 path = self._optimizer.path(source, baseline_name)
                 digests[location] = ResultDigest(
-                    hashlib.sha1(path.encode()).hexdigest(), path)
+                    hashlib.sha1(path.encode()).hexdigest(), path
+                )
         return digests
 
-    def write_copies(self,
-                     copies: Iterable[CopyOperation],
-                     placeholder: str = '') -> None:
+    def write_copies(
+        self, copies: Iterable[CopyOperation], placeholder: str = ''
+    ) -> None:
         for source, dest in copies:
             self._fs.maybe_make_directory(self._fs.dirname(dest))
             if source:

@@ -26,37 +26,36 @@ def error(context, *infos):
 def add_tag_names(data, result):
     namespace = data["metadata"]["namespaceURI"]
     for item in data["data"]:
-        result["elements"].append({
-            "namespace":
-            namespace,
-            "name":
-            item if isinstance(item, str) else item["name"],
-            "cppnamespace":
-            data["metadata"]["namespace"]
-        })
+        result["elements"].append(
+            {
+                "namespace": namespace,
+                "name": item if isinstance(item, str) else item["name"],
+                "cppnamespace": data["metadata"]["namespace"],
+            }
+        )
 
 
 def add_attribute_names(data, result):
-    namespace = (None if "attrsNullNamespace" in data["metadata"] else
-                 data["metadata"]["namespaceURI"])
+    namespace = (
+        None
+        if "attrsNullNamespace" in data["metadata"]
+        else data["metadata"]["namespaceURI"]
+    )
     for item in data["data"]:
-        result["attributes"].append({
-            "namespace":
-            namespace,
-            "name":
-            item,
-            "cppnamespace":
-            data["metadata"]["namespace"]
-        })
+        result["attributes"].append(
+            {
+                "namespace": namespace,
+                "name": item,
+                "cppnamespace": data["metadata"]["namespace"],
+            }
+        )
 
 
 def add_aria_attribute_names(data, result):
     for item in data["attributes"]:
-        result["attributes"].append({
-            "namespace": None,
-            "name": item["name"],
-            "cppnamespace": "HTML"
-        })
+        result["attributes"].append(
+            {"namespace": None, "name": item["name"], "cppnamespace": "HTML"}
+        )
 
 
 def main(argv):

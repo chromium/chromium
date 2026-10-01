@@ -43,8 +43,8 @@ import types
 # Since we execute this script directly as part of the unit tests, we need to ensure
 # that blink/tools is in sys.path for the next imports to work correctly.
 tools_dir = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 if tools_dir not in sys.path:
     sys.path.insert(0, tools_dir)
 
@@ -64,10 +64,12 @@ class MockDRTPort(object):
 
     def __init__(self, host, port_name, **kwargs):
         self.__delegate = PortFactory(host).get(
-            port_name.replace('mock-', ''), **kwargs)
+            port_name.replace('mock-', ''), **kwargs
+        )
         self.__delegate_driver_class = self.__delegate._driver_class
         self.__delegate._driver_class = types.MethodType(
-            self._driver_class, self.__delegate)
+            self._driver_class, self.__delegate
+        )
 
     def __getattr__(self, name):
         return getattr(self.__delegate, name)
@@ -83,22 +85,30 @@ class MockDRTPort(object):
 
     def _mocked_driver_maker(self, port, worker_number, no_timeout=False):
         path_to_this_file = self.host.filesystem.abspath(
-            __file__.replace('.pyc', '.py'))
-        driver = self.__delegate_driver_class()(self, worker_number,
-                                                no_timeout)
+            __file__.replace('.pyc', '.py')
+        )
+        driver = self.__delegate_driver_class()(self, worker_number, no_timeout)
         driver.cmd_line = self._overriding_cmd_line(
-            driver.cmd_line, self.__delegate.path_to_driver(), sys.executable,
-            path_to_this_file, self.__delegate.name())
+            driver.cmd_line,
+            self.__delegate.path_to_driver(),
+            sys.executable,
+            path_to_this_file,
+            self.__delegate.name(),
+        )
         return driver
 
     @staticmethod
-    def _overriding_cmd_line(original_cmd_line, driver_path, python_exe,
-                             this_file, port_name):
+    def _overriding_cmd_line(
+        original_cmd_line, driver_path, python_exe, this_file, port_name
+    ):
         def new_cmd_line(per_test_args):
             cmd_line = original_cmd_line(per_test_args)
             index = cmd_line.index(driver_path)
-            cmd_line[index:index + 1] = [
-                python_exe, this_file, '--platform', port_name
+            cmd_line[index : index + 1] = [
+                python_exe,
+                this_file,
+                '--platform',
+                port_name,
             ]
             return cmd_line
 
@@ -146,12 +156,12 @@ def parse_options(argv):
             return argv[index + 1]
         return None
 
-    options = optparse.Values({
-        'actual_directory':
-        get_arg('--actual-directory'),
-        'platform':
-        get_arg('--platform'),
-    })
+    options = optparse.Values(
+        {
+            'actual_directory': get_arg('--actual-directory'),
+            'platform': get_arg('--platform'),
+        }
+    )
     return (options, argv)
 
 
@@ -167,8 +177,7 @@ class MockDRT(object):
         port_name = None
         if options.platform:
             port_name = options.platform
-        self._port = PortFactory(host).get(
-            port_name=port_name, options=options)
+        self._port = PortFactory(host).get(port_name=port_name, options=options)
         self._driver = self._port.create_driver(0)
 
     def run(self):
@@ -180,9 +189,11 @@ class MockDRT(object):
                 return 0
             driver_input = self.input_from_line(line)
             dirname, basename = self._port.split_test(driver_input.test_name)
-            is_reftest = (self._port.reference_files(driver_input.test_name)
-                          or self._port.is_reference_html_file(
-                              self._port.host.filesystem, dirname, basename))
+            is_reftest = self._port.reference_files(
+                driver_input.test_name
+            ) or self._port.is_reference_html_file(
+                self._port.host.filesystem, dirname, basename
+            )
             output = self.output_for_test(driver_input, is_reftest)
             self.write_test_output(driver_input, output, is_reftest)
 
@@ -207,7 +218,8 @@ class MockDRT(object):
             wpt_print_mode=self._port.is_wpt_print_reftest(test_name),
             trace_file=None,
             startup_trace_file=None,
-            args=[])
+            args=[],
+        )
 
     def output_for_test(self, test_input, is_reftest):
         port = self._port
@@ -230,26 +242,28 @@ class MockDRT(object):
 
         if self._options.actual_directory:
             actual_path = port.host.filesystem.join(
-                self._options.actual_directory, test_input.test_name)
+                self._options.actual_directory, test_input.test_name
+            )
             root, _ = port.host.filesystem.splitext(actual_path)
             text_path = root + '-actual.txt'
             if port.host.filesystem.exists(text_path):
                 actual_text = port.host.filesystem.read_binary_file(text_path)
             audio_path = root + '-actual.wav'
             if port.host.filesystem.exists(audio_path):
-                actual_audio = port.host.filesystem.read_binary_file(
-                    audio_path)
+                actual_audio = port.host.filesystem.read_binary_file(audio_path)
             image_path = root + '-actual.png'
             if port.host.filesystem.exists(image_path):
-                actual_image = port.host.filesystem.read_binary_file(
-                    image_path)
+                actual_image = port.host.filesystem.read_binary_file(image_path)
                 with port.host.filesystem.open_binary_file_for_reading(
-                        image_path) as filehandle:
+                    image_path
+                ) as filehandle:
                     actual_checksum = read_checksum_from_png.read_checksum(
-                        filehandle)
+                        filehandle
+                    )
 
-        return DriverOutput(actual_text, actual_image, actual_checksum,
-                            actual_audio)
+        return DriverOutput(
+            actual_text, actual_image, actual_checksum, actual_audio
+        )
 
     def write_test_output(self, test_input, output, is_reftest):
         if output.audio:
@@ -269,8 +283,9 @@ class MockDRT(object):
         if output.image_hash:
             self._stdout.write(b'\n')
             self._stdout.write(b'ActualHash: ' + output.image_hash + b'\n')
-            self._stdout.write(b'ExpectedHash: ' + test_input.image_hash +
-                               b'\n')
+            self._stdout.write(
+                b'ExpectedHash: ' + test_input.image_hash + b'\n'
+            )
             if output.image_hash != test_input.image_hash:
                 self._stdout.write(b'Content-Type: image/png\n')
                 self._stdout.write(b'Content-Length: %s\n' % len(output.image))
@@ -285,4 +300,5 @@ if __name__ == '__main__':
     # Note that the Mock in MockDRT refers to the fact that it is emulating a
     # real DRT, and as such, it needs access to a real SystemHost, not a MockSystemHost.
     sys.exit(
-        main(sys.argv[1:], SystemHost(), sys.stdin, sys.stdout, sys.stderr))
+        main(sys.argv[1:], SystemHost(), sys.stdin, sys.stdout, sys.stderr)
+    )

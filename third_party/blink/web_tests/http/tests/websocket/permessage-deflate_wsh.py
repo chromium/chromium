@@ -32,9 +32,9 @@ from pywebsocket3.extensions import PerMessageDeflateExtensionProcessor
 from pywebsocket3.extensions import ExtensionProcessorInterface
 from pywebsocket3.common import ExtensionParameter
 
-_GOODBYE_MESSAGE = u'Goodbye'
-_ENABLE_MESSAGE = u'EnableCompression'
-_DISABLE_MESSAGE = u'DisableCompression'
+_GOODBYE_MESSAGE = 'Goodbye'
+_ENABLE_MESSAGE = 'EnableCompression'
+_DISABLE_MESSAGE = 'DisableCompression'
 _bfinal = False
 
 

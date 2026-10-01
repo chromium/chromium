@@ -18,21 +18,35 @@ from .operation import OperationGroup
 from .user_defined_type import UserDefinedType
 
 
-class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
-                WithExposure, WithComponent, WithDebugInfo):
+class Namespace(
+    UserDefinedType,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-namespaces"""
 
-    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     is_partial,
-                     attributes=None,
-                     constants=None,
-                     operations=None,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        IRMap.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            is_partial,
+            attributes=None,
+            constants=None,
+            operations=None,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(is_partial, bool)
             assert attributes is None or isinstance(attributes, (list, tuple))
             assert constants is None or isinstance(constants, (list, tuple))
@@ -42,16 +56,26 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             constants = constants or []
             operations = operations or []
             assert all(
-                isinstance(attribute, Attribute.IR) and attribute.is_readonly
-                and attribute.is_static for attribute in attributes)
+                isinstance(attribute, Attribute.IR)
+                and attribute.is_readonly
+                and attribute.is_static
+                for attribute in attributes
+            )
             assert all(
-                isinstance(constant, Constant.IR) for constant in constants)
+                isinstance(constant, Constant.IR) for constant in constants
+            )
             assert all(
-                isinstance(operation, Operation.IR) and operation.identifier
-                and operation.is_static for operation in operations)
+                isinstance(operation, Operation.IR)
+                and operation.identifier
+                and operation.is_static
+                for operation in operations
+            )
 
-            kind = (IRMap.IR.Kind.PARTIAL_NAMESPACE
-                    if is_partial else IRMap.IR.Kind.NAMESPACE)
+            kind = (
+                IRMap.IR.Kind.PARTIAL_NAMESPACE
+                if is_partial
+                else IRMap.IR.Kind.NAMESPACE
+            )
             IRMap.IR.__init__(self, identifier=identifier, kind=kind)
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithCodeGeneratorInfo.__init__(self)
@@ -99,26 +123,38 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         WithComponent.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
 
-        self._attributes = tuple([
-            Attribute(attribute_ir, owner=self)
-            for attribute_ir in ir.attributes
-        ])
-        self._constants = tuple([
-            Constant(constant_ir, owner=self) for constant_ir in ir.constants
-        ])
-        self._operations = tuple([
-            Operation(operation_ir, owner=self)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(operation_group_ir,
-                           list(
-                               filter(
-                                   lambda x: x.identifier == operation_group_ir
-                                   .identifier, self._operations)),
-                           owner=self)
-            for operation_group_ir in ir.operation_groups
-        ])
+        self._attributes = tuple(
+            [
+                Attribute(attribute_ir, owner=self)
+                for attribute_ir in ir.attributes
+            ]
+        )
+        self._constants = tuple(
+            [Constant(constant_ir, owner=self) for constant_ir in ir.constants]
+        )
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=self)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    operation_group_ir,
+                    list(
+                        filter(
+                            lambda x: (
+                                x.identifier == operation_group_ir.identifier
+                            ),
+                            self._operations,
+                        )
+                    ),
+                    owner=self,
+                )
+                for operation_group_ir in ir.operation_groups
+            ]
+        )
         self._tag = ir.tag
         self._max_subclass_tag = ir.max_subclass_tag
 

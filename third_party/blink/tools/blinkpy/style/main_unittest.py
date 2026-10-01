@@ -33,34 +33,45 @@ class ChangeDirectoryTest(LoggingTestCase):
         super(ChangeDirectoryTest, self).setUp()
         self.filesystem = MockFileSystem(
             dirs=[self._original_directory, self._checkout_root],
-            cwd=self._original_directory)
+            cwd=self._original_directory,
+        )
 
     def _change_directory(self, paths, checkout_root):
         return change_directory(
-            self.filesystem, paths=paths, checkout_root=checkout_root)
+            self.filesystem, paths=paths, checkout_root=checkout_root
+        )
 
-    def _assert_result(self, actual_return_value, expected_return_value,
-                       expected_log_messages, expected_current_directory):
+    def _assert_result(
+        self,
+        actual_return_value,
+        expected_return_value,
+        expected_log_messages,
+        expected_current_directory,
+    ):
         self.assertEqual(actual_return_value, expected_return_value)
         self.assertLog(expected_log_messages)
         self.assertEqual(self.filesystem.getcwd(), expected_current_directory)
 
     def test_paths_none(self):
         paths = self._change_directory(
-            checkout_root=self._checkout_root, paths=None)
+            checkout_root=self._checkout_root, paths=None
+        )
         self._assert_result(paths, None, [], self._checkout_root)
 
     def test_paths_convertible(self):
         paths = ['/chromium/src/foo1.txt', '/chromium/src/foo2.txt']
         paths = self._change_directory(
-            checkout_root=self._checkout_root, paths=paths)
-        self._assert_result(paths, ['foo1.txt', 'foo2.txt'], [],
-                            self._checkout_root)
+            checkout_root=self._checkout_root, paths=paths
+        )
+        self._assert_result(
+            paths, ['foo1.txt', 'foo2.txt'], [], self._checkout_root
+        )
 
     def test_with_git_paths_unconvertible(self):
         paths = ['/chromium/src/foo1.txt', '/outside/foo2.txt']
         paths = self._change_directory(
-            checkout_root=self._checkout_root, paths=paths)
+            checkout_root=self._checkout_root, paths=paths
+        )
         log_messages = [
             """WARNING: Path-dependent style checks may not work correctly:
 
@@ -75,5 +86,6 @@ class ChangeDirectoryTest(LoggingTestCase):
 
 """
         ]
-        self._assert_result(paths, paths, log_messages,
-                            self._original_directory)
+        self._assert_result(
+            paths, paths, log_messages, self._original_directory
+        )

@@ -13,11 +13,13 @@ class Includes(object):
     """https://webidl.spec.whatwg.org/#include"""
 
     class IR(IRMap.IR, WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     interface_identifier,
-                     mixin_identifier,
-                     component=None,
-                     debug_info=None):
+        def __init__(
+            self,
+            interface_identifier,
+            mixin_identifier,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(interface_identifier, Identifier)
             assert isinstance(mixin_identifier, Identifier)
 
@@ -29,7 +31,8 @@ class Includes(object):
             IRMap.IR.__init__(
                 self,
                 identifier=interface_identifier,
-                kind=IRMap.IR.Kind.INCLUDES)
+                kind=IRMap.IR.Kind.INCLUDES,
+            )
             WithCodeGeneratorInfo.__init__(self)
             WithComponent.__init__(self, component)
             WithDebugInfo.__init__(self, debug_info)

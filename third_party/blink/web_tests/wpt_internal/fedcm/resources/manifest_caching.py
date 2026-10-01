@@ -15,7 +15,7 @@ def main(request, response):
         return str(val)
 
     request_error = error_checker.manifestCheck(request)
-    if (request_error):
+    if request_error:
         return request_error
 
     request.server.stash.put(last_load_time_key, time.time())

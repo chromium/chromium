@@ -46,13 +46,18 @@ class Group(object):
         self.type_name = converter.to_class_name(prefix='style', suffix='data')
         self.member_name = converter.to_class_data_member(suffix='data')
         self.num_32_bit_words_for_bit_fields = _num_32_bit_words_for_bit_fields(
-            field for field in fields if field.is_bit_field)
+            field for field in fields if field.is_bit_field
+        )
 
         # Recursively get all the fields in the subgroups as well
-        self.all_fields = _flatten_list(subgroup.all_fields
-                                        for subgroup in subgroups) + fields
-        self.all_subgroups = _flatten_list(
-            subgroup.all_subgroups for subgroup in subgroups) + subgroups
+        self.all_fields = (
+            _flatten_list(subgroup.all_fields for subgroup in subgroups)
+            + fields
+        )
+        self.all_subgroups = (
+            _flatten_list(subgroup.all_subgroups for subgroup in subgroups)
+            + subgroups
+        )
 
         self.needs_diff = any(field.needs_diff for field in self.all_fields)
 
@@ -126,16 +131,32 @@ class Field(object):
             properties are included
     """
 
-    def __init__(self, field_role, name_for_methods, property_name, type_name,
-                 wrapper_pointer_name, field_template, size, default_value,
-                 derived_from, invalidate, reset_on_new_style, custom_compare,
-                 highlight_style_comes_from_originating_element, mutable,
-                 getter_method_name, setter_method_name, initial_method_name,
-                 computed_style_custom_functions,
-                 computed_style_protected_functions,
-                 may_be_affected_by_transition_all,
-                 may_be_affected_by_transition_all_discrete, is_extra_field,
-                 **kwargs):
+    def __init__(
+        self,
+        field_role,
+        name_for_methods,
+        property_name,
+        type_name,
+        wrapper_pointer_name,
+        field_template,
+        size,
+        default_value,
+        derived_from,
+        invalidate,
+        reset_on_new_style,
+        custom_compare,
+        highlight_style_comes_from_originating_element,
+        mutable,
+        getter_method_name,
+        setter_method_name,
+        initial_method_name,
+        computed_style_custom_functions,
+        computed_style_protected_functions,
+        may_be_affected_by_transition_all,
+        may_be_affected_by_transition_all_discrete,
+        is_extra_field,
+        **kwargs,
+    ):
         name_source = NameStyleConverter(name_for_methods)
         self.name = name_source.to_class_data_member()
         self.property_name = property_name
@@ -152,12 +173,18 @@ class Field(object):
             NameStyleConverter(value).to_enum_value() for value in invalidate
         ]
         self.needs_diff = bool(invalidate)
-        self.may_be_affected_by_transition_all = may_be_affected_by_transition_all
-        self.may_be_affected_by_transition_all_discrete = may_be_affected_by_transition_all_discrete
+        self.may_be_affected_by_transition_all = (
+            may_be_affected_by_transition_all
+        )
+        self.may_be_affected_by_transition_all_discrete = (
+            may_be_affected_by_transition_all_discrete
+        )
         self.is_extra_field = is_extra_field
         self.reset_on_new_style = reset_on_new_style
         self.custom_compare = custom_compare
-        self.highlight_style_comes_from_originating_element = highlight_style_comes_from_originating_element
+        self.highlight_style_comes_from_originating_element = (
+            highlight_style_comes_from_originating_element
+        )
         self.mutable = mutable
         self.group = None
 
@@ -165,18 +192,23 @@ class Field(object):
         self.getter_method_name = getter_method_name
         self.setter_method_name = setter_method_name
         self.internal_getter_method_name = name_source.to_function_name(
-            suffix='internal')
+            suffix='internal'
+        )
         self.internal_mutable_method_name = name_source.to_function_name(
-            prefix='mutable', suffix='internal')
+            prefix='mutable', suffix='internal'
+        )
         self.internal_setter_method_name = NameStyleConverter(
-            setter_method_name).to_function_name(suffix='internal')
+            setter_method_name
+        ).to_function_name(suffix='internal')
         self.initial_method_name = initial_method_name
-        self.resetter_method_name = name_source.to_function_name(
-            prefix='reset')
+        self.resetter_method_name = name_source.to_function_name(prefix='reset')
         self.internal_resetter_method_name = NameStyleConverter(
-            self.resetter_method_name).to_function_name(suffix='internal')
+            self.resetter_method_name
+        ).to_function_name(suffix='internal')
         self.computed_style_custom_functions = computed_style_custom_functions
-        self.computed_style_protected_functions = computed_style_protected_functions
+        self.computed_style_protected_functions = (
+            computed_style_protected_functions
+        )
         self.getter_visibility = self.get_visibility('getter')
         self.setter_visibility = self.get_visibility('setter')
         self.resetter_visibility = self.get_visibility('resetter')
@@ -187,25 +219,30 @@ class Field(object):
         # Field role: one of these must be true
         self.is_property = field_role == 'property'
         self.is_inherited_flag = field_role == 'inherited_flag'
-        assert (self.is_property, self.is_inherited_flag).count(True) == 1, \
+        assert (self.is_property, self.is_inherited_flag).count(True) == 1, (
             'Field role has to be exactly one of: property, inherited_flag'
+        )
 
         self.is_inherited = False
         if not self.is_inherited_flag:
             self.is_inherited = kwargs.pop('inherited')
             self.is_independent = kwargs.pop('independent')
             self.is_semi_independent_variable = kwargs.pop(
-                'semi_independent_variable')
-            assert self.is_inherited or not self.is_independent, \
+                'semi_independent_variable'
+            )
+            assert self.is_inherited or not self.is_independent, (
                 'Only inherited fields can be independent'
+            )
 
             suffix = ['is', 'inherited']
             if 'getter' in self.computed_style_custom_functions:
                 suffix.append('internal')
             self.is_inherited_method_name = name_source.to_function_name(
-                suffix=suffix)
-        assert len(kwargs) == 0, \
+                suffix=suffix
+            )
+        assert len(kwargs) == 0, (
             'Unexpected arguments provided to Field: ' + str(kwargs)
+        )
 
     def get_visibility(self, function):
         if function in self.computed_style_protected_functions:

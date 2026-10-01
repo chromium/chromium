@@ -48,28 +48,34 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
         'runtimeFlagHasOriginTrial': {},
     }
     default_metadata = dict(
-        MakeQualifiedNamesWriter.default_metadata, **{
+        MakeQualifiedNamesWriter.default_metadata,
+        **{
             'fallbackInterfaceName': '',
             'fallbackJSInterfaceName': '',
-        })
+        },
+    )
     filters = MakeQualifiedNamesWriter.filters
 
     def __init__(self, json5_file_paths, output_dir, generate_tag_enum=False):
-        super(MakeElementFactoryWriter, self).__init__(json5_file_paths,
-                                                       output_dir)
+        super(MakeElementFactoryWriter, self).__init__(
+            json5_file_paths, output_dir
+        )
 
         basename = self.namespace.lower() + '_element_factory'
-        self._outputs.update({
-            (basename + '.h'):
-            self.generate_factory_header,
-            (basename + '.cc'):
-            self.generate_factory_implementation,
-        })
+        self._outputs.update(
+            {
+                (basename + '.h'): self.generate_factory_header,
+                (basename + '.cc'): self.generate_factory_implementation,
+            }
+        )
 
         fallback_interface = self.tags_json5_file.metadata[
-            'fallbackInterfaceName'].strip('"')
-        fallback_js_interface = self.tags_json5_file.metadata[
-            'fallbackJSInterfaceName'].strip('"') or fallback_interface
+            'fallbackInterfaceName'
+        ].strip('"')
+        fallback_js_interface = (
+            self.tags_json5_file.metadata['fallbackJSInterfaceName'].strip('"')
+            or fallback_interface
+        )
 
         interface_counts = defaultdict(int)
         tags = self._template_context['tags']
@@ -77,35 +83,40 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
             tag['has_js_interface'] = self._has_js_interface(tag)
             tag['js_interface'] = self._js_interface(tag)
             tag['interface'] = self._interface(tag)
-            tag['interface_header'] = '%s/%s.h' % (self._interface_header_dir(
-                tag), self.get_file_basename(tag['interface']))
+            tag['interface_header'] = '%s/%s.h' % (
+                self._interface_header_dir(tag),
+                self.get_file_basename(tag['interface']),
+            )
             interface_counts[tag['interface']] += 1
 
         for tag in tags:
-            tag['multipleTagNames'] = (interface_counts[tag['interface']] > 1
-                                       or
-                                       tag['interface'] == fallback_interface)
+            tag['multipleTagNames'] = (
+                interface_counts[tag['interface']] > 1
+                or tag['interface'] == fallback_interface
+            )
 
-        self._template_context.update({
-            'fallback_interface':
-            fallback_interface,
-            'fallback_interface_header':
-            self.get_file_basename(fallback_interface) + '.h',
-            'fallback_js_interface':
-            fallback_js_interface,
-            'input_files':
-            self._input_files,
-            'generate_tag_enum':
-            generate_tag_enum
-        })
+        self._template_context.update(
+            {
+                'fallback_interface': fallback_interface,
+                'fallback_interface_header': self.get_file_basename(
+                    fallback_interface
+                )
+                + '.h',
+                'fallback_js_interface': fallback_js_interface,
+                'input_files': self._input_files,
+                'generate_tag_enum': generate_tag_enum,
+            }
+        )
 
     @template_expander.use_jinja(
-        'templates/element_factory.h.tmpl', filters=filters)
+        'templates/element_factory.h.tmpl', filters=filters
+    )
     def generate_factory_header(self):
         return self._template_context
 
     @template_expander.use_jinja(
-        'templates/element_factory.cc.tmpl', filters=filters)
+        'templates/element_factory.cc.tmpl', filters=filters
+    )
     def generate_factory_implementation(self):
         return self._template_context
 
@@ -125,7 +136,8 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
 
     def _has_js_interface(self, tag):
         return not tag['noConstructor'] and self._js_interface(tag) != (
-            '%sElement' % self.namespace)
+            '%sElement' % self.namespace
+        )
 
     def _interface_header_dir(self, tag):
         if tag['interfaceHeaderDir']:

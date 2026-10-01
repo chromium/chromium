@@ -95,8 +95,7 @@ Paths:
   detected.  This is because all file paths will already be relative
   to the source root and so will not need to be converted."""
 
-_EPILOG = ('This script can miss errors and does not substitute for '
-           'code review.')
+_EPILOG = 'This script can miss errors and does not substitute for code review.'
 
 
 # This class should not have knowledge of the flag key names.
@@ -137,25 +136,31 @@ class CommandOptionValues(object):
                      and "vs7" which Microsoft Visual Studio 7 can parse.
     """
 
-    def __init__(self,
-                 filter_rules=None,
-                 git_commit=None,
-                 diff_files=None,
-                 is_verbose=False,
-                 min_confidence=1,
-                 output_format='emacs'):
+    def __init__(
+        self,
+        filter_rules=None,
+        git_commit=None,
+        diff_files=None,
+        is_verbose=False,
+        min_confidence=1,
+        output_format='emacs',
+    ):
         if filter_rules is None:
             filter_rules = []
 
         if (min_confidence < 1) or (min_confidence > 5):
-            raise ValueError('Invalid "min_confidence" parameter: value '
-                             'must be an integer between 1 and 5 inclusive. '
-                             'Value given: "%s".' % min_confidence)
+            raise ValueError(
+                'Invalid "min_confidence" parameter: value '
+                'must be an integer between 1 and 5 inclusive. '
+                'Value given: "%s".' % min_confidence
+            )
 
         if output_format not in ('emacs', 'vs7'):
-            raise ValueError('Invalid "output_format" parameter: '
-                             'value must be "emacs" or "vs7". '
-                             'Value given: "%s".' % output_format)
+            raise ValueError(
+                'Invalid "output_format" parameter: '
+                'value must be "emacs" or "vs7". '
+                'Value given: "%s".' % output_format
+            )
 
         self.filter_rules = filter_rules
         self.git_commit = git_commit
@@ -223,7 +228,6 @@ class ArgumentPrinter(object):
 
 
 class ArgumentParser(object):
-
     # FIXME: Move the documentation of the attributes to the __init__
     #        docstring after making the attributes internal.
     """Supports the parsing of check_blink_style.py command arguments.
@@ -241,12 +245,14 @@ class ArgumentParser(object):
                     This parameter should be specified only for unit tests.
     """
 
-    def __init__(self,
-                 all_categories,
-                 default_options,
-                 base_filter_rules=None,
-                 mock_stderr=None,
-                 usage=None):
+    def __init__(
+        self,
+        all_categories,
+        default_options,
+        base_filter_rules=None,
+        mock_stderr=None,
+        usage=None,
+    ):
         """Create an ArgumentParser instance.
 
         Args:
@@ -282,10 +288,12 @@ class ArgumentParser(object):
             stderr=stderr,
             usage=usage,
             default_min_confidence=self.default_options.min_confidence,
-            default_output_format=self.default_options.output_format)
+            default_output_format=self.default_options.output_format,
+        )
 
-    def _create_option_parser(self, stderr, usage, default_min_confidence,
-                              default_output_format):
+    def _create_option_parser(
+        self, stderr, usage, default_min_confidence, default_output_format
+    ):
         # Since the epilog string is short, it is not necessary to replace
         # the epilog string with a mock epilog string when testing.
         # For this reason, we use _EPILOG directly rather than passing it
@@ -298,17 +306,20 @@ class ArgumentParser(object):
             'delimited list of boolean filter rules, for example '
             '"--filter -whitespace,+whitespace/braces".  To display '
             'all categories and which are enabled by default, pass '
-            """no value (e.g. '-f ""' or '--filter=').""")
+            """no value (e.g. '-f ""' or '--filter=')."""
+        )
         parser.add_option(
             '-f',
             '--filter-rules',
             metavar='RULES',
             dest='filter_value',
-            help=filter_help)
+            help=filter_help,
+        )
 
         git_commit_help = (
             'check all changes in the given commit. '
-            "Use 'commit_id..' to check all changes after commit_id")
+            "Use 'commit_id..' to check all changes after commit_id"
+        )
         parser.add_option(
             '-g',
             '--git-diff',
@@ -324,11 +335,14 @@ class ArgumentParser(object):
             action='store_true',
             dest='diff_files',
             default=False,
-            help=diff_files_help)
+            help=diff_files_help,
+        )
 
-        min_confidence_help = ('set the minimum confidence of style errors '
-                               'to report.  Can be an integer 1-5, with 1 '
-                               'displaying all errors.  Defaults to %default.')
+        min_confidence_help = (
+            'set the minimum confidence of style errors '
+            'to report.  Can be an integer 1-5, with 1 '
+            'displaying all errors.  Defaults to %default.'
+        )
         parser.add_option(
             '-m',
             '--min-confidence',
@@ -336,11 +350,14 @@ class ArgumentParser(object):
             type='int',
             dest='min_confidence',
             default=default_min_confidence,
-            help=min_confidence_help)
+            help=min_confidence_help,
+        )
 
-        output_format_help = ('set the output format, which can be "emacs" '
-                              'or "vs7" (for Visual Studio).  '
-                              'Defaults to "%default".')
+        output_format_help = (
+            'set the output format, which can be "emacs" '
+            'or "vs7" (for Visual Studio).  '
+            'Defaults to "%default".'
+        )
         parser.add_option(
             '-o',
             '--output-format',
@@ -348,7 +365,8 @@ class ArgumentParser(object):
             choices=['emacs', 'vs7'],
             dest='output_format',
             default=default_output_format,
-            help=output_format_help)
+            help=output_format_help,
+        )
 
         verbose_help = 'enable verbose logging.'
         parser.add_option(
@@ -357,7 +375,8 @@ class ArgumentParser(object):
             dest='is_verbose',
             default=False,
             action='store_true',
-            help=verbose_help)
+            help=verbose_help,
+        )
 
         # Override OptionParser's error() method so that option help will
         # also display when an error occurs.  Normally, just the usage
@@ -402,8 +421,10 @@ class ArgumentParser(object):
         self.stderr_write('\nDefault filter rules**:\n')
         for filter_rule in sorted(self._base_filter_rules):
             self.stderr_write('    ' + filter_rule + '\n')
-        self.stderr_write('\n**The command always evaluates the above rules, '
-                          'and before any --filter flag.\n\n')
+        self.stderr_write(
+            '\n**The command always evaluates the above rules, '
+            'and before any --filter flag.\n\n'
+        )
 
         sys.exit(0)
 
@@ -454,7 +475,8 @@ class ArgumentParser(object):
         if (min_confidence < 1) or (min_confidence > 5):
             self._parse_error(
                 'option --min-confidence: invalid integer: '
-                '%s: value must be between 1 and 5' % min_confidence)
+                '%s: value must be between 1 and 5' % min_confidence
+            )
 
         if filter_value:
             filter_rules = self._parse_filter_flag(filter_value)
@@ -472,6 +494,7 @@ class ArgumentParser(object):
             diff_files=diff_files,
             is_verbose=is_verbose,
             min_confidence=min_confidence,
-            output_format=output_format)
+            output_format=output_format,
+        )
 
         return (paths, options)

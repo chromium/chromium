@@ -26,8 +26,7 @@ def parse_output_reldirs(reldirs):
         result[key] = value
 
     for c in required:
-        assert c in result, "missing required --output_reldir \"{0}\"".format(
-            c)
+        assert c in result, "missing required --output_reldir \"{0}\"".format(c)
 
     for c in result.keys():
         assert c in valid, "invalid --output_reldir \"{0}\"".format(c)
@@ -37,33 +36,45 @@ def parse_output_reldirs(reldirs):
 
 def parse_options():
     parser = argparse.ArgumentParser(
-        description="Check the generated file list of Blink bindings")
-    parser.add_argument("--web_idl_database",
-                        required=True,
-                        type=str,
-                        help="filepath of the input database")
-    parser.add_argument("--root_src_dir",
-                        required=True,
-                        type=str,
-                        help="root directory of chromium project, i.e. \"//\"")
-    parser.add_argument("--root_gen_dir",
-                        required=True,
-                        type=str,
-                        help="root directory of generated code files, i.e. "
-                        "\"//out/Default/gen\"")
+        description="Check the generated file list of Blink bindings"
+    )
+    parser.add_argument(
+        "--web_idl_database",
+        required=True,
+        type=str,
+        help="filepath of the input database",
+    )
+    parser.add_argument(
+        "--root_src_dir",
+        required=True,
+        type=str,
+        help="root directory of chromium project, i.e. \"//\"",
+    )
+    parser.add_argument(
+        "--root_gen_dir",
+        required=True,
+        type=str,
+        help="root directory of generated code files, i.e. "
+        "\"//out/Default/gen\"",
+    )
     parser.add_argument(
         "--output_reldir",
         metavar="KEY=VALUE",
         action="append",
-        help="output directory of KEY component relative to root_gen_dir.")
-    parser.add_argument("--generated_file_list",
-                        required=True,
-                        type=str,
-                        help="filepath of the generated file list")
-    parser.add_argument("--output",
-                        required=True,
-                        type=str,
-                        help="filepath of the check results")
+        help="output directory of KEY component relative to root_gen_dir.",
+    )
+    parser.add_argument(
+        "--generated_file_list",
+        required=True,
+        type=str,
+        help="filepath of the generated file list",
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        type=str,
+        help="filepath of the check results",
+    )
 
     options = parser.parse_args()
 
@@ -78,39 +89,34 @@ def main():
     for component, reldir in output_reldirs.items():
         component_reldirs[web_idl.Component(component)] = reldir
 
-    bind_gen.init(web_idl_database_path=options.web_idl_database,
-                  root_src_dir=options.root_src_dir,
-                  root_gen_dir=options.root_gen_dir,
-                  component_reldirs=component_reldirs)
-    web_idl_database = bind_gen.package_initializer.package_initializer(
-    ).web_idl_database()
+    bind_gen.init(
+        web_idl_database_path=options.web_idl_database,
+        root_src_dir=options.root_src_dir,
+        root_gen_dir=options.root_gen_dir,
+        component_reldirs=component_reldirs,
+    )
+    web_idl_database = (
+        bind_gen.package_initializer.package_initializer().web_idl_database()
+    )
     idl_definitions = {
         "async_iterator": [
             interface.async_iterator
             for interface in web_idl_database.interfaces
             if interface.async_iterator
         ],
-        "callback_function":
-        web_idl_database.callback_functions,
-        "callback_interface":
-        web_idl_database.callback_interfaces,
-        "dictionary":
-        web_idl_database.dictionaries,
-        "enumeration":
-        web_idl_database.enumerations,
-        "interface":
-        web_idl_database.interfaces,
-        "namespace":
-        web_idl_database.namespaces,
-        "observable_array":
-        web_idl_database.observable_arrays,
+        "callback_function": web_idl_database.callback_functions,
+        "callback_interface": web_idl_database.callback_interfaces,
+        "dictionary": web_idl_database.dictionaries,
+        "enumeration": web_idl_database.enumerations,
+        "interface": web_idl_database.interfaces,
+        "namespace": web_idl_database.namespaces,
+        "observable_array": web_idl_database.observable_arrays,
         "sync_iterator": [
             interface.sync_iterator
             for interface in web_idl_database.interfaces
             if interface.sync_iterator
         ],
-        "union":
-        web_idl_database.union_types,
+        "union": web_idl_database.union_types,
     }
 
     error_log = []
@@ -120,8 +126,9 @@ def main():
     for_testing = False
     kind = None
     with open(options.generated_file_list) as input:
-        for token in itertools.chain.from_iterable(line.split()
-                                                   for line in input):
+        for token in itertools.chain.from_iterable(
+            line.split() for line in input
+        ):
             if token == "--for_prod":
                 for_testing = False
                 continue
@@ -146,14 +153,17 @@ def main():
             error_log.append(
                 "\"{path}\" is generated but not listed in the file list of "
                 "\"{kind}\" in generated_in_{component}.gni.\n".format(
-                    path=path, component=component, kind=kind))
+                    path=path, component=component, kind=kind
+                )
+            )
 
     # Check whether all generated files are listed appropriately.
     for kind, file_set in filepaths.items():
         for idl_definition in idl_definitions.get(kind, []):
             if kind == "callback_function" and idl_definition.identifier in (
-                    "OnErrorEventHandlerNonNull",
-                    "OnBeforeUnloadEventHandlerNonNull"):
+                "OnErrorEventHandlerNonNull",
+                "OnBeforeUnloadEventHandlerNonNull",
+            ):
                 # OnErrorEventHandlerNonNull and
                 # OnBeforeUnloadEventHandlerNonNull are unified into
                 # EventHandlerNonNull, and they won't be used.
@@ -161,20 +171,42 @@ def main():
 
             path_manager = PathManager(idl_definition)
             for_testing = idl_definition.code_generator_info.for_testing
-            check_if_listed(file_set, path_manager.api_path(ext="cc"),
-                            for_testing, path_manager.api_component, kind)
-            check_if_listed(file_set, path_manager.api_path(ext="h"),
-                            for_testing, path_manager.api_component, kind)
+            check_if_listed(
+                file_set,
+                path_manager.api_path(ext="cc"),
+                for_testing,
+                path_manager.api_component,
+                kind,
+            )
+            check_if_listed(
+                file_set,
+                path_manager.api_path(ext="h"),
+                for_testing,
+                path_manager.api_component,
+                kind,
+            )
             if path_manager.is_cross_components:
-                check_if_listed(file_set, path_manager.impl_path(ext="cc"),
-                                for_testing, path_manager.impl_component, kind)
-                check_if_listed(file_set, path_manager.impl_path(ext="h"),
-                                for_testing, path_manager.impl_component, kind)
+                check_if_listed(
+                    file_set,
+                    path_manager.impl_path(ext="cc"),
+                    for_testing,
+                    path_manager.impl_component,
+                    kind,
+                )
+                check_if_listed(
+                    file_set,
+                    path_manager.impl_path(ext="h"),
+                    for_testing,
+                    path_manager.impl_component,
+                    kind,
+                )
         for path, _ in file_set:
             error_log.append(
                 "\"{path}\" is listed in the file list of \"{kind}\", but "
-                "the file is not generated as {kind}.\n".format(path=path,
-                                                                kind=kind))
+                "the file is not generated as {kind}.\n".format(
+                    path=path, kind=kind
+                )
+            )
 
     with open(options.output, mode="w") as output:
         for message in error_log:
@@ -183,7 +215,8 @@ def main():
     if error_log:
         sys.stderr.write(
             "Error: {} errors were detected in file listing of the generated "
-            "Blink-V8 bindings files.\n\n".format(len(error_log)))
+            "Blink-V8 bindings files.\n\n".format(len(error_log))
+        )
         for message in error_log:
             sys.stderr.write(message)
         sys.stderr.write("\n")

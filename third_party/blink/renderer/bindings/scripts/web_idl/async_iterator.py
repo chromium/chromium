@@ -17,9 +17,14 @@ from .reference import RefById
 from .user_defined_type import UserDefinedType
 
 
-class AsyncIterator(UserDefinedType, WithExtendedAttributes,
-                    WithCodeGeneratorInfo, WithExposure, WithComponent,
-                    WithDebugInfo):
+class AsyncIterator(
+    UserDefinedType,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithComponent,
+    WithDebugInfo,
+):
     """
     Represents an async iterator type for 'asynchronous default iterator
     objects' [1], which exists for every interface that has a 'async iterator'
@@ -28,6 +33,7 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
     [1] https://webidl.spec.whatwg.org/#es-default-asynchronous-iterator-object
     [2] https://webidl.spec.whatwg.org/#es-asynchronous-iterable
     """
+
     @staticmethod
     def identifier_for(interface_identifier):
         """
@@ -37,21 +43,29 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
         assert isinstance(interface_identifier, Identifier)
         return Identifier('AsyncIterator_{}'.format(interface_identifier))
 
-    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     interface,
-                     component,
-                     key_type=None,
-                     value_type=None,
-                     operations=None):
+    class IR(
+        IRMap.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            interface,
+            component,
+            key_type=None,
+            value_type=None,
+            operations=None,
+        ):
             assert isinstance(interface, RefById)
             assert key_type is None or isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
             assert isinstance(operations, (list, tuple))
             assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
+                isinstance(operation, Operation.IR) for operation in operations
+            )
 
             identifier = AsyncIterator.identifier_for(interface.identifier)
 
@@ -98,18 +112,27 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
         self._interface = ir.interface
         self._key_type = ir.key_type
         self._value_type = ir.value_type
-        self._operations = tuple([
-            Operation(operation_ir, owner=self)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=self) for group_ir in ir.operation_groups
-        ])
+        self._operations = tuple(
+            [
+                Operation(operation_ir, owner=self)
+                for operation_ir in ir.operations
+            ]
+        )
+        self._operation_groups = tuple(
+            [
+                OperationGroup(
+                    group_ir,
+                    list(
+                        filter(
+                            lambda x: x.identifier == group_ir.identifier,
+                            self._operations,
+                        )
+                    ),
+                    owner=self,
+                )
+                for group_ir in ir.operation_groups
+            ]
+        )
         self._tag = ir.tag
         self._max_subclass_tag = ir.max_subclass_tag
 

@@ -36,8 +36,9 @@ from blinkpy.common.system.filesystem_mock import MockFileSystem
 from collections import OrderedDict
 
 
-class MockFileSystemTest(unittest.TestCase,
-                         filesystem_unittest.GenericFileSystemTests):
+class MockFileSystemTest(
+    unittest.TestCase, filesystem_unittest.GenericFileSystemTests
+):
     def setUp(self):
         self.fs = filesystem_mock.MockFileSystem()
         self.setup_generic_test_dir()
@@ -46,36 +47,44 @@ class MockFileSystemTest(unittest.TestCase,
         self.teardown_generic_test_dir()
         self.fs = None
 
-    def check_with_reference_function(self, test_function, good_function,
-                                      tests):
+    def check_with_reference_function(
+        self, test_function, good_function, tests
+    ):
         for test in tests:
-            if (isinstance(test, tuple)):
+            if isinstance(test, tuple):
                 expected = good_function(*test)
                 actual = test_function(*test)
             else:
                 expected = good_function(test)
                 actual = test_function(test)
             self.assertEqual(
-                expected, actual,
-                'given %s, expected %s, got %s' % (repr(test), repr(expected),
-                                                   repr(actual)))
+                expected,
+                actual,
+                'given %s, expected %s, got %s'
+                % (repr(test), repr(expected), repr(actual)),
+            )
 
     def test_join(self):
-        self.check_with_reference_function(self.fs.join,
-                                           self.fs._slow_but_correct_join, [
-                                               ('', ),
-                                               ('', 'bar'),
-                                               ('foo', ),
-                                               ('foo/', ),
-                                               ('foo', ''),
-                                               ('foo/', ''),
-                                               ('foo', 'bar'),
-                                               ('foo', '/bar'),
-                                           ])
+        self.check_with_reference_function(
+            self.fs.join,
+            self.fs._slow_but_correct_join,
+            [
+                ('',),
+                ('', 'bar'),
+                ('foo',),
+                ('foo/',),
+                ('foo', ''),
+                ('foo/', ''),
+                ('foo', 'bar'),
+                ('foo', '/bar'),
+            ],
+        )
 
     def test_normpath(self):
         self.check_with_reference_function(
-            self.fs.normpath, self.fs._slow_but_correct_normpath, [
+            self.fs.normpath,
+            self.fs._slow_but_correct_normpath,
+            [
                 '',
                 '/',
                 '.',
@@ -88,7 +97,8 @@ class MockFileSystemTest(unittest.TestCase,
                 'foo/../bar',
                 'foo/../bar/baz',
                 '../foo',
-            ])
+            ],
+        )
 
     def test_abspath_given_abs_path(self):
         self.assertEqual(self.fs.abspath('/some/path'), '/some/path')
@@ -113,10 +123,13 @@ class MockFileSystemTest(unittest.TestCase,
         mock_files = {'foo/bar/baz': '', 'foo/a': '', 'foo/b': '', 'foo/c': ''}
         host = MockHost()
         host.filesystem = MockFileSystem(files=mock_files)
-        self.assertEquals(list(host.filesystem.walk(mock_dir)), [
-            ('foo', ['bar'], ['a', 'b', 'c']),
-            ('foo/bar', [], ['baz']),
-        ])
+        self.assertEquals(
+            list(host.filesystem.walk(mock_dir)),
+            [
+                ('foo', ['bar'], ['a', 'b', 'c']),
+                ('foo/bar', [], ['baz']),
+            ],
+        )
 
     def test_filesystem_walk_deeply_nested(self):
         mock_dir = 'foo'
@@ -127,17 +140,20 @@ class MockFileSystemTest(unittest.TestCase,
             'foo/a/y': '',
             'foo/a/z/lyrics': '',
             'foo/b': '',
-            'foo/c': ''
+            'foo/c': '',
         }
         mock_files_ordered = OrderedDict(sorted(mock_files.items()))
         host = MockHost()
         host.filesystem = MockFileSystem(files=mock_files_ordered)
-        self.assertEquals(list(host.filesystem.walk(mock_dir)), [
-            ('foo', ['a', 'bar'], ['b', 'c']),
-            ('foo/a', ['z'], ['x', 'y']),
-            ('foo/a/z', [], ['lyrics']),
-            ('foo/bar', [], ['baz', 'quux']),
-        ])
+        self.assertEquals(
+            list(host.filesystem.walk(mock_dir)),
+            [
+                ('foo', ['a', 'bar'], ['b', 'c']),
+                ('foo/a', ['z'], ['x', 'y']),
+                ('foo/a/z', [], ['lyrics']),
+                ('foo/bar', [], ['baz', 'quux']),
+            ],
+        )
 
     def test_relpath_win32(self):
         # This unit test inherits tests from GenericFileSystemTests, but

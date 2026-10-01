@@ -14,7 +14,8 @@ class _Feature(str):
     def __init__(self, value):
         str.__init__(self)
         self._is_context_dependent = (
-            RuntimeEnabledFeatures.is_context_dependent(self))
+            RuntimeEnabledFeatures.is_context_dependent(self)
+        )
         self._is_origin_trial = RuntimeEnabledFeatures.is_origin_trial(self)
 
     @property
@@ -54,20 +55,28 @@ class Exposure(object):
 
         if other:
             self._global_names_and_features = tuple(
-                other.global_names_and_features)
+                other.global_names_and_features
+            )
             self._runtime_enabled_features = tuple(
-                other.runtime_enabled_features)
+                other.runtime_enabled_features
+            )
             self._context_independent_runtime_enabled_features = tuple(
-                other.context_independent_runtime_enabled_features)
+                other.context_independent_runtime_enabled_features
+            )
             self._context_dependent_runtime_enabled_features = tuple(
-                other.context_dependent_runtime_enabled_features)
+                other.context_dependent_runtime_enabled_features
+            )
             self._origin_trial_features = tuple(other._origin_trial_features)
             self._context_enabled_features = tuple(
-                other.context_enabled_features)
+                other.context_enabled_features
+            )
             self._only_in_coi_contexts = other.only_in_coi_contexts
             self._only_in_coi_contexts_or_runtime_enabled_features = tuple(
-                other.only_in_coi_contexts_or_runtime_enabled_features)
-            self._only_in_injection_mitigated_contexts = other.only_in_injection_mitigated_contexts
+                other.only_in_coi_contexts_or_runtime_enabled_features
+            )
+            self._only_in_injection_mitigated_contexts = (
+                other.only_in_injection_mitigated_contexts
+            )
             self._only_in_isolated_contexts = other.only_in_isolated_contexts
             self._only_in_secure_contexts = other.only_in_secure_contexts
         else:
@@ -189,15 +198,19 @@ class Exposure(object):
             global_names: When specified, it's taken into account that the
                 global object implements |global_names|.
         """
-        assert (global_names is None
-                or (isinstance(global_names, (list, tuple))
-                    and all(isinstance(name, str) for name in global_names)))
+        assert global_names is None or (
+            isinstance(global_names, (list, tuple))
+            and all(isinstance(name, str) for name in global_names)
+        )
 
-        if (self.context_dependent_runtime_enabled_features
-                or self.context_enabled_features or self.only_in_coi_contexts
-                or self.only_in_injection_mitigated_contexts
-                or self.only_in_isolated_contexts
-                or self.only_in_secure_contexts):
+        if (
+            self.context_dependent_runtime_enabled_features
+            or self.context_enabled_features
+            or self.only_in_coi_contexts
+            or self.only_in_injection_mitigated_contexts
+            or self.only_in_isolated_contexts
+            or self.only_in_secure_contexts
+        ):
             return True
 
         if not global_names:
@@ -236,7 +249,8 @@ class ExposureMutable(Exposure):
 
     def add_global_name_and_feature(self, global_name, feature_name=None):
         self._global_names_and_features.append(
-            _GlobalNameAndFeature(global_name, feature_name))
+            _GlobalNameAndFeature(global_name, feature_name)
+        )
 
     def add_runtime_enabled_feature(self, name):
         assert isinstance(name, str)
@@ -260,7 +274,8 @@ class ExposureMutable(Exposure):
     def add_only_in_coi_contexts_or_runtime_enabled_feature(self, name):
         assert isinstance(name, str)
         self._only_in_coi_contexts_or_runtime_enabled_features.append(
-            _Feature(name))
+            _Feature(name)
+        )
 
     def set_only_in_injection_mitigated_contexts(self, value):
         assert isinstance(value, bool)
@@ -271,13 +286,14 @@ class ExposureMutable(Exposure):
         self._only_in_isolated_contexts = value
 
     def set_only_in_secure_contexts(self, value):
-        assert (isinstance(value, (bool, str))
-                or (isinstance(value, (list, tuple))
-                    and all(isinstance(name, str) for name in value)))
+        assert isinstance(value, (bool, str)) or (
+            isinstance(value, (list, tuple))
+            and all(isinstance(name, str) for name in value)
+        )
         assert self._only_in_secure_contexts is None
         if isinstance(value, bool):
             self._only_in_secure_contexts = value
         elif isinstance(value, str):
-            self._only_in_secure_contexts = (_Feature(value), )
+            self._only_in_secure_contexts = (_Feature(value),)
         else:
             self._only_in_secure_contexts = tuple(map(_Feature, value))

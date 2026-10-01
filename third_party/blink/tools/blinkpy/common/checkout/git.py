@@ -56,8 +56,9 @@ class FileStatusType(enum.Flag):
     RENAME = enum.auto()
 
     def __str__(self) -> str:
-        return ''.join(status.name[0] for status in FileStatusType
-                       if status & self)
+        return ''.join(
+            status.name[0] for status in FileStatusType if status & self
+        )
 
     @classmethod
     def parse_diff_filter(cls, pattern: str) -> 'FileStatusType':
@@ -85,34 +86,45 @@ class Git:
     # Git doesn't appear to document error codes, but seems to return
     # 1 or 128, mostly.
     ERROR_FILE_IS_MISSING = 128
-    DEFAULT_DIFF_FILTER = (FileStatusType.ADD | FileStatusType.DELETE
-                           | FileStatusType.MODIFY)
+    DEFAULT_DIFF_FILTER = (
+        FileStatusType.ADD | FileStatusType.DELETE | FileStatusType.MODIFY
+    )
 
-    def __init__(self,
-                 cwd=None,
-                 executive=None,
-                 filesystem=None,
-                 platform=None,
-                 remote_branch=None):
+    def __init__(
+        self,
+        cwd=None,
+        executive=None,
+        filesystem=None,
+        platform=None,
+        remote_branch=None,
+    ):
         self._executive = executive or Executive()
         self._filesystem = filesystem or FileSystem()
         self._remote_branch = remote_branch
         self._executable_name = self.find_executable_name(
-            self._executive, platform)
+            self._executive, platform
+        )
 
         self.cwd = cwd or self._filesystem.abspath(self._filesystem.getcwd())
         if not self.in_working_directory(self.cwd):
             module_directory = self._filesystem.abspath(
                 self._filesystem.dirname(
-                    self._filesystem.path_to_module(self.__module__)))
+                    self._filesystem.path_to_module(self.__module__)
+                )
+            )
             _log.warning(
                 'The current directory (%s) is not in a git repo, trying directory %s.',
-                self.cwd, module_directory)
+                self.cwd,
+                module_directory,
+            )
             if self.in_working_directory(module_directory):
                 self.cwd = module_directory
             else:
-                _log.warning('Failed to find Git repo for %s or %s', self.cwd,
-                             module_directory)
+                _log.warning(
+                    'Failed to find Git repo for %s or %s',
+                    self.cwd,
+                    module_directory,
+                )
 
         self.checkout_root = self.find_checkout_root(self.cwd)
 
@@ -139,33 +151,42 @@ class Git:
             _log.debug('Using "git.bat" as git executable.')
             return 'git.bat'
 
-    def run(self,
-            command_args,
-            cwd=None,
-            stdin=None,
-            decode_output=True,
-            return_exit_code=False):
+    def run(
+        self,
+        command_args,
+        cwd=None,
+        stdin=None,
+        decode_output=True,
+        return_exit_code=False,
+    ):
         """Invokes git with the given args."""
         full_command_args = [self._executable_name] + command_args
         cwd = cwd or self.checkout_root
-        return self._executive.run_command(full_command_args,
-                                           cwd=cwd,
-                                           input=stdin,
-                                           return_exit_code=return_exit_code,
-                                           decode_output=decode_output,
-                                           debug_logging=False)
+        return self._executive.run_command(
+            full_command_args,
+            cwd=cwd,
+            input=stdin,
+            return_exit_code=return_exit_code,
+            decode_output=decode_output,
+            debug_logging=False,
+        )
 
     def absolute_path(self, repository_relative_path):
         """Converts repository-relative paths to absolute paths."""
-        return self._filesystem.join(self.checkout_root,
-                                     repository_relative_path)
+        return self._filesystem.join(
+            self.checkout_root, repository_relative_path
+        )
 
     def in_working_directory(self, path):
-        return self._executive.run_command(
-            [self._executable_name, 'rev-parse', '--is-inside-work-tree'],
-            cwd=path,
-            error_handler=Executive.ignore_error,
-            debug_logging=False).rstrip() == 'true'
+        return (
+            self._executive.run_command(
+                [self._executable_name, 'rev-parse', '--is-inside-work-tree'],
+                cwd=path,
+                error_handler=Executive.ignore_error,
+                debug_logging=False,
+            ).rstrip()
+            == 'true'
+        )
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
@@ -184,7 +205,8 @@ class Git:
         return executive.run_command(
             [cls.executable_name, 'config', '--get-all', key],
             error_handler=Executive.ignore_error,
-            cwd=cwd).rstrip('\n')
+            cwd=cwd,
+        ).rstrip('\n')
 
     def has_working_directory_changes(self, pathspec=None):
         """Checks whether there are uncommitted changes."""
@@ -218,8 +240,8 @@ class Git:
         # `git status -z` is a version of `git status -s`, that's recommended
         # for machine parsing. Lines are terminated with NUL rather than LF.
         change_lines = self.run(
-            ['status', '-z', '--no-renames',
-             '--untracked-files=all']).rstrip('\x00')
+            ['status', '-z', '--no-renames', '--untracked-files=all']
+        ).rstrip('\x00')
         if not change_lines:
             return
         for line in change_lines.split('\x00'):
@@ -228,9 +250,9 @@ class Git:
             yield line[0].strip(), line[1].strip(), path
 
     def add_list(self, paths: List[str], return_exit_code: bool = False):
-        return self._run_chunked(['add'],
-                                 paths,
-                                 return_exit_code=return_exit_code)
+        return self._run_chunked(
+            ['add'], paths, return_exit_code=return_exit_code
+        )
 
     def delete_list(self, paths: List[str], ignore_unmatch: bool = False):
         command = ['rm', '-f']
@@ -238,11 +260,13 @@ class Git:
             command.append('--ignore-unmatch')
         return self._run_chunked(command, paths)
 
-    def _run_chunked(self,
-                     command: List[str],
-                     paths: List[str],
-                     chunk_size: int = 128,
-                     **run_kwargs):
+    def _run_chunked(
+        self,
+        command: List[str],
+        paths: List[str],
+        chunk_size: int = 128,
+        **run_kwargs,
+    ):
         """Safely run `git` operations on an arbitrary number of paths.
 
         This helper transparently avoids command line length limitations on
@@ -261,7 +285,7 @@ class Git:
         """
         rv = 0
         for chunk_start in range(0, len(paths), chunk_size):
-            chunk = paths[chunk_start:chunk_start + chunk_size]
+            chunk = paths[chunk_start : chunk_start + chunk_size]
             rv = rv or self.run(command + chunk, **run_kwargs)
         return rv
 
@@ -309,9 +333,12 @@ class Git:
     def _upstream_branch(self):
         current_branch = self.current_branch()
         return self._branch_from_ref(
-            self.read_git_config('branch.%s.merge' % current_branch,
-                                 cwd=self.checkout_root,
-                                 executive=self._executive).strip())
+            self.read_git_config(
+                'branch.%s.merge' % current_branch,
+                cwd=self.checkout_root,
+                executive=self._executive,
+            ).strip()
+        )
 
     def _merge_base(self, git_commit=None):
         if git_commit:
@@ -320,7 +347,8 @@ class Git:
                 upstream = self._upstream_branch()
                 if not upstream:
                     raise ScriptError(
-                        message='No upstream/tracking branch set.')
+                        message='No upstream/tracking branch set.'
+                    )
                 git_commit = git_commit.replace('UPSTREAM', upstream)
 
             # Special-case <refname>.. to include working copy changes, e.g., 'HEAD....' shows only the diffs from HEAD.
@@ -371,24 +399,28 @@ class Git:
             affected_file = next(values)
             if status_type in FileStatusType.COPY | FileStatusType.RENAME:
                 file_statuses[next(values)] = FileStatus(
-                    status_type, affected_file)
+                    status_type, affected_file
+                )
             else:
                 file_statuses[affected_file] = FileStatus(status_type)
         return file_statuses
 
     def added_files(self):
-        return self._run_status_and_extract_filenames(self.status_command(),
-                                                      self._status_regexp('A'))
+        return self._run_status_and_extract_filenames(
+            self.status_command(), self._status_regexp('A')
+        )
 
     def deleted_files(self):
-        return self._run_status_and_extract_filenames(self.status_command(),
-                                                      self._status_regexp('D'))
+        return self._run_status_and_extract_filenames(
+            self.status_command(), self._status_regexp('D')
+        )
 
     def _run_status_and_extract_filenames(self, status_command, status_regexp):
         filenames = []
         # We run with cwd=self.checkout_root so that returned-paths are root-relative.
-        for line in self.run(status_command,
-                             cwd=self.checkout_root).splitlines():
+        for line in self.run(
+            status_command, cwd=self.checkout_root
+        ).splitlines():
             match = re.search(status_regexp, line)
             if not match:
                 continue
@@ -407,11 +439,13 @@ class Git:
     def display_name(self):
         return 'git'
 
-    def most_recent_log_matching(self,
-                                 grep_str: str,
-                                 path: Optional[str] = None,
-                                 commits: Union[None, str, CommitRange] = None,
-                                 format_pattern: Optional[str] = None) -> str:
+    def most_recent_log_matching(
+        self,
+        grep_str: str,
+        path: Optional[str] = None,
+        commits: Union[None, str, CommitRange] = None,
+        format_pattern: Optional[str] = None,
+    ) -> str:
         """Find and return the most recent commit message matching a pattern.
 
         Arguments:
@@ -443,7 +477,9 @@ class Git:
     def _commit_position_from_git_log(self, git_log):
         match = re.search(
             r"^\s*Cr-Commit-Position:.*@\{#(?P<commit_position>\d+)\}",
-            git_log, re.MULTILINE)
+            git_log,
+            re.MULTILINE,
+        )
         if not match:
             return ''
         return int(match.group('commit_position'))
@@ -480,19 +516,28 @@ class Git:
         return self._commit_position_from_git_log(git_log)
 
     def _branch_ref_exists(self, branch_ref):
-        return self.run(['show-ref', '--quiet', '--verify', branch_ref],
-                        return_exit_code=True) == 0
+        return (
+            self.run(
+                ['show-ref', '--quiet', '--verify', branch_ref],
+                return_exit_code=True,
+            )
+            == 0
+        )
 
     def _remote_merge_base(self):
-        return self.run(['merge-base',
-                         self._remote_branch_ref(), 'HEAD']).strip()
+        return self.run(
+            ['merge-base', self._remote_branch_ref(), 'HEAD']
+        ).strip()
 
     def _remote_branch_ref(self):
         # Use references so that we can avoid collisions, e.g. we don't want to operate on refs/heads/trunk if it exists.
         remote_main_ref = self._remote_branch or 'refs/remotes/origin/main'
         if self._branch_ref_exists(remote_main_ref):
             return remote_main_ref
-        error_msg = "Can't find a branch to diff against. %s does not exist" % remote_main_ref
+        error_msg = (
+            "Can't find a branch to diff against. %s does not exist"
+            % remote_main_ref
+        )
         raise ScriptError(message=error_msg)
 
     def commit_locally_with_message(self, message):
@@ -504,7 +549,8 @@ class Git:
 
     def git_commits_since(self, commit):
         return self.run(
-            ['log', commit + '..master', '--format=%H', '--reverse']).split()
+            ['log', commit + '..master', '--format=%H', '--reverse']
+        ).split()
 
     def git_commit_detail(self, commit, format=None):  # pylint: disable=redefined-builtin
         args = ['log', '-1', commit]

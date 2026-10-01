@@ -69,4 +69,5 @@ class KnownExportedChangeIdsSet:
 # The singleton instance used throughout the system.
 # It receives the raw set and processes it internally to build its lowercase set.
 KNOWN_EXPORTED_CHANGE_IDS = KnownExportedChangeIdsSet(
-    _RAW_KNOWN_EXPORTED_CHANGE_IDS)
+    _RAW_KNOWN_EXPORTED_CHANGE_IDS
+)

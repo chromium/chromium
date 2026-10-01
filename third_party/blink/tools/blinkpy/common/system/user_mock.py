@@ -32,16 +32,13 @@ _log = logging.getLogger(__name__)
 
 
 class MockUser(object):
-
     DEFAULT_YES = 'y'
     DEFAULT_NO = 'n'
 
     @classmethod
-    def prompt_with_list(cls,
-                         list_title,
-                         list_items,
-                         can_choose_multiple=False,
-                         input_func=input):
+    def prompt_with_list(
+        cls, list_title, list_items, can_choose_multiple=False, input_func=input
+    ):
         pass
 
     def __init__(self):

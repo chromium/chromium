@@ -34,12 +34,13 @@ class PathManager(object):
         Everything is generated in a single component.
     """
 
-    _REQUIRE_INIT_MESSAGE = ("PathManager.init must be called in advance.")
+    _REQUIRE_INIT_MESSAGE = "PathManager.init must be called in advance."
     _is_initialized = False
 
     @classmethod
-    def init(cls, root_src_dir, root_gen_dir, component_reldirs,
-             union_name_mapper):
+    def init(
+        cls, root_src_dir, root_gen_dir, component_reldirs, union_name_mapper
+    ):
         """
         Args:
             root_src_dir: Project's root directory, which corresponds to "//"
@@ -96,8 +97,9 @@ class PathManager(object):
         components = sorted(idl_definition.components)  # "core" < "modules"
 
         if len(components) == 0:
-            assert isinstance(idl_definition,
-                              (web_idl.ObservableArray, web_idl.Union))
+            assert isinstance(
+                idl_definition, (web_idl.ObservableArray, web_idl.Union)
+            )
             # Compound types of built-in types, e.g. ObservableArray<long> and
             # (double or DOMString), do not have a component.
             self._is_cross_components = False
@@ -112,9 +114,11 @@ class PathManager(object):
             # interfaces are defined in modules.
             # TODO(japhet, caseq): Figure out why exposed constructors don't
             # influence component calculations.
-            if (isinstance(idl_definition, WithExtendedAttributes)
-                    and "Global" in idl_definition.extended_attributes
-                    and component == "core"):
+            if (
+                isinstance(idl_definition, WithExtendedAttributes)
+                and "Global" in idl_definition.extended_attributes
+                and component == "core"
+            ):
                 self._is_cross_components = True
                 self._api_component = web_idl.Component("core")
                 self._impl_component = web_idl.Component("modules")
@@ -129,8 +133,9 @@ class PathManager(object):
             # code generation because clients of IDL observable array and IDL
             # union types must be on an upper or same layer to any of element
             # type and union members.
-            if isinstance(idl_definition,
-                          (web_idl.ObservableArray, web_idl.Union)):
+            if isinstance(
+                idl_definition, (web_idl.ObservableArray, web_idl.Union)
+            ):
                 self._is_cross_components = False
                 self._api_component = components[1]
                 self._impl_component = components[1]
@@ -144,10 +149,12 @@ class PathManager(object):
         self._api_dir = self._component_reldirs[self._api_component]
         self._impl_dir = self._component_reldirs[self._impl_component]
         if isinstance(idl_definition, web_idl.ObservableArray):
-            self._api_basename = name_style.file("v8",
-                                                 idl_definition.identifier)
-            self._impl_basename = name_style.file("v8",
-                                                  idl_definition.identifier)
+            self._api_basename = name_style.file(
+                "v8", idl_definition.identifier
+            )
+            self._impl_basename = name_style.file(
+                "v8", idl_definition.identifier
+            )
             self._blink_dir = None
             self._blink_basename = None
         elif isinstance(idl_definition, web_idl.Union):
@@ -164,21 +171,25 @@ class PathManager(object):
             # "int_32_array".
 
             if not filename:
-                filename = "v8_union_{}".format("_".join(
-                    idl_definition.member_tokens)).lower()
+                filename = "v8_union_{}".format(
+                    "_".join(idl_definition.member_tokens)
+                ).lower()
             self._api_basename = filename
             self._impl_basename = filename
             self._blink_dir = None
             self._blink_basename = None
         else:
-            self._api_basename = name_style.file("v8",
-                                                 idl_definition.identifier)
-            self._impl_basename = name_style.file("v8",
-                                                  idl_definition.identifier)
+            self._api_basename = name_style.file(
+                "v8", idl_definition.identifier
+            )
+            self._impl_basename = name_style.file(
+                "v8", idl_definition.identifier
+            )
             idl_path = idl_definition.debug_info.location.filepath
             self._blink_dir = posixpath.dirname(idl_path)
             self._blink_basename = name_style.file(
-                blink_class_name(idl_definition))
+                blink_class_name(idl_definition)
+            )
 
     @property
     def is_cross_components(self):
@@ -196,7 +207,8 @@ class PathManager(object):
         return self._join(
             dirpath=self.api_dir,
             filename=(filename or self._api_basename),
-            ext=ext)
+            ext=ext,
+        )
 
     @property
     def impl_component(self):
@@ -210,7 +222,8 @@ class PathManager(object):
         return self._join(
             dirpath=self.impl_dir,
             filename=(filename or self._impl_basename),
-            ext=ext)
+            ext=ext,
+        )
 
     @property
     def blink_dir(self):
@@ -220,7 +233,8 @@ class PathManager(object):
         return self._join(
             dirpath=self.blink_dir,
             filename=(filename or self._blink_basename),
-            ext=ext)
+            ext=ext,
+        )
 
     @staticmethod
     def _join(dirpath, filename, ext=None):

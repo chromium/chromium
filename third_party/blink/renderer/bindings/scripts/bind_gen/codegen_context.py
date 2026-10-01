@@ -91,7 +91,6 @@ class CodeGenContext(object):
             "sync_iterator": None,
             "typedef": None,
             "union": None,
-
             # Class-member-ish definition
             "attribute": None,
             "attribute_get": False,
@@ -105,7 +104,6 @@ class CodeGenContext(object):
             "legacy_window_alias": None,
             "operation": None,
             "operation_group": None,
-
             # Special member-ish definition
             "indexed_interceptor_kind": None,
             "indexed_property_getter": None,
@@ -115,7 +113,6 @@ class CodeGenContext(object):
             "named_property_setter": None,
             "named_property_deleter": None,
             "stringifier": None,
-
             # Cache of a tuple of dictionary._DictionaryMember for the own
             # members of the dictionary of which the Blink class is being
             # generated.  The cache is used in dictionary.py to save code
@@ -125,19 +122,15 @@ class CodeGenContext(object):
             # types of the union of which the Blink class is being generated.
             # The cache is used in union.py to save code generation time.
             "union_members": (),
-
             # The names of the class being generated and its base class.
             "base_class_name": None,
             "class_name": None,
-
             # Main world or all worlds
             # Used via [PerWorldBindings] to optimize the code path of the main
             # world.
             "for_world": cls.ALL_WORLDS,
-
             # True when generating a callback of [NoAllocDirectCall].
             "no_alloc_direct_call": False,
-
             # Type of V8 callback function which implements IDL attribute,
             # IDL operation, etc.
             "v8_callback_type": cls.V8_FUNCTION_CALLBACK,
@@ -179,13 +172,14 @@ class CodeGenContext(object):
 
         for arg in kwargs.keys():
             assert arg in self._context_attrs, "Unknown argument: {}".format(
-                arg)
+                arg
+            )
 
         for attr, default_value in self._context_attrs.items():
             value = kwargs[attr] if attr in kwargs else default_value
-            assert (default_value is None
-                    or type(value) is type(default_value)), (
-                        "Type mismatch at argument: {}".format(attr))
+            assert default_value is None or type(value) is type(
+                default_value
+            ), "Type mismatch at argument: {}".format(attr)
             setattr(self, self._internal_attr(attr), value)
 
     def make_copy(self, **kwargs):
@@ -195,14 +189,16 @@ class CodeGenContext(object):
         """
         for arg in kwargs.keys():
             assert arg in self._context_attrs, "Unknown argument: {}".format(
-                arg)
+                arg
+            )
 
         new_object = copy.copy(self)
 
         for attr, new_value in kwargs.items():
             old_value = getattr(self, attr)
             assert old_value is None or type(new_value) is type(old_value), (
-                "Type mismatch at argument: {}".format(attr))
+                "Type mismatch at argument: {}".format(attr)
+            )
             setattr(new_object, self._internal_attr(attr), new_value)
 
         return new_object
@@ -232,9 +228,14 @@ class CodeGenContext(object):
 
     @property
     def class_like(self):
-        return (self.async_iterator or self.callback_interface
-                or self.dictionary or self.interface or self.namespace
-                or self.sync_iterator)
+        return (
+            self.async_iterator
+            or self.callback_interface
+            or self.dictionary
+            or self.interface
+            or self.namespace
+            or self.sync_iterator
+        )
 
     @property
     def does_override_idl_return_type(self):
@@ -242,19 +243,33 @@ class CodeGenContext(object):
         # Namely, IndexedPropertySetterResult, NamedPropertySetterResult, and
         # NamedPropertyDeleterResult are returned ignoring the operation's
         # return type.
-        return (self.indexed_property_setter or self.named_property_setter
-                or self.named_property_deleter)
+        return (
+            self.indexed_property_setter
+            or self.named_property_setter
+            or self.named_property_deleter
+        )
 
     @property
     def function_like(self):
-        return (self.callback_function or self.constructor or self.operation
-                or self._indexed_or_named_property)
+        return (
+            self.callback_function
+            or self.constructor
+            or self.operation
+            or self._indexed_or_named_property
+        )
 
     @property
     def idl_definition(self):
-        return (self.callback_function or self.callback_interface
-                or self.dictionary or self.enumeration or self.interface
-                or self.namespace or self.typedef or self.union)
+        return (
+            self.callback_function
+            or self.callback_interface
+            or self.dictionary
+            or self.enumeration
+            or self.interface
+            or self.namespace
+            or self.typedef
+            or self.union
+        )
 
     @property
     def idl_location(self):
@@ -275,8 +290,7 @@ class CodeGenContext(object):
     def idl_name(self):
         member = self.member_like or self.property_
         if member:
-            return "{}.{}".format(self.class_like.identifier,
-                                  member.identifier)
+            return "{}.{}".format(self.class_like.identifier, member.identifier)
         if self.idl_definition:
             return self.idl_definition.identifier
         return "<<unknown name>>"
@@ -291,23 +305,39 @@ class CodeGenContext(object):
 
     @property
     def is_interceptor_returning_v8intercepted(self):
-        return bool((self.indexed_interceptor_kind
-                     and self.indexed_interceptor_kind != "Enumerator")
-                    or (self.named_interceptor_kind
-                        and self.named_interceptor_kind != "Enumerator")
-                    or (self.v8_callback_type
-                        == CodeGenContext.V8_NAMED_PROPERTY_GETTER_CALLBACK)
-                    or (self.v8_callback_type
-                        == CodeGenContext.V8_NAMED_PROPERTY_SETTER_CALLBACK))
+        return bool(
+            (
+                self.indexed_interceptor_kind
+                and self.indexed_interceptor_kind != "Enumerator"
+            )
+            or (
+                self.named_interceptor_kind
+                and self.named_interceptor_kind != "Enumerator"
+            )
+            or (
+                self.v8_callback_type
+                == CodeGenContext.V8_NAMED_PROPERTY_GETTER_CALLBACK
+            )
+            or (
+                self.v8_callback_type
+                == CodeGenContext.V8_NAMED_PROPERTY_SETTER_CALLBACK
+            )
+        )
 
     @property
     def logging_target(self):
-        return (self.attribute or self.constant or self.constructor
-                or self.constructor_group or self.dict_member
-                or (self.legacy_window_alias or self.exposed_construct)
-                or self.operation or self.operation_group
-                or (self.stringifier and self.stringifier.operation)
-                or self._indexed_or_named_property)
+        return (
+            self.attribute
+            or self.constant
+            or self.constructor
+            or self.constructor_group
+            or self.dict_member
+            or (self.legacy_window_alias or self.exposed_construct)
+            or self.operation
+            or self.operation_group
+            or (self.stringifier and self.stringifier.operation)
+            or self._indexed_or_named_property
+        )
 
     @property
     def may_throw_exception(self):
@@ -316,24 +346,35 @@ class CodeGenContext(object):
         ext_attr = self.member_like.extended_attributes.get("RaisesException")
         if not ext_attr:
             return False
-        return (not ext_attr.values
-                or (self.attribute_get and "Getter" in ext_attr.values)
-                or (self.attribute_set and "Setter" in ext_attr.values))
+        return (
+            not ext_attr.values
+            or (self.attribute_get and "Getter" in ext_attr.values)
+            or (self.attribute_set and "Setter" in ext_attr.values)
+        )
 
     @property
     def member_like(self):
-        return (self.attribute or self.constant or self.constructor
-                or self.dict_member or self.operation
-                or self._indexed_or_named_property)
+        return (
+            self.attribute
+            or self.constant
+            or self.constructor
+            or self.dict_member
+            or self.operation
+            or self._indexed_or_named_property
+        )
 
     @property
     def property_(self):
-        return (self.attribute or self.constant or self.constructor_group
-                or self.dict_member
-                or (self.legacy_window_alias or self.exposed_construct)
-                or self.operation_group
-                or (self.stringifier and self.stringifier.operation)
-                or self._indexed_or_named_property)
+        return (
+            self.attribute
+            or self.constant
+            or self.constructor_group
+            or self.dict_member
+            or (self.legacy_window_alias or self.exposed_construct)
+            or self.operation_group
+            or (self.stringifier and self.stringifier.operation)
+            or self._indexed_or_named_property
+        )
 
     @property
     def return_type(self):
@@ -346,9 +387,13 @@ class CodeGenContext(object):
 
     @property
     def _indexed_or_named_property(self):
-        return (self.indexed_property_getter or self.indexed_property_setter
-                or self.named_property_getter or self.named_property_setter
-                or self.named_property_deleter)
+        return (
+            self.indexed_property_getter
+            or self.indexed_property_setter
+            or self.named_property_getter
+            or self.named_property_setter
+            or self.named_property_deleter
+        )
 
 
 CodeGenContext.init()

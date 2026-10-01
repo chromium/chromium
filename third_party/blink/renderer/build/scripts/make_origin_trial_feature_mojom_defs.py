@@ -8,12 +8,14 @@ import template_expander
 
 
 class OriginTrialFeatureMojomWriter(
-        make_runtime_features.BaseRuntimeFeatureWriter):
+    make_runtime_features.BaseRuntimeFeatureWriter
+):
     file_basename = "origin_trial_feature"
 
     def __init__(self, json5_file_path, output_dir):
-        super(OriginTrialFeatureMojomWriter,
-              self).__init__(json5_file_path, output_dir)
+        super(OriginTrialFeatureMojomWriter, self).__init__(
+            json5_file_path, output_dir
+        )
         self._outputs = {
             (self.file_basename + '.mojom'): self.generate_mojom_definition
         }

@@ -34,8 +34,9 @@ from .sync_iterator import SyncIterator
 from .typedef import Typedef
 
 
-def load_and_register_idl_definitions(filepaths, register_ir,
-                                      create_ref_to_idl_def, idl_type_factory):
+def load_and_register_idl_definitions(
+    filepaths, register_ir, create_ref_to_idl_def, idl_type_factory
+):
     """
     Reads ASTs from |filepaths| and builds IRs from ASTs.
 
@@ -56,7 +57,8 @@ def load_and_register_idl_definitions(filepaths, register_ir,
             component=Component(asts.component),
             for_testing=asts.for_testing,
             create_ref_to_idl_def=create_ref_to_idl_def,
-            idl_type_factory=idl_type_factory)
+            idl_type_factory=idl_type_factory,
+        )
 
         for file_node in asts:
             assert file_node.GetClass() == 'File'
@@ -65,8 +67,9 @@ def load_and_register_idl_definitions(filepaths, register_ir,
 
 
 class _IRBuilder(object):
-    def __init__(self, component, for_testing, create_ref_to_idl_def,
-                 idl_type_factory):
+    def __init__(
+        self, component, for_testing, create_ref_to_idl_def, idl_type_factory
+    ):
         """
         Args:
             component: A Component to which the built IRs are associated.
@@ -112,18 +115,21 @@ class _IRBuilder(object):
         inherited = self._take_inheritance(child_nodes)
         stringifier_members = self._take_stringifier(child_nodes)
         async_iterable = self._take_async_iterable(
-            child_nodes, interface_identifier=identifier)
-        iterable = self._take_iterable(child_nodes,
-                                       interface_identifier=identifier)
+            child_nodes, interface_identifier=identifier
+        )
+        iterable = self._take_iterable(
+            child_nodes, interface_identifier=identifier
+        )
         maplike = self._take_maplike(
-            child_nodes, interface_identifier=identifier)
+            child_nodes, interface_identifier=identifier
+        )
         setlike = self._take_setlike(
-            child_nodes, interface_identifier=identifier)
+            child_nodes, interface_identifier=identifier
+        )
         extended_attributes = self._take_extended_attributes(child_nodes)
 
         members = [
-            self._build_interface_member(
-                child, interface_identifier=identifier)
+            self._build_interface_member(child, interface_identifier=identifier)
             for child in child_nodes
         ]
         if stringifier_members:
@@ -146,22 +152,24 @@ class _IRBuilder(object):
 
         legacy_factory_functions = self._build_legacy_factory_function(node)
 
-        return Interface.IR(identifier=identifier,
-                            is_partial=bool(node.GetProperty('PARTIAL')),
-                            is_mixin=bool(node.GetProperty('MIXIN')),
-                            inherited=inherited,
-                            attributes=attributes,
-                            constants=constants,
-                            constructors=constructors,
-                            legacy_factory_functions=legacy_factory_functions,
-                            operations=operations,
-                            async_iterable=async_iterable,
-                            iterable=iterable,
-                            maplike=maplike,
-                            setlike=setlike,
-                            extended_attributes=extended_attributes,
-                            component=self._component,
-                            debug_info=self._build_debug_info(node))
+        return Interface.IR(
+            identifier=identifier,
+            is_partial=bool(node.GetProperty('PARTIAL')),
+            is_mixin=bool(node.GetProperty('MIXIN')),
+            inherited=inherited,
+            attributes=attributes,
+            constants=constants,
+            constructors=constructors,
+            legacy_factory_functions=legacy_factory_functions,
+            operations=operations,
+            async_iterable=async_iterable,
+            iterable=iterable,
+            maplike=maplike,
+            setlike=setlike,
+            extended_attributes=extended_attributes,
+            component=self._component,
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_namespace(self, node):
         child_nodes = list(node.GetChildren())
@@ -191,17 +199,19 @@ class _IRBuilder(object):
             operations=operations,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
-    def _build_interface_member(self,
-                                node,
-                                fallback_extended_attributes=None,
-                                interface_identifier=None):
+    def _build_interface_member(
+        self, node, fallback_extended_attributes=None, interface_identifier=None
+    ):
         def build_attribute(node):
             child_nodes = list(node.GetChildren())
             idl_type = self._take_type(child_nodes)
-            extended_attributes = self._take_extended_attributes(
-                child_nodes) or fallback_extended_attributes
+            extended_attributes = (
+                self._take_extended_attributes(child_nodes)
+                or fallback_extended_attributes
+            )
             assert not child_nodes
             return Attribute.IR(
                 identifier=Identifier(node.GetName()),
@@ -211,13 +221,16 @@ class _IRBuilder(object):
                 does_inherit_getter=bool(node.GetProperty('INHERIT')),
                 extended_attributes=extended_attributes,
                 component=self._component,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_constant(node):
             child_nodes = list(node.GetChildren())
             value = self._take_constant_value(child_nodes)
-            extended_attributes = self._take_extended_attributes(
-                child_nodes) or fallback_extended_attributes
+            extended_attributes = (
+                self._take_extended_attributes(child_nodes)
+                or fallback_extended_attributes
+            )
             assert len(child_nodes) == 1, child_nodes[0].GetClass()
             # idl_parser doesn't produce a 'Type' node for the type of a
             # constant, hence we need to skip one level.
@@ -228,31 +241,38 @@ class _IRBuilder(object):
                 value=value,
                 extended_attributes=extended_attributes,
                 component=self._component,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_constructor(node):
             assert isinstance(interface_identifier, Identifier)
             child_nodes = list(node.GetChildren())
             arguments = self._take_arguments(child_nodes)
-            extended_attributes = self._take_extended_attributes(
-                child_nodes) or fallback_extended_attributes
+            extended_attributes = (
+                self._take_extended_attributes(child_nodes)
+                or fallback_extended_attributes
+            )
             assert not child_nodes
             return_type = self._idl_type_factory.reference_type(
-                interface_identifier)
+                interface_identifier
+            )
             return Constructor.IR(
                 identifier=None,
                 arguments=arguments,
                 return_type=return_type,
                 extended_attributes=extended_attributes,
                 component=self._component,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_operation(node):
             child_nodes = list(node.GetChildren())
             arguments = self._take_arguments(child_nodes)
             return_type = self._take_type(child_nodes)
-            extended_attributes = self._take_extended_attributes(
-                child_nodes) or fallback_extended_attributes
+            extended_attributes = (
+                self._take_extended_attributes(child_nodes)
+                or fallback_extended_attributes
+            )
             assert not child_nodes
             return Operation.IR(
                 identifier=Identifier(node.GetName()),
@@ -264,7 +284,8 @@ class _IRBuilder(object):
                 is_deleter=bool(node.GetProperty('DELETER')),
                 extended_attributes=extended_attributes,
                 component=self._component,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         build_functions = {
             'Attribute': build_attribute,
@@ -293,14 +314,18 @@ class _IRBuilder(object):
             child_nodes = list(call_node.GetChildren())
             arguments = self._take_arguments(child_nodes)
             return_type = self._idl_type_factory.reference_type(
-                Identifier(node.GetName()))
+                Identifier(node.GetName())
+            )
             assert not child_nodes
             legacy_factory_functions.append(
-                Constructor.IR(identifier=Identifier(call_node.GetName()),
-                               arguments=arguments,
-                               return_type=return_type,
-                               component=self._component,
-                               debug_info=self._build_debug_info(node)))
+                Constructor.IR(
+                    identifier=Identifier(call_node.GetName()),
+                    arguments=arguments,
+                    return_type=return_type,
+                    component=self._component,
+                    debug_info=self._build_debug_info(node),
+                )
+            )
 
         return legacy_factory_functions
 
@@ -317,7 +342,8 @@ class _IRBuilder(object):
             own_members=own_members,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_dictionary_member(self, node):
         assert node.GetClass() == 'Key'
@@ -335,7 +361,8 @@ class _IRBuilder(object):
             default_value=default_value,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_callback_interface(self, node):
         assert node.GetProperty('CALLBACK')
@@ -359,7 +386,8 @@ class _IRBuilder(object):
             operations=operations,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_callback_function(self, node):
         child_nodes = list(node.GetChildren())
@@ -373,7 +401,8 @@ class _IRBuilder(object):
             return_type=return_type,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_enumeration(self, node):
         child_nodes = list(node.GetChildren())
@@ -385,7 +414,8 @@ class _IRBuilder(object):
             values=values,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_typedef(self, node):
         child_nodes = list(node.GetChildren())
@@ -396,14 +426,16 @@ class _IRBuilder(object):
             identifier=Identifier(node.GetName()),
             idl_type=idl_type,
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_includes(self, node):
         return Includes.IR(
             interface_identifier=Identifier(node.GetName()),
             mixin_identifier=Identifier(node.GetProperty('REFERENCE')),
             component=self._component,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     # Helper functions sorted alphabetically
 
@@ -420,19 +452,20 @@ class _IRBuilder(object):
                 child_nodes,
                 is_optional=is_optional,
                 is_variadic=is_variadic,
-                extended_attributes=extended_attributes)
+                extended_attributes=extended_attributes,
+            )
             default_value = self._take_default_value(child_nodes)
             assert not child_nodes
             return Argument.IR(
                 identifier=Identifier(node.GetName()),
                 index=index,
                 idl_type=idl_type,
-                default_value=default_value)
+                default_value=default_value,
+            )
 
         assert node.GetClass() == 'Arguments'
         return [
-            build_argument(node, i)
-            for i, node in enumerate(node.GetChildren())
+            build_argument(node, i) for i, node in enumerate(node.GetChildren())
         ]
 
     def _build_async_iterable(self, node, interface_identifier):
@@ -444,7 +477,8 @@ class _IRBuilder(object):
         types = list(map(self._build_type, child_nodes))
         assert len(types) == 1 or len(types) == 2
         iter_ops = self._create_async_iterable_operations(
-            node, interface_identifier, arguments, extended_attributes)
+            node, interface_identifier, arguments, extended_attributes
+        )
         if len(types) == 1:  # value iterator
             key_type, value_type = (None, types[0])
             iter_ops[Identifier('values')].is_async_iterator = True
@@ -453,12 +487,14 @@ class _IRBuilder(object):
             key_type, value_type = types
             iter_ops[Identifier('entries')].is_async_iterator = True
             operations = list(iter_ops.values())
-        return AsyncIterable.IR(key_type=key_type,
-                                value_type=value_type,
-                                operations=operations,
-                                arguments=arguments,
-                                extended_attributes=extended_attributes,
-                                debug_info=self._build_debug_info(node))
+        return AsyncIterable.IR(
+            key_type=key_type,
+            value_type=value_type,
+            operations=operations,
+            arguments=arguments,
+            extended_attributes=extended_attributes,
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_constant_value(self, node):
         assert node.GetClass() == 'Value'
@@ -469,7 +505,9 @@ class _IRBuilder(object):
             location=Location(
                 filepath=node.GetProperty('FILENAME'),
                 line_number=node.GetProperty('LINENO'),
-                position=node.GetProperty('POSITION')))
+                position=node.GetProperty('POSITION'),
+            )
+        )
 
     def _build_default_value(self, node):
         assert node.GetClass() == 'Default'
@@ -488,7 +526,8 @@ class _IRBuilder(object):
                 child = child_nodes[0]
                 if child.GetClass() == 'Arguments':
                     arguments = list(
-                        map(build_extattr_argument, child.GetChildren()))
+                        map(build_extattr_argument, child.GetChildren())
+                    )
                 elif child.GetClass() == 'Call':
                     assert len(child.GetChildren()) == 1
                     grand_child = child.GetChildren()[0]
@@ -502,7 +541,8 @@ class _IRBuilder(object):
                     assert False
 
             return ExtendedAttribute(
-                key=key, values=values, arguments=arguments, name=name)
+                key=key, values=values, arguments=arguments, name=name
+            )
 
         def build_extattr_argument(node):
             assert node.GetClass() == 'Argument'
@@ -520,13 +560,15 @@ class _IRBuilder(object):
         assert node.GetClass() == 'ExtAttributes'
         return ExtendedAttributes(
             list(
-                filter(None, map(build_extended_attribute,
-                                 node.GetChildren()))))
+                filter(None, map(build_extended_attribute, node.GetChildren()))
+            )
+        )
 
     def _build_inheritance(self, node):
         assert node.GetClass() == 'Inherit'
         return self._create_ref_to_idl_def(
-            Identifier(node.GetName()), self._build_debug_info(node))
+            Identifier(node.GetName()), self._build_debug_info(node)
+        )
 
     def _build_is_variadic_argument(self, node):
         # idl_parser produces the following tree to indicate an argument is
@@ -552,14 +594,17 @@ class _IRBuilder(object):
         else:  # pair iterator
             key_type, value_type = types
             iter_ops = self._create_iterable_operations(
-                node, interface_identifier, extended_attributes)
+                node, interface_identifier, extended_attributes
+            )
             iter_ops[Identifier('entries')].is_iterator = True
             operations = list(iter_ops.values())
-        return Iterable.IR(key_type=key_type,
-                           value_type=value_type,
-                           operations=operations,
-                           extended_attributes=extended_attributes,
-                           debug_info=self._build_debug_info(node))
+        return Iterable.IR(
+            key_type=key_type,
+            value_type=value_type,
+            operations=operations,
+            extended_attributes=extended_attributes,
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_literal_constant(self, node):
         assert not node.GetChildren()
@@ -573,14 +618,17 @@ class _IRBuilder(object):
         if type_token == 'NULL':
             idl_type = factory.nullable_type(
                 inner_type=factory.simple_type(
-                    name='any', debug_info=debug_info),
-                debug_info=debug_info)
+                    name='any', debug_info=debug_info
+                ),
+                debug_info=debug_info,
+            )
             assert value_token == 'NULL'
             value = None
             literal = 'null'
         elif type_token == 'boolean':
             idl_type = factory.simple_type(
-                name='boolean', debug_info=debug_info)
+                name='boolean', debug_info=debug_info
+            )
             assert isinstance(value_token, bool)
             value = value_token
             literal = 'true' if value else 'false'
@@ -590,28 +638,29 @@ class _IRBuilder(object):
             value = int(value_token, base=0)
             literal = value_token
         elif type_token == 'float':
-            idl_type = factory.simple_type(
-                name='double', debug_info=debug_info)
+            idl_type = factory.simple_type(name='double', debug_info=debug_info)
             assert isinstance(value_token, str)
             value = float(value_token)
             literal = value_token
         elif type_token == 'DOMString':
             idl_type = factory.simple_type(
-                name='DOMString', debug_info=debug_info)
+                name='DOMString', debug_info=debug_info
+            )
             assert isinstance(value_token, str)
             value = value_token
             literal = '"{}"'.format(value)
         elif type_token == 'sequence':
             idl_type = factory.sequence_type(
                 element_type=factory.simple_type(
-                    name='any', debug_info=debug_info),
-                debug_info=debug_info)
+                    name='any', debug_info=debug_info
+                ),
+                debug_info=debug_info,
+            )
             assert value_token == '[]'
             value = []
             literal = '[]'
         elif type_token == 'dictionary':
-            idl_type = factory.simple_type(
-                name='object', debug_info=debug_info)
+            idl_type = factory.simple_type(name='object', debug_info=debug_info)
             assert value_token == '{}'
             value = dict()
             literal = '{}'
@@ -629,62 +678,74 @@ class _IRBuilder(object):
         is_readonly = bool(node.GetProperty('READONLY'))
         attributes = [
             self._create_attribute(
-                Identifier('size'),
-                'unsigned long',
-                is_readonly=True,
-                node=node),
+                Identifier('size'), 'unsigned long', is_readonly=True, node=node
+            ),
         ]
         iter_map = self._create_iterable_operations(node, interface_identifier)
         iter_map[Identifier('entries')].is_iterator = True
         iter_ops = list(iter_map.values())
         read_ops = [
-            self._create_operation(Identifier('get'),
-                                   arguments=self._create_arguments([
-                                       (Identifier('key'), key_type),
-                                   ]),
-                                   return_type='any',
-                                   extended_attributes={
-                                       'CallWith': 'ScriptState',
-                                       'ImplementedAs': 'getForBinding',
-                                   },
-                                   node=node),
-            self._create_operation(Identifier('has'),
-                                   arguments=self._create_arguments([
-                                       (Identifier('key'), key_type),
-                                   ]),
-                                   return_type='boolean',
-                                   extended_attributes={
-                                       'CallWith': 'ScriptState',
-                                       'ImplementedAs': 'hasForBinding',
-                                   },
-                                   node=node),
+            self._create_operation(
+                Identifier('get'),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('key'), key_type),
+                    ]
+                ),
+                return_type='any',
+                extended_attributes={
+                    'CallWith': 'ScriptState',
+                    'ImplementedAs': 'getForBinding',
+                },
+                node=node,
+            ),
+            self._create_operation(
+                Identifier('has'),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('key'), key_type),
+                    ]
+                ),
+                return_type='boolean',
+                extended_attributes={
+                    'CallWith': 'ScriptState',
+                    'ImplementedAs': 'hasForBinding',
+                },
+                node=node,
+            ),
         ]
         write_ops = [
             self._create_operation(
                 Identifier('set'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                    (Identifier('value'), value_type),
-                ]),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('key'), key_type),
+                        (Identifier('value'), value_type),
+                    ]
+                ),
                 return_type=interface_identifier,
                 extended_attributes={
                     'CallWith': 'ScriptState',
                     'RaisesException': None,
                     'ImplementedAs': 'setForBinding',
                 },
-                node=node),
+                node=node,
+            ),
             self._create_operation(
                 Identifier('delete'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                ]),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('key'), key_type),
+                    ]
+                ),
                 return_type='boolean',
                 extended_attributes={
                     'CallWith': 'ScriptState',
                     'RaisesException': None,
                     'ImplementedAs': 'deleteForBinding',
                 },
-                node=node),
+                node=node,
+            ),
             self._create_operation(
                 Identifier('clear'),
                 extended_attributes={
@@ -692,7 +753,8 @@ class _IRBuilder(object):
                     'RaisesException': None,
                     'ImplementedAs': 'clearForBinding',
                 },
-                node=node),
+                node=node,
+            ),
         ]
         for op in write_ops:
             op.is_optionally_defined = True
@@ -706,7 +768,8 @@ class _IRBuilder(object):
             is_readonly=is_readonly,
             attributes=attributes,
             operations=operations,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_setlike(self, node, interface_identifier):
         assert node.GetClass() == 'Setlike'
@@ -717,10 +780,8 @@ class _IRBuilder(object):
         is_readonly = bool(node.GetProperty('READONLY'))
         attributes = [
             self._create_attribute(
-                Identifier('size'),
-                'unsigned long',
-                is_readonly=True,
-                node=node),
+                Identifier('size'), 'unsigned long', is_readonly=True, node=node
+            ),
         ]
         iter_map = self._create_iterable_operations(node, interface_identifier)
         iter_map[Identifier('values')].is_iterator = True
@@ -728,42 +789,51 @@ class _IRBuilder(object):
         read_ops = [
             self._create_operation(
                 Identifier('has'),
-                arguments=self._create_arguments([
-                    (Identifier('value'), value_type),
-                ]),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('value'), value_type),
+                    ]
+                ),
                 return_type='boolean',
                 extended_attributes={
                     'CallWith': 'ScriptState',
                     'RaisesException': None,
                     'ImplementedAs': 'hasForBinding',
                 },
-                node=node),
+                node=node,
+            ),
         ]
         write_ops = [
             self._create_operation(
                 Identifier('add'),
-                arguments=self._create_arguments([
-                    (Identifier('value'), value_type),
-                ]),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('value'), value_type),
+                    ]
+                ),
                 return_type=interface_identifier,
                 extended_attributes={
                     'CallWith': 'ScriptState',
                     'RaisesException': None,
                     'ImplementedAs': 'addForBinding',
                 },
-                node=node),
+                node=node,
+            ),
             self._create_operation(
                 Identifier('delete'),
-                arguments=self._create_arguments([
-                    (Identifier('value'), value_type),
-                ]),
+                arguments=self._create_arguments(
+                    [
+                        (Identifier('value'), value_type),
+                    ]
+                ),
                 return_type='boolean',
                 extended_attributes={
                     'CallWith': 'ScriptState',
                     'RaisesException': None,
                     'ImplementedAs': 'deleteForBinding',
                 },
-                node=node),
+                node=node,
+            ),
             self._create_operation(
                 Identifier('clear'),
                 extended_attributes={
@@ -771,7 +841,8 @@ class _IRBuilder(object):
                     'RaisesException': None,
                     'ImplementedAs': 'clearForBinding',
                 },
-                node=node),
+                node=node,
+            ),
         ]
         for op in write_ops:
             op.is_optionally_defined = True
@@ -784,7 +855,8 @@ class _IRBuilder(object):
             is_readonly=is_readonly,
             attributes=attributes,
             operations=operations,
-            debug_info=self._build_debug_info(node))
+            debug_info=self._build_debug_info(node),
+        )
 
     def _build_stringifier(self, node):
         # There are three forms of stringifier declaration;
@@ -802,54 +874,60 @@ class _IRBuilder(object):
         member = None
         if len(child_nodes) == 1:
             member = self._build_interface_member(
-                child_nodes[0],
-                fallback_extended_attributes=extended_attributes)
+                child_nodes[0], fallback_extended_attributes=extended_attributes
+            )
             extended_attributes = None
         operation = member if isinstance(member, Operation.IR) else None
         attribute = member if isinstance(member, Attribute.IR) else None
 
         if operation is None:
             return_type = self._idl_type_factory.simple_type(
-                name='DOMString', debug_info=self._build_debug_info(node))
+                name='DOMString', debug_info=self._build_debug_info(node)
+            )
             operation = Operation.IR(
                 identifier=Identifier(''),
                 arguments=[],
                 return_type=return_type,
                 extended_attributes=extended_attributes,
                 component=self._component,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
         operation.is_stringifier = True
         if attribute:
             operation.stringifier_attribute = attribute.identifier
             return (operation, attribute)
         else:
-            return (operation, )
+            return (operation,)
 
-    def _build_type(self,
-                    node,
-                    is_optional=False,
-                    is_variadic=False,
-                    extended_attributes=None):
+    def _build_type(
+        self,
+        node,
+        is_optional=False,
+        is_variadic=False,
+        extended_attributes=None,
+    ):
         assert node.GetClass() == 'Type'
         assert not (is_optional and is_variadic)
         idl_type = self._build_type_internal(
             node.GetChildren(),
             is_optional=is_optional,
-            extended_attributes=extended_attributes)
+            extended_attributes=extended_attributes,
+        )
         if node.GetProperty('NULLABLE'):
             idl_type = self._idl_type_factory.nullable_type(
                 idl_type,
                 is_optional=is_optional,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
         if is_variadic:
             idl_type = self._idl_type_factory.variadic_type(
-                idl_type, debug_info=self._build_debug_info(node))
+                idl_type, debug_info=self._build_debug_info(node)
+            )
         return idl_type
 
-    def _build_type_internal(self,
-                             nodes,
-                             is_optional=False,
-                             extended_attributes=None):
+    def _build_type_internal(
+        self, nodes, is_optional=False, extended_attributes=None
+    ):
         """
         Args:
             nodes: The child nodes of a 'Type' node.
@@ -861,7 +939,8 @@ class _IRBuilder(object):
                 element_type=self._build_type(node.GetChildren()[0]),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_observable_array_type(node, extended_attributes):
             assert len(node.GetChildren()) == 1
@@ -869,7 +948,8 @@ class _IRBuilder(object):
                 element_type=self._build_type(node.GetChildren()[0]),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_promise_type(node, extended_attributes):
             assert len(node.GetChildren()) == 1
@@ -877,14 +957,16 @@ class _IRBuilder(object):
                 result_type=self._build_type(node.GetChildren()[0]),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_union_type(node, extended_attributes):
             return self._idl_type_factory.union_type(
                 member_types=list(map(self._build_type, node.GetChildren())),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_record_type(node, extended_attributes):
             key_node, value_node = node.GetChildren()
@@ -895,21 +977,24 @@ class _IRBuilder(object):
                 value_type=self._build_type(value_node),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_reference_type(node, extended_attributes):
             return self._idl_type_factory.reference_type(
                 Identifier(node.GetName()),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_sequence_type(node, extended_attributes):
             return self._idl_type_factory.sequence_type(
                 element_type=self._build_type(node.GetChildren()[0]),
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         def build_simple_type(node, extended_attributes):
             name = node.GetName()
@@ -922,39 +1007,44 @@ class _IRBuilder(object):
                 name=name,
                 is_optional=is_optional,
                 extended_attributes=extended_attributes,
-                debug_info=self._build_debug_info(node))
+                debug_info=self._build_debug_info(node),
+            )
 
         type_nodes = list(nodes)
         ext_attrs1 = extended_attributes
         ext_attrs2 = self._take_extended_attributes(type_nodes)
         if ext_attrs1 and ext_attrs2:
             extended_attributes = ExtendedAttributes(
-                list(ext_attrs1) + list(ext_attrs2))
+                list(ext_attrs1) + list(ext_attrs2)
+            )
         else:
             extended_attributes = ext_attrs1 or ext_attrs2
         assert len(type_nodes) == 1
         body_node = type_nodes[0]
 
-        buffer_source_types = set([
-            'ArrayBuffer',
-            'ArrayBufferView',  # Blink-specific ArrayBufferView definition
-            'DataView',
-            'Int8Array',
-            'Int16Array',
-            'Int32Array',
-            'BigInt64Array',
-            'Uint8Array',
-            'Uint16Array',
-            'Uint32Array',
-            'BigUint64Array',
-            'Uint8ClampedArray',
-            'Float16Array',
-            'Float32Array',
-            'Float64Array',
-        ])
+        buffer_source_types = set(
+            [
+                'ArrayBuffer',
+                'ArrayBufferView',  # Blink-specific ArrayBufferView definition
+                'DataView',
+                'Int8Array',
+                'Int16Array',
+                'Int32Array',
+                'BigInt64Array',
+                'Uint8Array',
+                'Uint16Array',
+                'Uint32Array',
+                'BigUint64Array',
+                'Uint8ClampedArray',
+                'Float16Array',
+                'Float32Array',
+                'Float64Array',
+            ]
+        )
         if body_node.GetName() in buffer_source_types:
             return build_simple_type(
-                body_node, extended_attributes=extended_attributes)
+                body_node, extended_attributes=extended_attributes
+            )
 
         build_functions = {
             'Any': build_simple_type,
@@ -970,7 +1060,8 @@ class _IRBuilder(object):
             'UnionType': build_union_type,
         }
         return build_functions[body_node.GetClass()](
-            body_node, extended_attributes=extended_attributes)
+            body_node, extended_attributes=extended_attributes
+        )
 
     def _create_arguments(self, args):
         """
@@ -992,7 +1083,8 @@ class _IRBuilder(object):
             identifier = arg[0]
             if isinstance(arg[1], str):
                 idl_type = self._create_type(
-                    arg[1], is_optional=(len(arg) == 3))
+                    arg[1], is_optional=(len(arg) == 3)
+                )
             else:
                 idl_type = arg[1]
 
@@ -1005,81 +1097,86 @@ class _IRBuilder(object):
                     identifier,
                     index=index,
                     idl_type=idl_type,
-                    default_value=default_value))
+                    default_value=default_value,
+                )
+            )
 
             index += 1
 
         return arguments
 
-    def _create_async_iterable_operations(self, node, interface_identifier,
-                                          arguments, extended_attributes):
+    def _create_async_iterable_operations(
+        self, node, interface_identifier, arguments, extended_attributes
+    ):
         """
         Constructs a set of async iterable operations.
 
         https://webidl.spec.whatwg.org/#define-the-asynchronous-iteration-methods
         """
+
         def make_ext_attrs(key_values):
             return ExtendedAttributes(
-                list(extended_attributes or []) +
-                list(self._create_extended_attributes(key_values)))
+                list(extended_attributes or [])
+                + list(self._create_extended_attributes(key_values))
+            )
 
         return {
-            Identifier('entries'):
-            self._create_operation(
+            Identifier('entries'): self._create_operation(
                 Identifier('entries'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'RaisesException':
-                    None,
-                    'ImplementedAs':
-                    'entriesForBinding',
-                }),
-                node=node),
-            Identifier('keys'):
-            self._create_operation(
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'RaisesException': None,
+                        'ImplementedAs': 'entriesForBinding',
+                    }
+                ),
+                node=node,
+            ),
+            Identifier('keys'): self._create_operation(
                 Identifier('keys'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'RaisesException':
-                    None,
-                    'ImplementedAs':
-                    'keysForBinding',
-                }),
-                node=node),
-            Identifier('values'):
-            self._create_operation(
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'RaisesException': None,
+                        'ImplementedAs': 'keysForBinding',
+                    }
+                ),
+                node=node,
+            ),
+            Identifier('values'): self._create_operation(
                 Identifier('values'),
                 arguments=make_copy(arguments),
                 return_type=AsyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'RaisesException':
-                    None,
-                    'ImplementedAs':
-                    'valuesForBinding',
-                }),
-                node=node),
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'RaisesException': None,
+                        'ImplementedAs': 'valuesForBinding',
+                    }
+                ),
+                node=node,
+            ),
         }
 
-    def _create_attribute(self,
-                          identifier,
-                          idl_type,
-                          is_readonly=False,
-                          extended_attributes=None,
-                          node=None):
+    def _create_attribute(
+        self,
+        identifier,
+        idl_type,
+        is_readonly=False,
+        extended_attributes=None,
+        node=None,
+    ):
         """Constructs a new Attribute.IR from simple parameters."""
         if isinstance(idl_type, str):
             idl_type = self._create_type(idl_type)
         if isinstance(extended_attributes, dict):
             extended_attributes = self._create_extended_attributes(
-                extended_attributes)
+                extended_attributes
+            )
         debug_info = self._build_debug_info(node) if node else None
 
         return Attribute.IR(
@@ -1088,7 +1185,8 @@ class _IRBuilder(object):
             is_readonly=is_readonly,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=debug_info)
+            debug_info=debug_info,
+        )
 
     def _create_extended_attributes(self, key_values):
         """
@@ -1096,75 +1194,82 @@ class _IRBuilder(object):
         """
         assert isinstance(key_values, dict)
 
-        return ExtendedAttributes([
-            ExtendedAttribute(key=key, values=values)
-            for key, values in key_values.items()
-        ])
+        return ExtendedAttributes(
+            [
+                ExtendedAttribute(key=key, values=values)
+                for key, values in key_values.items()
+            ]
+        )
 
-    def _create_iterable_operations(self,
-                                    node,
-                                    interface_identifier,
-                                    extended_attributes=None):
+    def _create_iterable_operations(
+        self, node, interface_identifier, extended_attributes=None
+    ):
         """
         Constructs a set of iterable operations.
 
         https://webidl.spec.whatwg.org/#define-the-iteration-methods
         """
+
         def make_ext_attrs(key_values):
             return ExtendedAttributes(
-                list(extended_attributes or []) +
-                list(self._create_extended_attributes(key_values)))
+                list(extended_attributes or [])
+                + list(self._create_extended_attributes(key_values))
+            )
 
         return {
-            Identifier('forEach'):
-            self._create_operation(Identifier('forEach'),
-                                   arguments=self._create_arguments([
-                                       (Identifier('callback'),
-                                        Identifier('ForEachIteratorCallback')),
-                                       (Identifier('thisArg'), 'any', 'null'),
-                                   ]),
-                                   extended_attributes=make_ext_attrs({
-                                       'CallWith':
-                                       ('ScriptState', 'ThisValue'),
-                                       'RaisesException':
-                                       None,
-                                       'ImplementedAs':
-                                       'forEachForBinding',
-                                   }),
-                                   node=node),
-            Identifier('entries'):
-            self._create_operation(
+            Identifier('forEach'): self._create_operation(
+                Identifier('forEach'),
+                arguments=self._create_arguments(
+                    [
+                        (
+                            Identifier('callback'),
+                            Identifier('ForEachIteratorCallback'),
+                        ),
+                        (Identifier('thisArg'), 'any', 'null'),
+                    ]
+                ),
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': ('ScriptState', 'ThisValue'),
+                        'RaisesException': None,
+                        'ImplementedAs': 'forEachForBinding',
+                    }
+                ),
+                node=node,
+            ),
+            Identifier('entries'): self._create_operation(
                 Identifier('entries'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'ImplementedAs':
-                    'entriesForBinding',
-                }),
-                node=node),
-            Identifier('keys'):
-            self._create_operation(
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'ImplementedAs': 'entriesForBinding',
+                    }
+                ),
+                node=node,
+            ),
+            Identifier('keys'): self._create_operation(
                 Identifier('keys'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'ImplementedAs':
-                    'keysForBinding',
-                }),
-                node=node),
-            Identifier('values'):
-            self._create_operation(
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'ImplementedAs': 'keysForBinding',
+                    }
+                ),
+                node=node,
+            ),
+            Identifier('values'): self._create_operation(
                 Identifier('values'),
                 return_type=SyncIterator.identifier_for(interface_identifier),
-                extended_attributes=make_ext_attrs({
-                    'CallWith':
-                    'ScriptState',
-                    'ImplementedAs':
-                    'valuesForBinding',
-                }),
-                node=node),
+                extended_attributes=make_ext_attrs(
+                    {
+                        'CallWith': 'ScriptState',
+                        'ImplementedAs': 'valuesForBinding',
+                    }
+                ),
+                node=node,
+            ),
         }
 
     def _create_literal_constant(self, token):
@@ -1172,18 +1277,22 @@ class _IRBuilder(object):
         if token == 'null':
             return LiteralConstant(
                 idl_type=factory.nullable_type(
-                    inner_type=factory.simple_type(name='any')),
+                    inner_type=factory.simple_type(name='any')
+                ),
                 value=None,
-                literal='null')
+                literal='null',
+            )
         else:
             assert False
 
-    def _create_operation(self,
-                          identifier,
-                          arguments=None,
-                          return_type=None,
-                          extended_attributes=None,
-                          node=None):
+    def _create_operation(
+        self,
+        identifier,
+        arguments=None,
+        return_type=None,
+        extended_attributes=None,
+        node=None,
+    ):
         """Constructs a new Operation.IR from simple parameters."""
         if not return_type:
             return_type = self._create_type('undefined')
@@ -1191,7 +1300,8 @@ class _IRBuilder(object):
             return_type = self._create_type(return_type)
         if isinstance(extended_attributes, dict):
             extended_attributes = self._create_extended_attributes(
-                extended_attributes)
+                extended_attributes
+            )
         debug_info = self._build_debug_info(node) if node else None
 
         return Operation.IR(
@@ -1200,7 +1310,8 @@ class _IRBuilder(object):
             return_type=return_type,
             extended_attributes=extended_attributes,
             component=self._component,
-            debug_info=debug_info)
+            debug_info=debug_info,
+        )
 
     def _create_type(self, keyword_or_identifier, **kwargs):
         """Constructs a new IdlType from a type keyword or identifier."""
@@ -1225,50 +1336,61 @@ class _IRBuilder(object):
         return None
 
     def _take_arguments(self, node_list):
-        return self._take_and_build('Arguments', self._build_arguments,
-                                    node_list)
+        return self._take_and_build(
+            'Arguments', self._build_arguments, node_list
+        )
 
     def _take_async_iterable(self, node_list, **kwargs):
-        return self._take_and_build('AsyncIterable',
-                                    self._build_async_iterable, node_list,
-                                    **kwargs)
+        return self._take_and_build(
+            'AsyncIterable', self._build_async_iterable, node_list, **kwargs
+        )
 
     def _take_constant_value(self, node_list):
-        return self._take_and_build('Value', self._build_constant_value,
-                                    node_list)
+        return self._take_and_build(
+            'Value', self._build_constant_value, node_list
+        )
 
     def _take_default_value(self, node_list):
-        return self._take_and_build('Default', self._build_default_value,
-                                    node_list)
+        return self._take_and_build(
+            'Default', self._build_default_value, node_list
+        )
 
     def _take_extended_attributes(self, node_list):
-        return self._take_and_build('ExtAttributes',
-                                    self._build_extended_attributes, node_list)
+        return self._take_and_build(
+            'ExtAttributes', self._build_extended_attributes, node_list
+        )
 
     def _take_inheritance(self, node_list):
-        return self._take_and_build('Inherit', self._build_inheritance,
-                                    node_list)
+        return self._take_and_build(
+            'Inherit', self._build_inheritance, node_list
+        )
 
     def _take_is_variadic_argument(self, node_list):
         return self._take_and_build(
-            'Argument', self._build_is_variadic_argument, node_list)
+            'Argument', self._build_is_variadic_argument, node_list
+        )
 
     def _take_iterable(self, node_list, **kwargs):
-        return self._take_and_build('Iterable', self._build_iterable,
-                                    node_list, **kwargs)
+        return self._take_and_build(
+            'Iterable', self._build_iterable, node_list, **kwargs
+        )
 
     def _take_maplike(self, node_list, **kwargs):
-        return self._take_and_build('Maplike', self._build_maplike, node_list,
-                                    **kwargs)
+        return self._take_and_build(
+            'Maplike', self._build_maplike, node_list, **kwargs
+        )
 
     def _take_setlike(self, node_list, **kwargs):
-        return self._take_and_build('Setlike', self._build_setlike, node_list,
-                                    **kwargs)
+        return self._take_and_build(
+            'Setlike', self._build_setlike, node_list, **kwargs
+        )
 
     def _take_stringifier(self, node_list):
-        return self._take_and_build('Stringifier', self._build_stringifier,
-                                    node_list)
+        return self._take_and_build(
+            'Stringifier', self._build_stringifier, node_list
+        )
 
     def _take_type(self, node_list, **kwargs):
-        return self._take_and_build('Type', self._build_type, node_list,
-                                    **kwargs)
+        return self._take_and_build(
+            'Type', self._build_type, node_list, **kwargs
+        )

@@ -52,8 +52,9 @@ class PatchReader(object):
 
         for path, diff_file in patch_files.items():
             line_numbers = diff_file.added_or_modified_line_numbers()
-            _log.debug('Found %s new or modified lines in: %s',
-                       len(line_numbers), path)
+            _log.debug(
+                'Found %s new or modified lines in: %s', len(line_numbers), path
+            )
 
             if not line_numbers:
                 # Don't check files which contain only deleted lines
@@ -63,4 +64,5 @@ class PatchReader(object):
                 continue
 
             self._text_file_reader.process_file(
-                file_path=path, line_numbers=line_numbers)
+                file_path=path, line_numbers=line_numbers
+            )

@@ -12,14 +12,19 @@ def web_socket_transfer_data(request):
     # pywebsocket does not mask message by default. We need to build a frame
     # manually to mask it.
     request.connection.write(
-        stream.create_text_frame('First message', mask=False))
+        stream.create_text_frame('First message', mask=False)
+    )
 
     request.connection.write(
         stream.create_text_frame(
-            'Fragmented ', opcode=common.OPCODE_TEXT, fin=0, mask=False))
+            'Fragmented ', opcode=common.OPCODE_TEXT, fin=0, mask=False
+        )
+    )
     request.connection.write(
         stream.create_text_frame(
-            'message', opcode=common.OPCODE_CONTINUATION, fin=1, mask=False))
+            'message', opcode=common.OPCODE_CONTINUATION, fin=1, mask=False
+        )
+    )
 
     request.connection.write(stream.create_text_frame('', mask=False))
 
@@ -27,8 +32,9 @@ def web_socket_transfer_data(request):
 
     # Wait for the client to start closing handshake. To receive a close frame,
     # we must use an internal method of request.ws_stream.
-    opcode, payload, final, reserved1, reserved2, reserved3 = \
+    opcode, payload, final, reserved1, reserved2, reserved3 = (
         request.ws_stream._receive_frame()
+    )
     assert opcode == common.OPCODE_CLOSE
     assert final
     assert not reserved1

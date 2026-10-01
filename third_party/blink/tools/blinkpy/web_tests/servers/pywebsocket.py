@@ -43,25 +43,28 @@ class PyWebSocket(server_base.ServerBase):
     def __init__(self, port_obj, output_dir, python_executable=sys.executable):
         super(PyWebSocket, self).__init__(port_obj, output_dir)
         self._name = 'pywebsocket'
-        self._log_prefixes = (_WS_LOG_PREFIX, )
+        self._log_prefixes = (_WS_LOG_PREFIX,)
         self._mappings = [{'port': _DEFAULT_WS_PORT, 'scheme': 'ws'}]
-        self._pid_file = self._filesystem.join(self._runtime_path,
-                                               '%s.pid' % self._name)
+        self._pid_file = self._filesystem.join(
+            self._runtime_path, '%s.pid' % self._name
+        )
 
         self._port = _DEFAULT_WS_PORT
         self._web_tests = self._port_obj.web_tests_dir()
-        self._web_socket_tests = self._filesystem.join(self._web_tests, 'http',
-                                                       'tests', 'websocket')
+        self._web_socket_tests = self._filesystem.join(
+            self._web_tests, 'http', 'tests', 'websocket'
+        )
         time_str = time.strftime('%d%b%Y-%H%M%S')
         log_file_name = _WS_LOG_PREFIX + time_str
-        self._error_log = self._filesystem.join(self._output_dir,
-                                                log_file_name + '-err.txt')
-        pywebsocket_base = PathFinder(
-            self._filesystem).path_from_chromium_base('third_party',
-                                                      'pywebsocket3', 'src')
-        pywebsocket_script = self._filesystem.join(pywebsocket_base,
-                                                   'pywebsocket3',
-                                                   'standalone.py')
+        self._error_log = self._filesystem.join(
+            self._output_dir, log_file_name + '-err.txt'
+        )
+        pywebsocket_base = PathFinder(self._filesystem).path_from_chromium_base(
+            'third_party', 'pywebsocket3', 'src'
+        )
+        pywebsocket_script = self._filesystem.join(
+            pywebsocket_base, 'pywebsocket3', 'standalone.py'
+        )
 
         self._start_cmd = [
             python_executable,
@@ -87,4 +90,5 @@ class PyWebSocket(server_base.ServerBase):
         # TODO(burnik): Check if this is really needed (and why). If not, just set PYTHONPATH.
         self._env = self._port_obj.setup_environ_for_server()
         self._env['PYTHONPATH'] = (
-            pywebsocket_base + os.pathsep + self._env.get('PYTHONPATH', ''))
+            pywebsocket_base + os.pathsep + self._env.get('PYTHONPATH', '')
+        )

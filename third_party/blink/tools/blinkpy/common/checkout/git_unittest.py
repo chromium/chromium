@@ -19,16 +19,16 @@ from blinkpy.common.system.filesystem_mock import MockFileSystem
 
 
 class FileStatusTypeTest(unittest.TestCase):
-
     def test_format_diff_filter(self):
         self.assertEqual(str(FileStatusType.ADD), 'A')
         self.assertEqual(str(FileStatusType.ADD | FileStatusType.MODIFY), 'AM')
 
     def test_parse_diff_filter(self):
-        self.assertIs(FileStatusType.parse_diff_filter('A'),
-                      FileStatusType.ADD)
-        self.assertIs(FileStatusType.parse_diff_filter('AM'),
-                      FileStatusType.ADD | FileStatusType.MODIFY)
+        self.assertIs(FileStatusType.parse_diff_filter('A'), FileStatusType.ADD)
+        self.assertIs(
+            FileStatusType.parse_diff_filter('AM'),
+            FileStatusType.ADD | FileStatusType.MODIFY,
+        )
 
 
 # These tests could likely be run on Windows if we first used Git.find_executable_name.
@@ -42,7 +42,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
 
         # Set up fresh git repository with one commit.
         self.untracking_checkout_path = self._mkdtemp(
-            suffix='-git_unittest_untracking')
+            suffix='-git_unittest_untracking'
+        )
         try:
             self._run(['git', 'init', self.untracking_checkout_path])
         except ScriptError:
@@ -58,22 +59,32 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self._write_text_file('foo_file', 'foo')
         self._run(['git', 'add', 'foo_file'])
         self._run(['git', 'commit', '-am', 'dummy commit'])
-        self.untracking_git = Git(cwd=self.untracking_checkout_path,
-                                  filesystem=self.filesystem,
-                                  executive=self.executive)
+        self.untracking_git = Git(
+            cwd=self.untracking_checkout_path,
+            filesystem=self.filesystem,
+            executive=self.executive,
+        )
 
         # Then set up a second git repo that tracks the first one.
         self.tracking_git_checkout_path = self._mkdtemp(
-            suffix='-git_unittest_tracking')
-        self._run([
-            'git', 'clone', '--quiet', self.untracking_checkout_path,
-            self.tracking_git_checkout_path
-        ])
+            suffix='-git_unittest_tracking'
+        )
+        self._run(
+            [
+                'git',
+                'clone',
+                '--quiet',
+                self.untracking_checkout_path,
+                self.tracking_git_checkout_path,
+            ]
+        )
         self._chdir(self.tracking_git_checkout_path)
         self._set_user_config()
-        self.tracking_git = Git(cwd=self.tracking_git_checkout_path,
-                                filesystem=self.filesystem,
-                                executive=self.executive)
+        self.tracking_git = Git(
+            cwd=self.tracking_git_checkout_path,
+            filesystem=self.filesystem,
+            executive=self.executive,
+        )
 
     def tearDown(self):
         self._chdir(self.original_cwd)
@@ -83,7 +94,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
     def _set_user_config(self):
         self._run(['git', 'config', '--local', 'user.name', 'Fake'])
         self._run(
-            ['git', 'config', '--local', 'user.email', 'fake@example.com'])
+            ['git', 'config', '--local', 'user.email', 'fake@example.com']
+        )
 
     def _chdir(self, path):
         self.filesystem.chdir(path)
@@ -172,12 +184,15 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self._chdir(self.untracking_checkout_path)
         git = self.untracking_git
         self._chdir(git.checkout_root)
-        self.filesystem.write_binary_file('foo.txt',
-                                          b'some stuff, possibly binary \xff')
+        self.filesystem.write_binary_file(
+            'foo.txt', b'some stuff, possibly binary \xff'
+        )
         git.add_list(['foo.txt'])
         git.commit_locally_with_message('adding foo')
-        self.assertEqual(git.show_blob('foo.txt', ref='HEAD'),
-                         b'some stuff, possibly binary \xff')
+        self.assertEqual(
+            git.show_blob('foo.txt', ref='HEAD'),
+            b'some stuff, possibly binary \xff',
+        )
 
     def test_most_recent_log_matching(self):
         self._chdir(self.untracking_checkout_path)
@@ -190,14 +205,16 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.add_list(['bar.txt'])
         git.commit_locally_with_message('commit 2')
 
-        subject = functools.partial(git.most_recent_log_matching,
-                                    format_pattern='%s')
+        subject = functools.partial(
+            git.most_recent_log_matching, format_pattern='%s'
+        )
         self.assertEqual(subject('commit'), 'commit 2\n')
         self.assertEqual(subject('1'), 'commit 1\n')
         self.assertEqual(subject('1', path='bar.txt'), '')
         self.assertEqual(subject('1', path='foo.txt'), 'commit 1\n')
-        self.assertEqual(subject('1', commits=CommitRange('HEAD~1', 'HEAD')),
-                         '')
+        self.assertEqual(
+            subject('1', commits=CommitRange('HEAD~1', 'HEAD')), ''
+        )
         self.assertEqual(subject('1', commits='HEAD~1'), 'commit 1\n')
 
     def test_changed_files_across_commit_range(self):
@@ -214,14 +231,19 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.add_list(['a'])
         git.commit_locally_with_message('commit 2')
 
-        self.assertEqual(git.changed_files(CommitRange('HEAD~1', 'HEAD')), {
-            'a': FileStatus(FileStatusType.MODIFY),
-        })
         self.assertEqual(
-            git.changed_files(CommitRange('HEAD~2', 'HEAD')), {
+            git.changed_files(CommitRange('HEAD~1', 'HEAD')),
+            {
+                'a': FileStatus(FileStatusType.MODIFY),
+            },
+        )
+        self.assertEqual(
+            git.changed_files(CommitRange('HEAD~2', 'HEAD')),
+            {
                 'a': FileStatus(FileStatusType.ADD),
                 'b': FileStatus(FileStatusType.ADD),
-            })
+            },
+        )
 
     def test_changed_files_renamed(self):
         self._chdir(self.untracking_checkout_path)
@@ -240,19 +262,24 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         commits = CommitRange('HEAD~1', 'HEAD')
         changed_files = git.changed_files(commits)
         self.assertEqual(
-            changed_files, {
+            changed_files,
+            {
                 'a': FileStatus(FileStatusType.DELETE),
                 'b': FileStatus(FileStatusType.ADD),
-            })
-        changed_files = git.changed_files(commits,
-                                          diff_filter=FileStatusType.RENAME,
-                                          rename_threshold=0.5)
-        self.assertEqual(changed_files, {
-            'b': FileStatus(FileStatusType.RENAME, 'a'),
-        })
-        changed_files = git.changed_files(commits,
-                                          diff_filter=FileStatusType.RENAME,
-                                          rename_threshold=1)
+            },
+        )
+        changed_files = git.changed_files(
+            commits, diff_filter=FileStatusType.RENAME, rename_threshold=0.5
+        )
+        self.assertEqual(
+            changed_files,
+            {
+                'b': FileStatus(FileStatusType.RENAME, 'a'),
+            },
+        )
+        changed_files = git.changed_files(
+            commits, diff_filter=FileStatusType.RENAME, rename_threshold=1
+        )
         self.assertEqual(changed_files, {})
 
     def test_move(self):
@@ -276,12 +303,15 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
 
     def test_remote_branch_ref(self):
         # This tests a protected method. pylint: disable=protected-access
-        self.assertEqual(self.tracking_git._remote_branch_ref(),
-                         'refs/remotes/origin/main')
-        custom_git = Git(cwd=self.tracking_git_checkout_path,
-                         filesystem=self.filesystem,
-                         executive=self.executive,
-                         remote_branch='security')
+        self.assertEqual(
+            self.tracking_git._remote_branch_ref(), 'refs/remotes/origin/main'
+        )
+        custom_git = Git(
+            cwd=self.tracking_git_checkout_path,
+            filesystem=self.filesystem,
+            executive=self.executive,
+            remote_branch='security',
+        )
         self.assertRaises(ScriptError, custom_git._remote_branch_ref)
         self._chdir(self.untracking_checkout_path)
         self.assertRaises(ScriptError, self.untracking_git._remote_branch_ref)
@@ -306,7 +336,8 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         self._run(['git', 'config', 'diff.noprefix', 'true'])
         patch = git.create_patch()
         self.assertRegexpMatches(
-            patch, b'^diff --git a/test_file_commit1 b/test_file_commit1')
+            patch, b'^diff --git a/test_file_commit1 b/test_file_commit1'
+        )
 
     def test_rename_files(self):
         self._chdir(self.tracking_git_checkout_path)
@@ -339,9 +370,9 @@ Date:   Mon Sep 28 19:10:30 2015 -0700
 
 class GitTestWithMock(unittest.TestCase):
     def make_git(self):
-        git = Git(cwd='.',
-                  executive=MockExecutive(),
-                  filesystem=MockFileSystem())
+        git = Git(
+            cwd='.', executive=MockExecutive(), filesystem=MockFileSystem()
+        )
         return git
 
     def test_unstaged_files(self):
@@ -357,12 +388,14 @@ class GitTestWithMock(unittest.TestCase):
         ]
         git.run = lambda args: '\x00'.join(status_lines) + '\x00'
         self.assertEqual(
-            git.unstaged_changes(), {
+            git.unstaged_changes(),
+            {
                 'd/modified.txt': 'M',
                 'd/deleted.txt': 'D',
                 'd/untracked.txt': '?',
                 'a': '?',
-            })
+            },
+        )
 
     def test_uncommitted_changes(self):
         git = self.make_git()
@@ -378,14 +411,17 @@ class GitTestWithMock(unittest.TestCase):
             'MM d/modified-then-modified.txt',
         ]
         git.run = lambda args: '\x00'.join(status_lines) + '\x00'
-        self.assertEqual(git.uncommitted_changes(), [
-            'd/modified.txt',
-            'd/deleted.txt',
-            'd/untracked.txt',
-            'a',
-            'd/deleted.txt',
-            'd/modified-staged.txt',
-            'd/added-staged.txt',
-            'd/added-then-modified.txt',
-            'd/modified-then-modified.txt',
-        ])
+        self.assertEqual(
+            git.uncommitted_changes(),
+            [
+                'd/modified.txt',
+                'd/deleted.txt',
+                'd/untracked.txt',
+                'a',
+                'd/deleted.txt',
+                'd/modified-staged.txt',
+                'd/added-staged.txt',
+                'd/added-then-modified.txt',
+                'd/modified-then-modified.txt',
+            ],
+        )

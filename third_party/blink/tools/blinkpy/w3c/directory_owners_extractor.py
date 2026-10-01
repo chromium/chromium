@@ -53,7 +53,8 @@ class DirectoryOwnersExtractor:
         """
         email_map = collections.defaultdict(set)
         external_root_owners = self.finder.path_from_web_tests(
-            'external', 'OWNERS')
+            'external', 'OWNERS'
+        )
         for relpath in changed_files:
             # Try to find the first *non-empty* OWNERS file.
             absolute_path = self.finder.path_from_chromium_base(relpath)
@@ -65,7 +66,8 @@ class DirectoryOwnersExtractor:
                     break
                 # Found an empty OWNERS file. Try again from the parent directory.
                 absolute_path = self.filesystem.dirname(
-                    self.filesystem.dirname(owners_file))
+                    self.filesystem.dirname(owners_file)
+                )
                 owners_file = self.find_owners_file(absolute_path)
             # Skip web_tests/external/OWNERS.
             if not owners or owners_file == external_root_owners:
@@ -73,7 +75,8 @@ class DirectoryOwnersExtractor:
 
             owned_directory = self.filesystem.dirname(owners_file)
             owned_directory_relpath = self.filesystem.relpath(
-                owned_directory, self.finder.web_tests_dir())
+                owned_directory, self.finder.web_tests_dir()
+            )
             email_map[tuple(owners)].add(owned_directory_relpath)
         return {
             owners: sorted(owned_directories)
@@ -86,8 +89,7 @@ class DirectoryOwnersExtractor:
     def find_dir_metadata_file(self, start_path: str) -> Optional[str]:
         return self._find_first_file(start_path, 'DIR_METADATA')
 
-    def _find_first_file(self, start_path: str,
-                         filename: str) -> Optional[str]:
+    def _find_first_file(self, start_path: str, filename: str) -> Optional[str]:
         """Find the first enclosing file for a given path.
 
         Starting from the given path, walk up the directory tree until the first
@@ -101,17 +103,23 @@ class DirectoryOwnersExtractor:
         Returns:
             The absolute path to the first file, if found; None otherwise.
         """
-        abs_start_path = (start_path if self.filesystem.isabs(start_path) else
-                          self.finder.path_from_chromium_base(start_path))
-        directory = (self.filesystem.normpath(abs_start_path)
-                     if self.filesystem.isdir(abs_start_path) else
-                     self.filesystem.dirname(abs_start_path))
+        abs_start_path = (
+            start_path
+            if self.filesystem.isabs(start_path)
+            else self.finder.path_from_chromium_base(start_path)
+        )
+        directory = (
+            self.filesystem.normpath(abs_start_path)
+            if self.filesystem.isdir(abs_start_path)
+            else self.filesystem.dirname(abs_start_path)
+        )
         if not directory.startswith(self.finder.web_tests_dir()):
             return None
         while directory != self.finder.web_tests_dir():
             maybe_file = self.filesystem.join(directory, filename)
             if self.filesystem.isfile(
-                    self.finder.path_from_chromium_base(maybe_file)):
+                self.finder.path_from_chromium_base(maybe_file)
+            ):
                 return maybe_file
             directory = self.filesystem.dirname(directory)
         return None
@@ -168,13 +176,15 @@ class DirectoryOwnersExtractor:
         # dirmd starts with an absolute directory path, `dir_path`, traverses
         # all parent directories and stops at `root_path` to find the first
         # available DIR_METADATA file. `root_path` is the web_tests directory.
-        json_data = self.executive.run_command([
-            self.finder.path_from_depot_tools_base('dirmd'),
-            'read',
-            '-form',
-            'sparse',
-            path,
-        ])
+        json_data = self.executive.run_command(
+            [
+                self.finder.path_from_depot_tools_base('dirmd'),
+                'read',
+                '-form',
+                'sparse',
+                path,
+            ]
+        )
         # Paths in the dirmd output are relative to the repo root.
         repo_root = self.finder.path_from_chromium_base()
         relative_path = self.filesystem.relpath(path, repo_root)
@@ -189,4 +199,5 @@ class DirectoryOwnersExtractor:
         return WPTDirMetadata(
             data.get('teamEmail'),
             data.get('wpt', {}).get('notify') != 'NO',
-            data.get('buganizerPublic', {}).get('componentId'))
+            data.get('buganizerPublic', {}).get('componentId'),
+        )

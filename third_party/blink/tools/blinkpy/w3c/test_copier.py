@@ -68,10 +68,14 @@ class TestCopier:
         self.web_tests_dir = self.path_finder.web_tests_dir()
         self.destination_directory = self.filesystem.normpath(
             self.filesystem.join(
-                self.web_tests_dir, DEST_DIR_NAME,
-                self.filesystem.basename(self.source_repo_path)))
+                self.web_tests_dir,
+                DEST_DIR_NAME,
+                self.filesystem.basename(self.source_repo_path),
+            )
+        )
         self.import_in_place = (
-            self.source_repo_path == self.destination_directory)
+            self.source_repo_path == self.destination_directory
+        )
         self.dir_above_repo = self.filesystem.dirname(self.source_repo_path)
 
         # This is just a FYI list of CSS properties that still need to be prefixed,
@@ -79,8 +83,11 @@ class TestCopier:
         self._prefixed_properties = {}
 
     def do_import(self):
-        _log.info('Importing %s into %s', self.source_repo_path,
-                  self.destination_directory)
+        _log.info(
+            'Importing %s into %s',
+            self.source_repo_path,
+            self.destination_directory,
+        )
         copies_by_dir = self.find_importable_tests()
         self.import_tests(copies_by_dir)
 
@@ -101,7 +108,7 @@ class TestCopier:
             cur_dir = root.replace(self.dir_above_repo + '/', '') + '/'
             _log.debug('Scanning %s...', cur_dir)
 
-            dirs_to_skip = ('.git', )
+            dirs_to_skip = ('.git',)
 
             if dirs:
                 for name in dirs_to_skip:
@@ -121,8 +128,13 @@ class TestCopier:
             for filename in files:
                 path_full = self.filesystem.join(root, filename)
                 path_base = path_full.replace(self.source_repo_path + '/', '')
-                path_base = self.destination_directory.replace(
-                    self.web_tests_dir + '/', '') + '/' + path_base
+                path_base = (
+                    self.destination_directory.replace(
+                        self.web_tests_dir + '/', ''
+                    )
+                    + '/'
+                    + path_base
+                )
                 if path_base in paths_to_skip:
                     if self.import_in_place:
                         _log.debug('Pruning: %s', path_base)
@@ -139,52 +151,59 @@ class TestCopier:
                     )
                     continue
 
-                copies_by_dir[root].append({
-                    'src': path_full,
-                    'dest': filename,
-                })
+                copies_by_dir[root].append(
+                    {
+                        'src': path_full,
+                        'dest': filename,
+                    }
+                )
 
         for path in paths_to_import:
             path_in_chromium = self.filesystem.join(self.web_tests_dir, path)
             path_from_wpt = path_in_chromium.replace(
-                self.destination_directory + '/', '')
+                self.destination_directory + '/', ''
+            )
             src = self.filesystem.join(self.source_repo_path, path_from_wpt)
             if not self.filesystem.isfile(src):
                 _log.warning(
                     'Only regular files can be explicitly allowlisted '
-                    f'currently. {src!r} is not; skipping.')
+                    f'currently. {src!r} is not; skipping.'
+                )
                 continue
-            copies_by_dir[self.filesystem.dirname(src)].append({
-                'src':
-                src,
-                'dest':
-                self.filesystem.basename(src)
-            })
+            copies_by_dir[self.filesystem.dirname(src)].append(
+                {'src': src, 'dest': self.filesystem.basename(src)}
+            )
         return copies_by_dir
 
     def _read_import_filter(self) -> Tuple[Set[str], Set[str]]:
         paths_to_skip, paths_to_import = set(), set()
         port = self.host.port_factory.get()
         w3c_import_expectations_path = self.path_finder.path_from_web_tests(
-            'W3CImportExpectations')
+            'W3CImportExpectations'
+        )
         w3c_import_expectations = self.filesystem.read_text_file(
-            w3c_import_expectations_path)
+            w3c_import_expectations_path
+        )
         expectations = TestExpectations(
-            port, {w3c_import_expectations_path: w3c_import_expectations})
+            port, {w3c_import_expectations_path: w3c_import_expectations}
+        )
 
         for line in expectations.get_updated_lines(
-                w3c_import_expectations_path):
+            w3c_import_expectations_path
+        ):
             if not line.test:  # Comment lines
                 continue
             if line.is_glob:
                 _log.warning(
                     'W3CImportExpectations:%d Globs are not allowed in this file.',
-                    line.lineno)
+                    line.lineno,
+                )
                 continue
             if line.tags:
                 _log.warning(
                     'W3CImportExpectations:%d should not have any specifiers',
-                    line.lineno)
+                    line.lineno,
+                )
             if ResultType.Skip in line.results:
                 paths_to_skip.add(line.test)
             elif ResultType.Pass in line.results:
@@ -196,10 +215,12 @@ class TestCopier:
         """Converts and copies files to their destination."""
         for src_dir, copy_list in copy_by_dir.items():
             assert copy_list, src_dir
-            relative_dir = self.filesystem.relpath(src_dir,
-                                                   self.source_repo_path)
-            dest_dir = self.filesystem.join(self.destination_directory,
-                                            relative_dir)
+            relative_dir = self.filesystem.relpath(
+                src_dir, self.source_repo_path
+            )
+            dest_dir = self.filesystem.join(
+                self.destination_directory, relative_dir
+            )
             if not self.filesystem.exists(dest_dir):
                 self.filesystem.maybe_make_directory(dest_dir)
             for file_to_copy in copy_list:
@@ -212,10 +233,14 @@ class TestCopier:
         if self._prefixed_properties:
             _log.info('Properties needing prefixes (by count):')
             for prefixed_property in sorted(
-                    self._prefixed_properties,
-                    key=lambda p: self._prefixed_properties[p]):
-                _log.info('  %s: %s', prefixed_property,
-                          self._prefixed_properties[prefixed_property])
+                self._prefixed_properties,
+                key=lambda p: self._prefixed_properties[p],
+            ):
+                _log.info(
+                    '  %s: %s',
+                    prefixed_property,
+                    self._prefixed_properties[prefixed_property],
+                )
 
     def copy_file(self, file_to_copy, dest_dir):
         """Converts and copies a file, if it should be copied.
@@ -237,14 +262,14 @@ class TestCopier:
             return
 
         if not self.filesystem.exists(source_path):
-            _log.error('%s not found. Possible error in the test.',
-                       source_path)
+            _log.error('%s not found. Possible error in the test.', source_path)
             return
 
         if not self.filesystem.exists(self.filesystem.dirname(dest_path)):
             if not self.import_in_place:
                 self.filesystem.maybe_make_directory(
-                    self.filesystem.dirname(dest_path))
+                    self.filesystem.dirname(dest_path)
+                )
 
         relpath = self.filesystem.relpath(dest_path, self.web_tests_dir)
         # FIXME: Maybe doing a file diff is in order here for existing files?
@@ -255,6 +280,8 @@ class TestCopier:
         if not self.import_in_place:
             self.filesystem.copyfile(source_path, dest_path)
             # Fix perms: https://github.com/web-platform-tests/wpt/issues/23997
-            if self.filesystem.read_binary_file(source_path)[:2] == b'#!' or \
-                    self.filesystem.splitext(source_path)[1].lower() == '.bat':
+            if (
+                self.filesystem.read_binary_file(source_path)[:2] == b'#!'
+                or self.filesystem.splitext(source_path)[1].lower() == '.bat'
+            ):
                 self.filesystem.make_executable(dest_path)

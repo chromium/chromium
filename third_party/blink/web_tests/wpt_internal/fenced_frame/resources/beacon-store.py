@@ -13,17 +13,20 @@ Event beacon store server.
   what key to look up. If the stored value doesn't exist, serves a 200 response
   with an empty body.
 """
+
 import uuid
 import hashlib
 
 NO_DATA_STRING = b"<No data>"
 NOT_SET_STRING = b"<Not set>"
 
+
 # The server stash requires a uuid to store data. Use a hash of the automatic
 # beacon data as the uuid to store and retrieve the data.
 def string_to_uuid(input):
     hash_value = hashlib.md5(str(input).encode("UTF-8")).hexdigest()
     return str(uuid.UUID(hex=hash_value))
+
 
 def main(request, response):
     stash = request.server.stash
@@ -36,8 +39,10 @@ def main(request, response):
         # the request from nextBeacon().
         if request.method == "GET" and b"expected_body" in request.GET:
             expected_body = request.GET.first(b"expected_body", NO_DATA_STRING)
-            data = stash.take(
-                string_to_uuid(event_type + expected_body)) or NOT_SET_STRING
+            data = (
+                stash.take(string_to_uuid(event_type + expected_body))
+                or NOT_SET_STRING
+            )
             return (200, [], data)
 
         # Requests with a body imply they were sent as a reporting beacon
@@ -46,16 +51,20 @@ def main(request, response):
             request_body = request.body or NO_DATA_STRING
             request_origin = request.headers.get("Origin") or NO_DATA_STRING
             request_referrer = request.headers.get("Referer") or NO_DATA_STRING
-            stash.put(string_to_uuid(event_type + request_body),
-                      (request_origin + b"," + request_referrer))
+            stash.put(
+                string_to_uuid(event_type + request_body),
+                (request_origin + b"," + request_referrer),
+            )
             return (200, [], b"")
         # GET requests without an 'expected_body' parameter imply they were sent
         # as a destination URL reporting beacon.
         if request.method == "GET" and event_type:
             request_origin = request.headers.get("Origin") or NO_DATA_STRING
             request_referrer = request.headers.get("Referer") or NO_DATA_STRING
-            stash.put(string_to_uuid(event_type + NO_DATA_STRING),
-                      (request_origin + b"," + request_referrer))
+            stash.put(
+                string_to_uuid(event_type + NO_DATA_STRING),
+                (request_origin + b"," + request_referrer),
+            )
             return (200, [], b"")
 
-        return (400, [], u"")
+        return (400, [], "")

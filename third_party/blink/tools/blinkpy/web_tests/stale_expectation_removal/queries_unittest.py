@@ -20,7 +20,6 @@ from unexpected_passes_common import unittest_utils as common_uu
 
 
 class ConvertBigQueryRowToResultObjectUnittest(unittest.TestCase):
-
     def setUp(self) -> None:
         common_data_types.SetResultImplementation(data_types.WebTestResult)
         common_expectations.ClearInstance()
@@ -31,15 +30,17 @@ class ConvertBigQueryRowToResultObjectUnittest(unittest.TestCase):
 
     def testDurationIsSet(self) -> None:
         """Tests that the duration is set appropriately on the result."""
-        row = wt_uu.FakeQueryResult(builder_name='builder_name',
-                                    id_='build-1234',
-                                    test_id='ninja://:blink_web_tests/test',
-                                    test_name='test',
-                                    status='PASS',
-                                    typ_tags=['debug'],
-                                    step_name='step_name',
-                                    duration='10',
-                                    timeout='3')
+        row = wt_uu.FakeQueryResult(
+            builder_name='builder_name',
+            id_='build-1234',
+            test_id='ninja://:blink_web_tests/test',
+            test_name='test',
+            status='PASS',
+            typ_tags=['debug'],
+            step_name='step_name',
+            duration='10',
+            timeout='3',
+        )
         querier = wt_uu.CreateGenericWebTestQuerier()
         result = querier._ConvertBigQueryRowToResultObject(row)
         self.assertTrue(result.is_slow_result)
@@ -47,37 +48,45 @@ class ConvertBigQueryRowToResultObjectUnittest(unittest.TestCase):
 
 
 class GetRelevantExpectationFilesForQueryResultUnittest(unittest.TestCase):
-
     def testNoFiles(self) -> None:
         """Tests that no reported expectation files are handled properly."""
         row = common_queries.QueryResult(data={})
         querier = wt_uu.CreateGenericWebTestQuerier()
         self.assertEqual(
-            querier._GetRelevantExpectationFilesForQueryResult(row), [])
+            querier._GetRelevantExpectationFilesForQueryResult(row), []
+        )
 
     def testAbsolutePath(self) -> None:
         """Tests that absolute paths are ignored."""
         row = common_queries.QueryResult(
-            data={'expectation_files': ['/posix/path', '/c:/windows/path']})
+            data={'expectation_files': ['/posix/path', '/c:/windows/path']}
+        )
         querier = wt_uu.CreateGenericWebTestQuerier()
         self.assertEqual(
-            querier._GetRelevantExpectationFilesForQueryResult(row), [])
+            querier._GetRelevantExpectationFilesForQueryResult(row), []
+        )
 
     def testRelativePath(self) -> None:
         """Tests that relative paths are properly reconstructed."""
-        row = common_queries.QueryResult(data={
-            'expectation_files':
-            ['TestExpectations', 'flag-specific/someflag']
-        })
+        row = common_queries.QueryResult(
+            data={
+                'expectation_files': [
+                    'TestExpectations',
+                    'flag-specific/someflag',
+                ]
+            }
+        )
         querier = wt_uu.CreateGenericWebTestQuerier()
         expected_files = [
             os.path.join(constants.WEB_TEST_ROOT_DIR, 'TestExpectations'),
-            os.path.join(constants.WEB_TEST_ROOT_DIR, 'flag-specific',
-                         'someflag'),
+            os.path.join(
+                constants.WEB_TEST_ROOT_DIR, 'flag-specific', 'someflag'
+            ),
         ]
         self.assertEqual(
             querier._GetRelevantExpectationFilesForQueryResult(row),
-            expected_files)
+            expected_files,
+        )
 
 
 class GeneratedQueryUnittest(unittest.TestCase):

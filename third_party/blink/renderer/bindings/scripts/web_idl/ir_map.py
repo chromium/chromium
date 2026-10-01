@@ -133,9 +133,14 @@ class IRMap(object):
                 duplicated_ir = self.find_by_identifier(ir.identifier)
                 # We don't allow to declare a definition of an IDL definition in
                 # multiple places.
-                raise ValueError('{} {} is defined twice.\n  {}\n  {}'.format(
-                    ir.kind, ir.identifier, ir.debug_info.location,
-                    duplicated_ir.debug_info.location))
+                raise ValueError(
+                    '{} {} is defined twice.\n  {}\n  {}'.format(
+                        ir.kind,
+                        ir.identifier,
+                        ir.debug_info.location,
+                        duplicated_ir.debug_info.location,
+                    )
+                )
         except KeyError:
             pass
         self.add(ir)
@@ -143,8 +148,11 @@ class IRMap(object):
     def add(self, ir):
         assert isinstance(ir, IRMap.IR)
 
-        ir_map = (self._multiple_value_irs
-                  if ir.does_support_multiple_defs else self._single_value_irs)
+        ir_map = (
+            self._multiple_value_irs
+            if ir.does_support_multiple_defs
+            else self._single_value_irs
+        )
         current_irs = ir_map[self._current_phase]
         kind = ir.kind
         if kind not in current_irs:
@@ -159,8 +167,11 @@ class IRMap(object):
         else:
             assert identifier not in irs_per_kind, (
                 'Duplicated definition: {}\n  {}\n  {}'.format(
-                    identifier, ir.debug_info.location,
-                    irs_per_kind[identifier].debug_info.location))
+                    identifier,
+                    ir.debug_info.location,
+                    irs_per_kind[identifier].debug_info.location,
+                )
+            )
             irs_per_kind[identifier] = ir
 
     def find_by_identifier(self, identifier):
@@ -169,7 +180,7 @@ class IRMap(object):
         |does_support_multiple_defs| is False.  Raises KeyError if not found.
         """
         assert isinstance(identifier, Identifier)
-        for irs_per_phase in self._single_value_irs[self._current_phase::-1]:
+        for irs_per_phase in self._single_value_irs[self._current_phase :: -1]:
             for irs_per_kind in irs_per_phase.values():
                 if identifier in irs_per_kind:
                     return irs_per_kind[identifier]
@@ -180,10 +191,12 @@ class IRMap(object):
         Returns a map from identifiers to the latest IRs of |kind|.  Returns an
         empty map if not found.
         """
-        ir_map = (self._multiple_value_irs
-                  if IRMap.IR.Kind.does_support_multiple_defs(kind) else
-                  self._single_value_irs)
-        for irs_per_phase in ir_map[self._current_phase::-1]:
+        ir_map = (
+            self._multiple_value_irs
+            if IRMap.IR.Kind.does_support_multiple_defs(kind)
+            else self._single_value_irs
+        )
+        for irs_per_phase in ir_map[self._current_phase :: -1]:
             if kind in irs_per_phase:
                 return irs_per_phase[kind]
         return dict()

@@ -45,12 +45,14 @@ if sys.platform == 'win32':
     import win32pipe
     import win32file
     import subprocess
+
     _quote_cmd = subprocess.list2cmdline
 else:
     import fcntl
     import os
     import shlex
     import select
+
     _quote_cmd = lambda cmdline: ' '.join(shlex.quote(arg) for arg in cmdline)
 
 _log = logging.getLogger(__name__)
@@ -77,15 +79,19 @@ class ServerProcess(object):
     as necessary to keep issuing commands.
     """
 
-    def __init__(self,
-                 port_obj,
-                 name,
-                 cmd,
-                 env=None,
-                 treat_no_data_as_crash=False,
-                 more_logging=False):
+    def __init__(
+        self,
+        port_obj,
+        name,
+        cmd,
+        env=None,
+        treat_no_data_as_crash=False,
+        more_logging=False,
+    ):
         self._port = port_obj
-        self._name = name  # Should be the command name (e.g. content_shell, image_diff)
+        self._name = (
+            name  # Should be the command name (e.g. content_shell, image_diff)
+        )
         self._cmd = cmd
         self._env = env
         self._treat_no_data_as_crash = treat_no_data_as_crash
@@ -137,8 +143,10 @@ class ServerProcess(object):
         if self._logging:
             env_str = ''
             if self._env:
-                env_str += '\n'.join('%s=%s' % (k, v)
-                                     for k, v in self._env.items()) + '\n'
+                env_str += (
+                    '\n'.join('%s=%s' % (k, v) for k, v in self._env.items())
+                    + '\n'
+                )
             _log.info('CMD: \n%s%s\n', env_str, _quote_cmd(self._cmd))
         proc = self._host.executive.popen(
             self._cmd,
@@ -146,7 +154,8 @@ class ServerProcess(object):
             stdout=self._host.executive.PIPE,
             stderr=self._host.executive.PIPE,
             close_fds=close_fds,
-            env=self._env)
+            env=self._env,
+        )
         self._set_proc(proc)
 
     def _set_proc(self, proc):
@@ -241,8 +250,9 @@ class ServerProcess(object):
     def read_stdout(self, deadline, size):
         if size <= 0:
             raise ValueError(
-                'ServerProcess.read() called with a non-positive size: %d ' %
-                size)
+                'ServerProcess.read() called with a non-positive size: %d '
+                % size
+            )
 
         def retrieve_bytes_from_stdout_buffer():
             if len(self._output) >= size:
@@ -271,17 +281,19 @@ class ServerProcess(object):
 
     def _pop_output_bytes(self, bytes_count):
         output, self._output = self._split_string_after_index(
-            self._output, bytes_count)
+            self._output, bytes_count
+        )
         return output
 
     def _pop_error_bytes(self, bytes_count):
         output, self._error = self._split_string_after_index(
-            self._error, bytes_count)
+            self._error, bytes_count
+        )
         return output
 
-    def _wait_for_data_and_update_buffers_using_select(self,
-                                                       deadline,
-                                                       stopping=False):
+    def _wait_for_data_and_update_buffers_using_select(
+        self, deadline, stopping=False
+    ):
         if self._proc.stdout.closed or self._proc.stderr.closed:
             # If the process crashed and is using FIFOs, like Chromium Android, the
             # stdout and stderr pipes will be closed.
@@ -291,8 +303,9 @@ class ServerProcess(object):
         err_fd = self._proc.stderr.fileno()
         select_fds = (out_fd, err_fd)
         try:
-            read_fds, _, _ = select.select(select_fds, [], select_fds,
-                                           max(deadline - time.time(), 0))
+            read_fds, _, _ = select.select(
+                select_fds, [], select_fds, max(deadline - time.time(), 0)
+            )
         except select.error as error:
             # We can ignore EINVAL since it's likely the process just crashed and we'll
             # figure that out the next time through the loop in _read().
@@ -308,16 +321,22 @@ class ServerProcess(object):
             # Linux because it's relatively harmless either way.
             if out_fd in read_fds:
                 data = self._proc.stdout.read()
-                if not data and not stopping and (self._treat_no_data_as_crash
-                                                  or self._proc.poll()):
+                if (
+                    not data
+                    and not stopping
+                    and (self._treat_no_data_as_crash or self._proc.poll())
+                ):
                     self._crashed = True
                 self._log_data('OUT', data)
                 self._output += data
 
             if err_fd in read_fds:
                 data = self._proc.stderr.read()
-                if not data and not stopping and (self._treat_no_data_as_crash
-                                                  or self._proc.poll()):
+                if (
+                    not data
+                    and not stopping
+                    and (self._treat_no_data_as_crash or self._proc.poll())
+                ):
                     self._crashed = True
                 self._log_data('ERR', data)
                 self._error += data
@@ -384,7 +403,8 @@ class ServerProcess(object):
 
             if self._use_win32_apis:
                 self._wait_for_data_and_update_buffers_using_win32_apis(
-                    deadline)
+                    deadline
+                )
             else:
                 self._wait_for_data_and_update_buffers_using_select(deadline)
 
@@ -415,8 +435,11 @@ class ServerProcess(object):
             while self._proc.poll() is None and time.time() < deadline:
                 time.sleep(0.01)
             if self._proc.poll() is None:
-                _log.warning('stopping %s(pid %d) timed out, killing it',
-                             self._name, self._proc.pid)
+                _log.warning(
+                    'stopping %s(pid %d) timed out, killing it',
+                    self._name,
+                    self._proc.pid,
+                )
 
         if self._proc.poll() is None:
             self._kill(kill_tree)
@@ -429,7 +452,8 @@ class ServerProcess(object):
                 self._wait_for_data_and_update_buffers_using_win32_apis(now)
             else:
                 self._wait_for_data_and_update_buffers_using_select(
-                    now, stopping=True)
+                    now, stopping=True
+                )
         out, err = self._output, self._error
         self._reset()
         return (out, err)

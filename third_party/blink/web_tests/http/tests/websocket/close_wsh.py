@@ -28,7 +28,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
-_GOODBYE_MESSAGE = u'Goodbye'
+
+_GOODBYE_MESSAGE = 'Goodbye'
 
 
 def web_socket_do_extra_handshake(request):

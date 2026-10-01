@@ -15,8 +15,10 @@ Could be tried by running this script, then navigating to:
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import wptserve
 
-print("Generated content (out/<build directory>/gen) is served from "
-      "out/Release/gen by default. Specify an alternate directory with "
-      "'-t <build directory>'.")
+print(
+    "Generated content (out/<build directory>/gen) is served from "
+    "out/Release/gen by default. Specify an alternate directory with "
+    "'-t <build directory>'."
+)
 
 cli_wrapper.main(wptserve.WPTServe, description=__doc__)

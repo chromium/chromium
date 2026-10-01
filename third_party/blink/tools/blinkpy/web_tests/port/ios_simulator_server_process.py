@@ -17,16 +17,18 @@ CONN_WAITING_TIMEOUT = 20
 
 # Custom version of ServerProcess that runs processes on the iOS simulator.
 class IOSSimulatorServerProcess(ServerProcess):
-    def __init__(self,
-                 port_obj,
-                 name,
-                 cmd,
-                 env=None,
-                 treat_no_data_as_crash=False,
-                 more_logging=False):
-        super(IOSSimulatorServerProcess,
-              self).__init__(port_obj, name, cmd, env, treat_no_data_as_crash,
-                             more_logging)
+    def __init__(
+        self,
+        port_obj,
+        name,
+        cmd,
+        env=None,
+        treat_no_data_as_crash=False,
+        more_logging=False,
+    ):
+        super(IOSSimulatorServerProcess, self).__init__(
+            port_obj, name, cmd, env, treat_no_data_as_crash, more_logging
+        )
         self._port.check_simulator_is_booted()
 
     def _start(self):
@@ -50,11 +52,13 @@ class IOSSimulatorServerProcess(ServerProcess):
         listen_socket.bind(('127.0.0.1', self._port.stdio_redirect_port()))
         listen_socket.listen(1)
 
-        proc = self._host.executive.popen(self._cmd,
-                                          stdin=self._host.executive.PIPE,
-                                          stdout=self._host.executive.PIPE,
-                                          stderr=self._host.executive.STDOUT,
-                                          env=self._env)
+        proc = self._host.executive.popen(
+            self._cmd,
+            stdin=self._host.executive.PIPE,
+            stdout=self._host.executive.PIPE,
+            stderr=self._host.executive.STDOUT,
+            env=self._env,
+        )
 
         # Wait for incoming connection from the iOS content_shell.
         fd = listen_socket.fileno()
@@ -75,7 +79,8 @@ class IOSSimulatorServerProcess(ServerProcess):
                 stdin=self._host.executive.PIPE,
                 stdout=self._host.executive.PIPE,
                 stderr=self._host.executive.STDOUT,
-                env=self._env)
+                env=self._env,
+            )
             read_fds, _, _ = select.select([fd], [], [], CONN_WAITING_TIMEOUT)
 
         # Python's interfaces for sockets and pipes are different. To masquerade

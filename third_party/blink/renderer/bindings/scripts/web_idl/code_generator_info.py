@@ -15,11 +15,13 @@ _CODE_GENERATOR_INFO_ATTRIBUTES = (
     'receiver_implemented_as',
 )
 
-_CGI_ATTRS = tuple([
-    # attribute name (_foo of self._foo), getter name, setter name
-    ('_{}'.format(attr), '{}'.format(attr), 'set_{}'.format(attr))
-    for attr in _CODE_GENERATOR_INFO_ATTRIBUTES
-])
+_CGI_ATTRS = tuple(
+    [
+        # attribute name (_foo of self._foo), getter name, setter name
+        ('_{}'.format(attr), '{}'.format(attr), 'set_{}'.format(attr))
+        for attr in _CODE_GENERATOR_INFO_ATTRIBUTES
+    ]
+)
 
 
 class CodeGeneratorInfo(object):
@@ -68,10 +70,14 @@ class CodeGeneratorInfoMutable(CodeGeneratorInfo):
 
 
 for attr_name, getter_name, setter_name in _CGI_ATTRS:
-    setattr(CodeGeneratorInfo, getter_name,
-            CodeGeneratorInfo.make_getter(attr_name))
-    setattr(CodeGeneratorInfoMutable, setter_name,
-            CodeGeneratorInfoMutable.make_setter(attr_name))
+    setattr(
+        CodeGeneratorInfo, getter_name, CodeGeneratorInfo.make_getter(attr_name)
+    )
+    setattr(
+        CodeGeneratorInfoMutable,
+        setter_name,
+        CodeGeneratorInfoMutable.make_setter(attr_name),
+    )
 
 CodeGeneratorInfo.make_getter = None
 CodeGeneratorInfoMutable.make_setter = None

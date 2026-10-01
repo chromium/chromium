@@ -49,7 +49,8 @@ class WithExtendedAttributes(object):
             self._extended_attributes = ExtendedAttributes(extended_attributes)
         else:
             self._extended_attributes = ExtendedAttributesMutable(
-                extended_attributes)
+                extended_attributes
+            )
 
     @property
     def extended_attributes(self):
@@ -122,8 +123,9 @@ class WithComponent(object):
             components = [component]
         else:
             components = component
-        assert (isinstance(components, (list, tuple)) and all(
-            isinstance(component, Component) for component in components))
+        assert isinstance(components, (list, tuple)) and all(
+            isinstance(component, Component) for component in components
+        )
         assert isinstance(readonly, bool)
 
         if readonly:
@@ -137,7 +139,8 @@ class WithComponent(object):
 
     def add_components(self, components):
         assert isinstance(components, (list, tuple)) and all(
-            isinstance(component, Component) for component in components)
+            isinstance(component, Component) for component in components
+        )
         for component in components:
             if component not in self._components:
                 self._components.append(component)
@@ -145,7 +148,8 @@ class WithComponent(object):
 
 class Location(object):
     _blink_path_prefix = posixpath.sep + posixpath.join(
-        'third_party', 'blink', 'renderer', '')
+        'third_party', 'blink', 'renderer', ''
+    )
 
     def __init__(self, filepath=None, line_number=None, position=None):
         assert filepath is None or isinstance(filepath, str)
@@ -158,7 +162,7 @@ class Location(object):
         if filepath is not None:
             index = filepath.find(self._blink_path_prefix)
             if index >= 0:
-                filepath = filepath[index + 1:]
+                filepath = filepath[index + 1 :]
 
         self._filepath = filepath
         self._line_number = line_number
@@ -210,7 +214,8 @@ class DebugInfo(object):
 
     def add_locations(self, locations):
         assert isinstance(locations, (list, tuple)) and all(
-            isinstance(location, Location) for location in locations)
+            isinstance(location, Location) for location in locations
+        )
         self._locations.extend(locations)
 
 
@@ -250,6 +255,7 @@ class WithOwnerMixin(object):
         if isinstance(owner_mixin, WithOwnerMixin):
             owner_mixin = owner_mixin._owner_mixin
         from .reference import RefById
+
         assert owner_mixin is None or isinstance(owner_mixin, RefById)
 
         self._owner_mixin = owner_mixin
@@ -264,6 +270,7 @@ class WithOwnerMixin(object):
 
     def set_owner_mixin(self, mixin):
         from .reference import RefById
+
         assert isinstance(mixin, RefById)
         assert self._owner_mixin is None
         self._owner_mixin = mixin

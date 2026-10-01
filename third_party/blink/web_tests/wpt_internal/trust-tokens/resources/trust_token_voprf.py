@@ -31,7 +31,8 @@ import ecdsa
 import ecdsa.ellipticcurve
 
 wpt_internal_dir = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 if wpt_internal_dir not in sys.path:
     sys.path.insert(0, wpt_internal_dir)
 
@@ -60,6 +61,7 @@ HASH_TO_SCALAR_DST = HASH_TO_SCALAR_STRING + "-" + CONTEXT_STRING
 # use a fixed private key for ease of debugging
 PRIVATE_KEY = ORDER_P384 - 1
 
+
 def bytes_to_base64_str(value: bytes) -> str:
     """Returns a Base64 string from bytes."""
     return base64.b64encode(value).decode("utf-8")
@@ -81,9 +83,9 @@ def rfc9497_compute_composites_fast(
     """
     Bm = B.to_bytes(encoding="compressed")
     seed_dst = SEED_DST.encode("utf-8")
-    seed_transcript = \
-        h2f.I2OSP(len(Bm), 2) + Bm +\
-        h2f.I2OSP(len(seed_dst), 2) + seed_dst
+    seed_transcript = (
+        h2f.I2OSP(len(Bm), 2) + Bm + h2f.I2OSP(len(seed_dst), 2) + seed_dst
+    )
     seed = hashlib.sha384(seed_transcript).digest()
 
     M = ecdsa.ellipticcurve.INFINITY
@@ -91,11 +93,16 @@ def rfc9497_compute_composites_fast(
     for i in range(m):
         Ci = C[i].to_bytes(encoding="compressed")
         Di = D[i].to_bytes(encoding="compressed")
-        composite_transcript = \
-            h2f.I2OSP(len(seed), 2) + seed + h2f.I2OSP(i, 2) +\
-            h2f.I2OSP(len(Ci), 2) + Ci +\
-            h2f.I2OSP(len(Di), 2) + Di +\
-            b"Composite"
+        composite_transcript = (
+            h2f.I2OSP(len(seed), 2)
+            + seed
+            + h2f.I2OSP(i, 2)
+            + h2f.I2OSP(len(Ci), 2)
+            + Ci
+            + h2f.I2OSP(len(Di), 2)
+            + Di
+            + b"Composite"
+        )
         di = hash_to_scalar(msg=composite_transcript, count=1)[0][0]
         M += di * C[i]
     Z = k * M
@@ -103,8 +110,7 @@ def rfc9497_compute_composites_fast(
 
 
 def random_scalar() -> int:
-    """This returns a fixed number for ease of debugging.
-    """
+    """This returns a fixed number for ease of debugging."""
     r = ORDER_P384 - 7
     return r
 
@@ -128,13 +134,19 @@ def rfc9497_generate_proof(
     a1 = Z.to_bytes("compressed")
     a2 = t2.to_bytes("compressed")
     a3 = t3.to_bytes("compressed")
-    challenge_transcript = \
-        h2f.I2OSP(len(Bm), 2) + Bm +\
-        h2f.I2OSP(len(a0), 2) + a0 +\
-        h2f.I2OSP(len(a1), 2) + a1 +\
-        h2f.I2OSP(len(a2), 2) + a2 +\
-        h2f.I2OSP(len(a3), 2) + a3 +\
-        b"Challenge"
+    challenge_transcript = (
+        h2f.I2OSP(len(Bm), 2)
+        + Bm
+        + h2f.I2OSP(len(a0), 2)
+        + a0
+        + h2f.I2OSP(len(a1), 2)
+        + a1
+        + h2f.I2OSP(len(a2), 2)
+        + a2
+        + h2f.I2OSP(len(a3), 2)
+        + a3
+        + b"Challenge"
+    )
     c = hash_to_scalar(msg=challenge_transcript, count=1)[0][0]
     s = (r - c * k) % ORDER_P384
     return c, s
@@ -151,8 +163,9 @@ def blind_evaluate_batch(
     evaluatedElements = []
     for blindedElement in blindedElements:
         evaluatedElements.append(skS * blindedElement)
-    c, s = rfc9497_generate_proof(skS, ecdsa.NIST384p.generator, pkS,
-                                  blindedElements, evaluatedElements)
+    c, s = rfc9497_generate_proof(
+        skS, ecdsa.NIST384p.generator, pkS, blindedElements, evaluatedElements
+    )
     return evaluatedElements, c, s
 
 
@@ -186,8 +199,9 @@ class DataBuffer:
         """
         if self.offset + size > len(self.buffer):
             raise BufferError(
-                "Failed to read bytes from buffer - too few bytes remain")
-        value = self.buffer[self.offset:self.offset + size]
+                "Failed to read bytes from buffer - too few bytes remain"
+            )
+        value = self.buffer[self.offset : self.offset + size]
         self.offset += size
         return value
 
@@ -259,10 +273,9 @@ def redeem_request_from_string(s: str) -> RedeemRequest:
     client_data_len = buf.read_int(2)
     client_data = buf.read_bytes(client_data_len)
 
-    return RedeemRequest(key_id=key_id,
-                         nonce=nonce,
-                         point=point,
-                         client_data=client_data)
+    return RedeemRequest(
+        key_id=key_id, nonce=nonce, point=point, client_data=client_data
+    )
 
 
 class Scalar:
@@ -305,7 +318,8 @@ class ECPoint:
     def __init__(self, value: bytes):
         self.value = value
         self.point = ecdsa.ellipticcurve.PointJacobi.from_bytes(
-            ecdsa.NIST384p.curve, value)
+            ecdsa.NIST384p.curve, value
+        )
 
     def __str__(self) -> str:
         return str(self.__dict__)
@@ -331,6 +345,7 @@ class ECPoint:
         """Returns the point as a Base64 string."""
         return bytes_to_base64_str(self.to_bytes())
 
+
 def hash_to_scalar(
     msg: Union[bytes, str],
     count: int,
@@ -346,15 +361,17 @@ def hash_to_scalar(
             `u_i = (e_0, ..., e_(m - 1))` and m is the extension degree of F.
             For P-384, m is equal to 1.
     """
-    expander = h2f.XMDExpander(dst=dst,
-                               hash_fn=hashlib.sha384,
-                               security_param=192)
-    return h2f.hash_to_field(msg=msg,
-                             count=count,
-                             modulus=ORDER_P384,
-                             degree=1,
-                             blen=72,
-                             expander=expander)
+    expander = h2f.XMDExpander(
+        dst=dst, hash_fn=hashlib.sha384, security_param=192
+    )
+    return h2f.hash_to_field(
+        msg=msg,
+        count=count,
+        modulus=ORDER_P384,
+        degree=1,
+        blen=72,
+        expander=expander,
+    )
 
 
 class TrustTokenSecretKey:
@@ -439,8 +456,12 @@ class TrustTokenKeyPair:
         secret_key: The secret component of the key pair.
     """
 
-    def __init__(self, id: int, public_key: TrustTokenPublicKey,
-                 secret_key: TrustTokenSecretKey):
+    def __init__(
+        self,
+        id: int,
+        public_key: TrustTokenPublicKey,
+        secret_key: TrustTokenSecretKey,
+    ):
         self.id = id
         self.public_key = public_key
         self.secret_key = secret_key
@@ -464,11 +485,12 @@ def generate_key_pair() -> TrustTokenKeyPair:
     # Fix the key ID
     id = 0
     public_key = TrustTokenPublicKey(
-        id, ECPoint(pub.to_bytes(encoding="uncompressed")))
+        id, ECPoint(pub.to_bytes(encoding="uncompressed"))
+    )
     secret_key = TrustTokenSecretKey(id, priv)
-    return TrustTokenKeyPair(id=id,
-                             public_key=public_key,
-                             secret_key=secret_key)
+    return TrustTokenKeyPair(
+        id=id, public_key=public_key, secret_key=secret_key
+    )
 
 
 class KeyCommitment:
@@ -486,12 +508,12 @@ class KeyCommitment:
     """
 
     def __init__(
-            self,
-            protocol_version: str,
-            id: int,
-            batchsize: int,
-            public_keys: List[TrustTokenPublicKey],
-            host: str,
+        self,
+        protocol_version: str,
+        id: int,
+        batchsize: int,
+        public_keys: List[TrustTokenPublicKey],
+        host: str,
     ):
         self.protocol_version = protocol_version
         self.id = id
@@ -522,9 +544,7 @@ class KeyCommitment:
                 "expiry": "253402300799000000",
             }
         hosts_to_key_commitments = {
-            self.host: {
-                self.protocol_version: key_commitment
-            }
+            self.host: {self.protocol_version: key_commitment}
         }
         return json.dumps(hosts_to_key_commitments, indent=indent)
 
@@ -583,8 +603,9 @@ class IssueResponse:
         proof: The DLEQ proof.
     """
 
-    def __init__(self, issued: int, key_id: int, signed: List[SignedNonce],
-                 proof: bytes):
+    def __init__(
+        self, issued: int, key_id: int, signed: List[SignedNonce], proof: bytes
+    ):
         self.issued = issued
         self.key_id = key_id
         self.signed = signed
@@ -631,8 +652,9 @@ class RedeemRequest:
         client_data: Client data associated with the request.
     """
 
-    def __init__(self, key_id: int, nonce: bytes, point: ECPoint,
-                 client_data: bytes):
+    def __init__(
+        self, key_id: int, nonce: bytes, point: ECPoint, client_data: bytes
+    ):
         self.key_id = key_id
         self.nonce = nonce
         self.point = point
@@ -683,8 +705,9 @@ class TrustTokenIssuer:
 
     KEY_COMMITMENT_ID = 1
 
-    def __init__(self, key_pair: TrustTokenKeyPair, max_batchsize: int,
-                 host: str):
+    def __init__(
+        self, key_pair: TrustTokenKeyPair, max_batchsize: int, host: str
+    ):
         self.key_pair = key_pair
         self.max_batchsize = max_batchsize
         self.key_commitment = KeyCommitment(
@@ -707,19 +730,24 @@ class TrustTokenIssuer:
         as close to PST spec/draft as possible for ease of understanding.
         """
         blinded_elements = [ni.point for ni in request.nonces]
-        evaluated_elements, c, s = \
-            blind_evaluate_batch(self.key_pair.secret_key.value.value,
-                                 self.key_pair.public_key.value.point,
-                                 blinded_elements)
-        proof = \
-            c.to_bytes(ORDER_P384_LEN, byteorder="big") + \
-            s.to_bytes(ORDER_P384_LEN, byteorder="big")
-        signed_nonce = \
-            [SignedNonce(ECPoint(ei.to_bytes("compressed"))) for ei in evaluated_elements]
-        response = IssueResponse(issued=len(signed_nonce),
-                                 key_id=key_id,
-                                 signed=signed_nonce,
-                                 proof=proof)
+        evaluated_elements, c, s = blind_evaluate_batch(
+            self.key_pair.secret_key.value.value,
+            self.key_pair.public_key.value.point,
+            blinded_elements,
+        )
+        proof = c.to_bytes(ORDER_P384_LEN, byteorder="big") + s.to_bytes(
+            ORDER_P384_LEN, byteorder="big"
+        )
+        signed_nonce = [
+            SignedNonce(ECPoint(ei.to_bytes("compressed")))
+            for ei in evaluated_elements
+        ]
+        response = IssueResponse(
+            issued=len(signed_nonce),
+            key_id=key_id,
+            signed=signed_nonce,
+            proof=proof,
+        )
         return response
 
     def redeem(self, request: RedeemRequest) -> RedeemResponse:
@@ -739,14 +767,13 @@ def create_trust_token_issuer() -> TrustTokenIssuer:
         The trust token issuer.
     """
     key_pair = generate_key_pair()
-    issuer = TrustTokenIssuer(key_pair=key_pair,
-                              max_batchsize=1,
-                              host=WPT_HOST)
+    issuer = TrustTokenIssuer(key_pair=key_pair, max_batchsize=1, host=WPT_HOST)
     return issuer
 
 
-def issue_trust_token(issuer: TrustTokenIssuer, request_data: str,
-                      key_id: int) -> IssueResponse:
+def issue_trust_token(
+    issuer: TrustTokenIssuer, request_data: str, key_id: int
+) -> IssueResponse:
     """Sends an issuance request to an issuer.
 
     Args:
@@ -763,8 +790,9 @@ def issue_trust_token(issuer: TrustTokenIssuer, request_data: str,
     return issuer.issue(key_id=key_id, request=request)
 
 
-def redeem_trust_token(issuer: TrustTokenIssuer,
-                       request_data: str) -> RedeemResponse:
+def redeem_trust_token(
+    issuer: TrustTokenIssuer, request_data: str
+) -> RedeemResponse:
     """Sends a redemption request to an issuer.
 
     Args:

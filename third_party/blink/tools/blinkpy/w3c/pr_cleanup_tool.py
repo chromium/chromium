@@ -23,21 +23,24 @@ class PrCleanupTool(object):
         for pull_request in pull_requests:
             if pull_request.state != 'open':
                 continue
-            change_id = wpt_github.extract_metadata('Change-Id: ',
-                                                    pull_request.body)
+            change_id = wpt_github.extract_metadata(
+                'Change-Id: ', pull_request.body
+            )
             maybe_cleanup_reason = self._cleanup_reason(gerrit, change_id)
 
             if maybe_cleanup_reason:
-                self.log_affected_pr_details(wpt_github, pull_request,
-                                             maybe_cleanup_reason)
-                self.close_pr_and_delete_branch(wpt_github,
-                                                pull_request.number,
-                                                maybe_cleanup_reason)
+                self.log_affected_pr_details(
+                    wpt_github, pull_request, maybe_cleanup_reason
+                )
+                self.close_pr_and_delete_branch(
+                    wpt_github, pull_request.number, maybe_cleanup_reason
+                )
 
         return True
 
-    def _cleanup_reason(self, gerrit: GerritAPI,
-                        change_id: Optional[str]) -> Optional[str]:
+    def _cleanup_reason(
+        self, gerrit: GerritAPI, change_id: Optional[str]
+    ) -> Optional[str]:
         """Get a human-readable comment describing why a PR will be closed.
 
         Returns `None` if the PR should not be closed.
@@ -47,7 +50,9 @@ class PrCleanupTool(object):
         try:
             cl = gerrit.query_cl(change_id)
         except GerritNotFoundError:
-            return 'Close this PR because the corresponding CL has been deleted.'
+            return (
+                'Close this PR because the corresponding CL has been deleted.'
+            )
         except GerritError as e:
             _log.error('Could not query change_id %s: %s', change_id, str(e))
             return None
@@ -63,8 +68,9 @@ class PrCleanupTool(object):
         """Retrieves last 1000 PRs with 'do not merge' label."""
         return wpt_github.all_provisional_pull_requests()
 
-    def close_pr_and_delete_branch(self, wpt_github, pull_request_number,
-                                   comment):
+    def close_pr_and_delete_branch(
+        self, wpt_github, pull_request_number, comment
+    ):
         """Closes a PR with a comment and delete the corresponding branch."""
         wpt_github.add_comment(pull_request_number, comment)
         wpt_github.update_pr(pull_request_number, state='closed')
@@ -74,7 +80,10 @@ class PrCleanupTool(object):
     def log_affected_pr_details(self, wpt_github, pull_request, comment):
         """Logs details of an affected PR."""
         _log.info(comment)
-        _log.info('https://github.com/web-platform-tests/wpt/pull/%s',
-                  pull_request.number)
         _log.info(
-            wpt_github.extract_metadata('Reviewed-on: ', pull_request.body))
+            'https://github.com/web-platform-tests/wpt/pull/%s',
+            pull_request.number,
+        )
+        _log.info(
+            wpt_github.extract_metadata('Reviewed-on: ', pull_request.body)
+        )

@@ -14,12 +14,18 @@ from writer_test_util import path_to_test_file, WriterTest
 class MakeDocumentPolicyFeaturesTest(WriterTest):
     def test_default_value_control(self):
         self._test_writer(
-            DocumentPolicyFeatureWriter, [
-                path_to_test_file('document_policy_default_value_control',
-                                  'input', 'document_policy_features.json5')
+            DocumentPolicyFeatureWriter,
+            [
+                path_to_test_file(
+                    'document_policy_default_value_control',
+                    'input',
+                    'document_policy_features.json5',
+                )
             ],
-            path_to_test_file('document_policy_default_value_control',
-                              'output'))
+            path_to_test_file(
+                'document_policy_default_value_control', 'output'
+            ),
+        )
 
 
 if __name__ == "__main__":

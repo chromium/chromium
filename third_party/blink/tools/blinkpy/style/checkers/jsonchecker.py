@@ -28,7 +28,7 @@ import re
 class JSONChecker(object):
     """Processes JSON lines for checking style."""
 
-    categories = set(('json/syntax', ))
+    categories = set(('json/syntax',))
 
     def __init__(self, _, handle_style_error):
         self._handle_style_error = handle_style_error
@@ -41,8 +41,11 @@ class JSONChecker(object):
             self._handle_style_error(error.lineno, 'json/syntax', 5, error.msg)
         except ValueError as error:
             self._handle_style_error(
-                self.line_number_from_json_exception(error), 'json/syntax', 5,
-                str(error))
+                self.line_number_from_json_exception(error),
+                'json/syntax',
+                5,
+                str(error),
+            )
 
     @staticmethod
     def line_number_from_json_exception(error):

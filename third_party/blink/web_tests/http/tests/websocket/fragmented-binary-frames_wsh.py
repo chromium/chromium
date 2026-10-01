@@ -9,8 +9,12 @@ def web_socket_do_extra_handshake(request):
 
 def web_socket_transfer_data(request):
     # pyformat: disable
-    messages_to_send = [[b'Hello, ', b'world!'], [b'', b'Hello, ', b'', b'world!', b''], [b'', b'', b''],
-                        [util.pack_byte(i) for i in range(256)]]
+    messages_to_send = [
+        [b'Hello, ', b'world!'],
+        [b'', b'Hello, ', b'', b'world!', b''],
+        [b'', b'', b''],
+        [util.pack_byte(i) for i in range(256)],
+    ]
     # pyformat: enable
     for message_list in messages_to_send:
         for index, message in enumerate(message_list):
@@ -24,6 +28,7 @@ def web_socket_transfer_data(request):
                 final = 0
             else:
                 final = 1
-            header = stream.create_header(opcode,
-                                          len(message), final, 0, 0, 0, 0)
+            header = stream.create_header(
+                opcode, len(message), final, 0, 0, 0, 0
+            )
             request.connection.write(header + message)

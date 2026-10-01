@@ -12,5 +12,6 @@ def web_socket_transfer_data(request):
     # connection.
     request.connection.write(
         stream.create_text_frame(
-            'This message should be ignored.', opcode=common.OPCODE_PING,
-            fin=0))
+            'This message should be ignored.', opcode=common.OPCODE_PING, fin=0
+        )
+    )

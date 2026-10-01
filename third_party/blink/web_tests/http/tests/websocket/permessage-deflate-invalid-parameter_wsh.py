@@ -37,14 +37,21 @@ def web_socket_do_extra_handshake(request):
     parameters = None
     if len(resources) == 2:
         parameters = parse.unquote(resources[1])
-    message_parameters = (b'; %s\r\n' % parameters.encode('utf-8') if parameters else b'\r\n')
+    message_parameters = (
+        b'; %s\r\n' % parameters.encode('utf-8') if parameters else b'\r\n'
+    )
 
-    message = (b'HTTP/1.1 101 Switching Protocols\r\n'
-               b'Upgrade: websocket\r\n'
-               b'Connection: Upgrade\r\n'
-               b'Sec-WebSocket-Accept: %s\r\n'
-               b'Sec-WebSocket-Extensions: permessage-deflate'
-               b'%s\r\n') % (compute_accept_from_unicode(request.headers_in['Sec-WebSocket-Key']), message_parameters)
+    message = (
+        b'HTTP/1.1 101 Switching Protocols\r\n'
+        b'Upgrade: websocket\r\n'
+        b'Connection: Upgrade\r\n'
+        b'Sec-WebSocket-Accept: %s\r\n'
+        b'Sec-WebSocket-Extensions: permessage-deflate'
+        b'%s\r\n'
+    ) % (
+        compute_accept_from_unicode(request.headers_in['Sec-WebSocket-Key']),
+        message_parameters,
+    )
 
     request.connection.write(message)
     # Prevents pywebsocket from sending its own handshake message.

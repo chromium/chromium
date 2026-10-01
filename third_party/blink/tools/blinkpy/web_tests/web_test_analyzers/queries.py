@@ -171,7 +171,8 @@ class Querier:
         self._billing_project = billing_project
 
     def get_failed_image_comparison_ci_tests(
-            self, test_path: Optional[str] = None) -> ct.QueryJsonType:
+        self, test_path: Optional[str] = None
+    ) -> ct.QueryJsonType:
         """Gets all failed image comparison tests from CI under the test path.
 
         Args:
@@ -184,17 +185,20 @@ class Querier:
         """
         if test_path:
             test_path_selector = (
-                'STARTS_WITH(test_metadata.name, "%s") AND' % test_path)
+                'STARTS_WITH(test_metadata.name, "%s") AND' % test_path
+            )
         else:
             test_path_selector = ''
         return self._get_json_results(
             CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
-                test_path_selector=test_path_selector))
+                test_path_selector=test_path_selector
+            )
+        )
 
     def get_overall_slowness_ci_tests(
-            self,
-            test_path: Optional[str] = None,
-            only_check_sheriff_builds: Optional[bool] = True
+        self,
+        test_path: Optional[str] = None,
+        only_check_sheriff_builds: Optional[bool] = True,
     ) -> ct.QueryJsonType:
         """Gets overall test slowness data from CI under the test path.
 
@@ -209,17 +213,23 @@ class Querier:
           overall test slowness that came from CI bots under the test path.
         """
         if test_path:
-            test_path_selector = ('STARTS_WITH(test_metadata.name, "%s") AND' %
-                                  test_path)
+            test_path_selector = (
+                'STARTS_WITH(test_metadata.name, "%s") AND' % test_path
+            )
         else:
             test_path_selector = ''
 
         if only_check_sheriff_builds:
-            chromium_builds = queries_module.SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE
-            sheriff_rotations_ci_builds = \
+            chromium_builds = (
+                queries_module.SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE
+            )
+            sheriff_rotations_ci_builds = (
                 f'sheriff_rotations_ci_builds AS ({chromium_builds}),'
-            builder_selector = ('AND builder IN (SELECT builder '
-                                'FROM sheriff_rotations_ci_builds)')
+            )
+            builder_selector = (
+                'AND builder IN (SELECT builder '
+                'FROM sheriff_rotations_ci_builds)'
+            )
         else:
             sheriff_rotations_ci_builds = ''
             builder_selector = ''
@@ -228,7 +238,9 @@ class Querier:
             CI_TESTS_OVERALL_SLOWNESS_QUERY.format(
                 sheriff_rotations_ci_builds=sheriff_rotations_ci_builds,
                 test_path_selector=test_path_selector,
-                builder_selector=builder_selector))
+                builder_selector=builder_selector,
+            )
+        )
 
     def get_web_test_flaky_bugs(self) -> ct.QueryJsonType:
         """Gets all web test flaky bugs from the database.
@@ -240,8 +252,9 @@ class Querier:
 
         return self._get_json_results(WEB_TEST_FLAKY_BUGS_QUERY)
 
-    def insert_web_test_analyzer_result(self, analyzer_type: str,
-                                        bug_type: str, bug_list: List[str]):
+    def insert_web_test_analyzer_result(
+        self, analyzer_type: str, bug_type: str, bug_list: List[str]
+    ):
         """Insert all web test analyzer bugs attach result to the database.
 
         Args:
@@ -251,11 +264,14 @@ class Querier:
         """
         values = []
         for bug_id in bug_list:
-            values.append(f"(CURRENT_TIMESTAMP, '{analyzer_type}',"
-                          f" '{bug_type}', '{bug_id}')")
+            values.append(
+                f"(CURRENT_TIMESTAMP, '{analyzer_type}',"
+                f" '{bug_type}', '{bug_id}')"
+            )
         value_string = ','.join(values)
         self._execute_query(
-            WEB_TEST_ANALYZER_RESULT_UPDATE_QUERY.format(values=value_string))
+            WEB_TEST_ANALYZER_RESULT_UPDATE_QUERY.format(values=value_string)
+        )
 
     def _get_json_results(self, query: str) -> ct.QueryJsonType:
         """Gets the JSON results from an input BigQuery query.
@@ -271,22 +287,22 @@ class Querier:
         """
         cmd = queries_module.GenerateBigQueryCommand(
             self._billing_project,
-            {'INT64': {
-                'sample_period': self._sample_period
-            }},
-            batch=False)
+            {'INT64': {'sample_period': self._sample_period}},
+            batch=False,
+        )
 
         with open(os.devnull, 'w') as devnull:
             try:
-                completed_process = subprocess.run(cmd,
-                                                   input=query,
-                                                   stdout=subprocess.PIPE,
-                                                   stderr=devnull,
-                                                   check=True,
-                                                   text=True)
+                completed_process = subprocess.run(
+                    cmd,
+                    input=query,
+                    stdout=subprocess.PIPE,
+                    stderr=devnull,
+                    check=True,
+                    text=True,
+                )
             except subprocess.CalledProcessError as error:
-                print("Failed to query result, run 'gcloud auth login'"
-                      " first.")
+                print("Failed to query result, run 'gcloud auth login' first.")
                 raise error
 
         return json.loads(completed_process.stdout)
@@ -297,18 +313,23 @@ class Querier:
         Args:
           query: A string containing the SQL query to run in BigQuery.
         """
-        cmd = queries_module.GenerateBigQueryCommand(self._billing_project, {},
-                                                     batch=False)
+        cmd = queries_module.GenerateBigQueryCommand(
+            self._billing_project, {}, batch=False
+        )
 
         with open(os.devnull, 'w') as devnull:
             try:
-                subprocess.run(cmd,
-                               input=query,
-                               stdout=devnull,
-                               stderr=devnull,
-                               check=True,
-                               text=True)
+                subprocess.run(
+                    cmd,
+                    input=query,
+                    stdout=devnull,
+                    stderr=devnull,
+                    check=True,
+                    text=True,
+                )
             except subprocess.CalledProcessError as error:
-                print("Failed to execute query, run 'gcloud auth login'"
-                      " might fix the issue.")
+                print(
+                    "Failed to execute query, run 'gcloud auth login'"
+                    " might fix the issue."
+                )
                 raise error

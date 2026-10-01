@@ -55,15 +55,15 @@ var test_files = [ '%(test_path)s' ]
         return glob.glob(os.path.join(directory, '*' + suffix))
 
     def _last_path_component_removing_suffix(self, path, suffix):
-        return os.path.split(path)[-1][:-len(suffix)]
+        return os.path.split(path)[-1][: -len(suffix)]
 
     def _remove_harness_prefix(self, name):
-        assert(name.startswith(self.HARNESS_PREFIX))
-        return name[len(self.HARNESS_PREFIX):]
+        assert name.startswith(self.HARNESS_PREFIX)
+        return name[len(self.HARNESS_PREFIX) :]
 
     def _remove_harness_type(self, name):
         parts = name.split('-')
-        assert(parts[-1] in self.HARNESS_TYPES)
+        assert parts[-1] in self.HARNESS_TYPES
         return "-".join(parts[:-1])
 
     def _test_name_from_harness_name(self, name):
@@ -71,25 +71,41 @@ var test_files = [ '%(test_path)s' ]
         return self._remove_harness_type(name)
 
     def _remove_stale_tests(self, test_names):
-        for path in self._files_in_directory_with_suffix(self.OUTPUT_DIRECTORY, self.HARNESS_SUFFIX):
-            name = self._last_path_component_removing_suffix(path, self.HARNESS_SUFFIX)
+        for path in self._files_in_directory_with_suffix(
+            self.OUTPUT_DIRECTORY, self.HARNESS_SUFFIX
+        ):
+            name = self._last_path_component_removing_suffix(
+                path, self.HARNESS_SUFFIX
+            )
             name = self._test_name_from_harness_name(name)
             if name not in test_names:
-                print("Removing %s, %s no longer exists." % (path, self._input_path(name)))
+                print(
+                    "Removing %s, %s no longer exists."
+                    % (path, self._input_path(name))
+                )
                 os.remove(path)
 
-        for path in self._files_in_directory_with_suffix(self.OUTPUT_DIRECTORY, self.EXPECTAION_SUFFIX):
-            name = self._last_path_component_removing_suffix(path, self.EXPECTAION_SUFFIX)
+        for path in self._files_in_directory_with_suffix(
+            self.OUTPUT_DIRECTORY, self.EXPECTAION_SUFFIX
+        ):
+            name = self._last_path_component_removing_suffix(
+                path, self.EXPECTAION_SUFFIX
+            )
             name = self._test_name_from_harness_name(name)
             if name not in test_names:
-                print("Removing %s, %s no longer exists." % (path, self._input_path(name)))
+                print(
+                    "Removing %s, %s no longer exists."
+                    % (path, self._input_path(name))
+                )
                 os.remove(path)
 
     def _input_path(self, test_name):
         return os.path.join(self.INPUT_DIRECTORY, test_name + self.INPUT_SUFFIX)
 
     def _harness_path(self, test_name, use_write):
-        harness_path = os.path.join(self.OUTPUT_DIRECTORY, self.HARNESS_PREFIX + test_name)
+        harness_path = os.path.join(
+            self.OUTPUT_DIRECTORY, self.HARNESS_PREFIX + test_name
+        )
         if use_write:
             harness_path += "-write"
         else:
@@ -99,7 +115,7 @@ var test_files = [ '%(test_path)s' ]
     def _harness_content(self, test_name, use_write):
         extra_content = ""
         if not use_write:
-            extra_content = "<script>window.forceDataURLs = true;</script>";
+            extra_content = "<script>window.forceDataURLs = true;</script>"
         return self.HARNESS_TEMPLATE % {
             # FIXME: .. should be relative to the number of components in OUTPUT_DIRECTORY
             'test_path': os.path.join('..', self._input_path(test_name)),
@@ -111,7 +127,12 @@ var test_files = [ '%(test_path)s' ]
         harness_file.write(self._harness_content(test_name, use_write))
 
     def main(self):
-        test_names = [self._last_path_component_removing_suffix(path, self.INPUT_SUFFIX) for path in self._files_in_directory_with_suffix(self.INPUT_DIRECTORY, self.INPUT_SUFFIX)]
+        test_names = [
+            self._last_path_component_removing_suffix(path, self.INPUT_SUFFIX)
+            for path in self._files_in_directory_with_suffix(
+                self.INPUT_DIRECTORY, self.INPUT_SUFFIX
+            )
+        ]
 
         self._remove_stale_tests(test_names)
 

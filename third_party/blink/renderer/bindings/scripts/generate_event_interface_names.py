@@ -23,24 +23,30 @@ import web_idl
 
 def parse_options():
     parser = optparse.OptionParser()
-    parser.add_option("--web_idl_database",
-                      type="string",
-                      help="filepath of the input database")
+    parser.add_option(
+        "--web_idl_database",
+        type="string",
+        help="filepath of the input database",
+    )
     parser.add_option(
         "--component",
         type="string",
-        help="component to be processed, e.g. 'core' or 'modules'")
+        help="component to be processed, e.g. 'core' or 'modules'",
+    )
     parser.add_option(
         "--export-macro",
         type="string",
-        help="C++ export macro, e.g. 'CORE_EXPORT' or 'MODULES_EXPORT'")
-    parser.add_option("--suffix",
-                      type="string",
-                      default="",
-                      help="'metadata.suffix' entry in the output .json5 file")
-    parser.add_option("--output",
-                      type="string",
-                      help="filepath of the output .json5 file")
+        help="C++ export macro, e.g. 'CORE_EXPORT' or 'MODULES_EXPORT'",
+    )
+    parser.add_option(
+        "--suffix",
+        type="string",
+        default="",
+        help="'metadata.suffix' entry in the output .json5 file",
+    )
+    parser.add_option(
+        "--output", type="string", help="filepath of the output .json5 file"
+    )
     options, args = parser.parse_args()
 
     required_option_names = [
@@ -52,7 +58,8 @@ def parse_options():
     for required_option_name in required_option_names:
         if getattr(options, required_option_name) is None:
             parser.error(
-                "--{} is a required option.".format(required_option_name))
+                "--{} is a required option.".format(required_option_name)
+            )
 
     return options, args
 
@@ -61,7 +68,8 @@ def main():
     options, args = parse_options()
 
     web_idl_database = web_idl.file_io.read_pickle_file(
-        options.web_idl_database)
+        options.web_idl_database
+    )
 
     metadata = {
         "namespace": "event_interface_names",
@@ -70,20 +78,22 @@ def main():
     }
     data = []
     event_interface = web_idl_database.find("Event")
-    for interface in sorted(web_idl_database.interfaces,
-                            key=lambda x: x.identifier):
+    for interface in sorted(
+        web_idl_database.interfaces, key=lambda x: x.identifier
+    ):
         if interface.components[0] != options.component:
             continue
         if event_interface not in interface.inclusive_inherited_interfaces:
             continue
         entry = {
-            "name":
-            interface.identifier,
-            "interfaceHeaderDir":
-            os.path.dirname(interface.code_generator_info.blink_headers[0]),
+            "name": interface.identifier,
+            "interfaceHeaderDir": os.path.dirname(
+                interface.code_generator_info.blink_headers[0]
+            ),
         }
         runtime_enabled_values = interface.extended_attributes.values_of(
-            "RuntimeEnabled")
+            "RuntimeEnabled"
+        )
         if runtime_enabled_values:
             assert len(runtime_enabled_values) == 1
             entry["RuntimeEnabled"] = runtime_enabled_values[0]

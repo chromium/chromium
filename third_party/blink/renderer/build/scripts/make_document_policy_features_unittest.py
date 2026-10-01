@@ -11,20 +11,26 @@ class MakeDocumentPolicyFeaturesTest(unittest.TestCase):
     def test_parse_default_value(self):
         self.assertEqual(
             parse_default_value("max", "DecDouble"),
-            "PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType::kDecDouble)"
+            "PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType::kDecDouble)",
         )
         self.assertEqual(
             parse_default_value("min", "DecDouble"),
-            "PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType::kDecDouble)"
+            "PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType::kDecDouble)",
         )
-        self.assertEqual(parse_default_value("false", "Bool"),
-                         "PolicyValue::CreateBool(false)")
-        self.assertEqual(parse_default_value("0.5", "DecDouble"),
-                         "PolicyValue::CreateDecDouble(0.5)")
-        self.assertEqual(parse_default_value("0", "Enum"),
-                         "PolicyValue::CreateEnum(0)")
-        self.assertEqual(parse_default_value("1", "Enum"),
-                         "PolicyValue::CreateEnum(1)")
+        self.assertEqual(
+            parse_default_value("false", "Bool"),
+            "PolicyValue::CreateBool(false)",
+        )
+        self.assertEqual(
+            parse_default_value("0.5", "DecDouble"),
+            "PolicyValue::CreateDecDouble(0.5)",
+        )
+        self.assertEqual(
+            parse_default_value("0", "Enum"), "PolicyValue::CreateEnum(0)"
+        )
+        self.assertEqual(
+            parse_default_value("1", "Enum"), "PolicyValue::CreateEnum(1)"
+        )
 
         with self.assertRaises(ValueError):
             parse_default_value("max", "NotImplemented")

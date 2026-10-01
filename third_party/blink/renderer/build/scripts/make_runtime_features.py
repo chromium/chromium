@@ -50,8 +50,9 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
     file_basename = None
 
     def __init__(self, json5_file_path, output_dir):
-        super(BaseRuntimeFeatureWriter, self).__init__(json5_file_path,
-                                                       output_dir)
+        super(BaseRuntimeFeatureWriter, self).__init__(
+            json5_file_path, output_dir
+        )
 
         for path in json5_file_path:
             file_root, file_ext = os.path.splitext(path)
@@ -68,15 +69,18 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
 
         # Make sure the resulting dictionaries have all the keys we expect.
         for feature in self._features:
-            feature['in_origin_trial'] = str(
-                feature['name']) in origin_trial_set
+            feature['in_origin_trial'] = (
+                str(feature['name']) in origin_trial_set
+            )
             # If 'status' is a dict, add the values for all the not-mentioned platforms too.
             if isinstance(feature['status'], dict):
                 feature['status'] = self._status_with_all_platforms(
-                    feature['status'])
+                    feature['status']
+                )
             # Specify the type of status
-            feature['status_type'] = "dict" if isinstance(
-                feature['status'], dict) else "str"
+            feature['status_type'] = (
+                "dict" if isinstance(feature['status'], dict) else "str"
+            )
             if feature['base_feature'] == 'none':
                 feature['base_feature'] = ''
             elif feature['base_feature'] == '':
@@ -87,8 +91,9 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
         self._origin_trial_features = [
             feature for feature in self._features if feature['in_origin_trial']
         ]
-        self._header_guard = self.make_header_guard(self._relative_output_dir +
-                                                    self.file_basename + '.h')
+        self._header_guard = self.make_header_guard(
+            self._relative_output_dir + self.file_basename + '.h'
+        )
 
     @staticmethod
     def _validate_custom_enable_check(feature):
@@ -100,17 +105,24 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
         bypass the coordination required with a custom enable check, as well as
         options that allow a feature to depend on the state of other features.
         """
-        unsupported = (f'runtime_enabled_features.json5: {feature["name"]}: '
-                       'custom_enable_check is not supported for features ')
-        assert not feature['in_origin_trial'], \
+        unsupported = (
+            f'runtime_enabled_features.json5: {feature["name"]}: '
+            'custom_enable_check is not supported for features '
+        )
+        assert not feature['in_origin_trial'], (
             unsupported + 'controlled by origin trials'
-        assert (not feature['browser_process_read_access']
-                and not feature['browser_process_read_write_access']), \
-            unsupported + 'readable or writable through ' \
+        )
+        assert (
+            not feature['browser_process_read_access']
+            and not feature['browser_process_read_write_access']
+        ), (
+            unsupported + 'readable or writable through '
             'RuntimeFeatureStateOverrideContext'
+        )
         assert not feature['public'], unsupported + 'with a public setter'
-        assert not feature['settable_from_internals'], \
+        assert not feature['settable_from_internals'], (
             unsupported + 'settable from internals'
+        )
         assert not feature['implied_by'], unsupported + 'with implied_by'
         assert not feature['depends_on'], unsupported + 'with depends_on'
 
@@ -141,12 +153,11 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
     def __init__(self, json5_file_path, output_dir):
         super(RuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {
-            (self.file_basename + '.h'):
-            self.generate_header,
-            (self.file_basename + '.cc'):
-            self.generate_implementation,
-            ('exported/web_runtime_features_base.cc'):
-            self.generate_web_implementation,
+            (self.file_basename + '.h'): self.generate_header,
+            (self.file_basename + '.cc'): self.generate_implementation,
+            (
+                'exported/web_runtime_features_base.cc'
+            ): self.generate_web_implementation,
         }
 
         # Write features to file for bindings generation
@@ -158,13 +169,19 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
             overridable_set.add(str(feature['name']))
 
         for feature in self._features:
-            feature['is_overridable_feature'] = str(
-                feature['name']) in overridable_set
+            feature['is_overridable_feature'] = (
+                str(feature['name']) in overridable_set
+            )
 
     def _write_features_to_pickle_file(self, platform_output_dir):
         # TODO(yashard): Get the file path from args instead of hardcoding it.
-        file_name = os.path.join(platform_output_dir, '..', 'build', 'scripts',
-                                 'runtime_enabled_features.pickle')
+        file_name = os.path.join(
+            platform_output_dir,
+            '..',
+            'build',
+            'scripts',
+            'runtime_enabled_features.pickle',
+        )
         features_map = {}
         for feature in self._features:
             features_map[str(feature['name'])] = {
@@ -190,8 +207,8 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
             f for f in features_by_name if f['custom_enable_check']
         ]
         custom_enable_checks = sorted(
-            {f['custom_enable_check']
-             for f in custom_enable_check_features})
+            {f['custom_enable_check'] for f in custom_enable_check_features}
+        )
         return {
             'features': self._features,
             'features_by_name': features_by_name,
@@ -223,7 +240,8 @@ class RuntimeFeatureTestHelpersWriter(BaseRuntimeFeatureWriter):
 
     def __init__(self, json5_file_path, output_dir):
         super(RuntimeFeatureTestHelpersWriter, self).__init__(
-            json5_file_path, output_dir)
+            json5_file_path, output_dir
+        )
         self._outputs = {
             ('testing/' + self.file_basename + '.h'): self.generate_header
         }

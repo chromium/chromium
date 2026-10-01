@@ -24,13 +24,21 @@ class ExtendedAttribute(object):
 
     def __init__(self, key, values=None, arguments=None, name=None):
         assert isinstance(key, str)
-        assert values is None or isinstance(values, str) or (isinstance(
-            values,
-            (list, tuple)) and all(isinstance(value, str) for value in values))
-        assert arguments is None or (isinstance(
-            arguments, (list, tuple)) and all(
+        assert (
+            values is None
+            or isinstance(values, str)
+            or (
+                isinstance(values, (list, tuple))
+                and all(isinstance(value, str) for value in values)
+            )
+        )
+        assert arguments is None or (
+            isinstance(arguments, (list, tuple))
+            and all(
                 isinstance(left, str) and isinstance(right, str)
-                for left, right in arguments))
+                for left, right in arguments
+            )
+        )
         assert name is None or isinstance(name, str)
 
         self._format = None
@@ -71,8 +79,7 @@ class ExtendedAttribute(object):
         if not all(isinstance(x, cls) for x in (lhs, rhs)):
             return False
 
-        return (lhs.key == rhs.key
-                and lhs.syntactic_form == rhs.syntactic_form)
+        return lhs.key == rhs.key and lhs.syntactic_form == rhs.syntactic_form
 
     @property
     def syntactic_form(self):
@@ -82,8 +89,11 @@ class ExtendedAttribute(object):
             return '{}={}'.format(self._key, self._values)
         if self._format == self._FORM_IDENT_LIST:
             return '{}=({})'.format(self._key, ', '.join(self._values))
-        args_str = '({})'.format(', '.join(
-            ['{} {}'.format(left, right) for left, right in self._arguments]))
+        args_str = '({})'.format(
+            ', '.join(
+                ['{} {}'.format(left, right) for left, right in self._arguments]
+            )
+        )
         if self._format == self._FORM_ARG_LIST:
             return '{}{}'.format(self._key, args_str)
         if self._format == self._FORM_NAMED_ARG_LIST:
@@ -102,13 +112,17 @@ class ExtendedAttribute(object):
         """
         if self._format in (self._FORM_NO_ARGS, self._FORM_IDENT):
             return self._values
-        raise ValueError('[{}] does not have a single value.'.format(
-            self.syntactic_form))
+        raise ValueError(
+            '[{}] does not have a single value.'.format(self.syntactic_form)
+        )
 
     @property
     def has_values(self):
-        return self._format in (self._FORM_NO_ARGS, self._FORM_IDENT,
-                                self._FORM_IDENT_LIST)
+        return self._format in (
+            self._FORM_NO_ARGS,
+            self._FORM_IDENT,
+            self._FORM_IDENT_LIST,
+        )
 
     @property
     def values(self):
@@ -119,11 +133,12 @@ class ExtendedAttribute(object):
         if self._format == self._FORM_NO_ARGS:
             return ()
         if self._format == self._FORM_IDENT:
-            return (self._values, )
+            return (self._values,)
         if self._format == self._FORM_IDENT_LIST:
             return self._values
-        raise ValueError('[{}] does not have a value.'.format(
-            self.syntactic_form))
+        raise ValueError(
+            '[{}] does not have a value.'.format(self.syntactic_form)
+        )
 
     @property
     def has_arguments(self):
@@ -137,8 +152,9 @@ class ExtendedAttribute(object):
         """
         if self._format in (self._FORM_ARG_LIST, self._FORM_NAMED_ARG_LIST):
             return self._arguments
-        raise ValueError('[{}] does not have an argument.'.format(
-            self.syntactic_form))
+        raise ValueError(
+            '[{}] does not have an argument.'.format(self.syntactic_form)
+        )
 
     @property
     def has_name(self):
@@ -151,8 +167,9 @@ class ExtendedAttribute(object):
         """
         if self._format == self._FORM_NAMED_ARG_LIST:
             return self._name
-        raise ValueError('[{}] does not have a name.'.format(
-            self.syntactic_form))
+        raise ValueError(
+            '[{}] does not have a name.'.format(self.syntactic_form)
+        )
 
 
 class ExtendedAttributes(object):
@@ -173,19 +190,27 @@ class ExtendedAttributes(object):
     """
 
     def __init__(self, extended_attributes=None):
-        assert (extended_attributes is None
-                or isinstance(extended_attributes, ExtendedAttributes)
-                or (isinstance(extended_attributes, (list, tuple)) and all(
+        assert (
+            extended_attributes is None
+            or isinstance(extended_attributes, ExtendedAttributes)
+            or (
+                isinstance(extended_attributes, (list, tuple))
+                and all(
                     isinstance(attr, ExtendedAttribute)
-                    for attr in extended_attributes)))
+                    for attr in extended_attributes
+                )
+            )
+        )
 
         sorted_ext_attrs = sorted(
-            extended_attributes or [], key=lambda x: x.key)
+            extended_attributes or [], key=lambda x: x.key
+        )
 
         self._ext_attrs = {
             key: tuple(sorted(ext_attrs, key=lambda x: x.syntactic_form))
             for key, ext_attrs in itertools.groupby(
-                sorted_ext_attrs, key=lambda x: x.key)
+                sorted_ext_attrs, key=lambda x: x.key
+            )
         }
         self._keys = None
         self._length = None
@@ -234,8 +259,9 @@ class ExtendedAttributes(object):
 
     @property
     def syntactic_form(self):
-        return '[{}]'.format(', '.join(
-            [ext_attr.syntactic_form for ext_attr in self]))
+        return '[{}]'.format(
+            ', '.join([ext_attr.syntactic_form for ext_attr in self])
+        )
 
     def keys(self):
         return self._keys
@@ -252,7 +278,9 @@ class ExtendedAttributes(object):
             return values[0]
         raise ValueError(
             "There are multiple extended attributes for the key '{}'.".format(
-                key))
+                key
+            )
+        )
 
     def get_list_of(self, key):
         """
@@ -274,12 +302,14 @@ class ExtendedAttributes(object):
         assert isinstance(ext_attr, ExtendedAttribute)
 
         if ext_attr.key not in self._ext_attrs:
-            self._ext_attrs[ext_attr.key] = (ext_attr, )
+            self._ext_attrs[ext_attr.key] = (ext_attr,)
         else:
-            self._ext_attrs[ext_attr.key] = (tuple(
+            self._ext_attrs[ext_attr.key] = tuple(
                 sorted(
-                    self._ext_attrs[ext_attr.key] + (ext_attr, ),
-                    key=lambda x: x.syntactic_form)))
+                    self._ext_attrs[ext_attr.key] + (ext_attr,),
+                    key=lambda x: x.syntactic_form,
+                )
+            )
         self._on_ext_attrs_updated()
 
 

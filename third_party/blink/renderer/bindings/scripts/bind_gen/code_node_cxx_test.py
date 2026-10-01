@@ -29,7 +29,8 @@ class CodeNodeCxxTest(unittest.TestCase):
 
         def simplify(text):
             return "\n".join(
-                [" ".join(line.split()) for line in text.split("\n")])
+                [" ".join(line.split()) for line in text.split("\n")]
+            )
 
         actual = simplify(render_code_node(node))
         expected = simplify(expected)
@@ -39,33 +40,42 @@ class CodeNodeCxxTest(unittest.TestCase):
     def test_symbol_definition_with_branches(self):
         root = SymbolScopeNode()
 
-        root.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = 1;"),
-            SymbolNode("var2", "int ${var2} = 2;"),
-            SymbolNode("var3", "int ${var3} = 3;"),
-            SymbolNode("var4", "int ${var4} = 4;"),
-            SymbolNode("var5", "int ${var5} = 5;"),
-            SymbolNode("var6", "int ${var6} = 6;"),
-        ])
+        root.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = 1;"),
+                SymbolNode("var2", "int ${var2} = 2;"),
+                SymbolNode("var3", "int ${var3} = 3;"),
+                SymbolNode("var4", "int ${var4} = 4;"),
+                SymbolNode("var5", "int ${var5} = 5;"),
+                SymbolNode("var6", "int ${var6} = 6;"),
+            ]
+        )
 
-        root.extend([
-            TextNode("${var1};"),
-            CxxUnlikelyIfNode(cond=TextNode("${var2}"),
-                              attribute=None,
-                              body=[
-                                  TextNode("${var3};"),
-                                  TextNode("return ${var4};"),
-                              ]),
-            CxxLikelyIfNode(cond=TextNode("${var5}"),
-                            attribute=None,
-                            body=[
-                                TextNode("return ${var6};"),
-                            ]),
-            TextNode("${var3};"),
-        ])
+        root.extend(
+            [
+                TextNode("${var1};"),
+                CxxUnlikelyIfNode(
+                    cond=TextNode("${var2}"),
+                    attribute=None,
+                    body=[
+                        TextNode("${var3};"),
+                        TextNode("return ${var4};"),
+                    ],
+                ),
+                CxxLikelyIfNode(
+                    cond=TextNode("${var5}"),
+                    attribute=None,
+                    body=[
+                        TextNode("return ${var6};"),
+                    ],
+                ),
+                TextNode("${var3};"),
+            ]
+        )
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 int var1 = 1;
 var1;
 int var2 = 2;
@@ -81,47 +91,59 @@ if (var5) {
   return var6;
 }
 var3;\
-""")
+""",
+        )
 
     def test_symbol_definition_with_nested_branches(self):
         root = SymbolScopeNode()
 
-        root.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = 1;"),
-            SymbolNode("var2", "int ${var2} = 2;"),
-            SymbolNode("var3", "int ${var3} = 3;"),
-            SymbolNode("var4", "int ${var4} = 4;"),
-            SymbolNode("var5", "int ${var5} = 5;"),
-            SymbolNode("var6", "int ${var6} = 6;"),
-        ])
+        root.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = 1;"),
+                SymbolNode("var2", "int ${var2} = 2;"),
+                SymbolNode("var3", "int ${var3} = 3;"),
+                SymbolNode("var4", "int ${var4} = 4;"),
+                SymbolNode("var5", "int ${var5} = 5;"),
+                SymbolNode("var6", "int ${var6} = 6;"),
+            ]
+        )
 
-        root.extend([
-            CxxUnlikelyIfNode(cond=TextNode("false"),
-                              attribute=None,
-                              body=[
-                                  CxxUnlikelyIfNode(
-                                      cond=TextNode("false"),
-                                      attribute=None,
-                                      body=[
-                                          TextNode("return ${var1};"),
-                                      ]),
-                                  TextNode("return;"),
-                              ]),
-            CxxLikelyIfNode(cond=TextNode("true"),
+        root.extend(
+            [
+                CxxUnlikelyIfNode(
+                    cond=TextNode("false"),
+                    attribute=None,
+                    body=[
+                        CxxUnlikelyIfNode(
+                            cond=TextNode("false"),
                             attribute=None,
                             body=[
-                                CxxLikelyIfNode(
-                                    cond=TextNode("true"),
-                                    attribute=None,
-                                    body=[
-                                        TextNode("return ${var2};"),
-                                    ]),
-                                TextNode("return;"),
-                            ]),
-        ])
+                                TextNode("return ${var1};"),
+                            ],
+                        ),
+                        TextNode("return;"),
+                    ],
+                ),
+                CxxLikelyIfNode(
+                    cond=TextNode("true"),
+                    attribute=None,
+                    body=[
+                        CxxLikelyIfNode(
+                            cond=TextNode("true"),
+                            attribute=None,
+                            body=[
+                                TextNode("return ${var2};"),
+                            ],
+                        ),
+                        TextNode("return;"),
+                    ],
+                ),
+            ]
+        )
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 if (false) {
   if (false) {
     int var1 = 1;
@@ -136,17 +158,22 @@ if (true) {
   }
   return;
 }\
-""")
+""",
+        )
 
     def test_function_definition_minimum(self):
         root = CxxFuncDefNode(
-            name="blink::bindings::func", arg_decls=[], return_type="void")
+            name="blink::bindings::func", arg_decls=[], return_type="void"
+        )
 
-        self.assertRenderResult(root, """\
+        self.assertRenderResult(
+            root,
+            """\
 void blink::bindings::func() {
 
 }\
-""")
+""",
+        )
 
     def test_function_definition_full(self):
         root = CxxFuncDefNode(
@@ -158,22 +185,30 @@ void blink::bindings::func() {
             member_initializer_list=[
                 "member1(0)",
                 "member2(\"str\")",
-            ])
+            ],
+        )
 
-        root.body.register_code_symbols([
-            SymbolNode("var1", "int ${var1} = 1;"),
-            SymbolNode("var2", "int ${var2} = 2;"),
-        ])
+        root.body.register_code_symbols(
+            [
+                SymbolNode("var1", "int ${var1} = 1;"),
+                SymbolNode("var2", "int ${var2} = 2;"),
+            ]
+        )
 
-        root.body.extend([
-            CxxUnlikelyIfNode(cond=TextNode("${var1}"),
-                              attribute=None,
-                              body=[TextNode("return ${var1};")]),
-            TextNode("return ${var2};"),
-        ])
+        root.body.extend(
+            [
+                CxxUnlikelyIfNode(
+                    cond=TextNode("${var1}"),
+                    attribute=None,
+                    body=[TextNode("return ${var1};")],
+                ),
+                TextNode("return ${var2};"),
+            ]
+        )
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 void blink::bindings::func(int arg1, int arg2) const override\
  : member1(0), member2("str") {
   int var1 = 1;
@@ -183,22 +218,28 @@ void blink::bindings::func(int arg1, int arg2) const override\
   int var2 = 2;
   return var2;
 }\
-""")
+""",
+        )
 
     def test_class_definition(self):
         root = CxxClassDefNode("X", ["A", "B"], final=True)
 
-        root.public_section.extend([
-            TextNode("void m1();"),
-            TextNode("void m2();"),
-        ])
-        root.private_section.extend([
-            TextNode("int m1_;"),
-            TextNode("int m2_;"),
-        ])
+        root.public_section.extend(
+            [
+                TextNode("void m1();"),
+                TextNode("void m2();"),
+            ]
+        )
+        root.private_section.extend(
+            [
+                TextNode("int m1_;"),
+                TextNode("int m2_;"),
+            ]
+        )
 
         self.assertRenderResult(
-            root, """\
+            root,
+            """\
 class X final : public A, public B {
 
  public:
@@ -212,4 +253,5 @@ class X final : public A, public B {
 
 
 };\
-""")
+""",
+        )

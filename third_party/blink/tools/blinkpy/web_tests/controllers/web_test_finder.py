@@ -33,9 +33,19 @@ import json
 import logging
 import re
 from collections import OrderedDict, defaultdict
-from typing import Collection, Mapping, NamedTuple, Optional, Sequence, Set, Tuple
+from typing import (
+    Collection,
+    Mapping,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+)
 
-from blinkpy.web_tests.layout_package.json_results_generator import convert_times_trie_to_flat_paths
+from blinkpy.web_tests.layout_package.json_results_generator import (
+    convert_times_trie_to_flat_paths,
+)
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
 
@@ -47,8 +57,12 @@ class WebTestFinder(object):
         self._port = port
         self._options = options
         self._filesystem = self._port.host.filesystem
-        self.WEB_TESTS_DIRECTORIES = ('src', 'third_party', 'blink',
-                                      'web_tests')
+        self.WEB_TESTS_DIRECTORIES = (
+            'src',
+            'third_party',
+            'blink',
+            'web_tests',
+        )
 
     def find_tests(
         self,
@@ -63,7 +77,8 @@ class WebTestFinder(object):
         paths = self._strip_test_dir_prefixes(args)
         if test_lists:
             new_paths = self._read_test_list_files(
-                test_lists, self._port.TEST_PATH_SEPARATOR)
+                test_lists, self._port.TEST_PATH_SEPARATOR
+            )
             new_paths = [
                 self._strip_test_dir_prefix(new_path) for new_path in new_paths
             ]
@@ -82,8 +97,9 @@ class WebTestFinder(object):
         if fastest_percentile:
             times_trie = self._times_trie()
             if times_trie:
-                fastest_tests = self._fastest_tests(times_trie, all_tests,
-                                                    fastest_percentile)
+                fastest_tests = self._fastest_tests(
+                    times_trie, all_tests, fastest_percentile
+                )
                 test_files = list(set(fastest_tests).union(path_tests))
             else:
                 _log.warning(
@@ -102,11 +118,13 @@ class WebTestFinder(object):
             all_filters = [f.split('::') for f in filters]
         if filter_files:
             file_filters = self._read_filter_files(
-                filter_files, self._port.TEST_PATH_SEPARATOR)
+                filter_files, self._port.TEST_PATH_SEPARATOR
+            )
             all_filters = all_filters + file_filters
         if inverted_filter_files:
             file_filters = self._read_filter_files(
-                inverted_filter_files, self._port.TEST_PATH_SEPARATOR)
+                inverted_filter_files, self._port.TEST_PATH_SEPARATOR
+            )
             all_filters = all_filters + self._invert_filters(file_filters)
 
         test_files = filter_tests(test_files, all_filters)
@@ -132,11 +150,14 @@ class WebTestFinder(object):
         times = convert_times_trie_to_flat_paths(times_trie)
 
         # Ignore tests with a time==0 because those are skipped tests.
-        sorted_times = sorted([test for (test, time) in times.items() if time],
-                              key=lambda t: (times[t], t))
+        sorted_times = sorted(
+            [test for (test, time) in times.items() if time],
+            key=lambda t: (times[t], t),
+        )
         clamped_percentile = max(0, min(100, fastest_percentile))
         number_of_tests_to_return = int(
-            len(sorted_times) * clamped_percentile / 100)
+            len(sorted_times) * clamped_percentile / 100
+        )
         fastest_tests = set(sorted_times[:number_of_tests_to_return])
 
         # Don't try to run tests in the times_trie that no longer exist,
@@ -159,12 +180,15 @@ class WebTestFinder(object):
         for i in range(len(self.WEB_TESTS_DIRECTORIES)):
             # Handle both "web_tests/foo/bar.html" and "web_tests\foo\bar.html" if
             # the filesystem uses '\\' as a directory separator
-            for separator in (self._port.TEST_PATH_SEPARATOR,
-                              self._filesystem.sep):
-                directory_prefix = separator.join(
-                    self.WEB_TESTS_DIRECTORIES[i:]) + separator
+            for separator in (
+                self._port.TEST_PATH_SEPARATOR,
+                self._filesystem.sep,
+            ):
+                directory_prefix = (
+                    separator.join(self.WEB_TESTS_DIRECTORIES[i:]) + separator
+                )
                 if path.startswith(directory_prefix):
-                    return path[len(directory_prefix):]
+                    return path[len(directory_prefix) :]
         return path
 
     def _read_filter_files(self, filenames, test_path_separator):
@@ -185,8 +209,9 @@ class WebTestFinder(object):
             except IOError as error:
                 if error.errno == errno.ENOENT:
                     _log.critical('')
-                    _log.critical('--test-launcher-filter-file "%s" not found',
-                                  filename)
+                    _log.critical(
+                        '--test-launcher-filter-file "%s" not found', filename
+                    )
                 raise
         return filters
 
@@ -218,8 +243,9 @@ class WebTestFinder(object):
                         continue
                     if line[0] == '-':
                         _log.debug(
-                            'test-list %s contains a negative filter %s' %
-                            (filename, line))
+                            'test-list %s contains a negative filter %s'
+                            % (filename, line)
+                        )
                     positive_matches.append(line)
             except IOError as error:
                 if error.errno == errno.ENOENT:
@@ -263,10 +289,11 @@ class WebTestFinder(object):
         for test in all_tests:
             # Manual tests and virtual tests skipped by platform config are
             # always skipped and not affected by the --skip parameter
-            if (self._port.skipped_due_to_manual_test(test)
-                    or self._port.virtual_test_skipped_due_to_platform_config(
-                        test) or
-                    self._port.skipped_due_to_exclusive_virtual_tests(test)):
+            if (
+                self._port.skipped_due_to_manual_test(test)
+                or self._port.virtual_test_skipped_due_to_platform_config(test)
+                or self._port.skipped_due_to_exclusive_virtual_tests(test)
+            ):
                 tests_always_skipped.update({test})
                 continue
 
@@ -275,7 +302,8 @@ class WebTestFinder(object):
             # run the test anyway if it is explicitly specified on the command
             # line; paths are removed from the skip list after this loop.
             if self._options.enable_sanitizer and Port.is_wpt_idlharness_test(
-                    test):
+                test
+            ):
                 tests_to_skip.update({test})
                 continue
 
@@ -286,9 +314,15 @@ class WebTestFinder(object):
             expected_results = expectations.get_expectations(test).results
             if ResultType.Skip in expected_results:
                 tests_to_skip.update({test})
-            if self._options.skip_timeouts and ResultType.Timeout in expected_results:
+            if (
+                self._options.skip_timeouts
+                and ResultType.Timeout in expected_results
+            ):
                 tests_to_skip.update({test})
-            if self._options.skip_failing_tests and ResultType.Failure in expected_results:
+            if (
+                self._options.skip_failing_tests
+                and ResultType.Failure in expected_results
+            ):
                 tests_to_skip.update({test})
 
         if self._options.skipped == 'only':
@@ -305,7 +339,10 @@ class WebTestFinder(object):
 
     def split_into_chunks(self, test_names):
         """split into a list to run and a set to skip, based on --shard_index and --total_shards."""
-        if self._options.shard_index is None and self._options.total_shards is None:
+        if (
+            self._options.shard_index is None
+            and self._options.total_shards is None
+        ):
             return test_names
 
         if self._options.shard_index is None:
@@ -318,27 +355,38 @@ class WebTestFinder(object):
             )
         if self._options.shard_index >= self._options.total_shards:
             raise ValueError(
-                'Shard index (%d) should be less than total shards (%d)!' %
-                (self._options.shard_index, self._options.total_shards))
+                'Shard index (%d) should be less than total shards (%d)!'
+                % (self._options.shard_index, self._options.total_shards)
+            )
 
-        return self._split_into_chunks(test_names, self._options.shard_index,
-                                       self._options.total_shards)
+        return self._split_into_chunks(
+            test_names, self._options.shard_index, self._options.total_shards
+        )
 
     @staticmethod
     def _split_into_chunks(test_names, index, count):
         tests_and_indices = [
-            (test_name,
-             int(hashlib.sha256(test_name.encode('utf-8')).hexdigest(), 16) %
-             count) for test_name in test_names
+            (
+                test_name,
+                int(hashlib.sha256(test_name.encode('utf-8')).hexdigest(), 16)
+                % count,
+            )
+            for test_name in test_names
         ]
 
         tests_to_run = [
-            test_name for test_name, test_index in tests_and_indices
+            test_name
+            for test_name, test_index in tests_and_indices
             if test_index == index
         ]
 
-        _log.debug('chunk %d of %d contains %d tests of %d', index, count,
-                   len(tests_to_run), len(test_names))
+        _log.debug(
+            'chunk %d of %d contains %d tests of %d',
+            index,
+            count,
+            len(tests_to_run),
+            len(test_names),
+        )
 
         return tests_to_run
 
@@ -375,7 +423,8 @@ def filter_tests(tests, filters):
         # partition the terms into exact/glob.
         exact_pos_terms, exact_neg_terms, glob_terms = _extract_terms(terms)
         include_by_default = not exact_pos_terms and not any(
-            include for _, include in glob_terms)
+            include for _, include in glob_terms
+        )
         glob_trie = FilterTrie.from_terms(glob_terms)
 
         filtered_tests = []
@@ -387,7 +436,8 @@ def filter_tests(tests, filters):
                 continue
 
             include = glob_trie.should_include(
-                test.split(Port.TEST_PATH_SEPARATOR))
+                test.split(Port.TEST_PATH_SEPARATOR)
+            )
             if include is None:
                 include = include_by_default
             if include:
@@ -419,11 +469,12 @@ class FilterTrie(NamedTuple):
         # Pre-sort the children so that `should_include()` honors the
         # longest-glob-wins rule.
         children = OrderedDict()
-        for next_part in sorted(child_terms_by_next_part,
-                                key=_remove_glob,
-                                reverse=True):
+        for next_part in sorted(
+            child_terms_by_next_part, key=_remove_glob, reverse=True
+        ):
             children[next_part] = cls.from_terms(
-                child_terms_by_next_part[next_part])
+                child_terms_by_next_part[next_part]
+            )
         return cls(children, include_for_trie)
 
     def should_include(self, test_parts: Sequence[str]) -> Optional[bool]:
@@ -450,14 +501,16 @@ class FilterTrie(NamedTuple):
         # still be a glob match at this directory.
         for maybe_glob, child in self.children.items():
             if maybe_glob.endswith('*') and next_part.startswith(
-                    _remove_glob(maybe_glob)):
+                _remove_glob(maybe_glob)
+            ):
                 assert child.include is not None, 'glob must terminate term'
                 return child.include
         return None
 
 
 def _extract_terms(
-        terms: Collection[str]) -> Tuple[Set[str], Set[str], Set[ParsedTerm]]:
+    terms: Collection[str],
+) -> Tuple[Set[str], Set[str], Set[ParsedTerm]]:
     """Extract terms of the filter into exact +/- terms and glob terms.
 
     The +/- prefix char for exact terms will also be stripped as they are no
@@ -470,8 +523,10 @@ def _extract_terms(
         if not test:
             raise ValueError(f'Empty filter entry {term!r}')
         if _has_illegal_wildcard(test):
-            raise ValueError(f'Bad test filter {term!r} specified; '
-                             'unescaped wildcards are only allowed at the end')
+            raise ValueError(
+                f'Bad test filter {term!r} specified; '
+                'unescaped wildcards are only allowed at the end'
+            )
 
         if test.endswith('*'):
             glob_terms.add((test, include))
@@ -482,29 +537,32 @@ def _extract_terms(
 
     contradictory_terms = (exact_pos_terms & exact_neg_terms) | {
         test
-        for test, include in glob_terms if (test, not include) in glob_terms
+        for test, include in glob_terms
+        if (test, not include) in glob_terms
     }
     if test := next(iter(contradictory_terms), None):
         raise ValueError(
-            f'Both "+{test}" and "-{test}" specified in test filter')
+            f'Both "+{test}" and "-{test}" specified in test filter'
+        )
     return exact_pos_terms, exact_neg_terms, glob_terms
 
 
 def _strip_sign(term: str) -> ParsedTerm:
     if term.startswith('-'):
-        return term[len('-'):], False
+        return term[len('-') :], False
     elif term.startswith('+'):
-        return term[len('+'):], True
+        return term[len('+') :], True
     return term, True
 
 
 def _remove_glob(test: str) -> str:
-    return test[:-len('*')] if test.endswith('*') else test
+    return test[: -len('*')] if test.endswith('*') else test
 
 
 def _has_illegal_wildcard(term: str) -> bool:
     # Remove any legal wildcard and add an initial dummy character, which fails
     # terms starting with `*` that aren't just `*`.
     term = ' ' + _remove_glob(term)
-    return any(prev != '\\' and char == '*'
-               for prev, char in zip(term[:-1], term[1:]))
+    return any(
+        prev != '\\' and char == '*' for prev, char in zip(term[:-1], term[1:])
+    )

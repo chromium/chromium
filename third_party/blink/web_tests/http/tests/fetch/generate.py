@@ -56,21 +56,33 @@ def generate_directory(relative_path, contexts, original_options):
 
         for context in contexts:
             template_path = os.path.join(
-                directory_path, 'TEMPLATE-' + context + '.html')
+                directory_path, 'TEMPLATE-' + context + '.html'
+            )
             for option in options:
-                generate(os.path.join(top_path, context, relative_path), template_path, context, testname, option)
+                generate(
+                    os.path.join(top_path, context, relative_path),
+                    template_path,
+                    context,
+                    testname,
+                    option,
+                )
 
 
 def main():
     basic_contexts = ['window', 'workers', 'serviceworker']
 
-    generate_directory('', ['window', 'workers', 'serviceworker'],
-                       ['', '-base-https-other-https'])
+    generate_directory(
+        '',
+        ['window', 'workers', 'serviceworker'],
+        ['', '-base-https-other-https'],
+    )
     generate_directory(
         'thorough',
         ['window', 'workers', 'serviceworker', 'serviceworker-proxied'],
-        ['', '-other-https', '-base-https-other-https'])
+        ['', '-other-https', '-base-https-other-https'],
+    )
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

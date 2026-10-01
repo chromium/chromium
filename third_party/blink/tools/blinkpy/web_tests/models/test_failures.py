@@ -63,7 +63,8 @@ TESTHARNESS_JS_FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
 # the fatal message, the second captures the message itself.
 FATAL_MESSAGE_RE = re.compile(
     r'^.*FATAL.*?([a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+\([0-9]+\))\]? (.*)$',
-    re.MULTILINE)
+    re.MULTILINE,
+)
 
 IGNORE_RESULT = 'IGNORE'
 
@@ -94,51 +95,69 @@ class AbstractTestResultType(object):
         ext = self.filesystem.splitext(path)[1]
         return ext != '.png' and ext != '.wav'
 
-    def _write_to_artifacts(self, typ_artifacts, artifact_name, path, content,
-                            force_overwrite):
+    def _write_to_artifacts(
+        self, typ_artifacts, artifact_name, path, content, force_overwrite
+    ):
         typ_artifacts.CreateArtifact(
-            artifact_name, path, content, force_overwrite=force_overwrite)
+            artifact_name, path, content, force_overwrite=force_overwrite
+        )
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         typ_artifacts_dir = self.filesystem.join(
-            self.result_directory, typ_artifacts.ArtifactsSubDirectory())
+            self.result_directory, typ_artifacts.ArtifactsSubDirectory()
+        )
         if self.actual_driver_output.command:
             artifact_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_CMD, '.txt')
-            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
-                                                     artifact_filename)
-            if (force_overwrite or self.result != ResultType.Pass
-                    or not self.filesystem.exists(artifacts_abspath)):
-                self._write_to_artifacts(typ_artifacts,
-                                         'command',
-                                         artifact_filename,
-                                         self.actual_driver_output.command,
-                                         force_overwrite=True)
+                self.test_name, FILENAME_SUFFIX_CMD, '.txt'
+            )
+            artifacts_abspath = self.filesystem.join(
+                typ_artifacts_dir, artifact_filename
+            )
+            if (
+                force_overwrite
+                or self.result != ResultType.Pass
+                or not self.filesystem.exists(artifacts_abspath)
+            ):
+                self._write_to_artifacts(
+                    typ_artifacts,
+                    'command',
+                    artifact_filename,
+                    self.actual_driver_output.command,
+                    force_overwrite=True,
+                )
 
         if self.actual_driver_output.error:
             artifact_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_STDERR, '.txt')
-            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
-                                                     artifact_filename)
+                self.test_name, FILENAME_SUFFIX_STDERR, '.txt'
+            )
+            artifacts_abspath = self.filesystem.join(
+                typ_artifacts_dir, artifact_filename
+            )
             # If a test has multiple stderr results, keep that of the last
             # failure, which is useful for debugging flaky tests with
             # --iterations=n or --repeat-each=n.
-            if (force_overwrite or self.result != ResultType.Pass
-                    or not self.filesystem.exists(artifacts_abspath)):
-                self._write_to_artifacts(typ_artifacts,
-                                         'stderr',
-                                         artifact_filename,
-                                         self.actual_driver_output.error,
-                                         force_overwrite=True)
+            if (
+                force_overwrite
+                or self.result != ResultType.Pass
+                or not self.filesystem.exists(artifacts_abspath)
+            ):
+                self._write_to_artifacts(
+                    typ_artifacts,
+                    'stderr',
+                    artifact_filename,
+                    self.actual_driver_output.error,
+                    force_overwrite=True,
+                )
 
     def _error_text(self):
-        if (self.actual_driver_output
-                and self.actual_driver_output.error is not None):
+        if (
+            self.actual_driver_output
+            and self.actual_driver_output.error is not None
+        ):
             # Even when running under py3, some clients pass a str
             # to error instead of bytes. We must handle both.
             if not isinstance(self.actual_driver_output.error, str):
-                return self.actual_driver_output.error.decode(
-                    'utf8', 'replace')
+                return self.actual_driver_output.error.decode('utf8', 'replace')
             else:
                 return self.actual_driver_output.error
         return ''
@@ -231,12 +250,14 @@ class FailureTimeout(AbstractTestResultType):
 class FailureCrash(AbstractTestResultType):
     result = ResultType.Crash
 
-    def __init__(self,
-                 actual_driver_output,
-                 is_reftest=False,
-                 process_name='content_shell',
-                 pid=None,
-                 has_log=False):
+    def __init__(
+        self,
+        actual_driver_output,
+        is_reftest=False,
+        process_name='content_shell',
+        pid=None,
+        has_log=False,
+    ):
         super(FailureCrash, self).__init__(actual_driver_output, None)
         self.process_name = process_name
         self.pid = pid
@@ -245,14 +266,20 @@ class FailureCrash(AbstractTestResultType):
         self.crash_log = self.actual_driver_output.crash_log
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
-        super(FailureCrash, self).create_artifacts(typ_artifacts,
-                                                   force_overwrite)
+        super(FailureCrash, self).create_artifacts(
+            typ_artifacts, force_overwrite
+        )
         if self.crash_log:
             artifact_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_CRASH_LOG, '.txt')
-            self._write_to_artifacts(typ_artifacts, 'crash_log',
-                                     artifact_filename, self.crash_log,
-                                     force_overwrite)
+                self.test_name, FILENAME_SUFFIX_CRASH_LOG, '.txt'
+            )
+            self._write_to_artifacts(
+                typ_artifacts,
+                'crash_log',
+                artifact_filename,
+                self.crash_log,
+                force_overwrite,
+            )
 
     def message(self):
         if self.pid:
@@ -279,13 +306,20 @@ class FailureLeak(TestFailure):
         self.is_reftest = is_reftest
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
-        super(FailureLeak, self).create_artifacts(typ_artifacts,
-                                                  force_overwrite)
+        super(FailureLeak, self).create_artifacts(
+            typ_artifacts, force_overwrite
+        )
         artifact_filename = self.port.output_filename(
-            self.test_name, FILENAME_SUFFIX_LEAK_LOG, '.txt')
+            self.test_name, FILENAME_SUFFIX_LEAK_LOG, '.txt'
+        )
         self.log = self.actual_driver_output.leak_log
-        self._write_to_artifacts(typ_artifacts, 'leak_log', artifact_filename,
-                                 self.log, force_overwrite)
+        self._write_to_artifacts(
+            typ_artifacts,
+            'leak_log',
+            artifact_filename,
+            self.log,
+            force_overwrite,
+        )
 
     def message(self):
         return self._message_format() % (self.log)
@@ -300,22 +334,31 @@ class FailureLeak(TestFailure):
 class ActualAndBaselineArtifacts(TestFailure):
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(ActualAndBaselineArtifacts, self).create_artifacts(
-            typ_artifacts, force_overwrite)
+            typ_artifacts, force_overwrite
+        )
         self.actual_artifact_filename = self.port.output_filename(
-            self.test_name, FILENAME_SUFFIX_ACTUAL, self.file_ext)
+            self.test_name, FILENAME_SUFFIX_ACTUAL, self.file_ext
+        )
         self.expected_artifact_filename = self.port.output_filename(
-            self.test_name, FILENAME_SUFFIX_EXPECTED, self.file_ext)
+            self.test_name, FILENAME_SUFFIX_EXPECTED, self.file_ext
+        )
         attr = _ext_to_file_type[self.file_ext]
         if getattr(self.actual_driver_output, attr):
-            self._write_to_artifacts(typ_artifacts, 'actual_%s' % attr,
-                                     self.actual_artifact_filename,
-                                     getattr(self.actual_driver_output,
-                                             attr), force_overwrite)
+            self._write_to_artifacts(
+                typ_artifacts,
+                'actual_%s' % attr,
+                self.actual_artifact_filename,
+                getattr(self.actual_driver_output, attr),
+                force_overwrite,
+            )
         if getattr(self.expected_driver_output, attr):
             self._write_to_artifacts(
-                typ_artifacts, 'expected_%s' % attr,
+                typ_artifacts,
+                'expected_%s' % attr,
                 self.expected_artifact_filename,
-                getattr(self.expected_driver_output, attr), force_overwrite)
+                getattr(self.expected_driver_output, attr),
+                force_overwrite,
+            )
 
     def message(self):
         raise NotImplementedError
@@ -323,60 +366,83 @@ class ActualAndBaselineArtifacts(TestFailure):
 
 class FailureText(ActualAndBaselineArtifacts):
     def __init__(self, actual_driver_output, expected_driver_output):
-        super(FailureText, self).__init__(actual_driver_output,
-                                          expected_driver_output)
+        super(FailureText, self).__init__(
+            actual_driver_output, expected_driver_output
+        )
         self.has_repaint_overlay = (
-            repaint_overlay.result_contains_repaint_rects(
-                self._actual_text())
+            repaint_overlay.result_contains_repaint_rects(self._actual_text())
             or repaint_overlay.result_contains_repaint_rects(
-                self._expected_text()))
+                self._expected_text()
+            )
+        )
         self.file_ext = '.txt'
 
     def _actual_text(self):
-        if (self.actual_driver_output
-                and self.actual_driver_output.text is not None):
+        if (
+            self.actual_driver_output
+            and self.actual_driver_output.text is not None
+        ):
             return self.actual_driver_output.text.decode('utf8', 'replace')
         return ''
 
     def _expected_text(self):
-        if (self.expected_driver_output
-                and self.expected_driver_output.text is not None):
+        if (
+            self.expected_driver_output
+            and self.expected_driver_output.text is not None
+        ):
             return self.expected_driver_output.text.decode('utf8', 'replace')
         return ''
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         # TODO (weizhong): See if you can can only output diff files for
         # non empty text.
-        super(FailureText, self).create_artifacts(typ_artifacts,
-                                                  force_overwrite)
+        super(FailureText, self).create_artifacts(
+            typ_artifacts, force_overwrite
+        )
 
         actual_text = self._actual_text()
         expected_text = self._expected_text()
 
         artifacts_abs_path = self.filesystem.join(
-            self.result_directory, typ_artifacts.ArtifactsSubDirectory())
+            self.result_directory, typ_artifacts.ArtifactsSubDirectory()
+        )
         diff_content = unified_diff(
-            expected_text, actual_text,
-            self.filesystem.join(artifacts_abs_path,
-                                 self.expected_artifact_filename),
-            self.filesystem.join(artifacts_abs_path,
-                                 self.actual_artifact_filename))
-        diff_filename = self.port.output_filename(self.test_name,
-                                                  FILENAME_SUFFIX_DIFF, '.txt')
+            expected_text,
+            actual_text,
+            self.filesystem.join(
+                artifacts_abs_path, self.expected_artifact_filename
+            ),
+            self.filesystem.join(
+                artifacts_abs_path, self.actual_artifact_filename
+            ),
+        )
+        diff_filename = self.port.output_filename(
+            self.test_name, FILENAME_SUFFIX_DIFF, '.txt'
+        )
         html_diff_content = html_diff(expected_text, actual_text)
         html_diff_filename = self.port.output_filename(
-            self.test_name, FILENAME_SUFFIX_HTML_DIFF, '.html')
+            self.test_name, FILENAME_SUFFIX_HTML_DIFF, '.html'
+        )
 
         if diff_content:
             diff_content = diff_content.encode('utf8', 'replace')
         if html_diff_content:
             html_diff_content = html_diff_content.encode('utf8', 'replace')
 
-        self._write_to_artifacts(typ_artifacts, 'text_diff', diff_filename,
-                                 diff_content, force_overwrite)
-        self._write_to_artifacts(typ_artifacts, 'pretty_text_diff',
-                                 html_diff_filename, html_diff_content,
-                                 force_overwrite)
+        self._write_to_artifacts(
+            typ_artifacts,
+            'text_diff',
+            diff_filename,
+            diff_content,
+            force_overwrite,
+        )
+        self._write_to_artifacts(
+            typ_artifacts,
+            'pretty_text_diff',
+            html_diff_filename,
+            html_diff_content,
+            force_overwrite,
+        )
 
     def message(self):
         raise NotImplementedError
@@ -387,8 +453,9 @@ class FailureText(ActualAndBaselineArtifacts):
     def failure_reason(self):
         actual_text = self._actual_text()
         expected_text = self._expected_text()
-        diff_content = unified_diff(expected_text, actual_text, "expected",
-                                    "actual")
+        diff_content = unified_diff(
+            expected_text, actual_text, "expected", "actual"
+        )
         diff_lines = diff_content.splitlines()
 
         # Drop the standard diff header with the following lines:
@@ -411,8 +478,9 @@ class FailureText(ActualAndBaselineArtifacts):
             # A block of diffs starts with removals (-)
             # and then additions (+). Any variation from this
             # pattern indicates an end of this block of diffs.
-            if ((line.startswith(' ') and match_state != '')
-                    or (line.startswith('-') and match_state == '+')):
+            if (line.startswith(' ') and match_state != '') or (
+                line.startswith('-') and match_state == '+'
+            ):
                 # End of block of additions and deletions.
                 break
             if line.startswith('-'):
@@ -443,8 +511,9 @@ class FailureText(ActualAndBaselineArtifacts):
                 # Only use the diff if it is not tiny. If it is only the
                 # addition of an empty line at the end of the file or
                 # similar, it is unlikely to be useful.
-                primary_error = ('Unexpected Diff (+got, -want):\n' +
-                                 first_diff_block)
+                primary_error = (
+                    'Unexpected Diff (+got, -want):\n' + first_diff_block
+                )
 
         if primary_error:
             return FailureReason(primary_error)
@@ -464,18 +533,24 @@ class FailureTextNotGenerated(FailureText):
 class FailureTextMismatch(FailureText):
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(FailureTextMismatch, self).create_artifacts(
-            typ_artifacts, force_overwrite)
+            typ_artifacts, force_overwrite
+        )
         html = repaint_overlay.generate_repaint_overlay_html(
             self.test_name,
             self.actual_driver_output.text.decode('utf8', 'replace'),
-            self.expected_driver_output.text.decode('utf8', 'replace'))
+            self.expected_driver_output.text.decode('utf8', 'replace'),
+        )
         if html:
             overlay_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_OVERLAY, '.html')
-            self._write_to_artifacts(typ_artifacts, 'overlay',
-                                     overlay_filename,
-                                     html.encode('utf8',
-                                                 'replace'), force_overwrite)
+                self.test_name, FILENAME_SUFFIX_OVERLAY, '.html'
+            )
+            self._write_to_artifacts(
+                typ_artifacts,
+                'overlay',
+                overlay_filename,
+                html.encode('utf8', 'replace'),
+                force_overwrite,
+            )
 
     def message(self):
         return 'text diff'
@@ -518,8 +593,9 @@ class FailureImage(ActualAndBaselineArtifacts):
     ACTUAL_HASH_RDB_TAG: ClassVar[str] = 'web_tests_actual_image_hash'
 
     def __init__(self, actual_driver_output, expected_driver_output):
-        super(FailureImage, self).__init__(actual_driver_output,
-                                           expected_driver_output)
+        super(FailureImage, self).__init__(
+            actual_driver_output, expected_driver_output
+        )
         self.file_ext = '.png'
 
     def message(self):
@@ -549,13 +625,20 @@ class FailureImageHashMismatch(FailureImage):
         # Need this if statement in case the image diff process fails
         if self.actual_driver_output.image_diff:
             diff_filename = self.port.output_filename(
-                self.test_name, FILENAME_SUFFIX_DIFF, '.png')
+                self.test_name, FILENAME_SUFFIX_DIFF, '.png'
+            )
             diff = self.actual_driver_output.image_diff
-            self._write_to_artifacts(typ_artifacts, 'image_diff',
-                                     diff_filename, diff, force_overwrite)
+            self._write_to_artifacts(
+                typ_artifacts,
+                'image_diff',
+                diff_filename,
+                diff,
+                force_overwrite,
+            )
 
         super(FailureImageHashMismatch, self).create_artifacts(
-            typ_artifacts, force_overwrite)
+            typ_artifacts, force_overwrite
+        )
 
 
 class FailureReftestMixin(object):
@@ -570,35 +653,45 @@ class FailureReftestMixin(object):
     # will be called first and then when that method calls the super class's
     # create_artifacts, it will call FailureImageHashMismatch's create_artifacts.
 
-    def __init__(self,
-                 actual_driver_output,
-                 expected_driver_output,
-                 reference_filename=None):
-        super(FailureReftestMixin, self).__init__(actual_driver_output,
-                                                  expected_driver_output)
+    def __init__(
+        self,
+        actual_driver_output,
+        expected_driver_output,
+        reference_filename=None,
+    ):
+        super(FailureReftestMixin, self).__init__(
+            actual_driver_output, expected_driver_output
+        )
         self.reference_filename = reference_filename
         self.reference_file_type = 'reference_file_mismatch'
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(FailureReftestMixin, self).create_artifacts(
-            typ_artifacts, force_overwrite)
+            typ_artifacts, force_overwrite
+        )
         sub_dir = typ_artifacts.ArtifactsSubDirectory()
         artifact_filename = self.filesystem.join(
-            sub_dir, self.filesystem.dirname(self.test_name),
-            self.filesystem.basename(self.reference_filename))
-        artifact_abspath = self.filesystem.join(self.result_directory,
-                                                artifact_filename)
+            sub_dir,
+            self.filesystem.dirname(self.test_name),
+            self.filesystem.basename(self.reference_filename),
+        )
+        artifact_abspath = self.filesystem.join(
+            self.result_directory, artifact_filename
+        )
         # a reference test may include a page that does not exist in the
         # web test directory, like about:blank pages
-        if (not self.filesystem.exists(artifact_abspath)
-                and self.filesystem.exists(self.reference_filename)):
+        if not self.filesystem.exists(
+            artifact_abspath
+        ) and self.filesystem.exists(self.reference_filename):
             self.filesystem.maybe_make_directory(
-                self.filesystem.dirname(artifact_abspath))
+                self.filesystem.dirname(artifact_abspath)
+            )
             self.filesystem.copyfile(self.reference_filename, artifact_abspath)
         typ_artifacts.AddArtifact(
             self.reference_file_type,
             artifact_filename,
-            raise_exception_for_duplicates=False)
+            raise_exception_for_duplicates=False,
+        )
 
     def message(self):
         raise NotImplementedError
@@ -610,12 +703,15 @@ class FailureReftestMismatch(FailureReftestMixin, FailureImageHashMismatch):
 
 
 class FailureReftestMismatchDidNotOccur(FailureReftestMixin, FailureImage):
-    def __init__(self,
-                 actual_driver_output,
-                 expected_driver_output,
-                 reference_filename=None):
+    def __init__(
+        self,
+        actual_driver_output,
+        expected_driver_output,
+        reference_filename=None,
+    ):
         super(FailureReftestMismatchDidNotOccur, self).__init__(
-            actual_driver_output, expected_driver_output, reference_filename)
+            actual_driver_output, expected_driver_output, reference_filename
+        )
         self.reference_file_type = 'reference_file_match'
 
     def message(self):
@@ -627,16 +723,18 @@ class FailureReftestNoImageGenerated(FailureReftestMixin, FailureImage):
         return "reference test didn't generate pixel results"
 
 
-class FailureReftestNoReferenceImageGenerated(FailureReftestMixin,
-                                              FailureImage):
+class FailureReftestNoReferenceImageGenerated(
+    FailureReftestMixin, FailureImage
+):
     def message(self):
         return "-expected.html didn't generate pixel results"
 
 
 class FailureAudio(ActualAndBaselineArtifacts):
     def __init__(self, actual_driver_output, expected_driver_output):
-        super(FailureAudio, self).__init__(actual_driver_output,
-                                           expected_driver_output)
+        super(FailureAudio, self).__init__(
+            actual_driver_output, expected_driver_output
+        )
         self.file_ext = '.wav'
 
     def message(self):
@@ -662,8 +760,9 @@ class FailureEarlyExit(AbstractTestResultType):
     result = ResultType.Skip
 
     def __init__(self, actual_driver_output=None, expected_driver_output=None):
-        super(FailureEarlyExit, self).__init__(actual_driver_output,
-                                               expected_driver_output)
+        super(FailureEarlyExit, self).__init__(
+            actual_driver_output, expected_driver_output
+        )
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         pass
@@ -682,22 +781,26 @@ class TraceFileArtifact(AbstractTestResultType):
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         typ_artifacts_dir = self.filesystem.join(
-            self.result_directory, typ_artifacts.ArtifactsSubDirectory())
+            self.result_directory, typ_artifacts.ArtifactsSubDirectory()
+        )
         trace_file = self._trace_file
-        if (trace_file and self.filesystem.exists(trace_file)):
+        if trace_file and self.filesystem.exists(trace_file):
             artifact_filename = self.port.output_filename(
-                self.test_name, self._suffix, '.pftrace')
-            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
-                                                     artifact_filename)
-            if (force_overwrite
-                    or not self.filesystem.exists(artifacts_abspath)):
+                self.test_name, self._suffix, '.pftrace'
+            )
+            artifacts_abspath = self.filesystem.join(
+                typ_artifacts_dir, artifact_filename
+            )
+            if force_overwrite or not self.filesystem.exists(artifacts_abspath):
                 with self.filesystem.open_binary_file_for_reading(
-                        trace_file) as trace_fh:
+                    trace_file
+                ) as trace_fh:
                     typ_artifacts.CreateArtifact(
                         'trace',
                         artifact_filename,
                         trace_fh.read(),
-                        force_overwrite=force_overwrite)
+                        force_overwrite=force_overwrite,
+                    )
 
     def message(self):
         return 'test produced a trace file'
@@ -705,16 +808,26 @@ class TraceFileArtifact(AbstractTestResultType):
 
 # Convenient collection of all failure classes for anything that might
 # need to enumerate over them all.
-ALL_FAILURE_CLASSES = (FailureTimeout, FailureCrash, FailureMissingResult,
-                       FailureTestHarnessAssertion, FailureTextMismatch,
-                       FailureSpacesAndTabsTextMismatch,
-                       FailureLineBreaksTextMismatch,
-                       FailureSpaceTabLineBreakTextMismatch,
-                       FailureMissingImageHash, FailureMissingImage,
-                       FailureImageHashMismatch, FailureReftestMismatch,
-                       FailureReftestMismatchDidNotOccur,
-                       FailureReftestNoImageGenerated,
-                       FailureReftestNoReferenceImageGenerated,
-                       FailureMissingAudio, FailureAudioMismatch,
-                       FailureEarlyExit, FailureImageHashNotGenerated,
-                       FailureTextNotGenerated, FailureAudioNotGenerated)
+ALL_FAILURE_CLASSES = (
+    FailureTimeout,
+    FailureCrash,
+    FailureMissingResult,
+    FailureTestHarnessAssertion,
+    FailureTextMismatch,
+    FailureSpacesAndTabsTextMismatch,
+    FailureLineBreaksTextMismatch,
+    FailureSpaceTabLineBreakTextMismatch,
+    FailureMissingImageHash,
+    FailureMissingImage,
+    FailureImageHashMismatch,
+    FailureReftestMismatch,
+    FailureReftestMismatchDidNotOccur,
+    FailureReftestNoImageGenerated,
+    FailureReftestNoReferenceImageGenerated,
+    FailureMissingAudio,
+    FailureAudioMismatch,
+    FailureEarlyExit,
+    FailureImageHashNotGenerated,
+    FailureTextNotGenerated,
+    FailureAudioNotGenerated,
+)

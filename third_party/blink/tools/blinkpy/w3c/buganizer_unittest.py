@@ -18,7 +18,6 @@ from blinkpy.w3c.buganizer import (
 
 
 class BuganizerIssueTest(unittest.TestCase):
-
     @staticmethod
     def create_mock_issue_payload(issue_id='12345'):
         return {
@@ -31,9 +30,12 @@ class BuganizerIssueTest(unittest.TestCase):
                 'priority': 'P1',
                 # `emailAddress` may be blank if the user is not visible to the
                 # caller.
-                'ccs': [{}, {
-                    'emailAddress': 'test@chromium.org',
-                }],
+                'ccs': [
+                    {},
+                    {
+                        'emailAddress': 'test@chromium.org',
+                    },
+                ],
             },
             'issueComment': {
                 'comment': 'test description',
@@ -41,14 +43,16 @@ class BuganizerIssueTest(unittest.TestCase):
         }
 
     def test_display(self):
-        issue = BuganizerIssue(title='test',
-                               description='ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ',
-                               component_id='999',
-                               issue_id=12345,
-                               cc=['foo@chromium.org', 'bar@chromium.org'],
-                               status=Status.ASSIGNED,
-                               priority=Priority.P0,
-                               severity=Severity.S0)
+        issue = BuganizerIssue(
+            title='test',
+            description='ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ',
+            component_id='999',
+            issue_id=12345,
+            cc=['foo@chromium.org', 'bar@chromium.org'],
+            status=Status.ASSIGNED,
+            priority=Priority.P0,
+            severity=Severity.S0,
+        )
         self.assertEqual(
             str(issue),
             textwrap.dedent("""\
@@ -60,16 +64,19 @@ class BuganizerIssueTest(unittest.TestCase):
                   Severity: S0
                   Description:
                     ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ
-                  """))
+                  """),
+        )
 
     def test_display_minimal(self):
-        issue = BuganizerIssue(title='test',
-                               description=textwrap.dedent("""\
+        issue = BuganizerIssue(
+            title='test',
+            description=textwrap.dedent("""\
                                   line 1
                                     line 2
                                   line 3
                                   """),
-                               component_id='999')
+            component_id='999',
+        )
         self.assertEqual(
             str(issue),
             textwrap.dedent("""\
@@ -83,17 +90,17 @@ class BuganizerIssueTest(unittest.TestCase):
                     line 1
                       line 2
                     line 3
-                """))
+                """),
+        )
 
     def test_crbug_link(self):
-        issue = BuganizerIssue(title='test',
-                               description='test',
-                               component_id='999',
-                               issue_id=12345)
+        issue = BuganizerIssue(
+            title='test', description='test', component_id='999', issue_id=12345
+        )
         self.assertEqual(issue.link, 'https://crbug.com/12345')
-        issue = BuganizerIssue(title='test',
-                               description='test',
-                               component_id='999')
+        issue = BuganizerIssue(
+            title='test', description='test', component_id='999'
+        )
         self.assertIsNone(issue.link)
 
     def test_build_from_payload(self):
@@ -109,7 +116,6 @@ class BuganizerIssueTest(unittest.TestCase):
 
 
 class BuganizerClientTest(unittest.TestCase):
-
     def setUp(self):
         self.service = mock.Mock()
         self.web = MockWeb()
@@ -127,21 +133,24 @@ class BuganizerClientTest(unittest.TestCase):
 
     def test_resolve_historic(self):
         self.web.urls['https://crbug.com/123'] = (
-            b'window.location = "https://issues.chromium.org/12345678";')
+            b'window.location = "https://issues.chromium.org/12345678";'
+        )
         self.client.GetIssue(123)
         fake_get = self.service.issues.return_value.get
         fake_get.assert_called_once_with(issueId=12_345_678)
 
     def test_resolve_historic_url(self):
         self.web.urls['https://crbug.com/123'] = (
-            b'window.location = "https://issues.chromium.org/12345678";')
+            b'window.location = "https://issues.chromium.org/12345678";'
+        )
         self.client.GetIssue('crbug.com/123')
         fake_get = self.service.issues.return_value.get
         fake_get.assert_called_once_with(issueId=12_345_678)
 
     def test_resolve_non_chromium_project(self):
         self.web.urls['https://skbug.com/123'] = (
-            b'window.location = "https://issues.skia.org/12345678";')
+            b'window.location = "https://issues.skia.org/12345678";'
+        )
         self.client.GetIssue('https://skbug.com/123')
         fake_get = self.service.issues.return_value.get
         fake_get.assert_called_once_with(issueId=12_345_678)
@@ -157,15 +166,14 @@ class BuganizerClientTest(unittest.TestCase):
         first_page_response = {
             'issues': [
                 BuganizerIssueTest.create_mock_issue_payload(issue_id='1'),
-                BuganizerIssueTest.create_mock_issue_payload(issue_id='2')
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='2'),
             ],
-            'nextPageToken':
-            'next_page_token',
+            'nextPageToken': 'next_page_token',
         }
         second_page_response = {
             'issues': [
                 BuganizerIssueTest.create_mock_issue_payload(issue_id='3'),
-                BuganizerIssueTest.create_mock_issue_payload(issue_id='4')
+                BuganizerIssueTest.create_mock_issue_payload(issue_id='4'),
             ],
         }
 
@@ -181,13 +189,16 @@ class BuganizerClientTest(unittest.TestCase):
         self.assertEqual(issues[1].issue_id, '2')
         self.assertEqual(issues[2].issue_id, '3')
 
-        self.service.issues.return_value.list.assert_has_calls([
-            mock.call(query='test query',
-                      pageSize=3,
-                      view='FULL',
-                      pageToken=None),
-            mock.call(query='test query',
-                      pageSize=1,
-                      view='FULL',
-                      pageToken='next_page_token'),
-        ])
+        self.service.issues.return_value.list.assert_has_calls(
+            [
+                mock.call(
+                    query='test query', pageSize=3, view='FULL', pageToken=None
+                ),
+                mock.call(
+                    query='test query',
+                    pageSize=1,
+                    view='FULL',
+                    pageToken='next_page_token',
+                ),
+            ]
+        )

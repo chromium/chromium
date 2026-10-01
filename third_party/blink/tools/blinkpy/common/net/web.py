@@ -62,28 +62,25 @@ class Web:
             return session
 
     def get_binary(self, url, return_none_on_404=False, trace=None):
-        make_request = functools.partial(self.request_and_read,
-                                         'GET',
-                                         url,
-                                         trace=trace,
-                                         headers={'Accept-Encoding': 'gzip'})
-        return NetworkTransaction(
-            return_none_on_404=return_none_on_404).run(make_request)
+        make_request = functools.partial(
+            self.request_and_read,
+            'GET',
+            url,
+            trace=trace,
+            headers={'Accept-Encoding': 'gzip'},
+        )
+        return NetworkTransaction(return_none_on_404=return_none_on_404).run(
+            make_request
+        )
 
-    def request(self,
-                method,
-                url,
-                data=None,
-                headers=None,
-                trace=None,
-                retry_index=None):
+    def request(
+        self, method, url, data=None, headers=None, trace=None, retry_index=None
+    ):
         if trace is not None and retry_index > 2:
             url += f'&{trace=!s}'
-        response = self.session.request(method.lower(),
-                                        url,
-                                        data=data,
-                                        headers=headers,
-                                        stream=True)
+        response = self.session.request(
+            method.lower(), url, data=data, headers=headers, stream=True
+        )
         response.raise_for_status()
         return response
 

@@ -28,6 +28,7 @@ BuildStatuses = Mapping[Build, BuildStatus]
 # arguments in `GitCL.*` with this more meaningful type.
 class CLRevisionID(NamedTuple):
     """An identifier for a Gerrit CL patchset."""
+
     issue: int
     patchset: Optional[int] = None
 
@@ -41,6 +42,7 @@ class CLStatus(enum.Enum):
 
     [0]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/85e409e/git_cl.py#2397
     """
+
     ERROR = 'error'
     UNSENT = 'unsent'
     WAITING = 'waiting'
@@ -57,18 +59,19 @@ class CLSummary(NamedTuple):
     It contains both the CL's status as reported by `git-cl status' as well as
     a mapping of Build objects to BuildStatus objects.
     """
+
     status: CLStatus
     try_job_results: BuildStatuses
 
 
 class GitCL:
-
     def __init__(self, host, cwd=None, bb_client=None):
         self._host = host
         self.bb_client = bb_client or BuildbucketClient.from_host(host)
         self._cwd = cwd
         self._git_executable_name = Git.find_executable_name(
-            host.executive, host.platform)
+            host.executive, host.platform
+        )
 
     def run(self, args):
         """Runs git-cl with the given arguments and returns the output.
@@ -83,7 +86,8 @@ class GitCL:
         # Suppress the stderr of git-cl because git-cl will show a warning when
         # running on Swarming bots with local git cache.
         return self._host.executive.run_command(
-            command, cwd=self._cwd, stderr=self._host.executive.PIPE)
+            command, cwd=self._cwd, stderr=self._host.executive.PIPE
+        )
 
     def close(self, issue: Optional[int] = None):
         command = ['set-close']
@@ -154,10 +158,12 @@ class GitCL:
     def _get_latest_patchset(self):
         return self.run(['status', '--field=patch']).strip()
 
-    def wait_for_try_jobs(self,
-                          poll_delay_seconds=10 * 60,
-                          timeout_seconds=120 * 60,
-                          cq_only=False):
+    def wait_for_try_jobs(
+        self,
+        poll_delay_seconds=10 * 60,
+        timeout_seconds=120 * 60,
+        cq_only=False,
+    ):
         """Waits until all try jobs are finished and returns results, or None.
 
         This function can also be interrupted if the corresponding CL is
@@ -172,25 +178,30 @@ class GitCL:
             _log.debug(f'Fetched CL status: {cl_status.value}')
             issue_number = self.get_issue_number()
             try_job_results = self.latest_try_jobs(
-                issue_number, cq_only=cq_only)
-            if (cl_status is CLStatus.CLOSED or
-                (try_job_results and self.all_finished(try_job_results))):
-                return CLSummary(status=cl_status,
-                                 try_job_results=try_job_results)
+                issue_number, cq_only=cq_only
+            )
+            if cl_status is CLStatus.CLOSED or (
+                try_job_results and self.all_finished(try_job_results)
+            ):
+                return CLSummary(
+                    status=cl_status, try_job_results=try_job_results
+                )
             return None
 
         return self._wait_for(
             finished_try_job_results_or_none,
             poll_delay_seconds,
             timeout_seconds,
-            message=' for try jobs')
+            message=' for try jobs',
+        )
 
     def wait_for_closed_status(
-            self,
-            poll_delay_seconds: float = 2 * 60,
-            timeout_seconds: float = 30 * 60,
-            issue: Optional[int] = None,
-            start: Optional[float] = None) -> Optional[CLStatus]:
+        self,
+        poll_delay_seconds: float = 2 * 60,
+        timeout_seconds: float = 30 * 60,
+        issue: Optional[int] = None,
+        start: Optional[float] = None,
+    ) -> Optional[CLStatus]:
         """Waits until git cl reports that the current CL is closed."""
 
         def closed_status_or_none():
@@ -201,18 +212,22 @@ class GitCL:
                 return status
             return None
 
-        return self._wait_for(closed_status_or_none,
-                              poll_delay_seconds,
-                              timeout_seconds,
-                              message=' for closed status',
-                              start=start)
+        return self._wait_for(
+            closed_status_or_none,
+            poll_delay_seconds,
+            timeout_seconds,
+            message=' for closed status',
+            start=start,
+        )
 
-    def _wait_for(self,
-                  poll_function,
-                  poll_delay_seconds,
-                  timeout_seconds,
-                  message='',
-                  start: Optional[float] = None):
+    def _wait_for(
+        self,
+        poll_function,
+        poll_delay_seconds,
+        timeout_seconds,
+        message='',
+        start: Optional[float] = None,
+    ):
         """Waits for the given poll_function to return something other than None.
 
         Args:
@@ -231,8 +246,9 @@ class GitCL:
         """
         if start is None:
             start = self._host.time()
-        self._host.print_('Waiting%s, timeout: %d seconds.' %
-                          (message, timeout_seconds))
+        self._host.print_(
+            'Waiting%s, timeout: %d seconds.' % (message, timeout_seconds)
+        )
         while (self._host.time() - start) < timeout_seconds:
             # TODO(crbug.com/40631540): The poll delay is actually twice what is
             # documented because we `sleep()` twice per loop. Get rid of one and
@@ -241,18 +257,22 @@ class GitCL:
             value = poll_function()
             if value is not None:
                 return value
-            self._host.print_('Waiting%s. %d seconds passed.' %
-                              (message, self._host.time() - start))
+            self._host.print_(
+                'Waiting%s. %d seconds passed.'
+                % (message, self._host.time() - start)
+            )
             self._host.sleep(poll_delay_seconds)
         self._host.print_('Timed out waiting%s.' % message)
         # Poll one more time in case the result recently changed.
         return poll_function()
 
-    def latest_try_jobs(self,
-                        issue_number=None,
-                        builder_names=None,
-                        cq_only=False,
-                        patchset=None):
+    def latest_try_jobs(
+        self,
+        issue_number=None,
+        builder_names=None,
+        cq_only=False,
+        patchset=None,
+    ):
         """Fetches a dict of Build to BuildStatus for the latest try jobs.
 
         This variant fetches try job data from buildbucket directly.
@@ -275,10 +295,9 @@ class GitCL:
             issue_number = self.get_issue_number()
         return self.filter_latest(
             self.try_job_results(
-                issue_number,
-                builder_names,
-                cq_only=cq_only,
-                patchset=patchset))
+                issue_number, builder_names, cq_only=cq_only, patchset=patchset
+            )
+        )
 
     @staticmethod
     def filter_latest(try_results):
@@ -297,11 +316,13 @@ class GitCL:
             if status in incomplete_statuses
         }
 
-    def try_job_results(self,
-                        issue_number=None,
-                        builder_names=None,
-                        cq_only=False,
-                        patchset=None):
+    def try_job_results(
+        self,
+        issue_number=None,
+        builder_names=None,
+        cq_only=False,
+        patchset=None,
+    ):
         """Returns a dict mapping Build objects to BuildStatus objects."""
         if not issue_number:
             issue_number = self.get_issue_number()
@@ -311,21 +332,22 @@ class GitCL:
             builder_name = build['builder']['builder']
             if builder_names and builder_name not in builder_names:
                 continue
-            is_cq = 'tags' in build and {
-                'key': 'user_agent',
-                'value': 'cq'
-            } in build['tags']
-            is_experimental = 'tags' in build and {
-                'key': 'cq_experimental',
-                'value': 'true'
-            } in build['tags']
+            is_cq = (
+                'tags' in build
+                and {'key': 'user_agent', 'value': 'cq'} in build['tags']
+            )
+            is_experimental = (
+                'tags' in build
+                and {'key': 'cq_experimental', 'value': 'true'} in build['tags']
+            )
             if cq_only and not (is_cq and not is_experimental):
                 continue
             build_number = build.get('number')
             status = build.get('status')
             build_id = build.get('id')
-            build_to_status[Build(builder_name, build_number,
-                                  build_id)] = BuildStatus[status]
+            build_to_status[Build(builder_name, build_number, build_id)] = (
+                BuildStatus[status]
+            )
         return build_to_status
 
     def fetch_raw_try_job_results(self, issue_number, patchset=None):
@@ -358,15 +380,18 @@ class GitCL:
         if not patchset:
             patchset = self._get_latest_patchset()
         predicate = {
-            'gerritChanges': [{
-                'host': 'chromium-review.googlesource.com',
-                'project': 'chromium/src',
-                'change': issue_number,
-                'patchset': patchset,
-            }],
+            'gerritChanges': [
+                {
+                    'host': 'chromium-review.googlesource.com',
+                    'project': 'chromium/src',
+                    'change': issue_number,
+                    'patchset': patchset,
+                }
+            ],
         }
         return self.bb_client.search_builds(
-            predicate, ['builder.builder', 'status', 'tags', 'number', 'id'])
+            predicate, ['builder.builder', 'status', 'tags', 'number', 'id']
+        )
 
     @staticmethod
     def _build(result_dict):

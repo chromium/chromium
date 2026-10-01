@@ -16,24 +16,40 @@ from .function_like import OverloadGroup
 from .make_copy import make_copy
 
 
-class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
-                WithExposure, WithOwner, WithOwnerMixin, WithComponent,
-                WithDebugInfo):
+class Operation(
+    FunctionLike,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithOwner,
+    WithOwnerMixin,
+    WithComponent,
+    WithDebugInfo,
+):
     """https://webidl.spec.whatwg.org/#idl-operations"""
 
-    class IR(FunctionLike.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):
-        def __init__(self,
-                     identifier,
-                     arguments,
-                     return_type,
-                     is_static=False,
-                     is_getter=False,
-                     is_setter=False,
-                     is_deleter=False,
-                     extended_attributes=None,
-                     component=None,
-                     debug_info=None):
+    class IR(
+        FunctionLike.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithOwnerMixin,
+        WithComponent,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            identifier,
+            arguments,
+            return_type,
+            is_static=False,
+            is_getter=False,
+            is_setter=False,
+            is_deleter=False,
+            extended_attributes=None,
+            component=None,
+            debug_info=None,
+        ):
             assert isinstance(is_getter, bool)
             assert isinstance(is_setter, bool)
             assert isinstance(is_deleter, bool)
@@ -44,7 +60,8 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
                 identifier=identifier,
                 arguments=arguments,
                 return_type=return_type,
-                is_static=is_static)
+                is_static=is_static,
+            )
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithCodeGeneratorInfo.__init__(self)
             WithExposure.__init__(self)
@@ -85,8 +102,12 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
 
     @property
     def is_special_operation(self):
-        return (self.is_getter or self.is_setter or self.is_deleter
-                or self.is_stringifier)
+        return (
+            self.is_getter
+            or self.is_setter
+            or self.is_deleter
+            or self.is_stringifier
+        )
 
     @property
     def is_indexed_or_named_property_operation(self):
@@ -155,9 +176,15 @@ class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
         return self._is_optionally_defined
 
 
-class OperationGroup(OverloadGroup, WithExtendedAttributes,
-                     WithCodeGeneratorInfo, WithExposure, WithOwner,
-                     WithComponent, WithDebugInfo):
+class OperationGroup(
+    OverloadGroup,
+    WithExtendedAttributes,
+    WithCodeGeneratorInfo,
+    WithExposure,
+    WithOwner,
+    WithComponent,
+    WithDebugInfo,
+):
     """
     Represents a group of operations with the same identifier and
     static/prototype visibility.
@@ -166,13 +193,20 @@ class OperationGroup(OverloadGroup, WithExtendedAttributes,
     the operations are overloaded.
     """
 
-    class IR(OverloadGroup.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
-             WithExposure, WithDebugInfo):
-        def __init__(self,
-                     operations,
-                     extended_attributes=None,
-                     code_generator_info=None,
-                     debug_info=None):
+    class IR(
+        OverloadGroup.IR,
+        WithExtendedAttributes,
+        WithCodeGeneratorInfo,
+        WithExposure,
+        WithDebugInfo,
+    ):
+        def __init__(
+            self,
+            operations,
+            extended_attributes=None,
+            code_generator_info=None,
+            debug_info=None,
+        ):
             OverloadGroup.IR.__init__(self, operations)
             WithExtendedAttributes.__init__(self, extended_attributes)
             WithCodeGeneratorInfo.__init__(self, code_generator_info)
@@ -182,14 +216,16 @@ class OperationGroup(OverloadGroup, WithExtendedAttributes,
     def __init__(self, ir, operations, owner):
         assert isinstance(ir, OperationGroup.IR)
         assert isinstance(operations, (list, tuple))
+        assert all(isinstance(operation, Operation) for operation in operations)
         assert all(
-            isinstance(operation, Operation) for operation in operations)
-        assert all(
-            operation.identifier == ir.identifier for operation in operations)
+            operation.identifier == ir.identifier for operation in operations
+        )
 
         components = functools.reduce(
-            lambda s, operation: s.union(operation.components), operations,
-            set())
+            lambda s, operation: s.union(operation.components),
+            operations,
+            set(),
+        )
 
         ir = make_copy(ir)
         OverloadGroup.__init__(self, functions=operations)

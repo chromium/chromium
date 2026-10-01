@@ -23,15 +23,16 @@ from mozlog.formatters.base import BaseFormatter
 
 
 class GroupingFormatter(mozlog.formatters.GroupingFormatter):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._start = datetime.now()
         self._driver_logging = False
         self.message_handler.register_message_handlers(
-            'driver_logging', {
+            'driver_logging',
+            {
                 'enable': self._enable_driver_logging,
-            })
+            },
+        )
 
     def _enable_driver_logging(self):
         self._driver_logging = True
@@ -76,15 +77,16 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
 
 
 class MachFormatter(mozlog.formatters.MachFormatter):
-
     def __init__(self, *args, reset_before_suite: bool = True, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset_before_suite = reset_before_suite
         self._driver_logging = False
         self.message_handler.register_message_handlers(
-            'driver_logging', {
+            'driver_logging',
+            {
                 'enable': self._enable_driver_logging,
-            })
+            },
+        )
 
     def _enable_driver_logging(self):
         self._driver_logging = True
@@ -145,7 +147,6 @@ def format_timestamp() -> str:
 
 
 class StructuredLogAdapter(logging.Handler):
-
     def __init__(self, logger, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._logger = logger
@@ -153,14 +154,19 @@ class StructuredLogAdapter(logging.Handler):
         self._fallback_handler.setFormatter(
             logging.Formatter(
                 fmt='%(asctime)s.%(msecs)03d %(levelname)s %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'))
+                datefmt='%Y-%m-%d %H:%M:%S',
+            )
+        )
 
     def emit(self, record):
-        log = getattr(self._logger, record.levelname.lower(),
-                      self._logger.debug)
+        log = getattr(
+            self._logger, record.levelname.lower(), self._logger.debug
+        )
         try:
-            log(record.getMessage(),
+            log(
+                record.getMessage(),
                 component=record.name,
-                exc_info=record.exc_info)
+                exc_info=record.exc_info,
+            )
         except mozlog.structuredlog.LoggerShutdownError:
             self._fallback_handler.emit(record)

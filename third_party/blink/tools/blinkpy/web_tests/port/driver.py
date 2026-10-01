@@ -65,7 +65,7 @@ def coalesce_repeated_switches(cmd):
         if not switch.startswith(prefix):
             return False
 
-        values = switch[len(prefix):].split(',')
+        values = switch[len(prefix) :].split(',')
         for value in values:
             values_set.add(value)
         return True
@@ -99,8 +99,16 @@ def coalesce_repeated_switches(cmd):
 
 
 class DriverInput(object):
-    def __init__(self, test_name, timeout, image_hash, wpt_print_mode,
-                 trace_file, startup_trace_file, args):
+    def __init__(
+        self,
+        test_name,
+        timeout,
+        image_hash,
+        wpt_print_mode,
+        trace_file,
+        startup_trace_file,
+        args,
+    ):
         self.test_name = test_name
         self.timeout = timeout  # in ms
         self.image_hash = image_hash
@@ -115,26 +123,28 @@ class DriverOutput(object):
     and post-processing of data.
     """
 
-    def __init__(self,
-                 text,
-                 image,
-                 image_hash,
-                 audio,
-                 crash=False,
-                 test_time=0,
-                 measurements=None,
-                 timeout=False,
-                 error=b'',
-                 crashed_process_name='??',
-                 crashed_pid=None,
-                 crash_log=None,
-                 crash_site=None,
-                 leak=False,
-                 leak_log=None,
-                 trace_file=None,
-                 startup_trace_file=None,
-                 pid=None,
-                 command=None):
+    def __init__(
+        self,
+        text,
+        image,
+        image_hash,
+        audio,
+        crash=False,
+        test_time=0,
+        measurements=None,
+        timeout=False,
+        error=b'',
+        crashed_process_name='??',
+        crashed_pid=None,
+        crash_log=None,
+        crash_site=None,
+        leak=False,
+        leak_log=None,
+        trace_file=None,
+        startup_trace_file=None,
+        pid=None,
+        command=None,
+    ):
         # FIXME: Args could be renamed to better clarify what they do.
         self.text = text
         self.image = image  # May be empty-string if the test crashes.
@@ -168,7 +178,6 @@ class DeviceFailure(Exception):
 
 
 class TestURIMapper:
-
     def __init__(self, port):
         self._wpt_dirs = port.wpt_dirs()
         self._port = port
@@ -183,8 +192,9 @@ class TestURIMapper:
     WPT_H2_PORT = 9000
 
     def is_http_test(self, test_name):
-        return (test_name.startswith(self.HTTP_DIR)
-                and not test_name.startswith(self.HTTP_LOCAL_DIR))
+        return test_name.startswith(self.HTTP_DIR) and not test_name.startswith(
+            self.HTTP_LOCAL_DIR
+        )
 
     def test_to_uri(self, test_name):
         """Convert a test name to a URI.
@@ -199,8 +209,9 @@ class TestURIMapper:
         using_wptserve = self._port.should_use_wptserve(test_name)
 
         if not self.is_http_test(test_name) and not using_wptserve:
-            return path.abspath_to_uri(self._port.host.platform,
-                                       self._port.abspath_for_test(test_name))
+            return path.abspath_to_uri(
+                self._port.host.platform, self._port.abspath_for_test(test_name)
+            )
 
         if using_wptserve:
             for wpt_path, url_prefix in self._wpt_dirs.items():
@@ -225,21 +236,33 @@ class TestURIMapper:
             test_url_prefix = '/'
             hostname, insecure_port, secure_port = self.HTTP_HOST_AND_PORTS
 
-        relative_path = test_name[len(test_dir_prefix):]
+        relative_path = test_name[len(test_dir_prefix) :]
 
-        if ('/https/' in test_name or '.https.' in test_name
-                or '.h2.' in test_name or '.serviceworker.' in test_name
-                or '.serviceworker-module.' in test_name):
-            return 'https://%s:%d%s%s' % (hostname, secure_port,
-                                          test_url_prefix, relative_path)
-        return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
-                                     relative_path)
+        if (
+            '/https/' in test_name
+            or '.https.' in test_name
+            or '.h2.' in test_name
+            or '.serviceworker.' in test_name
+            or '.serviceworker-module.' in test_name
+        ):
+            return 'https://%s:%d%s%s' % (
+                hostname,
+                secure_port,
+                test_url_prefix,
+                relative_path,
+            )
+        return 'http://%s:%d%s%s' % (
+            hostname,
+            insecure_port,
+            test_url_prefix,
+            relative_path,
+        )
 
     def _get_uri_prefixes(self, hostname, insecure_port, secure_port):
         """Returns the HTTP and HTTPS URI prefix for a hostname."""
         return [
             'http://%s:%d/' % (hostname, insecure_port),
-            'https://%s:%d/' % (hostname, secure_port)
+            'https://%s:%d/' % (hostname, secure_port),
         ]
 
     def uri_to_test(self, uri):
@@ -251,21 +274,22 @@ class TestURIMapper:
         """
 
         if uri.startswith('file:///'):
-            prefix = path.abspath_to_uri(self._port.host.platform,
-                                         self._port.web_tests_dir())
+            prefix = path.abspath_to_uri(
+                self._port.host.platform, self._port.web_tests_dir()
+            )
             if not prefix.endswith('/'):
                 prefix += '/'
-            return uri[len(prefix):]
+            return uri[len(prefix) :]
 
         for prefix in self._get_uri_prefixes(*self.HTTP_HOST_AND_PORTS):
             if uri.startswith(prefix):
-                return self.HTTP_DIR + uri[len(prefix):]
+                return self.HTTP_DIR + uri[len(prefix) :]
         for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
             if uri.startswith(prefix):
-                url_path = '/' + uri[len(prefix):]
+                url_path = '/' + uri[len(prefix) :]
                 for wpt_path, url_prefix in self._wpt_dirs.items():
                     if url_path.startswith(url_prefix):
-                        return wpt_path + '/' + url_path[len(url_prefix):]
+                        return wpt_path + '/' + url_path[len(url_prefix) :]
         raise NotImplementedError('unknown url type: %s' % uri)
 
 
@@ -316,8 +340,11 @@ class Driver(TestURIMapper):
         if self._port.get_option('profile'):
             profiler_name = self._port.get_option('profiler')
             self._profiler = ProfilerFactory.create_profiler(
-                self._port.host, self._port.path_to_driver(),
-                self._port.artifacts_directory(), profiler_name)
+                self._port.host,
+                self._port.path_to_driver(),
+                self._port.artifacts_directory(),
+                profiler_name,
+            )
         else:
             self._profiler = None
 
@@ -364,11 +391,14 @@ class Driver(TestURIMapper):
 
         if not crashed:
             sanitizer = self._port.output_contains_sanitizer_messages(
-                self.error_from_test)
+                self.error_from_test
+            )
             if sanitizer:
-                self.error_from_test = b'OUTPUT CONTAINS "sanitizer",' + \
-                    b' so we are treating this test as if it crashed, even though it did not.\n\n' + \
-                    self.error_from_test
+                self.error_from_test = (
+                    b'OUTPUT CONTAINS "sanitizer",'
+                    + b' so we are treating this test as if it crashed, even though it did not.\n\n'
+                    + self.error_from_test
+                )
                 crashed = True
                 self._crashed_process_name = 'unknown process name'
                 self._crashed_pid = 0
@@ -379,7 +409,8 @@ class Driver(TestURIMapper):
             # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
             out, err = self._server_process.stop(
                 timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
-                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'),
+            )
             if out:
                 text += out
             if err:
@@ -390,14 +421,20 @@ class Driver(TestURIMapper):
         crash_site = None
         if crashed:
             self.error_from_test, crash_log, crash_site = self._get_crash_log(
-                text, self.error_from_test)
+                text, self.error_from_test
+            )
 
             # If we don't find a crash log use a placeholder error message instead.
             if not crash_log:
-                pid_str = str(
-                    self._crashed_pid) if self._crashed_pid else 'unknown pid'
+                pid_str = (
+                    str(self._crashed_pid)
+                    if self._crashed_pid
+                    else 'unknown pid'
+                )
                 crash_log = 'No crash log found for %s:%s.\n' % (
-                    self._crashed_process_name, pid_str)
+                    self._crashed_process_name,
+                    pid_str,
+                )
                 # If we were unresponsive append a message informing there may not have been a crash.
                 if self._subprocess_was_unresponsive:
                     crash_log += 'Process failed to become responsive before timing out.\n'
@@ -405,17 +442,21 @@ class Driver(TestURIMapper):
                 # Print stdout and stderr to the placeholder crash log; we want as much context as possible.
                 if self.error_from_test:
                     crash_log += '\nstdout:\n%s\nstderr:\n%s\n' % (
-                        text, self.error_from_test)
-        command = ("%s %s" %
-                   (" ".join(server_process_command), test_command)).encode(
-                       'ascii', 'replace')
+                        text,
+                        self.error_from_test,
+                    )
+        command = (
+            "%s %s" % (" ".join(server_process_command), test_command)
+        ).encode('ascii', 'replace')
         if actual_image_hash:
             actual_image_hash = actual_image_hash.decode('utf8', 'replace')
         startup_trace_file = driver_input.startup_trace_file
-        if (startup_trace_file
-                and not self._port.host.filesystem.isabs(startup_trace_file)):
+        if startup_trace_file and not self._port.host.filesystem.isabs(
+            startup_trace_file
+        ):
             startup_trace_file = self._port.host.filesystem.join(
-                self._port.host.filesystem.getcwd(), startup_trace_file)
+                self._port.host.filesystem.getcwd(), startup_trace_file
+            )
         if startup_trace_file:
             # The startup trace file won't get flushed to disk until the server
             # process stops. In practice, the existence of startup_trace_file
@@ -423,35 +464,39 @@ class Driver(TestURIMapper):
             # anyway, so this just accelerates the inevitable.
             out, err = self._server_process.stop(
                 timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
-                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'),
+            )
             if out:
                 text += out
             if err:
                 self.error_from_test += err
             self._server_process = None
-        return DriverOutput(text,
-                            image,
-                            actual_image_hash,
-                            audio,
-                            crash=crashed,
-                            test_time=time.time() - test_begin_time,
-                            measurements=self._measurements,
-                            timeout=timed_out,
-                            error=self.error_from_test,
-                            crashed_process_name=self._crashed_process_name,
-                            crashed_pid=self._crashed_pid,
-                            crash_log=crash_log,
-                            crash_site=crash_site,
-                            leak=leaked,
-                            leak_log=self._leak_log,
-                            trace_file=driver_input.trace_file,
-                            startup_trace_file=startup_trace_file,
-                            pid=pid,
-                            command=command)
+        return DriverOutput(
+            text,
+            image,
+            actual_image_hash,
+            audio,
+            crash=crashed,
+            test_time=time.time() - test_begin_time,
+            measurements=self._measurements,
+            timeout=timed_out,
+            error=self.error_from_test,
+            crashed_process_name=self._crashed_process_name,
+            crashed_pid=self._crashed_pid,
+            crash_log=crash_log,
+            crash_site=crash_site,
+            leak=leaked,
+            leak_log=self._leak_log,
+            trace_file=driver_input.trace_file,
+            startup_trace_file=startup_trace_file,
+            pid=pid,
+            command=command,
+        )
 
     def _get_crash_log(self, stdout, stderr):
-        return self._port.get_crash_log(self._crashed_process_name,
-                                        self._crashed_pid, stdout, stderr)
+        return self._port.get_crash_log(
+            self._crashed_process_name, self._crashed_pid, stdout, stderr
+        )
 
     def has_crashed(self):
         if self._server_process is None:
@@ -485,14 +530,16 @@ class Driver(TestURIMapper):
             server_name,
             cmd_line,
             environment,
-            more_logging=self._port.get_option('driver_logging'))
+            more_logging=self._port.get_option('driver_logging'),
+        )
 
     def _start(self, per_test_args, wait_for_ready=True):
         """Returns a tuple of (whether driver was started, optional startup test result)."""
 
         self.stop()
         self._driver_tempdir = self._port.host.filesystem.mkdtemp(
-            prefix='%s-' % self._port.driver_name())
+            prefix='%s-' % self._port.driver_name()
+        )
         server_name = self._port.driver_name()
         environment = self._port.setup_environ_for_server()
         environment = self._setup_environ_for_driver(environment)
@@ -507,14 +554,16 @@ class Driver(TestURIMapper):
         if wait_for_ready:
             deadline = time.time() + DRIVER_START_TIMEOUT_SECS
             if not self._wait_for_server_process_output(
-                    self._server_process, deadline, b'#READY'):
+                self._server_process, deadline, b'#READY'
+            ):
                 _log.error('%s took too long to startup.' % server_name)
                 # Even though the server hasn't started up, we pretend it has
                 # so that the rest of the error-handling code can deal with
                 # this as if the test has simply crashed.
 
         if self._port.get_option(
-                'initialize_webgpu_adapter_at_startup_timeout_ms'):
+            'initialize_webgpu_adapter_at_startup_timeout_ms'
+        ):
             return self._initialize_webgpu_adapter_at_startup(per_test_args)
         return True, None
 
@@ -533,7 +582,8 @@ class Driver(TestURIMapper):
         # with wptrunner + chromedriver + chrome, which would obviate the need
         # for `000_run_me_first.https.html`.
         init_timeout = self._port.get_option(
-            'initialize_webgpu_adapter_at_startup_timeout_ms')
+            'initialize_webgpu_adapter_at_startup_timeout_ms'
+        )
         startup_input = DriverInput(
             "wpt_internal/webgpu/000_run_me_first.https.html",
             timeout=init_timeout,
@@ -541,35 +591,46 @@ class Driver(TestURIMapper):
             wpt_print_mode=None,
             trace_file=None,
             startup_trace_file=None,
-            args=per_test_args)
+            args=per_test_args,
+        )
         output = self._run_one_input(startup_input, start_time=time.time())
         if output.text and is_all_pass_test_result(
-                output.text.decode(errors='replace')):
+            output.text.decode(errors='replace')
+        ):
             return True, None
 
-        output.text = (b'Failed to initialize WebGPU adapter at startup via '
-                       b'wpt_internal_webgpu/000_run_me_first.https.html:\n' +
-                       output.text)
+        output.text = (
+            b'Failed to initialize WebGPU adapter at startup via '
+            b'wpt_internal_webgpu/000_run_me_first.https.html:\n' + output.text
+        )
         return False, output
 
     def _wait_for_server_process_output(self, server_process, deadline, text):
         output = b''
         line = server_process.read_stdout_line(deadline)
         output += server_process.pop_all_buffered_stderr()
-        while (not server_process.timed_out
-               and not server_process.has_crashed()
-               and not text in line.rstrip()):
+        while (
+            not server_process.timed_out
+            and not server_process.has_crashed()
+            and not text in line.rstrip()
+        ):
             output += line
             line = server_process.read_stdout_line(deadline)
             output += server_process.pop_all_buffered_stderr()
 
         if server_process.timed_out:
-            _log.error('Timed out while waiting for the %s process: \n"%s"',
-                       server_process.name(), output)
+            _log.error(
+                'Timed out while waiting for the %s process: \n"%s"',
+                server_process.name(),
+                output,
+            )
             return False
         if server_process.has_crashed():
-            _log.error('The %s process crashed while starting: \n"%s"',
-                       server_process.name(), output)
+            _log.error(
+                'The %s process crashed while starting: \n"%s"',
+                server_process.name(),
+                output,
+            )
             return False
 
         return True
@@ -589,12 +650,14 @@ class Driver(TestURIMapper):
         if timeout_secs != 0:
             timeout_secs = max(
                 timeout_secs or 0,
-                self._port.get_option('driver_kill_timeout_secs', 0))
+                self._port.get_option('driver_kill_timeout_secs', 0),
+            )
 
         if self._server_process:
             self._server_process.stop(
                 timeout_secs=timeout_secs,
-                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'),
+            )
             self._server_process = None
             if self._profiler:
                 self._profiler.profile_after_exit()
@@ -636,23 +699,31 @@ class Driver(TestURIMapper):
             self._crashed_process_name = self._server_process.name()
             self._crashed_pid = self._server_process.pid()
             self.error_from_test += error_line.encode('utf-8')
-        elif (error_line.startswith('#CRASHED - ')
-              or error_line.startswith('#PROCESS UNRESPONSIVE - ')):
+        elif error_line.startswith('#CRASHED - ') or error_line.startswith(
+            '#PROCESS UNRESPONSIVE - '
+        ):
             # WebKitTestRunner uses this to report that the WebProcess subprocess crashed.
-            match = re.match(r'#(?:CRASHED|PROCESS UNRESPONSIVE) - (\S+)',
-                             error_line)
-            self._crashed_process_name = (match.group(1)
-                                          if match else 'WebProcess')
+            match = re.match(
+                r'#(?:CRASHED|PROCESS UNRESPONSIVE) - (\S+)', error_line
+            )
+            self._crashed_process_name = (
+                match.group(1) if match else 'WebProcess'
+            )
             match = re.search(r'pid (\d+)', error_line)
             pid = int(match.group(1)) if match else None
             self._crashed_pid = pid
             # FIXME: delete this after we're sure this code is working :)
-            _log.debug('%s crash, pid = %s, error_line = %s',
-                       self._crashed_process_name, str(pid), error_line)
+            _log.debug(
+                '%s crash, pid = %s, error_line = %s',
+                self._crashed_process_name,
+                str(pid),
+                error_line,
+            )
             if error_line.startswith('#PROCESS UNRESPONSIVE - '):
                 self._subprocess_was_unresponsive = True
-                self._port.sample_process(self._crashed_process_name,
-                                          self._crashed_pid)
+                self._port.sample_process(
+                    self._crashed_process_name, self._crashed_pid
+                )
             self.error_from_test += error_line.encode('utf-8')
             return True
         return self.has_crashed()
@@ -666,12 +737,15 @@ class Driver(TestURIMapper):
 
     def _command_from_driver_input(self, driver_input):
         # FIXME: performance tests pass in full URLs instead of test names.
-        if (driver_input.test_name.startswith('http://')
-                or driver_input.test_name.startswith('https://')
-                or driver_input.test_name == ('about:blank')):
+        if (
+            driver_input.test_name.startswith('http://')
+            or driver_input.test_name.startswith('https://')
+            or driver_input.test_name == ('about:blank')
+        ):
             command = driver_input.test_name
-        elif (self.is_http_test(driver_input.test_name)
-              or self._port.should_use_wptserve(driver_input.test_name)):
+        elif self.is_http_test(
+            driver_input.test_name
+        ) or self._port.should_use_wptserve(driver_input.test_name):
             command = self.test_to_uri(driver_input.test_name)
         else:
             command = self._port.abspath_for_test(driver_input.test_name)
@@ -712,14 +786,10 @@ class Driver(TestURIMapper):
             return (block.decoded_content, block.content_hash)
         return (None, block.content_hash)
 
-    def _read_header(self,
-                     block,
-                     line,
-                     header_text,
-                     header_attr,
-                     header_filter=None):
-        if (line.startswith(header_text)
-                and getattr(block, header_attr) is None):
+    def _read_header(
+        self, block, line, header_text, header_attr, header_filter=None
+    ):
+        if line.startswith(header_text) and getattr(block, header_attr) is None:
             value = line.split()[1]
             if header_filter:
                 value = header_filter(value)
@@ -728,15 +798,19 @@ class Driver(TestURIMapper):
         return False
 
     def _process_stdout_line(self, block, line):
-        if (self._read_header(block, line, b'Content-Type: ', 'content_type')
-                or self._read_header(
-                    block, line, b'Content-Transfer-Encoding: ', 'encoding')
-                or self._read_header(block, line, b'Content-Length: ',
-                                     '_content_length', int) or
-                self._read_header(block, line, b'ActualHash: ', 'content_hash')
-                or self._read_header(block, line, b'DumpMalloc: ', 'malloc')
-                or self._read_header(block, line, b'DumpJSHeap: ', 'js_heap')
-                or self._read_header(block, line, b'StdinPath', 'stdin_path')):
+        if (
+            self._read_header(block, line, b'Content-Type: ', 'content_type')
+            or self._read_header(
+                block, line, b'Content-Transfer-Encoding: ', 'encoding'
+            )
+            or self._read_header(
+                block, line, b'Content-Length: ', '_content_length', int
+            )
+            or self._read_header(block, line, b'ActualHash: ', 'content_hash')
+            or self._read_header(block, line, b'DumpMalloc: ', 'malloc')
+            or self._read_header(block, line, b'DumpJSHeap: ', 'js_heap')
+            or self._read_header(block, line, b'StdinPath', 'stdin_path')
+        ):
             return
         # Note, we're not reading ExpectedHash: here, but we could.
         # If the line wasn't a header, we just append it to the content.
@@ -765,8 +839,11 @@ class Driver(TestURIMapper):
                 out_line = None
                 err_line = self._server_process.read_stderr_line(deadline)
             else:
-                out_line, err_line = self._server_process.read_either_stdout_or_stderr_line(
-                    deadline)
+                out_line, err_line = (
+                    self._server_process.read_either_stdout_or_stderr_line(
+                        deadline
+                    )
+                )
 
             if self._server_process.timed_out or self.has_crashed():
                 break
@@ -790,15 +867,19 @@ class Driver(TestURIMapper):
                 if content_length_before_header_check != block._content_length:
                     if block._content_length > 0:
                         block.content = self._server_process.read_stdout(
-                            deadline, block._content_length)
+                            deadline, block._content_length
+                        )
                     else:
                         _log.error(
                             'Received content of type %s with Content-Length of 0!  This indicates a bug in %s.',
-                            block.content_type, self._server_process.name())
+                            block.content_type,
+                            self._server_process.name(),
+                        )
 
             if err_line:
                 if self._check_for_driver_crash(
-                        err_line.decode('utf8', 'replace')):
+                    err_line.decode('utf8', 'replace')
+                ):
                     break
                 if self._check_for_leak(err_line.decode('utf8', 'replace')):
                     break

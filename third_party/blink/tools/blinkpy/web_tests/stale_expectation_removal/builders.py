@@ -58,12 +58,13 @@ class WebTestBuilders(builders.Builders):
             }
             self._fake_ci_builders = {}
             for ci_builder, try_builders in fake_try_builders.items():
-                ci_entry = data_types.BuilderEntry(ci_builder,
-                                                   constants.BuilderTypes.CI,
-                                                   False)
+                ci_entry = data_types.BuilderEntry(
+                    ci_builder, constants.BuilderTypes.CI, False
+                )
                 try_entries = {
-                    data_types.BuilderEntry(b, constants.BuilderTypes.TRY,
-                                            False)
+                    data_types.BuilderEntry(
+                        b, constants.BuilderTypes.TRY, False
+                    )
                     for b in try_builders
                 }
                 self._fake_ci_builders[ci_entry] = try_entries

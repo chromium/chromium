@@ -31,12 +31,14 @@ import os
 import jinja2
 
 
-def apply_template(template_path,
-                   params,
-                   filters=None,
-                   tests=None,
-                   template_cache=None,
-                   template_dir=None):
+def apply_template(
+    template_path,
+    params,
+    filters=None,
+    tests=None,
+    template_cache=None,
+    template_dir=None,
+):
     template = None
 
     if filters is None and tests is None and template_cache is not None:
@@ -49,7 +51,8 @@ def apply_template(template_path,
             loader=jinja2.FileSystemLoader(template_dir),
             keep_trailing_newline=True,  # newline-terminate generated files
             lstrip_blocks=True,  # so can indent control flow tags
-            trim_blocks=True)  # so don't need {%- -%} everywhere
+            trim_blocks=True,
+        )  # so don't need {%- -%} everywhere
         if filters:
             jinja_env.filters.update(filters)
         if tests:
@@ -63,20 +66,24 @@ def apply_template(template_path,
     return template.render(params)
 
 
-def use_jinja(template_path,
-              filters=None,
-              tests=None,
-              template_cache=None,
-              template_dir=None):
+def use_jinja(
+    template_path,
+    filters=None,
+    tests=None,
+    template_cache=None,
+    template_dir=None,
+):
     def real_decorator(generator):
         def generator_internal(*args, **kwargs):
             parameters = generator(*args, **kwargs)
-            return apply_template(template_path,
-                                  parameters,
-                                  filters=filters,
-                                  tests=tests,
-                                  template_cache=template_cache,
-                                  template_dir=template_dir)
+            return apply_template(
+                template_path,
+                parameters,
+                filters=filters,
+                tests=tests,
+                template_cache=template_cache,
+                template_dir=template_dir,
+            )
 
         generator_internal.__name__ = generator.__name__
         return generator_internal

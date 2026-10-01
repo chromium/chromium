@@ -14,9 +14,17 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     original_sys_path = sys.path
     try:
         sys.path = sys.path + [
-            input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
-                                   '..', '..', '..', 'tools', 'metrics',
-                                   'histograms')
+            input_api.os_path.join(
+                input_api.PresubmitLocalPath(),
+                '..',
+                '..',
+                '..',
+                '..',
+                '..',
+                'tools',
+                'metrics',
+                'histograms',
+            )
         ]
         import update_histogram_enum  # pylint: disable=F0401
         import update_scheduler_enums  # pylint: disable=F0401
@@ -26,8 +34,8 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     source_path = ''
     for f in input_api.AffectedFiles():
         if f.LocalPath().endswith(
-                input_api.os_path.basename(
-                    update_scheduler_enums.SOUCRE_FILE)):
+            input_api.os_path.basename(update_scheduler_enums.SOUCRE_FILE)
+        ):
             source_path = f.LocalPath()
             break
     else:
@@ -40,11 +48,10 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
         source_enum_path=update_scheduler_enums.SOUCRE_FILE,
         start_marker=update_scheduler_enums.START_MARKER,
         end_marker=update_scheduler_enums.END_MARKER,
-        strip_k_prefix=True)
+        strip_k_prefix=True,
+    )
     if presubmit_error:
-        return [
-            output_api.PresubmitError(presubmit_error, items=[source_path])
-        ]
+        return [output_api.PresubmitError(presubmit_error, items=[source_path])]
     return []
 
 

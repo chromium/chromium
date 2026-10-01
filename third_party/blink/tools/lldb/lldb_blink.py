@@ -20,12 +20,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-    LLDB Support for Blink Types
+LLDB Support for Blink Types
 
-    Add the following to your .lldbinit file to add Blink Type summaries in
-    LLDB and Xcode:
+Add the following to your .lldbinit file to add Blink Type summaries in
+LLDB and Xcode:
 
-    command script import {Path to Blink Root}/tools/lldb/lldb_blink.py
+command script import {Path to Blink Root}/tools/lldb/lldb_blink.py
 
 """
 
@@ -67,19 +67,25 @@ def __lldb_init_module(debugger, dict):
 
 def BlinkString_SummaryProvider(valobj, dict):
     provider = BlinkStringProvider(valobj, dict)
-    return "{ length = %d, contents = '%s' }" % (provider.get_length(),
-                                                 provider.to_string())
+    return "{ length = %d, contents = '%s' }" % (
+        provider.get_length(),
+        provider.to_string(),
+    )
 
 
 def BlinkStringImpl_SummaryProvider(valobj, dict):
     provider = BlinkStringImplProvider(valobj, dict)
     return "{ length = %d, is8bit = %d, contents = '%s' }" % (
-        provider.get_length(), provider.is_8bit(), provider.to_string())
+        provider.get_length(),
+        provider.is_8bit(),
+        provider.to_string(),
+    )
 
 
 def BlinkAtomicString_SummaryProvider(valobj, dict):
     return BlinkString_SummaryProvider(
-        valobj.GetChildMemberWithName('string_'), dict)
+        valobj.GetChildMemberWithName('string_'), dict
+    )
 
 
 def BlinkVector_SummaryProvider(valobj, dict):
@@ -89,8 +95,10 @@ def BlinkVector_SummaryProvider(valobj, dict):
 
 def BlinkHashTable_SummaryProvider(valobj, dict):
     provider = BlinkHashTableProvider(valobj, dict)
-    return "{ tableSize = %d, keyCount = %d }" % (provider.tableSize(),
-                                                  provider.keyCount())
+    return "{ tableSize = %d, keyCount = %d }" % (
+        provider.tableSize(),
+        provider.keyCount(),
+    )
 
 
 def BlinkLayoutUnit_SummaryProvider(valobj, dict):
@@ -158,8 +166,9 @@ class BlinkStringImplProvider:
         self.valobj = valobj
 
     def get_length(self):
-        return self.valobj.GetChildMemberWithName(
-            'length_').GetValueAsUnsigned(0)
+        return self.valobj.GetChildMemberWithName('length_').GetValueAsUnsigned(
+            0
+        )
 
     def to_string(self):
         val_type = self.valobj.GetType()
@@ -170,25 +179,35 @@ class BlinkStringImplProvider:
 
         char_start = self.valobj.GetValueAsUnsigned(0) + offset
         pointer = lldb.SBData.CreateDataFromUInt64Array(
-            endianness, pointer_size, [char_start])
+            endianness, pointer_size, [char_start]
+        )
         error = lldb.SBError()
         if self.is_8bit():
             return lstring_to_string(
                 self.valobj.CreateValueFromData(
-                    'str_impl', pointer,
-                    val_type.GetBasicType(
-                        lldb.eBasicTypeChar).GetPointerType()), error,
-                self.get_length())
+                    'str_impl',
+                    pointer,
+                    val_type.GetBasicType(lldb.eBasicTypeChar).GetPointerType(),
+                ),
+                error,
+                self.get_length(),
+            )
         return ustring_to_string(
             self.valobj.CreateValueFromData(
-                'str_impl', pointer,
+                'str_impl',
+                pointer,
                 val_type.GetBasicType(
-                    lldb.eBasicTypeUnsignedChar).GetPointerType()), error,
-            self.get_length())
+                    lldb.eBasicTypeUnsignedChar
+                ).GetPointerType(),
+            ),
+            error,
+            self.get_length(),
+        )
 
     def is_8bit(self):
         return self.valobj.GetChildMemberWithName(
-            'is_8bit_').GetValueAsUnsigned(0)
+            'is_8bit_'
+        ).GetValueAsUnsigned(0)
 
 
 class BlinkStringProvider:
@@ -197,7 +216,8 @@ class BlinkStringProvider:
 
     def stringimpl(self):
         impl_ptr = self.valobj.GetChildMemberWithName(
-            'impl_').GetChildMemberWithName('ptr_')
+            'impl_'
+        ).GetChildMemberWithName('ptr_')
         return BlinkStringImplProvider(impl_ptr, dict)
 
     def get_length(self):
@@ -220,8 +240,10 @@ class BlinkLayoutUnitProvider:
         self.valobj = valobj
 
     def to_string(self):
-        return "%.14gpx" % (self.valobj.GetChildMemberWithName('value_').
-                            GetValueAsSigned(0) / 64.0)
+        return "%.14gpx" % (
+            self.valobj.GetChildMemberWithName('value_').GetValueAsSigned(0)
+            / 64.0
+        )
 
 
 class BlinkLayoutPointProvider:
@@ -232,11 +254,13 @@ class BlinkLayoutPointProvider:
 
     def get_x(self):
         return BlinkLayoutUnitProvider(
-            self.valobj.GetChildMemberWithName('x_'), dict).to_string()
+            self.valobj.GetChildMemberWithName('x_'), dict
+        ).to_string()
 
     def get_y(self):
         return BlinkLayoutUnitProvider(
-            self.valobj.GetChildMemberWithName('y_'), dict).to_string()
+            self.valobj.GetChildMemberWithName('y_'), dict
+        ).to_string()
 
 
 class BlinkLengthProvider:
@@ -315,8 +339,9 @@ class BlinkVectorProvider:
             return self.buffer
         elif index < self.size:
             offset = index * self.data_size
-            child = self.buffer.CreateChildAtOffset('[' + str(index) + ']',
-                                                    offset, self.data_type)
+            child = self.buffer.CreateChildAtOffset(
+                '[' + str(index) + ']', offset, self.data_type
+            )
             return child
         else:
             return None
@@ -324,9 +349,11 @@ class BlinkVectorProvider:
     def update(self):
         self.buffer = self.valobj.GetChildMemberWithName('buffer_')
         self.size = self.valobj.GetChildMemberWithName(
-            'size_').GetValueAsUnsigned(0)
+            'size_'
+        ).GetValueAsUnsigned(0)
         self.capacity = self.buffer.GetChildMemberWithName(
-            'capacity_').GetValueAsUnsigned(0)
+            'capacity_'
+        ).GetValueAsUnsigned(0)
         self.data_type = self.buffer.GetType().GetPointeeType()
         self.data_size = self.data_type.GetByteSize()
 
@@ -370,17 +397,20 @@ class BlinkHashTableProvider:
         elif index < self.tableSize():
             table = self.valobj.GetChildMemberWithName('table_')
             return table.CreateChildAtOffset(
-                '[' + str(index) + ']', index * self.data_size, self.data_type)
+                '[' + str(index) + ']', index * self.data_size, self.data_type
+            )
         else:
             return None
 
     def tableSize(self):
         return self.valobj.GetChildMemberWithName(
-            'table_size_').GetValueAsUnsigned(0)
+            'table_size_'
+        ).GetValueAsUnsigned(0)
 
     def keyCount(self):
         return self.valobj.GetChildMemberWithName(
-            'key_count_').GetValueAsUnsigned(0)
+            'key_count_'
+        ).GetValueAsUnsigned(0)
 
     def update(self):
         self.data_type = self.valobj.GetType().GetTemplateArgumentType(0)

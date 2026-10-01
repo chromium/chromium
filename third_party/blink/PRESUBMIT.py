@@ -17,9 +17,11 @@ try:
     module_name = 'audit_non_blink_usage'
     module_path = os.path.join(
         os.path.dirname(inspect.stack()[0][1]),
-        'tools/blinkpy/presubmit/audit_non_blink_usage.py')
+        'tools/blinkpy/presubmit/audit_non_blink_usage.py',
+    )
     audit_non_blink_usage = importlib.machinery.SourceFileLoader(
-        module_name, module_path).load_module()
+        module_name, module_path
+    ).load_module()
 except IOError:
     # One of the presubmit upload tests tries to exec this script, which
     # doesn't interact so well with the import hack... just ignore the
@@ -48,7 +50,8 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
                 r'third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]loader[\\/]fetch[\\/]url_loader[\\/]',
                 r'third_party[\\/]blink[\\/]renderer[\\/]core[\\/]frame[\\/]web_view_impl.*\.(cc|h)$',
                 r'third_party[\\/]blink[\\/]renderer[\\/]core[\\/]frame[\\/]web.*frame.*\.(cc|h)$',
-            ])
+            ],
+        )
 
     pattern = input_api.re.compile(r'#include\s+[<"](.+)\.mojom(.*)\.h[>"]')
     public_folder = input_api.os_path.normpath('third_party/blink/public/')
@@ -89,27 +92,34 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/page/prerender_page_param',
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
         'third_party/blink/public/mojom/worker/worklet_global_scope_creation_params',
-        'media/mojo/mojom/interface_factory', 'media/mojo/mojom/audio_decoder',
-        'media/mojo/mojom/audio_encoder', 'media/mojo/mojom/video_decoder',
-        'media/mojo/mojom/media_metrics_provider')
+        'media/mojo/mojom/interface_factory',
+        'media/mojo/mojom/audio_decoder',
+        'media/mojo/mojom/audio_encoder',
+        'media/mojo/mojom/video_decoder',
+        'media/mojo/mojom/media_metrics_provider',
+    )
 
     for f in input_api.AffectedFiles(file_filter=source_file_filter):
         for line_num, line in f.ChangedContents():
             error_list = None
             match = pattern.match(line)
-            if (match and match.group(1) not in allowed_interfaces):
+            if match and match.group(1) not in allowed_interfaces:
                 if match.group(2) not in ('-shared', '-forward'):
                     if f.LocalPath().startswith(public_folder):
                         error_list = public_blink_mojom_errors
-                    elif match.group(2) not in ('-blink', '-blink-forward',
-                                                '-blink-test-utils'):
+                    elif match.group(2) not in (
+                        '-blink',
+                        '-blink-forward',
+                        '-blink-test-utils',
+                    ):
                         # Neither -shared.h, -blink.h, -blink-forward.h nor
                         # -blink-test-utils.h.
                         error_list = non_blink_mojom_errors
 
             if error_list is not None:
-                error_list.append('    %s:%d %s' %
-                                  (f.LocalPath(), line_num, line))
+                error_list.append(
+                    '    %s:%d %s' % (f.LocalPath(), line_num, line)
+                )
 
     results = []
     if non_blink_mojom_errors:
@@ -117,14 +127,20 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
             output_api.PresubmitError(
                 'Files that include non-Blink variant mojoms found. '
                 'You must include .mojom-blink.h, .mojom-forward.h or '
-                '.mojom-shared.h instead:', non_blink_mojom_errors))
+                '.mojom-shared.h instead:',
+                non_blink_mojom_errors,
+            )
+        )
 
     if public_blink_mojom_errors:
         results.append(
             output_api.PresubmitError(
                 'Public blink headers using Blink variant mojoms found. '
                 'You must include .mojom-forward.h or .mojom-shared.h '
-                'instead:', public_blink_mojom_errors))
+                'instead:',
+                public_blink_mojom_errors,
+            )
+        )
 
     return results
 
@@ -134,10 +150,13 @@ def _CheckBundleData(input_api, output_api):
     try:
         input_api.sys.path.append(input_api.change.RepositoryRoot())
         from build.ios import presubmit_support
+
         return presubmit_support.CheckBundleData(
-            input_api, output_api,
+            input_api,
+            output_api,
             'renderer/platform/blink_platform_unittests_bundle_data',
-            'renderer/platform')
+            'renderer/platform',
+        )
     finally:
         input_api.sys.path = old_sys_path
 
@@ -156,7 +175,9 @@ def _CommonChecks(input_api, output_api):
             owners_check=False,
             maxlen=800,
             license_header=license_header,
-            global_checks=False))
+            global_checks=False,
+        )
+    )
     results.extend(_CheckForWrongMojomIncludes(input_api, output_api))
     results.extend(_CheckBundleData(input_api, output_api))
     return results
@@ -176,8 +197,10 @@ def FilterPaths(input_api):
             continue
         # Skip files that were generated by bison.
         if re.search(
-                'third_party.blink.renderer.'
-                'core.xml.xpath_grammar_generated\.(cc|h)$', file_path):
+            'third_party.blink.renderer.'
+            'core.xml.xpath_grammar_generated\.(cc|h)$',
+            file_path,
+        ):
             continue
         files.append(file_path)
     return files
@@ -190,9 +213,9 @@ def _CheckStyle(input_api, output_api):
     if not files:
         return []
 
-    style_checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                'tools',
-                                                'check_blink_style.py')
+    style_checker_path = input_api.os_path.join(
+        input_api.PresubmitLocalPath(), 'tools', 'check_blink_style.py'
+    )
     # When running git cl presubmit --all this presubmit may be asked to check
     # ~260 files, leading to a command line that is about 17,000 characters.
     # This goes past the Windows 8191 character cmd.exe limit and causes cryptic
@@ -208,29 +231,38 @@ def _CheckStyle(input_api, output_api):
     results = []
     for i in range(0, len(files), files_per_command):
         args = [
-            input_api.python3_executable, style_checker_path, '--diff-files'
+            input_api.python3_executable,
+            style_checker_path,
+            '--diff-files',
         ]
-        args += files[i:i + files_per_command]
+        args += files[i : i + files_per_command]
 
         try:
             child = input_api.subprocess.Popen(
-                args, stderr=input_api.subprocess.PIPE)
+                args, stderr=input_api.subprocess.PIPE
+            )
             _, stderrdata = child.communicate()
             if child.returncode != 0:
                 results.append(
-                    output_api.PresubmitError('check_blink_style.py failed',
-                                              [stderrdata.decode('utf-8')]))
+                    output_api.PresubmitError(
+                        'check_blink_style.py failed',
+                        [stderrdata.decode('utf-8')],
+                    )
+                )
         except Exception as e:
             results.append(
                 output_api.PresubmitNotifyResult(
-                    'Could not run check_blink_style.py', [str(e)]))
+                    'Could not run check_blink_style.py', [str(e)]
+                )
+            )
 
     # By default, the pylint canned check lints all Python files together to
     # check for potential problems between dependencies. This is slow to run
     # across all of Blink (>2 min), so only lint affected files.
     affected_python_files = [
         input_api.os_path.relpath(file_path, input_api.PresubmitLocalPath())
-        for file_path in files if input_api.fnmatch.fnmatch(file_path, '*.py')
+        for file_path in files
+        if input_api.fnmatch.fnmatch(file_path, '*.py')
     ]
     if affected_python_files:
         pylintrc = input_api.os_path.join('tools', 'blinkpy', 'pylintrc')
@@ -242,7 +274,10 @@ def _CheckStyle(input_api, output_api):
                     files_to_check=[
                         re.escape(path) for path in affected_python_files
                     ],
-                    pylintrc=pylintrc)))
+                    pylintrc=pylintrc,
+                )
+            )
+        )
     return results
 
 
@@ -252,14 +287,16 @@ def _CheckForPrintfDebugging(input_api, output_api):
     """
     printf_re = input_api.re.compile(r'^\s*(printf\(|fprintf\(stderr,)')
     errors = input_api.canned_checks._FindNewViolationsOfRule(
-        lambda _, x: not printf_re.search(x), input_api, None)
+        lambda _, x: not printf_re.search(x), input_api, None
+    )
     errors = ['  * %s' % violation for violation in errors]
     if errors:
         return [
             output_api.PresubmitPromptOrNotify(
                 'printf debugging is best debugging! That said, it might '
                 'be a good idea to drop the following occurences from '
-                'your patch before uploading:\n%s' % '\n'.join(errors))
+                'your patch before uploading:\n%s' % '\n'.join(errors)
+            )
         ]
     return []
 
@@ -276,7 +313,8 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
     for f in input_api.AffectedFiles():
         path = f.LocalPath()
         errors = audit_non_blink_usage.check(
-            path, [(i + 1, l) for i, l in enumerate(f.NewContents())])
+            path, [(i + 1, l) for i, l in enumerate(f.NewContents())]
+        )
         if errors:
             errors = audit_non_blink_usage.check(path, f.ChangedContents())
             if errors:
@@ -288,9 +326,14 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
                                 'check if there are usable Blink equivalents; '
                                 'if none exist, please allowlist the new uses '
                                 'in third_party/blink/tools/blinkpy/presubmit/'
-                                'audit_non_blink_usage.py'))
+                                'audit_non_blink_usage.py'
+                            )
+                        )
                     msg = '%s:%d uses disallowed identifier %s' % (
-                        path, error.line, error.identifier)
+                        path,
+                        error.line,
+                        error.identifier,
+                    )
                     if error.advice:
                         msg += ". Advice: %s" % "\n".join(error.advice)
                     if error.warning:

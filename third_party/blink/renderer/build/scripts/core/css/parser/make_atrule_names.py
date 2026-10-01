@@ -19,7 +19,7 @@ class AtRuleNamesWriter(json5_generator.Writer):
 
         self._outputs = {
             'at_rule_descriptors.h': self.generate_header,
-            'at_rule_descriptors.cc': self.generate_implementation
+            'at_rule_descriptors.cc': self.generate_implementation,
         }
 
         self._descriptors = self.json5_file.name_dictionaries
@@ -38,26 +38,30 @@ class AtRuleNamesWriter(json5_generator.Writer):
             self._character_offsets.append(chars_used)
             chars_used += len(descriptor['name'].original)
             self._longest_name_length = max(
-                len(descriptor['name'].original), len(descriptor['alias']),
-                self._longest_name_length)
+                len(descriptor['name'].original),
+                len(descriptor['alias']),
+                self._longest_name_length,
+            )
 
     @template_expander.use_jinja(
-        'core/css/parser/templates/at_rule_descriptors.h.tmpl')
+        'core/css/parser/templates/at_rule_descriptors.h.tmpl'
+    )
     def generate_header(self):
         return {
             'descriptors': self._descriptors,
-            'descriptors_count': self._descriptors_count
+            'descriptors_count': self._descriptors_count,
         }
 
     @gperf.use_jinja_gperf_template(
-        'core/css/parser/templates/at_rule_descriptors.cc.tmpl')
+        'core/css/parser/templates/at_rule_descriptors.cc.tmpl'
+    )
     def generate_implementation(self):
         return {
             'descriptors': self._descriptors,
             'descriptor_offsets': self._character_offsets,
             'descriptors_count': len(self._descriptors),
             'longest_name_length': self._longest_name_length,
-            'gperf_path': self.gperf_path
+            'gperf_path': self.gperf_path,
         }
 
 

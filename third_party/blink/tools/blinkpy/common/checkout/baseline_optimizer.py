@@ -85,12 +85,14 @@ class BaselineOptimizer:
         Details: https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_baseline_fallback.md
     """
 
-    def __init__(self,
-                 host: Host,
-                 default_port: Port,
-                 port_names,
-                 exp_cache: Optional[TestExpectationsCache] = None,
-                 check: bool = False):
+    def __init__(
+        self,
+        host: Host,
+        default_port: Port,
+        port_names,
+        exp_cache: Optional[TestExpectationsCache] = None,
+        check: bool = False,
+    ):
         self._filesystem = host.filesystem
         self._finder = PathFinder(self._filesystem)
         self._default_port = default_port
@@ -99,17 +101,17 @@ class BaselineOptimizer:
         for port_name in port_names:
             self._ports.append(self.port(port_name))
             flag_spec_options = (
-                host.builders.flag_specific_options_for_port_name(port_name))
+                host.builders.flag_specific_options_for_port_name(port_name)
+            )
             self._ports.extend(
                 self.port(port_name, flag_specific)
-                for flag_specific in flag_spec_options)
+                for flag_specific in flag_spec_options
+            )
         self._exp_cache = exp_cache or TestExpectationsCache()
         self._check = check
 
     @memoized
-    def port(self,
-             port_name: str,
-             flag_specific: Optional[str] = None) -> Port:
+    def port(self, port_name: str, flag_specific: Optional[str] = None) -> Port:
         port = self._host.port_factory.get(port_name)
         # Avoid an update race between `optimize-baselines` workers.
         port.set_option_default('manifest_update', False)
@@ -130,22 +132,32 @@ class BaselineOptimizer:
 
         with _indent_log():
             nonvirtual_test, virtual_tests = self.get_tests_to_optimize(
-                test_name)
+                test_name
+            )
             paths = list(
-                self.generate_search_paths(nonvirtual_test, virtual_tests))
+                self.generate_search_paths(nonvirtual_test, virtual_tests)
+            )
             baseline_name = self._default_port.output_filename(
-                nonvirtual_test, self._default_port.BASELINE_SUFFIX, extension)
-            digests = self._digest(frozenset().union(*paths), baseline_name,
-                                   self._is_reftest(nonvirtual_test))
+                nonvirtual_test, self._default_port.BASELINE_SUFFIX, extension
+            )
+            digests = self._digest(
+                frozenset().union(*paths),
+                baseline_name,
+                self._is_reftest(nonvirtual_test),
+            )
             if not digests:
                 _log.debug('Nothing to optimize.')
                 return True
 
             predecessors_by_root = _predecessors_by_root(paths)
-            can_optimize = any([
-                self._handle_root(root, predecessors, digests, baseline_name)
-                for root, predecessors in predecessors_by_root.items()
-            ])
+            can_optimize = any(
+                [
+                    self._handle_root(
+                        root, predecessors, digests, baseline_name
+                    )
+                    for root, predecessors in predecessors_by_root.items()
+                ]
+            )
             redundant_locations = find_redundant_locations(paths, digests)
             can_optimize = can_optimize or len(redundant_locations) > 0
             for location in redundant_locations:
@@ -199,9 +211,7 @@ class BaselineOptimizer:
         skipped_ports_by_test = collections.defaultdict(list)
         for port in self._ports:
             search_path = self._baseline_search_path(port)
-            nonvirtual_locations = [
-                self.location(path) for path in search_path
-            ]
+            nonvirtual_locations = [self.location(path) for path in search_path]
             if not self.skips_test(port, nonvirtual_test):
                 yield nonvirtual_locations
             else:
@@ -219,8 +229,7 @@ class BaselineOptimizer:
                 # Virtual suite was parsed correctly from all baseline/test
                 # paths.
                 assert {
-                    location.virtual_suite
-                    for location in virtual_locations
+                    location.virtual_suite for location in virtual_locations
                 } == {virtual_suite}, virtual_locations
                 if virtual_suite == 'stable' and is_webexposed:
                     virtual_locations.append(BaselineLocation.BLOCK)
@@ -230,8 +239,11 @@ class BaselineOptimizer:
                 port.get_option('flag_specific') or port.name()
                 for port in ports
             ]
-            _log.debug('Excluding ports that skip "%s": %s', test,
-                       ', '.join(port_names))
+            _log.debug(
+                'Excluding ports that skip "%s": %s',
+                test,
+                ', '.join(port_names),
+            )
 
     def skips_test(self, port: Port, test: str) -> bool:
         expectations = self._exp_cache.load(port)
@@ -241,8 +253,14 @@ class BaselineOptimizer:
     def write_by_directory(self, results_by_directory, writer, indent):
         """Logs results_by_directory in a pretty format."""
         for path in sorted(results_by_directory):
-            writer('%s%s: %s' % (indent, self.location(path).platform
-                                 or '(generic)', results_by_directory[path]))
+            writer(
+                '%s%s: %s'
+                % (
+                    indent,
+                    self.location(path).platform or '(generic)',
+                    results_by_directory[path],
+                )
+            )
 
     def read_results_by_directory(self, test_name, baseline_name):
         """Reads the baselines with the given file name in all directories.
@@ -253,20 +271,22 @@ class BaselineOptimizer:
         locations = set()
         for port in self._ports.values():
             locations.update(
-                map(self.location, self._baseline_search_path(port)))
+                map(self.location, self._baseline_search_path(port))
+            )
 
-        digests = self._digest(locations, baseline_name,
-                               self._is_reftest(test_name))
+        digests = self._digest(
+            locations, baseline_name, self._is_reftest(test_name)
+        )
         return {
             self.path(location, baseline_name): digest
             for location, digest in digests.items()
         }
 
     def _digest(
-            self,
-            locations: FrozenSet[BaselineLocation],
-            baseline_name: str,
-            is_reftest: bool = False,
+        self,
+        locations: FrozenSet[BaselineLocation],
+        baseline_name: str,
+        is_reftest: bool = False,
     ) -> DigestMap:
         digests = {}
         for location in locations:
@@ -275,7 +295,8 @@ class BaselineOptimizer:
                 digests[location] = random_digest()
             elif self._filesystem.exists(path):
                 digests[location] = ResultDigest.from_file(
-                    self._filesystem, path, is_reftest)
+                    self._filesystem, path, is_reftest
+                )
         return digests
 
     def _handle_root(
@@ -291,7 +312,8 @@ class BaselineOptimizer:
             Whether a change could be made on disk.
         """
         predecessor_digest = _value_if_same(
-            [digests.get(predecessor) for predecessor in predecessors])
+            [digests.get(predecessor) for predecessor in predecessors]
+        )
         root_digest = digests.get(root)
         if predecessor_digest:
             # All of the root's immediate predecessors have the same value, so
@@ -302,8 +324,9 @@ class BaselineOptimizer:
             digests[root] = predecessor_digest
             return True
         elif root_digest and all(
-                digests.get(predecessor, root_digest) != root_digest
-                for predecessor in predecessors):
+            digests.get(predecessor, root_digest) != root_digest
+            for predecessor in predecessors
+        ):
             # Remove the root if it can never (and should never) be reached.
             # If a predecessor has the same digest as the root, that predecessor
             # will be deleted later instead of the root.
@@ -323,14 +346,21 @@ class BaselineOptimizer:
         if self._check:
             # Show the full path instead of the abbreviated representation so
             # that the recommendation is actionable.
-            _log.info('Can promote %s from %s', dest,
-                      ', '.join(map(str, sorted(predecessors))))
+            _log.info(
+                'Can promote %s from %s',
+                dest,
+                ', '.join(map(str, sorted(predecessors))),
+            )
         else:
             self._filesystem.maybe_make_directory(
-                self._filesystem.dirname(dest))
+                self._filesystem.dirname(dest)
+            )
             self._filesystem.copyfile(source, dest)
-            _log.debug('Promoted %s from %s', root,
-                       ', '.join(map(str, sorted(predecessors))))
+            _log.debug(
+                'Promoted %s from %s',
+                root,
+                ', '.join(map(str, sorted(predecessors))),
+            )
 
     def _remove(
         self,
@@ -413,10 +443,12 @@ class ResultDigest:
     # thus will be removed.
     _IMPLICIT_EXTRA_RESULT = '<EXTRA>'
 
-    def __init__(self,
-                 sha: str = _IMPLICIT_EXTRA_RESULT,
-                 path: Optional[str] = None,
-                 is_extra_result: bool = False):
+    def __init__(
+        self,
+        sha: str = _IMPLICIT_EXTRA_RESULT,
+        path: Optional[str] = None,
+        is_extra_result: bool = False,
+    ):
         self.sha = sha
         self.path = path
         self.is_extra_result = is_extra_result
@@ -445,7 +477,8 @@ class ResultDigest:
             try:
                 contents_text = contents.decode()
                 if is_testharness_output(contents_text) or is_wdspec_output(
-                        contents_text):
+                    contents_text
+                ):
                     # Canonicalize the representation of a testharness/wdspec
                     # baselines with insignificant whitespace.
                     #
@@ -472,7 +505,10 @@ class ResultDigest:
         # Implicit extra result is equal to any extra results.
         # Note: This is not transitive (i.e., two extra results that are both
         # not implicit extra results are not necessarily equal).
-        if self.sha == self._IMPLICIT_EXTRA_RESULT or other.sha == self._IMPLICIT_EXTRA_RESULT:
+        if (
+            self.sha == self._IMPLICIT_EXTRA_RESULT
+            or other.sha == self._IMPLICIT_EXTRA_RESULT
+        ):
             return self.is_extra_result and other.is_extra_result
         return self.sha == other.sha
 
@@ -485,15 +521,15 @@ class ResultDigest:
 
     def __repr__(self):
         is_extra_result = ' EXTRA' if self.is_extra_result else ''
-        return '<ResultDigest %s%s %s>' % (self.sha, is_extra_result,
-                                           self.path)
+        return '<ResultDigest %s%s %s>' % (self.sha, is_extra_result, self.path)
 
 
 ResultDigest.ALL_PASS = ResultDigest(is_extra_result=True)
 
 
-def find_redundant_locations(paths: List[SearchPath],
-                             digests: DigestMap) -> Set[BaselineLocation]:
+def find_redundant_locations(
+    paths: List[SearchPath], digests: DigestMap
+) -> Set[BaselineLocation]:
     """Find baseline locations that are redundant and can be safely removed.
 
     At a high level, this is done by checking for baselines that, if deleted,
@@ -541,9 +577,11 @@ def find_redundant_locations(paths: List[SearchPath],
     # be better.
     return max(
         _find_redundant_locations_with_order(
-            paths, digests, list(_visit_postorder(predecessors))),
+            paths, digests, list(_visit_postorder(predecessors))
+        ),
         _find_redundant_locations_with_order(
-            paths, digests, list(_visit_preorder(predecessors))),
+            paths, digests, list(_visit_preorder(predecessors))
+        ),
         key=len,
     )
 
@@ -560,7 +598,8 @@ def _find_redundant_locations_with_order(
     # stop shrinking, possibly becoming empty, which guarantees termination.
     while digests:
         new_redundant_location = _find_new_redundant_location(
-            paths, digests, removal_order)
+            paths, digests, removal_order
+        )
         if new_redundant_location:
             digests.pop(new_redundant_location)
             redundant_locations.add(new_redundant_location)
@@ -597,8 +636,9 @@ def _find_new_redundant_location(
     dependencies = collections.defaultdict(set)
     for path in paths:
         path = [*path, BaselineLocation.ALL_PASS]
-        assert len(set(path)) == len(path), ('duplicate location in path %s' %
-                                             path)
+        assert len(set(path)) == len(path), (
+            'duplicate location in path %s' % path
+        )
         with contextlib.suppress(ValueError):
             # Get the resolved location (i.e., `source`), and the file the
             # path would fall back to next if `source` were deleted. When only
@@ -614,7 +654,8 @@ def _find_new_redundant_location(
     for location in removal_order:
         successors = dependencies.get(location)
         if successors and _value_if_same(
-                map(digests.get, [location, *successors])):
+            map(digests.get, [location, *successors])
+        ):
             return location
     return None
 
@@ -666,8 +707,9 @@ def _predecessors_by_root(paths: List[SearchPath]) -> PredecessorMap:
     }
 
 
-def _value_if_same(digests: Collection[Optional[ResultDigest]]
-                   ) -> Optional[ResultDigest]:
+def _value_if_same(
+    digests: Collection[Optional[ResultDigest]],
+) -> Optional[ResultDigest]:
     """Get the value of a collection of digests if they are the same."""
     if digests:
         first, *digests = digests
@@ -682,18 +724,30 @@ def _value_if_same(digests: Collection[Optional[ResultDigest]]
 def _indent_log(prefix: str = ' ' * 2) -> Iterator[None]:
     record_factory = logging.getLogRecordFactory()
 
-    def make_indented_record(name,
-                             level,
-                             fn,
-                             lno,
-                             msg,
-                             args,
-                             exc_info,
-                             func=None,
-                             sinfo=None,
-                             **kwargs):
-        return record_factory(name, level, fn, lno, prefix + msg, args,
-                              exc_info, func, sinfo, **kwargs)
+    def make_indented_record(
+        name,
+        level,
+        fn,
+        lno,
+        msg,
+        args,
+        exc_info,
+        func=None,
+        sinfo=None,
+        **kwargs,
+    ):
+        return record_factory(
+            name,
+            level,
+            fn,
+            lno,
+            prefix + msg,
+            args,
+            exc_info,
+            func,
+            sinfo,
+            **kwargs,
+        )
 
     try:
         logging.setLogRecordFactory(make_indented_record)

@@ -52,10 +52,11 @@ class PrettyDiff(Command):
                 '--git-commit',
                 action='store',
                 dest='git_commit',
-                help=
-                ('Operate on a local commit. If a range, the commits are squashed into one. <ref>.... '
-                 'includes the working copy changes. UPSTREAM can be used for the upstream/tracking branch.'
-                 ))
+                help=(
+                    'Operate on a local commit. If a range, the commits are squashed into one. <ref>.... '
+                    'includes the working copy changes. UPSTREAM can be used for the upstream/tracking branch.'
+                ),
+            )
         ]
         super(PrettyDiff, self).__init__(options)
         self._tool = None
@@ -92,8 +93,7 @@ class PrettyDiff(Command):
 
     def _diff(self, git: Git, options):
         changed_files = git.changed_files(options.git_commit)
-        return git.create_patch(options.git_commit,
-                                changed_files=changed_files)
+        return git.create_patch(options.git_commit, changed_files=changed_files)
 
     @staticmethod
     def _pretty_diff_file(diff):

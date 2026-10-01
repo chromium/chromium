@@ -16,8 +16,9 @@ class LuciAuth(object):
 
     @property
     def _luci_auth_executable(self):
-        luci_auth_bin = ('luci-auth.bat'
-                         if self._host.platform.is_win() else 'luci-auth')
+        luci_auth_bin = (
+            'luci-auth.bat' if self._host.platform.is_win() else 'luci-auth'
+        )
         depot_tools_base = self._finder.depot_tools_base()
         if depot_tools_base:
             return self._host.filesystem.join(depot_tools_base, luci_auth_bin)
@@ -28,5 +29,6 @@ class LuciAuth(object):
     def get_access_token(self):
         # ScriptError will be raised if luci-auth fails.
         output = self._host.executive.run_command(
-            [self._luci_auth_executable, 'token'], debug_logging=False)
+            [self._luci_auth_executable, 'token'], debug_logging=False
+        )
         return output.strip()

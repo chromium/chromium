@@ -28,7 +28,10 @@
 
 from unittest import mock
 
-from blinkpy.common.net.network_transaction import NetworkTransaction, NetworkTimeout
+from blinkpy.common.net.network_transaction import (
+    NetworkTransaction,
+    NetworkTimeout,
+)
 from blinkpy.common.system.log_testing import LoggingTestCase
 
 from requests import Response
@@ -87,12 +90,14 @@ class NetworkTransactionTest(LoggingTestCase):
         transaction = NetworkTransaction(initial_backoff_seconds=0)
         self.assertEqual(transaction.run(self._raise_500_error), 42)
         self.assertEqual(self._run_count, 3)
-        self.assertLog([
-            'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
-            'WARNING: Retrying in 0.000 seconds...\n',
-            'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
-            'WARNING: Retrying in 0.000 seconds...\n'
-        ])
+        self.assertLog(
+            [
+                'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
+                'WARNING: Retrying in 0.000 seconds...\n',
+                'WARNING: Received HTTP status 500 loading "http://example.com/": internal server error. \n',
+                'WARNING: Retrying in 0.000 seconds...\n',
+            ]
+        )
 
     def test_convert_404_to_none(self):
         transaction = NetworkTransaction(return_none_on_404=True)
@@ -100,6 +105,7 @@ class NetworkTransactionTest(LoggingTestCase):
 
     def test_timeout(self):
         transaction = NetworkTransaction(
-            initial_backoff_seconds=60 * 60, timeout_seconds=60)
+            initial_backoff_seconds=60 * 60, timeout_seconds=60
+        )
         with self.assertRaises(NetworkTimeout):
             transaction.run(self._raise_timeout)

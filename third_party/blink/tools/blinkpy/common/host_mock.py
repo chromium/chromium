@@ -39,20 +39,25 @@ from blinkpy.web_tests.port.test import add_unit_tests_to_mock_filesystem
 from blinkpy.w3c.chromium_configs import ChromiumWPTConfig
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 
+
 class MockHost(MockSystemHost):
-    def __init__(self,
-                 log_executive=False,
-                 web=None,
-                 git=None,
-                 os_name=None,
-                 os_version=None,
-                 machine=None,
-                 time_return_val=123):
-        super(MockHost, self).__init__(log_executive=log_executive,
-                                       os_name=os_name,
-                                       os_version=os_version,
-                                       machine=None,
-                                       time_return_val=time_return_val)
+    def __init__(
+        self,
+        log_executive=False,
+        web=None,
+        git=None,
+        os_name=None,
+        os_version=None,
+        machine=None,
+        time_return_val=123,
+    ):
+        super(MockHost, self).__init__(
+            log_executive=log_executive,
+            os_name=os_name,
+            os_version=os_version,
+            machine=None,
+            time_return_val=time_return_val,
+        )
 
         add_unit_tests_to_mock_filesystem(self.filesystem)
         self._add_base_manifest_to_mock_filesystem(self.filesystem)
@@ -64,66 +69,68 @@ class MockHost(MockSystemHost):
         # on the list of known ports should override this with a MockPortFactory.
         self.port_factory = PortFactory(self)
 
-        self.builders = BuilderList({
-            'Fake Test Win10': {
-                'port_name': 'win-win10',
-                'specifiers': ['Win10', 'Release']
-            },
-            'Fake Test Linux': {
-                'port_name': 'linux',
-                'specifiers': ['Linux', 'Release']
-            },
-            'Fake Test Linux (dbg)': {
-                'port_name': 'linux',
-                'specifiers': ['Linux', 'Debug']
-            },
-            'Fake Test Mac11': {
-                'port_name': 'mac-mac11',
-                'specifiers': ['Mac11', 'Release'],
-                'is_try_builder': True,
-            },
-            'fake_blink_try_linux': {
-                'port_name': 'linux',
-                'specifiers': ['Linux', 'Release'],
-                'is_try_builder': True,
-            },
-            'fake_blink_try_win': {
-                'port_name': 'win-win10',
-                'specifiers': ['Win10', 'Release'],
-                'is_try_builder': True,
-            },
-            'android_blink_rel': {
-                'bucket': 'luci.chromium.android',
-                'port_name': 'android-kitkat',
-                'specifiers': ['KitKat', 'Release'],
-                'is_try_builder': True,
-            },
-            # For the try flag unit tests.
-            'linux-rel': {
-                'port_name': 'linux',
-                'specifiers': ['Linux', 'Release'],
-                'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests': {},
+        self.builders = BuilderList(
+            {
+                'Fake Test Win10': {
+                    'port_name': 'win-win10',
+                    'specifiers': ['Win10', 'Release'],
                 },
-            },
-            'win7-rel': {
-                'port_name': 'win-win7',
-                'specifiers': ['Win7', 'Release'],
-                'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests': {},
+                'Fake Test Linux': {
+                    'port_name': 'linux',
+                    'specifiers': ['Linux', 'Release'],
                 },
-            },
-            'mac-rel': {
-                'port_name': 'mac-mac15',
-                'specifiers': ['Mac15', 'Release'],
-                'is_try_builder': True,
-                'steps': {
-                    'blink_web_tests': {},
+                'Fake Test Linux (dbg)': {
+                    'port_name': 'linux',
+                    'specifiers': ['Linux', 'Debug'],
                 },
-            },
-        })
+                'Fake Test Mac11': {
+                    'port_name': 'mac-mac11',
+                    'specifiers': ['Mac11', 'Release'],
+                    'is_try_builder': True,
+                },
+                'fake_blink_try_linux': {
+                    'port_name': 'linux',
+                    'specifiers': ['Linux', 'Release'],
+                    'is_try_builder': True,
+                },
+                'fake_blink_try_win': {
+                    'port_name': 'win-win10',
+                    'specifiers': ['Win10', 'Release'],
+                    'is_try_builder': True,
+                },
+                'android_blink_rel': {
+                    'bucket': 'luci.chromium.android',
+                    'port_name': 'android-kitkat',
+                    'specifiers': ['KitKat', 'Release'],
+                    'is_try_builder': True,
+                },
+                # For the try flag unit tests.
+                'linux-rel': {
+                    'port_name': 'linux',
+                    'specifiers': ['Linux', 'Release'],
+                    'is_try_builder': True,
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                },
+                'win7-rel': {
+                    'port_name': 'win-win7',
+                    'specifiers': ['Win7', 'Release'],
+                    'is_try_builder': True,
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                },
+                'mac-rel': {
+                    'port_name': 'mac-mac15',
+                    'specifiers': ['Mac15', 'Release'],
+                    'is_try_builder': True,
+                    'steps': {
+                        'blink_web_tests': {},
+                    },
+                },
+            }
+        )
         self.results_fetcher = MockTestResultsFetcher.from_host(self)
 
     def git(self, path=None):
@@ -132,12 +139,14 @@ class MockHost(MockSystemHost):
                 cwd=path,
                 filesystem=self.filesystem,
                 executive=self.executive,
-                platform=self.platform)
+                platform=self.platform,
+            )
         if not self._git:
             self._git = MockGit(
                 filesystem=self.filesystem,
                 executive=self.executive,
-                platform=self.platform)
+                platform=self.platform,
+            )
         # Various pieces of code (wrongly) call filesystem.chdir(checkout_root).
         # Making the checkout_root exist in the mock filesystem makes that chdir not raise.
         self.filesystem.maybe_make_directory(self._git.checkout_root)

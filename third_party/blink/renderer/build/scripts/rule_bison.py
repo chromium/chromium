@@ -78,36 +78,45 @@ def main():
 
     output_cc = os.path.join(output_dir, output_basename + '.cc')
     BISON_HEADER_EXT = '.hh'
-    original_output_h = os.path.join(output_dir,
-                                     output_basename + BISON_HEADER_EXT)
+    original_output_h = os.path.join(
+        output_dir, output_basename + BISON_HEADER_EXT
+    )
 
     return_code = subprocess.call(
-        [bison_exe, '-d', input_file, '-o', output_cc])
+        [bison_exe, '-d', input_file, '-o', output_cc]
+    )
     assert return_code == 0
     # If the file doesn't exist, this raise an OSError.
     os.stat(original_output_h)
 
     # The generated files contain references to the original "foo.hh" for
     # #include and #line. We replace them with "foo.h".
-    common_replace_list = [(output_basename + BISON_HEADER_EXT,
-                            output_basename + '.h')]
+    common_replace_list = [
+        (output_basename + BISON_HEADER_EXT, output_basename + '.h')
+    ]
 
     # Rewrite the generated header with #include guards.
     CLANG_FORMAT_DISABLE_LINE = "// clang-format off"
     output_h = os.path.join(output_dir, output_basename + '.h')
     header_guard = NameStyleConverter(output_h).to_header_guard()
     modify_file(
-        original_output_h, [
+        original_output_h,
+        [
             CLANG_FORMAT_DISABLE_LINE,
             '#ifndef %s' % header_guard,
-            '#define %s' % header_guard
-        ], ['#endif  // %s' % header_guard],
-        replace_list=common_replace_list)
+            '#define %s' % header_guard,
+        ],
+        ['#endif  // %s' % header_guard],
+        replace_list=common_replace_list,
+    )
     os.rename(original_output_h, output_h)
 
     modify_file(
-        output_cc, [CLANG_FORMAT_DISABLE_LINE], [],
-        replace_list=common_replace_list)
+        output_cc,
+        [CLANG_FORMAT_DISABLE_LINE],
+        [],
+        replace_list=common_replace_list,
+    )
 
 
 if __name__ == '__main__':

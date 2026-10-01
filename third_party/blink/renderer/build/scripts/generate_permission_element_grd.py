@@ -8,7 +8,8 @@ import sys
 from xml.dom.minidom import parse, parseString
 
 _SRC_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..')
+)
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'grit'))
 from grit.extern import tclib
 
@@ -119,6 +120,7 @@ def get_message_id(raw_content):
     cleaned_content = ' '.join(presentable_content.split())
     return tclib.GenerateMessageId(cleaned_content)
 
+
 def get_message_id_map_and_orderings(input_base_dir):
     dom = parse(input_base_dir + "permission_element_strings.grd")
     dic = {}
@@ -129,9 +131,13 @@ def get_message_id_map_and_orderings(input_base_dir):
     # The returned orderings are used to help sort keys for the fixed flat map.
     # Empirically, resource IDs appear to be allocated in the order the messages
     # are listed in the grd.
-    return (dic,
-            dict((message.getAttribute("name"), i)
-                 for (i, message) in enumerate(messages)))
+    return (
+        dic,
+        dict(
+            (message.getAttribute("name"), i)
+            for (i, message) in enumerate(messages)
+        ),
+    )
 
 
 def generate_grd_file(id_map, file_list, output_file_path):
@@ -140,18 +146,21 @@ def generate_grd_file(id_map, file_list, output_file_path):
     for file in file_list:
         translated_file = parse(file)
         translated_messages = translated_file.getElementsByTagName(
-            "translation")
+            "translation"
+        )
         if translated_messages.length == 0:
             continue
-        message_name_suffix = file.rsplit('.',
-                                          1)[0].rsplit('_',
-                                                       1)[1].replace('-', '_')
+        message_name_suffix = (
+            file.rsplit('.', 1)[0].rsplit('_', 1)[1].replace('-', '_')
+        )
         for translated_message in translated_messages:
             message_name_prefix = id_map[translated_message.getAttribute("id")]
-            generated_message_name = message_name_prefix + "_" + message_name_suffix
-            message = "".join([
-                child.toxml() for child in translated_message.childNodes
-            ]).strip()
+            generated_message_name = (
+                message_name_prefix + "_" + message_name_suffix
+            )
+            message = "".join(
+                [child.toxml() for child in translated_message.childNodes]
+            ).strip()
             new_message_node = doc.createElement("message")
             new_message_node.setAttribute("name", generated_message_name)
             new_message_node.setAttribute("translateable", "false")
@@ -194,8 +203,12 @@ def generate_cpp_mapping(orderings, input_file_path, output_file_path):
         for message in messages:
             message_name = message.getAttribute('name')
             base_message = re.split('_[a-z]', message_name)[0]
-            locale = message_name.split(base_message)[1].split(
-                '_', 1)[1].lower().replace("_", "-")
+            locale = (
+                message_name.split(base_message)[1]
+                .split('_', 1)[1]
+                .lower()
+                .replace("_", "-")
+            )
             if locale in custom_locale_mappings:
                 locale = custom_locale_mappings[locale]
             # Add all locales first since iteration order is non-deterministic.
@@ -218,9 +231,9 @@ def generate_cpp_mapping(orderings, input_file_path, output_file_path):
         # Pre-sorting is important here to avoid running into constexpr
         # evaluation limits at compile time, since the translation tables can be
         # quite large.
-        for (lang, base_message,
-             message_name) in sorted(message_map,
-                                     key=lambda x: (x[0], orderings[x[1]])):
+        for lang, base_message, message_name in sorted(
+            message_map, key=lambda x: (x[0], orderings[x[1]])
+        ):
             output_file.write(
                 f'        {{{{{{{lang_map[lang][0]}, {lang_map[lang][1]}}}, {base_message}}}, {message_name}}},\n'
             )
@@ -235,12 +248,16 @@ def main(argv):
     input_base_dir = argv[input_base_dir_position + 1]
     id_map, orderings = get_message_id_map_and_orderings(input_base_dir)
     translated_files = sorted(
-        glob.glob(input_base_dir +
-                  "translations/permission_element_strings_*"))
-    generate_grd_file(id_map, translated_files,
-                      argv[output_grd_file_position + 1])
-    generate_cpp_mapping(orderings, argv[output_grd_file_position + 1],
-                         argv[output_map_file_position + 1])
+        glob.glob(input_base_dir + "translations/permission_element_strings_*")
+    )
+    generate_grd_file(
+        id_map, translated_files, argv[output_grd_file_position + 1]
+    )
+    generate_cpp_mapping(
+        orderings,
+        argv[output_grd_file_position + 1],
+        argv[output_map_file_position + 1],
+    )
 
 
 if __name__ == '__main__':

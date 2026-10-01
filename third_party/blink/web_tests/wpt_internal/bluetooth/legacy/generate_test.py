@@ -11,8 +11,10 @@ import sys
 import generate
 import logging
 
-UPDATE_TIP = 'To update the generated tests, run:\n' \
-             '$ python third_party/blink/web_tests/wpt_internal/bluetooth/legacy/generate.py'
+UPDATE_TIP = (
+    'To update the generated tests, run:\n'
+    '$ python third_party/blink/web_tests/wpt_internal/bluetooth/legacy/generate.py'
+)
 
 
 def main():
@@ -26,13 +28,17 @@ def main():
             with open(generated_test.path, 'r') as f:
                 data = f.read()
                 if data != generated_test.data:
-                    logging.error('%s does not match template',
-                                  generated_test.path)
+                    logging.error(
+                        '%s does not match template', generated_test.path
+                    )
                     return -1
         except IOError as e:
             if e.errno == 2:
-                logging.error('Missing generated test:\n%s\nFor template:\n%s',
-                              generated_test.path, generated_test.template)
+                logging.error(
+                    'Missing generated test:\n%s\nFor template:\n%s',
+                    generated_test.path,
+                    generated_test.template,
+                )
                 return -1
 
     # Tests that there are no obsolete generated files.

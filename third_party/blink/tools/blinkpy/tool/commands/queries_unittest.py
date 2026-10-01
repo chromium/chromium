@@ -37,11 +37,9 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 
 
 class PrintExpectationsTest(unittest.TestCase):
-    def run_test(self,
-                 tests,
-                 expected_stdout,
-                 platform='test-win-win7',
-                 **kwargs):
+    def run_test(
+        self, tests, expected_stdout, platform='test-win-win7', **kwargs
+    ):
         options_defaults = {
             'all': False,
             'csv': False,
@@ -55,9 +53,12 @@ class PrintExpectationsTest(unittest.TestCase):
         options = optparse.Values(dict(**options_defaults))
         tool = MockBlinkTool()
         tool.port_factory.all_port_names = lambda: [
-            'test-linux-trusty', 'test-linux-precise',
-            'test-mac-mac10.11', 'test-mac-mac10.10',
-            'test-win-win10', 'test-win-win7'
+            'test-linux-trusty',
+            'test-linux-precise',
+            'test-mac-mac10.11',
+            'test-mac-mac10.10',
+            'test-win-win10',
+            'test-win-win7',
         ]
         command = PrintExpectations()
 
@@ -72,58 +73,81 @@ class PrintExpectationsTest(unittest.TestCase):
     def test_basic(self):
         self.run_test(
             ['failures/expected/text.html', 'failures/expected/timeout.html'],
-            ('// For test-win-win7\n'
-             'failures/expected/text.html [ Failure ]\n'
-             'failures/expected/timeout.html [ Timeout ]\n'))
+            (
+                '// For test-win-win7\n'
+                'failures/expected/text.html [ Failure ]\n'
+                'failures/expected/timeout.html [ Timeout ]\n'
+            ),
+        )
 
     def test_multiple(self):
-        self.run_test([
-            'failures/unexpected/*/text.html', 'failures/expected/timeout.html'
-        ], ('// For test-win-win10\n'
-            'failures/expected/timeout.html [ Timeout ]\n'
-            'failures/unexpected/\*/text.html [ Pass ]\n'
-            '\n'
-            '// For test-win-win7\n'
-            'failures/expected/timeout.html [ Timeout ]\n'
-            'failures/unexpected/\*/text.html [ Pass ]\n'),
-                      platform='test-win-*')
+        self.run_test(
+            [
+                'failures/unexpected/*/text.html',
+                'failures/expected/timeout.html',
+            ],
+            (
+                '// For test-win-win10\n'
+                'failures/expected/timeout.html [ Timeout ]\n'
+                'failures/unexpected/\*/text.html [ Pass ]\n'
+                '\n'
+                '// For test-win-win7\n'
+                'failures/expected/timeout.html [ Timeout ]\n'
+                'failures/unexpected/\*/text.html [ Pass ]\n'
+            ),
+            platform='test-win-*',
+        )
 
     def test_full(self):
         self.run_test(
             ['failures/expected/text.html', 'failures/expected/timeout.html'],
-            ('// For test-win-win7\n'
-             'failures/expected/text.html [ Failure ]\n'
-             'failures/expected/timeout.html [ Timeout ]\n'),
-            full=True)
+            (
+                '// For test-win-win7\n'
+                'failures/expected/text.html [ Failure ]\n'
+                'failures/expected/timeout.html [ Timeout ]\n'
+            ),
+            full=True,
+        )
 
     def test_exclude(self):
         self.run_test(
             ['failures/expected/text.html', 'failures/expected/crash.html'],
-            ('// For test-win-win7\n'
-             'failures/expected/text.html [ Failure ]\n'),
-            exclude_keyword=['crash'])
+            ('// For test-win-win7\nfailures/expected/text.html [ Failure ]\n'),
+            exclude_keyword=['crash'],
+        )
 
     def test_include(self):
         self.run_test(
             ['failures/expected/text.html', 'failures/expected/crash.html'],
-            ('// For test-win-win7\n'
-             'failures/expected/crash.html [ Crash ]\n'),
-            include_keyword=['crash'])
+            ('// For test-win-win7\nfailures/expected/crash.html [ Crash ]\n'),
+            include_keyword=['crash'],
+        )
 
     def test_csv(self):
         self.run_test(
             ['failures/expected/text.html', 'failures/expected/image.html'],
-            ('test-win-win7,failures/expected/image.html,,,FAIL\n'
-             'test-win-win7,failures/expected/text.html,,,FAIL\n'),
-            csv=True)
+            (
+                'test-win-win7,failures/expected/image.html,,,FAIL\n'
+                'test-win-win7,failures/expected/text.html,,,FAIL\n'
+            ),
+            csv=True,
+        )
 
     def test_paths(self):
-        self.run_test([],
-                      (WEB_TESTS_LAST_COMPONENT + '/TestExpectations\n' +
-                       WEB_TESTS_LAST_COMPONENT + '/NeverFixTests\n' +
-                       WEB_TESTS_LAST_COMPONENT + '/StaleTestExpectations\n' +
-                       WEB_TESTS_LAST_COMPONENT + '/SlowTests\n'),
-                      paths=True)
+        self.run_test(
+            [],
+            (
+                WEB_TESTS_LAST_COMPONENT
+                + '/TestExpectations\n'
+                + WEB_TESTS_LAST_COMPONENT
+                + '/NeverFixTests\n'
+                + WEB_TESTS_LAST_COMPONENT
+                + '/StaleTestExpectations\n'
+                + WEB_TESTS_LAST_COMPONENT
+                + '/SlowTests\n'
+            ),
+            paths=True,
+        )
 
 
 class PrintBaselinesTest(unittest.TestCase):
@@ -133,9 +157,12 @@ class PrintBaselinesTest(unittest.TestCase):
         self.test_port = self.tool.port_factory.get('test-win-win7')
         self.tool.port_factory.get = lambda port_name=None: self.test_port
         self.tool.port_factory.all_port_names = lambda: [
-            'test-linux-trusty', 'test-linux-precise',
-            'test-mac-mac10.11', 'test-mac-mac10.10',
-            'test-win-win10', 'test-win-win7'
+            'test-linux-trusty',
+            'test-linux-precise',
+            'test-mac-mac10.11',
+            'test-mac-mac10.10',
+            'test-win-win10',
+            'test-win-win7',
         ]
 
     def tearDown(self):
@@ -154,49 +181,68 @@ class PrintBaselinesTest(unittest.TestCase):
     def test_basic(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({
-            'all': False,
-            'include_virtual_tests': False,
-            'csv': False,
-            'platform': None
-        })
+        options = optparse.Values(
+            {
+                'all': False,
+                'include_virtual_tests': False,
+                'csv': False,
+                'platform': None,
+            }
+        )
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout, ('// For test-win-win7\n'
-                                           'passes/text-expected.png\n'
-                                           'passes/text-expected.txt\n'))
+        self.assertMultiLineEqual(
+            stdout,
+            (
+                '// For test-win-win7\n'
+                'passes/text-expected.png\n'
+                'passes/text-expected.txt\n'
+            ),
+        )
 
     def test_multiple(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({
-            'all': False,
-            'include_virtual_tests': False,
-            'csv': False,
-            'platform': 'test-win-*'
-        })
+        options = optparse.Values(
+            {
+                'all': False,
+                'include_virtual_tests': False,
+                'csv': False,
+                'platform': 'test-win-*',
+            }
+        )
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout, ('// For test-win-win10\n'
-                                           'passes/text-expected.png\n'
-                                           'passes/text-expected.txt\n'
-                                           '\n'
-                                           '// For test-win-win7\n'
-                                           'passes/text-expected.png\n'
-                                           'passes/text-expected.txt\n'))
+        self.assertMultiLineEqual(
+            stdout,
+            (
+                '// For test-win-win10\n'
+                'passes/text-expected.png\n'
+                'passes/text-expected.txt\n'
+                '\n'
+                '// For test-win-win7\n'
+                'passes/text-expected.png\n'
+                'passes/text-expected.txt\n'
+            ),
+        )
 
     def test_csv(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({
-            'all': False,
-            'platform': '*win7',
-            'csv': True,
-            'include_virtual_tests': False
-        })
+        options = optparse.Values(
+            {
+                'all': False,
+                'platform': '*win7',
+                'csv': True,
+                'include_virtual_tests': False,
+            }
+        )
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout, (
-            'test-win-win7,passes/text.html,None,png,passes/text-expected.png,None\n'
-            'test-win-win7,passes/text.html,None,txt,passes/text-expected.txt,None\n'
-        ))
+        self.assertMultiLineEqual(
+            stdout,
+            (
+                'test-win-win7,passes/text.html,None,png,passes/text-expected.png,None\n'
+                'test-win-win7,passes/text.html,None,txt,passes/text-expected.txt,None\n'
+            ),
+        )

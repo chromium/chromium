@@ -18,7 +18,8 @@ class TestableExtendedAttribute(ExtendedAttribute):
 
     def __init__(self, key, values=None, arguments=None, name=None):
         super(TestableExtendedAttribute, self).__init__(
-            key=key, values=values, arguments=arguments, name=name)
+            key=key, values=values, arguments=arguments, name=name
+        )
 
     @property
     def format(self):
@@ -43,7 +44,7 @@ class ExtendedAttributeTest(unittest.TestCase):
         self.assertEqual(attr.format, TestableExtendedAttribute.FORM_IDENT)
         self.assertEqual(attr.key, 'Bar')
         self.assertEqual(attr.value, 'Val')
-        self.assertEqual(attr.values, ('Val', ))
+        self.assertEqual(attr.values, ('Val',))
         with self.assertRaises(ValueError):
             _ = attr.arguments
         with self.assertRaises(ValueError):
@@ -51,12 +52,12 @@ class ExtendedAttributeTest(unittest.TestCase):
 
         # IdentList
         attr = TestableExtendedAttribute(key='Buz', values=('Val', 'ue'))
-        self.assertEqual(attr.format,
-                         TestableExtendedAttribute.FORM_IDENT_LIST)
+        self.assertEqual(attr.format, TestableExtendedAttribute.FORM_IDENT_LIST)
         self.assertEqual(attr.key, 'Buz')
         self.assertEqual(attr.values, ('Val', 'ue'))
         attr = TestableExtendedAttribute(
-            key='IdentList', values=['Val', 'ue', 'List'])
+            key='IdentList', values=['Val', 'ue', 'List']
+        )
         self.assertEqual(attr.values, ('Val', 'ue', 'List'))
         with self.assertRaises(ValueError):
             _ = attr.arguments
@@ -65,7 +66,8 @@ class ExtendedAttributeTest(unittest.TestCase):
 
         # ArgList
         attr = TestableExtendedAttribute(
-            key='Foo', arguments=(('Left', 'Right'), ('foo', 'bar')))
+            key='Foo', arguments=(('Left', 'Right'), ('foo', 'bar'))
+        )
         self.assertEqual(attr.format, TestableExtendedAttribute.FORM_ARG_LIST)
         self.assertEqual(attr.key, 'Foo')
         with self.assertRaises(ValueError):
@@ -76,13 +78,15 @@ class ExtendedAttributeTest(unittest.TestCase):
 
         # NamedArgList
         attr = TestableExtendedAttribute(
-            key='Bar', arguments=(('Left', 'Right'), ), name='Buz')
-        self.assertEqual(attr.format,
-                         TestableExtendedAttribute.FORM_NAMED_ARG_LIST)
+            key='Bar', arguments=(('Left', 'Right'),), name='Buz'
+        )
+        self.assertEqual(
+            attr.format, TestableExtendedAttribute.FORM_NAMED_ARG_LIST
+        )
         self.assertEqual(attr.key, 'Bar')
         with self.assertRaises(ValueError):
             _ = attr.values
-        self.assertEqual(attr.arguments, (('Left', 'Right'), ))
+        self.assertEqual(attr.arguments, (('Left', 'Right'),))
         self.assertEqual(attr.name, 'Buz')
 
     def test_attributes(self):
@@ -90,7 +94,7 @@ class ExtendedAttributeTest(unittest.TestCase):
             ExtendedAttribute(key='A', values='val'),
             ExtendedAttribute(key='B'),
             ExtendedAttribute(key='C', values=('Val', 'ue')),
-            ExtendedAttribute(key='B', values=('Val', 'ue', 'B'))
+            ExtendedAttribute(key='B', values=('Val', 'ue', 'B')),
         ]
         attributes = ExtendedAttributes(attrs)
         self.assertTrue('A' in attributes)

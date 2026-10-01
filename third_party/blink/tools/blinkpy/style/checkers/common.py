@@ -46,7 +46,8 @@ class CarriageReturnChecker(object):
                 'whitespace/carriage_return',
                 1,
                 'One or more unexpected \\r (^M) found; '
-                'better to use only a \\n')
+                'better to use only a \\n',
+            )
 
             lines[line_number] = lines[line_number].rstrip('\r')
 
@@ -64,5 +65,9 @@ class TabChecker(object):
         # FIXME: share with cpp_style.
         for line_number, line in enumerate(lines):
             if '\t' in line:
-                self.handle_style_error(line_number + 1, 'whitespace/tab', 5,
-                                        'Line contains tab character.')
+                self.handle_style_error(
+                    line_number + 1,
+                    'whitespace/tab',
+                    5,
+                    'Line contains tab character.',
+                )

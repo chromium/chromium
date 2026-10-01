@@ -100,7 +100,9 @@ class TextFileReaderTest(LoggingTestCase):
 
         self.assertTrue(
             message.startswith(
-                "WARNING: Could not read file. Skipping: '%s'\n  " % temp_dir))
+                "WARNING: Could not read file. Skipping: '%s'\n  " % temp_dir
+            )
+        )
 
         self._assert_file_reader([], 1)
 
