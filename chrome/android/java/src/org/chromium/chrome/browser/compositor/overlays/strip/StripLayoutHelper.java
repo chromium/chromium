@@ -2583,8 +2583,9 @@ public class StripLayoutHelper
         resetTabCloseButtonPressedState();
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
 
-        if (stripView == null) {
-            // Show the tab strip context menu at the long-press position on the empty space.
+        if (stripView == null || stripView == mNewTabButton) {
+            // Show the tab strip context menu at the long-press position on the empty space or new
+            // tab button.
             showTabStripContextMenu(x, y);
             return;
         }
@@ -3290,7 +3291,9 @@ public class StripLayoutHelper
         clearLastHoveredTab();
         if (clickedView == null) {
             if (MotionEventUtils.isSecondaryClick(buttons)) {
-                // A right click on empty strip space should trigger the strip context menu.
+                // A right click on empty strip space or the new tab button (where
+                // determineClickedView returns null for secondary clicks) should trigger the strip
+                // context menu.
                 showTabStripContextMenu(x, y);
             }
             return;
@@ -3428,8 +3431,8 @@ public class StripLayoutHelper
     /**
      * Shows the context menu originating at strip coordinates ({@code xDp}, {@code yDp}) to handle
      * a long-press or right-click event at this position. The coordinates are assumed to lie on the
-     * empty space of the tab strip. For context menus associated with gestures on a {@link
-     * StripLayoutView}, see {@link #showContextMenu(StripLayoutView)}.
+     * empty space of the tab strip or on the new tab button. For context menus associated with
+     * gestures on a {@link StripLayoutView}, see {@link #showContextMenu(StripLayoutView)}.
      *
      * @param xDp The x coordinate of the position of the gesture event.
      * @param yDp The y coordinate of the position of the gesture event.

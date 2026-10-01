@@ -2056,31 +2056,19 @@ public class StripLayoutHelperTest {
     public void testCloseButtonHoverOnDown() {
         // Setup
         initializeTest(false, false, 2);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
         TintedCompositorButton closeButton =
-                new TintedCompositorButton(
-                        mContext,
-                        false,
-                        ButtonType.TAB_CLOSE,
-                        tabs[0],
-                        24.f,
-                        24.f,
-                        mTooltipHandler,
-                        mClickHandler,
-                        mKeyboardFocusHandler,
-                        R.drawable.ic_tab_close_tabstrip_24dp,
-                        R.drawable.tab_close_button_bg_24dp,
-                        0f);
-        closeButton.setOpacity(1.f);
-        int x = (int) closeButton.getDrawX();
-        int y = (int) closeButton.getDrawY();
-        tabs[0].setCloseButtonForTesting(closeButton);
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[0].getCloseButton();
+        float x = closeButton.getDrawX();
+        float y = closeButton.getDrawY();
 
         // Verify close button is in pressed state, not hover state, when clicked from mouse.
         mStripLayoutHelper.onDown(x + 1, y + 1, 1);
         assertFalse("Close button should not be hovered", closeButton.isHovered());
-        mStripLayoutHelper.onDown((int) x + 1, y + 1, 1);
-        assertFalse("Close should NOT be hovered", closeButton.isPressedFromMouse());
+        assertTrue("Close button should be pressed from mouse", closeButton.isPressedFromMouse());
 
         // Verify close button is not in hover state or press state when long-pressed.
         mStripLayoutHelper.onLongPress(x + 1, y + 1);
@@ -3477,6 +3465,35 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.click(0, x, y, MotionEvent.BUTTON_SECONDARY, 0);
 
         // Verify that we show the strip context menu.
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        int tabWidthPx =
+                Math.round(
+                        mStripLayoutHelper.getUnpinnedTabWidth()
+                                * mContext.getResources().getDisplayMetrics().density);
+        assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
+    }
+
+    @Test
+    public void testOnLongPress_OnNewTabButton() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, 0, 0, 0, 0);
+        mStripLayoutHelper.updateLayout(0);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
+
+        TintedCompositorButton ntb = mStripLayoutHelper.getNewTabButton();
+        int x = Math.round(ntb.getDrawX() + 1);
+        int y = Math.round(ntb.getDrawY() + 1);
+        mStripLayoutHelper.onDown(x, y, 0);
+        assertTrue("New tab button should be pressed on down.", ntb.isPressed());
+
+        mStripLayoutHelper.onLongPress(x, y);
+        assertFalse("New tab button should not remain pressed on long press.", ntb.isPressed());
+
         var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
         verify(mTabStripContextMenuCoordinator)
                 .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
