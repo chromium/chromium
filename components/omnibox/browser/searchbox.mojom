@@ -143,6 +143,9 @@ struct TabInfo {
   bool show_in_previous_tab_chip;
   // The time the tab was last active.
   mojo_base.mojom.TimeTicks last_active;
+  // Whether the tab is currently loading, matching the tab strip's loading
+  // indicator.
+  bool is_loading;
 };
 
 // Represents a file attachment whose upload was started browser-side (currently

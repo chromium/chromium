@@ -139,6 +139,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Restored = {
@@ -147,6 +148,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Recent = {
@@ -155,6 +157,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -163,6 +166,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?3',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -203,6 +207,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Restored = {
@@ -211,6 +216,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Recent = {
@@ -219,6 +225,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -227,6 +234,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?3',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -274,6 +282,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2 = {
@@ -282,6 +291,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -290,6 +300,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?3',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab4 = {
@@ -298,6 +309,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?4',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -345,6 +357,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Closed = {
@@ -353,6 +366,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -388,6 +402,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const historicalTab1 = {
@@ -396,6 +411,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'https://example.com/hist1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const historicalTab2 = {
@@ -404,6 +420,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'https://example.com/hist2',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -444,6 +461,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?hist',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -463,6 +481,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tab1Navigated = {
@@ -471,6 +490,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1_new',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -515,6 +535,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?navigated',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         searchboxHandler.setResultFor(
@@ -578,6 +599,7 @@ suite('ComposeboxMixinTest', () => {
             url: 'about:blank?3',
             showInCurrentTabChip: false,
             showInPreviousTabChip: false,
+            isLoading: false,
             lastActive: {internalValue: 0n},
           },
         ];
@@ -605,6 +627,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -1728,6 +1751,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
         element.hasCachedSubmittedTabsThisTurn = true;
@@ -1846,6 +1870,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -1873,6 +1898,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -1889,6 +1915,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -1922,6 +1949,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -1947,6 +1975,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?1',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         }];
         element.hasCachedSubmittedTabsThisTurn = true;
@@ -2297,6 +2326,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?10',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tabFile = ComposeboxFile.createFromTab(
@@ -2334,6 +2364,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?10',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
         const tabFile = ComposeboxFile.createFromTab(
@@ -2369,6 +2400,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?10',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -2430,6 +2462,7 @@ suite('ComposeboxMixinTest', () => {
           url: 'about:blank?10',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         };
 

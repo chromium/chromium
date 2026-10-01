@@ -3239,6 +3239,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             url: 'https://example.com',
             showInCurrentTabChip: false,
             showInPreviousTabChip: false,
+            isLoading: false,
             lastActive: {internalValue: 0n},
           },
           fileToken: null,

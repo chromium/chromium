@@ -770,6 +770,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             url: 'https://example.com',
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
+            isLoading: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(
@@ -835,6 +836,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             url: 'https://example.com',
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
+            isLoading: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(
@@ -916,6 +918,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             url: 'https://example.com',
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
+            isLoading: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(

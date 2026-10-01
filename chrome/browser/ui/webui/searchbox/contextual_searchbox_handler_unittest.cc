@@ -4005,6 +4005,79 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   all_tabs_.pop_back();
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_SetsIsLoadingWhenSkeletonLoaderEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
+        "true"}});
+  auto* loading_tab = AddTab(GURL("https://www.google.com"));
+  auto* loaded_tab = AddTab(GURL("https://www.youtube.com"));
+  // A started, uncommitted navigation leaves the tab loading.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search"), loading_tab->GetContents());
+  navigation->Start();
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+
+  // Tabs are ordered most recently active first.
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, loaded_tab->GetHandle().raw_value());
+  EXPECT_FALSE(tabs[0]->is_loading);
+  EXPECT_EQ(tabs[1]->tab_id, loading_tab->GetHandle().raw_value());
+  EXPECT_TRUE(tabs[1]->is_loading);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_IsLoadingFalseWhenSkeletonLoaderDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
+        "false"}});
+  auto* loading_tab = AddTab(GURL("https://www.google.com"));
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search"), loading_tab->GetContents());
+  navigation->Start();
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+
+  ASSERT_EQ(tabs.size(), 1u);
+  EXPECT_FALSE(tabs[0]->is_loading);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_NotifiesPageWhenLoadingTabStops) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{omnibox::kContextManagementInComposeboxFaviconSkeletonLoader.name,
+        "true"}});
+  auto* loading_tab = AddTab(GURL("https://www.google.com"));
+  // Keep `loading_tab` inactive so the active-tab navigation observer does not
+  // also notify the page when the navigation commits.
+  AddTab(GURL("https://www.youtube.com"));
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search"), loading_tab->GetContents());
+  navigation->Start();
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+  ASSERT_EQ(tabs.size(), 2u);
+  ASSERT_TRUE(tabs[1]->is_loading);
+
+  // The tab finishing its load prompts the page to refresh its tab list.
+  EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+  navigation->Commit();
+  mock_searchbox_page_.FlushForTesting();
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
   base::FieldTrialParams params;
   params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";

@@ -253,6 +253,7 @@ suite('ContextualEntrypointAndMenu', () => {
               url: 'about:blank?1',
               showInCurrentTabChip: false,
               showInPreviousTabChip: false,
+              isLoading: false,
               lastActive: {internalValue: 0n},
             },
             {
@@ -261,6 +262,7 @@ suite('ContextualEntrypointAndMenu', () => {
               url: 'about:blank?2',
               showInCurrentTabChip: false,
               showInPreviousTabChip: false,
+              isLoading: false,
               lastActive: {internalValue: 0n},
             },
           ];

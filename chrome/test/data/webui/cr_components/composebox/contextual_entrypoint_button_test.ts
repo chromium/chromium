@@ -344,6 +344,7 @@ suite('ContextualEntrypointButton', () => {
               title: 'Tab 1',
               showInCurrentTabChip: false,
               showInPreviousTabChip: false,
+              isLoading: false,
               lastActive: {internalValue: 0n},
             },
           ];
@@ -377,6 +378,7 @@ suite('ContextualEntrypointButton', () => {
       url: 'https://example1.com',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: 0n},
     };
     const tab2: TabInfo = {
@@ -385,6 +387,7 @@ suite('ContextualEntrypointButton', () => {
       url: 'https://example2.com',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: 0n},
     };
     const tab3: TabInfo = {
@@ -393,6 +396,7 @@ suite('ContextualEntrypointButton', () => {
       url: 'https://example3.com',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: 0n},
     };
     const tab4: TabInfo = {
@@ -401,6 +405,7 @@ suite('ContextualEntrypointButton', () => {
       url: 'https://example4.com',
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: 0n},
     };
 
@@ -461,6 +466,7 @@ suite('ContextualEntrypointButton', () => {
           url: 'https://example1.com',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         },
       ];
@@ -501,6 +507,7 @@ suite('ContextualEntrypointButton', () => {
           url: 'https://example1.com',
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: 0n},
         },
       ];

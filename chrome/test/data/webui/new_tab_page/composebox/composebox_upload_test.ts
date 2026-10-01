@@ -1415,6 +1415,7 @@ suite('CrComposeboxUploadContextTest', () => {
           url: 'https://example.com/1',
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: BigInt(1)},
         };
 
@@ -1478,6 +1479,7 @@ suite('CrComposeboxUploadContextTest', () => {
           url: 'https://example.com/1',
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: BigInt(1)},
         };
 
@@ -1531,6 +1533,7 @@ suite('CrComposeboxUploadContextTest', () => {
           url: 'https://example2.com',
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: BigInt(4)},
         };
 
@@ -1569,6 +1572,7 @@ suite('CrComposeboxUploadContextTest', () => {
           url: 'https://example.com/1',
           showInCurrentTabChip: true,
           showInPreviousTabChip: false,
+          isLoading: false,
           lastActive: {internalValue: BigInt(1)},
         };
 

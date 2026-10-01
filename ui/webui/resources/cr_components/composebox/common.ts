@@ -338,6 +338,9 @@ export class ComposeboxInputModel {
                tabId: file.tabId!,
                title: file.name,
                url: file.url!,
+               // Attached files carry no loading state; embedders fill it in
+               // from the latest tab suggestions.
+               isLoading: false,
              } as TabInfo));
   }
 

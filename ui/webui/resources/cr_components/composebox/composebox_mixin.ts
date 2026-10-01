@@ -3021,7 +3021,15 @@ export const ComposeboxEmbedderMixin =
 
         // Returns all attached tabs in composebox.
         getSharedTabs(): TabInfo[] {
-          return this.inputModel.getSharedTabs();
+          // Shared tabs are built from attached files, so pull the live
+          // loading state from the latest tab suggestions.
+          const suggestions =
+              new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
+          return this.inputModel.getSharedTabs().map(
+              tab => ({
+                ...tab,
+                isLoading: suggestions.get(tab.tabId)?.isLoading ?? false,
+              }));
         }
 
         hasTabs(): boolean {
