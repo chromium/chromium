@@ -1993,6 +1993,11 @@ crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-gener
 # This test should pass when prefetch behavior in iframe is fixed.
 crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.html [ Failure ]
 
+# This usually fails due to both an expectation failure and a harness failure
+# (cleanup function failed), but can also fail with just a different harness
+# error (target frame detached).
+crbug.com/532911229 external/wpt/navigation-timing/response-start-after-coop-bcg-switch.https.html [ Failure ]
+
 # css-highlight-inheritance/
 crbug.com/1467328 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-16.html [ Failure ]
