@@ -116,6 +116,7 @@ source_set("browser_tests") {
     "//components/keyed_service/core",
     "//components/send_tab_to_self",
     "//components/send_tab_to_self:test_support",
+    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings",

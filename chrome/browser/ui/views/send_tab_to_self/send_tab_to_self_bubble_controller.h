@@ -128,12 +128,18 @@ class SendTabToSelfBubbleController
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  bool ShouldShowNoTargetDeviceQrBubble(EntryPointDisplayReason reason,
+                                        BrowserWindowInterface* browser);
+  void OnQrBubbleClosed();
+
   void ShowBubbleWhenTargetDeviceListReady();
 
   void StartWaitingForTargetDeviceList();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
+  // True if the cross-device sign-in QR code bubble is currently shown.
+  bool is_qr_bubble_showing_ = false;
   // True if the back button is currently shown.
   bool show_back_button_ = false;
 

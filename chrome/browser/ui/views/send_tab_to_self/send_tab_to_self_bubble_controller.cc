@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -44,6 +45,12 @@
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 namespace send_tab_to_self {
 
 SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
@@ -60,7 +67,7 @@ void SendTabToSelfBubbleController::HideBubble() {
 void SendTabToSelfBubbleController::ShowBubble(ShareEntryPoint entry_point,
                                                bool show_back_button) {
   // Avoid re-creation if a bubble is already being shown for this controller.
-  if (send_tab_to_self_bubble_view_) {
+  if (IsBubbleShown()) {
     return;
   }
 
@@ -87,6 +94,22 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (ShouldShowNoTargetDeviceQrBubble(reason, browser)) {
+    // Note: `entry_point_` should always be populated here, since it's set in
+    // ShowBubble() which must've been called earlier. If it's not (e.g. in some
+    // unit tests), `kShareSheet` is used as a generic fallback.
+    RecordTargetDeviceCount(entry_point_.value_or(ShareEntryPoint::kShareSheet),
+                            reason, /*device_count=*/0);
+    is_qr_bubble_showing_ = true;
+    OpenSigninToPhoneQrCodeBubble(
+        browser, CrossDeviceSigninPromoEntryPoint::kSendTabToSelf,
+        base::BindOnce(&SendTabToSelfBubbleController::OnQrBubbleClosed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+#endif
 
   base::WeakPtr<BrowserWindowInterface> browser_weak_ptr;
   views::BubbleAnchor anchor;
@@ -182,7 +205,7 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
 }
 
 bool SendTabToSelfBubbleController::IsBubbleShown() const {
-  return send_tab_to_self_bubble_view_;
+  return send_tab_to_self_bubble_view_ || is_qr_bubble_showing_;
 }
 
 SendTabToSelfBubbleView*
@@ -290,6 +313,35 @@ void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
   }
 }
 
+bool SendTabToSelfBubbleController::ShouldShowNoTargetDeviceQrBubble(
+    EntryPointDisplayReason reason,
+    BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (reason != EntryPointDisplayReason::kInformNoTargetDevice || !browser ||
+      !base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop) ||
+      !base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode)) {
+    return false;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  if (!identity_manager) {
+    return false;
+  }
+  const signin_util::SignedInState signed_in_state =
+      signin_util::GetSignedInState(identity_manager);
+  return signed_in_state == signin_util::SignedInState::kSignedIn ||
+         signed_in_state == signin_util::SignedInState::kSyncing;
+#else
+  return false;
+#endif
+}
+
+void SendTabToSelfBubbleController::OnQrBubbleClosed() {
+  is_qr_bubble_showing_ = false;
+  entry_point_ = std::nullopt;
+}
+
 void SendTabToSelfBubbleController::OnBackButtonPressed() {
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
@@ -336,7 +388,7 @@ void SendTabToSelfBubbleController::ShowBubbleWhenTargetDeviceListReady() {
   target_device_list_waiter_.reset();
 
   // Avoid duplicate bubble presentation if one is already showing.
-  if (send_tab_to_self_bubble_view_) {
+  if (IsBubbleShown()) {
     return;
   }
 
