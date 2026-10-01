@@ -4530,4 +4530,227 @@ suite('ContextualActionMenu', () => {
           assertEquals('false', flyout.getAttribute('aria-hidden'));
         });
   });
+
+  suite('ContextualSearchTabPickerTelemetry', () => {
+    let recordedMetrics:
+        Array<{metricName: string, value: number, enumSize: number}> = [];
+    let originalRecordEnumerationValue: any;
+    let recordedBooleans: Array<{metricName: string, value: boolean}> = [];
+    let originalRecordBoolean: any;
+
+    suiteSetup(() => {
+      (window as any).chrome = (window as any).chrome || {};
+      (window as any).chrome.histograms =
+          (window as any).chrome.histograms || {};
+      originalRecordEnumerationValue =
+          (window as any).chrome.histograms.recordEnumerationValue;
+      (window as any).chrome.histograms.recordEnumerationValue =
+          (metricName: string, value: number, enumSize: number) => {
+            recordedMetrics.push({metricName, value, enumSize});
+            if (originalRecordEnumerationValue) {
+              originalRecordEnumerationValue(metricName, value, enumSize);
+            }
+          };
+      originalRecordBoolean = (window as any).chrome.histograms.recordBoolean;
+      (window as any).chrome.histograms.recordBoolean =
+          (metricName: string, value: boolean) => {
+            recordedBooleans.push({metricName, value});
+            if (originalRecordBoolean) {
+              originalRecordBoolean(metricName, value);
+            }
+          };
+    });
+
+    suiteTeardown(() => {
+      if ((window as any).chrome && (window as any).chrome.histograms) {
+        (window as any).chrome.histograms.recordEnumerationValue =
+            originalRecordEnumerationValue;
+        (window as any).chrome.histograms.recordBoolean = originalRecordBoolean;
+      }
+    });
+
+    setup(async () => {
+      recordedMetrics = [];
+      recordedBooleans = [];
+      asInternal(actionMenu).metricsSource_ = 'ContextualTasks';
+      actionMenu.inputState = new MockInputState({
+        allowedInputTypes: [
+          InputType.kBrowserTab,
+          InputType.kLensFile,
+          InputType.kDrive,
+        ],
+        allowedTools: [
+          ToolMode.kImageGen,
+          ToolMode.kDeepSearch,
+          ToolMode.kCanvas,
+        ],
+      });
+      actionMenu.tabSuggestions = [
+        createTabSuggestion({tabId: 1, title: 'Recent Tab'}),
+        createTabSuggestion(
+            {tabId: 2, title: 'Active Tab', showInCurrentTabChip: true}),
+        createTabSuggestion({tabId: 3, title: 'BG Tab'}),
+      ];
+      actionMenu.recentTabId = 1;
+      actionMenu.contextManagementInComposeboxEnabled = true;
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+    });
+
+    test(
+        'Records ContextualSearch.TabPicker.SelectedTab{IsActive,Position}.ContextualTasksWebUi when tab is selected',
+        async () => {
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.share-tabs-flyout');
+          assertTrue(!!flyout);
+          const tabItems = Array.from(
+              flyout.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+          assertEquals(3, tabItems.length);
+
+          // Only tab 1 is the active tab, so the two axes disagree and the
+          // assertions below would fail if they were conflated.
+          const expectations = [
+            {position: 0, isActive: false},
+            {position: 1, isActive: true},
+            {position: 2, isActive: false},
+          ];
+          for (const expected of expectations) {
+            recordedMetrics = [];
+            recordedBooleans = [];
+            tabItems[expected.position]!.click();
+            await microtasksFinished();
+
+            const position = recordedMetrics.find(
+                m => m.metricName ===
+                    'ContextualSearch.TabPicker.SelectedTabPosition.ContextualTasksWebUi');
+            assertTrue(!!position);
+            assertEquals(expected.position, position.value);
+            assertEquals(21, position.enumSize);
+
+            const isActive = recordedBooleans.find(
+                m => m.metricName ===
+                    'ContextualSearch.TabPicker.SelectedTabIsActive.ContextualTasksWebUi');
+            assertTrue(!!isActive);
+            assertEquals(expected.isActive, isActive.value);
+          }
+        });
+
+    test(
+        'Records ContextualSearch.TabPicker metrics for NewTabPage and Omnibox surfaces',
+        async () => {
+          const testCases = [
+            {source: 'NewTabPage', suffix: 'NewTabPage'},
+            {source: 'Omnibox', suffix: 'Omnibox'},
+            {source: 'OmniboxEverywhere', suffix: 'Omnibox'},
+          ];
+
+          for (const tc of testCases) {
+            asInternal(actionMenu).metricsSource_ = tc.source;
+            await microtasksFinished();
+
+            const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+            assertTrue(!!trigger);
+            trigger.dispatchEvent(new PointerEvent('pointerenter'));
+            await microtasksFinished();
+
+            const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+                '.share-tabs-flyout');
+            assertTrue(!!flyout);
+            const tabItems = Array.from(
+                flyout.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+            assertTrue(tabItems.length > 0);
+
+            recordedMetrics = [];
+            recordedBooleans = [];
+            tabItems[0]!.click();
+            await microtasksFinished();
+
+            const position = recordedMetrics.find(
+                m => m.metricName ===
+                    `ContextualSearch.TabPicker.SelectedTabPosition.${
+                         tc.suffix}`);
+            assertTrue(!!position);
+            assertEquals(0, position.value);
+
+            const isActive = recordedBooleans.find(
+                m => m.metricName ===
+                    `ContextualSearch.TabPicker.SelectedTabIsActive.${
+                         tc.suffix}`);
+            assertTrue(!!isActive);
+            assertFalse(isActive.value);
+          }
+        });
+
+    test(
+        'Does not record ContextualSearch.TabPicker metrics when metricsSource is unrecognized',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'UnknownSource';
+          await microtasksFinished();
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.share-tabs-flyout');
+          assertTrue(!!flyout);
+          const tabItems = Array.from(
+              flyout.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+          assertTrue(tabItems.length > 0);
+
+          recordedMetrics = [];
+          recordedBooleans = [];
+          tabItems[0]!.click();
+          await microtasksFinished();
+
+          assertFalse(!!recordedMetrics.find(
+              m => m.metricName.startsWith('ContextualSearch.TabPicker.')));
+          assertFalse(!!recordedBooleans.find(
+              m => m.metricName.startsWith('ContextualSearch.TabPicker.')));
+        });
+
+    test(
+        'Omits ContextualSearch.TabPicker.SelectedTabIsActive when no active tab candidate exists',
+        async () => {
+          actionMenu.tabSuggestions = [
+            createTabSuggestion({tabId: 1, title: 'Tab 1'}),
+            createTabSuggestion({tabId: 2, title: 'Tab 2'}),
+          ];
+          await microtasksFinished();
+
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.share-tabs-flyout');
+          assertTrue(!!flyout);
+          const tabItems = Array.from(
+              flyout.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+          assertTrue(tabItems.length > 0);
+
+          recordedMetrics = [];
+          recordedBooleans = [];
+          tabItems[0]!.click();
+          await microtasksFinished();
+
+          const position = recordedMetrics.find(
+              m => m.metricName ===
+                  'ContextualSearch.TabPicker.SelectedTabPosition.ContextualTasksWebUi');
+          assertTrue(!!position);
+          assertEquals(0, position.value);
+
+          const isActive = recordedBooleans.find(
+              m => m.metricName ===
+                  'ContextualSearch.TabPicker.SelectedTabIsActive.ContextualTasksWebUi');
+          assertFalse(!!isActive);
+        });
+  });
 });

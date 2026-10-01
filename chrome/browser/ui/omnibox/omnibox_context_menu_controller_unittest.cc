@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1272,4 +1273,59 @@ TEST_F(OmniboxContextMenuControllerTest, ShareTabsTooltip_ParamDisabled) {
   EXPECT_EQ(controller()->GetTooltipForCommandId(
                 IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU),
             u"");
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       ExecuteCommand_TabSelectionRecordsTabPickerTelemetry) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab0;
+  tab0.tab_id = 1;
+  tab0.title = u"Tab 1";
+  tab0.url = GURL("https://example.com/1");
+  tab0.is_active_tab = false;
+  mock_tabs.push_back(tab0);
+
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 2;
+  tab1.title = u"Tab 2";
+  tab1.url = GURL("https://example.com/2");
+  tab1.is_active_tab = true;
+  mock_tabs.push_back(tab1);
+
+  controller()->SetMockTabs(mock_tabs);
+  controller()->RebuildMenu();
+
+  // Execute command on tab 1 (command ID: 33000 + 1).
+  controller()->ExecuteCommand(33000 + 1, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 1, 1);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       ExecuteCommand_TabSelectionWithoutActiveTabOmitsIsActiveMetric) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab0;
+  tab0.tab_id = 1;
+  tab0.title = u"Tab 1";
+  tab0.url = GURL("https://example.com/1");
+  tab0.is_active_tab = false;
+  mock_tabs.push_back(tab0);
+
+  controller()->SetMockTabs(mock_tabs);
+  controller()->RebuildMenu();
+
+  // Execute command on tab 0 (command ID: 33000 + 0).
+  controller()->ExecuteCommand(33000 + 0, 0);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 0, 1);
 }
