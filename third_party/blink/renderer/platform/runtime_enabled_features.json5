@@ -1920,7 +1920,7 @@
       // Support for `position-visibility: anchor-valid`.
       // See crbug.com/333421963.
       name: "CSSPositionVisibilityAnchorValid",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The @private rule declares lexically-scoped custom properties that are
