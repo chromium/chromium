@@ -397,6 +397,7 @@ source_set("headless_browser") {
     "//content/public/browser",
     "//content/public/common",
     "//printing/buildflags",
+    "//sandbox/policy",
     "//services/cert_verifier/public/mojom",
     "//services/device/public/cpp/geolocation",
     "//services/service_manager/public/cpp",
@@ -799,13 +800,13 @@ component("headless_shell_lib") {
     "//components/headless/command_handler",
     "//components/policy/content",
     "//components/security_state/content",
-    "//content",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/child",
     "//content/public/common",
     "//content/public/utility",
     "//printing/buildflags",
+    "//sandbox/policy",
     "//v8",
   ]
 
