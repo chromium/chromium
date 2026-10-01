@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
@@ -36,9 +37,9 @@ import java.lang.annotation.RetentionPolicy;
  * Owns the resize handle for one {@link AnchorSide}, and translates drag gestures on it into {@link
  * SideUiContainer#onResizeLive} and {@link SideUiContainer#onResizeCommitted} calls.
  *
- * <p>The handle is an invisible strip overlaying the inner edge of the anchor container, i.e. the
- * edge facing the web contents. It has no visual of its own: the boundary is already drawn by
- * {@link SideUiWebContentHairlineManager}. The handle only changes the pointer icon on hover.
+ * <p>The handle is a strip overlaying the inner edge of the anchor container, i.e. the edge facing
+ * the web contents. Its width comes from {@link SideUiContainer#getResizeHandleWidthPx}, and it
+ * draws a bar at its center. It also changes the pointer icon on hover.
  *
  * <p>The handle {@link View} is created lazily the first time the bound container is resizable, and
  * is removed when the container's {@link View} is detached from the anchor container.
@@ -167,7 +168,9 @@ import java.lang.annotation.RetentionPolicy;
             mHandleView =
                     createHandleView(
                             mContext,
+                            mAnchorContainer,
                             gravity,
+                            mContainer.getResizeHandleWidthPx(),
                             mContainer.getResizeHandleContentDescriptionRes(),
                             /* onTouchListener= */ this);
             mAnchorContainer.addView(mHandleView);
@@ -306,23 +309,23 @@ import java.lang.annotation.RetentionPolicy;
         return PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW);
     }
 
-    // TODO(crbug.com/559262619): Add touch support. The resize pointer icon is only shown on hover,
-    // which requires a mouse or another precision pointer. Touch users see nothing while resizing,
-    // and the handle is narrower than the minimum touch target. Consider drawing the handle instead
-    // of reusing SideUiWebContentHairlineManager and making it wider.
-    /** Creates the handle {@link View}. The caller is responsible for adding it to its parent. */
+    /**
+     * Creates the handle {@link View}: a strip with a bar drawn at its center. The caller is
+     * responsible for adding it to {@code parent}.
+     */
     private static View createHandleView(
             Context context,
+            ViewGroup parent,
             int gravity,
+            @Px @Nullable Integer containerHandleWidthPx,
             @StringRes int contentDescriptionRes,
             View.OnTouchListener onTouchListener) {
-        View handleView = new View(context);
-        @Px
-        int widthPx =
-                context.getResources().getDimensionPixelSize(R.dimen.side_ui_resize_handle_width);
-        var layoutParams =
-                new FrameLayout.LayoutParams(widthPx, ViewGroup.LayoutParams.MATCH_PARENT);
+        View handleView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.side_ui_resize_handle, parent, /* attachToRoot= */ false);
+        var layoutParams = (FrameLayout.LayoutParams) handleView.getLayoutParams();
         layoutParams.gravity = gravity;
+        if (containerHandleWidthPx != null) layoutParams.width = containerHandleWidthPx;
         handleView.setLayoutParams(layoutParams);
         if (contentDescriptionRes != Resources.ID_NULL) {
             handleView.setContentDescription(context.getString(contentDescriptionRes));

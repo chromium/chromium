@@ -12,6 +12,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -204,6 +205,17 @@ public interface SideUiContainer {
      */
     default @StringRes int getResizeHandleContentDescriptionRes() {
         return Resources.ID_NULL;
+    }
+
+    /**
+     * Returns the width of the resize handle in px, e.g. the container's inner edge padding so that
+     * the handle doesn't overlap the container's content, or null to use the Side UI default.
+     *
+     * <p>Only called while {@link #supportsManualResize()} returns true, when the handle is
+     * created.
+     */
+    default @Px @Nullable Integer getResizeHandleWidthPx() {
+        return null;
     }
 
     /**

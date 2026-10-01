@@ -5,7 +5,13 @@
 import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
-  sources = [ "android/java/res/values/dimens.xml" ]
+  sources = [
+    "android/java/res/drawable/side_ui_resize_handle_bar.xml",
+    "android/java/res/layout/side_ui_resize_handle.xml",
+    "android/java/res/values/colors.xml",
+    "android/java/res/values/dimens.xml",
+  ]
+  deps = [ "//components/browser_ui/styles/android:java_resources" ]
 }
 
 android_library("java") {

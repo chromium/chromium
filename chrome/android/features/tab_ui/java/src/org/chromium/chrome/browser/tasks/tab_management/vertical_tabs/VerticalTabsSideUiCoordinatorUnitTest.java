@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.Map;
@@ -372,16 +373,34 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     @Test
-    public void testHoverExpanded_DoesNotSupportManualResize() {
+    public void testExpandOnHover_OnlyExpandedRailSupportsManualResize() {
         enableManualResize();
-        mCollapseController.toggleCollapseState();
+        enableExpandOnHover();
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         assertTrue(mCoordinator.supportsManualResize());
+
+        mCollapseController.toggleCollapseState();
+        assertFalse(mCoordinator.supportsManualResize());
 
         mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertFalse(mCoordinator.supportsManualResize());
 
         mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
+        assertFalse(mCoordinator.supportsManualResize());
+
+        mCollapseController.toggleCollapseState();
         assertTrue(mCoordinator.supportsManualResize());
+    }
+
+    @Test
+    public void testResizeHandleWidth_MatchesRailHorizontalPadding() {
+        assertEquals(
+                Integer.valueOf(
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.vertical_tabs_rail_horizontal_margin)),
+                mCoordinator.getResizeHandleWidthPx());
     }
 
     @Test
@@ -767,6 +786,14 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     private void enableManualResize() {
         FeatureOverrides.newBuilder()
                 .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
+                .apply();
+    }
+
+    /** Enables expand-on-hover, keeping manual resize enabled. */
+    private void enableExpandOnHover() {
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true)
                 .apply();
     }
 

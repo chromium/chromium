@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The strip's width and gravity are set at runtime by SideUiResizeHandler. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/side_ui_resize_handle_width"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/side_ui_resize_handle_bar"
+        android:layout_width="@dimen/side_ui_resize_handle_bar_width"
+        android:layout_height="@dimen/side_ui_resize_handle_bar_height"
+        android:layout_gravity="center"
+        android:background="@drawable/side_ui_resize_handle_bar"
+        android:importantForAccessibility="no" />
+</FrameLayout>

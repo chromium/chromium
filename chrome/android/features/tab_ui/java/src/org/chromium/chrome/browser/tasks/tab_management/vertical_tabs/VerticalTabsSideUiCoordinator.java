@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
@@ -250,11 +251,23 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public boolean supportsManualResize() {
-        // The hover expansion is transient and only overlays the web contents, so there is no
-        // stable edge to drag while it is showing.
-        return VerticalTabUtils.isManualResizeEnabled()
-                && !mCollapseController.isForcedCollapsed()
-                && !mCollapseController.isHoverExpanded();
+        if (!VerticalTabUtils.isManualResizeEnabled() || mCollapseController.isForcedCollapsed()) {
+            return false;
+        }
+        // With expand-on-hover, only the expanded rail is resizable: the collapsed rail expands as
+        // soon as the pointer reaches its edge, and the hover expansion is transient and only
+        // overlays the web contents, so neither has a stable edge to drag.
+        return !VerticalTabUtils.isExpandOnHoverEnabled()
+                || mCollapseController.getEffectiveRailCollapseState()
+                        == RailCollapseState.EXPANDED;
+    }
+
+    @Override
+    public @Px Integer getResizeHandleWidthPx() {
+        // Match the rail's inner padding so that the handle doesn't overlap the tabs.
+        return mRootView
+                .getResources()
+                .getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin);
     }
 
     @Override
