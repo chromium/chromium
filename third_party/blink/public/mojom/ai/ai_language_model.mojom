@@ -105,13 +105,13 @@ union AILanguageModelPromptContent {
   on_device_model.mojom.AudioData audio;
 
   // Tool call provided as input (from JavaScript LanguageModelToolCall).
-  // Format: {"callID": "...", "name": "...", "arguments": {...}}
+  // Format: {"callId": "...", "name": "...", "arguments": {...}}
   mojo_base.mojom.DictionaryValue tool_call;
 
   // Tool response provided as input (from JavaScript LanguageModelToolSuccess
   // or LanguageModelToolError).
-  // Success format: {"callID": "...", "name": "...", "result": [...]}
-  // Error format: {"callID": "...", "name": "...", "errorMessage": "..."}
+  // Success format: {"callId": "...", "name": "...", "result": [...]}
+  // Error format: {"callId": "...", "name": "...", "errorMessage": "..."}
   mojo_base.mojom.DictionaryValue tool_response;
 };
 

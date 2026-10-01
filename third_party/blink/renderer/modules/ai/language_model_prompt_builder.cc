@@ -131,13 +131,13 @@ HeapVector<Member<LanguageModelMessage>> NormalizePrompt(
 }
 
 // Converts a LanguageModelToolSuccess to DictValue for mojo transport.
-// Format: {"callID":"...","name":"...","result":[...]}
+// Format: {"callId":"...","name":"...","result":[...]}
 // Returns std::nullopt on error.
 std::optional<base::DictValue> ConvertToolSuccessToDictValue(
     ScriptState* script_state,
     const LanguageModelToolSuccess* tool_success) {
   base::DictValue dict;
-  dict.Set("callID", tool_success->callID().Utf8());
+  dict.Set("callId", tool_success->callId().Utf8());
   dict.Set("name", tool_success->name().Utf8());
 
   // Convert the result array to base::Value.
@@ -182,11 +182,11 @@ std::optional<base::DictValue> ConvertToolSuccessToDictValue(
 }
 
 // Converts a LanguageModelToolError to DictValue for mojo transport.
-// Format: {"callID":"...","name":"...","errorMessage":"..."}
+// Format: {"callId":"...","name":"...","errorMessage":"..."}
 base::DictValue ConvertToolErrorToDictValue(
     const LanguageModelToolError* tool_error) {
   base::DictValue dict;
-  dict.Set("callID", tool_error->callID().Utf8());
+  dict.Set("callId", tool_error->callId().Utf8());
   dict.Set("name", tool_error->name().Utf8());
   dict.Set("errorMessage", tool_error->errorMessage().Utf8());
 
@@ -194,13 +194,13 @@ base::DictValue ConvertToolErrorToDictValue(
 }
 
 // Converts a LanguageModelToolCall to DictValue for mojo transport.
-// Format: {"callID":"...","name":"...","arguments":{...}}
+// Format: {"callId":"...","name":"...","arguments":{...}}
 // Returns std::nullopt on error.
 std::optional<base::DictValue> ConvertToolCallToDictValue(
     ScriptState* script_state,
     const LanguageModelToolCall* tool_call) {
   base::DictValue dict;
-  dict.Set("callID", tool_call->callID().Utf8());
+  dict.Set("callId", tool_call->callId().Utf8());
   dict.Set("name", tool_call->name().Utf8());
 
   ScriptState::Scope scope(script_state);

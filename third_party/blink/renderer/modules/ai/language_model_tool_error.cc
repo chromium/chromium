@@ -12,14 +12,14 @@ namespace blink {
 LanguageModelToolError* LanguageModelToolError::Create(
     LanguageModelToolErrorInit* init,
     ExceptionState& exception_state) {
-  if (!init->hasCallID() || !init->hasName() || !init->hasErrorMessage()) {
+  if (!init->hasCallId() || !init->hasName() || !init->hasErrorMessage()) {
     exception_state.ThrowTypeError(
-        "LanguageModelToolError requires callID, name, and errorMessage.");
+        "LanguageModelToolError requires callId, name, and errorMessage.");
     return nullptr;
   }
 
   return MakeGarbageCollected<LanguageModelToolError>(
-      init->callID(), init->name(), init->errorMessage());
+      init->callId(), init->name(), init->errorMessage());
 }
 
 LanguageModelToolError::LanguageModelToolError(const String& call_id,

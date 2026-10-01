@@ -207,7 +207,7 @@ std::vector<blink::mojom::AILanguageModelPromptPtr> MakeToolCallInput(
     const std::string& name,
     base::DictValue arguments) {
   base::DictValue tool_call;
-  tool_call.Set("callID", call_id);
+  tool_call.Set("callId", call_id);
   tool_call.Set("name", name);
   tool_call.Set("arguments", std::move(arguments));
   return MakeToolCallInput(std::move(tool_call));
@@ -1987,7 +1987,7 @@ class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
     options->initial_prompts.push_back(std::move(tool_call.front()));
 
     base::DictValue tool_response;
-    tool_response.Set("callID", call_id);
+    tool_response.Set("callId", call_id);
     tool_response.Set("name", "get_weather");
     tool_response.Set("result", std::move(result));
     options->initial_prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
@@ -2137,7 +2137,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, RejectMalformedToolCallInput) {
   auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
 
   base::DictValue tool_call;
-  tool_call.Set("callID", "call_missing_arguments");
+  tool_call.Set("callId", "call_missing_arguments");
   tool_call.Set("name", "get_weather");
 
   AITestUtils::TestStreamingResponder responder;
@@ -2264,7 +2264,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, ToolResponseHandled) {
 
   // Send structured tool response with nested objects/arrays.
   base::DictValue tool_response_dict;
-  tool_response_dict.Set("callID", "call_456");
+  tool_response_dict.Set("callId", "call_456");
   tool_response_dict.Set("name", "get_weather");
 
   base::DictValue result;
@@ -2344,7 +2344,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, ToolResponseWithError) {
 
   // Send tool error response.
   base::DictValue error_response_dict;
-  error_response_dict.Set("callID", "call_789");
+  error_response_dict.Set("callId", "call_789");
   error_response_dict.Set("name", "get_weather");
   error_response_dict.Set("errorMessage",
                           "Unable to find weather data for InvalidCity");
@@ -2404,7 +2404,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, CompleteOpenLoopToolCallFlow) {
   // ========== STEP 4: Create and send tool response as new prompt ==========
   // Compose the result for ToolResponse.
   base::DictValue tool_result_dict;
-  tool_result_dict.Set("callID", "call_123");
+  tool_result_dict.Set("callId", "call_123");
   tool_result_dict.Set("name", "get_weather");
 
   base::DictValue result;
@@ -2467,7 +2467,7 @@ TEST_F(AILanguageModelOpenLoopToolTest,
 
   DisableToolCallSimulation();
   base::DictValue tool_response;
-  tool_response.Set("callID", "call_overflow");
+  tool_response.Set("callId", "call_overflow");
   tool_response.Set("name", "get_weather");
   base::DictValue result;
   result.Set("temperature", 72);
@@ -2541,7 +2541,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, ClonedSessionPreservesTools) {
 
   // Send tool response to cloned session.
   base::DictValue tool_response_dict;
-  tool_response_dict.Set("callID", "call_clone_002");
+  tool_response_dict.Set("callId", "call_clone_002");
   tool_response_dict.Set("name", "get_weather");
 
   base::DictValue result;
@@ -2602,7 +2602,7 @@ TEST_F(AILanguageModelOpenLoopToolTest, RejectCreateWithFlagDisabled) {
 TEST_F(AILanguageModelOpenLoopToolTest, RejectToolResponseWithoutCapability) {
   auto session = CreateSession();
   base::DictValue tool_response_dict;
-  tool_response_dict.Set("callID", "c0");
+  tool_response_dict.Set("callId", "c0");
   tool_response_dict.Set("name", "no_such_tool");
   base::DictValue result;
   result.Set("arbitrary_field", "arbitrary_value");

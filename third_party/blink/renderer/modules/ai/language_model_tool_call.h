@@ -29,7 +29,7 @@ class MODULES_EXPORT LanguageModelToolCall final : public ScriptWrappable {
                         ScriptValue arguments);
 
   // IDL attributes.
-  const String& callID() const { return call_id_; }
+  const String& callId() const { return call_id_; }
   const String& name() const { return name_; }
   v8::Local<v8::Value> arguments(ScriptState* script_state) const;
 

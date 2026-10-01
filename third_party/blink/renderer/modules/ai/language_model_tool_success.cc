@@ -14,14 +14,14 @@ namespace blink {
 LanguageModelToolSuccess* LanguageModelToolSuccess::Create(
     LanguageModelToolSuccessInit* init,
     ExceptionState& exception_state) {
-  if (!init->hasCallID() || !init->hasName() || !init->hasResult()) {
+  if (!init->hasCallId() || !init->hasName() || !init->hasResult()) {
     exception_state.ThrowTypeError(
-        "LanguageModelToolSuccess requires callID, name, and result.");
+        "LanguageModelToolSuccess requires callId, name, and result.");
     return nullptr;
   }
 
   return MakeGarbageCollected<LanguageModelToolSuccess>(
-      init->callID(), init->name(), init->result());
+      init->callId(), init->name(), init->result());
 }
 
 LanguageModelToolSuccess::LanguageModelToolSuccess(

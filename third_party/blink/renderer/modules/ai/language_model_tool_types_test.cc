@@ -22,7 +22,7 @@ TEST(LanguageModelToolTypeTest, ToolCallConstructorAndAttributes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* init = LanguageModelToolCallInit::Create(scope.GetIsolate());
-  init->setCallID("call-123");
+  init->setCallId("call-123");
   init->setName("get_weather");
 
   // Create arguments object.
@@ -38,7 +38,7 @@ TEST(LanguageModelToolTypeTest, ToolCallConstructorAndAttributes) {
 
   ASSERT_FALSE(exception_state.HadException());
   ASSERT_NE(tool_call, nullptr);
-  EXPECT_EQ(tool_call->callID(), "call-123");
+  EXPECT_EQ(tool_call->callId(), "call-123");
   EXPECT_EQ(tool_call->name(), "get_weather");
 
   // Verify arguments can be retrieved and check content.
@@ -63,7 +63,7 @@ TEST(LanguageModelToolTypeTest, ToolCallWithoutArguments) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* init = LanguageModelToolCallInit::Create(scope.GetIsolate());
-  init->setCallID("call-456");
+  init->setCallId("call-456");
   init->setName("get_time");
   // No arguments set.
 
@@ -72,7 +72,7 @@ TEST(LanguageModelToolTypeTest, ToolCallWithoutArguments) {
 
   ASSERT_FALSE(exception_state.HadException());
   ASSERT_NE(tool_call, nullptr);
-  EXPECT_EQ(tool_call->callID(), "call-456");
+  EXPECT_EQ(tool_call->callId(), "call-456");
   EXPECT_EQ(tool_call->name(), "get_time");
 
   // Verify arguments is null.
@@ -85,7 +85,7 @@ TEST(LanguageModelToolTypeTest, ToolSuccessConstructorAndAttributes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* init = LanguageModelToolSuccessInit::Create(scope.GetIsolate());
-  init->setCallID("call-123");
+  init->setCallId("call-123");
   init->setName("get_weather");
 
   // Create result array with a text result.
@@ -106,7 +106,7 @@ TEST(LanguageModelToolTypeTest, ToolSuccessConstructorAndAttributes) {
 
   ASSERT_FALSE(exception_state.HadException());
   ASSERT_NE(tool_success, nullptr);
-  EXPECT_EQ(tool_success->callID(), "call-123");
+  EXPECT_EQ(tool_success->callId(), "call-123");
   EXPECT_EQ(tool_success->name(), "get_weather");
   EXPECT_EQ(tool_success->result().size(), 1u);
   EXPECT_EQ(tool_success->result()[0]->type().AsString(), "text");
@@ -122,7 +122,7 @@ TEST(LanguageModelToolTypeTest, ToolSuccessWithMultipleResults) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* init = LanguageModelToolSuccessInit::Create(scope.GetIsolate());
-  init->setCallID("call-789");
+  init->setCallId("call-789");
   init->setName("search");
 
   // Create multiple result items.
@@ -163,7 +163,7 @@ TEST(LanguageModelToolTypeTest, ToolErrorConstructorAndAttributes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* init = LanguageModelToolErrorInit::Create(scope.GetIsolate());
-  init->setCallID("call-error");
+  init->setCallId("call-error");
   init->setName("broken_tool");
   init->setErrorMessage("Tool execution failed: timeout");
 
@@ -172,7 +172,7 @@ TEST(LanguageModelToolTypeTest, ToolErrorConstructorAndAttributes) {
 
   ASSERT_FALSE(exception_state.HadException());
   ASSERT_NE(tool_error, nullptr);
-  EXPECT_EQ(tool_error->callID(), "call-error");
+  EXPECT_EQ(tool_error->callId(), "call-error");
   EXPECT_EQ(tool_error->name(), "broken_tool");
   EXPECT_EQ(tool_error->errorMessage(), "Tool execution failed: timeout");
 }

@@ -390,7 +390,7 @@ std::optional<std::string> EchoAILanguageModel::PromptsToText(
 
 std::optional<std::string> EchoAILanguageModel::ExtractToolCallText(
     const base::DictValue& tool_call_dict) {
-  if (!tool_call_dict.FindString("callID") ||
+  if (!tool_call_dict.FindString("callId") ||
       !tool_call_dict.FindString("name") ||
       !tool_call_dict.FindDict("arguments")) {
     return std::nullopt;
@@ -405,7 +405,7 @@ std::optional<std::string> EchoAILanguageModel::ExtractToolCallText(
 
 std::optional<std::string> EchoAILanguageModel::ExtractToolResponseText(
     const base::DictValue& tool_response_dict) {
-  if (!tool_response_dict.FindString("callID") ||
+  if (!tool_response_dict.FindString("callId") ||
       !tool_response_dict.FindString("name") ||
       (!tool_response_dict.FindList("result") &&
        !tool_response_dict.FindString("errorMessage"))) {

@@ -13,9 +13,9 @@ namespace blink {
 LanguageModelToolCall* LanguageModelToolCall::Create(
     LanguageModelToolCallInit* init,
     ExceptionState& exception_state) {
-  if (!init->hasCallID() || !init->hasName()) {
+  if (!init->hasCallId() || !init->hasName()) {
     exception_state.ThrowTypeError(
-        "LanguageModelToolCall requires callID and name.");
+        "LanguageModelToolCall requires callId and name.");
     return nullptr;
   }
 
@@ -24,7 +24,7 @@ LanguageModelToolCall* LanguageModelToolCall::Create(
     arguments = init->arguments();
   }
 
-  return MakeGarbageCollected<LanguageModelToolCall>(init->callID(),
+  return MakeGarbageCollected<LanguageModelToolCall>(init->callId(),
                                                      init->name(), arguments);
 }
 

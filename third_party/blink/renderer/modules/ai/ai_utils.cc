@@ -476,7 +476,7 @@ HeapVector<Member<LanguageModelMessageContent>> ConvertMojoToolCallsToMessages(
 
     // Create init dictionary for the interface.
     auto* tool_call_init = LanguageModelToolCallInit::Create();
-    tool_call_init->setCallID(tc->call_id);
+    tool_call_init->setCallId(tc->call_id);
     tool_call_init->setName(tc->name);
     ScriptObject arguments_object(isolate, arguments_v8);
     tool_call_init->setArguments(arguments_object);

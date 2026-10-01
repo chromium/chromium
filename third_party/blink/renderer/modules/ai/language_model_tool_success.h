@@ -30,7 +30,7 @@ class MODULES_EXPORT LanguageModelToolSuccess final : public ScriptWrappable {
       const HeapVector<Member<LanguageModelToolResultContent>>& result);
 
   // IDL attributes.
-  const String& callID() const { return call_id_; }
+  const String& callId() const { return call_id_; }
   const String& name() const { return name_; }
   const HeapVector<Member<LanguageModelToolResultContent>>& result() const {
     return result_;

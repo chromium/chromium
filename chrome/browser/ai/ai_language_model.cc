@@ -62,7 +62,7 @@ using ::on_device_model::mojom::ToolResponsePtr;
 using ::optimization_guide::proto::PromptApiMetadata;
 
 ToolCallPtr GetToolCallFromDict(const base::DictValue& dict) {
-  const std::string* call_id = dict.FindString("callID");
+  const std::string* call_id = dict.FindString("callId");
   const std::string* name = dict.FindString("name");
   const base::DictValue* arguments = dict.FindDict("arguments");
   if (!call_id || !name || !arguments) {
@@ -73,12 +73,12 @@ ToolCallPtr GetToolCallFromDict(const base::DictValue& dict) {
 }
 
 ToolResponsePtr GetToolResponseFromDict(const base::DictValue& dict) {
-  const std::string* call_id = dict.FindString("callID");
+  const std::string* call_id = dict.FindString("callId");
   const std::string* name = dict.FindString("name");
   const base::Value* result = dict.Find("result");
   const std::string* error_message = dict.FindString("errorMessage");
 
-  // Validate: callID and name required; exactly one of result or errorMessage.
+  // Validate: callId and name required; exactly one of result or errorMessage.
   if (!call_id || !name || (result && error_message) ||
       (!result && !error_message)) {
     return nullptr;

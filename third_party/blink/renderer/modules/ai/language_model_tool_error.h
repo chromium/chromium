@@ -27,7 +27,7 @@ class MODULES_EXPORT LanguageModelToolError final : public ScriptWrappable {
                          const String& error_message);
 
   // IDL attributes.
-  const String& callID() const { return call_id_; }
+  const String& callId() const { return call_id_; }
   const String& name() const { return name_; }
   const String& errorMessage() const { return error_message_; }
 

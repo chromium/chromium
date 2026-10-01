@@ -74,13 +74,13 @@ dictionary LanguageModelToolResultContent {
 ]
 interface LanguageModelToolCall {
   [RaisesException] constructor(LanguageModelToolCallInit init);
-  readonly attribute DOMString callID;
+  readonly attribute DOMString callId;
   readonly attribute DOMString name;
   [CallWith=ScriptState] readonly attribute object? arguments;
 };
 
 dictionary LanguageModelToolCallInit {
-  required DOMString callID;
+  required DOMString callId;
   required DOMString name;
   object arguments;
 };
@@ -93,13 +93,13 @@ dictionary LanguageModelToolCallInit {
 ]
 interface LanguageModelToolSuccess {
   [RaisesException] constructor(LanguageModelToolSuccessInit init);
-  readonly attribute DOMString callID;
+  readonly attribute DOMString callId;
   readonly attribute DOMString name;
   readonly attribute FrozenArray<LanguageModelToolResultContent> result;
 };
 
 dictionary LanguageModelToolSuccessInit {
-  required DOMString callID;
+  required DOMString callId;
   required DOMString name;
   required sequence<LanguageModelToolResultContent> result;
 };
@@ -112,13 +112,13 @@ dictionary LanguageModelToolSuccessInit {
 ]
 interface LanguageModelToolError {
   [RaisesException] constructor(LanguageModelToolErrorInit init);
-  readonly attribute DOMString callID;
+  readonly attribute DOMString callId;
   readonly attribute DOMString name;
   readonly attribute DOMString errorMessage;
 };
 
 dictionary LanguageModelToolErrorInit {
-  required DOMString callID;
+  required DOMString callId;
   required DOMString name;
   required DOMString errorMessage;
 };
