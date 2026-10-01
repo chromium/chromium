@@ -19,6 +19,15 @@
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include <vector>
+
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_chromeos.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -65,6 +74,23 @@ constexpr std::string_view kManifestWithUnsanitizedShortcuts = R"(
                 "global": true
               }
             })";
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr std::string_view kManifestWithGlobalCommands = R"(
+            "manifest_version": 3,
+            "version": "1",
+            "commands": {
+              "global_command": {
+                "suggested_key": { "default": "Ctrl+Shift+7" },
+                "description": "global",
+                "global": true
+              },
+              "global_media_key_command": {
+                "suggested_key": { "default": "MediaPlayPause" },
+                "description": "global media key",
+                "global": true
+              }
+            })";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
  public:
@@ -147,6 +173,45 @@ class TestExtensionCommandsGlobalRegistry
  private:
   raw_ptr<ui::GlobalAcceleratorListener> global_shortcut_listener_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Stands in for Ash's AcceleratorControllerImpl, which becomes the delegate of
+// the ChromeOS GlobalAcceleratorListener before the initial profile is created.
+class ScopedFakeGlobalAcceleratorListenerChromeOSDelegate
+    : public ui::GlobalAcceleratorListenerChromeOS::Delegate {
+ public:
+  ScopedFakeGlobalAcceleratorListenerChromeOSDelegate() {
+    ui::GlobalAcceleratorListenerChromeOS::SetDelegate(this);
+  }
+  ScopedFakeGlobalAcceleratorListenerChromeOSDelegate(
+      const ScopedFakeGlobalAcceleratorListenerChromeOSDelegate&) = delete;
+  ScopedFakeGlobalAcceleratorListenerChromeOSDelegate& operator=(
+      const ScopedFakeGlobalAcceleratorListenerChromeOSDelegate&) = delete;
+  ~ScopedFakeGlobalAcceleratorListenerChromeOSDelegate() override {
+    ui::GlobalAcceleratorListenerChromeOS::SetDelegate(nullptr);
+  }
+
+  // ui::GlobalAcceleratorListenerChromeOS::Delegate:
+  void Register(const std::vector<ui::Accelerator>& accelerators,
+                ui::AcceleratorTarget* target) override {
+    registered_count_ += accelerators.size();
+  }
+  void Unregister(const ui::Accelerator& accelerator,
+                  ui::AcceleratorTarget* target) override {}
+  void UnregisterAll(ui::AcceleratorTarget* target) override {}
+  bool IsReserved(const ui::Accelerator& accelerator) const override {
+    return false;
+  }
+  bool IsRegistered(const ui::Accelerator& accelerator) const override {
+    return false;
+  }
+
+  size_t registered_count() const { return registered_count_; }
+
+ private:
+  size_t registered_count_ = 0;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ExtensionCommandsGlobalRegistryTest : public ExtensionServiceTestBase {
  public:
@@ -310,6 +375,43 @@ TEST_F(ExtensionCommandsGlobalRegistryTest,
   ASSERT_NE(it_hijack, commands.end());
   EXPECT_EQ(ui::VKEY_UNKNOWN, it_hijack->second.accelerator().key_code());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that global commands aren't registered on ChromeOS, where they're not
+// supported, even though a GlobalAcceleratorListener is available. Regression
+// test for crbug.com/562134230: registering a global media key command while
+// the initial profile was being created crashed because Ash's MediaClientImpl
+// didn't exist yet.
+TEST_F(ExtensionCommandsGlobalRegistryTest,
+       GlobalCommandsAreNotRegisteredOnChromeOS) {
+  ScopedFakeGlobalAcceleratorListenerChromeOSDelegate ash_delegate;
+
+  // Use a registry with the default GlobalAcceleratorListener instead of the
+  // fake one.
+  ResetRegistry();
+  auto registry = std::make_unique<ExtensionCommandsGlobalRegistry>(profile());
+
+  auto extension =
+      BuildAndEnableExtension("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+                              std::string(kManifestWithGlobalCommands));
+  ASSERT_TRUE(extension);
+  UpdateKeybindings(extension.get());
+
+  // The global commands are assigned their keybindings...
+  ui::CommandMap global_commands;
+  EXPECT_TRUE(CommandService::Get(profile())->GetNamedCommands(
+      extension->id(), CommandService::ACTIVE, CommandService::GLOBAL,
+      &global_commands));
+  EXPECT_EQ(2u, global_commands.size());
+
+  // ...but the keybindings aren't registered.
+  EXPECT_FALSE(registry->IsAcceleratorRegistered(
+      ui::Accelerator(ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)));
+  EXPECT_FALSE(registry->IsAcceleratorRegistered(
+      ui::Accelerator(ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE)));
+  EXPECT_EQ(0u, ash_delegate.registered_count());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
