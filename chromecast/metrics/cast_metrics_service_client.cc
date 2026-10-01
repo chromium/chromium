@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -158,7 +158,7 @@ int32_t CastMetricsServiceClient::GetProduct() {
 }
 
 std::string CastMetricsServiceClient::GetApplicationLocale() {
-  return base::i18n::GetConfiguredLocale();
+  return std::string(base::i18n::GetDefaultIcuLocale().tag_string());
 }
 
 const network_time::NetworkTimeTracker*
