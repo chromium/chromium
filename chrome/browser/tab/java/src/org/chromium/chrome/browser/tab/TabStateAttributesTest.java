@@ -27,13 +27,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -195,33 +193,42 @@ public class TabStateAttributesTest {
         for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
             observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
+        // onLoadStopped while CLEAN should neither change the state nor schedule a save.
+        ShadowLooper.idleMainLooper(
+                TabStateAttributes.DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS, TimeUnit.MILLISECONDS);
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
-        RobolectricUtil.runAllBackgroundAndUi();
         getAttributes().setStateForTesting(DirtinessState.UNTIDY);
         for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
             observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
-        assertEquals(1, Robolectric.getForegroundThreadScheduler().size());
 
-        // An additional call to onLoadStopped should not change the state, nor should another
-        // task be queued.
+        long halfDelayMs = TabStateAttributes.DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS / 2;
+        ShadowLooper.idleMainLooper(halfDelayMs, TimeUnit.MILLISECONDS);
+        assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
+
+        // An additional call to onLoadStopped should not change the state, reset the delay, nor
+        // queue another task.
         for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
             observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
-        assertEquals(1, Robolectric.getForegroundThreadScheduler().size());
 
-        Robolectric.getForegroundThreadScheduler()
-                .advanceBy(
-                        TabStateAttributes.DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS,
-                        TimeUnit.MILLISECONDS);
+        // The first save still runs at the original delay.
+        ShadowLooper.idleMainLooper(
+                TabStateAttributes.DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS - halfDelayMs,
+                TimeUnit.MILLISECONDS);
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
-        assertEquals(0, Robolectric.getForegroundThreadScheduler().size());
+
+        // Make the state UNTIDY again, so that a second save, which would be due half a delay
+        // later, would mark it DIRTY and notify the observer.
+        getAttributes().setStateForTesting(DirtinessState.UNTIDY);
+        ShadowLooper.idleMainLooper(halfDelayMs, TimeUnit.MILLISECONDS);
+        verifyNoMoreInteractions(mAttributesObserver);
     }
 
     @Test
