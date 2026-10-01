@@ -2424,4 +2424,30 @@ suite('NonEditable', () => {
     assertEquals(7, tiles.length);
     tiles.forEach(el => assertFalse(el.hidden));
   });
+
+  [false, true].forEach(hideTitle => {
+    test(
+        `focused tile link highlights circular tile icon, hideTitle=${
+            hideTitle}`,
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          await setUpTest({
+            nonEditable: true,
+            hideTitle,
+          });
+          mostVisited.style.setProperty(
+              '--most-visited-focus-shadow', 'rgb(26, 115, 232) 0px 0px 0px 2px');
+          document.documentElement.classList.add('focus-outline-visible');
+          await addTiles(1, /*customLinksEnabled=*/ false);
+          const tile = queryTiles()[0]!;
+          const tileLink = tile.querySelector<HTMLElement>('a')!;
+          const tileIcon = tile.querySelector<HTMLElement>('.tile-icon')!;
+
+          tileLink.focus();
+          assertEquals('none', getComputedStyle(tileLink).boxShadow);
+          assertEquals(
+              'rgb(26, 115, 232) 0px 0px 0px 2px',
+              getComputedStyle(tileIcon).boxShadow);
+        });
+  });
 });
