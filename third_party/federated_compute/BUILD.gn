@@ -340,10 +340,14 @@ source_set("confidential_compute_crypto_test_util") {
 
   public_configs = [ ":federated_compute_include" ]
 
+  public_deps = [
+    ":confidential_compute_proto",
+    "//third_party/abseil-cpp:absl",
+  ]
+
   deps = [
     ":base",
     ":confidential_compute",
-    "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
   ]
 }

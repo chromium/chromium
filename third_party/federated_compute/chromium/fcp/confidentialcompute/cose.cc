@@ -1000,10 +1000,7 @@ absl::StatusOr<std::string> ReleaseToken::Encode() const {
 template struct cose_internal::BaseCwt<OkpKey>;
 template struct cose_internal::BaseCwt<Ec2Key>;
 
-absl::StatusOr<std::string> SymmetricKey::Encode(
-    bool _encode_without_libcppbor) const {
-  // Note: we're not using libcppbor in Chromium anyway, so just use cbor.
-
+absl::StatusOr<std::string> SymmetricKey::Encode() const {
   cbor::Value::MapValue map;
   map.emplace(CoseKeyParameter::kKty, CoseKeyType::kSymmetric);
   if (algorithm) {
