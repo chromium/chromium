@@ -851,15 +851,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
 
   gfx::DXGIHandle dxgi_handle = std::move(handle).dxgi_handle();
-  // This shouldn't happen as the GpuMemoryBufferHandle constructor that takes a
-  // DXGIHandle asserts the handle is valid. However, it is currently possible
-  // for code to set the type to DXGI_SHARED_HANDLE directly but never actually
-  // set the handle. Make this an eventual CHECK() but handle this gracefully
-  // for now just in case.
-  CHECK(dxgi_handle.IsValid(), base::NotFatalUntil::M138);
-  if (!dxgi_handle.IsValid()) {
-    return nullptr;
-  }
+  CHECK(dxgi_handle.IsValid());
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
           dxgi_handle.token(), dxgi_handle.TakeBufferHandle(), d3d11_device_);
