@@ -153,6 +153,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void OpenTopic(
       browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
   void OpenGlicPanel(const std::vector<std::string>& prompts) override;
+  void RunTodoTask(const std::string& prompt,
+                   RunTodoTaskCallback callback) override;
 
  private:
   mojo::Remote<browser::context_hub::mojom::Page> page_;

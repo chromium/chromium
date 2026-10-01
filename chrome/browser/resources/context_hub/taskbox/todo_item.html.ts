@@ -10,6 +10,7 @@ import type {TodoItemElement} from './todo_item.js';
 import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: TodoItemElement) {
+  // clang-format off
   return html`
 ${this.variant === TodoItemVariant.TAB ?
       html`
@@ -102,8 +103,23 @@ ${this.variant === TodoItemVariant.TAB ?
           <p class="description">${this.description}</p>
         </div>
         <div class="todo-actions" @click="${this.onActionsClick_}">
-          <cr-button class="tonal-button"
-              @click="${this.onOpenTabClick_}">Open tab</cr-button>
+          ${this.canActOnWeb_ ? html`
+            <div class="split-button">
+              <cr-button class="tonal-button split-main-button"
+                  @click="${this.onOpenTabClick_}">Open tab</cr-button>
+              <cr-button class="tonal-button split-dropdown-button"
+                  id="taskDropdownButton"
+                  aria-label="More task actions"
+                  title="More task actions"
+                  aria-haspopup="menu"
+                  @click="${this.onTaskMenuClick_}">
+                <cr-icon icon="cr:arrow-drop-down"></cr-icon>
+              </cr-button>
+            </div>
+          ` : html`
+            <cr-button class="tonal-button"
+                @click="${this.onOpenTabClick_}">Open tab</cr-button>
+          `}
           <div class="thumb-group">
             <cr-icon-button id="thumbsUp"
                 iron-icon="${this.getThumbsUpIcon_()}"
@@ -121,6 +137,16 @@ ${this.variant === TodoItemVariant.TAB ?
         </div>
       </div>
     </cr-expand-button>
+    ${this.canActOnWeb_ ? html`
+      <cr-action-menu id="taskMenu">
+        <button class="dropdown-item" @click="${this.onOpenTabClick_}">
+          Open tab
+        </button>
+        <button class="dropdown-item" @click="${this.onRunTaskClick_}">
+          Run task
+        </button>
+      </cr-action-menu>
+    ` : ''}
     ${
           this.expanded_ ? html`
       <div class="expanded-content">
@@ -150,4 +176,5 @@ ${this.variant === TodoItemVariant.TAB ?
     ` :
                            ''}
   `}`;
+  // clang-format on
 }

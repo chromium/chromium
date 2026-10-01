@@ -150,6 +150,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "HistoryPageChatLinkout";
     case mojom::InvocationSource::kContextHubTopics:
       return "ContextHubTopics";
+    case mojom::InvocationSource::kContextHubAutoTodos:
+      return "ContextHubAutoTodos";
   }
 }
 

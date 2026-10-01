@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
@@ -59,6 +60,7 @@ export class TodoItemElement extends CrLitElement {
       liked: {type: Boolean},
       variant: {type: String},
       disable_state_mgmt: {type: Boolean},
+      canActOnWeb_: {type: Boolean},
     };
   }
 
@@ -76,6 +78,9 @@ export class TodoItemElement extends CrLitElement {
   accessor liked: boolean|null = null;
   accessor variant: TodoItemVariant = TodoItemVariant.DEFAULT;
   accessor disable_state_mgmt: boolean = false;
+  protected accessor canActOnWeb_: boolean =
+      loadTimeData.valueExists('can_act_on_web') &&
+      loadTimeData.getBoolean('can_act_on_web');
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
@@ -217,8 +222,15 @@ export class TodoItemElement extends CrLitElement {
         e.currentTarget as HTMLElement);
   }
 
+  protected onTaskMenuClick_(e: Event) {
+    e.stopPropagation();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')
+        ?.showAt(e.currentTarget as HTMLElement);
+  }
+
   protected onOpenTabClick_(e: Event) {
     e.stopPropagation();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
     if (this.variant === TodoItemVariant.TAB) {
       if (this.tabId !== null) {
         browserProxyFactory.getInstance().handler.switchToTab(this.tabId);
@@ -228,6 +240,24 @@ export class TodoItemElement extends CrLitElement {
 
     if (this.actionableUrl) {
       window.open(this.actionableUrl, '_blank');
+    }
+  }
+
+  protected async onRunTaskClick_(e: Event) {
+    e.stopPropagation();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
+    if (this.variant === TodoItemVariant.TAB) {
+      return;
+    }
+
+    const prompt =
+        `${this.heading} ${this.actionableUrl} If you need more information ` +
+        `to complete your task or if you have any questions, ask.`;
+
+    try {
+      await browserProxyFactory.getInstance().handler.runTodoTask(prompt);
+    } catch (err) {
+      console.error('Failed to run todo task:', err);
     }
   }
 

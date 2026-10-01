@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"             // nogncheck
 #include "chrome/browser/glic/public/glic_invoke_options.h"       // nogncheck
 #include "chrome/browser/glic/public/glic_keyed_service.h"        // nogncheck
+#include "chrome/browser/glic/public/glic_passkeys.h"             // nogncheck
 #include "chrome/browser/ui/webui/context_hub/context_hub_tab_provider_desktop.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"  // nogncheck
@@ -1038,5 +1039,47 @@ void ContextHubPageHandler::OpenGlicPanel(
   }
 
   glic_service->Invoke(std::move(options));
+#endif
+}
+
+void ContextHubPageHandler::RunTodoTask(const std::string& prompt,
+                                        RunTodoTaskCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (prompt.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  glic::GlicKeyedService* glic_service = GetGlicServiceIfEnabled(profile_);
+  if (!glic_service || !web_contents_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (!tab) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::mojom::InvocationSource::kContextHubAutoTodos);
+  options.prompts.push_back(prompt);
+  options.target.conversation = glic::NewConversation();
+  options.feature_mode = glic::mojom::FeatureMode::kActuation;
+  options.target.actuation_target = glic::mojom::ActuationTarget::kAgentDecides;
+  options.target.surface =
+      glic::DefaultSurface{tab->GetBrowserWindowInterface()};
+
+  glic::GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.show_panel = true;
+
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options), std::move(auto_submit_options));
+  std::move(callback).Run(true);
+#else
+  std::move(callback).Run(false);
 #endif
 }

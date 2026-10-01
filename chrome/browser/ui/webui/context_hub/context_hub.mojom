@@ -462,4 +462,9 @@ interface PageHandler {
   // unavailable for the profile or if the page is not hosted in a tab.
   [RuntimeFeature=kTopics]
   OpenGlicPanel(array<string> prompts);
+
+  // Invokes Glic with auto-submit in actuation (AutoBrowse) mode to execute
+  // `prompt`.
+  [RuntimeFeature=kAutoTodos]
+  RunTodoTask(string prompt) => (bool success);
 };

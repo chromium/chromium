@@ -168,6 +168,8 @@ enum InvocationSource {
   [MinVersion=29] kHistoryPageChatLinkout = 43,
   // From the Context Hub topics UI.
   [MinVersion=30] kContextHubTopics = 44,
+  // From the Context Hub AutoTodos UI.
+  [MinVersion=31] kContextHubAutoTodos = 45,
 };
 
 // LINT.ThenChange(

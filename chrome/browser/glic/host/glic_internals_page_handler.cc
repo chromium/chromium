@@ -280,6 +280,8 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kHistoryPageChatLinkout";
     case glic::mojom::InvocationSource::kContextHubTopics:
       return "kContextHubTopics";
+    case glic::mojom::InvocationSource::kContextHubAutoTodos:
+      return "kContextHubAutoTodos";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);

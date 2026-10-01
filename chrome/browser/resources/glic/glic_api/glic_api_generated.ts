@@ -723,6 +723,8 @@ export enum InvocationSource {
   HISTORY_PAGE_CHAT_LINKOUT = 43,
   // From the Context Hub topics UI.
   CONTEXT_HUB_TOPICS = 44,
+  // From the Context Hub AutoTodos UI.
+  CONTEXT_HUB_AUTO_TODOS = 45,
 }
 
 // Target for actuation.

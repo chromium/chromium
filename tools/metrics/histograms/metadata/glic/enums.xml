@@ -697,6 +697,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Web Continuity"/>
   <int value="43" label="History page chat linkout"/>
   <int value="44" label="Context Hub topics"/>
+  <int value="45" label="Context Hub AutoTodos"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
@@ -1210,6 +1211,10 @@ chromium-metrics-reviews@google.com.
   <int value="178" label="Context Hub topics, attached, audio mode."/>
   <int value="179" label="Context Hub topics, detached, text mode."/>
   <int value="180" label="Context Hub topics, detached, audio mode."/>
+  <int value="181" label="Context Hub AutoTodos, attached, text mode."/>
+  <int value="182" label="Context Hub AutoTodos, attached, audio mode."/>
+  <int value="183" label="Context Hub AutoTodos, detached, text mode."/>
+  <int value="184" label="Context Hub AutoTodos, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

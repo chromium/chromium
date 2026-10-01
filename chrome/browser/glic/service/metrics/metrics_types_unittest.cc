@@ -37,6 +37,9 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
   EXPECT_EQ(
       "ContextHubTopics",
       GetInvocationSourceString(mojom::InvocationSource::kContextHubTopics));
+  EXPECT_EQ(
+      "ContextHubAutoTodos",
+      GetInvocationSourceString(mojom::InvocationSource::kContextHubAutoTodos));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -129,6 +132,12 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
             GetResponseSegmentation(
                 /*attached=*/true, mojom::WebClientMode::kText,
                 mojom::InvocationSource::kContextHubTopics));
+
+  // ContextHubAutoTodos Attached Text
+  EXPECT_EQ(ResponseSegmentation::kContextHubAutoTodosAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kContextHubAutoTodos));
 }
 
 }  // namespace

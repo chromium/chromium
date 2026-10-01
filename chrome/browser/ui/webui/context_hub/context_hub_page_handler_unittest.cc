@@ -2713,6 +2713,23 @@ class ContextHubPageHandlerGlicTest : public ChromeRenderViewHostTestHarness {
         });
   }
 
+  // Arranges for the next 3-arg InvokeWithAutoSubmit() to be recorded in
+  // `captured_options_` and `captured_auto_submit_options_`.
+  void ExpectInvokeWithAutoSubmitCapturingOptions() {
+    EXPECT_CALL(
+        *mock_glic_service(),
+        InvokeWithAutoSubmit(
+            _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+        .WillOnce(
+            [this](glic::InvokeWithAutoSubmitPasskey,
+                   glic::GlicInvokeOptions options,
+                   glic::GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+              captured_options_ = std::move(options);
+              captured_auto_submit_options_ = std::move(auto_submit_options);
+              return base::WeakPtr<glic::GlicInstance>();
+            });
+  }
+
   // Reports an already-open panel bound to this tab.
   void SimulatePanelAlreadyShowing() {
     ON_CALL(showing_instance_, IsShowing())
@@ -2730,6 +2747,8 @@ class ContextHubPageHandlerGlicTest : public ChromeRenderViewHostTestHarness {
   MockPage page_;
   std::unique_ptr<ContextHubPageHandler> handler_;
   std::optional<glic::GlicInvokeOptions> captured_options_;
+  std::optional<glic::GlicInvokeWithAutoSubmitOptions>
+      captured_auto_submit_options_;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -2847,6 +2866,77 @@ TEST_F(ContextHubPageHandlerGlicTest, NoOpWhenNotHostedInTab) {
   EXPECT_CALL(*mock_glic_service(), Invoke(_)).Times(0);
 
   handler_->OpenGlicPanel({"Catch me up on Topic"});
+}
+
+TEST_F(ContextHubPageHandlerGlicTest, RunTodoTaskInvokesGlicWithAutoSubmit) {
+  AttachWebContentsToTab();
+  ExpectInvokeWithAutoSubmitCapturingOptions();
+
+  base::test::TestFuture<bool> future;
+  handler_->RunTodoTask(
+      "Perform the following task: Reply to Alice\nDetails: Confirm Q3 roadmap",
+      future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  ASSERT_TRUE(captured_options_.has_value());
+  EXPECT_EQ(captured_options_->GetInvocationSource(),
+            glic::mojom::InvocationSource::kContextHubAutoTodos);
+  EXPECT_THAT(
+      captured_options_->prompts,
+      testing::ElementsAre("Perform the following task: Reply to Alice\n"
+                           "Details: Confirm Q3 roadmap"));
+  EXPECT_EQ(captured_options_->feature_mode,
+            glic::mojom::FeatureMode::kActuation);
+  EXPECT_EQ(captured_options_->target.actuation_target,
+            glic::mojom::ActuationTarget::kAgentDecides);
+  EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+      captured_options_->target.conversation));
+  EXPECT_TRUE(std::holds_alternative<glic::DefaultSurface>(
+      captured_options_->target.surface));
+
+  ASSERT_TRUE(captured_auto_submit_options_.has_value());
+  EXPECT_TRUE(captured_auto_submit_options_->show_panel);
+}
+
+TEST_F(ContextHubPageHandlerGlicTest, RunTodoTaskFailsWhenPromptEmpty) {
+  AttachWebContentsToTab();
+  EXPECT_CALL(
+      *mock_glic_service(),
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->RunTodoTask("", future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerGlicTest,
+       RunTodoTaskFailsWhenGlicDisabledForProfile) {
+  AttachWebContentsToTab();
+  scoped_glic_bypass_.reset();
+
+  EXPECT_CALL(
+      *mock_glic_service(),
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->RunTodoTask("Task: Reply to Alice", future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerGlicTest, RunTodoTaskFailsWhenNotHostedInTab) {
+  EXPECT_CALL(
+      *mock_glic_service(),
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->RunTodoTask("Task: Reply to Alice", future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 #endif
 
