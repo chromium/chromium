@@ -175,6 +175,11 @@ base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
     tmx2_path.value(),
     "-L", std::string(kTmuxSocketName),
     "set-option", "-s", "terminal-overrides", "xterm*:smcup@:rmcup@", ";",
+    // Tell tmux the outer terminal (xterm.js) supports OSC 8 hyperlinks so
+    // that they are forwarded to the client instead of being stripped. Use an
+    // explicit array index so that repeated launches against the same tmux
+    // server don't keep appending duplicate entries.
+    "set-option", "-s", "terminal-features[1000]", "xterm*:hyperlinks", ";",
     "new-session", "-A", "-s", GetTmuxSessionName(id),
     "-e", base::StrCat({"CRD_TERMINAL_ID=", base::NumberToString(id)}),
     "-e", "CLI_GRAPHICS=iterm2", ";",
