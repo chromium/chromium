@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingMathMlDistillationStatus, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 // Test version of the BrowserProxy used in connecting Reading Mode to
@@ -20,6 +20,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordLanguage',
       'recordLineFocusSession',
       'recordLineFocusToggled',
+      'recordMathMlDistillationStatus',
       'recordNewPage',
       'recordNewPageWithSpeech',
       'recordSpeechError',
@@ -139,6 +140,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordBoolean(umaName: string, value: boolean) {
     this.methodCalled('recordBoolean', umaName, value);
+  }
+
+  recordMathMlDistillationStatus(status: ReadAnythingMathMlDistillationStatus) {
+    this.methodCalled('recordMathMlDistillationStatus', status);
   }
 
   updateWordsSeen(wordsSeen: number): void {

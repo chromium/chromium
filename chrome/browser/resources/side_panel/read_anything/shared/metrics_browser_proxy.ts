@@ -37,7 +37,37 @@ export enum UmaName {
   VOICE_LANGUAGE_CHANGE =
       'Accessibility.ReadAnything.ReadAloud.VoiceLanguageChange',
   VOICE_SPEED = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
+  MATHML_DISTILLATION_STATUS =
+      'Accessibility.ReadAnything.MathML.DistillationStatus',
+  MATHML_PRESENT_ON_PAGE = 'Accessibility.ReadAnything.MathML.PresentOnPage',
 }
+
+// Enum for logging MathML distillation status. Recorded once per distilled page
+// when at least one MathML element is present on the original page.
+//
+// Categorizes how math formulas were captured in the distilled Reading Mode
+// DOM:
+// - ONLY_MATHML: only native <math> elements were captured.
+// - MIXED_MATHML_AND_FALLBACK: both native <math> and fallbacks were captured.
+// - ONLY_FALLBACK: only math fallbacks (images with LaTeX/math class, or math
+// containers) were captured.
+// - NOT_DISTILLED_*: no math was captured in Reading Mode.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingMathMlDistillationStatus)
+export enum ReadAnythingMathMlDistillationStatus {
+  ONLY_MATHML = 0,
+  MIXED_MATHML_AND_FALLBACK = 1,
+  ONLY_FALLBACK = 2,
+  NOT_DISTILLED_READABILITY = 3,
+  NOT_DISTILLED_SCREEN2X = 4,
+
+  // Must be last.
+  COUNT = 5,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingMathMlDistillationStatus)
 
 // Enum for logging when we play speech on a page.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -187,6 +217,8 @@ export interface MetricsBrowserProxy {
   recordExtensionState(): void;
   recordCount(umaName: string, count: number): void;
   recordBoolean(umaName: string, value: boolean): void;
+  recordMathMlDistillationStatus(status: ReadAnythingMathMlDistillationStatus):
+      void;
   updateWordsSeen(wordsSeen: number): void;
   updateWordsHeard(wordsHeard: number): void;
   startLineFocusSession(): void;
@@ -318,6 +350,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordBoolean(umaName: string, value: boolean) {
     chrome.metricsPrivate.recordBoolean(umaName, value);
+  }
+
+  recordMathMlDistillationStatus(status: ReadAnythingMathMlDistillationStatus):
+      void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        UmaName.MATHML_DISTILLATION_STATUS, status,
+        ReadAnythingMathMlDistillationStatus.COUNT);
   }
 
   updateWordsSeen(wordsSeen: number): void {

@@ -2347,6 +2347,18 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineSpacing) -->
 
+<!-- LINT.IfChange(ReadAnythingMathMlDistillationStatus) -->
+
+<enum name="ReadAnythingMathMlDistillationStatus">
+  <int value="0" label="Only MathML"/>
+  <int value="1" label="Mixed (MathML and fallback)"/>
+  <int value="2" label="Only fallback"/>
+  <int value="3" label="Not distilled (Readability)"/>
+  <int value="4" label="Not distilled (Screen2x)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingMathMlDistillationStatus) -->
+
 <!-- LINT.IfChange(ReadAnythingNewPage) -->
 
 <enum name="ReadAnythingNewPage">

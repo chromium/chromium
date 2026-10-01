@@ -359,8 +359,13 @@ ReadAnythingAppModel::GetOriginalPageMetrics() const {
   OriginalPageMetrics metrics;
   for (ui::AXNode* node = active_tree->root(); node;
        node = node->GetNextUnignoredInTreeOrder()) {
-    if (IsNodeLikelyKeyPoints(node)) {
+    if (!metrics.has_mathml && ui::IsMath(node->GetRole())) {
+      metrics.has_mathml = true;
+    }
+    if (!metrics.maybe_has_key_points && IsNodeLikelyKeyPoints(node)) {
       metrics.maybe_has_key_points = true;
+    }
+    if (metrics.has_mathml && metrics.maybe_has_key_points) {
       break;
     }
   }

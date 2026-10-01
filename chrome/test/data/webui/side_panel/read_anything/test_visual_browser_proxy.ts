@@ -54,6 +54,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   activePresentationState: number = 1;
   pdf: boolean = false;
   originalPageMetrics: OriginalPageMetrics = {
+    hasMathML: false,
     maybeHasKeyPoints: false,
   };
   keyPointsRegex: string = 'key points|summary|the bottom line|why it matters';

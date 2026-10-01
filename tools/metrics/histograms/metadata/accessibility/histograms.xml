@@ -3464,6 +3464,29 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.MathML.DistillationStatus"
+    enum="ReadAnythingMathMlDistillationStatus" expires_after="2027-03-01">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the distillation status of math on a page that was detected to have
+    at least one MathML element on the original web page. Recorded when the page
+    structure metrics are logged for a distilled page in Reading Mode.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.MathML.PresentOnPage"
+    enum="Boolean" expires_after="2027-03-01">
+  <owner>lwinston@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether at least one MathML element was detected on the original web
+    page. Recorded for every distilled page in Reading Mode when page structure
+    metrics are logged, allowing comparison of pages containing math versus
+    pages without math.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.NewPage" enum="ReadAnythingNewPage"
     expires_after="2027-02-07">
   <owner>kristislee@google.com</owner>

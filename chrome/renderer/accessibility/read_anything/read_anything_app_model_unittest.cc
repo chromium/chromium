@@ -61,6 +61,7 @@ TEST_F(ReadAnythingAppModelNoInitTest,
        GetOriginalPageMetrics_EmptyBeforeTreeInitialization) {
   ReadAnythingAppModel::OriginalPageMetrics metrics =
       model().GetOriginalPageMetrics();
+  EXPECT_FALSE(metrics.has_mathml);
   EXPECT_FALSE(metrics.maybe_has_key_points);
 }
 
@@ -2714,7 +2715,10 @@ TEST_F(ReadAnythingAppModelTest,
   ApplyAccessibilityUpdates(tree_id_, {update});
   model().SetActiveTreeId(tree_id_);
 
-  EXPECT_TRUE(model().GetOriginalPageMetrics().maybe_has_key_points);
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.maybe_has_key_points);
+  EXPECT_FALSE(metrics.has_mathml);
 }
 
 TEST_F(ReadAnythingAppModelTest, GetOriginalPageMetrics_ReturnsFalseForH1) {
@@ -2738,7 +2742,181 @@ TEST_F(ReadAnythingAppModelTest, GetOriginalPageMetrics_ReturnsFalseForH1) {
   ApplyAccessibilityUpdates(tree_id_, {update});
   model().SetActiveTreeId(tree_id_);
 
-  EXPECT_FALSE(model().GetOriginalPageMetrics().maybe_has_key_points);
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_FALSE(metrics.maybe_has_key_points);
+  EXPECT_FALSE(metrics.has_mathml);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetOriginalPageMetrics_ReturnsTrueForMathML) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData math_node;
+  math_node.id = 2;
+  math_node.role = ax::mojom::Role::kMathMLMath;
+
+  root.child_ids = {math_node.id};
+  update.root_id = root.id;
+  update.nodes = {root, math_node};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.has_mathml);
+  EXPECT_FALSE(metrics.maybe_has_key_points);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetOriginalPageMetrics_CapturesMathMLAfterKeyPoints) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData heading;
+  heading.id = 2;
+  heading.role = ax::mojom::Role::kHeading;
+  heading.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
+  ui::AXNodeData text = test::TextNode(3, u"Summary");
+  heading.child_ids = {text.id};
+
+  ui::AXNodeData math_node;
+  math_node.id = 4;
+  math_node.role = ax::mojom::Role::kMathMLMath;
+
+  root.child_ids = {heading.id, math_node.id};
+  update.root_id = root.id;
+  update.nodes = {root, heading, text, math_node};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.has_mathml);
+  EXPECT_TRUE(metrics.maybe_has_key_points);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetOriginalPageMetrics_CapturesKeyPointsAfterMathML) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData math_node;
+  math_node.id = 2;
+  math_node.role = ax::mojom::Role::kMathMLMath;
+
+  ui::AXNodeData heading;
+  heading.id = 3;
+  heading.role = ax::mojom::Role::kHeading;
+  heading.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
+  ui::AXNodeData text = test::TextNode(4, u"Key Points");
+  heading.child_ids = {text.id};
+
+  root.child_ids = {math_node.id, heading.id};
+  update.root_id = root.id;
+  update.nodes = {root, math_node, heading, text};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.has_mathml);
+  EXPECT_TRUE(metrics.maybe_has_key_points);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetOriginalPageMetrics_ReturnsTrueForDeeplyNestedMathML) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData section;
+  section.id = 2;
+  section.role = ax::mojom::Role::kSection;
+
+  ui::AXNodeData paragraph;
+  paragraph.id = 3;
+  paragraph.role = ax::mojom::Role::kParagraph;
+
+  ui::AXNodeData math_node;
+  math_node.id = 4;
+  math_node.role = ax::mojom::Role::kMathMLMath;
+
+  paragraph.child_ids = {math_node.id};
+  section.child_ids = {paragraph.id};
+  root.child_ids = {section.id};
+  update.root_id = root.id;
+  update.nodes = {root, section, paragraph, math_node};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.has_mathml);
+  EXPECT_FALSE(metrics.maybe_has_key_points);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetOriginalPageMetrics_ReturnsTrueForOtherMathRoles) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData math_node;
+  math_node.id = 2;
+  math_node.role = ax::mojom::Role::kMath;
+
+  root.child_ids = {math_node.id};
+  update.root_id = root.id;
+  update.nodes = {root, math_node};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics.has_mathml);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetOriginalPageMetrics_ReturnsCachedMetricsOnSubsequentCalls) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  ui::AXNodeData math_node;
+  math_node.id = 2;
+  math_node.role = ax::mojom::Role::kMathMLMath;
+
+  root.child_ids = {math_node.id};
+  update.root_id = root.id;
+  update.nodes = {root, math_node};
+
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics1 =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics1.has_mathml);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics2 =
+      model().GetOriginalPageMetrics();
+  EXPECT_TRUE(metrics2.has_mathml);
+  EXPECT_EQ(metrics1.has_mathml, metrics2.has_mathml);
+  EXPECT_EQ(metrics1.maybe_has_key_points, metrics2.maybe_has_key_points);
 }
 
 TEST_F(ReadAnythingAppModelTest, GetActiveTreeUrl) {

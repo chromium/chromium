@@ -91,6 +91,7 @@ class ReadAnythingAppModel {
   // differences in types of content on the original page and on the distilled
   // page in metrics.
   struct OriginalPageMetrics {
+    bool has_mathml = false;
     bool maybe_has_key_points = false;
   };
 

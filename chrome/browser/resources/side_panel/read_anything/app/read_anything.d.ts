@@ -30,6 +30,7 @@ interface AxTreeAnchorMetadata {
 // differences in types of content on the original page and on the distilled
 // page in metrics.
 interface OriginalPageMetrics {
+  hasMathML: boolean;
   maybeHasKeyPoints: boolean;
 }
 

@@ -7,6 +7,7 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {EventForwarder} from '../content/read_anything_types.js';
 
 export interface OriginalPageMetrics {
+  hasMathML: boolean;
   maybeHasKeyPoints: boolean;
 }
 

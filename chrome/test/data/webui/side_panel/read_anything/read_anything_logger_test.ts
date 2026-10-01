@@ -5,11 +5,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LinkStatus, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LinkStatus, ReadAloudSettingsChange, ReadAnythingMathMlDistillationStatus, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -20,6 +21,7 @@ suite('Logger', () => {
   let metrics: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
   let audioBrowserProxy: TestAudioBrowserProxy;
+  let contentBrowserProxy: TestContentBrowserProxy;
 
   async function assertTimeMetricIsCalled(
       from: TimeFrom, expectedMetric: string) {
@@ -33,6 +35,7 @@ suite('Logger', () => {
     metrics = result.metrics;
     visualBrowserProxy = result.visualBrowserProxy;
     audioBrowserProxy = result.audioBrowserProxy;
+    contentBrowserProxy = result.contentBrowserProxy;
     logger = result.logger;
   });
 
@@ -376,7 +379,7 @@ suite('Logger', () => {
         assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
       });
 
-  test('logTimeFrom uses correct uma name', () => {
+    test('logTimeFrom uses correct uma name', () => {
     assertTimeMetricIsCalled(
         TimeFrom.APP,
         'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
@@ -445,9 +448,10 @@ suite('Logger', () => {
       // TopTwoHeadersCount (excluding h1): h2 (2) + h4 (5) = 7
       // TopTwoHeadersHaveMinimumTwoItems: h2 has 2, h4 has 5 -> true
       // TopTwoHeadingRatio: (2 / 5) * 100 = 40
+      // MathML.PresentOnPage: false (logged for every page)
 
       assertEquals(6, metrics.getCallCount('recordCount'));
-      assertEquals(1, metrics.getCallCount('recordBoolean'));
+      assertEquals(2, metrics.getCallCount('recordBoolean'));
 
       const countCalls = metrics.getArgs('recordCount');
       assertEquals(
@@ -509,9 +513,10 @@ suite('Logger', () => {
       // TopTwoHeadersCount (h1 and h2): 5 + 5 = 10
       // TopTwoHeadersHaveMinimumTwoItems: h1 has 5, h2 has 5 -> true
       // TopTwoHeadingRatio: (5 / 5) * 100 = 100
+      // MathML.PresentOnPage: false (logged for every page)
 
       assertEquals(6, metrics.getCallCount('recordCount'));
-      assertEquals(1, metrics.getCallCount('recordBoolean'));
+      assertEquals(2, metrics.getCallCount('recordBoolean'));
 
       const countCalls = metrics.getArgs('recordCount');
       assertEquals(
@@ -566,9 +571,10 @@ suite('Logger', () => {
       // TopTwoHeadersCount (excluding h1): h2 (5), no second header -> 5
       // TopTwoHeadersHaveMinimumTwoItems: no second header -> false
       // TopTwoHeadingRatio: not logged (no second header)
+      // MathML.PresentOnPage: false (logged for every page)
 
       assertEquals(4, metrics.getCallCount('recordCount'));
-      assertEquals(1, metrics.getCallCount('recordBoolean'));
+      assertEquals(2, metrics.getCallCount('recordBoolean'));
 
       const countCalls = metrics.getArgs('recordCount');
       assertEquals(
@@ -684,6 +690,7 @@ suite('Logger', () => {
     container.appendChild(h2);
 
     visualBrowserProxy.originalPageMetrics = {
+      hasMathML: false,
       maybeHasKeyPoints: true,
     };
 
@@ -703,5 +710,268 @@ suite('Logger', () => {
             'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsOnPage');
     assertTrue(!!onPageMetric);
     assertEquals(true, onPageMetric[1]);
+  });
+
+  suite('logDistilledPageStructure MathML metrics', () => {
+    let container: HTMLElement;
+
+    setup(() => {
+      container = document.createElement('div');
+      // Attach to the document, as the distilled content is in production, so
+      // that checkVisibility() can account for hidden ancestors.
+      document.body.appendChild(container);
+      // Unless a test overrides it, the original page contains MathML.
+      visualBrowserProxy.originalPageMetrics.hasMathML = true;
+      metrics.reset();
+    });
+
+    function getPresentOnPageMetric(): boolean|undefined {
+      const booleanCalls = metrics.getArgs('recordBoolean');
+      const presentCall = booleanCalls.find(
+          (args: [string, boolean]) =>
+              args[0] === 'Accessibility.ReadAnything.MathML.PresentOnPage');
+      return presentCall ? presentCall[1] : undefined;
+    }
+
+    // Logs the structure of `container` and asserts that MathML was reported
+    // as present and that `expected` was the only distillation status logged.
+    function logAndAssertStatus(
+        expected: ReadAnythingMathMlDistillationStatus) {
+      logger.logDistilledPageStructure(container);
+
+      assertEquals(true, getPresentOnPageMetric());
+      assertEquals(1, metrics.getCallCount('recordMathMlDistillationStatus'));
+      assertEquals(
+          expected, metrics.getArgs('recordMathMlDistillationStatus')[0]);
+    }
+
+    function setDistilledByReadability() {
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
+    }
+
+    test('page without MathML logs false and no distillation status', () => {
+      visualBrowserProxy.originalPageMetrics.hasMathML = false;
+
+      logger.logDistilledPageStructure(container);
+
+      assertEquals(false, getPresentOnPageMetric());
+      assertEquals(0, metrics.getCallCount('recordMathMlDistillationStatus'));
+    });
+
+    test('ONLY_MATHML logged when distilled page has only mathml', () => {
+      container.appendChild(document.createElement('math'));
+
+      logAndAssertStatus(ReadAnythingMathMlDistillationStatus.ONLY_MATHML);
+    });
+
+    test(
+        'MIXED_MATHML_AND_FALLBACK logged when distilled page has both', () => {
+          container.appendChild(document.createElement('math'));
+          const img = document.createElement('img');
+          img.className = 'mwe-math-fallback-image-inline';
+          container.appendChild(img);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.MIXED_MATHML_AND_FALLBACK);
+        });
+
+    test(
+        'ONLY_FALLBACK logged when distilled page has math image with math class',
+        () => {
+          const img = document.createElement('img');
+          img.className = 'mwe-math-element';
+          container.appendChild(img);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test(
+        'ONLY_FALLBACK logged when distilled page has math image with LaTeX alt',
+        () => {
+          const img = document.createElement('img');
+          img.alt = '{\\displaystyle \\sqrt{x^2+y^2}}';
+          container.appendChild(img);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test(
+        'ONLY_FALLBACK logged when distilled page has KaTeX container with content',
+        () => {
+          const span = document.createElement('span');
+          span.className = 'katex';
+          span.textContent = 'x = 1';
+          container.appendChild(span);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test(
+        'ONLY_FALLBACK logged when distilled page has MathJax container with SVG',
+        () => {
+          const mathjax = document.createElement('mjx-container');
+          const svg =
+              document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          mathjax.appendChild(svg);
+          container.appendChild(mathjax);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test(
+        'ONLY_FALLBACK logged when distilled page has mw:Extension/math element',
+        () => {
+          const span = document.createElement('span');
+          span.setAttribute('typeof', 'mw:Extension/math');
+          span.textContent = 'E = mc^2';
+          container.appendChild(span);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test('non-math image and empty container do not count as math', () => {
+      setDistilledByReadability();
+
+      const img = document.createElement('img');
+      img.alt = 'A beautiful sunset in the mountains';
+      img.className = 'header-photo';
+      container.appendChild(img);
+
+      const emptyKatex = document.createElement('span');
+      emptyKatex.className = 'katex';
+      container.appendChild(emptyKatex);
+
+      logAndAssertStatus(
+          ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+    });
+
+    test(
+        'NOT_DISTILLED status matches distillation method when math is absent',
+        () => {
+          const p = document.createElement('p');
+          p.textContent = 'Just regular text with no math elements.';
+          container.appendChild(p);
+
+          setDistilledByReadability();
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+
+          metrics.reset();
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeScreen2x;
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_SCREEN2X);
+        });
+
+    test('hidden MathML elements do not count as distilled', () => {
+      setDistilledByReadability();
+      const displayNoneMath = document.createElement('math');
+      displayNoneMath.style.display = 'none';
+      container.appendChild(displayNoneMath);
+
+      const hiddenAttributeMath = document.createElement('math');
+      hiddenAttributeMath.hidden = true;
+      container.appendChild(hiddenAttributeMath);
+
+      logAndAssertStatus(
+          ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+    });
+
+    test('hidden math fallbacks do not count as distilled', () => {
+      setDistilledByReadability();
+      const displayNoneImg = document.createElement('img');
+      displayNoneImg.className = 'mwe-math-fallback-image-inline';
+      displayNoneImg.style.display = 'none';
+      container.appendChild(displayNoneImg);
+
+      const hiddenAttributeImg = document.createElement('img');
+      hiddenAttributeImg.className = 'mwe-math-fallback-image-inline';
+      hiddenAttributeImg.hidden = true;
+      container.appendChild(hiddenAttributeImg);
+
+      // A math container whose only child is hidden.
+      const span = document.createElement('span');
+      span.setAttribute('typeof', 'mw:Extension/math');
+      const latexImg = document.createElement('img');
+      latexImg.alt = '{\\displaystyle \\mathbb{R}^n}';
+      latexImg.style.display = 'none';
+      span.appendChild(latexImg);
+      container.appendChild(span);
+
+      logAndAssertStatus(
+          ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+    });
+
+    test(
+        'visible MathML among hidden MathML and fallback logs ONLY_MATHML',
+        () => {
+          const hiddenMath = document.createElement('math');
+          hiddenMath.style.display = 'none';
+          container.appendChild(hiddenMath);
+
+          const visibleMath = document.createElement('math');
+          container.appendChild(visibleMath);
+
+          const hiddenImg = document.createElement('img');
+          hiddenImg.className = 'mwe-math-fallback-image-inline';
+          hiddenImg.style.display = 'none';
+          container.appendChild(hiddenImg);
+
+          logAndAssertStatus(ReadAnythingMathMlDistillationStatus.ONLY_MATHML);
+        });
+
+    test(
+        'visible fallback among hidden MathML and fallback logs ONLY_FALLBACK',
+        () => {
+          const hiddenMath = document.createElement('math');
+          hiddenMath.style.display = 'none';
+          container.appendChild(hiddenMath);
+
+          const hiddenImg = document.createElement('img');
+          hiddenImg.className = 'mwe-math-fallback-image-inline';
+          hiddenImg.style.display = 'none';
+          container.appendChild(hiddenImg);
+
+          const visibleImg = document.createElement('img');
+          visibleImg.className = 'mwe-math-fallback-image-inline';
+          container.appendChild(visibleImg);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+        });
+
+    test(
+        'realistic Wikipedia formula with hidden MathML and hidden fallback image logs NOT_DISTILLED_READABILITY',
+        () => {
+          setDistilledByReadability();
+
+          // Simulates Wikipedia's <span typeof="mw:Extension/math"> wrapping
+          // visually-hidden MathML and an <img> that is hidden when images are
+          // toggled off in Reading Mode.
+          const span = document.createElement('span');
+          span.setAttribute('typeof', 'mw:Extension/math');
+
+          const mathWrapper = document.createElement('span');
+          mathWrapper.className = 'mwe-math-mathml-inline';
+          mathWrapper.style.display = 'none';
+          mathWrapper.appendChild(document.createElement('math'));
+          span.appendChild(mathWrapper);
+
+          const img = document.createElement('img');
+          img.className = 'mwe-math-fallback-image-inline';
+          img.style.display = 'none';
+          span.appendChild(img);
+
+          container.appendChild(span);
+
+          logAndAssertStatus(
+              ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+        });
   });
 });

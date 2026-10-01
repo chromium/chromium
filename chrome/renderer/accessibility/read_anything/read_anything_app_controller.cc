@@ -2322,6 +2322,7 @@ v8::Local<v8::Value> ReadAnythingAppController::GetOriginalPageMetrics() {
 
   ReadAnythingAppModel::OriginalPageMetrics metrics =
       model_.GetOriginalPageMetrics();
+  dict.Set("hasMathML", metrics.has_mathml);
   dict.Set("maybeHasKeyPoints", metrics.maybe_has_key_points);
   return obj;
 }

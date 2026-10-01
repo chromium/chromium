@@ -8,7 +8,8 @@ import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {hasEspeakIdentifier, hasNaturalIdentifier} from '../read_aloud/voice_language_conversions.js';
 
-import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType, UmaName} from './metrics_browser_proxy.js';
+import {isDistilledByReadability} from './common.js';
+import {MetricsBrowserProxyImpl, ReadAnythingMathMlDistillationStatus, ReadAnythingSpeechError, ReadAnythingVoiceType, UmaName} from './metrics_browser_proxy.js';
 import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 
 export enum TimeFrom {
@@ -295,6 +296,114 @@ export class ReadAnythingLogger {
         this.visualBrowserProxy_.getOriginalPageMetrics();
     this.logEnglishKeyPointsMetrics_(
         wordCountContainer, originalPageMetrics.maybeHasKeyPoints);
+    this.logMathMlMetrics_(wordCountContainer, originalPageMetrics.hasMathML);
+  }
+
+  // Logs MathML metrics for the distilled page:
+  // 1. Accessibility.ReadAnything.MathML.PresentOnPage is logged for every
+  // page.
+  // 2. If at least one MathML element is present on the original page,
+  //    Accessibility.ReadAnything.MathML.DistillationStatus is logged at page
+  //    level:
+  //    - ONLY_MATHML: only native <math> elements were captured.
+  //    - MIXED_MATHML_AND_FALLBACK: both native <math> and fallbacks were
+  //    captured.
+  //    - ONLY_FALLBACK: only math fallbacks were captured.
+  //    - NOT_DISTILLED_*: no math was captured in Reading Mode.
+  private logMathMlMetrics_(
+      wordCountContainer: Element, pageHasMathML: boolean) {
+    this.metrics.recordBoolean(UmaName.MATHML_PRESENT_ON_PAGE, pageHasMathML);
+
+    if (!pageHasMathML) {
+      return;
+    }
+
+    const hasMathML = this.hasVisibleMathMl_(wordCountContainer);
+    const hasMathFallback = this.hasVisibleMathFallback_(wordCountContainer);
+
+    if (hasMathML && hasMathFallback) {
+      this.metrics.recordMathMlDistillationStatus(
+          ReadAnythingMathMlDistillationStatus.MIXED_MATHML_AND_FALLBACK);
+    } else if (hasMathML) {
+      this.metrics.recordMathMlDistillationStatus(
+          ReadAnythingMathMlDistillationStatus.ONLY_MATHML);
+    } else if (hasMathFallback) {
+      this.metrics.recordMathMlDistillationStatus(
+          ReadAnythingMathMlDistillationStatus.ONLY_FALLBACK);
+    } else if (isDistilledByReadability()) {
+      this.metrics.recordMathMlDistillationStatus(
+          ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_READABILITY);
+    } else {
+      this.metrics.recordMathMlDistillationStatus(
+          ReadAnythingMathMlDistillationStatus.NOT_DISTILLED_SCREEN2X);
+    }
+  }
+
+  private isElementVisible_(element: Element): boolean {
+    if ('style' in element &&
+        (element as HTMLElement).style.display === 'none') {
+      return false;
+    }
+    if (element.hasAttribute('hidden') ||
+        ('hidden' in element && (element as HTMLElement).hidden)) {
+      return false;
+    }
+    if (element.isConnected && element.checkVisibility) {
+      return element.checkVisibility({checkVisibilityCSS: true});
+    }
+    return true;
+  }
+
+  private hasVisibleMathMl_(wordCountContainer: Element): boolean {
+    const mathElements = wordCountContainer.querySelectorAll('math');
+    for (const math of mathElements) {
+      if (this.isElementVisible_(math)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Pages with MathML often include fallback elements (such as Wikipedia's
+  // <img> tags with LaTeX alt text, or KaTeX/MathJax HTML) for browsers that
+  // don't support MathML. Distillation may preserve these fallbacks instead of
+  // (or alongside) the native <math> tags. Only count them if they are
+  // actually visible to the user (e.g. not hidden when images are turned off).
+  private hasVisibleMathFallback_(wordCountContainer: Element): boolean {
+    const mathImages = wordCountContainer.querySelectorAll('img');
+    for (const img of mathImages) {
+      if (!this.isElementVisible_(img)) {
+        continue;
+      }
+      if (img.className &&
+          /(^|\s)(mwe-math(-|_|\s|$)|math(\s|$))/i.test(img.className)) {
+        return true;
+      }
+      const alt = img.getAttribute('alt') || '';
+      if (alt.toLowerCase().includes('displaystyle') ||
+          /\\[a-zA-Z]{2,}/.test(alt)) {
+        return true;
+      }
+    }
+
+    const mathContainers = wordCountContainer.querySelectorAll(
+        '.katex, .katex-html, .MathJax, mjx-container, [typeof="mw:Extension/math"]');
+    for (const el of mathContainers) {
+      if (!this.isElementVisible_(el)) {
+        continue;
+      }
+      if (el.textContent && el.textContent.trim().length > 0) {
+        return true;
+      }
+      const visualChildren = el.querySelectorAll('svg, canvas, img');
+      for (const child of visualChildren) {
+        if (this.isElementVisible_(child)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private logEnglishKeyPointsMetrics_(
