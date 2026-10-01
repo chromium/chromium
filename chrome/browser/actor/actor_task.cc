@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/action_tracker_for_metrics.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
@@ -652,6 +653,8 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
   journal_->Log(
       GURL(), id(), "ActorTask::AddTab",
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+
+  actor_keyed_service().GetSurfaceRegistry().GetOrCreateForTab(tab_handle);
 
   controlled_tabs_.emplace(
       tab_handle,

@@ -855,6 +855,11 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
   return nullptr;
 }
 
+ActorSurfaceRegistry& ActorKeyedService::GetSurfaceRegistry() {
+  CHECK(surface_registry_);
+  return *surface_registry_;
+}
+
 ui::ActorUiStateManager* ActorKeyedService::GetActorUiStateManager(
     base::PassKey<ui::ActorUiStateManager>) {
   return actor_ui_state_manager_.get();

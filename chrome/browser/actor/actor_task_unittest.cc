@@ -15,6 +15,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
@@ -137,6 +139,10 @@ class ActorTaskTest : public testing::Test {
     AddTabToTask(tab, *task_);
     EXPECT_TRUE(task_->HasTab(tab.GetHandle()));
     EXPECT_TRUE(task_->GetTabs().contains(tab.GetHandle()));
+  }
+
+  ActorSurfaceRegistry& registry() {
+    return ActorKeyedService::Get(profile_.get())->GetSurfaceRegistry();
   }
 
   void RemoveTabAndVerify(tabs::TabInterface& tab) {
@@ -799,6 +805,7 @@ TEST_F(ActorTaskTest, AddTab_RejectsNonExistentTab) {
   EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
   EXPECT_FALSE(task_->HasTab(non_existent_handle));
   EXPECT_FALSE(task_->GetTabs().contains(non_existent_handle));
+  EXPECT_FALSE(registry().GetForTab(non_existent_handle));
 }
 
 TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTab) {
@@ -813,6 +820,19 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTab) {
   EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
   EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
   EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
+  EXPECT_FALSE(registry().GetForTab(cross_profile_tab->GetHandle()));
+}
+
+TEST_F(ActorTaskTest, AddTab_RegistersSurfaceWithTabHandleId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kGenerateIndependentIdsForActorSurface);
+  tabs::MockTabInterface mock_tab;
+  AddTabAndVerify(mock_tab);
+
+  ActorSurface* surface =
+      registry().Get(ActorSurfaceId(mock_tab.GetHandle().raw_value()));
+  ASSERT_TRUE(surface);
+  EXPECT_EQ(surface->GetTabHandle(), mock_tab.GetHandle());
 }
 
 TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {

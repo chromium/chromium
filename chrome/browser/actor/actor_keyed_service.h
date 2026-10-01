@@ -128,6 +128,9 @@ class ActorKeyedService : public KeyedService,
   // The associated journal for the associated profile.
   AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
 
+  // The registry of surfaces the actor can act on for the associated profile.
+  ActorSurfaceRegistry& GetSurfaceRegistry() LIFETIME_BOUND;
+
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManager* GetActorUiStateManager(
       base::PassKey<ui::ActorUiStateManager>);
