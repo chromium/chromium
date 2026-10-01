@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -19,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -35,7 +33,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -60,11 +57,6 @@ GmailOtpOptInBubbleView::GmailOtpOptInBubbleView(
       views::BoxLayout::Orientation::kVertical));
   SetShowCloseButton(true);
   SetTitle(IDS_AUTOFILL_GMAIL_OTP_OPT_IN_TITLE);
-  SetShowIcon(true);
-  SetIcon(ui::ImageModel::FromVectorIcon(
-      GooglePasswordManagerVectorIcon(), ui::kColorIcon,
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
 
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,

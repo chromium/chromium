@@ -19,7 +19,6 @@ source_set("one_time_tokens") {
   deps = [
     "//chrome/browser:resources",
     "//chrome/browser/ui:chrome_pages",
-    "//chrome/browser/ui/passwords",
     "//chrome/common",
     "//components/strings",
     "//content/public/browser",
