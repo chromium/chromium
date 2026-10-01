@@ -1,6 +1,7 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import type {GenericPendingAssociatedReceiver} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -161,10 +162,11 @@ export class SelectionOverlayBaseHandlerImpl extends
     BrowserProxyImpl.getInstance().handler.getSuggestedActions(listener);
   }
 
-  executeSuggestedAction(actionId: UnguessableToken): void {
+  executeSuggestedAction(
+      actionId: UnguessableToken,
+      channel: GenericPendingAssociatedReceiver|null): void {
     const proxy = BrowserProxyImpl.getInstance();
-    // TODO(liuwilliam): Use a real channel for inline fulfillment.
-    proxy.handler.executeSuggestedAction(actionId, /*channel=*/ null);
+    proxy.handler.executeSuggestedAction(actionId, channel);
   }
 
   dismissOverlay(reason: number): void {

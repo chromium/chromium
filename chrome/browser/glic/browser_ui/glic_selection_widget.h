@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/skills/public/skill.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -26,6 +27,8 @@ namespace glic {
 
 class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAskGeminiButtonElementId);
+
   static constexpr int kMinSkillCommandId = 100;
 
   using SkillOption = skills::Skill;

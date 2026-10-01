@@ -304,6 +304,9 @@ class GlicSelectionContentsView : public views::View,
                 &GlicSelectionContentsView::OnAskGeminiButtonClicked,
                 base::Unretained(this)),
             cta_label));
+    ask_gemini_btn->SetProperty(
+        views::kElementIdentifierKey,
+        GlicSelectionWidgetDelegate::kAskGeminiButtonElementId);
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
     ask_gemini_btn->SetImageLabelSpacing(is_small_chip ? 0 : 6);
@@ -983,6 +986,9 @@ BEGIN_METADATA(GlicSelectionContentsView)
 END_METADATA
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicSelectionWidgetDelegate,
+                                      kAskGeminiButtonElementId);
 
 GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     ActionDelegate& action_delegate,

@@ -357,3 +357,13 @@
   flex-shrink: 0;
   justify-content: center;
 }
+
+/* Hidden until it holds a card, so it doesn't add a flex gap. */
+#inlineFulfillmentHost:not(:has(*)) {
+  display: none;
+}
+
+/* The card takes the chips' place. */
+.action-chips-row:has(~ #inlineFulfillmentHost > *) {
+  display: none;
+}

@@ -4576,6 +4576,7 @@ config("disable_thinlto_cache_flags") {
 mojom("test_interfaces") {
   testonly = true
   sources = [ "mojom/echo.test-mojom" ]
+  webui_module_path = "/"
 }
 
 test("unit_tests") {

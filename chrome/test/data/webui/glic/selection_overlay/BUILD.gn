@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  is_chrome_untrusted = true
+  cc_test_files = [ "selection_overlay_browsertest.cc" ]
+  files = [ "inline_fulfillment_host_test.ts" ]
+
+  mojo_files = [ "$root_gen_dir/chrome/test/mojom/echo.test-mojom-webui.ts" ]
+  mojo_files_deps = [ "//chrome/test:test_interfaces_ts__generator" ]
+
+  ts_path_mappings = [ "chrome-untrusted://glic/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/glic/selection_overlay/tsc/*",
+                           target_gen_dir) ]
+
+  ts_deps = [
+    "//chrome/browser/resources/glic/selection_overlay:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

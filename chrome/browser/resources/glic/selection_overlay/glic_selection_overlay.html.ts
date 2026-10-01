@@ -85,6 +85,10 @@ export function getHtml(this: SelectionOverlayElementElement) {
             </button>
           `)}
         </div>
+
+        <glic-inline-fulfillment-host id="inlineFulfillmentHost"
+            @pointerdown="${this.onPromptPointerdown}">
+        </glic-inline-fulfillment-host>
       </div>
     ` : ''}
     <!--_html_template_end_-->`;
