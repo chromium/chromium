@@ -220,7 +220,6 @@ enum class ThemeProperty {
   kThemeName,
   kIconThemeName,
   kKeyThemeName,
-  kCursorThemeName,
 };
 
 // Returns true if `theme` is a safe, valid theme name for `property`.
