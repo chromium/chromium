@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
@@ -139,6 +140,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kGoogleApiKeys:
     case InfoBarType::kKnownInterception:
     case InfoBarType::kObsoleteSystem:
+    case InfoBarType::kOSCryptAsyncAvailability:
     case InfoBarType::kPageInfo:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case InfoBarType::kPdf:
@@ -328,6 +330,13 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   add_entry(InfoBarType::kObsoleteSystem, "Obsolete System",
             "The Obsolete System infobar warns users when their operating "
             "system is no longer supported. This trigger shows the infobar.");
+
+  add_entry(InfoBarType::kOSCryptAsyncAvailability,
+            "OSCrypt Async Availability",
+            "The OSCrypt Async Availability infobar warns users that OS "
+            "encryption is unavailable and some profile data may not be "
+            "readable, suggesting a relaunch. This trigger shows the "
+            "infobar.");
 
   add_entry(InfoBarType::kPageInfo, "Page Info",
             "The Page Info infobar is shown when a user changes permissions, "
@@ -776,6 +785,26 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
           return false;
         }
         ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
+      }
+      return true;
+    }
+    case InfoBarType::kOSCryptAsyncAvailability: {
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            active_tab, infobars::InfoBarDelegate::
+                            OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE);
+      } else {
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        OSCryptAsyncAvailabilityInfoBarDelegate::Create(infobar_manager);
       }
       return true;
     }

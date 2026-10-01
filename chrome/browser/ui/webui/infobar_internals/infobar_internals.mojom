@@ -72,6 +72,9 @@ enum InfoBarType {
   // Obsolete system infobar.
   kObsoleteSystem,
 
+  // OSCrypt async availability infobar.
+  kOSCryptAsyncAvailability,
+
   // Page Info infobar.
   kPageInfo,
 
