@@ -310,9 +310,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
   WaitForObservedEvent();
   test_controller()->ClickOptOut();
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kOptOut,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kOptOut,
+      /*expected_bucket_count=*/1);
 }
 
 class SecurePaymentConfirmationOptOutDisabledTest

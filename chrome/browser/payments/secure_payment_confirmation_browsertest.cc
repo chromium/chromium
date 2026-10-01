@@ -390,9 +390,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
       GetCancelErrorMessage(),
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kCancel,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kCancel,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
@@ -411,9 +412,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
       GetWebAuthnErrorMessage(),
       content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kAccept,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kAccept,
+      /*expected_bucket_count=*/1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

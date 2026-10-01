@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.GetSecurePaymentConfirmationCapabilities.BrowserBoundKeyHardware"
     enum="Boolean" expires_after="2027-03-01">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether a hardware backed browser bound key is available for use when
@@ -404,7 +404,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency"
-    units="ms" expires_after="2026-11-01">
+    units="ms" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate"
-    enum="Boolean" expires_after="2026-11-01">
+    enum="Boolean" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency"
-    units="ms" expires_after="2026-11-01">
+    units="ms" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.DeviceSupportsHardwareKeysLatency.{DeviceSupportsHardwareKeysResult}"
     units="ms" expires_after="2027-03-01">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records the latency of fetching whether the device has support for hardware
@@ -475,7 +475,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.GetKeyLatency.{GetKeyLatencyResult}"
-    units="ms" expires_after="2026-11-01">
+    units="ms" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoAuthenticator"
     enum="Boolean" expires_after="2027-07-01">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records whether the SPC fallback UX was triggered by a missing
@@ -565,12 +565,28 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoCredential"
     enum="Boolean" expires_after="2027-07-01">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records whether the SPC fallback UX was triggered by a missing credential.
     Recorded right before the SPC app is created with `is_error_dialog` set to
     true.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome"
+    enum="SecurePaymentRequestOutcome" expires_after="2027-09-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The outcome of showing the SecurePaymentRequest &quot;Fallback&quot; UX and
+    how the user interacts with it.
+
+    Recorded when the SecurePaymentRequest fallback dialog is closed.
+
+    Note that this is only for the SPC fallback dialog (when matching
+    credentials are not found) and does not include the SPC transaction dialog
+    or the OS-level web authentication dialog.
   </summary>
 </histogram>
 
@@ -587,10 +603,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome"
+    enum="SecurePaymentRequestOutcome" expires_after="2027-03-21">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The outcome of showing the SecurePaymentRequest &quot;Transaction&quot; UX
+    and how the user interacts with it.
+
+    Recorded when the SecurePaymentRequest transaction dialog is closed.
+
+    Note that this is only for the SPC transaction dialog and does not include
+    the OS-level web authentication dialog that comes after this dialog or the
+    fallback dialog when matching credentials are not found.
+  </summary>
+</histogram>
+
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.UserVerifyingPlatformAuthenticatorAvailable"
     enum="Boolean" expires_after="2027-07-01">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records whether a user verifying platform authenticator is available for
@@ -664,7 +696,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Payments.ThreeDSecure.ChallengeRequest" enum="Boolean"
     expires_after="2027-08-21">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records attempts to trigger 3D-Secure challenge requests (cReq).
@@ -676,7 +708,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Payments.ThreeDSecure.ChallengeResponse"
     enum="ThreeDSecureTransactionStatus" expires_after="2027-08-21">
-  <owner>darwinyang@google.com</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records the outcome of a 3D-Secure challenge response (cRes) detected in the
@@ -686,38 +718,6 @@ chromium-metrics-reviews@google.com.
     is not a single character or is not one of the expected values, it is
     considered an unknown outcome. If the cRes value is formatted as JSON Web
     Encryption (detected by period characters) it is recorded as JSON encrypted.
-  </summary>
-</histogram>
-
-<histogram name="SecurePaymentRequest.Fallback.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    The outcome of showing the SecurePaymentRequest &quot;Fallback&quot; UX and
-    how the user interacts with it.
-
-    Recorded when the SecurePaymentRequest fallback dialog is closed.
-
-    Note that this is only for the SPC fallback dialog (when matching
-    credentials are not found) and does not include the SPC transaction dialog
-    or the OS-level web authentication dialog.
-  </summary>
-</histogram>
-
-<histogram name="SecurePaymentRequest.Transaction.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2027-03-21">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    The outcome of showing the SecurePaymentRequest &quot;Transaction&quot; UX
-    and how the user interacts with it.
-
-    Recorded when the SecurePaymentRequest transaction dialog is closed.
-
-    Note that this is only for the SPC transaction dialog and does not include
-    the OS-level web authentication dialog that comes after this dialog or the
-    fallback dialog when matching credentials are not found.
   </summary>
 </histogram>
 
