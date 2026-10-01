@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/page_info/features/features.h"
@@ -244,7 +243,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<NewTabPageTabHelper>();
   attacher.Create<ShareFileDownloadTabHelper>();
   attacher.Create<OptimizationGuideTabHelper>();
-  attacher.Create<OptimizationGuideValidationTabHelper>();
 
   attacher.Create<favicon::WebFaviconDriver>(
       ios::FaviconServiceFactory::GetForProfile(

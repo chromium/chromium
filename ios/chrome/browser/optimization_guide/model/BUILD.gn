@@ -20,8 +20,6 @@ source_set("model") {
     "optimization_guide_service_factory.mm",
     "optimization_guide_tab_helper.h",
     "optimization_guide_tab_helper.mm",
-    "optimization_guide_validation_tab_helper.h",
-    "optimization_guide_validation_tab_helper.mm",
     "prediction_model_download_client.mm",
     "tab_url_provider_impl.h",
     "tab_url_provider_impl.mm",
@@ -116,7 +114,6 @@ source_set("unit_tests") {
     "optimization_guide_tab_helper_unittest.mm",
     "optimization_guide_test_utils.h",
     "optimization_guide_test_utils.mm",
-    "optimization_guide_validation_tab_helper_unittest.mm",
     "prediction_manager_browsertest.mm",
     "tab_url_provider_impl_unittest.mm",
   ]

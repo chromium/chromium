@@ -68,10 +68,6 @@ BASE_FEATURE(kPageTextExtraction,
              "OptimizationGuidePageContentExtraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the validation of optimization guide metadata.
-BASE_FEATURE(kOptimizationGuideMetadataValidation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreventLongRunningPredictionModels,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -370,12 +366,6 @@ base::TimeDelta ModelExecutionWatchdogDefaultTimeout() {
       2000
 #endif
       ));
-}
-
-bool ShouldMetadataValidationFetchHostKeyed() {
-  DCHECK(base::FeatureList::IsEnabled(kOptimizationGuideMetadataValidation));
-  return GetFieldTrialParamByFeatureAsBool(kOptimizationGuideMetadataValidation,
-                                           "is_host_keyed", true);
 }
 
 bool ShouldDeferStartupActiveTabsHintsFetch() {

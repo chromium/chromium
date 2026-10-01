@@ -56,9 +56,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
         optimization_guide::kPurgeHintsStoreSwitch);
 
     scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kOptimizationGuideMetadataValidation},
-        {});
+        {optimization_guide::features::kOptimizationHints}, {});
   }
 
   // Initializes the OptimizationGuide service with an AboutThisSite hint,
