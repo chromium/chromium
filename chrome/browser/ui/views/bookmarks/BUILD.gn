@@ -13,6 +13,7 @@ source_set("bookmark_bar_view_observer") {
 
 source_set("bookmarks") {
   public = [
+    "app_menu_bookmark_delegate.h",
     "bookmark_account_storage_move_dialog.h",
     "bookmark_account_storage_move_dialog_delegate.h",
     "bookmark_bar_menu_delegate.h",
@@ -65,6 +66,7 @@ source_set("bookmarks") {
 
 source_set("impl") {
   sources = [
+    "app_menu_bookmark_delegate.cc",
     "bookmark_account_storage_move_dialog.cc",
     "bookmark_account_storage_move_dialog_delegate.cc",
     "bookmark_bar_menu_delegate.cc",

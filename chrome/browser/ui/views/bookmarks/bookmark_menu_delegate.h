@@ -49,9 +49,11 @@ class Widget;
 // BookmarkMenuDelegate is a bookmark merged surface, it combines local and
 // account bookmark nodes (see `BookmarkParentFolder`). This class must use
 // `BookmarkMergedSurfaceService` to retrieve bookmarks and their indexes.
-// TODO(crbug.com/382749219): This class has some unnecessary complexity
-// stemming from the fact that it's trying to handle distinct requirements from
-// various clients. This client-specific logic should be split out.
+//
+// This class only contains logic shared by all clients. Client-specific
+// behavior lives in the subclasses:
+// - `BookmarkBarMenuDelegate` for standalone bookmark bar / overflow menus.
+// - `AppMenuBookmarkDelegate` for bookmarks embedded in the app menu.
 class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
                              public BookmarkContextMenuObserver {
  public:
@@ -64,14 +66,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   BookmarkMenuDelegate& operator=(const BookmarkMenuDelegate&) = delete;
 
   ~BookmarkMenuDelegate() override;
-
-  // Extends the `parent` menu by adding items for all relevant bookmark nodes,
-  // including:
-  // - a folder for managed nodes, if any
-  // - each bookmark bar node
-  // - a folder for 'other' nodes, if any
-  // - a folder for mobile nodes, if any
-  void BuildFullMenu(views::MenuItemView* parent);
 
   // Returns the id given to the next menu.
   int next_menu_id() const { return next_menu_id_; }
@@ -268,28 +262,20 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   }
   const NodeToMenuMap& node_to_menu_map() const { return node_to_menu_map_; }
 
- private:
-  friend class BookmarkMenuDelegateTest;
-
-  // Returns true if `folder` has child nodes.
-  bool ShouldBuildPermanentNode(const BookmarkParentFolder& folder) const;
-
-  // Builds menus for the 'other' and 'mobile' nodes if they're not empty,
-  // adding them to `parent_menu_item_`.
-  void BuildMenusForPermanentNodes();
-
   // Builds a submenu item for the provided bookmark folder, adding it to
   // `parent_menu`.
   void BuildMenuForFolder(const BookmarkParentFolder& folder,
                           const ui::ImageModel& icon,
                           views::MenuItemView* parent_menu);
 
-  // Adds or removes the bookmarks title + separator as necessary.
-  // Returns the updated menu if there were changes; otherwise, returns null.
-  views::MenuItemView* UpdateBookmarksTitle();
-  bool ShouldHaveBookmarksTitle();
-  void BuildBookmarksTitle(size_t index);
-  void RemoveBookmarksTitle();
+  // Ampersands inside bookmark titles need to be escaped when the menu the
+  // bookmarks are added to uses mnemonics. See `MaybeEscapeLabel()`.
+  void set_menu_uses_mnemonics(bool menu_uses_mnemonics) {
+    menu_uses_mnemonics_ = menu_uses_mnemonics;
+  }
+
+ private:
+  friend class BookmarkMenuDelegateTest;
 
   void BuildMenuForFolderAt(const BookmarkParentFolder& folder,
                             const ui::ImageModel& icon,
@@ -341,16 +327,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
 
   // Maps from menu id to BookmarkNode.
   MenuIDToNodeMap menu_id_to_node_map_;
-
-  // If non-NULL this is the |parent| passed to BuildFullMenu and is NOT owned
-  // by us.
-  raw_ptr<views::MenuItemView> parent_menu_item_;
-
-  // Views built by this delegate, but not tracked by the maps.
-  // These are all owned by `parent_menu_item_`, if not null.
-  raw_ptr<views::View> bookmarks_title_;
-  raw_ptr<views::View> bookmarks_title_separator_;
-  raw_ptr<views::View> permanent_nodes_separator_;
 
   // The separator within the "other" bookmarks menu.
   raw_ptr<views::View> other_node_menu_separator_;

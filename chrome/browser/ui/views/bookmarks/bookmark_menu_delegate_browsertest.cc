@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/app_menu_bookmark_delegate.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_menu_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -150,7 +151,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     // empty.
     root_menu_->AppendTitle(std::u16string());
     root_menu_->CreateSubmenu();
-    app_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+    app_menu_delegate_ = std::make_unique<AppMenuBookmarkDelegate>(
         browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
     app_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
@@ -165,7 +166,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     root_menu_->CreateSubmenu();
     // Add a placeholder to ensure the bookmarks title is added.
     root_menu_->AppendTitle(std::u16string());
-    app_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+    app_menu_delegate_ = std::make_unique<AppMenuBookmarkDelegate>(
         browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
     app_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
@@ -226,7 +227,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<BookmarkBarMenuDelegate> bookmark_menu_delegate_;
-  std::unique_ptr<BookmarkMenuDelegate> app_menu_delegate_;
+  std::unique_ptr<AppMenuBookmarkDelegate> app_menu_delegate_;
 
   std::unique_ptr<views::MenuItemView> root_menu_;
 

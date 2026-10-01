@@ -23,7 +23,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
-class BookmarkMenuDelegate;
+class AppMenuBookmarkDelegate;
 class BrowserWindowInterface;
 
 namespace views {
@@ -207,7 +207,7 @@ class AppMenu final : public views::MenuDelegate,
       profile_menu_item_selected_subscription_list_;
 
   // Used for managing the bookmark menu items.
-  std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
+  std::unique_ptr<AppMenuBookmarkDelegate> bookmark_menu_delegate_;
 
   // Menu corresponding to IDC_BOOKMARKS_MENU.
   raw_ptr<views::MenuItemView, DanglingUntriaged> bookmark_menu_ = nullptr;
