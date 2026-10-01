@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -12,9 +13,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/lens/lens_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,9 +25,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -358,6 +363,54 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   // Because the committed origin (b.com) does not match the request origin
   // (a.com), the result is dropped and nullptr is returned.
   EXPECT_EQ(future.Take(), nullptr);
+}
+
+class TabContextualizationControllerWakeHiddenTabBrowserTest
+    : public TabContextualizationControllerBrowserTest {
+ public:
+  TabContextualizationControllerWakeHiddenTabBrowserTest() {
+    // Only enabled by default on Android.
+    scoped_feature_list_.InitAndEnableFeature(
+        lens::features::kLensWakeHiddenTabForPageContentExtraction);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Hidden pages can be frozen by the renderer scheduler (e.g. Blink freezes
+// pages that have been backgrounded for a while on Android). Extracting page
+// context from such a tab should wake it up rather than stalling until the
+// main frame extraction timeout fires and returning no content.
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerWakeHiddenTabBrowserTest,
+                       GetPageContextForFrozenBackgroundTab) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  // Move the tab to the background and freeze it.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
+  web_contents->SetPageFrozen(true);
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+  auto data = future.Take();
+
+  ASSERT_TRUE(data);
+  EXPECT_EQ(data->page_url, url);
+  ASSERT_TRUE(data->context_input.has_value());
+  ASSERT_FALSE(data->context_input->empty());
+  EXPECT_EQ(data->context_input->front().content_type_,
+            lens::MimeType::kAnnotatedPageContent);
+
+  // The tab is hidden again once extraction completes.
+  EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::HIDDEN);
+  EXPECT_FALSE(web_contents->IsBeingCaptured());
 }
 
 }  // namespace lens
