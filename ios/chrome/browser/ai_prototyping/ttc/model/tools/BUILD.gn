@@ -20,10 +20,10 @@ source_set("tools") {
     "//components/sessions:session_id",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
-    "//ios/web/public/navigation",
     "//url",
   ]
   public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

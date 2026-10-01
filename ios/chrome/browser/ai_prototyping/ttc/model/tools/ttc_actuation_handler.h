@@ -17,9 +17,11 @@ namespace actor {
 class ActorService;
 }  // namespace actor
 
-// Bridges TalkToChrome tool execution to the Chromium ActorService pipeline.
-// Manages the lifetime and tab bindings of Actor tasks, coordinating browser
-// actions executed on behalf of the user.
+@class TTCActuationRequest;
+@class TTCActuationResponse;
+
+// The handler for TalkToChrome actuations, bridging incoming actuation
+// requests to the Chromium Actor Service orchestration layer.
 @interface TTCActuationHandler : NSObject
 
 // Designated initializer with Profile, WebStateList, and Browser ID.
@@ -33,7 +35,8 @@ class ActorService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects from the browser and stops all active tasks. Must be called
+// Disconnects active references, cancels in-flight tasks with `kShutdown`, and
+// fails pending actuation callbacks with `kExecutorDestroyed`. Must be called
 // before destruction.
 - (void)disconnect;
 
@@ -44,6 +47,30 @@ class ActorService;
 // active WebState, if the active WebState is off-the-record, or if ActorService
 // is unavailable.
 - (actor::ActorTaskId)createTaskWithTitle:(NSString*)title;
+
+// Dispatches `request` for execution under `taskID`. The underlying Actor task
+// remains active to allow subsequent actuation requests until explicitly
+// stopped or disconnected.
+// The `completionBlock` is guaranteed to be invoked on the UI thread.
+// @param request The actuation request containing action protos.
+// @param taskID The ID of the task to execute actions within.
+// @param completionBlock Invoked with the execution response.
+- (void)dispatchActuationRequest:(TTCActuationRequest*)request
+                       forTaskID:(actor::ActorTaskId)taskID
+                 completionBlock:
+                     (void (^)(TTCActuationResponse* response))completionBlock;
+
+// Stops the task identified by `taskID` with the specified `reason` and
+// releases its tab binding. If an actuation request is currently in progress
+// for `taskID`, its completion block is invoked with `kTaskWentAway`.
+// @param taskID The ID of the task to stop.
+// @param reason The reason the task is being stopped.
+- (void)stopTask:(actor::ActorTaskId)taskID
+      withReason:(actor::ActorTaskStoppedReason)reason;
+
+// Stops the task identified by `taskID` with `kTaskComplete` reason.
+// @param taskID The ID of the task to stop.
+- (void)stopTask:(actor::ActorTaskId)taskID;
 
 @end
 
