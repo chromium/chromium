@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -119,6 +120,7 @@ class ExtensionsToolbarDesktopUITest : public ExtensionsToolbarUITest {
       std::vector<base::test::FeatureRef> enabled_features,
       std::vector<base::test::FeatureRef> disabled_features) {
     disabled_features.push_back(features::kExtensionsPinnedByDefault);
+    disabled_features.push_back(features::kWebUIExtensionsContainer);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ExtensionsToolbarDesktopUITest(const ExtensionsToolbarDesktopUITest&) =
@@ -1578,12 +1580,17 @@ class ExtensionsToolbarDesktopFeatureRolloutInteractiveTest
   ExtensionsToolbarDesktopFeatureRolloutInteractiveTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {extensions_features::kExtensionsMenuAccessControl},
-          {features::kExtensionsPinnedByDefault});
+          /*enabled_features=*/{extensions_features::
+                                    kExtensionsMenuAccessControl},
+          /*disabled_features=*/{features::kExtensionsPinnedByDefault,
+                                 features::kWebUIExtensionsContainer});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {extensions_features::kExtensionsMenuAccessControl,
-               features::kExtensionsPinnedByDefault});
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              extensions_features::kExtensionsMenuAccessControl,
+              features::kExtensionsPinnedByDefault,
+              features::kWebUIExtensionsContainer});
     }
   }
   ExtensionsToolbarDesktopFeatureRolloutInteractiveTest(
@@ -1715,8 +1722,10 @@ class ExtensionsToolbarDesktopFeatureInteractiveTest
  public:
   ExtensionsToolbarDesktopFeatureInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionsMenuAccessControl},
-        {features::kExtensionsPinnedByDefault});
+        /*enabled_features=*/{extensions_features::
+                                  kExtensionsMenuAccessControl},
+        /*disabled_features=*/{features::kExtensionsPinnedByDefault,
+                               features::kWebUIExtensionsContainer});
   }
   ExtensionsToolbarDesktopFeatureInteractiveTest(
       const ExtensionsToolbarDesktopFeatureInteractiveTest&) = delete;
@@ -1873,8 +1882,9 @@ class ExtensionsPinnedByDefaultInteractiveTest
   ExtensionsPinnedByDefaultInteractiveTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHExtensionsPinnedByDefaultFeature})) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExtensionsPinnedByDefault);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kExtensionsPinnedByDefault},
+        /*disabled_features=*/{features::kWebUIExtensionsContainer});
   }
 
   void SetUpOnMainThread() override {
