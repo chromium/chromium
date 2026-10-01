@@ -97,13 +97,19 @@ class GeminiWebModalCoordinatorTest : public PlatformTest {
   FakeGeminiWebModalCoordinatorDelegate* delegate_;
 };
 
-// Test that the title falls back to the host while the page has no title.
-TEST_F(GeminiWebModalCoordinatorTest, TitleFallsBackToHost) {
+// Test that the domain is always shown, and that the title is not replaced by
+// the URL while the page has no title.
+TEST_F(GeminiWebModalCoordinatorTest, NavigationItemShowsDomain) {
   [coordinator_ start];
 
   GeminiModalContentViewController* viewController = PresentedModal();
   ASSERT_TRUE(viewController);
-  EXPECT_NSEQ(@(kTestURLHost), viewController.title);
+  if (@available(iOS 26, *)) {
+    EXPECT_EQ(0u, viewController.title.length);
+    EXPECT_NSEQ(@(kTestURLHost), viewController.navigationItem.subtitle);
+  } else {
+    EXPECT_NSEQ(@(kTestURLHost), viewController.title);
+  }
 }
 
 // Test that stopping the coordinator dismisses the modal.

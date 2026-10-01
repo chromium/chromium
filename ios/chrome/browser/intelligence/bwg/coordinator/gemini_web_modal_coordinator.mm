@@ -7,10 +7,12 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_modal_content_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -27,7 +29,7 @@
 @end
 
 @implementation GeminiWebModalCoordinator {
-  GURL _URL;
+  GURL _initialURL;
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
@@ -40,7 +42,7 @@
                                        URL:(const GURL&)URL {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _URL = URL;
+    _initialURL = URL;
   }
   return self;
 }
@@ -64,7 +66,7 @@
   _webStateDelegateBridge = std::make_unique<web::WebStateDelegateBridge>(self);
   _webState->SetDelegate(_webStateDelegateBridge.get());
 
-  // Used to update the navigation item title based on the web state's title.
+  // Used to keep the navigation bar's title and URL in sync with the page.
   _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
   _webState->AddObserver(_webStateObserverBridge.get());
 
@@ -78,7 +80,6 @@
   _viewController = [[GeminiModalContentViewController alloc]
       initWithContentView:_webState->GetView()];
   _viewController.delegate = self;
-  [self updateTitle];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -89,10 +90,11 @@
                                       completion:nil];
 
   _webState->GetNavigationManager()->LoadURLWithParams(
-      web::NavigationManager::WebLoadParams(_URL));
+      web::NavigationManager::WebLoadParams(_initialURL));
   // TODO(crbug.com/41407753): For a newly created WebState, the session
   // will not be restored until LoadIfNecessary call. Remove when fixed.
   _webState->GetNavigationManager()->LoadIfNecessary();
+  [self updateNavigationItem];
 }
 
 - (void)stop {
@@ -133,8 +135,18 @@
 
 #pragma mark - CRWWebStateObserver
 
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigationContext {
+  [self updateNavigationItem];
+}
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  [self updateNavigationItem];
+}
+
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
-  [self updateTitle];
+  [self updateNavigationItem];
 }
 
 #pragma mark - GeminiModalContentViewControllerDelegate
@@ -169,16 +181,29 @@
   if (!_webState) {
     return;
   }
-  _URL = URL;
   _webState->GetNavigationManager()->LoadURLWithParams(
       web::NavigationManager::WebLoadParams(URL));
 }
 
-// Shows the page title in the navigation bar, falling back to the URL host.
-- (void)updateTitle {
-  NSString* pageTitle = base::SysUTF16ToNSString(_webState->GetTitle());
-  _viewController.title =
-      pageTitle.length ? pageTitle : base::SysUTF8ToNSString(_URL.host());
+// Updates the navigation item to reflect the page's domain and/or title.
+- (void)updateNavigationItem {
+  NSString* domain =
+      base::SysUTF16ToNSString(url_formatter::FormatUrlForSecurityDisplay(
+          _webState->GetVisibleURL(),
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+
+  if (@available(iOS 26, *)) {
+    // Subtitle is available. Show the page title and domain as the
+    // navigation item title & subtitle.
+    web::NavigationItem* item =
+        _webState->GetNavigationManager()->GetVisibleItem();
+    _viewController.title =
+        item ? base::SysUTF16ToNSString(item->GetTitle()) : nil;
+    _viewController.navigationItem.subtitle = domain;
+  } else {
+    // Subtitle is unavailable. Just show the domain as navigation item title.
+    _viewController.title = domain;
+  }
 }
 
 @end
