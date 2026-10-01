@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>showOpenFilePicker automation tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+// Use wptserve fs_path to resolve files relative to this test directory.
+const testFile1 = String.raw`{{fs_path(resources/testfile.txt)}}`;
+const testFile2 = String.raw`{{fs_path(resources/testfile2.txt)}}`;
+
+// 1. Test single-file selection.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await internals.setSelectFileDialogResult([testFile1]);
+  await test_driver.bless('show a file picker');
+
+  const files = await self.showOpenFilePicker();
+  assert_true(Array.isArray(files));
+  assert_equals(files.length, 1);
+  assert_true(files[0] instanceof FileSystemHandle);
+  assert_true(files[0] instanceof FileSystemFileHandle);
+  assert_equals(files[0].kind, 'file');
+  assert_equals(files[0].name, 'testfile.txt');
+
+  const file = await files[0].getFile();
+  assert_equals(file.name, 'testfile.txt');
+  assert_equals(await file.text(), 'Hello World!\n');
+}, 'showOpenFilePicker can select a single file');
+
+// 2. Test multi-file selection.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await internals.setSelectFileDialogResult([testFile1, testFile2]);
+  await test_driver.bless('show a file picker');
+
+  const files = await self.showOpenFilePicker({multiple: true});
+  assert_true(Array.isArray(files));
+  assert_equals(files.length, 2);
+
+  assert_true(files[0] instanceof FileSystemFileHandle);
+  assert_equals(files[0].name, 'testfile.txt');
+  const file1 = await files[0].getFile();
+  assert_equals(await file1.text(), 'Hello World!\n');
+
+  assert_true(files[1] instanceof FileSystemFileHandle);
+  assert_equals(files[1].name, 'testfile2.txt');
+  const file2 = await files[1].getFile();
+  assert_equals(await file2.text(), 'File to upload\n');
+}, 'showOpenFilePicker can select multiple files');
+
+// 3. Test dialog cancellation (AbortError).
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await internals.setSelectFileDialogResult(null);
+  await test_driver.bless('show a file picker');
+
+  await promise_rejects_dom(t, 'AbortError', self.showOpenFilePicker());
+}, 'showOpenFilePicker rejects with AbortError when canceled');
+
+// 4. Test that passing an empty array rejects with TypeError.
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  t.add_cleanup(async () => {
+    await internals.setSelectFileDialogResult(null);
+  });
+  await promise_rejects_js(
+      t, TypeError, internals.setSelectFileDialogResult([]));
+}, 'setSelectFileDialogResult rejects with TypeError when passing an empty array');
+</script>
