@@ -5,8 +5,8 @@
 if (!is_fuchsia) {
   source_set("policy") {
     sources = [
-      "find_and_fill_with_gemini_settings_policy_handler.cc",
-      "find_and_fill_with_gemini_settings_policy_handler.h",
+      "autofill_gen_ai_settings_policy_handler.cc",
+      "autofill_gen_ai_settings_policy_handler.h",
     ]
 
     deps = [
@@ -14,7 +14,6 @@ if (!is_fuchsia) {
       "//components/optimization_guide/core:features",
       "//components/policy/core/common",
       "//components/prefs",
-      "//components/strings",
     ]
 
     public_deps = [ "//components/policy/core/browser" ]
@@ -22,8 +21,7 @@ if (!is_fuchsia) {
 
   source_set("unit_tests") {
     testonly = true
-    sources =
-        [ "find_and_fill_with_gemini_settings_policy_handler_unittest.cc" ]
+    sources = [ "autofill_gen_ai_settings_policy_handler_unittest.cc" ]
 
     deps = [
       ":policy",

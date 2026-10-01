@@ -1472,7 +1472,7 @@ policies:
   1471: UpdateOnZeroWindowEnabled
   1472: BackForwardCacheForWebSocketsAllowed
   1473: GeminiChromeFileUploadSettings
-  1474: FindAndFillWithGeminiSettings
+  1474: AutofillGenAiSettings
   1475: OnNetworkRequestEnterpriseConnector
   1476: EnterprisePublishedSkills
   1477: OnDataCopiedEnterpriseConnector

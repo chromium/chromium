@@ -10,6 +10,7 @@
 //ios/chrome/test/data/policy/pref_mapping/AutoSelectCertificateForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillAddressEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillCreditCardEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/AutofillGenAiSettings.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillPredictionSettings.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillSettings.json
 //ios/chrome/test/data/policy/pref_mapping/BrowserContextAwareAccessSignalsAllowlist.json
@@ -50,7 +51,6 @@
 //ios/chrome/test/data/policy/pref_mapping/EnableExperimentalPolicies.json
 //ios/chrome/test/data/policy/pref_mapping/EnterpriseRealTimeUrlCheckMode.json
 //ios/chrome/test/data/policy/pref_mapping/FilePickerChooseFromDriveSettings.json
-//ios/chrome/test/data/policy/pref_mapping/FindAndFillWithGeminiSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GeminiSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json

@@ -1,0 +1,60 @@
+caption: Settings for generative AI features in Autofill
+
+desc: |-
+  These features in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> employ generative AI models to help users fill out forms on the web. To use these features, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> has to collect data such as the structure of the forms a user interacts with and, for Find and Fill with Gemini, the free-text queries that a user enters to search connected Gemini apps, and send this data to a server owned by Google, which runs a generative AI model.
+
+  Setting the policy to 0 (Allow generative AI features in Autofill and improve AI models), allows the features to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. 0 is the default value, except when noted below.
+
+  Setting the policy to 1 (Allow generative AI features in Autofill without improving AI models), allows the features to be used, but does not allow Google to improve models using users' content (including prompts, inputs, outputs, source materials, and written feedback). 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph> and for Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
+
+  Setting the policy to 2 (Do not allow generative AI features in Autofill), does not allow the features.
+
+  When the policy is not set, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+
+  Generative AI features in Autofill include:
+
+  - Smarter form understanding: uses AI to identify and classify the fields of a form, so that more of them can be filled.
+
+  - Find and Fill with Gemini: finds information from the apps a user has connected to Gemini and offers it for filling, either as proactive suggestions on a form or in response to a query the user writes.
+
+  This policy supersedes the <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME">AutofillPredictionSettings</ph> policy, which still applies when this policy is unset. The "Find and Fill with Gemini" feature also requires the <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy to not be disabled.
+
+  This policy does not control Autofill features that do not use generative AI.
+
+  For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
+
+# The default for managed users is implemented through a fallback to the `GenAiDefaultSettings` policy
+# instead of using `default_for_enterprise_users`.
+default: 0
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow generative AI features in Autofill and improve AI models.
+  name: Allowed
+  value: 0
+- caption: Allow generative AI features in Autofill without improving AI models.
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Do not allow generative AI features in Autofill.
+  name: Disabled
+  value: 2
+owners:
+- file://components/autofill/OWNERS
+- jkeitel@google.com
+- luchenpeng@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+future_on:
+- android
+- chrome.*
+- chrome_os
+- ios
+tags:
+- google-sharing
+type: int-enum
