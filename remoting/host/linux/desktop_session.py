@@ -23,7 +23,6 @@ import time
 from shared_lib import (
     XDesktop,
     cleanup,
-    display_manager_is_gdm,
     exec_self_via_login_shell,
     watch_for_resolution_changes,
 )
@@ -138,18 +137,21 @@ def main():
       seconds=int(time.clock_gettime(time.CLOCK_BOOTTIME)))
   logging.info("Machine uptime: %s", uptime)
 
-  if display_manager_is_gdm():
-    # See https://gitlab.gnome.org/GNOME/gdm/-/issues/580 for details.
-    gdm_message = (
-        "WARNING: This system uses GDM. Some GDM versions have a bug that "
-        "prevents local login while a Chrome Remote Desktop session is "
-        "running. If you run into this issue, you can stop the Chrome Remote "
-        "Desktop session from an SSH session or a text console (e.g. "
-        "Ctrl+Alt+F3) by running `sudo systemctl stop "
-        "chrome-remote-desktop-x11-session@%s`." %
-        pwd.getpwuid(os.getuid()).pw_name)
-    logging.warning(gdm_message)
-    syslog.syslog(syslog.LOG_WARNING | syslog.LOG_DAEMON, gdm_message)
+  # Most desktop environments support only one graphical session per user,
+  # and all of a user's sessions share the same session bus and
+  # `systemd --user` instance. Logging in locally as the same user while this
+  # session is running may therefore fail or misbehave.
+  local_login_message = (
+      "A Chrome Remote Desktop session is running for %(user)s. Most "
+      "desktop environments support only one graphical session per user, so "
+      "logging in locally as %(user)s while this session is running may fail "
+      "or not work correctly. To log in locally, first stop the Chrome Remote "
+      "Desktop session from an SSH session or a text console (e.g. "
+      "Ctrl+Alt+F3) by running `sudo systemctl stop "
+      "chrome-remote-desktop-x11-session@%(user)s`." %
+      {"user": pwd.getpwuid(os.getuid()).pw_name})
+  logging.info(local_login_message)
+  syslog.syslog(syslog.LOG_NOTICE | syslog.LOG_DAEMON, local_login_message)
 
   # atexit handlers run in reverse order, so the logind session is terminated
   # after cleanup() has torn down the session processes and unset CRD systemd
