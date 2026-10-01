@@ -87,6 +87,14 @@ namespace navigation_initiator {
 // have a dedicated `NavigationInitiator`.
 inline constexpr NavigationInitiator kOther{0, "Other"};
 
+// The following are derived from `ui::PageTransition`, not attached by a
+// trigger. See the comment of `NavigationInitiator`.
+inline constexpr NavigationInitiator kLinkClick{5, "LinkClick"};
+inline constexpr NavigationInitiator kForward{6, "Forward"};
+inline constexpr NavigationInitiator kBackward{7, "Backward"};
+inline constexpr NavigationInitiator kReload{8, "Reload"};
+inline constexpr NavigationInitiator kFormSubmission{11, "FormSubmission"};
+
 }  // namespace navigation_initiator
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
 
