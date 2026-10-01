@@ -1,7 +1,3 @@
-# META: timeout=long
-
-# Longer timeout required due to a large number of parametrized invalid argument subtests that create and destroy user contexts when parameters are not rejected upfront.
-
 import pytest
 
 import webdriver.bidi.error as error
