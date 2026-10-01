@@ -328,6 +328,7 @@ void NetworkInformation::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  NetworkStateNotifier::NetworkStateObserver::Trace(visitor);
 }
 
 const String NetworkInformation::Host() const {
