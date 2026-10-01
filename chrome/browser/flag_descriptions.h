@@ -6704,6 +6704,12 @@ inline constexpr char kUseAngleDescriptionAndroid[] =
 inline constexpr char kUseAngleGLES[] = "OpenGL ES";
 inline constexpr char kUseAngleVulkan[] = "Vulkan";
 
+inline constexpr char kUseWebUiBookmarksAndroidName[] =
+    "Use WebUI Bookmarks on Android";
+inline constexpr char kUseWebUiBookmarksAndroidDescription[] =
+    "When enabled, use the WebUI Bookmarks instead of the native Bookmarks on "
+    "Android.";
+
 inline constexpr char kUseWebUiNtp3PDSEName[] = "Use WebUI NTP for 3P DSE";
 inline constexpr char kUseWebUiNtp3PDSEDescription[] =
     "When enabled, use the WebUI NTP for 3P DSEs on Android.";

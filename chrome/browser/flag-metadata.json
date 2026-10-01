@@ -10054,6 +10054,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-webui-bookmarks-android",
+    "owners": [ "huangs@google.com", "wylieb@google.com" ],
+    "expiry_milestone": 176
+  },
+  {
     "name": "use-webui-ntp-3p-dse",
     "owners": [ "giannich@google.com", "yvonneshi@google.com", "ruoxih@google.com" ],
     "expiry_milestone": 160

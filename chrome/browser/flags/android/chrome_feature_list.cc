@@ -545,6 +545,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseAppTaskForCustomTabActivation,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kUsePLinkInHelp,
+    &kUseWebUiBookmarksAndroid,
     &kUseWebUiNtp3PDSE,
     &kUseWebUiNtpAndroid,
     &kVerifyStartupSigninState,
@@ -987,6 +988,7 @@ BASE_FEATURE(kUseAppTaskForCustomTabActivation, base::FEATURE_ENABLED_BY_DEFAULT
 // only on Android.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUsePLinkInHelp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseWebUiBookmarksAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtp3PDSE, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtpAndroid, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT : base::FEATURE_DISABLED_BY_DEFAULT);
 // Verify sign-in state on startup.

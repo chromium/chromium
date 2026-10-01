@@ -895,6 +895,7 @@ public abstract class ChromeFeatureList {
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String USE_P_LINK_IN_HELP = "UsePLinkInHelp";
+    public static final String USE_WEB_UI_BOOKMARKS_ANDROID = "UseWebUiBookmarksAndroid";
     public static final String USE_WEB_UI_NTP_3P_DSE = "UseWebUiNtp3PDSE";
     public static final String USE_WEB_UI_NTP_ANDROID = "UseWebUiNtpAndroid";
     public static final String VERIFY_QWACS = "VerifyQWACs";
@@ -1469,6 +1470,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
+    public static final CachedFlag sUseWebUiBookmarksAndroid =
+            newCachedFlag(USE_WEB_UI_BOOKMARKS_ANDROID, /* defaultValue= */ false);
     public static final CachedFlag sUseWebUiNtp3PDSE = newCachedFlag(USE_WEB_UI_NTP_3P_DSE, false);
     public static final CachedFlag sUseWebUiNtpAndroid =
             newCachedFlag(USE_WEB_UI_NTP_ANDROID, BuildConfig.IS_DESKTOP_ANDROID);
@@ -1685,6 +1688,7 @@ public abstract class ChromeFeatureList {
                     sUseAppTaskForCustomTabActivation,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,
+                    sUseWebUiBookmarksAndroid,
                     sUseWebUiNtp3PDSE,
                     sUseWebUiNtpAndroid,
                     sVirtualKeyboardResizesContentTransientOvershootFix,

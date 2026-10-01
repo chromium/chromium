@@ -14275,6 +14275,7 @@ from previous Chrome versions.
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-199443830"
       label="ReadingListEnableSyncTransportModeUponSignIn:enabled"/>
+  <int value="-199441815" label="UseWebUiBookmarksAndroid:disabled"/>
   <int value="-199375204"
       label="EnableCollectAccessibilityHeuristicInCanvasUkm:enabled"/>
   <int value="-199266098" label="FluidResize:enabled"/>
@@ -17875,6 +17876,7 @@ from previous Chrome versions.
   <int value="902442795" label="time-before-discard-in-minutes"/>
   <int value="902649149" label="ArcGhostWindowNewStyle:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
+  <int value="903116938" label="UseWebUiBookmarksAndroid:enabled"/>
   <int value="903267263" label="disable-offline-pages"/>
   <int value="903773754" label="DataSharingAndroidV2:enabled"/>
   <int value="903777470" label="HeadlessLiveCaption:enabled"/>
