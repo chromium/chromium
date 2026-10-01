@@ -31,9 +31,18 @@ class SuggestionTool {
 
   virtual ToolId GetToolId() const = 0;
 
+  // Runs `callback` with suggestions that the tool proposed for the
+  // `processed_area`.
   virtual void RequestSuggestions(const AreaOfInterest& processed_area,
                                   SuggestionsCallback callback) = 0;
 
+  // Returns whether the server may generate suggestions for this tool. If
+  // `true`, this tool's `ToolId` is included in the supported tools server
+  // request for suggestion generation.
+  virtual bool SupportsServerSuggestions() const = 0;
+
+  // Turns the `server_suggestion` into a `Suggestion`. That is, it acts as a
+  // factory function for suggestions that used this tool.
   virtual std::unique_ptr<Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) = 0;
@@ -42,4 +51,3 @@ class SuggestionTool {
 }  // namespace selection
 
 #endif  // CHROME_BROWSER_SELECTION_SUGGESTION_TOOL_H_
-

@@ -55,7 +55,8 @@ proto::AreaOfInterest ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
 }
 
 // Builds a request proto for `aoi` and `tools`, excluding screenshot data.
-// Returns `std::nullopt` if no tools with a valid `ToolId` are registered.
+// Returns `std::nullopt` if no tools supporting server suggestions with a valid
+// `ToolId` are registered.
 std::optional<proto::SmartSelectionSuggestionsRequest>
 BuildServerSuggestionsRequest(
     const AreaOfInterest& aoi,
@@ -65,8 +66,9 @@ BuildServerSuggestionsRequest(
   proto::SmartSelectionClientCapabilities& capabilities =
       *request.mutable_client_capabilities();
   for (const auto& [tool_id, tool] : tools) {
-    // TODO(crbug.com/561489586): Allow tools to exclude themselves from being
-    // shared.
+    if (!tool->SupportsServerSuggestions()) {
+      continue;
+    }
     if (tool_id == proto::SMART_SELECTION_TOOL_UNSPECIFIED) {
       continue;
     }
@@ -115,7 +117,8 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
       continue;
     }
     if (const raw_ptr<SuggestionTool>* tool =
-            base::FindOrNull(tools, server_suggestion.tool())) {
+            base::FindOrNull(tools, server_suggestion.tool());
+        tool && (*tool)->SupportsServerSuggestions()) {
       if (std::unique_ptr<Suggestion> suggestion =
               (*tool)->CreateSuggestion(server_suggestion)) {
         suggestions.emplace_back(std::move(suggestion));

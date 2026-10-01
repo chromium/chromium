@@ -195,6 +195,8 @@ class FakeStaticSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  bool SupportsServerSuggestions() const override { return false; }
+
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
@@ -228,6 +230,8 @@ class FakeSelectionSuggestionTool
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
                                   /*complete=*/true));
   }
+
+  bool SupportsServerSuggestions() const override { return false; }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
@@ -511,6 +515,8 @@ class CountingSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  bool SupportsServerSuggestions() const override { return false; }
+
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
@@ -665,6 +671,8 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  bool SupportsServerSuggestions() const override { return false; }
+
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
@@ -727,6 +735,8 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
     suggestions.push_back(std::move(suggestion));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
+
+  bool SupportsServerSuggestions() const override { return false; }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&

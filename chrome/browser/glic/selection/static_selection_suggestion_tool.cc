@@ -35,6 +35,10 @@ void StaticSelectionSuggestionTool::RequestSuggestions(
   std::move(callback).Run(std::move(suggestions), /*complete=*/true);
 }
 
+bool StaticSelectionSuggestionTool::SupportsServerSuggestions() const {
+  return true;
+}
+
 std::unique_ptr<::selection::Suggestion>
 StaticSelectionSuggestionTool::CreateSuggestion(
     const optimization_guide::proto::SmartSelectionSuggestion&

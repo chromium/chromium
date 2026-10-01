@@ -67,8 +67,11 @@ class CustomTestTool : public SuggestionTool {
   explicit CustomTestTool(
       std::u16string label = u"Custom Action",
       ToolId tool_id =
-          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME)
-      : label_(std::move(label)), tool_id_(tool_id) {}
+          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+      bool supports_server_suggestions = true)
+      : label_(std::move(label)),
+        tool_id_(tool_id),
+        supports_server_suggestions_(supports_server_suggestions) {}
   ~CustomTestTool() override = default;
 
   ToolId GetToolId() const override { return tool_id_; }
@@ -78,6 +81,10 @@ class CustomTestTool : public SuggestionTool {
     std::vector<std::unique_ptr<Suggestion>> suggestions;
     suggestions.push_back(std::make_unique<TestSuggestion>(label_));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+  bool SupportsServerSuggestions() const override {
+    return supports_server_suggestions_;
   }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
@@ -91,8 +98,9 @@ class CustomTestTool : public SuggestionTool {
   }
 
  private:
-  std::u16string label_;
-  ToolId tool_id_;
+  const std::u16string label_;
+  const ToolId tool_id_;
+  const bool supports_server_suggestions_;
 };
 
 class AsyncCustomTestTool : public SuggestionTool {
@@ -112,6 +120,8 @@ class AsyncCustomTestTool : public SuggestionTool {
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
                                   /*complete=*/true));
   }
+
+  bool SupportsServerSuggestions() const override { return false; }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
@@ -232,6 +242,32 @@ TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
   service().UnregisterTool(&static_tool);
 }
 
+// Tests that server suggestions are not requested when no registered tool
+// supports them.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsNotRequestedWhenNoToolSupportsThem) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  CustomTestTool local_only_tool(
+      u"Static Action",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+      /*supports_server_suggestions=*/false);
+  service().RegisterTool(&local_only_tool);
+
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  AreaOfInterest aoi;
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
+      TestFutureMode::kQueue};
+  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+
+  auto [batch, complete] = future.Take();
+  EXPECT_TRUE(complete);
+  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
+
+  service().UnregisterTool(&local_only_tool);
+}
+
 // Tests that server suggestions are requested, parsed, and returned.
 TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
@@ -239,10 +275,15 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   CustomTestTool gemini_tool(
       u"Static Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  CustomTestTool local_only_tool(
+      u"Local Only Action",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH,
+      /*supports_server_suggestions=*/false);
   CustomTestTool unspecified_tool(
       u"Unspecified Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
   service().RegisterTool(&gemini_tool);
+  service().RegisterTool(&local_only_tool);
   service().RegisterTool(&unspecified_tool);
 
   optimization_guide::proto::SmartSelectionSuggestionsResponse response;
@@ -259,8 +300,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
   optimization_guide::proto::SmartSelectionSuggestion* s3 =
       response.add_suggestions();
-  s3->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
-  s3->set_label("Unspecified Tool Action");
+  s3->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH);
+  s3->set_label("Local Only Tool Action");
+
+  optimization_guide::proto::SmartSelectionSuggestion* s4 =
+      response.add_suggestions();
+  s4->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
+  s4->set_label("Unspecified Tool Action");
 
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
@@ -313,7 +359,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   EXPECT_FALSE(static_complete);
   EXPECT_THAT(static_batch,
               ElementsAre(SuggestionWithLabel(u"Unspecified Action"),
-                          SuggestionWithLabel(u"Static Action")));
+                          SuggestionWithLabel(u"Static Action"),
+                          SuggestionWithLabel(u"Local Only Action")));
 
   // Second batch: Server suggestions, with complete=true.
   auto [server_batch, server_complete] = future.Take();
@@ -322,6 +369,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
 
   service().UnregisterTool(&gemini_tool);
+  service().UnregisterTool(&local_only_tool);
   service().UnregisterTool(&unspecified_tool);
 }
 
