@@ -6929,6 +6929,13 @@
     "expiry_milestone": 170
   },
   {
+    "name": "mac-sandbox-logging",
+    "owners": [
+      "bryanoltman@google.com", "//ui/base/cocoa/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "magic-stack-tips-v2-ios",
     "owners": [ "erahmaoui@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 170

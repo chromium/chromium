@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/mac/sandbox_serializer.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -107,7 +108,9 @@ void SetupCommonSandboxParameters(
   const base::CommandLine* browser_command_line =
       base::CommandLine::ForCurrentProcess();
   bool enable_logging = browser_command_line->HasSwitch(
-      sandbox::policy::switches::kEnableSandboxLogging);
+                            sandbox::policy::switches::kEnableSandboxLogging) ||
+                        base::FeatureList::IsEnabled(
+                            sandbox::policy::features::kEnableSandboxLogging);
 
   CHECK(serializer->SetParameter(
       sandbox::policy::kParamExecutablePath,

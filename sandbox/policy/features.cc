@@ -35,6 +35,13 @@ BASE_FEATURE(kNetworkServiceFileAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_MAC)
+// Enables sandbox violation logging on macOS (equivalent to the
+// --enable-sandbox-logging command-line flag). When enabled, every attempt to
+// access a resource denied by the sandbox will be logged to the system log.
+BASE_FEATURE(kEnableSandboxLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_WIN)
 // Enables the Windows speech recognition sandbox hardening.
 BASE_FEATURE(kSpeechRecognitionSandboxHardening,

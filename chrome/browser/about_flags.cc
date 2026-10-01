@@ -6039,6 +6039,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacCatapLoopbackAudioForCastDescription, kOsMac,
      FEATURE_VALUE_TYPE(media::kMacCatapLoopbackAudioForCast)},
 
+    {"mac-sandbox-logging", flag_descriptions::kMacSandboxLoggingName,
+     flag_descriptions::kMacSandboxLoggingDescription, kOsMac,
+     STRING_VALUE_TYPE(sandbox::policy::switches::kEnableSandboxLogging, "")},
+
     {"use-sc-content-sharing-picker",
      flag_descriptions::kUseSCContentSharingPickerName,
      flag_descriptions::kUseSCContentSharingPickerDescription, kOsMac,
