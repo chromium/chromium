@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -61,7 +60,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
 
   // Clears all internal state and closes the UnderlyingSource's Controller.
   // Must be called on |realm_task_runner_|.
-  void Close();
+  virtual void Close();
 
   bool IsClosed() { return is_closed_; }
 
@@ -75,6 +74,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Delivers a new frame to this source.
   void QueueFrame(NativeFrameType);
 
+  bool HasPendingPulls() const;
   int NumPendingPullsForTesting() const;
   double DesiredSizeForTesting() const;
   uint64_t TotalFrames() const;
@@ -94,6 +94,16 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
     realm_is_boostable_context_ = is_boostable;
   }
 
+  bool HasTransferredSourceForTesting() const {
+    base::AutoLock locker(lock_);
+    return !!transferred_source_;
+  }
+
+  // Due to a potential race condition between |transferred_source_|'s heap
+  // being destroyed and the Close() method being called, we need to explicitly
+  // clear |transferred_source_| when its context is being destroyed.
+  void ClearTransferredSource();
+
  protected:
   // Initializes a new FrameQueueUnderlyingSource containing a
   // |frame_queue_handle_| that references the same internal circular queue as
@@ -101,6 +111,19 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   FrameQueueUnderlyingSource(
       ScriptState*,
       FrameQueueUnderlyingSource<NativeFrameType>* other_source);
+  FrameQueueUnderlyingSource(ScriptState*,
+                             scoped_refptr<FrameQueue<NativeFrameType>> queue,
+                             std::string device_id,
+                             wtf_size_t frame_pool_size,
+                             std::optional<base::ThreadType> thread_type);
+
+  scoped_refptr<FrameQueue<NativeFrameType>> Queue() const {
+    return frame_queue_handle_.Queue();
+  }
+  const std::string& DeviceId() const { return device_id_; }
+  wtf_size_t FramePoolSize() const { return frame_pool_size_; }
+  std::optional<base::ThreadType> ThreadType() const { return thread_type_; }
+
   scoped_refptr<base::SequencedTaskRunner> GetRealmRunner() {
     return realm_task_runner_;
   }
@@ -109,17 +132,12 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // QueueFrame(). |transferred_source| will pull frames from the same circular
   // queue. Must be called on |realm_task_runner_|.
   void TransferSource(
+      scoped_refptr<base::SequencedTaskRunner> transferred_runner,
       CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
           transferred_source,
       base::TimeTicks time_origin = base::TimeTicks(),
       bool is_cross_origin_isolated = false);
 
-  // Due to a potential race condition between |transferred_source_|'s heap
-  // being destroyed and the Close() method being called, we need to explicitly
-  // clear |transferred_source_| when its context is being destroyed.
-  void ClearTransferredSource();
-
- protected:
   bool MustUseMonitor() const;
 
  private:
@@ -167,10 +185,14 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // transferred stream.
   CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
       transferred_source_ GUARDED_BY(lock_);
+  scoped_refptr<base::SequencedTaskRunner> transferred_runner_
+      GUARDED_BY(lock_);
   bool transferred_source_cleared_ GUARDED_BY(lock_) = false;
   int num_pending_pulls_ GUARDED_BY(lock_) = 0;
-  uint64_t total_frames_ GUARDED_BY(lock_) = 0;
-  uint64_t discarded_frames_ GUARDED_BY(lock_) = 0;
+  uint64_t initial_total_frames_ = 0;
+  uint64_t initial_discarded_frames_ = 0;
+  uint64_t closed_total_frames_ GUARDED_BY(lock_) = 0;
+  uint64_t closed_discarded_frames_ GUARDED_BY(lock_) = 0;
   // When nonempty, |device_id_| is used to monitor all frames queued by this
   // source or exposed to JS via the stream connected to this source.
   // Frame monitoring applies only to video. Audio is never monitored.

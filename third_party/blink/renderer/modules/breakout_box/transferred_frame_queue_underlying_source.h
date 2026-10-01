@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_TRANSFERRED_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_TRANSFERRED_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 
+#include <optional>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
@@ -20,9 +22,12 @@ class TransferredFrameQueueUnderlyingSource
 
   TransferredFrameQueueUnderlyingSource(
       ScriptState*,
-      CrossThreadPersistent<FrameQueueHost>,
+      scoped_refptr<FrameQueue<NativeFrameType>> queue,
       scoped_refptr<base::SequencedTaskRunner> host_runner,
-      CrossThreadOnceClosure transferred_source_destroyed_callback);
+      CrossThreadPersistent<FrameQueueHost> host,
+      std::string device_id = std::string(),
+      wtf_size_t frame_pool_size = 0,
+      std::optional<base::ThreadType> thread_type = std::nullopt);
   ~TransferredFrameQueueUnderlyingSource() override = default;
 
   TransferredFrameQueueUnderlyingSource(
@@ -33,6 +38,7 @@ class TransferredFrameQueueUnderlyingSource
   // FrameQueueUnderlyingSource<NativeFrameType> implementation.
   bool StartFrameDelivery() override;
   void StopFrameDelivery() override;
+  void Close() override;
 
   // ExecutionLifecycleObserver
   void ContextDestroyed() override;
@@ -42,7 +48,6 @@ class TransferredFrameQueueUnderlyingSource
  private:
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
   CrossThreadPersistent<FrameQueueHost> host_;
-  CrossThreadOnceClosure transferred_source_destroyed_callback_;
 };
 
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT

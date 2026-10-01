@@ -104,6 +104,16 @@ class TestVideoFrameQueueUnderlyingSource
   using VideoFrameQueueUnderlyingSource::TransferSource;
   using VideoFrameQueueUnderlyingSource::VideoFrameQueueUnderlyingSource;
 
+  TestVideoFrameQueueUnderlyingSource(
+      ScriptState* script_state,
+      VideoFrameQueueUnderlyingSource* other_source)
+      : VideoFrameQueueUnderlyingSource(script_state, other_source) {}
+
+  void TransferSource(TestVideoFrameQueueUnderlyingSource* transferred_source) {
+    TransferSource(transferred_source->GetRealmRunner(),
+                   WrapCrossThreadPersistent(transferred_source));
+  }
+
   bool StartFrameDelivery() override { return true; }
   void StopFrameDelivery() override {}
 };
@@ -483,10 +493,8 @@ TEST_F(MediaStreamTrackProcessorTest, StatsForDirectPushesToTransferredSource) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
 
-  // Create source A and source B.
+  // Create source A.
   auto* source_a = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
-      script_state, 10u, "device_id", 10u, std::nullopt);
-  auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
       script_state, 10u, "device_id", 10u, std::nullopt);
 
   scoped_refptr<media::VideoFrame> frame =
@@ -494,7 +502,9 @@ TEST_F(MediaStreamTrackProcessorTest, StatsForDirectPushesToTransferredSource) {
   source_a->QueueFrame(frame);
   source_a->QueueFrame(frame);
 
-  // Transfer A to B.
+  // Create source B sharing source A's queue and transfer A to B.
+  auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, source_a);
   source_a->TransferSource(source_b);
 
   EXPECT_EQ(source_a->TotalFrames(), 2u);
@@ -521,7 +531,7 @@ TEST_F(MediaStreamTrackProcessorTest, ClearTransferredSourceStopsTransfer) {
   auto* source_a = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
       script_state, 10u, "device_id", 10u, std::nullopt);
   auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
-      script_state, 10u, "device_id", 10u, std::nullopt);
+      script_state, source_a);
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
@@ -534,6 +544,7 @@ TEST_F(MediaStreamTrackProcessorTest, ClearTransferredSourceStopsTransfer) {
   source_a->ClearTransferredSource();
   source_a->QueueFrame(frame);
   EXPECT_EQ(source_b->TotalFrames(), 1u);
+  EXPECT_EQ(source_a->DiscardedFrames(), 2u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, TransferAfterClearDoesNotTransfer) {
@@ -543,13 +554,14 @@ TEST_F(MediaStreamTrackProcessorTest, TransferAfterClearDoesNotTransfer) {
   auto* source_a = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
       script_state, 10u, "device_id", 10u, std::nullopt);
   auto* source_b = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
-      script_state, 10u, "device_id", 10u, std::nullopt);
+      script_state, source_a);
 
   // ClearTransferredSource called before TransferSource (simulates Worker
   // ContextDestroyed running before Main processes TransferSource).
   source_a->ClearTransferredSource();
 
   source_a->TransferSource(source_b);
+  EXPECT_FALSE(source_a->HasTransferredSourceForTesting());
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));

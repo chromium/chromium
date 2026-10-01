@@ -262,12 +262,10 @@ std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamAudioTrackUnderlyingSource::GetTransferringOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<AudioDataQueueTransferOptimizer>(
-      this, GetRealmRunner(), MaxQueueSize(),
+      this, GetRealmRunner(), Queue(), DeviceId(), FramePoolSize(),
+      ThreadType(),
       CrossThreadBindOnce(
           &MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted,
-          WrapCrossThreadWeakPersistent(this)),
-      CrossThreadBindOnce(
-          &MediaStreamAudioTrackUnderlyingSource::ClearTransferredSource,
           WrapCrossThreadWeakPersistent(this)));
 }
 
@@ -286,7 +284,8 @@ void MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted(
     base::TimeTicks time_origin,
     bool is_cross_origin_isolated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransferSource(std::move(source), time_origin, is_cross_origin_isolated);
+  TransferSource(std::move(transferred_runner), std::move(source), time_origin,
+                 is_cross_origin_isolated);
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableAudioWorker);
 }
 

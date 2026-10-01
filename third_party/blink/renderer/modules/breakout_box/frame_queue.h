@@ -22,22 +22,24 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   explicit FrameQueue(wtf_size_t max_size)
       : max_size_(std::max(1u, max_size)) {}
 
-  base::Lock& GetLock() { return lock_; }
+  base::Lock& GetLock() const { return lock_; }
 
   std::optional<NativeFrameType> Push(NativeFrameType frame) {
     TRACE_EVENT_INSTANT("mediastream", "FrameQueue::Push", "this",
                         static_cast<void*>(this));
-    base::AutoLock locker_(GetLock());
+    base::AutoLock locker(GetLock());
     return PushLocked(std::move(frame));
   }
 
   std::optional<NativeFrameType> PushLocked(NativeFrameType frame)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    total_frames_++;
     std::optional<NativeFrameType> ret;
     if (queue_.size() == max_size_) {
       TRACE_EVENT_INSTANT("mediastream", "FrameQueue::Push no space left",
                           "max_size_", max_size_);
       ret = queue_.TakeFirst();
+      discarded_frames_++;
     }
     queue_.push_back(std::move(frame));
     TRACE_COUNTER("mediastream",
@@ -49,7 +51,7 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   std::optional<NativeFrameType> Pop() {
     TRACE_EVENT_INSTANT("mediastream", "FrameQueue::Pop", "this",
                         static_cast<void*>(this));
-    base::AutoLock locker_(GetLock());
+    base::AutoLock locker(GetLock());
     return PopLocked();
   }
 
@@ -68,7 +70,7 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   }
 
   bool IsEmpty() {
-    base::AutoLock locker_(GetLock());
+    base::AutoLock locker(GetLock());
     return IsEmptyLocked();
   }
 
@@ -82,15 +84,44 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
 
   wtf_size_t MaxSize() const { return max_size_; }
 
+  void IncrementTotalFramesLocked() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    total_frames_++;
+  }
+
+  void IncrementDiscardedFramesLocked(size_t count = 1)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    discarded_frames_ += count;
+  }
+
+  uint64_t TotalFrames() const {
+    base::AutoLock locker(GetLock());
+    return TotalFramesLocked();
+  }
+
+  uint64_t TotalFramesLocked() const EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    return total_frames_;
+  }
+
+  uint64_t DiscardedFrames() const {
+    base::AutoLock locker(GetLock());
+    return DiscardedFramesLocked();
+  }
+
+  uint64_t DiscardedFramesLocked() const EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    return discarded_frames_;
+  }
+
   void Clear() {
-    base::AutoLock locker_(GetLock());
+    base::AutoLock locker(GetLock());
     queue_.clear();
   }
 
  private:
-  base::Lock lock_;
+  mutable base::Lock lock_;
   Deque<NativeFrameType> queue_ GUARDED_BY(GetLock());
   const wtf_size_t max_size_;
+  uint64_t total_frames_ GUARDED_BY(GetLock()) = 0;
+  uint64_t discarded_frames_ GUARDED_BY(GetLock()) = 0;
 };
 
 // Wrapper that allows sharing a single FrameQueue reference across multiple

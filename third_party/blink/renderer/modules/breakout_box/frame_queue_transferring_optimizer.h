@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_TRANSFERRING_OPTIMIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_TRANSFERRING_OPTIMIZER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/modules/breakout_box/frame_queue.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -34,9 +37,11 @@ class FrameQueueTransferringOptimizer final
   FrameQueueTransferringOptimizer(
       FrameQueueHost*,
       scoped_refptr<base::SequencedTaskRunner> host_runner,
-      wtf_size_t max_queue_size,
-      ConnectHostCallback connect_host_callback,
-      CrossThreadOnceFunction<void()> transferred_source_destroyed_callback);
+      scoped_refptr<FrameQueue<NativeFrameType>> frame_queue,
+      std::string device_id,
+      wtf_size_t frame_pool_size,
+      std::optional<base::ThreadType> thread_type,
+      ConnectHostCallback connect_host_callback);
   ~FrameQueueTransferringOptimizer() override = default;
 
   UnderlyingSourceBase* PerformInProcessOptimization(
@@ -45,9 +50,11 @@ class FrameQueueTransferringOptimizer final
  private:
   CrossThreadWeakPersistent<FrameQueueHost> host_;
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
+  scoped_refptr<FrameQueue<NativeFrameType>> frame_queue_;
+  const std::string device_id_;
+  const wtf_size_t frame_pool_size_;
+  const std::optional<base::ThreadType> thread_type_;
   ConnectHostCallback connect_host_callback_;
-  CrossThreadOnceFunction<void()> transferred_source_destroyed_callback_;
-  wtf_size_t max_queue_size_;
 };
 
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT

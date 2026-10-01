@@ -23,15 +23,18 @@ FrameQueueTransferringOptimizer<NativeFrameType>::
     FrameQueueTransferringOptimizer(
         FrameQueueHost* host,
         scoped_refptr<base::SequencedTaskRunner> host_runner,
-        wtf_size_t max_queue_size,
-        ConnectHostCallback connect_host_callback,
-        CrossThreadOnceClosure transferred_source_destroyed_callback)
+        scoped_refptr<FrameQueue<NativeFrameType>> frame_queue,
+        std::string device_id,
+        wtf_size_t frame_pool_size,
+        std::optional<base::ThreadType> thread_type,
+        ConnectHostCallback connect_host_callback)
     : host_(host),
       host_runner_(std::move(host_runner)),
-      connect_host_callback_(std::move(connect_host_callback)),
-      transferred_source_destroyed_callback_(
-          std::move(transferred_source_destroyed_callback)),
-      max_queue_size_(max_queue_size) {}
+      frame_queue_(std::move(frame_queue)),
+      device_id_(std::move(device_id)),
+      frame_pool_size_(frame_pool_size),
+      thread_type_(thread_type),
+      connect_host_callback_(std::move(connect_host_callback)) {}
 
 template <typename NativeFrameType>
 UnderlyingSourceBase*
@@ -46,9 +49,6 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
   // `ContextDestroyed()`, so the host would keep forwarding frames to a dead
   // heap. Treat this like a transferred source whose context was destroyed.
   if (!context || context->IsContextDestroyed()) {
-    if (transferred_source_destroyed_callback_) {
-      std::move(transferred_source_destroyed_callback_).Run();
-    }
     PostCrossThreadTask(
         *host_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameQueueHost::Close, std::move(host)));
@@ -67,8 +67,8 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
 
   auto* source = MakeGarbageCollected<
       TransferredFrameQueueUnderlyingSource<NativeFrameType>>(
-      script_state, host, host_runner_,
-      std::move(transferred_source_destroyed_callback_));
+      script_state, frame_queue_, host_runner_, host, device_id_,
+      frame_pool_size_, thread_type_);
 
   PostCrossThreadTask(
       *host_runner_, FROM_HERE,
