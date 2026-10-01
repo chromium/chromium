@@ -2121,24 +2121,28 @@ chromium-metrics-reviews@google.com.
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
 
-<histogram name="Glic.InvokeResult" enum="GlicInvokeResult"
+<histogram name="Glic.InvokeResult2" enum="GlicInvokeResult"
     expires_after="2027-06-01">
   <owner>vollick@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
     Records the result of a Glic invocation (success or specific error).
-    Recorded when the invocation completes successfully or fails.
+    Recorded when the invocation completes successfully or fails. Replaced
+    Glic.InvokeResult in M157, when the &quot;Instance destroyed&quot; error was
+    split by why the instance was removed.
   </summary>
 </histogram>
 
-<histogram name="Glic.InvokeResult.{InvocationSource}" enum="GlicInvokeResult"
+<histogram name="Glic.InvokeResult2.{InvocationSource}" enum="GlicInvokeResult"
     expires_after="2027-06-01">
   <owner>vollick@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
     Records the result of a Glic invocation (success or specific error) sliced
     by the invocation source. Recorded when the invocation completes
-    successfully or fails.
+    successfully or fails. Replaced Glic.InvokeResult.{InvocationSource} in
+    M157, when the &quot;Instance destroyed&quot; error was split by why the
+    instance was removed.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>

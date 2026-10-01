@@ -214,8 +214,9 @@ enum class GlicInvokeError {
   kInvalidTab = 4,
   // The tab was closed before the invocation could complete.
   kTabClosed = 5,
-  // The instance was destroyed before the invocation could complete.
-  kInstanceDestroyed = 6,
+  // Deprecated: split by removal reason into the kInstanceDestroyed* values
+  // below.
+  // kInstanceDestroyed = 6,
   // The instance is already handling an invocation.
   kInvokeInProgress = 7,
   // The provided invocation configuration is invalid.
@@ -246,7 +247,14 @@ enum class GlicInvokeError {
   kLiveModeActive = 19,
   // The Glic client failed to load or reach a ready state.
   kClientLoadError = 20,
-  kMaxValue = kClientLoadError,
+  // The instance was destroyed before the invocation could complete. The
+  // suffix says why the instance was removed (see InstanceRemovalReason).
+  kInstanceDestroyedBlankInstanceClosed = 21,
+  kInstanceDestroyedUnbound = 22,
+  kInstanceDestroyedArchived = 23,
+  kInstanceDestroyedSignedOut = 24,
+  kInstanceDestroyedShutdown = 25,
+  kMaxValue = kInstanceDestroyedShutdown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/public/glic_invoke_options.cc:GlicInvokeErrorToString)
 

@@ -273,7 +273,8 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, ZoomChangeCountMetric) {
   TriggerHotkey(LocalHotkeyManager::Command::kZoomReset);
 
   // Destroy the instance to trigger metric emission on close/destruction.
-  coordinator().RemoveInstance(instance->id());
+  coordinator().RemoveInstance(instance->id(),
+                               InstanceRemovalReason::kArchived);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
 }

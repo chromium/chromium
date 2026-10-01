@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   EXPECT_OK(RunUntilEqual(
       [&]() {
         return histogram_tester.GetBucketCount(
-            "Glic.InvokeResult.WebDragDrop",
+            "Glic.InvokeResult2.WebDragDrop",
             static_cast<int>(GlicInvokeResult::kSuccess));
       },
       1));
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   EXPECT_OK(RunUntilEqual(
       [&]() {
         return histogram_tester.GetBucketCount(
-            "Glic.InvokeResult.WebDragDrop",
+            "Glic.InvokeResult2.WebDragDrop",
             static_cast<int>(GlicInvokeResult::kSuccess));
       },
       1));

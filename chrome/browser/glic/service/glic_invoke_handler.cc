@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/host.h"
@@ -69,6 +70,22 @@ ShowOptions CreateShowOptions(
   show_options.invocation_source = options.GetInvocationSource();
   show_options.focus_on_show = options.focus_on_show;
   return show_options;
+}
+
+GlicInvokeError ToInvokeError(InstanceRemovalReason reason) {
+  switch (reason) {
+    case InstanceRemovalReason::kBlankInstanceClosed:
+      return GlicInvokeError::kInstanceDestroyedBlankInstanceClosed;
+    case InstanceRemovalReason::kUnbound:
+      return GlicInvokeError::kInstanceDestroyedUnbound;
+    case InstanceRemovalReason::kArchived:
+      return GlicInvokeError::kInstanceDestroyedArchived;
+    case InstanceRemovalReason::kSignedOut:
+      return GlicInvokeError::kInstanceDestroyedSignedOut;
+    case InstanceRemovalReason::kShutdown:
+      return GlicInvokeError::kInstanceDestroyedShutdown;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -218,12 +235,6 @@ GlicInvokeHandler::GlicInvokeHandler(
         base::BindRepeating(&GlicInvokeHandler::OnTabWillDetach,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // As the handler holds a raw pointer to GlicInstanceImpl, it must listen to
-  // its destruction.
-  instance_destruction_subscription_ = instance_->RegisterWillBeDestroyed(
-      base::BindOnce(&GlicInvokeHandler::OnInstanceWillBeDestroyed,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 GlicInvokeHandler::~GlicInvokeHandler() = default;
@@ -437,16 +448,16 @@ void GlicInvokeHandler::Cancel(GlicInvokeError error) {
   OnError(error);
 }
 
+void GlicInvokeHandler::CancelForInstanceRemoval(InstanceRemovalReason reason) {
+  OnError(ToInvokeError(reason));
+}
+
 void GlicInvokeHandler::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
     OnError(GlicInvokeError::kTabClosed);
   }
-}
-
-void GlicInvokeHandler::OnInstanceWillBeDestroyed(GlicInstance* instance) {
-  OnError(GlicInvokeError::kInstanceDestroyed);
 }
 
 void GlicInvokeHandler::OnConversationInfoChanged(

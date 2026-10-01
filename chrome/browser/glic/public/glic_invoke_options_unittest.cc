@@ -17,6 +17,10 @@ TEST(GlicInvokeOptionsTest, EveryInvokeErrorHasADistinctString) {
   // 0 is reserved for success in metrics, so values start at 1.
   for (int value = 1; value <= static_cast<int>(GlicInvokeError::kMaxValue);
        ++value) {
+    // Skip the deprecated kInstanceDestroyed.
+    if (value == 6) {
+      continue;
+    }
     const auto error = static_cast<GlicInvokeError>(value);
     const std::string_view description = GlicInvokeErrorToString(error);
     EXPECT_FALSE(description.empty()) << "No description for error " << value;

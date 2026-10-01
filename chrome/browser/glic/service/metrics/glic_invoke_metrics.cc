@@ -21,7 +21,7 @@ namespace glic {
 
 namespace {
 
-constexpr char kInvokeResultHistogramName[] = "Glic.InvokeResult";
+constexpr char kInvokeResultHistogramName[] = "Glic.InvokeResult2";
 constexpr char kInvokeSourceHistogramName[] = "Glic.Invoke.InvocationSource";
 constexpr char kInvokeDurationHistogramName[] = "Glic.Invoke.Duration";
 constexpr char kInvokeTimeoutStageHistogramName[] = "Glic.Invoke.TimeoutStage";
@@ -35,7 +35,11 @@ glic::GlicCuiOutcome MapInvokeErrorToCuiOutcome(GlicInvokeError error) {
     case GlicInvokeError::kCancelled:
       return glic::GlicCuiOutcome::kUnknownCancel;
     case GlicInvokeError::kTabClosed:
-    case GlicInvokeError::kInstanceDestroyed:
+    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
+    case GlicInvokeError::kInstanceDestroyedUnbound:
+    case GlicInvokeError::kInstanceDestroyedArchived:
+    case GlicInvokeError::kInstanceDestroyedSignedOut:
+    case GlicInvokeError::kInstanceDestroyedShutdown:
       return glic::GlicCuiOutcome::kAbandoned;
     default:
       return glic::GlicCuiOutcome::kFailed;

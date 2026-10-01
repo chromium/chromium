@@ -710,7 +710,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Invalid conversation ID"/>
   <int value="4" label="Invalid tab"/>
   <int value="5" label="Tab closed"/>
-  <int value="6" label="Instance destroyed"/>
+  <int value="6" label="(Obsolete) Instance destroyed">
+    (Obsolete) Split by why the instance was removed into values 21-25.
+  </int>
   <int value="7" label="Invoke in progress"/>
   <int value="8" label="Invalid configuration"/>
   <int value="9" label="Additional context saw navigation"/>
@@ -725,6 +727,11 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Superseded by another invocation"/>
   <int value="19" label="Instance is in live mode"/>
   <int value="20" label="Client load error"/>
+  <int value="21" label="Instance destroyed: blank instance closed"/>
+  <int value="22" label="Instance destroyed: unbound"/>
+  <int value="23" label="Instance destroyed: archived"/>
+  <int value="24" label="Instance destroyed: signed out"/>
+  <int value="25" label="Instance destroyed: shutdown"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->

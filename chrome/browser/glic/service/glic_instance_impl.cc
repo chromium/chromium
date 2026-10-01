@@ -791,7 +791,8 @@ void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   ContextAccessIndicatorChanged(host().IsContextAccessIndicatorEnabled());
 }
 
-void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
+void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key,
+                                      InstanceRemovalReason removal_reason) {
   instance_metrics_.OnUnbindEmbedder(key);
   tabs::TabInterface* tab = GetTabFromEmbedderKey(key);
 
@@ -827,7 +828,7 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
 
   UpdateFloatingPanelCanAttach();
 
-  MaybeRemoveInstance();
+  MaybeRemoveInstance(removal_reason);
 
   if (tab && tab_group_binding_) {
     EnsureTabNotInGroup(tab, tab_group_binding_->id);
@@ -1278,7 +1279,7 @@ void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
   NotifyVisibilityChange();
   UpdateFloatingPanelCanAttach();
   MaybeActivateForegroundEmbedder();
-  MaybeRemoveInstance();
+  MaybeRemoveInstance(InstanceRemovalReason::kUnbound);
 }
 
 void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
@@ -1698,7 +1699,7 @@ void GlicInstanceImpl::MaybeRemoveBlankInstanceOnClose() {
     return;
   }
 
-  UnbindTab(tab);
+  UnbindEmbedder(key, InstanceRemovalReason::kBlankInstanceClosed);
 }
 
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
@@ -1778,7 +1779,7 @@ void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,
   }
   if (!pinned) {
     helper->OnUnpinnedByInstance(this);
-    MaybeRemoveInstance();
+    MaybeRemoveInstance(InstanceRemovalReason::kUnbound);
     return;
   }
   helper->OnPinnedByInstance(this);
@@ -1948,21 +1949,21 @@ std::string GlicInstanceImpl::DescribeForTesting() {
   return ss.str();
 }
 
-void GlicInstanceImpl::MaybeRemoveInstance() {
+void GlicInstanceImpl::MaybeRemoveInstance(InstanceRemovalReason reason) {
   if (CanBeRemoved() && coordinator_delegate_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&GlicInstanceImpl::ExecuteRemoveInstance,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(), reason));
   }
 }
 
-void GlicInstanceImpl::ExecuteRemoveInstance() {
+void GlicInstanceImpl::ExecuteRemoveInstance(InstanceRemovalReason reason) {
   // Re-verify that the instance is still ready to be removed when this task
   // executes. For example, if a tab was closed and then restored synchronously
   // before this task ran, the instance will have been reused, so we must not
   // remove it.
   if (CanBeRemoved() && coordinator_delegate_) {
-    coordinator_delegate_->RemoveInstance(id_);
+    coordinator_delegate_->RemoveInstance(id_, reason);
   }
 }
 

@@ -252,9 +252,6 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
     case GlicInvokeError::kTabClosed:
       ShareComplete(ShareImageResult::kFailedNoTab);
       break;
-    case GlicInvokeError::kInstanceDestroyed:
-      ShareComplete(ShareImageResult::kFailedLostInstance);
-      break;
     case GlicInvokeError::kInvokeInProgress:
       ShareComplete(ShareImageResult::kFailedInvokeInProgress);
       break;
@@ -296,6 +293,13 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
       break;
     case GlicInvokeError::kClientLoadError:
       ShareComplete(ShareImageResult::kFailedUnknown);
+      break;
+    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
+    case GlicInvokeError::kInstanceDestroyedUnbound:
+    case GlicInvokeError::kInstanceDestroyedArchived:
+    case GlicInvokeError::kInstanceDestroyedSignedOut:
+    case GlicInvokeError::kInstanceDestroyedShutdown:
+      ShareComplete(ShareImageResult::kFailedLostInstance);
       break;
   }
 }

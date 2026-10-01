@@ -333,7 +333,7 @@ TEST_F(GlicShareImageHandlerTest, OnInvokeErrorTabClosed) {
 }
 
 TEST_F(GlicShareImageHandlerTest, OnInvokeErrorInstanceDestroyed) {
-  OnInvokeError(GlicInvokeError::kInstanceDestroyed);
+  OnInvokeError(GlicInvokeError::kInstanceDestroyedUnbound);
   histogram_tester_.ExpectBucketCount(
       "Glic.TabContext.ShareImageResult",
       static_cast<int>(ShareImageResult::kFailedLostInstance), 1);

@@ -87,7 +87,8 @@ class GlicInstanceImpl : public GlicInstance,
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
-    virtual void RemoveInstance(InstanceId id) = 0;
+    virtual void RemoveInstance(InstanceId id,
+                                InstanceRemovalReason reason) = 0;
     // Called by an instance when its visibility state changes.
     virtual void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                              bool is_showing) = 0;
@@ -211,8 +212,12 @@ class GlicInstanceImpl : public GlicInstance,
 
   bool IsActiveEmbedder(EmbedderKey key) const;
 
+  // If this leaves nothing keeping `this` alive, `this` is removed for
+  // `removal_reason`.
   // NOTE: This method may result in the deletion of `this`.
-  void UnbindEmbedder(EmbedderKey key);
+  void UnbindEmbedder(
+      EmbedderKey key,
+      InstanceRemovalReason removal_reason = InstanceRemovalReason::kUnbound);
   void UnbindTab(tabs::TabInterface* tab);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
@@ -400,11 +405,11 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Checks if the instance is ready to be removed (i.e. it has no embedders
   // and no remaining pinned tabs). If so, posts a task to the
-  // coordinator delegate to destroy this instance asynchronously.
-  void MaybeRemoveInstance();
+  // coordinator delegate to destroy this instance asynchronously for `reason`.
+  void MaybeRemoveInstance(InstanceRemovalReason reason);
   // Executes the asynchronous removal of this instance. Should not be called
   // directly; call MaybeRemoveInstance() instead.
-  void ExecuteRemoveInstance();
+  void ExecuteRemoveInstance(InstanceRemovalReason reason);
   bool CanBeRemoved();
   EmbedderEntry& BindTab(tabs::TabInterface* tab,
                          GlicPinTrigger pin_trigger,

@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest,
   EXPECT_OK(RunUntilEqual(
       [&]() {
         return histogram_tester.GetBucketCount(
-            "Glic.InvokeResult.WebDragDrop",
+            "Glic.InvokeResult2.WebDragDrop",
             static_cast<int>(
                 GlicInvokeError::kAdditionalContextFailedPastePolicy));
       },

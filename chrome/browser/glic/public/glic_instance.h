@@ -115,7 +115,8 @@ class GlicInstance {
   // Cancels ongoing actuation task if one exists.
   virtual void CancelTask() = 0;
 
-  // Returns true if the instance is currently being invoked upon.
+  // Returns true if an invocation that sends an invoke to the web client is in
+  // progress on the instance. Invocations that only show the UI don't count.
   virtual bool IsInvoking() const = 0;
 
   // Cancels any ongoing invocation if one exists.

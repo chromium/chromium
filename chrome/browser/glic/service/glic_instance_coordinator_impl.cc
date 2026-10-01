@@ -165,6 +165,11 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
   active_instance_sharing_manager_->SetActiveSharingManager(nullptr);
 
   for (auto& [id, instance] : instances_) {
+    for (auto& handler : TakeInvokeHandlers(instance.get())) {
+      if (handler) {
+        handler->CancelForInstanceRemoval(InstanceRemovalReason::kShutdown);
+      }
+    }
     instance->CloseInstanceAndShutdown();
   }
 
@@ -222,24 +227,27 @@ void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
 
 bool GlicInstanceCoordinatorImpl::IsInvoking(
     const GlicInstanceImpl* instance) const {
-  return invoke_handlers_.contains(const_cast<GlicInstanceImpl*>(instance));
+  return FindClientInvokeHandler(const_cast<GlicInstanceImpl*>(instance)) !=
+         nullptr;
 }
 
 void GlicInstanceCoordinatorImpl::CancelInvoke(GlicInstanceImpl* instance) {
-  // Take ownership of the handlers first, as cancelling them re-enters
-  // OnInvokeHandlerComplete().
+  for (auto& handler : TakeInvokeHandlers(instance)) {
+    if (handler) {
+      handler->Cancel(GlicInvokeError::kCancelled);
+    }
+  }
+}
+
+std::vector<std::unique_ptr<GlicInvokeHandler>>
+GlicInstanceCoordinatorImpl::TakeInvokeHandlers(GlicInstance* instance) {
   auto [begin, end] = invoke_handlers_.equal_range(instance);
   std::vector<std::unique_ptr<GlicInvokeHandler>> handlers;
   for (auto it = begin; it != end; ++it) {
     handlers.push_back(std::move(it->second));
   }
   invoke_handlers_.erase(begin, end);
-
-  for (auto& handler : handlers) {
-    if (handler) {
-      handler->Cancel(GlicInvokeError::kCancelled);
-    }
-  }
+  return handlers;
 }
 
 void GlicInstanceCoordinatorImpl::OnInvoked(mojom::InvocationSource source,
@@ -267,7 +275,7 @@ void GlicInstanceCoordinatorImpl::OnPrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     // Close all instances on sign-out.
-    RemoveAllInstances();
+    RemoveAllInstances(InstanceRemovalReason::kSignedOut);
   }
 }
 
@@ -622,7 +630,7 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
 
   for (auto& [instance, handler] : handlers) {
     if (handler) {
-      handler->Cancel(GlicInvokeError::kInstanceDestroyed);
+      handler->CancelForInstanceRemoval(InstanceRemovalReason::kShutdown);
     }
   }
 
@@ -639,9 +647,10 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
   CloseFloaty(options);
 }
 
-void GlicInstanceCoordinatorImpl::RemoveAllInstances() {
+void GlicInstanceCoordinatorImpl::RemoveAllInstances(
+    InstanceRemovalReason reason) {
   while (!instances_.empty()) {
-    RemoveInstance(instances_.begin()->first);
+    RemoveInstance(instances_.begin()->first, reason);
   }
 }
 
@@ -874,24 +883,11 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
-  if (bypass_in_progress_check) {
-    auto handler = std::make_unique<GlicInvokeHandler>(
-        *instance, resolved_target, std::move(options),
-        std::move(auto_submit_options), auto_submit_passkey, std::move(metrics),
-        base::DoNothing());
-    GlicInvokeHandler* handler_ptr = handler.get();
-    handler_ptr->set_completion_callback(
-        base::BindOnce([](std::unique_ptr<GlicInvokeHandler> h, GlicInstance*,
-                          GlicInvokeHandler*) {},
-                       std::move(handler)));
-    handler_ptr->Invoke();
-    return instance->GetWeakPtr();
-  }
-
   // Only invocations that send an invoke message to the web client conflict
   // with each other. Invocations that merely show the UI can safely run
   // simultaneously with any other invocation on the same instance.
-  if (GlicInvokeHandler::RequiresClientInvoke(
+  if (!bypass_in_progress_check &&
+      GlicInvokeHandler::RequiresClientInvoke(
           options, auto_submit_passkey.has_value())) {
     if (GlicInvokeHandler* in_progress = FindClientInvokeHandler(instance)) {
       if (options.supersede_if_in_progress) {
@@ -981,7 +977,7 @@ void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   for (auto& [id, instance] : instances_) {
     if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
-      RemoveInstance(id);
+      RemoveInstance(id, InstanceRemovalReason::kArchived);
       return;
     }
   }
@@ -1303,7 +1299,8 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   }
 }
 
-void GlicInstanceCoordinatorImpl::RemoveInstance(InstanceId id) {
+void GlicInstanceCoordinatorImpl::RemoveInstance(InstanceId id,
+                                                 InstanceRemovalReason reason) {
   auto it = instances_.find(id);
   if (it == instances_.end()) {
     // This instance has already been removed, so there's no work to do.
@@ -1312,6 +1309,13 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(InstanceId id) {
   GlicInstanceImpl* instance = it->second.get();
   OnInstanceActivationChanged(instance, false);
   actuating_changed_subscriptions_.erase(id);
+
+  // Invocations hold a reference to `instance`, so end them first.
+  for (auto& handler : TakeInvokeHandlers(instance)) {
+    if (handler) {
+      handler->CancelForInstanceRemoval(reason);
+    }
+  }
 
   // Remove the instance first, and then delete. This way,
   // instances_ will not include the instance being deleted while

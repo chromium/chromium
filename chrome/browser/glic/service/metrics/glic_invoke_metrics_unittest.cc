@@ -27,9 +27,9 @@ TEST(GlicInvokeMetricsTest, RecordSuccess) {
   GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
   metrics.RecordSuccess();
 
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeResult::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeResult::kSuccess, 1);
 }
 
@@ -38,9 +38,9 @@ TEST(GlicInvokeMetricsTest, RecordError) {
   GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
   metrics.RecordError(GlicInvokeError::kInvalidTab);
 
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kInvalidTab, 1);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeError::kInvalidTab, 1);
   histogram_tester.ExpectTotalCount("Glic.Invoke.TimeoutStage", 0);
   histogram_tester.ExpectTotalCount("Glic.Invoke.TimeoutStage.OsButton", 0);
@@ -63,9 +63,9 @@ TEST(GlicInvokeMetricsTest, RecordErrorTimeoutRecordsTimeoutStage) {
   GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
   metrics.RecordError(GlicInvokeError::kTimeout, GlicTaskType::kSendToClient);
 
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kTimeout, 1);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeError::kTimeout, 1);
   histogram_tester.ExpectUniqueSample("Glic.Invoke.TimeoutStage",
                                       GlicTaskType::kSendToClient, 1);
@@ -78,9 +78,9 @@ TEST(GlicInvokeMetricsTest, RecordErrorTimeoutNulloptRecordsUnknown) {
   GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
   metrics.RecordError(GlicInvokeError::kTimeout, std::nullopt);
 
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kTimeout, 1);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeError::kTimeout, 1);
   histogram_tester.ExpectUniqueSample("Glic.Invoke.TimeoutStage",
                                       GlicTaskType::kUnknown, 1);
@@ -93,9 +93,9 @@ TEST(GlicInvokeMetricsTest, RecordErrorTimeoutDefaultArgumentRecordsUnknown) {
   GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
   metrics.RecordError(GlicInvokeError::kTimeout);
 
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kTimeout, 1);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeError::kTimeout, 1);
   histogram_tester.ExpectUniqueSample("Glic.Invoke.TimeoutStage",
                                       GlicTaskType::kUnknown, 1);

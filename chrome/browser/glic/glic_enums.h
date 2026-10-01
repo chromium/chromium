@@ -215,6 +215,28 @@ enum class ClientLoadErrorReason {
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
 
+// Why a Glic instance was removed. Invocations still running on the instance
+// fail with the matching GlicInvokeError::kInstanceDestroyed* value.
+enum class InstanceRemovalReason {
+  // The panel of an instance without a conversation was closed, so the blank
+  // instance was cleaned up.
+  kBlankInstanceClosed,
+
+  // Nothing kept the instance alive anymore: it had no bound tabs, tab group
+  // or pinned tabs left, e.g. because its last tab was closed, unpinned or
+  // bound to another conversation.
+  kUnbound,
+
+  // The user manually deleted the instance.
+  kArchived,
+
+  // The user signed out of the primary account.
+  kSignedOut,
+
+  // The profile is shutting down.
+  kShutdown,
+};
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

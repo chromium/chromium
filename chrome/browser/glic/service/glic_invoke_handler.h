@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -79,9 +80,9 @@ class GlicInvokeHandler {
   // Cancels the invocation, generating an error callback.
   void Cancel(GlicInvokeError error);
 
-  void set_completion_callback(CompletionCallback completion_callback) {
-    completion_callback_ = std::move(completion_callback);
-  }
+  // Cancels the invocation because its instance is being removed for `reason`.
+  // Fails with the matching kInstanceDestroyed* error.
+  void CancelForInstanceRemoval(InstanceRemovalReason reason);
 
   // Returns the task type of the last active task, if the invocation sequence
   // is currently running or failed. Returns std::nullopt if no tasks have been
@@ -105,9 +106,9 @@ class GlicInvokeHandler {
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
-  void OnInstanceWillBeDestroyed(GlicInstance* instance);
   void OnConversationInfoChanged(const mojom::ConversationInfo& info);
   void OnActuatingChanged(bool actuating);
+  // The coordinator cancels `this` before destroying the instance.
   const base::raw_ref<GlicInstanceImpl> instance_;
   ResolvedTarget resolved_target_;
   GlicInvokeOptions options_;
@@ -118,7 +119,6 @@ class GlicInvokeHandler {
   const bool requires_client_invoke_;
 
   bool should_wait_for_load_ = false;
-  base::CallbackListSubscription instance_destruction_subscription_;
   base::CallbackListSubscription tab_destruction_subscription_;
   base::CallbackListSubscription conversation_subscription_;
   base::CallbackListSubscription actuating_subscription_;
