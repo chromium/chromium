@@ -13,12 +13,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -66,6 +68,18 @@ std::vector<StructuredErrorReason> GetRecordedClientLoadErrors(
 }
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
+std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
+    const net::test_server::HttpRequest& request) {
+  if (request.method != net::test_server::METHOD_GET ||
+      !base::StartsWith(request.relative_url, "/sorry/")) {
+    return nullptr;
+  }
+  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+  result->set_code(net::HttpStatusCode::HTTP_OK);
+  result->set_content_type("text/html");
+  result->set_content("<html><body>Sorry CAPTCHA</body></html>");
+  return result;
+}
 GlicNoWebviewContentsManager* GetNoWebviewContentsManager(
     GlicInstanceImpl* instance) {
   if (!instance) {
@@ -135,6 +149,8 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicNoWebview},
         /*disabled_features=*/{});
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&SorryPageRequestHandler));
   }
 
   void SetUpOnMainThread() override {
@@ -398,10 +414,9 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
             GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
 
   // Navigate guest to a /sorry/ CAPTCHA or error page.
-  manager.OnGuestNavigated(GURL("https://gemini.google.com/sorry/index"),
-                           /*is_api_allowed=*/false,
-                           mojom::GuestPageType::kGuestError,
-                           /*is_initial_commit=*/false);
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/index")));
 
   // Guest contents should be shown so user can view/solve the CAPTCHA.
   EXPECT_EQ(manager.state(),
@@ -925,10 +940,9 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
 
   // Guest navigates to /sorry/ CAPTCHA page; transient error is cleared to show
   // CAPTCHA.
-  manager.OnGuestNavigated(GURL("https://gemini.google.com/sorry/index"),
-                           /*is_api_allowed=*/false,
-                           mojom::GuestPageType::kGuestError,
-                           /*is_initial_commit=*/false);
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/sorry/index")));
   EXPECT_EQ(manager.error_type(), std::nullopt);
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
@@ -957,34 +971,36 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   EXPECT_TRUE(manager.ShouldReloadOnShow());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        LoadingTimerCancelledWhenGuestBecomesReady) {
   GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
                                        /*initially_hidden=*/false);
   manager.SetVisibility(content::Visibility::VISIBLE);
   EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
 
-  // Guest client connects.
-  manager.OnWebClientCreated();
+  // Wait for guest client to connect and dismiss loading timer.
+  ASSERT_OK(
+      RunUntilEqual([&]() { return manager.state(); },
+                    GlicNoWebviewContentsManager::DisplayState::kShowingGuest));
   EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
-  EXPECT_EQ(manager.state(),
-            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
-                       LoadingTimerCancelledWhenPanelHidden) {
+                       LoadingTimerContinuesWhenPanelHidden) {
   GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
                                        /*initially_hidden=*/false);
   manager.SetVisibility(content::Visibility::VISIBLE);
   EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
 
-  // Hiding the panel cancels the loading timer.
+  // Hiding the panel keeps the loading timer running.
   manager.SetVisibility(content::Visibility::HIDDEN);
-  EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
-
-  // Showing the panel restarts the loading timer if still unready.
-  manager.SetVisibility(content::Visibility::VISIBLE);
   EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+
+  // Firing the loading timeout while hidden sets error and requires reload on
+  // show.
+  manager.loading_timer_for_testing().FireNow();
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_TRUE(manager.ShouldReloadOnShow());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
@@ -1033,4 +1049,56 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   EXPECT_FALSE(manager->ShouldReloadOnShow());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       WarmingContentsTimesOutAndReloadsOnShow) {
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/true);
+  EXPECT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kWarming);
+  EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+  EXPECT_FALSE(manager.ShouldReloadOnShow());
+
+  // Fire the loading timeout while warming in the background.
+  manager.loading_timer_for_testing().FireNow();
+
+  EXPECT_FALSE(manager.guest_contents()->IsLoading());
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_TRUE(manager.ShouldReloadOnShow());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       TakeContainerDiscardsTimedOutWarmingContainer) {
+  base::HistogramTester histogram_tester;
+  auto& warming_pool = coordinator().GetWebContentsWarmingPoolForTesting();
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  ASSERT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+      warming_pool.GetWarmedContainerForTesting());
+  ASSERT_TRUE(manager);
+  EXPECT_TRUE(manager->loading_timer_for_testing().IsRunning());
+
+  base::WeakPtr<content::WebContents> old_guest =
+      manager->guest_contents()->GetWeakPtr();
+  ASSERT_TRUE(old_guest);
+
+  // Fire timeout on background container.
+  manager->loading_timer_for_testing().FireNow();
+  EXPECT_FALSE(manager->guest_contents()->IsLoading());
+  EXPECT_TRUE(manager->ShouldReloadOnShow());
+
+  // TakeContainer sees ShouldReloadOnShow() == true and discards the timed-out
+  // container.
+  std::unique_ptr<GlicWebContentsManager> taken = warming_pool.TakeContainer();
+  ASSERT_TRUE(taken);
+  EXPECT_FALSE(old_guest);
+  EXPECT_NE(taken->guest_contents(), nullptr);
+  EXPECT_FALSE(taken->ShouldReloadOnShow());
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.HitStatus",
+      GlicWebContentsWarmingPool::WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.WarmedContainerFate",
+      GlicWebContentsWarmingPool::WarmedContainerFate::kCrashed, 1);
+}
 }  // namespace glic

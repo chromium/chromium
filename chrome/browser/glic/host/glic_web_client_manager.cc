@@ -129,6 +129,9 @@ void GlicWebClientManager::SetPendingWebClientReceiver(
     CreateWebClient(std::move(web_client_receiver));
   } else {
     pending_web_client_receiver_ = std::move(web_client_receiver);
+    if (delegate_) {
+      delegate_->OnWebClientStateChanged(mojom::WebClientState::kWarmed);
+    }
   }
 }
 
@@ -198,6 +201,7 @@ void GlicWebClientManager::DidStartNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
+  pending_web_client_receiver_.reset();
   if (delegate_) {
     delegate_->OnGuestNavigationStarted();
   }
@@ -242,6 +246,7 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
       << std::to_underlying(status);
   base::UmaHistogramEnumeration("Glic.Session.WebClientCrash.ExitReason",
                                 TerminationStatusToExitReason(status));
+  pending_web_client_receiver_.reset();
   if (web_client_owned_) {
     UnsetWebClient(GlicWebClientLifecycleEvent::kDisconnectedOnProcessGone);
   }

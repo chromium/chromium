@@ -810,6 +810,9 @@ void GlicNoWebviewContentsManager::OnWebClientCreated() {
 void GlicNoWebviewContentsManager::OnWebClientStateChanged(
     mojom::WebClientState state) {
   switch (state) {
+    case mojom::WebClientState::kWarmed:
+      StopGuestBootstrap();
+      [[fallthrough]];
     case mojom::WebClientState::kResponsive:
       ClearTransientErrorState();
       guest_state_.Set(GuestState::kReady);
@@ -823,7 +826,6 @@ void GlicNoWebviewContentsManager::OnWebClientStateChanged(
                     ClientLoadErrorReason::kClientError);
       break;
     case mojom::WebClientState::kUninitialized:
-    case mojom::WebClientState::kWarmed:
     case mojom::WebClientState::kUnresponsive:
       break;
   }
@@ -862,6 +864,11 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
       CancelOverlayDeletion();
       EnsureOverlayContents();
       NotifyWebContentsChanged();
+      // Restart timer when showing overlay to grant full visible loading
+      // duration.
+      if (!overlay_manager_.error_type().has_value()) {
+        loading_timer_.Stop();
+      }
       break;
 
     case DisplayState::kShowingGuest:
@@ -1004,8 +1011,7 @@ void GlicNoWebviewContentsManager::UpdateActuationTracker() {
 }
 
 void GlicNoWebviewContentsManager::UpdateLoadingTimer() {
-  bool should_run_timer = is_visible_ &&
-                          guest_state_.get() == GuestState::kLoading &&
+  bool should_run_timer = guest_state_.get() == GuestState::kLoading &&
                           !overlay_manager_.error_type().has_value();
   if (should_run_timer) {
     if (!loading_timer_.IsRunning()) {
@@ -1020,6 +1026,9 @@ void GlicNoWebviewContentsManager::UpdateLoadingTimer() {
 }
 
 void GlicNoWebviewContentsManager::OnLoadingTimeout() {
+  if (!is_visible_ && guest_contents()) {
+    guest_contents()->Stop();
+  }
   SetErrorState(mojom::ErrorPanelType::kError,
                 ClientLoadErrorReason::kClientLoadTimeout);
 }
