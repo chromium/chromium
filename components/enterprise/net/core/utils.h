@@ -88,6 +88,10 @@ base::DictValue ProvisioningDomainProxyConfigToDict(
 // match on port, so the returned rule is widened to all ports of the matched
 // destinations. If no domains/subnets are declared, stripping ports widens the
 // rule to all traffic (`*`). See crbug.com/552534571.
+// On iOS, `domains` entries naming a single host are rewritten to `*.<host>` to
+// mirror WebKit's suffix-based proxy domain matching. Since `*.` entries also
+// add the bare domain, the rule matches both `<host>` and its subdomains. See
+// crbug.com/567512841.
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     const base::DictValue& match_dict);
 

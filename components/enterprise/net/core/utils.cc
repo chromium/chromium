@@ -26,6 +26,8 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/logging.h"
+#include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #endif  // BUILDFLAG(IS_IOS)
 
 namespace enterprise_net {
@@ -46,6 +48,9 @@ constexpr char kProxyMatchKey[] = "proxy-match";
 constexpr char kDomainsKey[] = "domains";
 constexpr char kSubnetsKey[] = "subnets";
 constexpr char kPortsKey[] = "ports";
+
+// Prefix of a PvD domain pattern matching all subdomains of a domain.
+constexpr std::string_view kWildcardSubdomainPrefix = "*.";
 
 // JSON keys shared between policy entries, PvD server responses, and headers.
 constexpr char kAuthConfigKey[] = "auth_config";
@@ -265,6 +270,44 @@ void StripPortMatchers(std::vector<uint16_t>& ports, bool is_wildcard_rule) {
 
   ports.clear();
 }
+
+// Returns whether `domain` names a single host. Wildcard patterns (including
+// the leading-dot form `net` treats as a wildcard), subnets and IP literals are
+// excluded. Subnets and IPs show up in `domains` when a cached config is parsed
+// because its serialized rules keep every matcher under `domains`.
+bool IsPlainHostname(std::string_view domain) {
+  if (domain.empty() || domain.starts_with('.') ||
+      domain.find('*') != std::string_view::npos) {
+    return false;
+  }
+  net::IPAddress address;
+  size_t prefix_length_in_bits = 0;
+  return !net::ParseCIDRBlock(domain, &address, &prefix_length_in_bits) &&
+         !net::ParseURLHostnameToAddress(domain, &address);
+}
+
+// Rewrites plain hostnames in `domains` to `*.<hostname>`. WebKit's proxy
+// configuration API matches domains as suffixes, so it routes every subdomain
+// of `example.com` through the proxy. The rewrite gives the parsed rule the
+// same reach so auth challenges for those subdomains resolve to this rule. The
+// host itself keeps matching because `*.` entries also add the bare domain.
+// `example.com` and `*.example.com` collapse into the same entry, so duplicates
+// are dropped to keep re-parsing a serialized config stable. Duplicates are
+// compared case-insensitively because `net` lowercases every pattern.
+void WidenDomainsToSubdomains(std::vector<std::string>& domains) {
+  absl::flat_hash_set<std::string> seen_domains;
+  std::vector<std::string> widened_domains;
+  widened_domains.reserve(domains.size());
+  for (std::string& domain : domains) {
+    if (IsPlainHostname(domain)) {
+      domain = base::StrCat({kWildcardSubdomainPrefix, domain});
+    }
+    if (seen_domains.insert(base::ToLowerASCII(domain)).second) {
+      widened_domains.push_back(std::move(domain));
+    }
+  }
+  domains = std::move(widened_domains);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -332,6 +375,7 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
 
 #if BUILDFLAG(IS_IOS)
   StripPortMatchers(ports, is_wildcard_rule);
+  WidenDomainsToSubdomains(domains);
 #endif  // BUILDFLAG(IS_IOS)
 
   net::ProxyHostMatchingRules destination_matchers;
@@ -350,10 +394,11 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     // Combine domains and ports.
     for (const auto& domain : domains) {
       std::vector<std::string> patterns_to_add = {domain};
-      if (domain.starts_with("*.")) {
+      if (domain.starts_with(kWildcardSubdomainPrefix)) {
         // By PvD proxy routing standard, entries that include a wildcard prefix
         // (*.domain.com) also match the FQDN with no subdomain (domain.com)
-        patterns_to_add.push_back(domain.substr(2));
+        patterns_to_add.push_back(
+            domain.substr(kWildcardSubdomainPrefix.size()));
       }
 
       for (const auto& pattern : patterns_to_add) {

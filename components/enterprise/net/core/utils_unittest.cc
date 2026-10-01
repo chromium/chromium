@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -85,6 +86,42 @@ std::string ExpectedPortMatcher(std::string_view host, uint16_t port) {
 #else
   return base::StrCat({host, ":", base::NumberToString(port)});
 #endif
+}
+
+// Returns the destination matchers expected for a plain `host` entry in
+// `domains`. iOS widens plain hosts to `*.<host>` to mirror WebKit's suffix
+// matching, and the wildcard entry keeps matching `host` itself.
+std::vector<std::string> ExpectedDomainMatchers(std::string_view host) {
+#if BUILDFLAG(IS_IOS)
+  return {base::StrCat({"*.", host}), std::string(host)};
+#else
+  return {std::string(host)};
+#endif
+}
+
+// Returns the string form of every rule in `matchers`, in evaluation order.
+std::vector<std::string> MatcherStrings(
+    const net::ProxyHostMatchingRules& matchers) {
+  std::vector<std::string> strings;
+  for (const auto& rule : matchers.rules()) {
+    strings.push_back(rule->ToString());
+  }
+  return strings;
+}
+
+// Returns a "proxy-match" rule dictionary routing `domains` through "proxy1".
+base::DictValue MakeDomainMatchDict(const std::vector<std::string>& domains) {
+  base::ListValue domains_list;
+  for (const std::string& domain : domains) {
+    domains_list.Append(domain);
+  }
+  base::ListValue proxies;
+  proxies.Append("proxy1");
+
+  base::DictValue match_dict;
+  match_dict.Set("domains", std::move(domains_list));
+  match_dict.Set("proxies", std::move(proxies));
+  return match_dict;
 }
 
 // Constructs a comprehensive valid PvD JSON response string matching the
@@ -349,19 +386,27 @@ TEST(ParseProvisioningDomainConfigTest, ParsesValidPvdResponse) {
        ProxyEndpoint(MakeHttpsProxyChain(kTestProxyHost3))});
 
   net::ProxyHostMatchingRules matchers1;
-  matchers1.AddRuleFromString(ExpectedPortMatcher(kTestDomain, kTestPort));
+  for (const std::string& matcher : ExpectedDomainMatchers(kTestDomain)) {
+    matchers1.AddRuleFromString(ExpectedPortMatcher(matcher, kTestPort));
+  }
   matchers1.AddRuleFromString(ExpectedPortMatcher(kTestSubnet, kTestPort));
   expected.routing_rules.push_back(
       MakeRoutingRule({kTestProxyIdentity1}, std::move(matchers1)));
 
   net::ProxyHostMatchingRules matchers2;
-  matchers2.AddRuleFromString("multi.domain.com");
+  for (const std::string& matcher :
+       ExpectedDomainMatchers("multi.domain.com")) {
+    matchers2.AddRuleFromString(matcher);
+  }
   expected.routing_rules.push_back(MakeRoutingRule(
       {kTestProxyIdentity1, kTestProxyIdentity2, kTestProxyIdentity3},
       std::move(matchers2)));
 
   net::ProxyHostMatchingRules matchers3;
-  matchers3.AddRuleFromString("bypass.domain.com");
+  for (const std::string& matcher :
+       ExpectedDomainMatchers("bypass.domain.com")) {
+    matchers3.AddRuleFromString(matcher);
+  }
   expected.routing_rules.push_back(
       MakeRoutingRule({"DIRECT"}, std::move(matchers3)));
 
@@ -649,7 +694,9 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
 #if BUILDFLAG(IS_IOS)
   // Stripping the port also preserves the subnet matcher: `10.0.0.0/8:443` is
   // not a pattern `net::ProxyHostMatchingRules` accepts, while `10.0.0.0/8` is.
-  EXPECT_THAT(rule0_matcher_strings, ElementsAre(kTestDomain, kTestSubnet));
+  EXPECT_THAT(
+      rule0_matcher_strings,
+      ElementsAre(base::StrCat({"*.", kTestDomain}), kTestDomain, kTestSubnet));
 #else
   EXPECT_THAT(rule0_matcher_strings,
               ElementsAre(base::StrCat(
@@ -666,6 +713,29 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
             roundtrip_config->proxy_endpoints.size());
   EXPECT_EQ(config->routing_rules.size(),
             roundtrip_config->routing_rules.size());
+}
+
+// Test that re-parsing a serialized config, as done when loading the pref
+// cache, yields the same destination matchers as the original parse.
+TEST(ProvisioningDomainProxyConfigToDictTest,
+     RoundtripKeepsDomainMatchersStable) {
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(GetValidPvdJsonResponse());
+  ASSERT_TRUE(config.has_value());
+
+  std::optional<ProvisioningDomainProxyConfig> roundtrip_config =
+      ParseProvisioningDomainConfig(
+          ProvisioningDomainProxyConfigToDict(*config));
+  ASSERT_TRUE(roundtrip_config.has_value());
+  ASSERT_EQ(config->routing_rules.size(),
+            roundtrip_config->routing_rules.size());
+
+  for (size_t i = 0; i < config->routing_rules.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << "routing rule index: " << i);
+    EXPECT_EQ(MatcherStrings(config->routing_rules[i].destination_matchers),
+              MatcherStrings(
+                  roundtrip_config->routing_rules[i].destination_matchers));
+  }
 }
 
 TEST(ParseRoutingRuleTest, WildcardApexDomainExpansion) {
@@ -778,6 +848,106 @@ TEST(ParseRoutingRuleTest, StripsPortMatchersFromSubnetRule) {
       rule->destination_matchers.Matches(GURL("http://192.168.1.1:443/")));
 }
 
+// Test that a plain domain is widened to match the domain and all of its
+// subdomains, mirroring WebKit's suffix-based matching.
+TEST(ParseRoutingRuleTest, WidensPlainDomainToSubdomains) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict({"example.com"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("*.example.com", "example.com"));
+  EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://example.com/")));
+  EXPECT_TRUE(
+      rule->destination_matchers.Matches(GURL("https://sub.example.com/")));
+  EXPECT_TRUE(rule->destination_matchers.Matches(
+      GURL("https://admin.test.example.com/")));
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("https://notexample.com/")));
+  EXPECT_FALSE(rule->destination_matchers.Matches(GURL("https://other.com/")));
+}
+
+// Test that entries already carrying a wildcard are not widened further.
+TEST(ParseRoutingRuleTest, KeepsWildcardDomainsUnchanged) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> wildcard_rule =
+      ParseRoutingRule(MakeDomainMatchDict({"*.example.com"}));
+  ASSERT_TRUE(wildcard_rule.has_value());
+  EXPECT_THAT(MatcherStrings(wildcard_rule->destination_matchers),
+              ElementsAre("*.example.com", "example.com"));
+
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> match_all_rule =
+      ParseRoutingRule(MakeDomainMatchDict({"*"}));
+  ASSERT_TRUE(match_all_rule.has_value());
+  EXPECT_THAT(MatcherStrings(match_all_rule->destination_matchers),
+              ElementsAre("*"));
+}
+
+// Test that subnets and IP literals, which reach `domains` when a cached
+// config is parsed, are not widened.
+TEST(ParseRoutingRuleTest, DoesNotWidenSubnetsOrIpLiterals) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict(
+          {"10.0.0.0/8", "2001:db8::/32", "10.1.2.3", "[2001:db8::1]"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(
+      MatcherStrings(rule->destination_matchers),
+      ElementsAre("10.0.0.0/8", "2001:db8::/32", "10.1.2.3", "[2001:db8::1]"));
+  EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://10.4.5.6/")));
+  EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://10.1.2.3/")));
+}
+
+// Test that listing both the plain and the wildcard form of a domain does not
+// produce duplicate matchers once the plain form is widened.
+TEST(ParseRoutingRuleTest, CollapsesPlainAndWildcardDomainPair) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict({"example.com", "*.example.com"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("*.example.com", "example.com"));
+}
+
+// Test that a plain and a wildcard form of a domain that differ only in case
+// collapse into a single pair of matchers, since `net` lowercases patterns.
+TEST(ParseRoutingRuleTest, CollapsesDomainPairCaseInsensitively) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict({"Example.com", "*.example.com"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("*.example.com", "example.com"));
+}
+
+// Test that empty and leading-dot entries are not widened into malformed
+// `*.` or `*..` patterns.
+TEST(ParseRoutingRuleTest, DoesNotWidenEmptyOrLeadingDotDomains) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict({"", ".example.com"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("*.example.com"));
+}
+
+// Test that an auth challenge for a subdomain of a plain PvD domain resolves to
+// the endpoint of that domain's rule, since WebKit routes subdomains through
+// the same proxy.
+TEST(FindMatchingProxyEndpointTest, MatchesSubdomainOfPlainDomain) {
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(GetValidPvdJsonResponse());
+  ASSERT_TRUE(config.has_value());
+
+  const ProvisioningDomainProxyConfig::ProxyEndpoint* endpoint =
+      FindMatchingProxyEndpoint(*config,
+                                GURL("https://admin.sub.test.domain.com/path"),
+                                MakeHttpsProxyChain(kTestProxyHost1));
+  ASSERT_NE(nullptr, endpoint);
+  EXPECT_EQ(MakeHttpsProxyChain(kTestProxyHost1), endpoint->proxy_chain);
+  ASSERT_TRUE(endpoint->auth.has_value());
+  EXPECT_EQ(AuthType::kProfileBearerToken, endpoint->auth->type);
+}
+
 #else
 
 TEST(ParseRoutingRuleTest, SinglePortParsingAndIgnoredPortRanges) {
@@ -815,6 +985,19 @@ TEST(ParseRoutingRuleTest, SinglePortParsingAndIgnoredPortRanges) {
       rule->destination_matchers.Matches(GURL("http://example.com:81/")));
   EXPECT_FALSE(
       rule->destination_matchers.Matches(GURL("http://example.com:8001/")));
+}
+
+// Test that, per the PvD standard, a plain domain only matches that exact host.
+TEST(ParseRoutingRuleTest, PlainDomainDoesNotMatchSubdomains) {
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(MakeDomainMatchDict({"example.com"}));
+  ASSERT_TRUE(rule.has_value());
+
+  EXPECT_THAT(MatcherStrings(rule->destination_matchers),
+              ElementsAre("example.com"));
+  EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://example.com/")));
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("https://sub.example.com/")));
 }
 
 #endif  // BUILDFLAG(IS_IOS)
