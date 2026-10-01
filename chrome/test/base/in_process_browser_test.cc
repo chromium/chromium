@@ -675,10 +675,11 @@ void InProcessBrowserTest::RecordPropertyFromMap(
 void InProcessBrowserTest::SetUpLocalStatePrefService(
     PrefService* local_state) {
 #if BUILDFLAG(IS_WIN)
-  // Put the current build version number in the prefs, so that pinned taskbar
-  // icons aren't migrated.
+  // Put the current build version number and time in the prefs, so that pinned
+  // taskbar icons aren't migrated.
   local_state->SetString(prefs::kShortcutMigrationVersion,
                          std::string(version_info::GetVersionNumber()));
+  local_state->SetTime(prefs::kShortcutMigrationTime, base::Time::Now());
 #endif  // BUILDFLAG(IS_WIN);
 }
 

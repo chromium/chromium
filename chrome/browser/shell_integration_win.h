@@ -9,8 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace base::win {
 struct ShortcutProperties;
@@ -18,6 +21,15 @@ enum class ShortcutOperation;
 }  // namespace base::win
 
 namespace shell_integration::win {
+
+// Controls whether taskbar shortcuts are migrated to include
+// `--source-shortcut-location=taskbar` and periodically re-checked.
+BASE_DECLARE_FEATURE(kMigrateTaskbarShortcutLocation);
+
+// Interval between periodic taskbar shortcut migration re-checks. Set to 0 or
+// negative to disable periodic re-checks.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kTaskbarShortcutMigrationInterval);
 
 // Initiates the interaction with the system settings for the default browser.
 // The function takes care of making sure |on_finished_callback| will get called
@@ -103,8 +115,9 @@ void CreateOrUpdateShortcuts(
     base::win::ShortcutOperation operation,
     CreateOrUpdateShortcutsResultCallback callback);
 
-// Migrates existing chrome taskbar pins by tagging them with correct app id.
-// see http://crbug.com/40330895. Migrates taskbar pins via a task and runs
+// Migrates existing chrome taskbar pins by tagging them with correct app id and
+// `--source-shortcut-location=taskbar`. See http://crbug.com/40330895 and
+// http://crbug.com/559652784. Migrates taskbar pins via a task and runs
 // |completion_callback| on the calling sequence when done.
 void MigrateTaskbarPins(base::OnceClosure completion_callback);
 
@@ -113,7 +126,7 @@ void MigrateTaskbarPinsCallback(const base::FilePath& pins_path,
                                 const base::FilePath& implicit_apps_path);
 
 // Migrates all shortcuts in |path| which point to |chrome_exe| such that they
-// have the appropriate AppUserModelId.
+// have the appropriate AppUserModelId and `--source-shortcut-location=taskbar`.
 // Returns the number of shortcuts migrated.
 // This method should not be called prior to Windows 7.
 // This method is only public for the sake of tests and shouldn't be called

@@ -30,6 +30,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -547,14 +548,17 @@ void CreateOrUpdateShortcutsHelper::OnCreateOrUpdateShortcutResult(
   delete this;
 }
 
-void MigrateChromeAndChromeProxyShortcuts(
+int MigrateChromeAndChromeProxyShortcuts(
     const base::FilePath& chrome_exe,
     const base::FilePath& chrome_proxy_path,
     const base::FilePath& shortcut_path) {
-  win::MigrateShortcutsInPathInternal(chrome_exe, shortcut_path);
+  int shortcuts_migrated =
+      win::MigrateShortcutsInPathInternal(chrome_exe, shortcut_path);
 
   // Migrate any pinned PWA shortcuts in taskbar directory.
-  win::MigrateShortcutsInPathInternal(chrome_proxy_path, shortcut_path);
+  shortcuts_migrated +=
+      win::MigrateShortcutsInPathInternal(chrome_proxy_path, shortcut_path);
+  return shortcuts_migrated;
 }
 
 std::wstring GetHttpSchemeUserChoiceProgId() {
@@ -711,6 +715,15 @@ DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
 
 namespace win {
 
+BASE_FEATURE(kMigrateTaskbarShortcutLocation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTaskbarShortcutMigrationInterval,
+                   &kMigrateTaskbarShortcutLocation,
+                   "migration_interval",
+                   base::Days(30));
+
 void SetAsDefaultBrowserUsingSystemSettings(
     base::OnceClosure on_finished_callback) {
   base::FilePath chrome_exe;
@@ -805,20 +818,23 @@ void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
     return;
   base::FilePath chrome_proxy_path(shortcuts::GetChromeProxyPath());
 
+  int shortcuts_migrated = 0;
   if (!taskbar_path.empty()) {
-    MigrateChromeAndChromeProxyShortcuts(chrome_exe, chrome_proxy_path,
-                                         taskbar_path);
+    shortcuts_migrated += MigrateChromeAndChromeProxyShortcuts(
+        chrome_exe, chrome_proxy_path, taskbar_path);
   }
-  if (implicit_apps_path.empty())
-    return;
-  base::FileEnumerator directory_enum(implicit_apps_path, /*recursive=*/false,
-                                      base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath implicit_app_sub_directory = directory_enum.Next();
-       !implicit_app_sub_directory.empty();
-       implicit_app_sub_directory = directory_enum.Next()) {
-    MigrateChromeAndChromeProxyShortcuts(chrome_exe, chrome_proxy_path,
-                                         implicit_app_sub_directory);
+  if (!implicit_apps_path.empty()) {
+    base::FileEnumerator directory_enum(implicit_apps_path, /*recursive=*/false,
+                                        base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath implicit_app_sub_directory = directory_enum.Next();
+         !implicit_app_sub_directory.empty();
+         implicit_app_sub_directory = directory_enum.Next()) {
+      shortcuts_migrated += MigrateChromeAndChromeProxyShortcuts(
+          chrome_exe, chrome_proxy_path, implicit_app_sub_directory);
+    }
   }
+  base::UmaHistogramCounts100("Windows.TaskbarShortcutMigrationCount",
+                              shortcuts_migrated);
 }
 
 void GetIsPinnedToTaskbarState(IsPinnedToTaskbarCallback result_callback) {
@@ -870,7 +886,9 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
       path, false,  // not recursive
       base::FileEnumerator::FILES, FILE_PATH_LITERAL("*.lnk"));
 
-  bool is_per_user_install = InstallUtil::IsPerUserInstall();
+  const bool is_per_user_install = InstallUtil::IsPerUserInstall();
+  const bool migrate_shortcut_location =
+      base::FeatureList::IsEnabled(kMigrateTaskbarShortcutLocation);
 
   int shortcuts_migrated = 0;
   base::FilePath target_path;
@@ -920,9 +938,8 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
     } else {
       switch (propvariant.get().vt) {
         case VT_EMPTY:
-          // If there is no app_id set, set our app_id if one is expected.
-          if (!expected_app_id.empty())
-            updated_properties.set_app_id(expected_app_id);
+          // If there is no app_id set, set our app_id.
+          updated_properties.set_app_id(expected_app_id);
           break;
         case VT_LPWSTR:
           if (expected_app_id != std::wstring(propvariant.get().pwszVal))
@@ -935,6 +952,19 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
 
     persist_file.Reset();
     shell_link.Reset();
+
+    // Ensure taskbar shortcuts are tagged with
+    // --source-shortcut-location=taskbar. Remove any existing switch first in
+    // case the shortcut was pinned from the Desktop or Start Menu.
+    if (migrate_shortcut_location &&
+        command_line.GetSwitchValueASCII(switches::kSourceShortcutLocation) !=
+            switches::kSourceShortcutLocationTaskbar) {
+      command_line.RemoveSwitch(switches::kSourceShortcutLocation);
+      command_line.AppendSwitchASCII(
+          switches::kSourceShortcutLocation,
+          switches::kSourceShortcutLocationTaskbar);
+      updated_properties.set_arguments(command_line.GetArgumentsString());
+    }
 
     // Update the shortcut if some of its properties need to be updated.
     if (updated_properties.options &&

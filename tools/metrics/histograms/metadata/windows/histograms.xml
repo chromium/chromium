@@ -718,6 +718,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.TaskbarShortcutMigrationCount" units="shortcuts"
+    expires_after="2027-03-28">
+  <owner>songhaoli@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    The number of taskbar and implicit app shortcuts migrated (to fix their
+    AppUserModelID or add --source-shortcut-location=taskbar) during a taskbar
+    pin migration scan. Recorded once per MigrateTaskbarPins() run. A value of 0
+    indicates that all existing taskbar shortcuts were already properly
+    configured.
+  </summary>
+</histogram>
+
 <histogram name="Windows.TimeInSelectFileDialog" units="ms"
     expires_after="2026-09-06">
   <owner>fdoray@chromium.org</owner>

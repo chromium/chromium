@@ -14,9 +14,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
@@ -26,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
@@ -125,9 +129,11 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
     ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
         temp_dir_.GetPath(), &temp_properties));
 
-    // Shortcut 2 points to chrome.exe, but already has the right appid.
+    // Shortcut 2 points to chrome.exe, and already has the right appid and
+    // source shortcut location.
     temp_properties.set_target(chrome_exe_);
     temp_properties.set_app_id(chrome_app_id_);
+    temp_properties.set_arguments(L"--source-shortcut-location=taskbar");
     ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
         temp_dir_.GetPath(), &temp_properties));
 
@@ -210,6 +216,21 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
     temp_properties.set_app_id(chrome_app_id_with_default_profile);
     ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
         temp_dir_.GetPath(), &temp_properties));
+
+    // Shortcut 12 already has the right appid, but is missing
+    // --source-shortcut-location=taskbar.
+    temp_properties.set_target(chrome_exe_);
+    temp_properties.set_app_id(chrome_app_id_);
+    ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
+        temp_dir_.GetPath(), &temp_properties));
+
+    // Shortcut 13 already has the right appid, but was pinned from the Start
+    // Menu and carries --source-shortcut-location=start-menu.
+    temp_properties.set_target(chrome_exe_);
+    temp_properties.set_app_id(chrome_app_id_);
+    temp_properties.set_arguments(L"--source-shortcut-location=start-menu");
+    ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
+        temp_dir_.GetPath(), &temp_properties));
   }
 
   base::win::ScopedCOMInitializer com_initializer_;
@@ -261,23 +282,49 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
 
 TEST_F(ShellIntegrationWinMigrateShortcutTest, AdjustAppIds) {
   CreateShortcuts();
-  // 10 shortcuts should have their app id updated below.
-  EXPECT_EQ(10,
+  // 12 shortcuts should have their app id or arguments updated below.
+  EXPECT_EQ(12,
             MigrateShortcutsInPathInternal(chrome_exe_, temp_dir_.GetPath()));
 
   // Shortcut 1, 3, 4, 5, 6, 7, 8, 9, 10, and 11 should have had their app_id
-  //  fixed.
+  // fixed, and shortcuts 1 and 3..13 should have
+  // --source-shortcut-location=taskbar.
   shortcuts_[1].properties.set_app_id(chrome_app_id_);
+  shortcuts_[1].properties.set_arguments(L"--source-shortcut-location=taskbar");
   shortcuts_[3].properties.set_app_id(chrome_app_id_);
+  shortcuts_[3].properties.set_arguments(L"--source-shortcut-location=taskbar");
   shortcuts_[4].properties.set_app_id(chrome_app_id_);
+  shortcuts_[4].properties.set_arguments(L"--source-shortcut-location=taskbar");
   shortcuts_[5].properties.set_app_id(chrome_app_id_);
+  shortcuts_[5].properties.set_arguments(L"--source-shortcut-location=taskbar");
   shortcuts_[6].properties.set_app_id(non_default_profile_chrome_app_id_);
+  shortcuts_[6].properties.set_arguments(
+      base::StrCat({shortcuts_[6].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
   shortcuts_[7].properties.set_app_id(non_default_user_data_dir_chrome_app_id_);
+  shortcuts_[7].properties.set_arguments(
+      base::StrCat({shortcuts_[7].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
   shortcuts_[8].properties.set_app_id(
       non_default_user_data_dir_and_profile_chrome_app_id_);
+  shortcuts_[8].properties.set_arguments(
+      base::StrCat({shortcuts_[8].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
   shortcuts_[9].properties.set_app_id(extension_app_id_);
+  shortcuts_[9].properties.set_arguments(
+      base::StrCat({shortcuts_[9].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
   shortcuts_[10].properties.set_app_id(non_default_profile_extension_app_id_);
+  shortcuts_[10].properties.set_arguments(
+      base::StrCat({shortcuts_[10].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
   shortcuts_[11].properties.set_app_id(chrome_app_id_);
+  shortcuts_[11].properties.set_arguments(
+      L"--source-shortcut-location=taskbar");
+  shortcuts_[12].properties.set_arguments(
+      L"--source-shortcut-location=taskbar");
+  shortcuts_[13].properties.set_arguments(
+      L"--source-shortcut-location=taskbar");
 
   for (size_t i = 0; i < shortcuts_.size(); ++i) {
     SCOPED_TRACE(i);
@@ -289,8 +336,10 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, AdjustAppIds) {
             MigrateShortcutsInPathInternal(chrome_exe_, temp_dir_.GetPath()));
 }
 
-// Test that chrome_proxy.exe shortcuts (PWA) have their app_id migrated
-// to not include the default profile name. This tests both shortcuts in the
+// Test that chrome_proxy.exe shortcuts (PWA) have their app_id migrated to not
+// include the default profile name, are tagged with
+// --source-shortcut-location=taskbar, and record
+// Windows.TaskbarShortcutMigrationCount. This tests both shortcuts in
 // DIR_TASKBAR_PINS and sub-directories of DIR_IMPLICIT_APP_SHORTCUTS.
 TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   // Create shortcut to chrome_proxy_exe in executable directory,
@@ -331,23 +380,62 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   ASSERT_NO_FATAL_FAILURE(
       AddTestShortcutAndResetProperties(temp_dir_.GetPath(), &temp_properties));
 
+  base::HistogramTester histogram_tester;
   MigrateTaskbarPinsCallback(temp_dir_.GetPath(), temp_dir_.GetPath());
+  histogram_tester.ExpectUniqueSample("Windows.TaskbarShortcutMigrationCount",
+                                      4, 1);
+
   // Verify that the migrated shortcut in temp_dir_ does not contain the default
   // profile name.
   shortcuts_[0].properties.set_app_id(chrome_app_id_);
+  shortcuts_[0].properties.set_arguments(L"--source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[0].path, shortcuts_[0].properties);
   // Verify that the migrated shortcut in temp_dir_sub does not contain the
   // default profile name.
   shortcuts_[1].properties.set_app_id(chrome_app_id_);
+  shortcuts_[1].properties.set_arguments(L"--source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[1].path, shortcuts_[1].properties);
 
   shortcuts_[2].properties.set_app_id(extension_app_id_);
+  shortcuts_[2].properties.set_arguments(base::StrCat(
+      {L"--app-id=", extension_id_, L" --source-shortcut-location=taskbar"}));
   base::win::ValidateShortcut(shortcuts_[2].path, shortcuts_[2].properties);
 
   shortcuts_[3].properties.set_app_id(GetAppUserModelIdForApp(
       base::UTF8ToWide(web_app::GenerateApplicationNameFromURL(url)),
       base::FilePath()));
+  shortcuts_[3].properties.set_arguments(
+      L"--app=http://www.example.com/ --source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[3].path, shortcuts_[3].properties);
+
+  // A subsequent scan when all shortcuts are already migrated should record 0.
+  MigrateTaskbarPinsCallback(temp_dir_.GetPath(), temp_dir_.GetPath());
+  histogram_tester.ExpectBucketCount("Windows.TaskbarShortcutMigrationCount", 0,
+                                     1);
+}
+
+TEST_F(ShellIntegrationWinMigrateShortcutTest,
+       MigrateShortcutLocationFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kMigrateTaskbarShortcutLocation);
+
+  base::win::ShortcutProperties temp_properties;
+  temp_properties.set_target(chrome_exe_);
+  temp_properties.set_app_id(L"Dumbo");
+  ASSERT_NO_FATAL_FAILURE(
+      AddTestShortcutAndResetProperties(temp_dir_.GetPath(), &temp_properties));
+
+  temp_properties.set_target(chrome_exe_);
+  temp_properties.set_app_id(chrome_app_id_);
+  ASSERT_NO_FATAL_FAILURE(
+      AddTestShortcutAndResetProperties(temp_dir_.GetPath(), &temp_properties));
+
+  EXPECT_EQ(1,
+            MigrateShortcutsInPathInternal(chrome_exe_, temp_dir_.GetPath()));
+
+  shortcuts_[0].properties.set_app_id(chrome_app_id_);
+  base::win::ValidateShortcut(shortcuts_[0].path, shortcuts_[0].properties);
+  base::win::ValidateShortcut(shortcuts_[1].path, shortcuts_[1].properties);
 }
 
 // This test verifies that MigrateTaskbarPins does a case-insensitive
@@ -365,6 +453,7 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateMixedCaseDirTest) {
   // Verify that the shortcut was migrated, i.e., its app_id does not contain
   // the default profile name.
   shortcuts_[0].properties.set_app_id(chrome_app_id_);
+  shortcuts_[0].properties.set_arguments(L"--source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[0].path, shortcuts_[0].properties);
 }
 

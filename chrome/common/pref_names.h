@@ -2484,6 +2484,11 @@ inline constexpr char kNetworkProfileLastWarningTime[] =
 // shell_integration::win::MigrateTaskbarPins() completed.
 inline constexpr char kShortcutMigrationVersion[] =
     "browser.shortcut_migration_version";
+
+// The last time at which shell_integration::win::MigrateTaskbarPins()
+// completed.
+inline constexpr char kShortcutMigrationTime[] =
+    "browser.shortcut_migration_time";
 #endif  // BUILDFLAG(IS_WIN)
 
 // An integer that is incremented whenever changes are made to app shortcuts.

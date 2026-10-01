@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -63,15 +64,23 @@ class ChromeBrowserMainWinTest : public InProcessBrowserTest {
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
     if (GetTestPreCount() > 0) {
-      // Clear the migration version pref set by
+      // Clear the migration version and time prefs set by
       // InProcessBrowserTest::SetUpLocalStatePrefService.
       local_state->ClearPref(prefs::kShortcutMigrationVersion);
+      local_state->ClearPref(prefs::kShortcutMigrationTime);
     } else {
-      // Set the version back to kLastVersionNeedingMigration and
-      // `ShortcutsAreMigratedOnce` will verify that it's not migrated again.
-      local_state->SetString(prefs::kShortcutMigrationVersion, "86.0.4231.0");
+      // Set the version back to kLastVersionNeedingMigration and a recent
+      // timestamp so `ShortcutsAreMigratedOnce` will verify that it's not
+      // migrated again.
+      local_state->SetString(prefs::kShortcutMigrationVersion, "156.0.8069.0");
+      initial_migration_time_ = base::Time::Now() - base::Days(1);
+      local_state->SetTime(prefs::kShortcutMigrationTime,
+                           initial_migration_time_);
     }
   }
+
+ protected:
+  base::Time initial_migration_time_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, PRE_ShortcutsAreMigratedOnce) {
@@ -79,21 +88,49 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, PRE_ShortcutsAreMigratedOnce) {
   content::RunAllTasksUntilIdle();
 
   // Confirm that shortcuts were migrated.
-  const std::string last_version_migrated =
-      g_browser_process->local_state()->GetString(
-          prefs::kShortcutMigrationVersion);
-  EXPECT_EQ(last_version_migrated, version_info::GetVersionNumber());
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_EQ(local_state->GetString(prefs::kShortcutMigrationVersion),
+            version_info::GetVersionNumber());
+  EXPECT_FALSE(local_state->GetTime(prefs::kShortcutMigrationTime).is_null());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, ShortcutsAreMigratedOnce) {
   content::RunAllTasksUntilIdle();
 
   // Confirm that shortcuts weren't migrated when marked as having last been
-  // migrated in kLastVersionNeedingMigration+.
-  const std::string last_version_migrated =
-      g_browser_process->local_state()->GetString(
-          prefs::kShortcutMigrationVersion);
-  EXPECT_EQ(last_version_migrated, "86.0.4231.0");
+  // migrated in kLastVersionNeedingMigration+ and within the re-check interval.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_EQ(local_state->GetString(prefs::kShortcutMigrationVersion),
+            "156.0.8069.0");
+  EXPECT_EQ(local_state->GetTime(prefs::kShortcutMigrationTime),
+            initial_migration_time_);
+}
+
+class ChromeBrowserMainWinPeriodicMigrationTest : public InProcessBrowserTest {
+ public:
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+    time_before_test_ = base::Time::Now();
+    local_state->SetString(prefs::kShortcutMigrationVersion, "156.0.8069.0");
+    local_state->SetTime(prefs::kShortcutMigrationTime,
+                         time_before_test_ - base::Days(31));
+  }
+
+ protected:
+  base::Time time_before_test_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinPeriodicMigrationTest,
+                       ShortcutsAreMigratedAfterInterval) {
+  content::RunAllTasksUntilIdle();
+
+  // Confirm that shortcuts were migrated again because the last migration time
+  // was older than the 30-day interval.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_EQ(local_state->GetString(prefs::kShortcutMigrationVersion),
+            version_info::GetVersionNumber());
+  EXPECT_GE(local_state->GetTime(prefs::kShortcutMigrationTime),
+            time_before_test_);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

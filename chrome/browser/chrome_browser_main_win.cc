@@ -45,6 +45,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/version.h"
@@ -372,25 +373,52 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
 }
 
 void MigratePinnedTaskBarShortcutsIfNeeded() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;
+  }
+
+  const bool migrate_shortcut_location = base::FeatureList::IsEnabled(
+      shell_integration::win::kMigrateTaskbarShortcutLocation);
+
   // Update this number when users should go through a taskbar shortcut
-  // migration again. The last reason to do this was crrev.com/798174. @
-  // 86.0.4231.0.
+  // migration again (https://crbug.com/559652784 for 156.0.8069.0, and
+  // crrev.com/798174 for 86.0.4231.0).
   //
   // Note: If shortcut updates need to be done once after a future OS upgrade,
   // that should be done by re-versioning Active Setup (see //chrome/installer
   // and https://crbug.com/41234315 for details).
-  const base::Version kLastVersionNeedingMigration({86, 0, 4231, 0});
+  const base::Version kLastVersionNeedingMigration =
+      migrate_shortcut_location ? base::Version({156, 0, 8069, 0})
+                                : base::Version({86, 0, 4231, 0});
 
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
-    const base::Version last_version_migrated(
-        local_state->GetString(prefs::kShortcutMigrationVersion));
-    if (!last_version_migrated.IsValid() ||
-        last_version_migrated < kLastVersionNeedingMigration) {
-      shell_integration::win::MigrateTaskbarPins(base::BindOnce(
-          &PrefService::SetString, base::Unretained(local_state),
-          prefs::kShortcutMigrationVersion, version_info::GetVersionNumber()));
+  const base::Version last_version_migrated(
+      local_state->GetString(prefs::kShortcutMigrationVersion));
+  bool needs_migration = !last_version_migrated.IsValid() ||
+                         last_version_migrated < kLastVersionNeedingMigration;
+
+  // Periodically re-check taskbar shortcuts to repair shortcuts pinned after
+  // the initial migration (e.g., pinned from the Start Menu or Desktop).
+  if (!needs_migration && migrate_shortcut_location) {
+    const base::TimeDelta migration_interval =
+        shell_integration::win::kTaskbarShortcutMigrationInterval.Get();
+    if (migration_interval.is_positive()) {
+      const base::TimeDelta elapsed =
+          base::Time::Now() -
+          local_state->GetTime(prefs::kShortcutMigrationTime);
+      needs_migration = elapsed.is_negative() || elapsed > migration_interval;
     }
+  }
+
+  if (needs_migration) {
+    shell_integration::win::MigrateTaskbarPins(base::BindOnce(
+        [](PrefService* local_state) {
+          local_state->SetString(prefs::kShortcutMigrationVersion,
+                                 version_info::GetVersionNumber());
+          local_state->SetTime(prefs::kShortcutMigrationTime,
+                               base::Time::Now());
+        },
+        base::Unretained(local_state)));
   }
 }
 
