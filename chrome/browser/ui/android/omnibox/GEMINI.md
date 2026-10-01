@@ -36,6 +36,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - **ViewBinder**: A stateless component that translates changes in the `PropertyModel` to the View. This is the **only** class that is permitted to manipulate View properties at runtime.
   - **View**: Android `View` components that hold layout references. They should host very little logic, if any.
   - **Property-Driven View Updates**: Coordinators and Mediators **must avoid manipulating views directly**. If the component is a proper MVC component, and a change can be represented using properties, it **must** be represented via properties in the `PropertyModel`. In almost all cases (including context menu content, visibility, click handlers, styling, and text state), properties should be used. Exceptions may arise only when it is impossible to capture and agree on a discrete state (e.g. transient actions like `requestFocus()`).
+  - **Avoid Plumbing Statically Accessible Feature Flags Through `PropertyModel`**: Do not route statically accessible, session-invariant values (such as Finch-backed feature flags in `OmniboxFeatures`) through `Mediator` -> `PropertyModel` -> `ViewBinder` -> `View` when `PropertyModel` adds no value. Similarly, avoid holding and repeatedly updating multiple mutually-exclusive child `View` fields when all but one are permanently `View.GONE`; resolve the single active `View` reference once during view initialization (e.g. in the `View` constructor or `onFinishInflate()`).
 
 ## Coding
 
@@ -46,6 +47,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
 - **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
 - **Direct Reference Equality (`propertyKey == FooProperties.KEY_NAME`)**: In `ViewBinder.bind(...)` methods, always use direct reference equality (`propertyKey == FooProperties.BAR`) rather than `FooProperties.BAR.equals(propertyKey)` or `propertyKey.equals(...)`. Property keys are unique singleton instances, and equality is never overridden for them; calling `equals()` is unnecessary, incurs virtual method invocation overhead, and is inefficient on hot UI update paths.
+- **Cross-Property Reads in `ViewBinder` & Null-Safety**: `PropertyModelChangeProcessor.create(...)` only binds properties present in `model.getAllSetProperties()` upon construction (though `ModelListAdapter` rebinds all keys when recycling views). However, if a `ViewBinder` branch reads *another* object property from the model (i.e. a property accessed across multiple branches of `ViewBinder`), that other property may still be unset (`null`) when the first property is bound—`ViewBinder` methods must either initialize such shared properties in `PropertyModel.Builder` or guard against `null`.
 - **`@IntDef` Properties**:
   - Properties representing an `@IntDef` **MUST** use `WritableIntDefPropertyKey<T>` or `ReadableIntDefPropertyKey<T>` (typed with the `@IntDef` annotation interface) rather than generic `WritableIntPropertyKey` / `ReadableIntPropertyKey` for clarity, documentation, and compile-time safety.
   - Each `@IntDef` must have a dedicated 1:1 association with a specific property (no multi-purpose omnibus enums; see `@IntDef State Definitions & Naming`).
@@ -170,6 +172,9 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   ResettersForTesting.register(() -> sVariableName = defaultValue);
   ```
   This ensures test overrides do not bleed over into subsequent tests. Resetting static overrides in an `@After` block is strictly prohibited.
+- **Class Member Ordering**: Group all `static final` constants, static fields, and instance member fields at the very top of the class definition (never interspersed between methods or placed at the bottom of the file). In test classes, place `@Rule`s, fields, and `@Before`/`@After` lifecycle methods at the top of the class before any `@Test` methods, and collocate private helper methods together.
+- **Remove Orphaned Callee Methods & Unused `.grdp` Strings When Deleting Code**: Whenever code is deleted, check all methods called from the deleted code; if any callee has no remaining production callers (even if still referenced in unit tests), remove the dead method and its test references in the same CL. Similarly, when removing the last Java/XML reference to an `R.string.*` resource in `components/omnibox_strings.grdp`, remove the `IDS_*` entry in the same CL so `chrome_public_apk__lint` does not fail with `[UnusedResources]`.
+- **Prefer Concrete Generic Types Over Unbounded Wildcards (`<?>`)**: Declare fields and suppliers with concrete type parameters (e.g. `SettableMonotonicObservableSupplier<AiModeButtonUiConfig>`) rather than unbounded wildcards (`<?>`).
 
 ## Feature Flags
 
@@ -192,6 +197,7 @@ When introducing or modifying Omnibox feature flags:
 - **Naming Conventions**:
   - Unit test files must be named `*UnitTest.java` (e.g., `AutocompleteMediatorUnitTest`) to clearly distinguish them from integration/instrumentation/render tests.
   - UI unit tests (unit tests that run on device) must be named `*UiTest.java` (e.g., `StatusViewUiTest`).
+  - **Omit `ForTesting` Suffixes on Test-Only Support Classes & Helpers**: Helper classes, inner subclasses, and methods defined inside test files (`*Test.java`, `*UnitTest.java`) are already in test-only scope and do not need `ForTesting` suffixes (e.g. use `TestLayout` instead of `LayoutForTesting`). Reserve `*ForTesting` strictly for production classes exposing hooks to tests.
 - **Rely on `OmniboxTestUtils` in Integration Tests**:
   - Integration and on-device instrumentation tests (`*Test.java`) should rely on `OmniboxTestUtils` instead of inventing equivalent logic locally.
   - Reusable omnibox-oriented helper functions, assertions, and interaction routines should be contributed directly to `OmniboxTestUtils` (`org.chromium.chrome.test.util.OmniboxTestUtils`) to foster consistency and prevent helper proliferation.
@@ -201,6 +207,7 @@ When introducing or modifying Omnibox feature flags:
   - For resource-free suites (e.g. `base_junit_tests`), `manifest = --none` is injected globally into `robolectric.properties` by `local_machine_junit_test_run.py`.
   - In all scenarios, class-level `@Config(manifest = ...)` annotations are completely redundant no-ops and should be omitted from new tests and dropped from existing tests.
 - **Avoid Test Size Annotations in Unit Tests**: Do not annotate unit tests (`*UnitTest.java`) with size annotations such as `@SmallTest`, `@MediumTest`, or `@LargeTest`. These annotations are only relevant for on-device instrumentation tests (`*Test.java`) where the runner uses them to enforce timeouts and shard batches. In host-based Robolectric unit tests, they have no effect, carry no meaning, and are purely redundant boilerplate.
+- **`@DisableIf.Device` & `@Restriction(DeviceFormFactor.*)` Runner Compatibility**: `@DisableIf.Device(DeviceFormFactor.DESKTOP)` and `@Restriction(DeviceFormFactor.DESKTOP)` are only supported on tests running under `ChromeJUnit4ClassRunner` / `ChromeJUnit4RunnerDelegate` (which install `UiDisableIfSkipCheck` and `UiRestriction`). Using them on a test running under `BaseJUnit4RunnerDelegate` or `BaseJUnit4ClassRunner` throws an `UnsupportedOperationException` at runtime.
 - **Test Length**: Unit tests should be kept concise.
   - The *target* size of a test function is **<30 lines of code (LOC)** (ideal: **10 ± 5 lines of code**).
   - Test cases longer than **30 lines of code** are strongly discouraged.
@@ -245,9 +252,10 @@ When introducing or modifying Omnibox feature flags:
   - `lenient()` calls should be used in `@Before` / `@BeforeClass` (or shared setup helpers) to configure commonly used mocks.
   - `lenient()` calls are **not allowed** inside `@Test` methods.
   - `lenient()` should be used sparingly—only to address mock calls that are commonly executed and impact a significant number of test cases.
-- **Do Not Mock Data Classes**:
+- **Do Not Mock Data Classes, `View`, `Activity`, or `Context`**:
   - Data classes, value objects, and state containers should not be mocked. Construct and pass real instances instead.
   - Above all, `AutocompleteInput` **must not be mocked**—always instantiate and use real `AutocompleteInput` objects.
+  - Do not mock or spy Android `View` subclasses, `Activity`, or `Context` in unit tests (use `ApplicationProvider.getApplicationContext()` or `Robolectric.buildActivity(Activity.class).setup().get()` instead). When testing behavior that depends on rendered layout geometry or `final` framework methods (e.g. `TextView#getLayout()`, hit-testing, or multi-line wrapping), write an on-device/emulator UI test (`*UiTest.java`) rather than injecting fake layouts or reflection in Robolectric.
 - **Mockito Spies Discouraged (`@Spy` / `spy()`)**:
   - Mockito spies should be used rarely. While not banned, they are strongly discouraged: interacting with partially stubbed live code runs real methods and constructors, creating a substantial risk of unintended state mutation and subtle side effects.
   - When a spy is genuinely necessary, the explicit reason for using a spy **must be properly captured in a comment** at the declaration site explaining why a real object, fake, or standard mock is insufficient.
