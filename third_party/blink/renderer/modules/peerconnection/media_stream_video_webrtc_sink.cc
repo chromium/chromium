@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/media/video_capture.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
@@ -262,8 +263,7 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
       WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebRtcVideoSourceAdapter::OnVideoFrameOnIO, source_adapter_)),
-      MediaStreamVideoSink::IsSecure::kNo,
-      MediaStreamVideoSink::UsesAlpha::kNo);
+      WebMediaStreamSink::IsSecure::kNo, WebMediaStreamSink::UsesAlpha::kNo);
   video_track->SetSinkNotifyFrameDroppedCallback(
       this, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                 &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnIO,

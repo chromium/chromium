@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 
 #include "base/functional/callback_helpers.h"
@@ -10,6 +9,7 @@
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -659,8 +659,8 @@ class MockMediaStreamComponent
   MOCK_METHOD4(AddSink,
                void(WebMediaStreamSink*,
                     const VideoCaptureDeliverFrameCB&,
-                    MediaStreamVideoSink::IsSecure,
-                    MediaStreamVideoSink::UsesAlpha));
+                    WebMediaStreamSink::IsSecure,
+                    WebMediaStreamSink::UsesAlpha));
   MOCK_CONST_METHOD0(ToString, String());
 };
 
@@ -701,8 +701,8 @@ class ImageCaptureTest : public testing::Test {
     ON_CALL(*component_, AddSink(_, _, _, _))
         .WillByDefault([&](WebMediaStreamSink* sink,
                            const VideoCaptureDeliverFrameCB& callback,
-                           MediaStreamVideoSink::IsSecure is_secure,
-                           MediaStreamVideoSink::UsesAlpha uses_alpha) {
+                           WebMediaStreamSink::IsSecure is_secure,
+                           WebMediaStreamSink::UsesAlpha uses_alpha) {
           platform_track_->AddSink(sink, callback, is_secure, uses_alpha);
           if (produce_frame_on_add_sink_) {
             callback.Run(media::VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),

@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -203,8 +202,8 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // |callback| will be reset on the render thread.
   virtual void AddSink(WebMediaStreamSink* sink,
                        const VideoCaptureDeliverFrameCB& callback,
-                       MediaStreamVideoSink::IsSecure is_secure,
-                       MediaStreamVideoSink::UsesAlpha uses_alpha) {
+                       WebMediaStreamSink::IsSecure is_secure,
+                       WebMediaStreamSink::UsesAlpha uses_alpha) {
     NOTREACHED();
   }
 

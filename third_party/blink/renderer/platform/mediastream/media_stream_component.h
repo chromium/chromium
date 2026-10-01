@@ -36,7 +36,6 @@
 #include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -91,8 +90,8 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   // TODO(crbug.com/1354563) Create separate MSC types for audio and video
   virtual void AddSink(WebMediaStreamSink* sink,
                        const VideoCaptureDeliverFrameCB& callback,
-                       MediaStreamVideoSink::IsSecure is_secure,
-                       MediaStreamVideoSink::UsesAlpha uses_alpha) = 0;
+                       WebMediaStreamSink::IsSecure is_secure,
+                       WebMediaStreamSink::UsesAlpha uses_alpha) = 0;
 
   virtual void GetSettings(MediaStreamTrackPlatform::Settings&) = 0;
   virtual MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() = 0;

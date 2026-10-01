@@ -11,6 +11,7 @@
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -43,8 +44,8 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&FakeMediaStreamVideoSink::OnVideoFrame,
                                      CrossThreadUnretained(this))),
-        MediaStreamVideoSink::IsSecure::kYes,
-        MediaStreamVideoSink::UsesAlpha::kDefault);
+        WebMediaStreamSink::IsSecure::kYes,
+        WebMediaStreamSink::UsesAlpha::kDefault);
   }
 
   void DisconnectFromTrack() { MediaStreamVideoSink::DisconnectFromTrack(); }

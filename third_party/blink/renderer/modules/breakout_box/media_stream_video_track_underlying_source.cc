@@ -8,6 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
@@ -110,8 +111,8 @@ bool MediaStreamVideoTrackUnderlyingSource::StartFrameDelivery() {
                  ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                      &MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack,
                      WrapCrossThreadPersistent(this))),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
   return true;
 }
 

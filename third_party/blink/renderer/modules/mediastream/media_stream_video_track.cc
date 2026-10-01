@@ -22,6 +22,7 @@
 #include "media/base/limits.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
@@ -964,18 +965,17 @@ static void RemoveSinkInternal(Vector<WebMediaStreamSink*>* sinks,
   sinks->erase(it);
 }
 
-void MediaStreamVideoTrack::AddSink(
-    WebMediaStreamSink* sink,
-    const VideoCaptureDeliverFrameCB& callback,
-    MediaStreamVideoSink::IsSecure is_secure,
-    MediaStreamVideoSink::UsesAlpha uses_alpha) {
+void MediaStreamVideoTrack::AddSink(WebMediaStreamSink* sink,
+                                    const VideoCaptureDeliverFrameCB& callback,
+                                    WebMediaStreamSink::IsSecure is_secure,
+                                    WebMediaStreamSink::UsesAlpha uses_alpha) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   AddSinkInternal(&sinks_, sink);
   frame_deliverer_->AddCallback(sink, callback);
-  secure_tracker_.Add(sink, is_secure == MediaStreamVideoSink::IsSecure::kYes);
-  if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kDefault) {
+  secure_tracker_.Add(sink, is_secure == WebMediaStreamSink::IsSecure::kYes);
+  if (uses_alpha == WebMediaStreamSink::UsesAlpha::kDefault) {
     alpha_using_sinks_.insert(sink);
-  } else if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kNo) {
+  } else if (uses_alpha == WebMediaStreamSink::UsesAlpha::kNo) {
     alpha_discarding_sinks_.insert(sink);
   }
 

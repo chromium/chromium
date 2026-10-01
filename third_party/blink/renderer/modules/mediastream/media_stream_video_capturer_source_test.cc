@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
@@ -68,8 +69,8 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&FakeMediaStreamVideoSink::OnVideoFrame,
                                      CrossThreadUnretained(this))),
-        MediaStreamVideoSink::IsSecure::kYes,
-        MediaStreamVideoSink::UsesAlpha::kDefault);
+        WebMediaStreamSink::IsSecure::kYes,
+        WebMediaStreamSink::UsesAlpha::kDefault);
   }
 
   void DisconnectFromTrack() { MediaStreamVideoSink::DisconnectFromTrack(); }

@@ -11,7 +11,6 @@
 #include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -224,8 +223,8 @@ void TransferredMediaStreamComponent::AddSourceObserver(
 void TransferredMediaStreamComponent::AddSink(
     WebMediaStreamSink* sink,
     const VideoCaptureDeliverFrameCB& callback,
-    MediaStreamVideoSink::IsSecure is_secure,
-    MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    WebMediaStreamSink::IsSecure is_secure,
+    WebMediaStreamSink::UsesAlpha uses_alpha) {
   DCHECK_EQ(MediaStreamSource::kTypeVideo, GetSourceType());
   if (component_) {
     component_->AddSink(sink, callback, is_secure, uses_alpha);

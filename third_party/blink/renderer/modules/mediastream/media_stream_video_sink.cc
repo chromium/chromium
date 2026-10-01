@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
@@ -21,8 +22,8 @@ namespace {
 void AddSinkToMediaStreamTrack(const WebMediaStreamTrack& track,
                                WebMediaStreamSink* sink,
                                const VideoCaptureDeliverFrameCB& callback,
-                               MediaStreamVideoSink::IsSecure is_secure,
-                               MediaStreamVideoSink::UsesAlpha uses_alpha) {
+                               WebMediaStreamSink::IsSecure is_secure,
+                               WebMediaStreamSink::UsesAlpha uses_alpha) {
   static_cast<MediaStreamComponent*>(track)->AddSink(sink, callback, is_secure,
                                                      uses_alpha);
 }
@@ -45,8 +46,8 @@ MediaStreamVideoSink::~MediaStreamVideoSink() {
 void MediaStreamVideoSink::ConnectToTrack(
     const WebMediaStreamTrack& track,
     const VideoCaptureDeliverFrameCB& callback,
-    MediaStreamVideoSink::IsSecure is_secure,
-    MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    WebMediaStreamSink::IsSecure is_secure,
+    WebMediaStreamSink::UsesAlpha uses_alpha) {
   DCHECK(connected_track_.IsNull());
   connected_track_ = track;
   AddSinkToMediaStreamTrack(track, this, callback, is_secure, uses_alpha);

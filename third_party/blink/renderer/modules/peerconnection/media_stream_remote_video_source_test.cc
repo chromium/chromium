@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -222,8 +223,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, StartTrack) {
 
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(sink, OnVideoFrame)
@@ -273,8 +274,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, SurvivesSourceTermination) {
 
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
   EXPECT_EQ(blink::WebMediaStreamSource::kReadyStateLive, sink.state());
   EXPECT_EQ(MediaStreamSource::kReadyStateLive, Source()->GetReadyState());
   StopWebRtcTrack();
@@ -289,8 +290,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesColorSpace) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -324,8 +325,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -363,8 +364,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, AlwaysSetsColorSpace) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -393,8 +394,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesRotation) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -425,8 +426,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedRotationIsIgnored) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -450,8 +451,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -535,8 +536,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -584,8 +585,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
@@ -613,8 +614,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, CallsContentTypeScreenshareCallback) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
 
   base::RunLoop run_loop;
   webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
@@ -681,8 +682,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
@@ -711,8 +712,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
-                 MediaStreamVideoSink::IsSecure::kNo,
-                 MediaStreamVideoSink::UsesAlpha::kDefault);
+                 WebMediaStreamSink::IsSecure::kNo,
+                 WebMediaStreamSink::UsesAlpha::kDefault);
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 

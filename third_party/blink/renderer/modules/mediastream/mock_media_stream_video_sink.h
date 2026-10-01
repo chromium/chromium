@@ -9,6 +9,7 @@
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/media/video_capture.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 
 namespace blink {
@@ -20,7 +21,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
 
   void ConnectToTrack(const WebMediaStreamTrack& track) {
     MediaStreamVideoSink::ConnectToTrack(track, GetDeliverFrameCB(),
-                                         MediaStreamVideoSink::IsSecure::kYes,
+                                         WebMediaStreamSink::IsSecure::kYes,
                                          uses_alpha_);
   }
 
@@ -32,7 +33,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   void ConnectToTrackWithCallback(const WebMediaStreamTrack& track,
                                   const VideoCaptureDeliverFrameCB& callback) {
     MediaStreamVideoSink::ConnectToTrack(
-        track, callback, MediaStreamVideoSink::IsSecure::kYes, uses_alpha_);
+        track, callback, WebMediaStreamSink::IsSecure::kYes, uses_alpha_);
   }
 
   using MediaStreamVideoSink::DisconnectEncodedFromTrack;
@@ -70,7 +71,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
     return content_hint_;
   }
 
-  void SetUsesAlpha(MediaStreamVideoSink::UsesAlpha uses_alpha) {
+  void SetUsesAlpha(WebMediaStreamSink::UsesAlpha uses_alpha) {
     uses_alpha_ = uses_alpha;
   }
 
@@ -82,8 +83,8 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
                                 base::TimeTicks estimated_capture_time);
   void NotifyFrameDropped(media::VideoCaptureFrameDropReason reason);
 
-  MediaStreamVideoSink::UsesAlpha uses_alpha_ =
-      MediaStreamVideoSink::UsesAlpha::kDefault;
+  WebMediaStreamSink::UsesAlpha uses_alpha_ =
+      WebMediaStreamSink::UsesAlpha::kDefault;
   int number_of_frames_;
   bool enabled_;
   media::VideoPixelFormat format_;

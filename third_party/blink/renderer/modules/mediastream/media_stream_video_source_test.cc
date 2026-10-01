@@ -18,6 +18,7 @@
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
@@ -983,9 +984,9 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlpha) {
   WebMediaStreamTrack track = CreateTrack();
 
   MockMediaStreamVideoSink sink_no_alpha;
-  sink_no_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kNo);
+  sink_no_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kNo);
   MockMediaStreamVideoSink sink_alpha;
-  sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
+  sink_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kDefault);
 
   EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_no_alpha.ConnectToTrack(track);
@@ -1010,12 +1011,12 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaIfOtherSinksDiscard) {
   WebMediaStreamTrack track = CreateTrack();
 
   MockMediaStreamVideoSink sink_no_alpha;
-  sink_no_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kNo);
+  sink_no_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kNo);
   MockMediaStreamVideoSink sink_depends;
   sink_depends.SetUsesAlpha(
-      MediaStreamVideoSink::UsesAlpha::kDependsOnOtherSinks);
+      WebMediaStreamSink::UsesAlpha::kDependsOnOtherSinks);
   MockMediaStreamVideoSink sink_alpha;
-  sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
+  sink_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kDefault);
 
   // Keep alpha if the only sink is DependsOnOtherSinks.
   EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
@@ -1052,9 +1053,9 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaMultipleTracks) {
   WebMediaStreamTrack track_with_alpha = CreateTrack();
 
   MockMediaStreamVideoSink sink_no_alpha;
-  sink_no_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kNo);
+  sink_no_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kNo);
   MockMediaStreamVideoSink sink_alpha;
-  sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
+  sink_alpha.SetUsesAlpha(WebMediaStreamSink::UsesAlpha::kDefault);
 
   // Adding just the track with no alpha, the source can discard alpha.
   EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));

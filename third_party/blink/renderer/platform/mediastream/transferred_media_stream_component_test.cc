@@ -13,7 +13,6 @@
 #include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -64,8 +63,8 @@ class MockMediaStreamComponent
   MOCK_METHOD4(AddSink,
                void(WebMediaStreamSink*,
                     const VideoCaptureDeliverFrameCB&,
-                    MediaStreamVideoSink::IsSecure,
-                    MediaStreamVideoSink::UsesAlpha));
+                    WebMediaStreamSink::IsSecure,
+                    WebMediaStreamSink::UsesAlpha));
   MOCK_CONST_METHOD0(ToString, String());
 };
 

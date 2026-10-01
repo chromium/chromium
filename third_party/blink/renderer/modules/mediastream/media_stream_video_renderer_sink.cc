@@ -17,6 +17,7 @@
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -171,8 +172,8 @@ void MediaStreamVideoRendererSink::Start() {
           &FrameDeliverer::OnVideoFrame,
           CrossThreadUnretained(frame_deliverer_.get()))),
       // Local display video rendering is considered a secure link.
-      MediaStreamVideoSink::IsSecure::kYes,
-      MediaStreamVideoSink::UsesAlpha::kDependsOnOtherSinks);
+      WebMediaStreamSink::IsSecure::kYes,
+      WebMediaStreamSink::UsesAlpha::kDependsOnOtherSinks);
 
   if (video_component_->GetReadyState() ==
           MediaStreamSource::kReadyStateEnded ||

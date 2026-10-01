@@ -30,6 +30,18 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamSink {
   virtual void OnVideoConstraintsChanged(std::optional<double> min_fps,
                                          std::optional<double> max_fps) {}
 
+  // IsSecure indicates if this sink is secure (i.e. meets
+  // output protection requirement). Generally, this should be kNo unless you
+  // know what you are doing. Encoded sinks are never secure.
+  enum class IsSecure { kNo, kYes };
+
+  // UsesAlpha indicates if this sink might use its source's
+  // alpha channel (if the source has one). This should be kDefault unless it is
+  // guaranteed that the alpha channel of |track| will be ignored. If
+  // kDependsOnOtherSinks is used, the sink will not receive alpha if all other
+  // sinks do not use alpha.
+  enum class UsesAlpha { kDefault, kDependsOnOtherSinks, kNo };
+
  protected:
   virtual ~WebMediaStreamSink() {}
 };

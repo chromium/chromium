@@ -10,7 +10,6 @@
 #include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -72,8 +71,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   void AddSink(WebMediaStreamAudioSink* sink) override;
   void AddSink(WebMediaStreamSink* sink,
                const VideoCaptureDeliverFrameCB& callback,
-               MediaStreamVideoSink::IsSecure is_secure,
-               MediaStreamVideoSink::UsesAlpha uses_alpha) override;
+               WebMediaStreamSink::IsSecure is_secure,
+               WebMediaStreamSink::UsesAlpha uses_alpha) override;
 
   String ToString() const override;
 
@@ -83,8 +82,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   struct AddSinkArgs {
     raw_ptr<WebMediaStreamSink> sink;
     VideoCaptureDeliverFrameCB callback;
-    MediaStreamVideoSink::IsSecure is_secure;
-    MediaStreamVideoSink::UsesAlpha uses_alpha;
+    WebMediaStreamSink::IsSecure is_secure;
+    WebMediaStreamSink::UsesAlpha uses_alpha;
   };
 
   Member<MediaStreamComponent> component_;
