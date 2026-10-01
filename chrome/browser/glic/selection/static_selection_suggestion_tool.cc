@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/selection/prompt_suggestion.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 
@@ -32,6 +33,18 @@ void StaticSelectionSuggestionTool::RequestSuggestions(
   suggestions.push_back(
       std::make_unique<PromptSuggestion>(*tab_, u"Ask Gemini"));
   std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+}
+
+std::unique_ptr<::selection::Suggestion>
+StaticSelectionSuggestionTool::CreateSuggestion(
+    const optimization_guide::proto::SmartSelectionSuggestion&
+        server_suggestion) {
+  if (server_suggestion.label().empty()) {
+    return nullptr;
+  }
+  return std::make_unique<PromptSuggestion>(
+      *tab_, base::UTF8ToUTF16(server_suggestion.label()),
+      server_suggestion.label());
 }
 
 }  // namespace glic

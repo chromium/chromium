@@ -12,6 +12,7 @@
 #include "chrome/browser/selection/suggestion.h"
 
 namespace optimization_guide::proto {
+class SmartSelectionSuggestion;
 enum SmartSelectionToolId : int;
 }  // namespace optimization_guide::proto
 
@@ -32,6 +33,10 @@ class SuggestionTool {
 
   virtual void RequestSuggestions(const AreaOfInterest& processed_area,
                                   SuggestionsCallback callback) = 0;
+
+  virtual std::unique_ptr<Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) = 0;
 };
 
 }  // namespace selection

@@ -195,6 +195,12 @@ class FakeStaticSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
+  }
+
  private:
   raw_ptr<tabs::TabInterface> tab_;
 };
@@ -207,7 +213,7 @@ class FakeSelectionSuggestionTool
   ~FakeSelectionSuggestionTool() override = default;
 
   ToolId GetToolId() const override {
-    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS;
   }
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
@@ -221,6 +227,12 @@ class FakeSelectionSuggestionTool
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
                                   /*complete=*/true));
+  }
+
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
   }
 
  private:
@@ -499,6 +511,12 @@ class CountingSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
+  }
+
   int request_count() const { return request_count_; }
   const gfx::Rect& last_rect() const { return last_rect_; }
   const SkBitmap& last_aoi_screenshot() const { return last_aoi_screenshot_; }
@@ -647,6 +665,12 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
+  }
+
  private:
   raw_ptr<tabs::TabInterface> tab_;
 };
@@ -702,6 +726,12 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
     last_suggestion_ = suggestion.get();
     suggestions.push_back(std::move(suggestion));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
   }
 
   InlineSuggestion* last_suggestion() { return last_suggestion_; }

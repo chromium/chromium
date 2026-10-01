@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
@@ -39,13 +40,14 @@ class TestSuggestion : public Suggestion {
 
 class CustomTestTool : public SuggestionTool {
  public:
-  explicit CustomTestTool(std::u16string label = u"Custom Action")
-      : label_(std::move(label)) {}
+  explicit CustomTestTool(
+      std::u16string label = u"Custom Action",
+      ToolId tool_id =
+          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME)
+      : label_(std::move(label)), tool_id_(tool_id) {}
   ~CustomTestTool() override = default;
 
-  ToolId GetToolId() const override {
-    return optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED;
-  }
+  ToolId GetToolId() const override { return tool_id_; }
 
   void RequestSuggestions(const AreaOfInterest& processed_area,
                           SuggestionsCallback callback) override {
@@ -54,8 +56,15 @@ class CustomTestTool : public SuggestionTool {
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
+  std::unique_ptr<Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
+  }
+
  private:
   std::u16string label_;
+  ToolId tool_id_;
 };
 
 class AsyncCustomTestTool : public SuggestionTool {
@@ -64,7 +73,7 @@ class AsyncCustomTestTool : public SuggestionTool {
   ~AsyncCustomTestTool() override = default;
 
   ToolId GetToolId() const override {
-    return optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED;
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH;
   }
 
   void RequestSuggestions(const AreaOfInterest& processed_area,
@@ -74,6 +83,12 @@ class AsyncCustomTestTool : public SuggestionTool {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
                                   /*complete=*/true));
+  }
+
+  std::unique_ptr<Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    return nullptr;
   }
 };
 
@@ -97,8 +112,12 @@ class SuggestionServiceUnitTest : public testing::Test {
 TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   EXPECT_EQ(SuggestionService::From(&mock_tab_), service_.get());
 
-  CustomTestTool tool1(u"Static Action 1");
-  CustomTestTool tool2(u"Static Action 2");
+  CustomTestTool tool1(
+      u"Static Action 1",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  CustomTestTool tool2(
+      u"Static Action 2",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS);
   service_->RegisterTool(&tool1);
   service_->RegisterTool(&tool2);
 
@@ -151,6 +170,18 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncTool) {
   service_->UnregisterTool(&async_tool);
 }
 
+// Tests that we CHECK that one cannot registering two tools with the same id.
+TEST_F(SuggestionServiceUnitTest, DuplicateToolRegistrationChecks) {
+  CustomTestTool tool1(
+      u"Static Action 1",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  CustomTestTool tool2(
+      u"Static Action 2",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service_->RegisterTool(&tool1);
+  EXPECT_CHECK_DEATH(service_->RegisterTool(&tool2));
+  service_->UnregisterTool(&tool1);
+}
+
 }  // namespace
 }  // namespace selection
-

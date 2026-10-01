@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -42,7 +43,8 @@ class SuggestionService {
   static SuggestionService* FromTabWebContents(
       content::WebContents* tab_web_contents);
 
-  // Registration interface for internal Chrome feature tools.
+  // Registers `tool`. There must not be a tool with the same `ToolId` already
+  // registered.
   void RegisterTool(SuggestionTool* tool);
   void UnregisterTool(SuggestionTool* tool);
 
@@ -66,7 +68,7 @@ class SuggestionService {
       bool complete);
 
   const raw_ref<tabs::TabInterface> tab_;
-  std::vector<raw_ptr<SuggestionTool>> tools_;
+  base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>> tools_;
 
   ui::ScopedUnownedUserData<SuggestionService> scoped_unowned_user_data_;
 

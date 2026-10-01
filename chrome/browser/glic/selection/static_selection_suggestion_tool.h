@@ -24,6 +24,9 @@ class StaticSelectionSuggestionTool
   ToolId GetToolId() const override;
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override;
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override;
 
  private:
   const raw_ref<tabs::TabInterface> tab_;

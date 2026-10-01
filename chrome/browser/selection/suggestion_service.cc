@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace selection {
@@ -59,13 +61,19 @@ void SuggestionService::RegisterTool(SuggestionTool* tool) {
   if (!tool) {
     return;
   }
-  if (!std::ranges::contains(tools_, tool)) {
-    tools_.push_back(tool);
-  }
+  // TODO(crbug.com/561489586): Disallow registering tools with an undefined
+  // tool ID.
+  CHECK(tools_.try_emplace(tool->GetToolId(), tool).second);
 }
 
 void SuggestionService::UnregisterTool(SuggestionTool* tool) {
-  std::erase(tools_, tool);
+  if (!tool) {
+    return;
+  }
+  if (auto it = tools_.find(tool->GetToolId());
+      it != tools_.end() && it->second == tool) {
+    tools_.erase(it);
+  }
 }
 
 void SuggestionService::UpdateScreenContent(
@@ -85,8 +93,9 @@ void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
 
   auto active_request = base::MakeRefCounted<ActiveRequest>(
       tools_.size(), std::move(callback));
-  std::vector<raw_ptr<SuggestionTool>> tools_snapshot = tools_;
-  for (SuggestionTool* tool : tools_snapshot) {
+  const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>
+      tools_snapshot = tools_;
+  for (const auto& [tool_id, tool] : tools_snapshot) {
     tool->RequestSuggestions(
         processed_area,
         base::BindRepeating(&SuggestionService::OnToolSuggestions,
