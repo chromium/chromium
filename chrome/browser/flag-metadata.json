@@ -2573,7 +2573,7 @@
   },
   {
     "name": "cws-review-prompting-native-ui",
-    "owners": ["ikabadzhov@google.com"],
+    "owners": ["ikabadzhov@google.com", "mikhailh@google.com"],
     "expiry_milestone": 160
   },
   {
