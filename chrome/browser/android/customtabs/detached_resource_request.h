@@ -83,7 +83,6 @@ class DetachedResourceRequest {
 
   const GURL url_;
   const GURL site_for_referrer_;
-  base::TimeTicks start_time_;
   Motivation motivation_;
   OnResultCallback cb_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

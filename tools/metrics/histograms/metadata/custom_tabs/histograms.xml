@@ -288,19 +288,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="CustomTabs.DetachedResourceRequest.Duration.{DetachedResourceRequestFinalStatus}{DetachedResourceRequestSource}"
-    units="ms" expires_after="2024-03-17">
-  <owner>lizeb@chromium.org</owner>
-  <owner>cct-team@google.com</owner>
-  <summary>
-    Time between the start of a detached resource request and its completion
-    (failure or success). Android only. Starting with M84 this is is also
-    recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-    {DetachedResourceRequestFinalStatus} {DetachedResourceRequestSource}
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
     enum="NetErrorCodes" expires_after="2027-02-21">
   <owner>lizeb@chromium.org</owner>

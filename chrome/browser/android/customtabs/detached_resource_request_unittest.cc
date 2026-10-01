@@ -343,8 +343,6 @@ TEST_F(DetachedResourceRequestTest, Simple) {
   request_completion_waiter.Run();
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "CustomTabs.DetachedResourceRequest.Duration.Success", 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
 }
@@ -366,8 +364,6 @@ TEST_F(DetachedResourceRequestTest, SimpleFailure) {
   request_waiter.Run();
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "CustomTabs.DetachedResourceRequest.Duration.Failure", 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus",
       -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
@@ -396,8 +392,6 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
     request_waiter.Run();
     histogram_tester.ExpectUniqueSample(
         "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 0, 1);
-    histogram_tester.ExpectTotalCount(
-        "CustomTabs.DetachedResourceRequest.Duration.Success", 1);
     histogram_tester.ExpectBucketCount(
         "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
   }
@@ -419,8 +413,6 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
     request_waiter.Run();
     histogram_tester.ExpectUniqueSample(
         "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
-    histogram_tester.ExpectTotalCount(
-        "CustomTabs.DetachedResourceRequest.Duration.Failure", 1);
     histogram_tester.ExpectBucketCount(
         "CustomTabs.DetachedResourceRequest.FinalStatus",
         -net::ERR_INSUFFICIENT_RESOURCES, 1);
@@ -447,8 +439,6 @@ TEST_F(DetachedResourceRequestTest, CookieSetWithTruncatedResponse) {
   request_waiter.Run();
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "CustomTabs.DetachedResourceRequest.Duration.Failure", 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus",
       -net::ERR_INSUFFICIENT_RESOURCES, 1);

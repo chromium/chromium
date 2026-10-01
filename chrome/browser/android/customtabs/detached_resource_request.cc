@@ -30,7 +30,6 @@ namespace {
 
 void RecordParallelRequestHistograms(const std::string& suffix,
                                      int redirects,
-                                     base::TimeDelta duration,
                                      int net_error) {
   bool success = net_error == net::OK;
   if (success) {
@@ -38,16 +37,10 @@ void RecordParallelRequestHistograms(const std::string& suffix,
     base::UmaHistogramCustomCounts(
         "CustomTabs.DetachedResourceRequest.RedirectsCount.Success" + suffix,
         redirects, 1, 21, 21);
-    base::UmaHistogramMediumTimes(
-        "CustomTabs.DetachedResourceRequest.Duration.Success" + suffix,
-        duration);
   } else {
     base::UmaHistogramCustomCounts(
         "CustomTabs.DetachedResourceRequest.RedirectsCount.Failure" + suffix,
         redirects, 1, 21, 21);
-    base::UmaHistogramMediumTimes(
-        "CustomTabs.DetachedResourceRequest.Duration.Failure" + suffix,
-        duration);
   }
 
   base::UmaHistogramSparse(
@@ -144,7 +137,6 @@ DetachedResourceRequest::DetachedResourceRequest(
 void DetachedResourceRequest::Start(
     std::unique_ptr<DetachedResourceRequest> request,
     content::BrowserContext* browser_context) {
-  request->start_time_ = base::TimeTicks::Now();
   auto* storage_partition = browser_context->GetStoragePartition(nullptr);
 
   request->url_loader_->SetOnRedirectCallback(
@@ -202,11 +194,9 @@ void DetachedResourceRequest::OnResponseCallback(
   net_error = std::abs(net_error);
 
   if (motivation_ == Motivation::kParallelRequest) {
-    auto duration = base::TimeTicks::Now() - start_time_;
-    RecordParallelRequestHistograms("", redirects_, duration, net_error);
+    RecordParallelRequestHistograms("", redirects_, net_error);
     if (is_from_aga_) {
-      RecordParallelRequestHistograms(".FromAga", redirects_, duration,
-                                      net_error);
+      RecordParallelRequestHistograms(".FromAga", redirects_, net_error);
     }
   }
 
