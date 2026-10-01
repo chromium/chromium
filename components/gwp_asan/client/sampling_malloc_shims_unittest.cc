@@ -327,38 +327,6 @@ TEST_F(SamplingMallocShimsTest, AlignedRealloc) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
-#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-MULTIPROCESS_TEST_MAIN_WITH_SETUP(
-    BatchFree,
-    SamplingMallocShimsTest::multiprocessTestSetup) {
-  void* ptrs[kMaxMetadata + 1];
-  for (size_t i = 0; i < kMaxMetadata; i++) {
-    UNSAFE_TODO(ptrs[i]) = GetMallocGpaForTesting().Allocate(16);
-    UNSAFE_TODO(CHECK(ptrs[i]));
-  }
-  // Check that all GPA allocations were consumed.
-  CHECK_EQ(GetMallocGpaForTesting().Allocate(16), nullptr);
-
-  ptrs[kMaxMetadata] =
-      malloc_zone_malloc(malloc_default_zone(), 16);
-  CHECK(ptrs[kMaxMetadata]);
-
-  malloc_zone_batch_free(malloc_default_zone(), ptrs,
-                         kMaxMetadata + 1);
-
-  // Check that GPA allocations were freed.
-  CHECK(GetMallocGpaForTesting().Allocate(16));
-
-  return kSuccess;
-}
-
-TEST_F(SamplingMallocShimsTest, BatchFree) {
-  runTest("BatchFree");
-}
-
-#endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     SamplingRange,
     SamplingMallocShimsTest::multiprocessTestSetupWithSamplingMaxSize) {

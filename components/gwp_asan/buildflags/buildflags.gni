@@ -19,7 +19,7 @@ supported_platform =
 declare_args() {
   # Is GWP-ASan malloc/PartitionAlloc hooking enabled for chrome/ on a given
   # platform.
-  enable_gwp_asan_malloc = supported_platform && use_allocator_shim
+  enable_gwp_asan_malloc = supported_platform && use_partition_alloc_as_malloc
   enable_gwp_asan_partitionalloc = supported_platform && use_partition_alloc
 }
 

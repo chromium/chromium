@@ -6,8 +6,6 @@
 
 #include "partition_alloc/shim/allocator_shim.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "partition_alloc/buildflags.h"
@@ -161,5 +159,3 @@ TEST_F(ExtremeLightweightDetectorMallocShimsTest, Basic) {
 }  // namespace
 
 }  // namespace gwp_asan::internal
-
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

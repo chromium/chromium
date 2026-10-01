@@ -6,8 +6,6 @@
 
 #include "partition_alloc/slot_start.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
 #include <atomic>
 
 #include "base/compiler_specific.h"
@@ -335,10 +333,8 @@ void InstallExtremeLightweightDetectorHooks(
   sampling_state.Init(init_options.sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&allocator_dispatch);
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::trace_event::MallocDumpProvider::SetExtremeLUDGetStatsCallback(
       base::BindRepeating(GetStats));
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 ExtremeLightweightDetectorQuarantineBranch&
@@ -356,5 +352,3 @@ GetEludQuarantineBranchForLargeObjectsForTesting() {
 }
 
 }  // namespace gwp_asan::internal
-
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
