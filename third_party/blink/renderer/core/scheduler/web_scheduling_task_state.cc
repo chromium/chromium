@@ -71,30 +71,9 @@ TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
 
 TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
     SoftNavigationContext* soft_navigation_context) {
-  // TODO(crbug.com/475261410):  `SoftNavigationContext` is not expected to be
-  // created in web scheduling tasks and continuations, but this didn't hold in
-  // the case of dispatching simulated clicks to a form control's label. This
-  // has been fixed, but to be safe, this is being marked as non-fatal to flush
-  // out any other cases. Everything below the NOTREACHED should be removed once
-  // we're confident there are no more such cases.
-  NOTREACHED(base::NotFatalUntil::M149);
-
-  TaskAttributionInfoImpl* previous_task_attribution_info_impl =
-      UnsafeTo<TaskAttributionInfoImpl>(GetTaskAttributionInfo());
-  // TaskAttributionInfoImpl::ForkAndSetVariable() returns a
-  // TaskAttributionInfoImpl.
-  TaskAttributionTaskState* current_task_state =
-      previous_task_attribution_info_impl
-          ? previous_task_attribution_info_impl->ForkAndSetVariable(
-                soft_navigation_context)
-          : MakeGarbageCollected<TaskAttributionInfoImpl>(
-                soft_navigation_context,
-                /*resource_timing_context=*/nullptr,
-                /*script_tool_context=*/nullptr);
-
-  return MakeGarbageCollected<WebSchedulingTaskState>(
-      UnsafeTo<TaskAttributionInfoImpl>(current_task_state),
-      GetSchedulerTaskContext());
+  // `SoftNavigationContext` is not expected to be created in web scheduling
+  // tasks and continuations.
+  NOTREACHED();
 }
 
 bool WebSchedulingTaskState::IsWebSchedulingTaskState() const {

@@ -4,19 +4,13 @@
 
 #include "third_party/blink/renderer/platform/bindings/cross_thread_source_location.h"
 
-#include "base/check.h"
-#include "base/not_fatal_until.h"
+#include "base/check_deref.h"
 
 namespace blink {
 
 CrossThreadSourceLocation CrossThreadSourceLocation::From(
     const SourceLocation* location) {
-  if (location) {
-    return CrossThreadSourceLocation(*location);
-  }
-
-  CHECK(false, base::NotFatalUntil::M150);
-  return CrossThreadSourceLocation();
+  return CrossThreadSourceLocation(CHECK_DEREF(location));
 }
 
 }  // namespace blink

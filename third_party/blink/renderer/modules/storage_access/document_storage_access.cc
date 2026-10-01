@@ -333,8 +333,7 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
   // been added without adding a new check above.
   CHECK(!GetSupplementable()
              ->dom_window_->GetStorageKey()
-             .ForbidsUnpartitionedStorageAccess(),
-        base::NotFatalUntil::M138);
+             .ForbidsUnpartitionedStorageAccess());
 
   // RequestPermission may return `GRANTED` without actually creating a
   // permission grant if cookies are already accessible.

@@ -657,7 +657,7 @@ void MemoryCache::PruneTieredStrongReferences() {
 
   size_t current_total_size = 0;
   for (Resource* resource : tiered_strong_references_) {
-    CHECK(resource, base::NotFatalUntil::M145);
+    CHECK(resource);
     current_total_size += resource->size();
   }
 
@@ -672,8 +672,8 @@ void MemoryCache::PruneTieredStrongReferences() {
   // The sorting is "Just-In-Time" for the eviction decisions.
   std::sort(tiered_strong_references_.begin(), tiered_strong_references_.end(),
             [this](const Member<Resource>& a, const Member<Resource>& b) {
-              CHECK(a, base::NotFatalUntil::M145);
-              CHECK(b, base::NotFatalUntil::M145);
+              CHECK(a);
+              CHECK(b);
               // Note: `>` sorts in descending order (highest value first).
               return CalculateResourceValue(a.Get()) >
                      CalculateResourceValue(b.Get());
