@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
@@ -287,6 +289,34 @@ TEST_F(EntitySuppressionManagerImplTest, ClearAllSuppressions_Empty) {
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
   EXPECT_FALSE(manager().ClearAllSuppressions());
+}
+
+// Tests that all operations fail gracefully if the sync bridge never loads,
+// e.g. because encryption is unavailable.
+TEST_F(EntitySuppressionManagerImplTest, BridgeNotLoaded) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_processor(), ReportError)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  os_crypt_async::OSCryptAsync os_crypt_async_without_keys({});
+  auto bridge = std::make_unique<EntitySuppressionSyncBridge>(
+      mock_processor().CreateForwardingProcessor(),
+      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+      &os_crypt_async_without_keys);
+  run_loop.Run();
+  ASSERT_FALSE(bridge->IsLoaded());
+  EntitySuppressionManagerImpl manager(std::move(bridge));
+
+  MockEntitySuppressionManagerObserver observer;
+  manager.AddObserver(&observer);
+  EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
+
+  EntityInstance passport = test::GetPassportEntityInstance();
+  EXPECT_FALSE(manager.SuppressEntity(passport));
+  EXPECT_FALSE(manager.IsSuppressed(passport));
+  EXPECT_FALSE(manager.UndoInSessionSuppressedEntity(passport.guid()));
+  EXPECT_FALSE(manager.ClearAllSuppressions());
+
+  manager.RemoveObserver(&observer);
 }
 
 }  // namespace

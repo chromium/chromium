@@ -36,7 +36,7 @@ class EntitySuppressionManagerImpl
   // EntitySuppressionManager:
   void AddObserver(EntitySuppressionManager::Observer* observer) override;
   void RemoveObserver(EntitySuppressionManager::Observer* observer) override;
-  bool SuppressEntity(const EntityInstance& entity) override;
+  bool SuppressEntity(EntityInstance entity) override;
   bool UndoInSessionSuppressedEntity(
       const EntityInstance::EntityId& entity_id) override;
   bool ClearAllSuppressions() override;

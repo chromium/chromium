@@ -26,8 +26,7 @@ void InMemoryEntitySuppressionManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool InMemoryEntitySuppressionManager::SuppressEntity(
-    const EntityInstance& entity) {
+bool InMemoryEntitySuppressionManager::SuppressEntity(EntityInstance entity) {
   bool modified = false;
   for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
     if (suppressed_entries_.insert(entry).second) {

@@ -33,16 +33,15 @@ void EntitySuppressionManagerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool EntitySuppressionManagerImpl::SuppressEntity(
-    const EntityInstance& entity) {
-  // Copy the ID because `Suppress()` notifies observers, which may destroy
-  // `entity`. For example, the `EntityDataManager` evicts suppressed
-  // personal-context entities.
-  const EntityInstance::EntityId entity_id = entity.guid();
+bool EntitySuppressionManagerImpl::SuppressEntity(EntityInstance entity) {
+  if (!sync_bridge_->IsLoaded()) {
+    return false;
+  }
   bool modified = false;
   for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
     if (sync_bridge_->Suppress(entry)) {
-      suppressed_entries_by_entity_id_[entity_id].push_back(std::move(entry));
+      suppressed_entries_by_entity_id_[entity.guid()].push_back(
+          std::move(entry));
       modified = true;
     }
   }
@@ -51,6 +50,9 @@ bool EntitySuppressionManagerImpl::SuppressEntity(
 
 bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
     const EntityInstance::EntityId& entity_id) {
+  if (!sync_bridge_->IsLoaded()) {
+    return false;
+  }
   const std::vector<EntitySuppressionEntry>* entries =
       base::FindOrNull(suppressed_entries_by_entity_id_, entity_id);
   if (!entries) {
@@ -67,6 +69,9 @@ bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
 }
 
 bool EntitySuppressionManagerImpl::ClearAllSuppressions() {
+  if (!sync_bridge_->IsLoaded()) {
+    return false;
+  }
   suppressed_entries_by_entity_id_.clear();
   return sync_bridge_->ClearAllSuppressions();
 }
