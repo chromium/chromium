@@ -4779,6 +4779,18 @@ TEST_F(BrowserAutofillManagerTest,
                                         form.fields().back().global_id(), {});
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_NotifiesPasswordDelegateOfInlineQrCode) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = USERNAME, .autocomplete_attribute = "webauthn"}}});
+  FormsSeen({form});
+
+  EXPECT_CALL(password_delegate(), OnWebauthnInlineQrCodeSuggestionShown);
+  autofill_manager().DidShowSuggestions(
+      {Suggestion(SuggestionType::kWebauthnPasskeyQrCode)}, /*metadata=*/{},
+      form.global_id(), form.fields().front().global_id(), {});
+}
+
 TEST_F(BrowserAutofillManagerTest, Reset_ResetsMerchantPromoCodeManager) {
   EXPECT_CALL(merchant_promo_code_manager(), Reset);
   test_api(autofill_manager()).Reset();

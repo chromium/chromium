@@ -38,6 +38,7 @@ class MockPasswordManagerDelegate : public PasswordManagerDelegate {
               GetWebauthnInlineQrCodeSuggestion,
               (),
               (const, override));
+  MOCK_METHOD(void, OnWebauthnInlineQrCodeSuggestionShown, (), (override));
 
   MOCK_METHOD(void,
               SelectSuggestion,

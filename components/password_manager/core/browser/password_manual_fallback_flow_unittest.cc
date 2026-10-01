@@ -914,6 +914,21 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptInlineQrCodeSuggestion) {
                              field_id);
 }
 
+TEST_F(PasswordManualFallbackFlowTest,
+       ShowingInlineQrCodeNotifiesPasswordManagerDelegate) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+  flow().RunFlow(MakeFieldGlobalId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  ON_CALL(driver(), GetPasswordManagerDelegate)
+      .WillByDefault(Return(&password_manager_delegate()));
+  EXPECT_CALL(password_manager_delegate(),
+              OnWebauthnInlineQrCodeSuggestionShown);
+  Suggestion suggestion(SuggestionType::kWebauthnPasskeyQrCode);
+  flow().OnSuggestionsShown(base::span_from_ref(suggestion), /*metadata=*/{});
+}
+
 // Test that both username and password are filled if the suggestion is accepted
 // for a popup triggered on a password form if the biometric authentication is
 // not available.

@@ -265,6 +265,14 @@ PasswordAutofillManager::GetWebauthnInlineQrCodeSuggestion() const {
   return suggestion_generator_.GetWebauthnInlineQrCodeSuggestion();
 }
 
+void PasswordAutofillManager::OnWebauthnInlineQrCodeSuggestionShown() {
+  if (WebAuthnCredentialsDelegate* credentials_delegate =
+          password_client_->GetWebAuthnCredentialsDelegateForDriver(
+              password_manager_driver_)) {
+    credentials_delegate->OnPasskeyQrCodeSuggestionShown();
+  }
+}
+
 void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     const SuggestionUiMetadata& metadata) {
@@ -273,13 +281,8 @@ void PasswordAutofillManager::OnSuggestionsShown(
         return suggestion.type ==
                autofill::SuggestionType::kWebauthnPasskeyQrCode;
       });
-  if (!shows_passkey_qr_code) {
-    return;
-  }
-  if (WebAuthnCredentialsDelegate* credentials_delegate =
-          password_client_->GetWebAuthnCredentialsDelegateForDriver(
-              password_manager_driver_)) {
-    credentials_delegate->OnPasskeyQrCodeSuggestionShown();
+  if (shows_passkey_qr_code) {
+    OnWebauthnInlineQrCodeSuggestionShown();
   }
 }
 

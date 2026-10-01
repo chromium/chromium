@@ -2269,6 +2269,13 @@ void BrowserAutofillManager::DidShowSuggestions(
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
 
+  if (shown_suggestion_types.contains(SuggestionType::kWebauthnPasskeyQrCode)) {
+    if (PasswordManagerDelegate* password_delegate =
+            client().GetPasswordManagerDelegate(field_id)) {
+      password_delegate->OnWebauthnInlineQrCodeSuggestionShown();
+    }
+  }
+
   if (shown_suggestion_types.contains(SuggestionType::kIbanEntry) &&
       client().GetPaymentsAutofillClient()->GetIbanManager()) {
     client()
