@@ -1259,16 +1259,13 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 
 void CanvasRenderingContext2D::ResetResourceProvider() {
   auto old_shared = std::move(shared_image_provider_);
-  auto old_bitmap = std::move(bitmap_provider_);
+  bitmap_provider_.reset();
   last_recording_ = std::nullopt;
   if (canvas()) {
     canvas()->UpdateMemoryUsage();
   }
   if (old_shared) {
     old_shared->SetDelegate(nullptr);
-  }
-  if (old_bitmap) {
-    old_bitmap->SetDelegate(nullptr);
   }
 }
 

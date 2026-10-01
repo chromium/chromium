@@ -69,9 +69,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   ~Canvas2DBitmapProvider() override;
 
-  void SetDelegate(CanvasResourceProviderDelegate* delegate) {
-    delegate_ = delegate;
-  }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
   void ReleaseImageProviderImages();
