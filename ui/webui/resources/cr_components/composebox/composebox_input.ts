@@ -14,6 +14,21 @@ import {getHtml} from './composebox_input.html.js';
 
 const ZERO_SPACE_STRING: string = '\u200b';
 
+export const CHIP_CLASS = 'aim-chip';
+export const CHIP_LABEL_CLASS = 'chip-label';
+
+export const CHIP_DATASET_ID = 'chipId';
+export const CHIP_DATASET_TEXT = 'chipText';
+export const CHIP_DATASET_EMOJI = 'chipEmoji';
+export const CHIP_DATASET_ICON_URL = 'chipIconUrl';
+
+export interface ComposeboxChip {
+  id?: string;
+  text: string;
+  emoji?: string;
+  iconUrl?: string;
+}
+
 export interface ComposeboxInputElement {
   $: {
     cancelIcon: CrIconButtonElement,
@@ -117,16 +132,15 @@ export class ComposeboxInputElement extends I18nMixinLit
 
     if (changedProperties.has('input')) {
       if (this.composeboxSkillsEnabled) {
-        if (this.$.input) {
-          const text = this.input || '';
-          if (text !== this.$.input.innerText) {
+        const text = this.input || '';
+        if (text !== getPlainText(this.$.input)) {
+          if (text === '') {
+            this.$.input.replaceChildren();
+          } else {
             this.$.input.innerText = text;
-            if (text === '') {
-              this.$.input.replaceChildren();
-            }
-            if (this.shadowRoot?.activeElement === this.$.input) {
-              setCaretToEnd(this.$.input, this.shadowRoot);
-            }
+          }
+          if (this.shadowRoot?.activeElement === this.$.input) {
+            setCaretToEnd(this.$.input, this.shadowRoot);
           }
         }
       }
@@ -137,10 +151,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       if (!this.input) {
         this.resetHeight();
       }
-      if (!this.disableCaretColorAnimation) {
-        this.updateMirror_();
-        this.updateCaret_();
-      }
+      this.updateMirrorAndCaret_();
     }
 
     if (changedProperties.has('smartComposeInlineHint') ||
@@ -259,22 +270,12 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   protected onInputInput_(e: Event) {
     if (this.composeboxSkillsEnabled) {
-      let text = (e.target as HTMLDivElement).innerText || '';
-      // If the input only consists of whitespace or empty newline artifacts
-      // from deleted lines, clear the input and remove the text nodes.
-      if (text === '\n' || text === '\r\n') {
-        text = '';
-        (e.target as HTMLDivElement).replaceChildren();
-      }
-      this.input = text;
+      this.input = getPlainText(this.$.input);
     } else {
       this.input = (e.target as HTMLTextAreaElement).value;
     }
 
-    if (!this.disableCaretColorAnimation) {
-      this.updateMirror_();
-      this.updateCaret_();
-    }
+    this.updateMirrorAndCaret_();
     this.dispatchEvent(new CustomEvent('input-input', {detail: e}));
   }
 
@@ -410,33 +411,72 @@ export class ComposeboxInputElement extends I18nMixinLit
     this.isRtl_ = window.getComputedStyle(this).direction === 'rtl';
   }
 
+  private updateMirrorAndCaret_() {
+    if (!this.disableCaretColorAnimation) {
+      this.updateMirror_();
+      this.updateCaret_();
+    }
+  }
+
+  /**
+   * Reconstructs the `#mirror` element's DOM spans to mirror each character and
+   * chip in `#input` for caret anchor positioning.
+   */
   private updateMirror_() {
     const mirror = this.shadowRoot.getElementById('mirror');
     if (!mirror) {
       return;
     }
 
-    mirror.textContent = '';
-    const chars = this.input.split('');
+    if (this.composeboxSkillsEnabled) {
+      mirror.replaceChildren();
 
-    if (chars.length === 0) {
-      const emptySpan = document.createElement('span');
-      emptySpan.textContent = ZERO_SPACE_STRING;
-      mirror.appendChild(emptySpan);
-      return;
-    }
-
-    chars.forEach(char => {
-      const span = document.createElement('span');
-      if (char === ' ') {
-        span.textContent = ' ';
-      } else if (char === '\n') {
-        span.textContent = `\n${ZERO_SPACE_STRING}`;
-      } else {
-        span.textContent = char;
+      if (this.input.length === 0) {
+        appendCharSpan(ZERO_SPACE_STRING, mirror);
+        return;
       }
-      mirror.appendChild(span);
-    });
+
+      for (const node of this.$.input.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent || '';
+          for (const char of text) {
+            appendCharSpan(char, mirror);
+          }
+        } else if (
+            node instanceof HTMLElement &&
+            node.classList.contains(CHIP_CLASS)) {
+          const chipText = node.dataset[CHIP_DATASET_TEXT] || '';
+          const chipContainer = document.createElement('span');
+          chipContainer.classList.add(CHIP_CLASS);
+          for (const char of chipText) {
+            appendCharSpan(char, chipContainer);
+          }
+          mirror.appendChild(chipContainer);
+        }
+      }
+    } else {
+      mirror.textContent = '';
+      const chars = this.input.split('');
+
+      if (chars.length === 0) {
+        const emptySpan = document.createElement('span');
+        emptySpan.textContent = ZERO_SPACE_STRING;
+        mirror.appendChild(emptySpan);
+        return;
+      }
+
+      chars.forEach(char => {
+        const span = document.createElement('span');
+        if (char === ' ') {
+          span.textContent = ' ';
+        } else if (char === '\n') {
+          span.textContent = `\n${ZERO_SPACE_STRING}`;
+        } else {
+          span.textContent = char;
+        }
+        mirror.appendChild(span);
+      });
+    }
   }
 
   private updateCaret_() {
@@ -466,8 +506,9 @@ export class ComposeboxInputElement extends I18nMixinLit
     // CSS `position-anchor: --cursor-char` on #caret does the rest.
     const selectionEnd = this.getSelectionEnd();
     const atStart = selectionEnd === 0;
-    const targetSpan =
-        getTargetSpan(selectionEnd, this.input.length, mirror, this.isRtl_);
+    const targetSpan = getTargetSpan(
+        selectionEnd, this.input.length, mirror, this.isRtl_,
+        this.composeboxSkillsEnabled);
 
     if (targetSpan) {
       targetSpan.style.anchorName = '--cursor-char';
@@ -495,7 +536,9 @@ export class ComposeboxInputElement extends I18nMixinLit
     // current textarea selectionEnd. The parent calls this after clearing its
     // input property, but before the child's Lit render flushes,
     // so selectionEnd may still reflect the old cursor.
-    const firstSpan = mirror.firstChild as HTMLElement;
+    const firstSpan = this.composeboxSkillsEnabled ?
+        mirror.querySelector<HTMLElement>(`span:not(.${CHIP_CLASS})`) :
+        (mirror.firstChild as HTMLElement);
     if (firstSpan) {
       firstSpan.style.anchorName = '--cursor-char';
       this.anchoredSpan_ = firstSpan;
@@ -587,26 +630,114 @@ function setCaretToEnd(element: HTMLElement, shadowRoot?: ShadowRoot|null) {
 
 function getTargetSpan(
     selectionEnd: number, textLength: number, mirror: Readonly<HTMLElement>,
-    isRtl: boolean): HTMLElement|null {
+    isRtl: boolean, composeboxSkillsEnabled: boolean): HTMLElement|null {
   const atStart = selectionEnd === 0;
   const atEnd = selectionEnd === textLength;
 
-  if (atStart) {
-    return mirror.firstChild as HTMLElement;
+  if (composeboxSkillsEnabled) {
+    if (atStart) {
+      return mirror.querySelector<HTMLElement>(`span:not(.${CHIP_CLASS})`);
+    }
+    const allSpans =
+        mirror.querySelectorAll<HTMLElement>(`span:not(.${CHIP_CLASS})`);
+    if (isRtl && atEnd) {
+      let targetSpan: HTMLElement|null = null;
+      let minLeft = Infinity;
+      for (const element of allSpans) {
+        if (element.offsetLeft < minLeft) {
+          minLeft = element.offsetLeft;
+          targetSpan = element;
+        }
+      }
+      return targetSpan;
+    }
+    if (allSpans.length > 0) {
+      if (selectionEnd - 1 < allSpans.length) {
+        return allSpans[selectionEnd - 1] as HTMLElement;
+      }
+      return allSpans[allSpans.length - 1] as HTMLElement;
+    }
+    return null;
+  } else {
+    if (atStart) {
+      return mirror.firstChild as HTMLElement;
+    }
+    if (isRtl && atEnd) {
+      let targetSpan: HTMLElement|null = null;
+      let minLeft = Infinity;
+      for (const child of mirror.children) {
+        const element = child as HTMLElement;
+        if (element.offsetLeft < minLeft) {
+          minLeft = element.offsetLeft;
+          targetSpan = element;
+        }
+      }
+      return targetSpan;
+    }
+    return mirror.childNodes[selectionEnd - 1] as HTMLElement;
   }
-  if (isRtl && atEnd) {
-    let targetSpan: HTMLElement|null = null;
-    let minLeft = Infinity;
-    for (const child of mirror.children) {
-      const element = child as HTMLElement;
-      if (element.offsetLeft < minLeft) {
-        minLeft = element.offsetLeft;
-        targetSpan = element;
+}
+
+/**
+ * Creates a span mirroring a single character and appends it to `container`.
+ * Newlines are followed by a zero-width space so that the line break is
+ * measurable for caret positioning. Spaces are mirrored as-is.
+ */
+function appendCharSpan(char: string, container: Node) {
+  const span = document.createElement('span');
+  span.textContent = char === '\n' ? `\n${ZERO_SPACE_STRING}` : char;
+  container.appendChild(span);
+}
+
+/**
+ * Creates and returns a non-editable HTML span element representing a chip,
+ * along with associated data attributes.
+ */
+export function createChipElement(chip: ComposeboxChip): HTMLElement {
+  const chipEl = document.createElement('span');
+  chipEl.classList.add(CHIP_CLASS);
+  chipEl.setAttribute('contenteditable', 'false');
+  chipEl.setAttribute('tabindex', '-1');
+  chipEl.title = chip.text;
+  if (chip.id) {
+    chipEl.dataset[CHIP_DATASET_ID] = chip.id;
+  }
+  chipEl.dataset[CHIP_DATASET_TEXT] = chip.text;
+  if (chip.emoji) {
+    chipEl.dataset[CHIP_DATASET_EMOJI] = chip.emoji;
+  }
+  if (chip.iconUrl) {
+    chipEl.dataset[CHIP_DATASET_ICON_URL] = chip.iconUrl;
+  }
+
+  const textSpan = document.createElement('span');
+  textSpan.classList.add(CHIP_LABEL_CLASS);
+  textSpan.textContent = chip.text;
+  chipEl.appendChild(textSpan);
+
+  return chipEl;
+}
+
+/**
+ * Traverses the DOM tree inside `container` recursively to extract plaintext,
+ * converting `.aim-chip` elements to their plain text representation.
+ */
+function getPlainText(container: Node): string {
+  let result = '';
+  function traverse(node: Node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      result += node.textContent || '';
+    } else if (
+        node instanceof HTMLElement && node.classList.contains(CHIP_CLASS)) {
+      result += node.dataset[CHIP_DATASET_TEXT] || '';
+    } else {
+      for (const child of node.childNodes) {
+        traverse(child);
       }
     }
-    return targetSpan;
   }
-  return mirror.childNodes[selectionEnd - 1] as HTMLElement;
+  traverse(container);
+  return result;
 }
 
 declare global {

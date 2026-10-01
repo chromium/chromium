@@ -26,6 +26,7 @@ constexpr SkColor kColorGemSysColorPrimary_Light =
 constexpr SkColor kColorSysTonalOutline_Light = SkColorSetRGB(0xA8, 0xC7, 0xFA);
 constexpr SkColor kColorSysPrimary_Light = SkColorSetRGB(0x0B, 0x57, 0xD0);
 
+constexpr SkColor kColorSysOnSurface_Light = SkColorSetRGB(0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorSysOnSurfaceSubtle_Light =
     SkColorSetRGB(0x5E, 0x5E, 0x5E);
 }  // namespace
@@ -250,6 +251,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeboxLensButtonHoverBackground] = {
       SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxLink] = {gfx::kGoogleBlue700};
+  mixer[kColorComposeboxAimChipHoverBackground] = {
+      kColorSysStateHoverOnSubtle_Light};
+  mixer[kColorComposeboxAimChipHoverText] = {kColorSysOnSurface_Light};
 
   mixer[kColorNewTabPageWallpaperSearchButtonBackground] = {
       ui::kColorSysPrimary};

@@ -39,6 +39,8 @@
 }
 
 #composebox {
+  --color-composebox-aim-chip-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-aim-chip-hover-text: var(--color-omnibox-text);
   --color-composebox-background: var(--color-omnibox-results-background);
   --color-composebox-cancel-button: unset; /* Lens only */
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
