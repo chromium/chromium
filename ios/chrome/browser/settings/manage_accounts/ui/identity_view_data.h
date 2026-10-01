@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_ITEM_H_
-#define IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_DATA_H_
+#define IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_DATA_H_
 
 #import <UIKit/UIKit.h>
 
 class GaiaId;
 
 // Item to exchange identities between the mediator and the view controller.
-@interface IdentityViewItem : NSObject
+@interface IdentityViewData : NSObject
 
 @property(nonatomic, copy) NSString* userEmail;
 // The name may be nil if it has not yet been loaded.
@@ -22,4 +22,4 @@ class GaiaId;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_IDENTITY_VIEW_DATA_H_

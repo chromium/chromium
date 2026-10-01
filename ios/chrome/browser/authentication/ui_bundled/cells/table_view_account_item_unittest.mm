@@ -21,12 +21,12 @@ using AccountControlTableViewItemTest = PlatformTest;
 TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
   TableViewAccountItem* item = [[TableViewAccountItem alloc] initWithType:0];
   UIImage* image = [[UIImage alloc] init];
-  NSString* main_text = @"Main text";
-  NSString* detail_text = @"Detail text";
+  NSString* name = @"Name";
+  NSString* email = @"email";
 
   item.image = image;
-  item.text = main_text;
-  item.detailText = detail_text;
+  item.name = name;
+  item.email = email;
 
   LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
@@ -39,8 +39,8 @@ TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
       base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
           cell.contentConfiguration);
 
-  EXPECT_NSEQ(main_text, configuration.title);
-  EXPECT_NSEQ(detail_text, configuration.subtitle);
+  EXPECT_NSEQ(name, configuration.title);
+  EXPECT_NSEQ(email, configuration.subtitle);
 
   NSObject<ChromeContentConfiguration>* leading_config =
       configuration.leadingConfiguration;

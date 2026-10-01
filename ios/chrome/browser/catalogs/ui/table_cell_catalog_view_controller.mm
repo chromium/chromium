@@ -649,9 +649,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewAccountItem* accountItemDetailWithError =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
   accountItemDetailWithError.image = defaultAvatar;
-  accountItemDetailWithError.text = @"Account User Name";
-  accountItemDetailWithError.detailText =
-      @"Syncing to AccountUserNameAccount@example.com";
+  accountItemDetailWithError.name = @"Account User Name";
+  accountItemDetailWithError.email = @"AccountUserNameAccount@example.com";
   accountItemDetailWithError.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   accountItemDetailWithError.detailImage = TableViewAccountDetailImage::kError;
@@ -661,12 +660,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewAccountItem* accountItemCheckMark =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
   accountItemCheckMark.image = defaultAvatar;
-  accountItemCheckMark.text = @"Lorem ipsum dolor sit amet, consectetur "
-                              @"adipiscing elit, sed do eiusmod tempor "
-                              @"incididunt ut labore et dolore magna aliqua.";
-  accountItemCheckMark.detailText =
-      @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-      @"eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+  accountItemCheckMark.name = @"Account User name.";
+  accountItemCheckMark.email = @"foo@bar.com";
   accountItemCheckMark.accessoryType = UITableViewCellAccessoryCheckmark;
   [model addItem:accountItemCheckMark
       toSectionWithIdentifier:SectionIdentifierAccount];

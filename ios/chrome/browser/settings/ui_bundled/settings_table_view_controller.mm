@@ -2106,14 +2106,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   identityAccountItem.image =
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _identity, IdentityAvatarSize::TableViewIcon);
-  NSString* name = _identity.userFullName;
-  NSString* email = _identity.userEmail;
-  if (name) {
-    identityAccountItem.text = name;
-    identityAccountItem.detailText = email;
-  } else {
-    identityAccountItem.text = email;
-  }
+  identityAccountItem.name = _identity.userFullName;
+  identityAccountItem.email = _identity.userEmail;
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);

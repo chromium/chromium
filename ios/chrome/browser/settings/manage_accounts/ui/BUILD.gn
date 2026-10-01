@@ -4,60 +4,39 @@
 
 source_set("ui") {
   sources = [
-    "identity_view_item.h",
-    "identity_view_item.mm",
     "manage_accounts_consumer.h",
     "manage_accounts_model_identity_data_source.h",
     "manage_accounts_mutator.h",
     "manage_accounts_table_view_controller.h",
     "manage_accounts_table_view_controller.mm",
   ]
-  deps = [
+  public_deps = [
     ":protocols",
-    "//base",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager/objc",
-    "//components/strings",
-    "//components/sync/base:features",
-    "//components/sync/service",
-    "//ios/chrome/app/application_delegate:app_state",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled",
-    "//ios/chrome/browser/authentication/ui_bundled:continuation",
-    "//ios/chrome/browser/authentication/ui_bundled/cells",
-    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
-    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/settings/manage_accounts/public",
-    "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/settings/ui_bundled/cells",
-    "//ios/chrome/browser/settings/ui_bundled/sync",
-    "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:features",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
+  ]
+  deps = [
+    ":data",
+    "//base",
+    "//google_apis",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/settings/manage_accounts/public",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
-    "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/signin/model:system_identity_manager",
-    "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+}
+
+source_set("data") {
+  sources = [
+    "identity_view_data.h",
+    "identity_view_data.mm",
+  ]
+  deps = [ "//google_apis" ]
 }
 
 source_set("protocols") {

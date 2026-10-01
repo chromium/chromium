@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_item.h"
+#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_data.h"
 
 #import "google_apis/gaia/gaia_id.h"
 
-@implementation IdentityViewItem
+@implementation IdentityViewData
 @end

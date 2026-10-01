@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
-#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_item.h"
+#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_data.h"
 #import "ios/chrome/browser/settings/manage_accounts/ui/manage_accounts_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -88,7 +88,7 @@
   _authServiceObserverBridge.reset();
 }
 
-#pragma mark - AccountsModelIdentityDataSource
+#pragma mark - ManageAccountsModelIdentityDataSource
 
 - (id<SystemIdentity>)identityWithGaiaID:(const GaiaId&)gaiaID {
   return _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
@@ -101,14 +101,14 @@
       ->GetIdentityAvatar(identity, IdentityAvatarSize::TableViewIcon);
 }
 
-- (IdentityViewItem*)primaryIdentityViewItem {
+- (NSString*)primaryIdentityEmail {
   id<SystemIdentity> identity = _authService->GetPrimaryIdentity();
   CHECK(identity);
-  return [self identityViewItemForIdentity:identity];
+  return identity.userEmail;
 }
 
-- (std::vector<IdentityViewItem*>)identityViewItems {
-  std::vector<IdentityViewItem*> identityViewItemsForAccounts;
+- (std::vector<IdentityViewData*>)identityViewDataArray {
+  std::vector<IdentityViewData*> identityViewItemsForAccounts;
 
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
       signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
@@ -186,18 +186,18 @@
       updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
 }
 
-- (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
+- (IdentityViewData*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
   CHECK(identity);
-  IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
-  identityViewItem.userEmail = identity.userEmail;
-  identityViewItem.userFullName = identity.userFullName;
-  identityViewItem.gaiaID = identity.gaiaId;
-  identityViewItem.managed = [self isIdentityKnownToBeManaged:identity];
+  IdentityViewData* identityViewData = [[IdentityViewData alloc] init];
+  identityViewData.userEmail = identity.userEmail;
+  identityViewData.userFullName = identity.userFullName;
+  identityViewData.gaiaID = identity.gaiaId;
+  identityViewData.managed = [self isIdentityKnownToBeManaged:identity];
   IdentityAvatarSize avatarSize = IdentityAvatarSize::Regular;
-  identityViewItem.avatar = [self identityAvatarWithSizeForIdentity:identity
+  identityViewData.avatar = [self identityAvatarWithSizeForIdentity:identity
                                                                size:avatarSize];
-  identityViewItem.accessibilityIdentifier = identity.userEmail;
-  return identityViewItem;
+  identityViewData.accessibilityIdentifier = identity.userEmail;
+  return identityViewData;
 }
 
 // Returns true if `identity` is known to be managed.

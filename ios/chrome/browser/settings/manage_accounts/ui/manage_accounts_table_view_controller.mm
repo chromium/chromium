@@ -10,7 +10,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/settings/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
-#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_item.h"
+#import "ios/chrome/browser/settings/manage_accounts/ui/identity_view_data.h"
 #import "ios/chrome/browser/settings/manage_accounts/ui/manage_accounts_model_identity_data_source.h"
 #import "ios/chrome/browser/settings/manage_accounts/ui/manage_accounts_mutator.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 }  // namespace
 
 @interface ManageAccountsTableViewController () {
-  // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
+  // Enable lookup of item corresponding to a given IdentityViewData GAIA ID
   // string.
   base::flat_map<GaiaId, TableViewItem*> _identityMap;
 
@@ -86,20 +86,20 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   base::flat_map<GaiaId, TableViewItem*> mutableIdentityMap;
 
   NSString* authenticatedEmail =
-      [self.modelIdentityDataSource primaryIdentityViewItem].userEmail;
+      [self.modelIdentityDataSource primaryIdentityEmail];
 
   NSInteger nextSection = SectionIdentifierSecondaryAccount;
 
-  for (const auto& identityViewItem :
-       [self.modelIdentityDataSource identityViewItems]) {
-    CHECK(identityViewItem);
+  for (const auto& identityViewData :
+       [self.modelIdentityDataSource identityViewDataArray]) {
+    CHECK(identityViewData);
 
     TableViewItem* accountItem =
-        [self accountItemWithIdentityViewItem:identityViewItem];
+        [self accountItemWithIdentityViewData:identityViewData];
     TableViewItem* removeAccountItem =
-        [self removeAccountItemWithIdentityViewItem:identityViewItem];
+        [self removeAccountItemWithIdentityViewItem:identityViewData];
     NSInteger sectionNumber;
-    if ([identityViewItem.userEmail isEqualToString:authenticatedEmail]) {
+    if ([identityViewData.userEmail isEqualToString:authenticatedEmail]) {
       [model insertSectionWithIdentifier:SectionIdentifierPrimaryAccount
                                  atIndex:0];
       sectionNumber = SectionIdentifierPrimaryAccount;
@@ -109,7 +109,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     }
     [model addItem:accountItem toSectionWithIdentifier:sectionNumber];
     [model addItem:removeAccountItem toSectionWithIdentifier:sectionNumber];
-    mutableIdentityMap[identityViewItem.gaiaID] = accountItem;
+    mutableIdentityMap[identityViewData.gaiaID] = accountItem;
   }
 
   TableViewItem* addAccountItem = [self addAccountItem];
@@ -127,42 +127,36 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 #pragma mark - Model objects
 
-- (TableViewItem*)accountItemWithIdentityViewItem:
-    (IdentityViewItem*)identityViewItem {
+- (TableViewItem*)accountItemWithIdentityViewData:
+    (IdentityViewData*)identityViewData {
   TableViewAccountItem* item =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  [self updateAccountItem:item withIdentityViewItem:identityViewItem];
+  [self updateAccountItem:item withIdentityViewData:identityViewData];
   return item;
 }
 
 - (void)updateAccountItem:(TableViewAccountItem*)item
-     withIdentityViewItem:(IdentityViewItem*)identityViewItem {
-  item.image = identityViewItem.avatar;
-  NSString* name = identityViewItem.userFullName;
-  NSString* email = identityViewItem.userEmail;
-  if (name) {
-    item.text = name;
-    item.detailText = email;
-  } else {
-    item.text = email;
-  }
-  item.accessibilityIdentifier = identityViewItem.accessibilityIdentifier;
+     withIdentityViewData:(IdentityViewData*)identityViewData {
+  item.image = identityViewData.avatar;
+  item.name = identityViewData.userFullName;
+  item.email = identityViewData.userEmail;
+  item.accessibilityIdentifier = identityViewData.accessibilityIdentifier;
   item.mode = TableViewAccountModeNonTappable;
   item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityTraits = UIAccessibilityTraitStaticText;
-  if (identityViewItem.managed) {
+  if (identityViewData.managed) {
     item.detailImage = TableViewAccountDetailImage::kManaged;
   }
 }
 
 - (TableViewItem*)removeAccountItemWithIdentityViewItem:
-    (IdentityViewItem*)identityViewItem {
+    (IdentityViewData*)identityViewData {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeRemoveAccount];
   item.text = l10n_util::GetNSString(IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE);
   item.accessibilityIdentifier =
       [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
-          stringByAppendingString:identityViewItem.accessibilityIdentifier];
+          stringByAppendingString:identityViewData.accessibilityIdentifier];
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
@@ -244,14 +238,14 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   [self reloadData];
 }
 
-- (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {
+- (void)updateIdentityViewItem:(IdentityViewData*)identityViewData {
   TableViewAccountItem* item =
       base::apple::ObjCCastStrict<TableViewAccountItem>(
-          _identityMap[identityViewItem.gaiaID]);
+          _identityMap[identityViewData.gaiaID]);
   if (!item) {
     return;
   }
-  [self updateAccountItem:item withIdentityViewItem:identityViewItem];
+  [self updateAccountItem:item withIdentityViewData:identityViewData];
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];

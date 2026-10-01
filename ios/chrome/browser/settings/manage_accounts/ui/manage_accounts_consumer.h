@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
-@class IdentityViewItem;
+@class IdentityViewData;
 @protocol SystemIdentity;
 
 // Consumer protocol for accounts.
@@ -22,7 +22,7 @@
 - (void)popView;
 
 // Updates identity view item.
-- (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem;
+- (void)updateIdentityViewItem:(IdentityViewData*)identityViewData;
 
 @end
 

@@ -29,6 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/settings/manage_accounts/public",
     "//ios/chrome/browser/settings/manage_accounts/ui",
+    "//ios/chrome/browser/settings/manage_accounts/ui:data",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",

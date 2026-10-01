@@ -127,4 +127,24 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
       [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
 }
 
+#pragma mark - Private
+
+// Returns the main text to display in the item. The name if available otherwise
+// the email.
+- (NSString*)text {
+  if (self.name) {
+    return self.name;
+  }
+  return self.email;
+}
+
+// Returns the secondary text to display in the item if any. That is, the email
+// if there is a name, otherwise nothing.
+- (NSString*)detailText {
+  if (self.name) {
+    return self.email;
+  }
+  return nil;
+}
+
 @end

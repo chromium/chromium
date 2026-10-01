@@ -9,7 +9,7 @@
 
 class GaiaId;
 enum class IdentityAvatarSize;
-@class IdentityViewItem;
+@class IdentityViewData;
 @class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
@@ -24,11 +24,11 @@ enum class IdentityAvatarSize;
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
                                          size:(IdentityAvatarSize)size;
 
-// Returns the primary identity view item.
-- (IdentityViewItem*)primaryIdentityViewItem;
+// Returns the primary identity's email.
+- (NSString*)primaryIdentityEmail;
 
 // Provides identity view items for all available identities.
-- (std::vector<IdentityViewItem*>)identityViewItems;
+- (std::vector<IdentityViewData*>)identityViewDataArray;
 
 @end
 

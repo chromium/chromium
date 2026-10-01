@@ -274,8 +274,8 @@ TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedIn) {
   auto* account_item = static_cast<TableViewAccountItem*>(account_items[0]);
   auto* google_services_item =
       static_cast<TableViewDetailIconItem*>(account_items[1]);
-  EXPECT_NSEQ(fake_identity_.userFullName, account_item.text);
-  EXPECT_NSEQ(fake_identity_.userEmail, account_item.detailText);
+  EXPECT_NSEQ(fake_identity_.userFullName, account_item.name);
+  EXPECT_NSEQ(fake_identity_.userEmail, account_item.email);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE),
               google_services_item.text);
   EXPECT_NSEQ(nil, google_services_item.detailText);
