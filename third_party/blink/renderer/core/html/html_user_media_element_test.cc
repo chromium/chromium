@@ -557,4 +557,25 @@ TEST_F(HTMLUserMediaElementTest, DefaultConstraintsNoSetConstraintsClick) {
   ::testing::Mock::VerifyAndClearExpectations(provider);
 }
 
+TEST_F(HTMLUserMediaElementTest, DisplayModeIconOnlyNotSupported) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map;
+  init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  init_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                  mojom::blink::PermissionStatus::ASK);
+  element->OnPermissionStatusInitialized(init_map);
+  EXPECT_FALSE(element->IsIconOnly());
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraMicrophoneString);
+
+  element->setAttribute(html_names::kDisplaymodeAttr,
+                        AtomicString("icon-only"));
+  EXPECT_FALSE(element->IsIconOnly());
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraMicrophoneString);
+}
+
 }  // namespace blink

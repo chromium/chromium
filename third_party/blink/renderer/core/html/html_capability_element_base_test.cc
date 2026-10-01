@@ -28,10 +28,12 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_camera_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_install_element.h"
+#include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
@@ -447,8 +449,13 @@ TEST_F(HTMLCapabilityElementBaseTest, SetTypeAfterInsertedInto) {
 
 TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnly) {
   ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
-  for (const char* type : {"camera", "microphone", "geolocation"}) {
-    auto* permission_element = CreatePermissionElement(type);
+  HeapVector<Member<HTMLCapabilityElementBase>> elements = {
+      MakeGarbageCollected<HTMLCameraElement>(GetDocument()),
+      MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument()),
+      MakeGarbageCollected<HTMLGeolocationElement>(GetDocument())};
+  for (auto& permission_element : elements) {
+    GetDocument().body()->AppendChild(permission_element);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     WaitForPermissionElementRegistration(permission_element);
     EXPECT_FALSE(permission_element->IsIconOnly());
     EXPECT_FALSE(permission_element->permission_text_span_for_testing()
@@ -470,7 +477,10 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnly) {
 
 TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyCaseInsensitive) {
   ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
-  auto* permission_element = CreatePermissionElement("camera");
+  auto* permission_element =
+      MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  GetDocument().body()->AppendChild(permission_element);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   WaitForPermissionElementRegistration(permission_element);
   permission_element->setAttribute(html_names::kDisplaymodeAttr,
                                    AtomicString("iCoN-oNlY"));
@@ -480,7 +490,10 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyCaseInsensitive) {
 
 TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyDisabled) {
   ScopedCapabilityElementIconOnlyModeForTest scoped_feature(false);
-  auto* permission_element = CreatePermissionElement("camera");
+  auto* permission_element =
+      MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+  GetDocument().body()->AppendChild(permission_element);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   WaitForPermissionElementRegistration(permission_element);
   EXPECT_FALSE(permission_element->IsIconOnly());
   EXPECT_FALSE(permission_element->permission_text_span_for_testing()

@@ -491,7 +491,7 @@ void HTMLCapabilityElementBase::SetPreciseLocation(bool is_precise_location) {
 }
 
 bool HTMLCapabilityElementBase::IsIconOnly() const {
-  if (IsHTMLInstallElement() ||
+  if (IsHTMLInstallElement() || IsHTMLUserMediaElement() ||
       !RuntimeEnabledFeatures::CapabilityElementIconOnlyModeEnabled(
           GetDocument().GetExecutionContext())) {
     return false;
@@ -699,7 +699,7 @@ void HTMLCapabilityElementBase::ParseAttribute(
   if (params.name == html_names::kPreciselocationAttr) {
     SetPreciseLocation(params.new_value != nullptr);
   } else if (params.name == html_names::kDisplaymodeAttr) {
-    if (!IsHTMLInstallElement() &&
+    if (!IsHTMLInstallElement() && !IsHTMLUserMediaElement() &&
         RuntimeEnabledFeatures::CapabilityElementIconOnlyModeEnabled(
             GetDocument().GetExecutionContext()) &&
         EqualIgnoringAsciiCase(params.old_value, "icon-only") !=
