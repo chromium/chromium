@@ -35,21 +35,15 @@ ShelfButton::ShelfButton(Shelf* shelf,
           gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
   SetFocusPainter(nullptr);
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetVisibleOpacity(1.0f);
 }
 
 ShelfButton::~ShelfButton() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // views::View
-
-void ShelfButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
-  ink_drop->SetVisibleOpacity(1.0f);
-
-  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
-}
 
 gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = Button::GetAnchorBoundsInScreen();
