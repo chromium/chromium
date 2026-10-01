@@ -3511,14 +3511,14 @@
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'non-gce',
+          'gce',
           'x64_ai_wpt_shards',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'non-gce',
+          'gce',
           'x64_ai_wpt_shards',
         ],
       },

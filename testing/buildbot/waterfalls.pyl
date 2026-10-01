@@ -1077,7 +1077,7 @@
         ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'linux-jammy',
+          'linux-ubuntu',
           'x86-64',
         ],
         'test_suites': {

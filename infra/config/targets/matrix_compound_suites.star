@@ -925,14 +925,14 @@ targets.legacy_matrix_compound_suite(
         "chrome_ai_wpt_tests_manifest_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "non-gce",
+                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_gemma4_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "non-gce",
+                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
