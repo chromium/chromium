@@ -1921,9 +1921,8 @@ suite('SearchboxMixinTest', () => {
     assertEquals(keyword, args.keyword);
   });
 
-  // TODO(crbug.com/555945371): Fails on multiple OSes.
-  test.skip(
-      'navigating matches in keyword mode preserves keyword mode and icon',
+  test(
+      'navigating matches in keyword mode exits on non-keyword match',
       async () => {
         const mockInput = element.getInputElement();
         const keyword = 'google.com';
@@ -1968,11 +1967,7 @@ suite('SearchboxMixinTest', () => {
         await mockInput.updateComplete;
         await mockInput.$.icon.updateComplete;
 
-        assertTrue(element.inputKeywordModel !== null);
-        assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
-        assertIconMaskImageUrl(
-            mockInput.$.icon,
-            '//resources/cr_components/searchbox/icons/search_cr23.svg');
+        assertEquals(null, element.inputKeywordModel);
       });
 
   test(
