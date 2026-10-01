@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -23,7 +25,6 @@
 
 namespace content {
 
-class WebContents;
 class BrowserContext;
 
 // This handler parses the Clear-Site-Data header and executes the clearing
@@ -42,7 +43,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     };
 
     using OutputFormattedMessageFunction =
-        base::RepeatingCallback<void(WebContents*,
+        base::RepeatingCallback<void(NavigationOrDocumentHandle*,
+                                     const GURL&,
                                      blink::mojom::ConsoleMessageLevel,
                                      const std::string&)>;
 
@@ -54,8 +56,10 @@ class CONTENT_EXPORT ClearSiteDataHandler {
                             const std::string& text,
                             blink::mojom::ConsoleMessageLevel level);
 
-    // Outputs stored messages to the console of WebContents.
-    virtual void OutputMessages(base::WeakPtr<WebContents> web_contents);
+    // Outputs stored messages to the console of the target navigation or
+    // document.
+    virtual void OutputMessages(
+        NavigationOrDocumentHandle* navigation_or_document);
 
     const std::vector<Message>& GetMessagesForTesting() const {
       return messages_;
@@ -78,7 +82,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // applicable.
   static void HandleHeader(
       base::WeakPtr<BrowserContext> browser_context,
-      base::WeakPtr<WebContents> web_contents,
+      scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
       const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
@@ -99,7 +103,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
  protected:
   ClearSiteDataHandler(
       base::WeakPtr<BrowserContext> browser_context,
-      base::WeakPtr<WebContents> web_contents,
+      scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
       const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
@@ -139,10 +143,11 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // Signals that a parsing and deletion task was finished.
   // |clearing_started| is the time when the last clearing operation started.
   // Used when clearing finishes to compute the duration.
-  static void TaskFinished(base::TimeTicks clearing_started,
-                           std::unique_ptr<ConsoleMessagesDelegate> delegate,
-                           base::WeakPtr<WebContents> web_contents,
-                           base::OnceClosure callback);
+  static void TaskFinished(
+      base::TimeTicks clearing_started,
+      std::unique_ptr<ConsoleMessagesDelegate> delegate,
+      scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
+      base::OnceClosure callback);
 
   // Outputs the console messages in the |delegate_|.
   void OutputConsoleMessages();
@@ -172,7 +177,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
  private:
   // Required to clear the data.
   base::WeakPtr<BrowserContext> browser_context_;
-  base::WeakPtr<WebContents> web_contents_;
+  scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
 
   // The config for the target storage partition which stores the data.
   const StoragePartitionConfig storage_partition_config_;

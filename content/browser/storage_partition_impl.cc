@@ -2783,11 +2783,15 @@ void StoragePartitionImpl::OnClearSiteData(
     OnClearSiteDataCallback callback) {
   CHECK(initialized_, base::NotFatalUntil::M159);
 
-  base::WeakPtr<WebContents> weak_web_contents;
-  WebContents* web_contents =
-      url_loader_network_observers_.current_context().GetWebContents();
-  if (web_contents) {
-    weak_web_contents = web_contents->GetWeakPtr();
+  URLLoaderNetworkContext& context =
+      url_loader_network_observers_.current_context();
+  if (WebContents* web_contents = context.GetWebContents()) {
+    // TODO(crbug.com/399123018): This attributes the feature to the primary
+    // main frame's page, which is wrong for navigations that haven't committed
+    // yet (e.g. prerendering or navigating away) and for subframes. Since
+    // kClearSiteData is recorded in UKM, attribute it to the document from
+    // `context.navigation_or_document()` instead, deferring it until commit
+    // for navigations.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         web_contents->GetPrimaryMainFrame(),
         blink::mojom::WebFeature::kClearSiteData);
@@ -2800,9 +2804,9 @@ void StoragePartitionImpl::OnClearSiteData(
           : nullptr);
 
   ClearSiteDataHandler::HandleHeader(
-      browser_context()->GetWeakPtr(), weak_web_contents, GetConfig(), url,
-      header_value, load_flags, cookie_partition_key, storage_key,
-      partitioned_state_allowed_only, std::move(callback));
+      browser_context()->GetWeakPtr(), context.navigation_or_document(),
+      GetConfig(), url, header_value, load_flags, cookie_partition_key,
+      storage_key, partitioned_state_allowed_only, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)

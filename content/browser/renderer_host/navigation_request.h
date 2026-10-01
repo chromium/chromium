@@ -1213,10 +1213,16 @@ class CONTENT_EXPORT NavigationRequest
   // Store a console message, which will be sent to the final RenderFrameHost
   // immediately after requesting the navigation to commit.
   //
+  // If `required_origin` is set, the message is only sent if the navigation
+  // commits a document whose origin is `required_origin`, or commits an error
+  // page in an isolated error page process. Otherwise, it is dropped.
+  //
   // /!\ WARNING /!\: Beware of not leaking cross-origin information to a
   // potentially compromised renderer when using this method.
-  void AddDeferredConsoleMessage(blink::mojom::ConsoleMessageLevel level,
-                                 std::string message);
+  void AddDeferredConsoleMessage(
+      blink::mojom::ConsoleMessageLevel level,
+      std::string message,
+      std::optional<url::Origin> required_origin = std::nullopt);
 
   bool is_deferred_on_fenced_frame_url_mapping_for_testing() const {
     return is_deferred_on_fenced_frame_url_mapping_;
@@ -1977,6 +1983,8 @@ class CONTENT_EXPORT NavigationRequest
   struct ConsoleMessage {
     blink::mojom::ConsoleMessageLevel level;
     std::string message;
+    // See AddDeferredConsoleMessage().
+    std::optional<url::Origin> required_origin;
   };
 
   NavigationRequest(
@@ -2625,7 +2633,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // Called just after a navigation commits (also in case of error): it
   // sends all console messages to the final RenderFrameHost.
-  void SendDeferredConsoleMessages();
+  // `origin_to_commit` is the origin of the committed document, or
+  // std::nullopt if an error page is committed.
+  void SendDeferredConsoleMessages(
+      const std::optional<url::Origin>& origin_to_commit);
 
   bool ShouldRenderFallbackContentForResponse(
       const net::HttpResponseHeaders& response_head) const;

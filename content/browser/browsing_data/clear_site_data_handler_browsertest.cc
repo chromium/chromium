@@ -31,17 +31,25 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -88,6 +96,18 @@ void WaitForTitle(const Shell* shell, const char* expected_title) {
 // A value of the Clear-Site-Data header that requests cookie deletion. Reused
 // in tests that need a valid header but do not depend on its value.
 static const char* kClearCookiesHeader = "\"cookies\"";
+
+// Adds a throttle to `registry` that returns `result` from
+// WillProcessResponse(), i.e. after the Clear-Site-Data header of the final
+// response has been handled.
+void AddWillProcessResponseThrottle(
+    NavigationThrottle::ThrottleCheckResult result,
+    NavigationThrottleRegistry& registry) {
+  auto throttle = std::make_unique<TestNavigationThrottle>(registry);
+  throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                        TestNavigationThrottle::SYNCHRONOUS, result);
+  registry.AddThrottle(std::move(throttle));
+}
 
 // For use with TestBrowsingDataRemoverDelegate::ExpectClearSiteDataCall.
 enum class SetStorageKey { kYes, kNo };
@@ -542,6 +562,288 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, InsecureNavigation) {
 
   // We do not expect any calls to have been made.
   delegate()->VerifyAndClearExpectations();
+}
+
+// Tests that console messages emitted while handling Clear-Site-Data during
+// navigations (both rejected HTTP headers and accepted HTTPS redirect chains)
+// are deferred until the navigation commits and attributed to the newly
+// committed RenderFrameHost rather than the outgoing RenderFrameHost
+// (crbug.com/41409604, crbug.com/399123018). Messages for responses that are
+// cross-origin to the committed document are dropped.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ConsoleMessagesDeferredOnNavigation) {
+  GURL initial_url = https_server()->GetURL("origin1.com", "/");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  GlobalRenderFrameHostId initial_rfh_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+
+  // 1. Navigate from https://origin1.com to an insecure http://origin2.com URL
+  // sending a Clear-Site-Data header. The kError console message must be
+  // attributed to the newly committed origin2.com RenderFrameHost and URL, not
+  // the outgoing origin1.com document.
+  {
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern("Clear-Site-Data header on *");
+
+    GURL insecure_url = embedded_test_server()->GetURL("origin2.com", "/");
+    AddQuery(&insecure_url, "header", kClearCookiesHeader);
+    ASSERT_TRUE(NavigateToURL(shell(), insecure_url));
+    ASSERT_TRUE(console_observer.Wait());
+
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_NE(initial_rfh_id,
+              console_observer.messages()[0].source_frame->GetGlobalId());
+    EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame(),
+              console_observer.messages()[0].source_frame);
+    EXPECT_EQ(base::UTF8ToUTF16(insecure_url.spec()),
+              console_observer.messages()[0].source_id);
+    EXPECT_EQ("Clear-Site-Data header on '" + insecure_url.spec() +
+                  "': Not supported for insecure origins.",
+              console_observer.GetMessageAt(0));
+  }
+
+  // 2. Navigate across a same-origin HTTPS redirect where both the redirecting
+  // response and the final response send Clear-Site-Data headers. Both
+  // messages should be deferred and delivered to the final committed
+  // RenderFrameHost.
+  {
+    GlobalRenderFrameHostId previous_rfh_id =
+        shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+
+    GURL destination_url = https_server()->GetURL("origin3.com", "/second");
+    AddQuery(&destination_url, "header", kClearCookiesHeader);
+    GURL redirect_url = https_server()->GetURL("origin3.com", "/first");
+    AddQuery(&redirect_url, "header", kClearCookiesHeader);
+    AddQuery(&redirect_url, "redirect", destination_url.spec());
+
+    delegate()->ExpectClearSiteDataCookiesCall(
+        storage_partition_config(), url::Origin::Create(redirect_url));
+    delegate()->ExpectClearSiteDataCookiesCall(
+        storage_partition_config(), url::Origin::Create(destination_url));
+
+    WebContentsConsoleObserver redirect_console_observer(
+        shell()->web_contents());
+    redirect_console_observer.SetPattern("Clear-Site-Data header on '" +
+                                         redirect_url.spec() + "'*");
+    WebContentsConsoleObserver dest_console_observer(shell()->web_contents());
+    dest_console_observer.SetPattern("Clear-Site-Data header on '" +
+                                     destination_url.spec() + "'*");
+
+    ASSERT_TRUE(NavigateToURL(shell(), redirect_url, destination_url));
+    ASSERT_TRUE(redirect_console_observer.Wait());
+    ASSERT_TRUE(dest_console_observer.Wait());
+    delegate()->VerifyAndClearExpectations();
+
+    ASSERT_EQ(1u, redirect_console_observer.messages().size());
+    EXPECT_NE(
+        previous_rfh_id,
+        redirect_console_observer.messages()[0].source_frame->GetGlobalId());
+    EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame(),
+              redirect_console_observer.messages()[0].source_frame);
+    EXPECT_EQ(base::UTF8ToUTF16(destination_url.spec()),
+              redirect_console_observer.messages()[0].source_id);
+
+    ASSERT_EQ(1u, dest_console_observer.messages().size());
+    EXPECT_NE(previous_rfh_id,
+              dest_console_observer.messages()[0].source_frame->GetGlobalId());
+    EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame(),
+              dest_console_observer.messages()[0].source_frame);
+    EXPECT_EQ(base::UTF8ToUTF16(destination_url.spec()),
+              dest_console_observer.messages()[0].source_id);
+  }
+
+  // 3. Navigate across a cross-origin HTTPS redirect where both the redirecting
+  // response and the final response send Clear-Site-Data headers. The message
+  // for the redirecting response contains its full URL, so it must not be
+  // delivered to the cross-origin final document. The message for the final
+  // response is delivered.
+  {
+    GURL destination_url = https_server()->GetURL("origin5.com", "/");
+    AddQuery(&destination_url, "header", kClearCookiesHeader);
+    GURL redirect_url = https_server()->GetURL("origin4.com", "/");
+    AddQuery(&redirect_url, "header", kClearCookiesHeader);
+    AddQuery(&redirect_url, "redirect", destination_url.spec());
+
+    delegate()->ExpectClearSiteDataCookiesCall(
+        storage_partition_config(), url::Origin::Create(redirect_url));
+    delegate()->ExpectClearSiteDataCookiesCall(
+        storage_partition_config(), url::Origin::Create(destination_url));
+
+    WebContentsConsoleObserver redirect_console_observer(
+        shell()->web_contents());
+    redirect_console_observer.SetPattern("Clear-Site-Data header on '" +
+                                         redirect_url.spec() + "'*");
+    WebContentsConsoleObserver dest_console_observer(shell()->web_contents());
+    dest_console_observer.SetPattern("Clear-Site-Data header on '" +
+                                     destination_url.spec() + "'*");
+
+    ASSERT_TRUE(NavigateToURL(shell(), redirect_url, destination_url));
+    ASSERT_TRUE(dest_console_observer.Wait());
+    delegate()->VerifyAndClearExpectations();
+
+    ASSERT_EQ(1u, dest_console_observer.messages().size());
+    EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame(),
+              dest_console_observer.messages()[0].source_frame);
+    // Deferred messages are sent in order, so the redirect message would have
+    // been received before the destination message.
+    EXPECT_TRUE(redirect_console_observer.messages().empty());
+  }
+}
+
+// Tests that Clear-Site-Data console messages for subresource requests inside a
+// subframe are logged to the requesting subframe's RenderFrameHost rather than
+// the primary main frame (crbug.com/399123018).
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ConsoleMessagesAttributedToSubframe) {
+  GURL image_url = https_server()->GetURL("origin2.com", "/image.png");
+  AddQuery(&image_url, "header", kClearCookiesHeader);
+
+  GURL subframe_url = https_server()->GetURL("origin2.com", "/");
+  std::string subframe_html =
+      "<html><body><img src=\"" + image_url.spec() + "\"></body></html>";
+  AddQuery(&subframe_url, "html", subframe_html);
+
+  GURL main_url = https_server()->GetURL("origin1.com", "/");
+  std::string main_html = "<html><body><iframe src=\"" + subframe_url.spec() +
+                          "\"></iframe></body></html>";
+  AddQuery(&main_url, "html", main_html);
+
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(image_url),
+      net::SchemefulSite(main_url), /*cookies=*/true, /*storage=*/false,
+      /*cache=*/false);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Clear-Site-Data header on *");
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(console_observer.Wait());
+  delegate()->VerifyAndClearExpectations();
+
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* subframe_rfh = ChildFrameAt(main_rfh, 0);
+  ASSERT_TRUE(subframe_rfh);
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ(subframe_rfh, console_observer.messages()[0].source_frame);
+  EXPECT_NE(main_rfh, console_observer.messages()[0].source_frame);
+  EXPECT_EQ(base::UTF8ToUTF16(subframe_url.spec()),
+            console_observer.messages()[0].source_id);
+}
+
+// Tests that when navigating away from a WebUI page to a site sending a
+// Clear-Site-Data header, the resulting console message is not logged to the
+// outgoing WebUI document (crbug.com/399123018).
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ConsoleMessagesNotLoggedToWebUIWhenNavigatingAway) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetWebUIURL(kChromeUIGpuHost)));
+  RenderFrameHost* webui_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(webui_rfh->GetWebUI());
+  GlobalRenderFrameHostId webui_rfh_id = webui_rfh->GetGlobalId();
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Clear-Site-Data header on *");
+
+  GURL insecure_url = embedded_test_server()->GetURL("origin2.com", "/");
+  AddQuery(&insecure_url, "header", kClearCookiesHeader);
+  ASSERT_TRUE(NavigateToURL(shell(), insecure_url));
+  ASSERT_TRUE(console_observer.Wait());
+
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  EXPECT_FALSE(main_rfh->GetWebUI());
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_NE(webui_rfh_id,
+            console_observer.messages()[0].source_frame->GetGlobalId());
+  EXPECT_EQ(main_rfh, console_observer.messages()[0].source_frame);
+  EXPECT_EQ(base::UTF8ToUTF16(insecure_url.spec()),
+            console_observer.messages()[0].source_id);
+}
+
+// Tests that Clear-Site-Data console messages emitted during a subframe
+// navigation that ends up committing an error page are only delivered to the
+// error page if it is isolated. Otherwise, the error page may be committed in
+// the initiator or destination process.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ConsoleMessagesOnlyDeliveredToIsolatedErrorPage) {
+  const bool error_page_isolated =
+      SiteIsolationPolicy::IsErrorPageIsolationEnabled(/*in_main_frame=*/false);
+
+  GURL main_url = https_server()->GetURL("origin1.com", "/");
+  AddQuery(&main_url, "html", "<html><body><iframe></iframe></body></html>");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&url, "header", kClearCookiesHeader);
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(url),
+      net::SchemefulSite(main_url), /*cookies=*/true, /*storage=*/false,
+      /*cache=*/false);
+
+  // Block the response after the Clear-Site-Data header has been handled, so
+  // that the subframe navigation commits an error page.
+  TestNavigationThrottleInserter throttle_inserter(
+      shell()->web_contents(),
+      base::BindRepeating(&AddWillProcessResponseThrottle,
+                          NavigationThrottle::ThrottleCheckResult(
+                              NavigationThrottle::BLOCK_RESPONSE)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Clear-Site-Data header on *");
+
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("document.querySelector('iframe').src = $1", url)));
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  delegate()->VerifyAndClearExpectations();
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+  EXPECT_TRUE(child_rfh->IsErrorDocument());
+
+  if (error_page_isolated) {
+    ASSERT_TRUE(console_observer.Wait());
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(child_rfh, console_observer.messages()[0].source_frame);
+  } else {
+    // Round-trip to the error page's renderer to make sure that any console
+    // message sent to it would have been received by now.
+    EXPECT_TRUE(ExecJs(child_rfh, "true"));
+    EXPECT_TRUE(console_observer.messages().empty());
+  }
+}
+
+// Tests that Clear-Site-Data console messages emitted during a navigation that
+// is cancelled before commit are dropped rather than logged to the current
+// document. The data is still cleared.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ConsoleMessagesDroppedOnCancelledNavigation) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("origin1.com", "/")));
+
+  GURL url = https_server()->GetURL("origin2.com", "/");
+  AddQuery(&url, "header", kClearCookiesHeader);
+  delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
+                                             url::Origin::Create(url));
+
+  // Cancel the navigation after the Clear-Site-Data header has been handled.
+  TestNavigationThrottleInserter throttle_inserter(
+      shell()->web_contents(),
+      base::BindRepeating(
+          &AddWillProcessResponseThrottle,
+          NavigationThrottle::ThrottleCheckResult(NavigationThrottle::CANCEL)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("Clear-Site-Data header on *");
+
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  delegate()->VerifyAndClearExpectations();
+
+  // Round-trip to the renderer of the current document to make sure that any
+  // console message sent to it would have been received by now.
+  EXPECT_TRUE(ExecJs(shell(), "true"));
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 class ClearSiteDataHandlerBrowserTestWithAutoupgradesDisabled

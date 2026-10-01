@@ -6981,7 +6981,7 @@ void NavigationRequest::CommitErrorPage(
       net_error_, extended_error_code_, error_page_content, *document_token_);
   UpdateNavigationHandleTimingsOnCommitSent();
 
-  SendDeferredConsoleMessages();
+  SendDeferredConsoleMessages(/*origin_to_commit=*/std::nullopt);
 }
 
 void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
@@ -7448,7 +7448,7 @@ void NavigationRequest::CommitNavigation() {
   RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
       GetRenderFrameHost()->GetSiteInstance());
 
-  SendDeferredConsoleMessages();
+  SendDeferredConsoleMessages(origin_to_commit);
 }
 
 void NavigationRequest::UpdateViewTransitionStateForDestinationOrigin(
@@ -12182,13 +12182,28 @@ bool NavigationRequest::IsWaitingForBeforeUnload() {
 
 void NavigationRequest::AddDeferredConsoleMessage(
     blink::mojom::ConsoleMessageLevel level,
-    std::string message) {
+    std::string message,
+    std::optional<url::Origin> required_origin) {
   CHECK_LE(state_, READY_TO_COMMIT);
-  console_messages_.push_back(ConsoleMessage{level, std::move(message)});
+  console_messages_.push_back(
+      ConsoleMessage{level, std::move(message), std::move(required_origin)});
 }
 
-void NavigationRequest::SendDeferredConsoleMessages() {
+void NavigationRequest::SendDeferredConsoleMessages(
+    const std::optional<url::Origin>& origin_to_commit) {
   for (auto& message : console_messages_) {
+    if (message.required_origin) {
+      // Only send origin-restricted messages to a document of the same
+      // origin. Error pages have an opaque origin, and may be committed in the
+      // initiator or destination process unless error page isolation is
+      // enabled, so only send the messages to them when they are isolated.
+      bool can_send = origin_to_commit
+                          ? *origin_to_commit == *message.required_origin
+                          : frame_tree_node_->IsErrorPageIsolationEnabled();
+      if (!can_send) {
+        continue;
+      }
+    }
     // TODO(crbug.com/40520047): We should have a way of sending console
     // messages to devtools without going through the renderer.
     GetRenderFrameHost()->AddMessageToConsole(message.level,

@@ -13,9 +13,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/buckets/bucket_utils.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -76,13 +77,35 @@ int ParametersMask(const ClearSiteDataTypeSet clear_site_data_types,
   return mask;
 }
 
-// Outputs a single |formatted_message| on the UI thread.
-void OutputFormattedMessage(WebContents* web_contents,
+// Outputs a single |formatted_text| about |url| on the UI thread.
+void OutputFormattedMessage(NavigationOrDocumentHandle* navigation_or_document,
+                            const GURL& url,
                             blink::mojom::ConsoleMessageLevel level,
                             const std::string& formatted_text) {
-  if (web_contents)
-    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(level,
-                                                             formatted_text);
+  if (!navigation_or_document) {
+    return;
+  }
+  if (NavigationRequest* request =
+          navigation_or_document->GetNavigationRequest()) {
+    // For a navigation, defer the message so that it is sent to the document
+    // the navigation eventually commits. The message contains the full `url`,
+    // which may be cross-origin to that document (e.g. an earlier redirect
+    // hop), so restrict it to documents of the same origin as `url`. If the
+    // navigation doesn't commit (e.g. it is cancelled), the message is dropped
+    // along with the NavigationRequest.
+    //
+    // Clearing may finish after the navigation has started failing or being
+    // cancelled (e.g. if the network service crashed), in which case the
+    // message is dropped.
+    if (request->state() <= NavigationRequest::READY_TO_COMMIT) {
+      request->AddDeferredConsoleMessage(level, formatted_text,
+                                         url::Origin::Create(url));
+    }
+    return;
+  }
+  if (RenderFrameHost* rfh = navigation_or_document->GetDocument()) {
+    rfh->AddMessageToConsole(level, formatted_text);
+  }
 }
 
 }  // namespace
@@ -104,14 +127,15 @@ void ClearSiteDataHandler::ConsoleMessagesDelegate::AddMessage(
 }
 
 void ClearSiteDataHandler::ConsoleMessagesDelegate::OutputMessages(
-    base::WeakPtr<WebContents> web_contents) {
-  if (messages_.empty())
+    NavigationOrDocumentHandle* navigation_or_document) {
+  if (messages_.empty()) {
     return;
+  }
 
   for (const auto& message : messages_) {
     // Prefix each message with |kConsoleMessageTemplate|.
     output_formatted_message_function_.Run(
-        web_contents.get(), message.level,
+        navigation_or_document, message.url, message.level,
         base::StringPrintf(kConsoleMessageTemplate, message.url.spec().c_str(),
                            message.text.c_str()));
   }
@@ -131,7 +155,7 @@ void ClearSiteDataHandler::ConsoleMessagesDelegate::
 // static
 void ClearSiteDataHandler::HandleHeader(
     base::WeakPtr<BrowserContext> browser_context,
-    base::WeakPtr<WebContents> web_contents,
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
     const StoragePartitionConfig& storage_partition_config,
     const GURL& url,
     const std::string& header_value,
@@ -141,10 +165,10 @@ void ClearSiteDataHandler::HandleHeader(
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   ClearSiteDataHandler handler(
-      browser_context, web_contents, storage_partition_config, url,
-      header_value, load_flags, cookie_partition_key, storage_key,
-      partitioned_state_allowed_only, std::move(callback),
-      std::make_unique<ConsoleMessagesDelegate>());
+      browser_context, std::move(navigation_or_document),
+      storage_partition_config, url, header_value, load_flags,
+      cookie_partition_key, storage_key, partitioned_state_allowed_only,
+      std::move(callback), std::make_unique<ConsoleMessagesDelegate>());
   handler.HandleHeaderAndOutputConsoleMessages();
 }
 
@@ -162,7 +186,7 @@ bool ClearSiteDataHandler::ParseHeaderForTesting(
 
 ClearSiteDataHandler::ClearSiteDataHandler(
     base::WeakPtr<BrowserContext> browser_context,
-    base::WeakPtr<WebContents> web_contents,
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
     const StoragePartitionConfig& storage_partition_config,
     const GURL& url,
     const std::string& header_value,
@@ -173,7 +197,7 @@ ClearSiteDataHandler::ClearSiteDataHandler(
     base::OnceClosure callback,
     std::unique_ptr<ConsoleMessagesDelegate> delegate)
     : browser_context_(browser_context),
-      web_contents_(web_contents),
+      navigation_or_document_(std::move(navigation_or_document)),
       storage_partition_config_(storage_partition_config),
       url_(url),
       header_value_(header_value),
@@ -192,7 +216,6 @@ bool ClearSiteDataHandler::HandleHeaderAndOutputConsoleMessages() {
   bool deferred = Run();
 
   // If the redirect is deferred, wait until it is resumed.
-  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
   if (!deferred) {
     OutputConsoleMessages();
     RunCallbackNotDeferred();
@@ -255,7 +278,7 @@ bool ClearSiteDataHandler::Run() {
       origin, clear_site_data_types, storage_buckets_to_remove,
       base::BindOnce(&ClearSiteDataHandler::TaskFinished,
                      base::TimeTicks::Now(), std::move(delegate_),
-                     web_contents_, std::move(callback_)));
+                     navigation_or_document_, std::move(callback_)));
 
   return true;
 }
@@ -416,18 +439,17 @@ void ClearSiteDataHandler::ExecuteClearingTask(
 void ClearSiteDataHandler::TaskFinished(
     base::TimeTicks clearing_started,
     std::unique_ptr<ConsoleMessagesDelegate> delegate,
-    base::WeakPtr<WebContents> web_contents,
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
     base::OnceClosure callback) {
   CHECK(!clearing_started.is_null(), base::NotFatalUntil::M159);
 
-  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
-  delegate->OutputMessages(web_contents);
+  delegate->OutputMessages(navigation_or_document.get());
 
   std::move(callback).Run();
 }
 
 void ClearSiteDataHandler::OutputConsoleMessages() {
-  delegate_->OutputMessages(web_contents_);
+  delegate_->OutputMessages(navigation_or_document_.get());
 }
 
 void ClearSiteDataHandler::RunCallbackNotDeferred() {

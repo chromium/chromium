@@ -53,7 +53,7 @@ const StoragePartitionConfig kTestStoragePartitionConfig;
 class TestHandler : public ClearSiteDataHandler {
  public:
   TestHandler(base::WeakPtr<BrowserContext> browser_context,
-              base::WeakPtr<WebContents> web_contents,
+              scoped_refptr<NavigationOrDocumentHandle> navigation_or_document,
               const StoragePartitionConfig& storage_partition_config,
               const GURL& url,
               const std::string& header_value,
@@ -64,7 +64,7 @@ class TestHandler : public ClearSiteDataHandler {
               base::OnceClosure callback,
               std::unique_ptr<ConsoleMessagesDelegate> delegate)
       : ClearSiteDataHandler(browser_context,
-                             web_contents,
+                             std::move(navigation_or_document),
                              storage_partition_config,
                              url,
                              header_value,
@@ -120,7 +120,8 @@ class VectorConsoleMessagesDelegate : public ConsoleMessagesDelegate {
       : message_buffer_(message_buffer) {}
   ~VectorConsoleMessagesDelegate() override = default;
 
-  void OutputMessages(base::WeakPtr<WebContents> web_contents) override {
+  void OutputMessages(
+      NavigationOrDocumentHandle* navigation_or_document) override {
     *message_buffer_ = GetMessagesForTesting();
   }
 
@@ -141,10 +142,12 @@ class StringConsoleMessagesDelegate : public ConsoleMessagesDelegate {
   ~StringConsoleMessagesDelegate() override {}
 
  private:
-  static void OutputFormattedMessage(std::string* output_buffer,
-                                     WebContents* web_contents,
-                                     blink::mojom::ConsoleMessageLevel level,
-                                     const std::string& formatted_text) {
+  static void OutputFormattedMessage(
+      std::string* output_buffer,
+      NavigationOrDocumentHandle* navigation_or_document,
+      const GURL& url,
+      blink::mojom::ConsoleMessageLevel level,
+      const std::string& formatted_text) {
     *output_buffer += formatted_text + "\n";
   }
 };
@@ -594,44 +597,30 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
        "No recognized types specified.\n"},
   };
 
-  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
-  bool kHandlerTypeIsNavigation[] = {false};
+  std::string output_buffer;
+  std::string last_seen_console_output;
 
-  for (bool navigation : kHandlerTypeIsNavigation) {
-    SCOPED_TRACE(navigation ? "Navigation test." : "Subresource test.");
+  // |StoragePartitionImpl::OnClearSiteData| creates a new
+  // |ClearSiteDataHandler| for each navigation, redirect, or subresource
+  // header response.
+  for (const auto& test : kTestCases) {
+    TestHandler handler(
+        nullptr, nullptr, kTestStoragePartitionConfig, GURL(test.url),
+        test.header, net::LOAD_NORMAL, /*cookie_partition_key=*/std::nullopt,
+        /*storage_key=*/std::nullopt,
+        /*partitioned_state_allowed_only=*/false, base::DoNothing(),
+        std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
+    handler.DoHandleHeader();
 
-    std::string output_buffer;
-    std::string last_seen_console_output;
-
-    // |NetworkServiceClient| creates a new |ClearSiteDataHandler| for each
-    // navigation, redirect, or subresource header responses.
-    for (const auto& test : kTestCases) {
-      TestHandler handler(
-          nullptr, nullptr, kTestStoragePartitionConfig, GURL(test.url),
-          test.header, net::LOAD_NORMAL, /*cookie_partition_key=*/std::nullopt,
-          /*storage_key=*/std::nullopt,
-          /*partitioned_state_allowed_only=*/false, base::DoNothing(),
-          std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
-      handler.DoHandleHeader();
-
-      // For navigations, the console should be still empty. For subresource
-      // requests, messages should be added progressively.
-      if (navigation) {
-        EXPECT_TRUE(output_buffer.empty());
-      } else {
-        EXPECT_EQ(last_seen_console_output + test.output, output_buffer);
-      }
-
-      last_seen_console_output = output_buffer;
-    }
-
-    // At the end, the console must contain all messages regardless of whether
-    // it was a navigation or a subresource request.
-    std::string expected_output;
-    for (struct TestCase& test_case : kTestCases)
-      expected_output += test_case.output;
-    EXPECT_EQ(expected_output, output_buffer);
+    EXPECT_EQ(last_seen_console_output + test.output, output_buffer);
+    last_seen_console_output = output_buffer;
   }
+
+  std::string expected_output;
+  for (struct TestCase& test_case : kTestCases) {
+    expected_output += test_case.output;
+  }
+  EXPECT_EQ(expected_output, output_buffer);
 }
 
 TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
