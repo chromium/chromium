@@ -81,10 +81,12 @@ EligibilityCategory GetEligibilityCategory(const base::DictValue& history_dict,
     }
   }
 
+  const double threshold_ratio = features::kEligibilityThresholdRatio.Get();
+
   bool is_recent_eligible =
       recent_total_days > 0 &&
       (static_cast<double>(recent_eligible_days) / recent_total_days >=
-       UniversalOptOutService::kEligibilityThresholdRatio);
+       threshold_ratio);
   if (is_recent_eligible) {
     return EligibilityCategory::kEligible;
   }
@@ -92,7 +94,7 @@ EligibilityCategory GetEligibilityCategory(const base::DictValue& history_dict,
   bool is_trailing_eligible =
       trailing_total_days > 0 &&
       (static_cast<double>(trailing_eligible_days) / trailing_total_days >=
-       UniversalOptOutService::kEligibilityThresholdRatio);
+       threshold_ratio);
   if (is_trailing_eligible) {
     return EligibilityCategory::kTrailingEligible;
   }

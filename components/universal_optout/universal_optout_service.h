@@ -68,8 +68,6 @@ enum class EligibilityTransition {
 class UniversalOptOutService : public KeyedService,
                                public variations::VariationsService::Observer {
  public:
-  static constexpr double kEligibilityThresholdRatio = 0.5;
-
   using OptOutChangedCallback = base::RepeatingCallback<void(bool)>;
 
   explicit UniversalOptOutService(
