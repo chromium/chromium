@@ -110,6 +110,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEB_MESSAGE_ARRAY_BUFFER,
                 Features.IMAGE_DRAG_DROP,
                 Features.USER_AGENT_METADATA,
+                Features.USER_AGENT_METADATA_FORM_FACTORS,
                 Features.MULTI_PROFILE,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,

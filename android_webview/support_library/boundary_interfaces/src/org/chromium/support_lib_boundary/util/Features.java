@@ -274,6 +274,11 @@ public class Features {
     // WebSettingsCompat.getUserAgentMetadataMap
     public static final String USER_AGENT_METADATA = "USER_AGENT_METADATA";
 
+    // UserAgentMetadata.Builder.setFormFactors
+    // UserAgentMetadata.getFormFactors
+    public static final String USER_AGENT_METADATA_FORM_FACTORS =
+            "USER_AGENT_METADATA_FORM_FACTORS";
+
     // WebSettingsCompat.setAttributionBehavior
     // WebSettingsCompat.getAttributionBehavior
     @Deprecated public static final String ATTRIBUTION_BEHAVIOR = "ATTRIBUTION_BEHAVIOR";

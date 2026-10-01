@@ -37,6 +37,9 @@ public class SupportLibTest {
                 Arrays.asList(SupportLibWebViewChromiumFactory.assembleSupportedFeatures());
         Assert.assertTrue(
                 supportedFeaturesList.contains(Features.SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL));
+        Assert.assertTrue(supportedFeaturesList.contains(Features.USER_AGENT_METADATA));
+        Assert.assertTrue(
+                supportedFeaturesList.contains(Features.USER_AGENT_METADATA_FORM_FACTORS));
     }
 
     @Test
