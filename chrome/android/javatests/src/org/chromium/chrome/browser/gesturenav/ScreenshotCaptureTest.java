@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -59,6 +60,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Test that the screenshot was successfully taken when navigating as expected. */
@@ -124,7 +126,7 @@ public class ScreenshotCaptureTest {
                 EmbeddedTestServer.createAndStartServerWithPort(
                         ApplicationProvider.getApplicationContext(), 46985);
 
-        var siteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
+        List<SiteSuggestion> siteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions();
         var mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(siteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;

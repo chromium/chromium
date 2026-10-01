@@ -21,7 +21,6 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -71,7 +70,6 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -113,7 +111,6 @@ public class FeedV2NewTabPageTest {
 
     private Tab mTab;
     private NewTabPage mNtp;
-    private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private TestFeedServer mFeedServer;
 
@@ -132,11 +129,8 @@ public class FeedV2NewTabPageTest {
                 });
 
         mFeedServer = new TestFeedServer();
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
 
-        mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
+        mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions();
         FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
@@ -145,7 +139,7 @@ public class FeedV2NewTabPageTest {
 
     @After
     public void tearDown() {
-        if (mTestServer != null) {
+        if (mFeedServer != null) {
             mFeedServer.shutdown();
         }
     }
@@ -215,7 +209,8 @@ public class FeedV2NewTabPageTest {
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(MIN_ITEMS_AFTER_LOAD));
 
-        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/blue.html"));
+        mActivityTestRule.loadUrl(
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/blue.html"));
 
         WebContentsUtils.waitForCopyableViewInWebContents(webContents);
 

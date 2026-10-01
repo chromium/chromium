@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -38,7 +37,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -76,12 +74,7 @@ public class NewTabPageMemoryLeakTest {
 
         new OmniboxTestUtils(mActivityTestRule.getActivity());
 
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-
-        List<SiteSuggestion> siteSuggestions =
-                NewTabPageTestUtils.createFakeSiteSuggestions(testServer);
+        List<SiteSuggestion> siteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions();
         FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(siteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
