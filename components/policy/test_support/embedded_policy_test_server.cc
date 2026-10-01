@@ -126,6 +126,11 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   RegisterHandler(std::make_unique<SimpleRequestHandler>(
       this, dm_protocol::kValueRequestChromeDesktopReport,
       std::move(chrome_desktop_report_response)));
+  em::DeviceManagementResponse chrome_profile_report_response;
+  chrome_profile_report_response.mutable_chrome_profile_report_response();
+  RegisterHandler(std::make_unique<SimpleRequestHandler>(
+      this, dm_protocol::kValueRequestChromeProfileReport,
+      std::move(chrome_profile_report_response)));
   RegisterHandler(
       std::make_unique<RequestHandlerForClientCertProvisioning>(this));
   RegisterHandler(

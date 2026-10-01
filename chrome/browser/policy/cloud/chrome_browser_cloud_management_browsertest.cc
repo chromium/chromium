@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -427,6 +428,27 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
   em::ChromeDesktopReportRequest chrome_desktop_report;
   UploadChromeDesktopReport(&chrome_desktop_report);
 }
+
+// Desktop only.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
+                       ChromeProfileReport) {
+  CloudPolicyClient client("fake_profile_id", service_.get(),
+                           g_browser_process->system_network_context_manager()
+                               ->GetSharedURLLoaderFactory(),
+                           CloudPolicyClient::DeviceDMTokenCallback());
+  client.SetupRegistration(kDMToken, kClientID,
+                           /*user_affiliation_ids=*/{});
+
+  auto report = std::make_unique<em::ChromeProfileReportRequest>();
+  report->mutable_browser_report()->set_browser_version("1.2.3");
+
+  base::test::TestFuture<CloudPolicyClient::Result> future;
+  client.UploadChromeProfileReport(/*use_cookies=*/false, std::move(report),
+                                   future.GetCallback());
+  EXPECT_TRUE(future.Get().IsSuccess());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(
     ChromeBrowserCloudManagementServiceIntegrationTestInstance,
