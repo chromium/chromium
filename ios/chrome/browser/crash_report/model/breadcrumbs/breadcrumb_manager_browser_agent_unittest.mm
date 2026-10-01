@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/spinning_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -302,4 +303,26 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AlertOverlay) {
   EXPECT_TRUE(activation->contains(kBreadcrumbOverlayAlert)) << *activation;
   EXPECT_TRUE(activation->contains(kBreadcrumbOverlayActivated)) << *activation;
   queue->CancelAllRequests();
+}
+
+// Tests logging kBreadcrumbOverlayLoading.
+TEST_F(BreadcrumbManagerBrowserAgentTest, SpinningOverlay) {
+  InsertWebState(browser_.get());
+
+  BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<SpinningOverlayRequestConfig>(
+          /*label_text=*/nil, /*is_cancellable=*/false));
+  queue->CancelAllRequests();
+
+  const auto& events = GetEvents();
+  ASSERT_EQ(1u, events.size());
+
+  EXPECT_TRUE(events.back().contains(kBreadcrumbOverlay)) << events.back();
+  EXPECT_TRUE(events.back().contains(kBreadcrumbOverlayLoading))
+      << events.back();
 }

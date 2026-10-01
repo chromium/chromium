@@ -35,6 +35,9 @@ extern const char kBreadcrumbOverlayAlert[];
 // Appended to `kBreadcrumbOverlay` event if overlay is app launch confirmation.
 extern const char kBreadcrumbOverlayAppLaunch[];
 
+// Appended to `kBreadcrumbOverlay` event if overlay is loading indicator.
+extern const char kBreadcrumbOverlayLoading[];
+
 // Appended to `kBreadcrumbOverlay` event if overlay is JavaScript alert.
 extern const char kBreadcrumbOverlayJsAlert[];
 
