@@ -671,8 +671,7 @@ void Database::CloseInternal(bool forced) {
     db_ = nullptr;
     auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(raw_db));
 
-    CHECK_NE(sqlite_result_code, SqliteResultCode::kBusy,
-             base::NotFatalUntil::M141)
+    CHECK_NE(sqlite_result_code, SqliteResultCode::kBusy)
         << "sqlite3_close() called while resources (statements, blobs, etc) "
            "are still alive";
     DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
