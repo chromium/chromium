@@ -231,7 +231,7 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                            OrganizerPanelLocation::kOrganizerTray;
                   },
                   Then(PressButton(kOrganizerPanelCloseButtonElementId)),
-                  Else(PressButton(kTabSearchButtonElementId))),
+                  Else(PressButton(kVerticalTabStripTabStripButtonElementId))),
               WaitForPanelClose());
     AddDescriptionPrefix(steps, "CloseOrganizerPanel()");
     return steps;

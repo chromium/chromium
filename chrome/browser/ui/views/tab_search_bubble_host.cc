@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -255,6 +256,13 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     auto* controller =
         OrganizerPanelController::From(browser_window_interface_);
     if (controller) {
+      if (controller->IsOrganizerPanelVisible() &&
+          DoesVerticalTabStripSupportEmbeddedOrganizerPanel(
+              *browser_window_interface_)) {
+        // When the Organizer Panel is embedded in the tab strip, clicking the
+        // button no longer toggles the state.
+        return;
+      }
       controller->SetOrganizerVisible(!controller->IsOrganizerPanelVisible());
       return;
     }

@@ -19,24 +19,6 @@
 
 namespace {
 
-bool DoesVerticalTabStripSupportEmbeddedOrganizerPanel(
-    BrowserWindowInterface& browser) {
-  const auto* controller =
-      tabs::VerticalTabStripStateController::From(&browser);
-  if (!controller) {
-    return false;
-  }
-  if (!controller->ShouldDisplayVerticalTabs()) {
-    return false;
-  }
-  if (controller->IsCollapsed()) {
-    return controller->IsExpandOnHoverEnabled();
-  }
-  return controller->GetUncollapsedWidth() >
-         organizer_panel::kOrganizerPanelMinWidth -
-             organizer_panel::kOrganizerPanelMinOverlap;
-}
-
 OrganizerPanelHost* GetVerticalTabStripHost(BrowserWindowInterface& browser) {
   const auto views = BrowserElementsViews::From(&browser)->GetAllViews(
       kTabStripRegionElementId, /*require_visible=*/false);
@@ -57,6 +39,24 @@ OrganizerPanelHost* GetOrganizerTrayHost(BrowserWindowInterface& browser) {
 }
 
 }  // namespace
+
+bool DoesVerticalTabStripSupportEmbeddedOrganizerPanel(
+    BrowserWindowInterface& browser) {
+  const auto* controller =
+      tabs::VerticalTabStripStateController::From(&browser);
+  if (!controller) {
+    return false;
+  }
+  if (!controller->ShouldDisplayVerticalTabs()) {
+    return false;
+  }
+  if (controller->IsCollapsed()) {
+    return controller->IsExpandOnHoverEnabled();
+  }
+  return controller->GetUncollapsedWidth() >
+         organizer_panel::kOrganizerPanelMinWidth -
+             organizer_panel::kOrganizerPanelMinOverlap;
+}
 
 // static
 OrganizerPanelHost* OrganizerPanelHost::FromView(views::View* view) {

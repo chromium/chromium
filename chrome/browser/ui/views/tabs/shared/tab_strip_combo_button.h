@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -99,6 +100,8 @@ class TabStripComboButton : public views::View,
   void OnTabSearchBubbleShown();
 
   std::unique_ptr<TabStripFlatEdgeButton> CreateFlatEdgeButtonFor(
+      ui::ElementIdentifier element_id);
+  std::unique_ptr<TabStripFlatEdgeButton> CreateFlatEdgeButtonFor(
       actions::ActionId action_id,
       ui::ElementIdentifier element_id);
 
@@ -124,6 +127,7 @@ class TabStripComboButton : public views::View,
   views::LayoutOrientation orientation_ = views::LayoutOrientation::kHorizontal;
 
   bool show_tab_search_ephemerally_ = false;
+  bool is_segmentation_control_ = false;
 
   PrefChangeRegistrar pref_registrar_;
 
@@ -140,6 +144,10 @@ class TabStripComboButton : public views::View,
       tab_search_bubble_host_observation_{this};
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
+
+  base::CallbackListSubscription mode_changed_subscription_;
+  base::CallbackListSubscription collapse_changed_subscription_;
+  base::CallbackListSubscription expand_on_hover_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_
