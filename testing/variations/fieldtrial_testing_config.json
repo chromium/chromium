@@ -47,6 +47,21 @@
             ]
         }
     ],
+    "ANGLEPurgeableBufferPool": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ANGLEPurgeableBufferPool"
+                    ]
+                }
+            ]
+        }
+    ],
     "AVFoundationCaptureForwardSampleTimestamps": [
         {
             "platforms": [
