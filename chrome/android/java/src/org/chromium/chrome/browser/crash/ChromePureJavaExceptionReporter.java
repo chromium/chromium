@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.crash;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
@@ -18,7 +19,13 @@ import java.io.File;
 @NullMarked
 public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     private static final String TAG = "ChromeCrashReporter";
+    // LINT.IfChange(AndroidCrashProductName)
     private static final String CHROME_CRASH_PRODUCT_NAME = "Chrome_Android";
+    private static final String CHROME_DESKTOP_CRASH_PRODUCT_NAME = "Chrome_Android_Desktop";
+    // LINT.ThenChange(
+    //   //chrome/app/chrome_crash_reporter_client.cc:AndroidCrashProductName,
+    //   //components/minidump_uploader/rewrite_minidumps_as_mimes.cc:AndroidCrashProductName
+    // )
     private static final String FILE_PREFIX = "chromium-browser-minidump-";
 
     @UsedByReflection("SplitCompatApplication.java")
@@ -33,7 +40,11 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
 
     @Override
     protected String getProductName() {
-        return CHROME_CRASH_PRODUCT_NAME;
+        // Differentiate Android Desktop crash reports by device type rather than UI affordance
+        // (crbug.com/567605929).
+        return DeviceInfo.isDesktop() // nocheck
+                ? CHROME_DESKTOP_CRASH_PRODUCT_NAME
+                : CHROME_CRASH_PRODUCT_NAME;
     }
 
     @Override

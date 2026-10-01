@@ -38,6 +38,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #include "chrome/common/chrome_descriptors_android.h"
 #endif
 
@@ -136,7 +137,14 @@ void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
 
   const char* product_name = "";
 #if BUILDFLAG(IS_ANDROID)
-  product_name = "Chrome_Android";
+  // LINT.IfChange(AndroidCrashProductName)
+  product_name = base::android::device_info::is_desktop()
+                     ? "Chrome_Android_Desktop"
+                     : "Chrome_Android";
+  // LINT.ThenChange(
+  //   //chrome/android/java/src/org/chromium/chrome/browser/crash/ChromePureJavaExceptionReporter.java:AndroidCrashProductName,
+  //   //components/minidump_uploader/rewrite_minidumps_as_mimes.cc:AndroidCrashProductName
+  // )
 #elif BUILDFLAG(IS_CHROMEOS)
   product_name = "Chrome_ChromeOS";
 #elif BUILDFLAG(IS_LINUX)

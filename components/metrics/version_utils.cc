@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace metrics {
@@ -59,6 +60,11 @@ std::string GetAppPackageName() {
 std::string GetOperatingSystemName() {
 #if BUILDFLAG(IS_CHROMEOS)
   return "CrOS";
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_desktop()) {
+    return "Android Desktop";
+  }
+  return base::SysInfo::OperatingSystemName();
 #else
   return base::SysInfo::OperatingSystemName();
 #endif
