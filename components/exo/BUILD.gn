@@ -201,10 +201,6 @@ static_library("exo") {
   if (use_xkbcommon) {
     configs += [ ":xkbcommon" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -355,10 +351,6 @@ source_set("unit_tests") {
     "//ui/views:test_support",
     "//ui/wm",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("exo_unittests") {
@@ -387,8 +379,4 @@ test("exo_unittests") {
   ]
 
   data_deps = []
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

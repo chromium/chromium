@@ -339,13 +339,11 @@ class FakeRasterContextProvider
   }
   const gpu::Capabilities& ContextCapabilities() const override {
     ADD_FAILURE();
-    static gpu::Capabilities dummy_caps;
-    return dummy_caps;
+    return dummy_caps_;
   }
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override {
     ADD_FAILURE();
-    static gpu::GpuFeatureInfo dummy_feature_info;
-    return dummy_feature_info;
+    return dummy_feature_info_;
   }
   gpu::raster::RasterInterface* RasterInterface() override {
     return GetInterceptingTestRasterInterface();
@@ -367,6 +365,8 @@ class FakeRasterContextProvider
   base::OnceClosure on_destroyed_;
 
   InterceptingTestRasterInterface intercepting_test_raster_interface_;
+  gpu::Capabilities dummy_caps_;
+  gpu::GpuFeatureInfo dummy_feature_info_;
 };
 
 }  // namespace

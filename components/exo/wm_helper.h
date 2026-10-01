@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -159,7 +160,7 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
   void RemovePowerObserver(WMHelper::PowerObserver* observer);
   VSyncTimingManager& GetVSyncTimingManager();
   const display::ManagedDisplayInfo& GetDisplayInfo(int64_t display_id) const;
-  const std::vector<uint8_t>& GetDisplayIdentificationData(
+  base::span<const uint8_t> GetDisplayIdentificationData(
       int64_t display_id) const;
   bool GetActiveModeForDisplayId(int64_t display_id,
                                  display::ManagedDisplayMode* mode) const;

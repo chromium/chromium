@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -222,7 +221,7 @@ const display::ManagedDisplayInfo& WMHelper::GetDisplayInfo(
   return ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
 }
 
-const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
+base::span<const uint8_t> WMHelper::GetDisplayIdentificationData(
     int64_t display_id) const {
   const auto& displays =
       ash::Shell::Get()->display_configurator()->cached_displays();
@@ -235,18 +234,13 @@ const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
         // b/288216766
         // TODO(b/299391925) instead of using kPlaceholderIdentificationData we
         // should derive it from the display info of this DisplaySnapshot..
-        static const std::vector<uint8_t> kFablicatedFallbackEDID(
-            kFablicatedFallbackEDIDData,
-            UNSAFE_TODO(kFablicatedFallbackEDIDData +
-                        sizeof(kFablicatedFallbackEDIDData)));
-        return kFablicatedFallbackEDID;
+        return kFablicatedFallbackEDIDData;
       }
       return display->edid();
     }
   }
 
-  static std::vector<uint8_t> no_data;
-  return no_data;
+  return {};
 }
 
 bool WMHelper::GetActiveModeForDisplayId(

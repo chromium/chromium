@@ -5,6 +5,7 @@
 #include "components/exo/surface.h"
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
@@ -87,6 +88,10 @@ BASE_FEATURE(kDisableNonYUVOverlaysFromExo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
+// Devices on which non-YUV overlays are disabled; see ShouldDisableOverlay().
+constexpr auto kOverlayBlockedDevices =
+    std::to_array<std::string_view>({"DRALLION", "HATCH", "VOLTEER"});
+
 // A property key containing the surface that is associated with
 // window. If unset, no surface is associated with window.
 DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kSurfaceKey, nullptr)
@@ -113,12 +118,10 @@ bool ListContainsEntry(T& list, U key) {
 bool ShouldDisableOverlay(viz::SharedImageFormat format) {
   static bool is_blocked_device = false;
   static bool is_initialized = false;
-  static const base::flat_set<std::string> blocked_devices = {
-      "DRALLION", "HATCH", "VOLTEER"};
   if (!is_initialized) {
     is_initialized = true;
-    std::string device_model = base::SysInfo::HardwareModelName();
-    is_blocked_device = blocked_devices.contains(device_model);
+    is_blocked_device = std::ranges::contains(
+        kOverlayBlockedDevices, base::SysInfo::HardwareModelName());
   }
 
   if (!is_blocked_device) {
@@ -318,16 +321,15 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 };
 
 const std::string& GetApplicationId(aura::Window* window) {
-  static const std::string empty_app_id;
   if (!window)
-    return empty_app_id;
+    return base::EmptyString();
   while (window) {
     const std::string* app_id = exo::GetShellApplicationId(window);
     if (app_id)
       return *app_id;
     window = window->parent();
   }
-  return empty_app_id;
+  return base::EmptyString();
 }
 
 int surface_id = 0;
