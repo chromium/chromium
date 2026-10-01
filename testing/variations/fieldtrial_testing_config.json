@@ -6806,6 +6806,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DetectSpaceChangeViaOcclusion",
+                        "NotifyCompositorOfSpaceVisibilityOnMacOs",
                         "NotifyCompositorOfWindowVisibilityOnMacOs",
                         "VizBufferQueueDiscardOnVisibilityChange"
                     ]
