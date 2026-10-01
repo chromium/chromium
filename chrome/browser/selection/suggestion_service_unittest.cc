@@ -141,6 +141,7 @@ class SuggestionServiceUnitTest : public testing::Test {
   SuggestionService service_{&mock_tab_, &mock_model_executor_};
 };
 
+// Tests that registered tools provide suggestions and unregistering them works.
 TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   EXPECT_EQ(SuggestionService::From(&mock_tab()), &service());
 
@@ -162,9 +163,8 @@ TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   // with complete=true.
   auto [batch, complete] = future.Take();
   EXPECT_TRUE(complete);
-  ASSERT_EQ(batch.size(), 2u);
-  EXPECT_EQ(batch[0]->GetLabel(), u"Static Action 1");
-  EXPECT_EQ(batch[1]->GetLabel(), u"Static Action 2");
+  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action 1"),
+                                 SuggestionWithLabel(u"Static Action 2")));
 
   service().UnregisterTool(&tool1);
   service().UnregisterTool(&tool2);
@@ -172,9 +172,10 @@ TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   service().RequestSuggestions(aoi, future.GetRepeatingCallback());
   auto [empty_batch, empty_complete] = future.Take();
   EXPECT_TRUE(empty_complete);
-  EXPECT_TRUE(empty_batch.empty());
+  EXPECT_THAT(empty_batch, IsEmpty());
 }
 
+// Tests that asynchronous tools return their suggestions in subsequent batches.
 TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncTool) {
   CustomTestTool static_tool(u"Static Action");
   AsyncCustomTestTool async_tool;
@@ -189,14 +190,14 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncTool) {
   // First batch: Synchronous tool suggestions.
   auto [static_suggestions, static_complete] = future.Take();
   EXPECT_FALSE(static_complete);
-  ASSERT_EQ(static_suggestions.size(), 1u);
-  EXPECT_EQ(static_suggestions[0]->GetLabel(), u"Static Action");
+  EXPECT_THAT(static_suggestions,
+              ElementsAre(SuggestionWithLabel(u"Static Action")));
 
   // Second batch: Async custom tool suggestions.
   auto [async_suggestions, async_complete] = future.Take();
   EXPECT_TRUE(async_complete);
-  ASSERT_EQ(async_suggestions.size(), 1u);
-  EXPECT_EQ(async_suggestions[0]->GetLabel(), u"Async Action");
+  EXPECT_THAT(async_suggestions,
+              ElementsAre(SuggestionWithLabel(u"Async Action")));
 
   service().UnregisterTool(&static_tool);
   service().UnregisterTool(&async_tool);
