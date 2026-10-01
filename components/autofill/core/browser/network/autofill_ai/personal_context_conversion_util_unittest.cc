@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -445,10 +446,20 @@ TEST(AutofillAiPersonalContextConverters,
 
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                   result.record_type_data())
                   .sources,
               IsEmpty());
+#else
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {
+          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                 .metadata = GmailSourceMetadata{.title = ""}}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+#endif
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertEntityWithPhotosSource) {
@@ -501,10 +512,19 @@ TEST(AutofillAiPersonalContextConverters,
 
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                   result.record_type_data())
                   .sources,
               IsEmpty());
+#else
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {Source{.url = GURL("https://photos.google.com/photo/abc"),
+                         .metadata = PhotosSourceMetadata{}}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+#endif
 }
 
 TEST(AutofillAiPersonalContextConverters,
@@ -527,10 +547,19 @@ TEST(AutofillAiPersonalContextConverters,
 
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                   result.record_type_data())
                   .sources,
               IsEmpty());
+#else
+  EntityInstance::PersonalContextRecordTypePayload payload{
+      .sources = {Source{.url = GURL("https://photos.google.com/photo/abc"),
+                         .metadata = PhotosSourceMetadata{}}}};
+  EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
+                result.record_type_data()),
+            payload);
+#endif
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
@@ -592,7 +621,14 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithMultipleSources) {
               .metadata = GmailSourceMetadata{.title = "Order Confirmation"}},
           Source{.url = GURL("https://photos.google.com/photo/abc"),
                  .metadata =
-                     PhotosSourceMetadata{.timestamp = expected_timestamp}}}};
+                     PhotosSourceMetadata{.timestamp = expected_timestamp}},
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+          Source{.url = GURL("https://mail.google.com/mail/u/0/#inbox/456"),
+                 .metadata = GmailSourceMetadata{.title = ""}},
+          Source{.url = GURL("https://photos.google.com/photo/def"),
+                 .metadata = PhotosSourceMetadata{}},
+#endif
+      }};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);

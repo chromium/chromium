@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -107,6 +108,8 @@ bool IsSourceValid(
   if (!source.url.is_valid()) {
     return false;
   }
+  // Source metadata other than the URL is only required on mobile.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return std::visit(absl::Overload{[](const GmailSourceMetadata& gmail) {
                                      return !gmail.title.empty();
                                    },
@@ -114,6 +117,9 @@ bool IsSourceValid(
                                      return !photos.timestamp.is_null();
                                    }},
                     source.metadata);
+#else
+  return true;
+#endif
 }
 
 std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
