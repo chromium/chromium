@@ -94,8 +94,8 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   // don't want navigations to these URLs to have WebUI bindings, e.g.
   // chrome.send() or Mojo.bindInterface(), since some WebUIs currently expose
   // untrusted content via these schemes.
-  if (url.GetScheme() != kChromeUIScheme &&
-      url.GetScheme() != kChromeUIUntrustedScheme) {
+  if (url.scheme() != kChromeUIScheme &&
+      url.scheme() != kChromeUIUntrustedScheme) {
     return nullptr;
   }
 
@@ -114,8 +114,8 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
 }
 
 std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
-  CHECK(url.GetScheme() == kChromeUIScheme ||
-        url.GetScheme() == kChromeUIUntrustedScheme);
+  CHECK(url.scheme() == kChromeUIScheme ||
+        url.scheme() == kChromeUIUntrustedScheme);
 
   auto it = configs_map_.find(url::Origin::Create(url));
   if (it == configs_map_.end()) {
