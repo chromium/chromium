@@ -9125,4 +9125,6 @@ crbug.com/527852129 [ Mac ] external/wpt/scroll-animations/animation-trigger/ani
 crbug.com/527852129 [ Linux ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
 crbug.com/527852129 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
 
+# Gardener 2026-10-01
 crbug.com/564804235 inspector-protocol/emulation/device-emulation-text-size-adjust-two-pages.js [ Failure ]
+crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/contexts.py [ Failure Pass ]
