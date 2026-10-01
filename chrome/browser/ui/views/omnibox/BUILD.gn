@@ -180,6 +180,25 @@ source_set("impl") {
   # them via browser_public_dependencies; the reverse edge is the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (is_mac) {
+    deps += [ ":native_widget_mac" ]
+  }
+}
+
+if (is_mac) {
+  source_set("native_widget_mac") {
+    sources = [
+      "omnibox_popup_native_widget_mac.h",
+      "omnibox_popup_native_widget_mac.mm",
+    ]
+    public_deps = [ "//components/remote_cocoa/app_shim" ]
+    deps = [
+      "//components/remote_cocoa/common:mojo",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
 }
 
 source_set("unit_tests") {
