@@ -134,7 +134,8 @@ class LensSearchController {
       lens::LensOverlayInvocationSource invocation_source,
       const GURL& destination_url,
       omnibox::AutocompleteMatchType match_type,
-      bool is_zero_prefix_suggestion);
+      bool is_zero_prefix_suggestion,
+      bool grant_session_permission = false);
 
   // If `suppress_contextualization` is true, queries will not be performed with
   // contextualization for the duration of the session. However,
@@ -147,7 +148,8 @@ class LensSearchController {
       std::map<std::string, std::string> additional_query_parameters,
       omnibox::AutocompleteMatchType match_type,
       bool is_zero_prefix_suggestion,
-      bool suppress_contextualization);
+      bool suppress_contextualization,
+      bool grant_session_permission = false);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
@@ -404,7 +406,8 @@ class LensSearchController {
   // Creates all state necessary to start a Lens session. This method contains
   // shared state that is used no matter the entrypoint.
   void StartLensSession(lens::LensOverlayInvocationSource invocation_source,
-                        bool suppress_contextualization = false);
+                        bool suppress_contextualization = false,
+                        bool grant_session_permission = false);
 
   // Runs the eligibility checks necessary for Lens to open on this tab. If the
   // user has not granted permission to use Lens on this tab, the permission

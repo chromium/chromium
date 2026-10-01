@@ -936,9 +936,14 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
   if (auto* web_contents = GetWebContents(web_contents_getter_)) {
     web_contents->Focus();
     if (auto* lens_search_controller = GetLensSearchController(web_contents)) {
+      bool grant_session_permission =
+          base::FeatureList::IsEnabled(
+              omnibox::kWebUIOmniboxAskGAboutThisPage) &&
+          omnibox::kAskGBypassPrivacyNotice.Get();
       lens_search_controller->IssueContextualSearchRequest(
           lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
-          destination_url, match_type, is_zero_prefix_suggestion);
+          destination_url, match_type, is_zero_prefix_suggestion,
+          grant_session_permission);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
