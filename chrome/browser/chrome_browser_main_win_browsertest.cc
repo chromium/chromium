@@ -5,12 +5,16 @@
 #include "chrome/browser/chrome_browser_main_win.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/win/current_module.h"
+#include "base/win/pe_image.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -212,4 +216,121 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinUpdateSwapTest,
   // runs the browser has a tab, so child processes must exist.
   content::RunAllTasksUntilIdle();
   EXPECT_GT(CountChildProcessHosts(), 0);
+}
+
+// `std::nullopt` means that kEagerlyResolveCoreDllsImports is disabled.
+using EagerlyResolveCoreDllsImportsTestParam =
+    std::optional<features::EagerlyResolveCoreDllsImportsTiming>;
+
+class EagerlyResolveCoreDllsImportsTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<
+          EagerlyResolveCoreDllsImportsTestParam> {
+ protected:
+  EagerlyResolveCoreDllsImportsTest() {
+    if (!is_enabled()) {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kEagerlyResolveCoreDllsImports);
+      return;
+    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kEagerlyResolveCoreDllsImports,
+        {{features::kEagerlyResolveCoreDllsImportsTiming.name,
+          features::kEagerlyResolveCoreDllsImportsTiming.GetName(
+              *GetParam())}});
+  }
+
+  bool is_enabled() const { return GetParam().has_value(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EagerlyResolveCoreDllsImportsTest,
+    ::testing::Values(
+        std::nullopt,
+        features::EagerlyResolveCoreDllsImportsTiming::kPreCreateThreads,
+        features::EagerlyResolveCoreDllsImportsTiming::kBeforeThreadPoolStart),
+    [](const ::testing::TestParamInfo<EagerlyResolveCoreDllsImportsTestParam>&
+           info) -> std::string {
+      if (!info.param.has_value()) {
+        return "Disabled";
+      }
+      switch (*info.param) {
+        case features::EagerlyResolveCoreDllsImportsTiming::kPreCreateThreads:
+          return "PreCreateThreads";
+        case features::EagerlyResolveCoreDllsImportsTiming::
+            kBeforeThreadPoolStart:
+          return "BeforeThreadPoolStart";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(EagerlyResolveCoreDllsImportsTest,
+                       VerifyCoreDllsDelayLoadResolution) {
+  // Inspect the module containing this code (and ChromeBrowserMainPartsWin),
+  // i.e. the test executable itself, which delay-loads the core DLLs.
+  base::win::PEImage pe(CURRENT_MODULE());
+  ASSERT_TRUE(pe.VerifyMagic());
+
+  static constexpr const char* const kTargetDlls[] = {
+      "user32.dll", "dwmapi.dll", "uxtheme.dll", "gdi32.dll", "imm32.dll",
+  };
+
+  int total_unpatched_thunk_count = 0;
+  for (const char* target_dll : kTargetDlls) {
+    struct Context {
+      const char* target_dll = nullptr;
+      int unpatched_thunk_count = 0;
+      int resolved_count = 0;
+    } context{target_dll};
+
+    // Enumerate delay import chunks with target_module_name = nullptr so that
+    // EnumDelayImportChunks does not trigger an automatic load via
+    // base::win::PEImage.
+    pe.EnumDelayImportChunks(
+        [](const base::win::PEImage& image, PImgDelayDescr delay_descriptor,
+           LPCSTR module_name, PIMAGE_THUNK_DATA name_table,
+           PIMAGE_THUNK_DATA iat, PVOID raw_context) -> bool {
+          auto* c = reinterpret_cast<Context*>(raw_context);
+          if (lstrcmpiA(module_name, c->target_dll) == 0) {
+            image.EnumOneDelayImportChunk(
+                [](const base::win::PEImage& img, LPCSTR mod, DWORD ord,
+                   LPCSTR name, DWORD hint, PIMAGE_THUNK_DATA thunk_iat,
+                   PVOID inner_context) -> bool {
+                  auto* inner_c = reinterpret_cast<Context*>(inner_context);
+                  if (img.GetImageSectionFromAddr(reinterpret_cast<PVOID>(
+                          thunk_iat->u1.Function)) != nullptr) {
+                    inner_c->unpatched_thunk_count++;
+                  } else {
+                    inner_c->resolved_count++;
+                  }
+                  return true;
+                },
+                delay_descriptor, module_name, name_table, iat, c);
+          }
+          return true;
+        },
+        &context, nullptr);
+
+    // Each core DLL is expected to be in the delay-load table.
+    ASSERT_GT(context.resolved_count + context.unpatched_thunk_count, 0)
+        << target_dll << " is not delay-loaded";
+
+    if (is_enabled()) {
+      // When kEagerlyResolveCoreDllsImports is enabled, all delay-load entries
+      // for the core DLLs should be resolved, so none point to thunks.
+      EXPECT_EQ(context.unpatched_thunk_count, 0)
+          << "Expected all delayload imports for " << target_dll
+          << " to be resolved, but found unpatched thunks.";
+    }
+    total_unpatched_thunk_count += context.unpatched_thunk_count;
+  }
+
+  if (!is_enabled()) {
+    // When the feature is disabled, some delay-load entries should still point
+    // to thunks. This ensures that the enabled case doesn't pass vacuously.
+    EXPECT_GT(total_unpatched_thunk_count, 0);
+  }
 }

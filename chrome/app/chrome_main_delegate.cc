@@ -947,6 +947,12 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     chrome_feature_list_creator->CreateFeatureList();
   }
 
+#if BUILDFLAG(IS_WIN)
+  // This runs before content::StartBrowserThreadPool().
+  MaybeLoadAllImportsForCoreDlls(
+      features::EagerlyResolveCoreDllsImportsTiming::kBeforeThreadPoolStart);
+#endif
+
   content::InitializeMojoCore();
 
 #if BUILDFLAG(IS_CHROMEOS)

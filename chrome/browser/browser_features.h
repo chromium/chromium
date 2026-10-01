@@ -92,6 +92,16 @@ BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
+BASE_DECLARE_FEATURE(kEagerlyResolveCoreDllsImports);
+enum class EagerlyResolveCoreDllsImportsTiming {
+  // In ChromeBrowserMainPartsWin::PreCreateThreads().
+  kPreCreateThreads,
+  // In ChromeMainDelegate::PostEarlyInitialization(), before the ThreadPool is
+  // started.
+  kBeforeThreadPoolStart,
+};
+BASE_DECLARE_FEATURE_PARAM(EagerlyResolveCoreDllsImportsTiming,
+                           kEagerlyResolveCoreDllsImportsTiming);
 BASE_DECLARE_FEATURE(kIsolatedProcess);
 
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);

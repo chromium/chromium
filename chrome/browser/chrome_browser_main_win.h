@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/common/conflicts/module_watcher_win.h"
 #include "chrome/install_static/buildflags.h"
@@ -27,6 +28,13 @@ class CommandLine;
 // If |chrome_still_running| is true a modal dialog will be shown asking the
 // user to close the other chrome instance.
 int DoUninstallTasks(bool chrome_still_running);
+
+// If `features::kEagerlyResolveCoreDllsImports` is enabled and configured to
+// run at `timing`, resolves all delay-load imports for core DLLs (user32.dll,
+// uxtheme.dll, gdi32.dll, imm32.dll and dwmapi.dll), loading them if needed.
+// Must be called from the browser process main thread.
+void MaybeLoadAllImportsForCoreDlls(
+    features::EagerlyResolveCoreDllsImportsTiming timing);
 
 class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
  public:

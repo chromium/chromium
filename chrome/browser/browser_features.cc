@@ -183,6 +183,28 @@ BASE_FEATURE(kWebUsbDeviceDetection, base::FEATURE_ENABLED_BY_DEFAULT);
 // Build 14393) onwards.
 BASE_FEATURE(kBrowserDynamicCodeDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Eagerly resolves all delay-loaded imports for user32.dll, uxtheme.dll,
+// gdi32.dll, imm32.dll and dwmapi.dll (loading those that aren't loaded yet)
+// during browser process startup, at a point selected by
+// `kEagerlyResolveCoreDllsImportsTiming`. This avoids UI-thread jank from
+// contending on the apphelp.dll critical section (SE_GetProcAddressForCaller)
+// during lazy delay-load resolution.
+BASE_FEATURE(kEagerlyResolveCoreDllsImports, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<EagerlyResolveCoreDllsImportsTiming>::Option
+    kEagerlyResolveCoreDllsImportsTimingOptions[] = {
+        {EagerlyResolveCoreDllsImportsTiming::kPreCreateThreads,
+         "pre-create-threads"},
+        {EagerlyResolveCoreDllsImportsTiming::kBeforeThreadPoolStart,
+         "before-thread-pool-start"},
+};
+BASE_FEATURE_ENUM_PARAM(
+    /*T=*/EagerlyResolveCoreDllsImportsTiming,
+    /*feature_object_name=*/kEagerlyResolveCoreDllsImportsTiming,
+    /*feature=*/&kEagerlyResolveCoreDllsImports,
+    /*default_value=*/EagerlyResolveCoreDllsImportsTiming::kPreCreateThreads,
+    /*options=*/&kEagerlyResolveCoreDllsImportsTimingOptions);
+
 // When enabled, the browser will run with isolation enabled on the next
 // restart.
 BASE_FEATURE(kIsolatedProcess, base::FEATURE_DISABLED_BY_DEFAULT);
