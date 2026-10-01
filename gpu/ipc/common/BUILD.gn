@@ -253,7 +253,6 @@ mojom("interfaces") {
   }
 
   public_deps = [
-    ":gpu_preferences_interface",
     ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
