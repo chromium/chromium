@@ -25,14 +25,11 @@
   --skeleton-stagger-delay: 0ms;
   aspect-ratio: 1/1;
   background-color: #fff;
+  border: 2px solid var(--composebox-favicon-border-color, #f2f2f2);
   border-radius: 50%;
-  box-sizing: border-box;
-  display: inline-block;
-  height: 20px;
-  outline: 2px solid
-      var(--composebox-favicon-border-color, #f2f2f2);
-  outline-offset: 2px;
+  height: 16px;
   position: relative;
+  width: 16px;
 }
 
 .favicon-item:nth-child(1) {
