@@ -96,6 +96,9 @@ struct TabInfo {
 //   so for small collections it is usually slower to search and iterate than
 //   a vector. See base/containers/README.md.
 struct TabContextState {
+  // Map of tab SessionID to the tab's URL and title.
+  using DeselectedTabsMap = std::map<SessionID, std::pair<GURL, std::string>>;
+
   bool operator==(const TabContextState& other) const;
 
   // Tabs that have been selected in the tab picker, in the order they were
@@ -108,6 +111,11 @@ struct TabContextState {
   // tab is also re-attached in this session; frontend surfaces that render
   // both should deduplicate on URL.
   std::vector<TabInfo> restored;
+
+  // Tabs explicitly deselected by the user in this session, with their URL and
+  // title at the time of deselection, so deselection can be lazily cleared if
+  // the tab navigates elsewhere.
+  mutable DeselectedTabsMap deselected;
 };
 
 // RAII handle for managing the lifetime of a ComposeboxQueryController.
@@ -301,13 +309,13 @@ class ContextualSearchSessionHandle {
   // the token was found and removed.
   bool RemoveUploadedContextToken(const base::UnguessableToken& file_token);
 
-  using DeselectedTabsMap = std::map<SessionID, std::pair<GURL, std::string>>;
+  using DeselectedTabsMap = TabContextState::DeselectedTabsMap;
 
   const DeselectedTabsMap& deselected_tabs_urls() const {
-    return deselected_tabs_urls_;
+    return tab_context_.deselected;
   }
   void set_deselected_tabs_urls(DeselectedTabsMap deselected_tabs_urls) {
-    deselected_tabs_urls_ = std::move(deselected_tabs_urls);
+    tab_context_.deselected = std::move(deselected_tabs_urls);
   }
 
   // Returns the token for the tab session ID, searching both uploaded and
@@ -501,11 +509,8 @@ class ContextualSearchSessionHandle {
            std::pair<base::UnguessableToken, lens::LensOverlayRequestId>>
       persisted_tabs_;
 
-  // Tracks tabs explicitly deselected by the user. Map key is the SessionID,
-  // and value is the GURL of the tab at the time of deselection.
-  mutable DeselectedTabsMap deselected_tabs_urls_;
-
-  // Current snapshot of attached and restored tabs.
+  // Current snapshot of attached, restored, and deselected tabs. Mutable
+  // because `IsTabDeselected()` lazily clears stale deselections.
   TabContextState tab_context_;
 
   // Subscribers to changes in the tab context state.
