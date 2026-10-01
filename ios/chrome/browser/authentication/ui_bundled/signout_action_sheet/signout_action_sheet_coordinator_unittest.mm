@@ -196,12 +196,15 @@ TEST_F(SignoutActionSheetCoordinatorTest,
             std::move(callback).Run(
                 absl::flat_hash_map<syncer::DataType, size_t>());
           });
+  OCMExpect([snackbar_handler_ showSnackbarMessage:[OCMArg any]
+                                      bottomOffset:0]);
   EXPECT_CALL(completion_callback_, Run);
 
   base::HistogramTester histogram_tester;
 
   [signout_coordinator_ start];
 
+  EXPECT_OCMOCK_VERIFY((id)snackbar_handler_);
   histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout2", 0u);
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }

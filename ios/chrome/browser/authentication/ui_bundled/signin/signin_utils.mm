@@ -541,11 +541,12 @@ void MultiProfileSignOutForProfile(
         break;
       }
     }
-    base::OnceClosure authentication_signout_completion = base::BindOnce(
-        std::move(signout_completion_closure), trigger_scene_state);
-    authentication_service->SignOut(
-        signout_source,
-        base::CallbackToBlock(std::move(authentication_signout_completion)));
+    authentication_service->SignOut(signout_source);
+    if (signout_completion_closure) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(signout_completion_closure),
+                                    trigger_scene_state));
+    }
     return;
   }
 
