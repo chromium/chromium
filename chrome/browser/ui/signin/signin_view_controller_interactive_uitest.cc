@@ -117,8 +117,10 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
-  SigninViewController::From(browser())->ShowSignin(
-      signin_metrics::AccessPoint::kSettings);
+  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+      signin_metrics::AccessPoint::kSettings,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
 
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 // Press Ctrl/Cmd+T, which will open a new tab.

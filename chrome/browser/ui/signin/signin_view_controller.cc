@@ -242,16 +242,6 @@ int FindDiceSigninTab(TabStripModel* tab_strip, const GURL& signin_url) {
   return -1;
 }
 
-// Returns the promo action to be used when signing with a new account.
-signin_metrics::PromoAction GetPromoActionForNewAccount(
-    signin::IdentityManager* identity_manager) {
-  return !identity_manager->GetAccountsWithRefreshTokens().empty()
-             ? signin_metrics::PromoAction::
-                   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
-             : signin_metrics::PromoAction::
-                   PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
-}
-
 // Returns if account extensions should be shown in the signout confirmation
 // prompt. If true, this will force the prompt to show before signing out.
 bool ShowAccountExtensionsOnSignout(Profile* profile) {
@@ -420,16 +410,6 @@ bool SigninViewController::IsNTPTab(content::WebContents* contents) {
   const GURL& contents_url = contents->GetVisibleURL();
   return contents_url == chrome::ChromeUINewTabURLAsGURL() ||
          search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL;
-}
-
-void SigninViewController::ShowSignin(signin_metrics::AccessPoint access_point,
-                                      const GURL& redirect_url) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  signin_metrics::PromoAction promo_action =
-      GetPromoActionForNewAccount(identity_manager);
-  ShowDiceSigninTab(signin_metrics::Reason::kSigninPrimaryAccount, access_point,
-                    promo_action, /*email_hint=*/std::string(), redirect_url);
 }
 
 void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(

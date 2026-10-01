@@ -1441,8 +1441,10 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
       https_server_.GetURL(kEnableSyncURL));
 
   // Signin using the Chrome Sync endpoint.
-  SigninViewController::From(browser())->ShowSignin(
-      signin_metrics::AccessPoint::kSettings);
+  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+      signin_metrics::AccessPoint::kSettings,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
 
   // Receive ENABLE_SYNC.
   SendEnableSyncResponse();

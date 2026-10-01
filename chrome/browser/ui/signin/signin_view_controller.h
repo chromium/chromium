@@ -104,13 +104,6 @@ class SigninViewController {
   // Returns true if Chrome new tab page/blank is displayed in `contents`.
   static bool IsNTPTab(content::WebContents* contents);
 
-  // Shows the signin attached to |browser_|'s active web contents.
-  // |access_point| indicates the access point used to open the Gaia sign in
-  // page.
-  // DEPRECATED: Use ShowDiceEnableSyncTab instead.
-  void ShowSignin(signin_metrics::AccessPoint access_point,
-                  const GURL& redirect_url = chrome::ChromeUINewTabURLAsGURL());
-
   // Shows a Chrome Sync signin tab. |email_hint| may be empty.
   // Note: If the user has already set a primary account, then this is
   // considered a reauth of the primary account, and |email_hint| is ignored.
