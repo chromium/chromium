@@ -555,6 +555,11 @@ class TerminalSessionLinux : public TerminalSession {
 }  // namespace
 
 // static
+bool TerminalSession::IsSupported() {
+  return true;
+}
+
+// static
 std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,

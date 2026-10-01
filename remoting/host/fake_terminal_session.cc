@@ -80,6 +80,11 @@ std::vector<int32_t> FakeTerminalSession::GetPersistentIds() {
 }
 
 // static
+bool TerminalSession::IsSupported() {
+  return true;
+}
+
+// static
 std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
   return FakeTerminalSession::GetPersistentIds();
 }

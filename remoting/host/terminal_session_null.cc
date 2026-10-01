@@ -6,6 +6,12 @@
 
 namespace remoting {
 
+// static
+bool TerminalSession::IsSupported() {
+  return false;
+}
+
+// static
 std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,

@@ -67,6 +67,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
+#include "remoting/host/terminal_session.h"
 #include "remoting/host/terminal_session_manager.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
@@ -1136,7 +1137,8 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
     host_capabilities_.append(protocol::kSecurityKeyV2Capability);
   }
 
-  if (effective_policies_.allow_terminal_mode.value_or(true)) {
+  if (TerminalSession::IsSupported() &&
+      effective_policies_.allow_terminal_mode.value_or(true)) {
     host_capabilities_.append(" ");
     host_capabilities_.append(protocol::kTerminalModeCapability);
   }

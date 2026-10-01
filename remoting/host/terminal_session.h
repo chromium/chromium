@@ -17,6 +17,9 @@ class TerminalSession {
  public:
   virtual ~TerminalSession() = default;
 
+  // Returns true if terminal sessions are supported on the current platform.
+  static bool IsSupported();
+
   // Factory helper to construct an OS-specific TerminalSession.
   // Returns nullptr on unsupported platforms.
   static std::unique_ptr<TerminalSession> Create(
