@@ -1489,7 +1489,20 @@ TEST_F(CloudBinaryUploadServiceTest, CancelUploadFeatureDisabled) {
             enterprise_connectors::ScanRequestUploadResult::kUnknown);
 }
 
+// Tests the cancellation timing metric when upload cancellation is disabled,
+// i.e. when the upload keeps running until its response arrives. With
+// `kEnableCancelUploadOnContentAnalysis` enabled the upload is finished within
+// the `MaybeCancelRequests()` call itself, so the measured duration is 0ms and
+// `RecordDeepScanMetrics()` drops it by design. The enabled behavior is covered
+// by `CancelUploadFeatureEnabled`.
+//
+// TODO(crbug.com/567912137): the metric is therefore no longer needed, to be
+// removed alongside with the test.
 TEST_F(CloudBinaryUploadServiceTest, TrackUserCancellation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
   base::HistogramTester histogram_tester;
   enterprise_connectors::ScanRequestUploadResult scanning_result =
       enterprise_connectors::ScanRequestUploadResult::kUnknown;

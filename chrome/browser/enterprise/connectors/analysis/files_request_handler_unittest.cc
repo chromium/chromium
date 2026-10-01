@@ -305,6 +305,7 @@ class FilesRequestHandlerTest : public BaseTest {
       EXPECT_FALSE(token_and_action.first.empty());
     }
 
+    fake_files_request_handler_.reset();
     return future.Take();
   }
 
@@ -1070,6 +1071,7 @@ TEST_F(FilesRequestHandlerTest, StopFileWorkWithoutFileOpeningJob) {
   fake_files_request_handler_->StopFileWork();
 
   EXPECT_FALSE(future.IsReady());
+  fake_files_request_handler_.reset();
 }
 
 TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled_FileDeleted) {

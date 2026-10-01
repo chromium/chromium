@@ -13350,7 +13350,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cancel-upload-on-content-analysis",
      flag_descriptions::kEnableCancelUploadOnContentAnalysisName,
-     flag_descriptions::kEnableCancelUploadOnContentAnalysisDescription, kOsAll,
+     flag_descriptions::kEnableCancelUploadOnContentAnalysisDescription,
+     kOsDesktop,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)},
 

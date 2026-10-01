@@ -7343,26 +7343,6 @@
             ]
         }
     ],
-    "EnableCancelUploadOnContentAnalysis": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCancelUploadOnContentAnalysis"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [
