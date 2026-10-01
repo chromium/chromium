@@ -105,6 +105,10 @@ class LoginHandler : public content::LoginDelegate {
   // Notify observers that authentication is cancelled.
   virtual void NotifyAuthCancelled();
 
+  base::WeakPtr<LoginHandler> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, DialogStringsAndRealm);
   FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, MakeInputForPasswordManager);
