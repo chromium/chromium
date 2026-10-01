@@ -42,12 +42,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Notification click (within last 5 seconds)"/>
 </enum>
 
+<!-- LINT.IfChange(IncognitoForcedStart) -->
+
 <enum name="IncognitoForcedStart">
-  <int value="0" label="No Incognito switch and not forced"/>
-  <int value="1" label="Incognito switch but not forced"/>
-  <int value="2" label="No Incognito switch but forced"/>
-  <int value="3" label="Incognito switch and forced"/>
+  <int value="0" label="No Incognito switch and Incognito not launched"/>
+  <int value="1" label="Incognito switch but Incognito not launched"/>
+  <int value="2" label="No Incognito switch but Incognito launched"/>
+  <int value="3" label="Incognito switch and Incognito launched"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/startup_browser_creator.cc:IncognitoForcedStart) -->
 
 <enum name="IOSColdStartType">
   <int value="0" label="Cold start"/>

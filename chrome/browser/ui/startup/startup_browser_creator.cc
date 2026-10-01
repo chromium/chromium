@@ -437,29 +437,43 @@ bool MaybeLaunchExtensionApp(const base::CommandLine& command_line,
   return true;
 }
 
+// Records whether the --incognito switch was present at startup and whether
+// Incognito was launched. Incognito launches if the switch is present or the
+// IncognitoModeAvailability policy forces it, unless Incognito is disabled by
+// the policy or by platform parental controls.
+//
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Updates need to be reflected in
-// enum IncognitoForcedStart in tools/metrics/histograms/enums.xml.
+// numeric values should never be reused.
+// LINT.IfChange(IncognitoForcedStart)
 enum class IncognitoForcedStart {
-  kNoSwitchAndNotForced = 0,
-  kSwitchButNotForced = 1,
-  kNoSwitchButForced = 2,
-  kSwitchAndForced = 3,
-  kMaxValue = kSwitchAndForced,
+  // No --incognito switch and Incognito was not launched.
+  kNoSwitchAndNotLaunched = 0,
+  // The --incognito switch was present, but Incognito was not launched because
+  // it is disabled by the IncognitoModeAvailability policy or by platform
+  // parental controls, or because startup shows the profile picker.
+  kSwitchButNotLaunched = 1,
+  // No --incognito switch, but Incognito was launched because the
+  // IncognitoModeAvailability policy forces it.
+  kNoSwitchButLaunched = 2,
+  // The --incognito switch was present and Incognito was launched.
+  kSwitchAndLaunched = 3,
+  kMaxValue = kSwitchAndLaunched,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:IncognitoForcedStart)
 
 void RecordIncognitoForcedStart(bool should_launch_incognito,
                                 bool has_incognito_switch) {
   if (has_incognito_switch) {
     base::UmaHistogramEnumeration(
         "Startup.IncognitoForcedStart",
-        should_launch_incognito ? IncognitoForcedStart::kSwitchAndForced
-                                : IncognitoForcedStart::kSwitchButNotForced);
+        should_launch_incognito ? IncognitoForcedStart::kSwitchAndLaunched
+                                : IncognitoForcedStart::kSwitchButNotLaunched);
   } else {
     base::UmaHistogramEnumeration(
         "Startup.IncognitoForcedStart",
-        should_launch_incognito ? IncognitoForcedStart::kNoSwitchButForced
-                                : IncognitoForcedStart::kNoSwitchAndNotForced);
+        should_launch_incognito
+            ? IncognitoForcedStart::kNoSwitchButLaunched
+            : IncognitoForcedStart::kNoSwitchAndNotLaunched);
   }
 }
 
