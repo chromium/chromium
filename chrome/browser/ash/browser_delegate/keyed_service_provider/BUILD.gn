@@ -6,6 +6,7 @@ assert(is_chromeos)
 
 group("keyed_service_provider") {
   public_deps = [
+    ":bookmark_model_provider_impl",
     ":consent_auditor_provider_impl",
     ":desk_sync_service_provider_impl",
     ":favicon_service_provider_impl",
@@ -20,6 +21,24 @@ group("keyed_service_provider") {
     ":trusted_vault_service_provider_impl",
     ":wifi_configuration_sync_service_provider_impl",
   ]
+}
+
+source_set("bookmark_model_provider_impl") {
+  sources = [
+    "bookmark_model_provider_impl.cc",
+    "bookmark_model_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/bookmarks",
+    "//chromeos/ash/components/bookmarks:bookmark_model_provider",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
 }
 
 source_set("consent_auditor_provider_impl") {

@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login/session",
-  "+chrome/browser/bookmarks",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser_window",
@@ -38,11 +37,14 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 
-  # Unlike production code, tests construct the //chrome-side
-  # TemplateURLServiceProviderImpl themselves so it registers as the
-  # process-wide TemplateURLServiceProvider::Get() singleton.
+  # Unlike production code, tests construct the //chrome-side provider impls
+  # (e.g. TemplateURLServiceProviderImpl) themselves so they register as the
+  # process-wide Provider::Get() singletons, and still create the BookmarkModel
+  # through chrome/browser/bookmarks's Profile-keyed factory; production uses
+  # ash::BookmarkModelProvider.
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/ash/browser_delegate/keyed_service_provider",
+    "+chrome/browser/bookmarks",
   ],
 
   # Besides the provider above, this unittest also needs TemplateURLService

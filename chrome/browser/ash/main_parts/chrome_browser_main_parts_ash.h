@@ -76,6 +76,7 @@ class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class FwupdDownloadClientImpl;
 class GnubbyNotification;
+class BookmarkModelProvider;
 class ConsentAuditorProvider;
 class DeskSyncServiceProvider;
 class FaviconServiceProvider;
@@ -229,6 +230,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       doze_mode_power_status_scheduler_;
 
   std::unique_ptr<apps::AppServiceRegistry> app_service_registry_;
+  std::unique_ptr<BookmarkModelProvider> bookmark_model_provider_;
   std::unique_ptr<ConsentAuditorProvider> consent_auditor_provider_;
   std::unique_ptr<DeskSyncServiceProvider> desk_sync_service_provider_;
   std::unique_ptr<FaviconServiceProvider> favicon_service_provider_;

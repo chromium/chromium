@@ -64,6 +64,7 @@
 #include "chrome/browser/ash/bluetooth/bluetooth_log_controller.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/bookmark_model_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/consent_auditor_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/desk_sync_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/favicon_service_provider_impl.h"
@@ -968,6 +969,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   // List of instances providing KeyedService related services.
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
+  bookmark_model_provider_ = std::make_unique<BookmarkModelProviderImpl>();
   consent_auditor_provider_ = std::make_unique<ConsentAuditorProviderImpl>();
   desk_sync_service_provider_ = std::make_unique<DeskSyncServiceProviderImpl>();
   favicon_service_provider_ = std::make_unique<FaviconServiceProviderImpl>();
@@ -1901,6 +1903,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   favicon_service_provider_.reset();
   desk_sync_service_provider_.reset();
   consent_auditor_provider_.reset();
+  bookmark_model_provider_.reset();
   app_service_registry_.reset();
   services_customization_document_.reset();
   user_session_manager_.reset();

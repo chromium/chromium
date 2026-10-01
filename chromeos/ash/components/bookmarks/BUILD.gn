@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("bookmark_model_provider") {
+  public = [ "bookmark_model_provider.h" ]
+
+  sources = [ "bookmark_model_provider.cc" ]
+
+  defines = [ "IS_BOOKMARK_MODEL_PROVIDER_IMPL" ]
+
+  deps = [ "//base" ]
+}
