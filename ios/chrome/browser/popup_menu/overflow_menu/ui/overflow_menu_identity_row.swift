@@ -6,6 +6,37 @@ import SwiftUI
 import UIKit
 import ios_chrome_common_ui_colors_swift
 
+/// A SwiftUI wrapper around `AITierAvatarView`.
+private struct OverflowMenuIdentityAvatarView: UIViewRepresentable {
+  let image: UIImage
+  let diameter: CGFloat
+  let showsAITierRing: Bool
+
+  func makeUIView(context: Context) -> UIView {
+    let container = UIView()
+    container.isUserInteractionEnabled = false
+    return container
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {
+    uiView.subviews.forEach { $0.removeFromSuperview() }
+    guard
+      let avatarView = AITierAvatarView(
+        avatarImage: image,
+        avatarDiameter: diameter,
+        showsAITierRing: showsAITierRing
+      )
+    else {
+      return
+    }
+    uiView.addSubview(avatarView)
+    NSLayoutConstraint.activate([
+      avatarView.centerXAnchor.constraint(equalTo: uiView.centerXAnchor),
+      avatarView.centerYAnchor.constraint(equalTo: uiView.centerYAnchor),
+    ])
+  }
+}
+
 /// A view that displays the identity/signed-in state in the overflow menu.
 struct OverflowMenuIdentityRow: View {
   /// Spacing between the sign-in icon and the text vertical stack.
@@ -74,12 +105,13 @@ struct OverflowMenuIdentityRow: View {
   @ViewBuilder
   private var signinIcon: some View {
     if let avatarImage = action.image {
-      Image(uiImage: avatarImage)
-        .resizable()
-        .aspectRatio(contentMode: .fill)
-        .frame(width: Self.imageSize, height: Self.imageSize)
-        .clipShape(Circle())
-        .accessibilityHidden(true)
+      OverflowMenuIdentityAvatarView(
+        image: avatarImage,
+        diameter: Self.imageSize,
+        showsAITierRing: action.showsAITierRing
+      )
+      .frame(width: Self.imageSize, height: Self.imageSize)
+      .accessibilityHidden(true)
     } else if let symbolName = action.symbolName {
       let symbol = action.systemSymbol ? Image(systemName: symbolName) : Image(symbolName)
       symbol

@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -372,6 +373,8 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   mediator.identityAvatarProvider =
       GetApplicationContext()->GetIdentityAvatarProvider();
+  mediator.subscriptionEligibilityService =
+      SubscriptionEligibilityServiceFactory::GetForProfile(profile);
   mediator.tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(browser);
   mediator.hasSettingsBlueDot =

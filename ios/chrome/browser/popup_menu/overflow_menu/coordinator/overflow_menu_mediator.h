@@ -25,6 +25,9 @@ namespace signin {
 class AvatarProvider;
 class IdentityManager;
 }  // namespace signin
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
+}  // namespace subscription_eligibility
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -192,6 +195,11 @@ class WebStateList;
 
 // The AvatarProvider to get identity avatars.
 @property(nonatomic, assign) signin::AvatarProvider* identityAvatarProvider;
+
+// Service for checking AI subscription eligibility.
+@property(nonatomic, assign)
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscriptionEligibilityService;
 
 // Disconnect the mediator.
 - (void)disconnect;

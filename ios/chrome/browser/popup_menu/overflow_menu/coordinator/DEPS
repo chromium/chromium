@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/subscription_eligibility",
   "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
@@ -61,8 +62,10 @@ include_rules = [
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service_observer_bridge.h",
   "+ios/chrome/browser/signin/model/avatar/avatar_provider.h",
+  "+ios/chrome/browser/subscription_eligibility/model",
   "+ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h",
   "+ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h",
+  "+ios/chrome/browser/sync/model/sync_observer_bridge.h",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/features.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",

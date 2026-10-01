@@ -34,6 +34,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -128,6 +130,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
@@ -305,6 +308,8 @@ void GetPresetNTPBackgroundPreview(
                                     PrefObserverDelegate,
                                     ReadingListModelBridgeObserver,
                                     SearchEngineObserving,
+                                    SubscriptionEligibilityServiceObserving,
+                                    SyncObserverModelBridge,
                                     WebStateListObserving> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
@@ -339,6 +344,14 @@ void GetPresetNTPBackgroundPreview(
   // Bridge to register for IdentityManager changes.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
+
+  // Bridge to register for SubscriptionEligibilityService changes.
+  std::unique_ptr<
+      subscription_eligibility::SubscriptionEligibilityObserverBridge>
+      _subscriptionEligibilityObserverBridge;
+
+  // Bridge to register for SyncService changes.
+  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 
   // Whether an action (tap) was taken on the default browser promo shortcut.
   BOOL _defaultBrowserShortcutActionTaken;
@@ -512,6 +525,9 @@ void GetPresetNTPBackgroundPreview(
   _authServiceObserverBridge.reset();
   _identityManager = nullptr;
   _identityManagerObserverBridge.reset();
+  _subscriptionEligibilityService = nullptr;
+  _subscriptionEligibilityObserverBridge.reset();
+  _syncObserverBridge.reset();
 
   self.navigationAgent = nullptr;
   self.browserPolicyConnector = nullptr;
@@ -744,12 +760,15 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)setSyncService:(syncer::SyncService*)syncService {
+  _syncObserverBridge.reset();
   _syncService = syncService;
 
   if (!syncService) {
     return;
   }
 
+  _syncObserverBridge =
+      std::make_unique<SyncObserverBridge>(self, _syncService);
   [self updateModel];
 }
 
@@ -771,6 +790,19 @@ void GetPresetNTPBackgroundPreview(
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             _authenticationService, self);
+  }
+  [self updateModel];
+}
+
+- (void)setSubscriptionEligibilityService:
+    (subscription_eligibility::SubscriptionEligibilityService*)
+        subscriptionEligibilityService {
+  _subscriptionEligibilityObserverBridge.reset();
+  _subscriptionEligibilityService = subscriptionEligibilityService;
+  if (_subscriptionEligibilityService) {
+    _subscriptionEligibilityObserverBridge = std::make_unique<
+        subscription_eligibility::SubscriptionEligibilityObserverBridge>(
+        _subscriptionEligibilityService, self);
   }
   [self updateModel];
 }
@@ -2166,6 +2198,11 @@ void GetPresetNTPBackgroundPreview(
     self.identityAction.image = self.identityAvatarProvider->GetIdentityAvatar(
         primaryIdentity, IdentityAvatarSize::Regular);
   }
+  self.identityAction.showsAITierRing =
+      ![self shouldIndicateIdentityError] &&
+      self.subscriptionEligibilityService &&
+      self.subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
+      IsAiSubscriptionAvatarRingFollowupIOSEnabled();
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is
@@ -3336,6 +3373,18 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
+  [self updateModel];
+}
+
+#pragma mark - SubscriptionEligibilityServiceObserving
+
+- (void)aiSubscriptionTierDidUpdate:(int32_t)newSubscriptionTier {
+  [self updateModel];
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
   [self updateModel];
 }
 
