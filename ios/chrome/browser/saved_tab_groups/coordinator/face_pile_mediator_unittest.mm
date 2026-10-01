@@ -122,8 +122,7 @@ class FacePileMediatorTest : public PlatformTest {
   // Sign out.
   void SignOut() {
     AuthenticationServiceFactory::GetForProfile(profile_)->SignOut(
-        signin_metrics::ProfileSignout::kTest, ^(){
-        });
+        signin_metrics::ProfileSignout::kTest);
   }
 
   web::WebTaskEnvironment task_environment_;

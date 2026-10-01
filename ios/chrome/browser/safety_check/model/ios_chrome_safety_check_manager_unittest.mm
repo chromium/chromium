@@ -96,7 +96,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
 
   // Helper method to sign out.
   void SignOut() {
-    auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+    auth_service_->SignOut(signin_metrics::ProfileSignout::kTest);
   }
 
   web::WebTaskEnvironment task_environment_{

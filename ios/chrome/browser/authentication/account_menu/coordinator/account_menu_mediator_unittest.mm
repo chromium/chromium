@@ -175,16 +175,6 @@ class AccountMenuMediatorTest : public PlatformTest {
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
-  void SignOut() {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
-    authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
-                                     ^() {
-                                       closure.Run();
-                                     });
-    run_loop.Run();
-  }
-
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -290,8 +280,7 @@ TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
                   signedIdentity:nil
                  userTappedClose:NO]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
-  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest, ^(){
-                                   });
+  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
 }
 
 #pragma mark - AccountMenuDataSource

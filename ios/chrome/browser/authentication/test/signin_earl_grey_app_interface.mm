@@ -220,7 +220,7 @@
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+  authentication_service->SignOut(signin_metrics::ProfileSignout::kTest);
 }
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {

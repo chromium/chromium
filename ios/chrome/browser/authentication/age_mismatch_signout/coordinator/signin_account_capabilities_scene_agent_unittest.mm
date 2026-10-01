@@ -388,7 +388,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, StandardSignoutDoesNotSetPref) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings, nil);
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,

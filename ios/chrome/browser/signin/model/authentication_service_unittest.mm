@@ -475,7 +475,7 @@ TEST_F(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
+      signin_metrics::ProfileSignout::kAbortSignin);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
 }

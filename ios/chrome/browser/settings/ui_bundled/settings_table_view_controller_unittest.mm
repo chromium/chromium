@@ -453,7 +453,7 @@ TEST_F(SettingsTableViewControllerTest,
           feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
       .Times(testing::AnyNumber());
 
-  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest);
   ASSERT_FALSE(auth_service_->HasPrimaryIdentity());
 
   CreateController();

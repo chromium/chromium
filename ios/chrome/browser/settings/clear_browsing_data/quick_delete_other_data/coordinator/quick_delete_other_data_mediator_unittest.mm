@@ -471,7 +471,7 @@ TEST_F(QuickDeleteOtherDataMediatorTest,
   OCMExpect([consumer_ setShouldShowMyActivityCell:NO]);
   OCMExpect([consumer_ setShouldShowSearchHistoryCell:NO]);
 
-  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

@@ -1307,8 +1307,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return;
   }
   if (![self isSignedIn]) {
-    authenticationService->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
-                                   nil);
+    authenticationService->SignOut(
+        signin_metrics::ProfileSignout::kPrefChanged);
   }
 }
 
