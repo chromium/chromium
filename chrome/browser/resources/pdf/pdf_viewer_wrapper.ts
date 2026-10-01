@@ -74,12 +74,14 @@ export type {TextBoxInit} from './ink2_manager.js';
 export {UndoRedoStack} from './undo_redo_stack.js';
 export type {UndoRedoState, UndoRedoStateChangedDetail} from './undo_redo_stack.js';
 // </if>
+export {LocalStorageProxyImpl} from './local_storage_proxy.js';
+export type {LocalStorageProxy} from './local_storage_proxy.js';
 export type {PdfPluginElement} from './internal_plugin.js';
 export {PostMessageDataType, record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
 export {PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 export type {NavigatorDelegate, PdfNavigator} from './navigator.js';
 export {OpenPdfParamsParser, ViewMode} from './open_pdf_params_parser.js';
-export {getFilenameFromURL, PdfViewerElement} from './pdf_viewer.js';
+export {getFilenameFromURL, LOCAL_STORAGE_TWO_UP_VIEW_ENABLED_KEY, PdfViewerElement} from './pdf_viewer.js';
 export {PdfViewerBaseElement} from './pdf_viewer_base.js';
 // <if expr="enable_pdf_save_to_drive">
 export {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';

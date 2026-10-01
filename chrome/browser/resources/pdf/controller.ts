@@ -872,11 +872,9 @@ export class PluginController implements ContentController {
     resolver.resolve(messageData);
   }
 
-  // <if expr="enable_pdf_ink2">
   setPluginForTesting(plugin: HTMLEmbedElement) {
     this.setPlugin_(plugin);
   }
-  // </if>
 
   static getInstance(): PluginController {
     return instance || (instance = new PluginController());

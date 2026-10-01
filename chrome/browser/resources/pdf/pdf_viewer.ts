@@ -162,6 +162,8 @@ function hasCtrlModifierMaybeWithShift(e: KeyboardEvent): boolean {
 
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 
+export const LOCAL_STORAGE_TWO_UP_VIEW_ENABLED_KEY: string = 'twoUpViewEnabled';
+
 /**
  * The background color used for the regular viewer.
  */
@@ -850,6 +852,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   /**
+   * @return Whether two up view was enabled when the user last toggled it,
+   *     and should be restored for this document.
+   */
+  private shouldRestoreTwoUpView_(): boolean {
+    const value = LocalStorageProxyImpl.getInstance().getItem(
+        LOCAL_STORAGE_TWO_UP_VIEW_ENABLED_KEY);
+    return value !== null && Boolean(Number.parseInt(value, 10));
+  }
+
+  /**
    * Changes two up view mode for the controller. Controller will trigger
    * layout update later, which will update the viewport accordingly.
    */
@@ -857,6 +869,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     const twoUpViewEnabled = e.detail;
     assert(this.currentController);
     this.currentController.setTwoUpView(twoUpViewEnabled);
+    LocalStorageProxyImpl.getInstance().setItem(
+        LOCAL_STORAGE_TWO_UP_VIEW_ENABLED_KEY, twoUpViewEnabled ? '1' : '0');
     record(
         twoUpViewEnabled ? UserAction.TWO_UP_VIEW_ENABLE :
                            UserAction.TWO_UP_VIEW_DISABLE);
@@ -1229,6 +1243,17 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   override setDocumentDimensions(documentDimensions:
                                      DocumentDimensionsMessageData): void {
+    // Restore the two up view mode from the previous session before the
+    // initial layout is applied, so that the document is never laid out and
+    // painted in single page view first.
+    if (!this.documentDimensions &&
+        !documentDimensions.layoutOptions?.twoUpViewEnabled &&
+        this.shouldRestoreTwoUpView_()) {
+      assert(this.currentController);
+      this.currentController.setTwoUpView(true);
+      return;
+    }
+
     super.setDocumentDimensions(documentDimensions);
 
     // If the document dimensions are received, the password was correct and the

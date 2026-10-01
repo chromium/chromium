@@ -3309,6 +3309,33 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, AppendedChildElementsAreVisible) {
                   .ExtractBool());
 }
 
+// Test that two up view mode, once enabled by the user, is restored for the
+// next document.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TwoUpViewRestored) {
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  static constexpr char kTwoUpViewEnabledScript[] =
+      "viewer.viewport.twoUpViewEnabled();";
+
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(pdf_url);
+  ASSERT_TRUE(extension_host);
+  EXPECT_FALSE(content::EvalJs(extension_host, kTwoUpViewEnabledScript)
+                   .ExtractBool());
+
+  // Enable two up view from the toolbar menu.
+  ASSERT_TRUE(content::ExecJs(
+      extension_host,
+      "viewer.$.toolbar.shadowRoot.querySelector('#twoPageViewButton')"
+      ".click();"));
+
+  // Load the document again. The viewer only reports the load as complete
+  // once the initial layout has been applied, so the restored layout is
+  // already in effect.
+  extension_host = LoadPdfGetExtensionHost(pdf_url);
+  ASSERT_TRUE(extension_host);
+  EXPECT_TRUE(content::EvalJs(extension_host, kTwoUpViewEnabledScript)
+                  .ExtractBool());
+}
+
 class PDFExtensionPrerenderTest : public PDFExtensionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

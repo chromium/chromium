@@ -261,6 +261,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbar) {
   RunTestsInJsModule("viewer_toolbar_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, TwoUpViewPersistence) {
+  RunTestsInJsModule("two_up_view_persistence_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
