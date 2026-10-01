@@ -1202,7 +1202,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableAndroidEnterpriseScreenshotProtection =
             newCachedFlag(
                     ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sEnableAndroidSidePanel =
             newCachedFlag(
