@@ -1141,8 +1141,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   gfx::ColorSpace video_color_space = video_frame->ColorSpace();
   // There should be no usages of RGB matrix for color space here.
   CHECK(!video_color_space.IsValid() ||
-            (video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB),
-        base::NotFatalUntil::M139);
+        (video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB));
   if (video_color_space.IsValid()) {
     // The ColorSpace is converted to SkYUVColorSpace but not used by
     // WritePixelsYUV.

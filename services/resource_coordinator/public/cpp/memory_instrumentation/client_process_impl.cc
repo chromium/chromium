@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
@@ -104,8 +103,7 @@ void ClientProcessImpl::OnChromeMemoryDumpDone(
     uint64_t dump_guid,
     std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump) {
   CHECK(outcome == base::trace_event::ProcessMemoryDumpOutcome::kSuccess ||
-            !process_memory_dump,
-        base::NotFatalUntil::M148);
+        !process_memory_dump);
 
   auto callback_it = pending_chrome_callbacks_.find(dump_guid);
   CHECK(callback_it != pending_chrome_callbacks_.end());

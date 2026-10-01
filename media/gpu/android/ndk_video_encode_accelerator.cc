@@ -1648,10 +1648,8 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   if (!timestamp_info.has_value()) {
     MEDIA_LOG(ERROR, log_) << "Failed to find timestamp for encoded frame. ts:"
                            << mc_buffer_info.presentationTimeUs;
-    NOTREACHED(base::NotFatalUntil::M150)
-        << "Failed to find timestamp for encoded frame. ts:"
-        << mc_buffer_info.presentationTimeUs;
-    timestamp_info = FrameTimestampInfo();
+    NOTREACHED() << "Failed to find timestamp for encoded frame. ts:"
+                 << mc_buffer_info.presentationTimeUs;
   }
   auto metadata = BitstreamBufferMetadata(
       mc_buffer_size + config_size, key_frame, timestamp_info->real_timestamp);

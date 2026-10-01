@@ -359,7 +359,7 @@ std::optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
     buffer_info.modifier =
         buffer_info.gpu_memory_buffer_handle.native_pixmap_handle().modifier;
   } else {
-    CHECK_IS_TEST(base::NotFatalUntil::M139);
+    CHECK_IS_TEST();
   }
   return buffer_info;
 }
@@ -504,7 +504,7 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
         gmb_handle.type == gfx::NATIVE_PIXMAP) {
       native_pixmap_handle = std::move(gmb_handle).native_pixmap_handle();
     } else {
-      CHECK_IS_TEST(base::NotFatalUntil::M139);
+      CHECK_IS_TEST();
     }
     auto buffer_handle = cros::mojom::CameraBufferHandle::New();
     buffer_handle->buffer_id = GetBufferIpcId(stream_type, vcd_buffer.id);

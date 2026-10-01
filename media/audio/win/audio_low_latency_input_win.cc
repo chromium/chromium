@@ -767,12 +767,9 @@ bool WASAPIAudioInputStream::UpdateFormats() {
     base::UmaHistogramEnumeration("Media.Audio.Capture.Win.AudioEngineFormat",
                                   mix_sample_format);
     if (mix_sample_format != kUnknownSampleFormat) {
-      // We are not sure if the Windows Audio Engine will ever choose 24bit over
-      // 32bit. Check if this is the case, and if so we choose S32 instead.
-      CHECK_NE(mix_sample_format, kSampleFormatS24, base::NotFatalUntil::M148);
-      sample_format_ = (mix_sample_format == kSampleFormatS24)
-                           ? kSampleFormatS32
-                           : mix_sample_format;
+      // The Windows Audio Engine should not choose 24bit over 32bit.
+      CHECK_NE(mix_sample_format, kSampleFormatS24);
+      sample_format_ = mix_sample_format;
 
       input_format_.SubFormat = GetSubFormat(mix_format);
 
@@ -1938,7 +1935,7 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
       // Engine for its MixFormat. The MixFormat should in theory always be
       // supported and have the same bit depth, so we should not hit this
       // pathway.
-      CHECK(!use_device_sample_format_, base::NotFatalUntil::M148);
+      CHECK(!use_device_sample_format_);
       input_format->wBitsPerSample = closest_match->wBitsPerSample;
     }
 

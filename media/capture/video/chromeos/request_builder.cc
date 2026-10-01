@@ -90,7 +90,7 @@ cros::mojom::CameraBufferHandlePtr RequestBuilder::CreateCameraBufferHandle(
       buffer_handle->offsets.push_back(native_pixmap_handle.planes[i].offset);
     }
   } else {
-    CHECK_IS_TEST(base::NotFatalUntil::M139);
+    CHECK_IS_TEST();
   }
 
   return buffer_handle;
