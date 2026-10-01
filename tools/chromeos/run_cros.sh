@@ -63,7 +63,8 @@ GlicLiveModeOnlyGlow
 WEBIUM_FEATURES=Webium,AttachUnownedInnerWebContents,\
 ExtensionsMenuAccessControl
 
-ENABLE_FEATURES=VerticalTabs,FeatureManagementRoundedWindows,${GLIC_FEATURES}
+ENABLE_FEATURES=VerticalTabs,FeatureManagementRoundedWindows,${GLIC_FEATURES},\
+WindowPreviewOnShelf
 DISABLE_FEATURES=
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
