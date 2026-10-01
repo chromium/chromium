@@ -402,6 +402,13 @@ inline constexpr char kClientSideDetectionIosName[] =
 inline constexpr char kClientSideDetectionIosDescription[] =
     "Enables Client Side Detection (CSD) for phishing on iOS.";
 
+inline constexpr char kClientSideDetectionServerModelForScamDetectionIosName[] =
+    "Client Side Detection Server Model for Scam Detection on iOS";
+inline constexpr char
+    kClientSideDetectionServerModelForScamDetectionIosDescription[] =
+        "Enables server model for scam detection on iOS. Requires "
+        "#client-side-detection-ios to be enabled.";
+
 inline constexpr char kCollaborationMessagingName[] = "Collaboration Messaging";
 inline constexpr char kCollaborationMessagingDescription[] =
     "Enables the messaging framework within the collaboration feature, "
