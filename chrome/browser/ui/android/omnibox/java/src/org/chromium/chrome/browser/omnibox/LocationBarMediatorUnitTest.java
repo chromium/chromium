@@ -5616,22 +5616,26 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChip_configCleared_hidesChip() {
         beginPopoverSearchInputWithoutFusebox();
-        clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout, mActivationChip);
 
         mAiModeButtonUiConfigSupplier.set(null);
 
         verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mActivationChip).setContentDescription(null);
+        verify(mActivationChip).setTooltipText(null);
     }
 
     @Test
     public void testActivationChip_configArrives_showsChip() {
         mAiModeButtonUiConfigSupplier.set(null);
         beginPopoverSearchInputWithoutFusebox();
-        clearInvocations(mLocationBarLayout);
+        clearInvocations(mLocationBarLayout, mActivationChip);
 
         mAiModeButtonUiConfigSupplier.set(createTestAiModeButtonUiConfig());
 
         verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mActivationChip).setContentDescription("AI Mode button");
+        verify(mActivationChip).setTooltipText("Ask AI Mode");
     }
 
     @Test

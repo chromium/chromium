@@ -8684,7 +8684,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT" desc="The text for the compose entrypoint in the searchbox on the New Tab Page.">
         AI Mode
       </message>
-      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page." formatter_data="android_java">
+      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page.">
         Ask AI Mode in Google Search
       </message>
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT_SHORTENED_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to enter AI Mode search.">

@@ -27,10 +27,12 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/fusebox_plus_button"
-        android:foreground="@drawable/pill_button_focus_ring"
         android:layout_width="@dimen/fusebox_button_size"
         android:layout_height="@dimen/fusebox_button_size"
+        android:layout_marginStart="?attr/fuseboxPlusButtonStartMargin"
+        android:layout_marginBottom="?attr/fuseboxPlusButtonBottomMargin"
         android:visibility="gone"
+        android:foreground="@drawable/pill_button_focus_ring"
         android:padding="@dimen/fusebox_button_padding"
         android:contentDescription="@string/accessibility_omnibox_open_context_popup"
         android:tooltipText="@string/ntp_compose_add_context_title"
@@ -39,8 +41,6 @@ found in the LICENSE file.
         android:clickable="true"
         android:focusable="true"
         android:clipToOutline="true"
-        android:layout_marginStart="?attr/fuseboxPlusButtonStartMargin"
-        android:layout_marginBottom="?attr/fuseboxPlusButtonBottomMargin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/url_bar"
@@ -87,11 +87,10 @@ found in the LICENSE file.
         style="@style/AiModeChip"
         android:id="@+id/fusebox_activation_chip"
         android:visibility="gone"
-        android:tooltipText="@string/ntp_compose_entrypoint_a11y_label"
         android:foreground="@drawable/activation_chip_focus_ring"
-        app:verticalInset="8dp"
-        app:horizontalInset="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:verticalInset="8dp"
+        app:horizontalInset="5dp"/>
 
 </merge>

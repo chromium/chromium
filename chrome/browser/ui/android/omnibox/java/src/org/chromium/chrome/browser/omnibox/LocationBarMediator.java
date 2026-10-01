@@ -2047,16 +2047,9 @@ public class LocationBarMediator
         mPrefChangeRegistrar.addObserver(
                 Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, this::updateActivationChip);
         mIsFuseboxEligible = ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(profile);
-        // Registration returns the current value; the observer then keeps it current as the
-        // default search engine or the client's eligibility changes. Seeding it here rather than
-        // via a notify-on-add variant keeps the updates below to a single pass.
-        mAiModeButtonUiConfig =
-                mSearchEngineService
-                        .getAiModeButtonUiConfigSupplier()
-                        .addSyncObserver(mAiModeButtonUiConfigObserver);
-        updateActivationChip();
-
-        updateAlwaysShowAiModeCallback();
+        mSearchEngineService
+                .getAiModeButtonUiConfigSupplier()
+                .addSyncObserverAndCall(mAiModeButtonUiConfigObserver);
     }
 
     private void updateAlwaysShowAiModeCallback() {
@@ -3725,6 +3718,9 @@ public class LocationBarMediator
      */
     private void onAiModeButtonUiConfigChanged(@Nullable AiModeButtonUiConfig config) {
         mAiModeButtonUiConfig = config;
+        View activationChip = mLocationBarLayout.getActivationChip();
+        activationChip.setContentDescription(config != null ? config.a11yLabel : null);
+        activationChip.setTooltipText(config != null ? config.tooltip : null);
         updateActivationChip();
         updateAlwaysShowAiModeCallback();
     }
