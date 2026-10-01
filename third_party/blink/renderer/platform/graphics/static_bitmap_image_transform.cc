@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -264,25 +263,22 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   ComputeSubsetParameters(source, options, source_rect, source_rect_valid,
                           dest_size);
 
-  // If `source` is accelerated and there is a context provider, try to use an
-  // accelerated SharedImage provider.
+  // If `source` is accelerated and there is a context provider, try to create
+  // an accelerated snapshot.
   auto source_paint_image = source->PaintImageForCurrentFrame();
   const auto source_orientation = GetSourceOrientation(source, options);
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
-    auto resource_provider = CanvasNon2DResourceProvider::Create(
-        gfx::Size(dest_size.width(), dest_size.height()), dest_format,
-        dest_alpha_type, dest_color_space, dest_hdr_metadata,
-        source->ContextProviderWrapper(), source->GetSharedImage()->usage());
-
-    if (resource_provider) {
-      // Perform the blit and return the drawn resource.
-      return resource_provider->DoExternalOverdrawAndSnapshot(
-          [&](cc::PaintCanvas& canvas) {
-            BlitToCanvas(canvas, source_paint_image, source_orientation,
-                         SkRect::Make(source_rect), dest_size, options);
-          },
-          source_orientation);
+    if (auto image = AcceleratedStaticBitmapImage::CreateFromRaster(
+            gfx::Size(dest_size.width(), dest_size.height()), dest_format,
+            dest_alpha_type, dest_color_space, dest_hdr_metadata,
+            source->ContextProviderWrapper(), source->GetSharedImage()->usage(),
+            [&](cc::PaintCanvas& canvas) {
+              BlitToCanvas(canvas, source_paint_image, source_orientation,
+                           SkRect::Make(source_rect), dest_size, options);
+            },
+            source_orientation)) {
+      return image;
     }
   }
 
