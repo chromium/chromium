@@ -14,10 +14,12 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/enterprise/device_trust/core/common_types.h"
 #import "components/enterprise/device_trust/core/device_trust_connector_service.h"
+#import "components/enterprise/device_trust/core/metrics_utils.h"
 #import "components/enterprise/device_trust/core/mock_device_trust_service.h"
 #import "components/enterprise/device_trust/prefs.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -51,6 +53,15 @@ const char kWildcardPattern[] = "*";
 const char16_t kExpectedSetupScript[] =
     u"__gCrWeb.callFunctionInGcrWeb('deviceTrust', "
     u"'setupDeviceTrustAPI', []);";
+const char kFunnelHistogram[] = "Enterprise.DeviceTrust.Attestation.Funnel";
+const char kPolicyLevelHistogram[] =
+    "Enterprise.DeviceTrust.Attestation.PolicyLevel";
+const char kHandshakeResultHistogram[] =
+    "Enterprise.DeviceTrust.Handshake.Result";
+const char kSuccessLatencyHistogram[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Success";
+const char kFailureLatencyHistogram[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
 
 class DeviceTrustChallengeTabHelperTest : public PlatformTest {
  protected:
@@ -155,8 +166,42 @@ class DeviceTrustChallengeTabHelperTest : public PlatformTest {
         out_response, out_count, std::move(quit_closure));
   }
 
+  // Makes the service enabled and watching every URL at the user level.
+  void WatchAllUrls() {
+    ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+    ON_CALL(*mock_service(), Watches(testing::_))
+        .WillByDefault(
+            testing::Return(std::set<enterprise_connectors::DTCPolicyLevel>{
+                enterprise_connectors::DTCPolicyLevel::kUser}));
+  }
+
+  // Makes the service reply synchronously with `response`.
+  void ReplyWith(const enterprise_connectors::DeviceTrustResponse& response) {
+    ON_CALL(*mock_service(),
+            BuildChallengeResponse(testing::_, testing::_, testing::_))
+        .WillByDefault(
+            [response](
+                const std::string&,
+                const std::set<enterprise_connectors::DTCPolicyLevel>&,
+                enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                    callback) { std::move(callback).Run(response); });
+  }
+
+  // Sends a request from `origin` and waits for its reply.
+  AttestationResult SendRequest(const url::Origin& origin) {
+    base::RunLoop run_loop;
+    AttestationResult response;
+    helper()->BuildChallengeResponse(
+        origin, origin.GetURL(), "challenge",
+        CaptureResponseCallback(&response, /*out_count=*/nullptr,
+                                run_loop.QuitClosure()));
+    run_loop.Run();
+    return response;
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_ = nullptr;
@@ -855,6 +900,168 @@ TEST_F(DeviceTrustChallengeTabHelperTest,
     run_loop.Run();
   }
   EXPECT_EQ(count, 0);
+}
+
+// Verifies that setting up the API on an allowlisted main frame logs the
+// start of the attestation flow.
+TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPILogsAttestationFlowStarted) {
+  SetAllowlistPatterns({kExampleUrl});
+  SetupMainFrame(GURL(kExampleUrl));
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogram,
+      enterprise_connectors::DTAttestationFunnelStep::kAttestationFlowStarted,
+      1);
+}
+
+// Verifies that a main frame that does not get the API does not log the start
+// of the attestation flow.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       IgnoredMainFrameDoesNotLogAttestationFlowStarted) {
+  SetAllowlistPatterns({kExampleUrl});
+  SetupMainFrame(GURL(kAttackerUrl));
+  histogram_tester_.ExpectTotalCount(kFunnelHistogram, 0);
+}
+
+// Verifies the metrics logged for a successful attestation.
+TEST_F(DeviceTrustChallengeTabHelperTest, SuccessfulResponseLogsMetrics) {
+  WatchAllUrls();
+  enterprise_connectors::DeviceTrustResponse service_response;
+  service_response.challenge_response = "signed_payload_123";
+  ReplyWith(service_response);
+  AttestationResult response =
+      SendRequest(url::Origin::Create(GURL(kExampleUrl)));
+  EXPECT_FALSE(response.error.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFunnelHistogram,
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeReceived, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFunnelHistogram,
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      kPolicyLevelHistogram,
+      enterprise_connectors::DTAttestationPolicyLevel::kUser, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kHandshakeResultHistogram,
+      enterprise_connectors::DTHandshakeResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kSuccessLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 0);
+}
+
+// Verifies the metrics logged when the service fails to build a response.
+TEST_F(DeviceTrustChallengeTabHelperTest, ServiceErrorLogsHandshakeFailure) {
+  WatchAllUrls();
+  enterprise_connectors::DeviceTrustResponse service_response;
+  service_response.error =
+      enterprise_connectors::DeviceTrustError::kFailedToCreateResponse;
+  ReplyWith(service_response);
+  SendRequest(url::Origin::Create(GURL(kExampleUrl)));
+  histogram_tester_.ExpectUniqueSample(
+      kHandshakeResultHistogram,
+      enterprise_connectors::DTHandshakeResult::kFailedToCreateResponse, 1);
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kSuccessLatencyHistogram, 0);
+  histogram_tester_.ExpectBucketCount(
+      kFunnelHistogram,
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent,
+      0);
+}
+
+// Verifies that an empty service response without an error is logged as an
+// unknown handshake failure.
+TEST_F(DeviceTrustChallengeTabHelperTest, EmptyResponseLogsUnknownFailure) {
+  WatchAllUrls();
+  ReplyWith(enterprise_connectors::DeviceTrustResponse());
+  SendRequest(url::Origin::Create(GURL(kExampleUrl)));
+  histogram_tester_.ExpectUniqueSample(
+      kHandshakeResultHistogram,
+      enterprise_connectors::DTHandshakeResult::kUnknown, 1);
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 1);
+}
+
+// Verifies that a timeout is logged once with its latency, and that the late
+// service reply is not logged again.
+TEST_F(DeviceTrustChallengeTabHelperTest, TimeoutLogsHandshakeTimeout) {
+  WatchAllUrls();
+  enterprise_connectors::DeviceTrustService::DeviceTrustCallback saved_callback;
+  ON_CALL(*mock_service(),
+          BuildChallengeResponse(testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { saved_callback = std::move(callback); });
+  helper()->BuildChallengeResponse(url::Origin::Create(GURL(kExampleUrl)),
+                                   GURL(kExampleUrl), "challenge",
+                                   CaptureResponseCallback(nullptr));
+  task_environment_.FastForwardBy(base::Seconds(25));
+  histogram_tester_.ExpectUniqueSample(
+      kHandshakeResultHistogram,
+      enterprise_connectors::DTHandshakeResult::kTimeout, 1);
+  // The 25s timeout exceeds the 10s range of UmaHistogramTimes and lands in the
+  // overflow bucket, so only the count is meaningful.
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 1);
+  enterprise_connectors::DeviceTrustResponse late_response;
+  late_response.challenge_response = "late_payload";
+  std::move(saved_callback).Run(late_response);
+  histogram_tester_.ExpectTotalCount(kHandshakeResultHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kSuccessLatencyHistogram, 0);
+}
+
+// Verifies that requests rejected before reaching the service are neither
+// counted as received challenges nor logged as handshake outcomes.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       EarlyRejectionsDoNotLogHandshakeMetrics) {
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(false));
+  EXPECT_EQ(SendRequest(url::Origin::Create(GURL(kExampleUrl))).error,
+            enterprise_connectors::DeviceTrustError::kServiceUnavailable);
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  EXPECT_EQ(SendRequest(url::Origin()).error,
+            enterprise_connectors::DeviceTrustError::kInvalidOrigin);
+  ON_CALL(*mock_service(), Watches(testing::_))
+      .WillByDefault(
+          testing::Return(std::set<enterprise_connectors::DTCPolicyLevel>()));
+  EXPECT_EQ(SendRequest(url::Origin::Create(GURL(kExampleUrl))).error,
+            enterprise_connectors::DeviceTrustError::kUrlNotAllowed);
+  histogram_tester_.ExpectTotalCount(kFunnelHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kPolicyLevelHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kHandshakeResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kSuccessLatencyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 0);
+}
+
+// Verifies that a request rejected with TOO_MANY_REQUESTS is neither counted
+// as a received challenge nor logged as a handshake outcome.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       TooManyRequestsDoesNotLogHandshakeMetrics) {
+  WatchAllUrls();
+  std::vector<enterprise_connectors::DeviceTrustService::DeviceTrustCallback>
+      callbacks;
+  ON_CALL(*mock_service(),
+          BuildChallengeResponse(testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { callbacks.push_back(std::move(callback)); });
+  for (size_t i = 0; i < DeviceTrustChallengeTabHelper::kMaxPendingRequests;
+       ++i) {
+    helper()->BuildChallengeResponse(url::Origin::Create(GURL(kExampleUrl)),
+                                     GURL(kExampleUrl), "challenge",
+                                     CaptureResponseCallback(nullptr));
+  }
+  EXPECT_EQ(SendRequest(url::Origin::Create(GURL(kExampleUrl))).error,
+            enterprise_connectors::DeviceTrustError::kTooManyRequests);
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogram,
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeReceived,
+      DeviceTrustChallengeTabHelper::kMaxPendingRequests);
+  histogram_tester_.ExpectUniqueSample(
+      kPolicyLevelHistogram,
+      enterprise_connectors::DTAttestationPolicyLevel::kUser,
+      DeviceTrustChallengeTabHelper::kMaxPendingRequests);
+  histogram_tester_.ExpectTotalCount(kHandshakeResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 0);
 }
 
 }  // namespace

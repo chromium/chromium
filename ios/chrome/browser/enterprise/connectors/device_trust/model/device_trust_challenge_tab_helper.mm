@@ -10,6 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/enterprise/device_trust/core/common_types.h"
 #import "components/enterprise/device_trust/core/device_trust_service.h"
+#import "components/enterprise/device_trust/core/metrics_utils.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -107,6 +108,12 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
     return;
   }
 
+  // Like desktop, only count challenges that passed all local checks, so that
+  // kChallengeReceived and PolicyLevel match Handshake.Result.
+  enterprise_connectors::LogAttestationFunnelStep(
+      enterprise_connectors::DTAttestationFunnelStep::kChallengeReceived);
+  enterprise_connectors::LogAttestationPolicyLevel(levels);
+
   const RequestId request_id{next_request_id_++};
   auto request = std::make_unique<PendingRequest>(std::move(callback));
   request->timer.Start(
@@ -135,6 +142,8 @@ void DeviceTrustChallengeTabHelper::RunPostedError(
     AttestationCallback callback,
     enterprise_connectors::DeviceTrustError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Early rejections happen before the handshake starts, so they are not
+  // handshake outcomes: LogDeviceTrustResponse() must not be called for them.
   enterprise_connectors::DeviceTrustResponse response;
   response.error = error;
   std::move(callback).Run(response);
@@ -161,21 +170,22 @@ void DeviceTrustChallengeTabHelper::OnChallengeResponseReady(
     return;
   }
 
-  if (response.error.has_value()) {
-    std::move(pending_request->callback).Run(response);
-    return;
-  }
-
-  if (response.challenge_response.empty()) {
+  enterprise_connectors::DeviceTrustResponse final_response = response;
+  if (!final_response.error.has_value() &&
+      final_response.challenge_response.empty()) {
     // An empty response with no error indicates an unexpected internal
     // failure, appropriately represented by kUnknown.
-    enterprise_connectors::DeviceTrustResponse failed_response = response;
-    failed_response.error = enterprise_connectors::DeviceTrustError::kUnknown;
-    std::move(pending_request->callback).Run(failed_response);
-    return;
+    final_response.error = enterprise_connectors::DeviceTrustError::kUnknown;
   }
 
-  std::move(pending_request->callback).Run(response);
+  enterprise_connectors::LogDeviceTrustResponse(final_response,
+                                                pending_request->start_time);
+  if (!final_response.error.has_value()) {
+    enterprise_connectors::LogAttestationFunnelStep(
+        enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent);
+  }
+
+  std::move(pending_request->callback).Run(final_response);
 }
 
 void DeviceTrustChallengeTabHelper::OnAttestationTimeout(RequestId request_id) {
@@ -188,6 +198,8 @@ void DeviceTrustChallengeTabHelper::OnAttestationTimeout(RequestId request_id) {
 
   enterprise_connectors::DeviceTrustResponse response;
   response.error = enterprise_connectors::DeviceTrustError::kTimeout;
+  enterprise_connectors::LogDeviceTrustResponse(response,
+                                                pending_request->start_time);
   std::move(pending_request->callback).Run(response);
 
   // TODO(crbug.com/517885334): Track or cancel the underlying attestation
@@ -221,6 +233,8 @@ void DeviceTrustChallengeTabHelper::MaybeSetupDeviceTrustAPI(
     return;
   }
 
+  enterprise_connectors::LogAttestationFunnelStep(
+      enterprise_connectors::DTAttestationFunnelStep::kAttestationFlowStarted);
   DeviceTrustJavaScriptFeature::GetInstance()->SetupDeviceTrustAPI(web_frame);
 }
 

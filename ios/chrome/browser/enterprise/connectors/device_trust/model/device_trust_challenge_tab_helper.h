@@ -17,6 +17,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
+#import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/types/strong_alias.h"
 #import "components/enterprise/device_trust/core/common_types.h"
@@ -103,6 +104,8 @@ class DeviceTrustChallengeTabHelper
 
     AttestationCallback callback;
     base::OneShotTimer timer;
+    // When the request was handed to the service; used for latency metrics.
+    const base::TimeTicks start_time = base::TimeTicks::Now();
   };
 
   using RequestId = base::StrongAlias<class RequestTag, uint64_t>;
