@@ -402,6 +402,7 @@ if (!is_chromeos) {
   }
 
   source_set("profile_impl") {
+    public = []
     sources = [
       "managed_user_profile_notice_handler.cc",
       "managed_user_profile_notice_ui.cc",

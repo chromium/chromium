@@ -69,6 +69,7 @@ source_set("new_tab_page") {
 
 # The implementation target.
 source_set("impl") {
+  public = []
   sources = [
     "feature_promo_helper/new_tab_page_feature_promo_helper.cc",
     "microsoft_auth/microsoft_auth_service.cc",

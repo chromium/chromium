@@ -183,6 +183,7 @@ source_set("signin") {
 }
 
 source_set("impl") {
+  public = []
   sources = [
     "about_signin_internals_factory.cc",
     "account_consistency_mode_manager.cc",

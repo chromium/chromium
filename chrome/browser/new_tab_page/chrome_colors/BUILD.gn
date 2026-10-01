@@ -14,17 +14,28 @@ source_set("selected_colors_info") {
 }
 
 source_set("chrome_colors") {
-  sources = [
-    "chrome_colors_util.cc",
-    "chrome_colors_util.h",
-  ]
+  public = [ "chrome_colors_util.h" ]
   public_deps = [
     "//skia",
     "//ui/base/mojom",
   ]
+  deps = [ ":chrome_colors_impl" ]
+}
+
+source_set("chrome_colors_impl") {
+  visibility = [ ":*" ]
+  public = []
+  sources = [
+    "chrome_colors_util.cc",
+    "chrome_colors_util.h",
+  ]
   deps = [
     ":generate_chrome_colors_info",
+    ":selected_colors_info",
+    "//base",
     "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//skia",
+    "//ui/base/mojom",
   ]
 }
 
@@ -50,15 +61,13 @@ compiled_action("generate_chrome_colors_info") {
   # Restrict visibility to prevent accidental build dependency serialization.
   # See http://crbug.com/477780634.
   visibility = [
-    ":chrome_colors",
-    "//chrome/browser",
+    ":chrome_colors_impl",
     "//chrome/browser/new_tab_page:browser_tests",
     "//chrome/browser/new_tab_page:impl",
     "//chrome/browser/signin:impl",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/profiles:impl",
+    "//chrome/browser/ui/profiles:profile_colors_util_impl",
     "//chrome/browser/ui/profiles:unit_tests",
-    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker:*",
     "//chrome/browser/ui/webui/signin:profile_impl",
     "//chrome/test:*",
   ]
