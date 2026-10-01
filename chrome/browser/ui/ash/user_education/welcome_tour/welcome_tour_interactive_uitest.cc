@@ -171,14 +171,15 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks the visibility of
   // app list bubble.
-  [[nodiscard]] auto CheckAppListBubbleVisibility(bool visible) {
+  [[nodiscard]] static auto CheckAppListBubbleVisibility(bool visible) {
     return CheckViewProperty(ash::kAppListBubbleViewElementId,
                              &views::View::GetVisible, visible);
   }
 
   // Returns a builder for an interaction step that checks the browser is
   // for a web app associated with the specified `app_id`.
-  [[nodiscard]] auto CheckBrowserIsForWebApp(const webapps::AppId& app_id) {
+  [[nodiscard]] static auto CheckBrowserIsForWebApp(
+      const webapps::AppId& app_id) {
     return CheckView(kBrowserViewElementId,
                      [app_id](BrowserView* browser_view) {
                        return web_app::AppBrowserController::IsForWebApp(
@@ -188,7 +189,7 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks whether the dialog
   // accept button is focused.
-  [[nodiscard]] auto CheckDialogAcceptButtonFocus(bool focused) {
+  [[nodiscard]] static auto CheckDialogAcceptButtonFocus(bool focused) {
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kAcceptButtonIdForTesting,
         &views::MdTextButton::HasFocus, focused);
@@ -196,7 +197,7 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks the dialog accept
   // button text.
-  [[nodiscard]] auto CheckDialogAcceptButtonText() {
+  [[nodiscard]] static auto CheckDialogAcceptButtonText() {
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kAcceptButtonIdForTesting,
         &ash::PillButton::GetText,
@@ -206,7 +207,7 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks the dialog cancel
   // button text.
-  [[nodiscard]] auto CheckDialogCancelButtonText() {
+  [[nodiscard]] static auto CheckDialogCancelButtonText() {
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kCancelButtonIdForTesting,
         &ash::PillButton::GetText,
@@ -216,7 +217,7 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks the dialog
   // description.
-  [[nodiscard]] auto CheckDialogDescription(int message_id) {
+  [[nodiscard]] static auto CheckDialogDescription(int message_id) {
     const std::u16string product_name = ui::GetChromeOSDeviceName();
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kDescriptionTextIdForTesting,
@@ -225,7 +226,7 @@ class WelcomeTourInteractiveUiTest
   }
 
   // Returns a builder for an interaction step that checks the dialog title.
-  [[nodiscard]] auto CheckDialogTitle(int message_id) {
+  [[nodiscard]] static auto CheckDialogTitle(int message_id) {
     const std::u16string product_name = ui::GetChromeOSDeviceName();
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kTitleTextIdForTesting,
@@ -236,7 +237,8 @@ class WelcomeTourInteractiveUiTest
   // Returns a builder for an interaction step that checks that the anchor of a
   // help bubble (a) matches the specified `element_id`, and (b) is contained
   // within the primary root window.
-  [[nodiscard]] auto CheckHelpBubbleAnchor(ui::ElementIdentifier element_id) {
+  [[nodiscard]] static auto CheckHelpBubbleAnchor(
+      ui::ElementIdentifier element_id) {
     return CheckViewProperty<ash::HelpBubbleViewAsh, views::View*>(
         ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting,
         &ash::HelpBubbleViewAsh::GetAnchorView,
@@ -246,21 +248,22 @@ class WelcomeTourInteractiveUiTest
 
   // Returns a builder for an interaction step that checks that the body text of
   // a help bubble matches the specified `body_text`.
-  [[nodiscard]] auto CheckHelpBubbleBodyText(const std::u16string& body_text) {
+  [[nodiscard]] static auto CheckHelpBubbleBodyText(
+      const std::u16string& body_text) {
     return CheckViewProperty(ash::HelpBubbleViewAsh::kBodyTextIdForTesting,
                              &views::Label::GetText, body_text);
   }
 
   // Returns a builder for an interaction step that checks whether the help
   // bubble default button is focused.
-  [[nodiscard]] auto CheckHelpBubbleDefaultButtonFocus(bool focused) {
+  [[nodiscard]] static auto CheckHelpBubbleDefaultButtonFocus(bool focused) {
     return CheckViewProperty(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting,
                              &views::MdTextButton::HasFocus, focused);
   }
 
   // Returns a builder for an interaction step that checks that the default
   // button text of a help bubble matches the specified `message_id`.
-  [[nodiscard]] auto CheckHelpBubbleDefaultButtonText(int message_id) {
+  [[nodiscard]] static auto CheckHelpBubbleDefaultButtonText(int message_id) {
     return CheckViewProperty(ash::HelpBubbleViewAsh::kDefaultButtonIdForTesting,
                              &views::LabelButton::GetText,
                              l10n_util::GetStringUTF16(message_id));

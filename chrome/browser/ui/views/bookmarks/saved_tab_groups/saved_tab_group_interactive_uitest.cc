@@ -410,7 +410,7 @@ class SavedTabGroupInteractiveTest
   // Presses the enter/return key on the button to open the context menu.
   auto OpenTabGroupContextMenu() {
     return WithElement(kSavedTabGroupButtonElementId,
-                       [this](ui::TrackedElement* el) {
+                       [](ui::TrackedElement* el) {
                          const ui::KeyEvent event(
                              ui::EventType::kKeyPressed,
                              ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
@@ -426,8 +426,7 @@ class SavedTabGroupInteractiveTest
   // submenu.
   auto CheckTabGroupSubmenuTabCount(ElementSpecifier menu_item,
                                     int expected_count) {
-    return WithElement(menu_item, [this,
-                                   expected_count](ui::TrackedElement* el) {
+    return WithElement(menu_item, [expected_count](ui::TrackedElement* el) {
       views::MenuItemView* menu_item_view = AsView<views::MenuItemView>(el);
       views::SubmenuView* submenu = menu_item_view->GetSubmenu();
       CHECK(submenu);
@@ -583,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(STGEverythingMenu::kTabGroup),
       WithElement(
           STGEverythingMenu::kTabGroup,
-          [this](ui::TrackedElement* el) {
+          [](ui::TrackedElement* el) {
             ui::test::EventGenerator event_generator(
                 views::GetRootWindow(AsView<views::View>(el)->GetWidget()));
             event_generator.MoveMouseTo(

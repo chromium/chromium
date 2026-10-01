@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 
       // Trigger the tab group editor.
       AfterShow(kTabGroupHeaderElementId,
-                [this](ui::TrackedElement* element) {
+                [](ui::TrackedElement* element) {
                   // Show the tab group editor bubble.
                   auto* const view = AsView(element);
                   view->ShowContextMenu(view->GetLocalBounds().CenterPoint(),

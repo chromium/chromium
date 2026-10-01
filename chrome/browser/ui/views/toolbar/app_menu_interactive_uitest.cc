@@ -57,7 +57,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto TopCenter() {
-    return base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+    return base::BindOnce([](ui::TrackedElement* el) {
       auto* const view =
           views::test::InteractiveViewsTestApi::AsView<views::View>(el);
       return view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 5);
