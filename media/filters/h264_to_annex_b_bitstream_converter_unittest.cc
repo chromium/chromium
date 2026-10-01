@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/containers/heap_array.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -378,6 +380,54 @@ TEST_F(H264ToAnnexBBitstreamConverterTest, SkipDummyNalu) {
   ASSERT_EQ(out_size, needed);
   ASSERT_EQ(needed, converter.GetConfigSize(avc_config_) + 9u);
   EXPECT_EQ(output[out_size - 1], 0x05);
+}
+
+// A 6-byte NALU of type 31 followed by a 5-byte NALU of type 1.
+static const auto kPacketWithNaluType31 = std::to_array<uint8_t>(
+    {0x00, 0x00, 0x00, 0x06, 0x1F, 0x01, 0xC6, 0x82, 0x89, 0xFA, 0x00, 0x00,
+     0x00, 0x05, 0x01, 0x02, 0x03, 0x04, 0x05});
+
+TEST_F(H264ToAnnexBBitstreamConverterTest, SkipUnspecifiedNaluType31) {
+  base::test::ScopedFeatureList feature_list(kH264SkipUnspecifiedNalus);
+  H264ToAnnexBBitstreamConverter converter;
+
+  EXPECT_TRUE(
+      converter.ParseConfiguration(kHeaderDataOkWithFieldLen4, &avc_config_));
+
+  uint32_t needed = converter.CalculateNeededOutputBufferSize(
+      kPacketWithNaluType31, &avc_config_);
+  std::vector<uint8_t> output(needed);
+
+  uint32_t out_size = needed;
+  EXPECT_TRUE(converter.ConvertNalUnitStreamToByteStream(
+      kPacketWithNaluType31, &avc_config_, output, &out_size));
+  ASSERT_EQ(out_size, needed);
+  // Parameter sets, then a zero byte, a 3-byte start code and the type-1 NALU.
+  ASSERT_EQ(needed, converter.GetConfigSize(avc_config_) + 9u);
+  EXPECT_EQ(output[out_size - 1], 0x05);
+}
+
+TEST_F(H264ToAnnexBBitstreamConverterTest, KeepNaluType31IfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kH264SkipUnspecifiedNalus);
+  H264ToAnnexBBitstreamConverter converter;
+
+  EXPECT_TRUE(
+      converter.ParseConfiguration(kHeaderDataOkWithFieldLen4, &avc_config_));
+
+  uint32_t needed = converter.CalculateNeededOutputBufferSize(
+      kPacketWithNaluType31, &avc_config_);
+  std::vector<uint8_t> output(needed);
+
+  uint32_t out_size = needed;
+  EXPECT_TRUE(converter.ConvertNalUnitStreamToByteStream(
+      kPacketWithNaluType31, &avc_config_, output, &out_size));
+  ASSERT_EQ(out_size, needed);
+  // Parameter sets, then 1 + 3 + 6 bytes for the type-31 NALU and 3 + 5 bytes
+  // for the type-1 NALU.
+  const uint32_t config_size = converter.GetConfigSize(avc_config_);
+  ASSERT_EQ(needed, config_size + 18u);
+  EXPECT_EQ(output[config_size + 4], 0x1F);
 }
 
 TEST_F(H264ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {

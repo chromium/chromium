@@ -39,6 +39,10 @@ static constexpr auto kExpected =
     std::to_array<uint8_t>({0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x03, 0x00,
                             0x00, 0x00, 0x01, 0x04, 0x05, 0x06, 0x07});
 
+// A 6-byte NALU with the unspecified nal_unit_type 31 (0x1F).
+static constexpr auto kNaluType31 =
+    std::to_array<uint8_t>({0x1F, 0x01, 0xC6, 0x82, 0x89, 0xFA});
+
 static constexpr auto kExpectedParamSets = std::to_array<uint8_t>(
     {0x00, 0x00, 0x00, 0x01, 0x67, 0x12, 0x00, 0x00, 0x00, 0x01, 0x67, 0x34,
      0x00, 0x00, 0x00, 0x01, 0x68, 0x56, 0x78});
@@ -151,6 +155,16 @@ class AVCConversionTest : public testing::TestWithParam<int> {
     buf->insert(buf->end(), kNALU2.begin(), kNALU2.end());
   }
 
+  // Same as MakeInputForLength(), but with a type-31 NALU in front.
+  void MakeInputWithNaluType31(int length_size, std::vector<uint8_t>* buf) {
+    std::vector<uint8_t> rest;
+    MakeInputForLength(length_size, &rest);
+
+    buf->clear();
+    WriteLength(length_size, sizeof(kNaluType31), buf);
+    buf->insert(buf->end(), kNaluType31.begin(), kNaluType31.end());
+    buf->insert(buf->end(), rest.begin(), rest.end());
+  }
 };
 
 TEST_P(AVCConversionTest, ParseCorrectly) {
@@ -310,6 +324,102 @@ TEST_P(AVCConversionTest, AllDummyNalusRejected) {
   std::vector<uint8_t> buf;
   WriteLength(GetParam(), 1, &buf);
   buf.push_back(0x00);
+  EXPECT_FALSE(
+      AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf, nullptr));
+}
+
+TEST_P(AVCConversionTest, ConvertFrameToAnnexBSkipsUnspecifiedNaluType31) {
+  base::test::ScopedFeatureList feature_list(kH264SkipUnspecifiedNalus);
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+  MakeInputWithNaluType31(GetParam(), &buf);
+
+  EXPECT_TRUE(AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf,
+                                        &subsamples));
+  EXPECT_EQ(base::span(buf), base::span(kExpected));
+}
+
+TEST_P(AVCConversionTest, ConvertFrameToAnnexBKeepsNaluType31IfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kH264SkipUnspecifiedNalus);
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+  MakeInputWithNaluType31(GetParam(), &buf);
+
+  EXPECT_TRUE(AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf,
+                                        &subsamples));
+  std::vector<uint8_t> expected = {0x00, 0x00, 0x00, 0x01};
+  expected.insert(expected.end(), kNaluType31.begin(), kNaluType31.end());
+  expected.insert(expected.end(), kExpected.begin(), kExpected.end());
+  EXPECT_EQ(buf, expected);
+}
+
+TEST_P(AVCConversionTest, ConvertFrameToAnnexBClearNaluType31WithSubsamples) {
+  base::test::ScopedFeatureList feature_list(kH264SkipUnspecifiedNalus);
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+
+  // Subsample 0: a type-31 NALU followed by kNALU1, all clear.
+  WriteLength(GetParam(), sizeof(kNaluType31), &buf);
+  buf.insert(buf.end(), kNaluType31.begin(), kNaluType31.end());
+  WriteLength(GetParam(), sizeof(kNALU1), &buf);
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
+  subsamples.emplace_back(2 * GetParam() + sizeof(kNaluType31) + sizeof(kNALU1),
+                          0);
+
+  // Subsample 1: kNALU2 with a clear length prefix and an encrypted payload.
+  WriteLength(GetParam(), sizeof(kNALU2), &buf);
+  buf.insert(buf.end(), kNALU2.begin(), kNALU2.end());
+  subsamples.emplace_back(GetParam(), sizeof(kNALU2));
+
+  EXPECT_TRUE(AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf,
+                                        &subsamples));
+
+  // The type-31 NALU is removed from subsample 0, and the encrypted payload in
+  // subsample 1 is untouched.
+  EXPECT_EQ(base::span(buf), base::span(kExpected));
+  ASSERT_EQ(subsamples.size(), 2u);
+  EXPECT_EQ(subsamples[0].clear_bytes, 4 + sizeof(kNALU1));
+  EXPECT_EQ(subsamples[0].cypher_bytes, 0u);
+  EXPECT_EQ(subsamples[1].clear_bytes, 4u);
+  EXPECT_EQ(subsamples[1].cypher_bytes, sizeof(kNALU2));
+  EXPECT_TRUE(VerifySubsamplesMatchSize(subsamples, buf.size()));
+}
+
+TEST_P(AVCConversionTest,
+       ConvertFrameToAnnexBCypherOverlappingNaluType31Preserved) {
+  base::test::ScopedFeatureList feature_list(kH264SkipUnspecifiedNalus);
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+
+  // Subsample 0: kNALU1 (clear).
+  WriteLength(GetParam(), sizeof(kNALU1), &buf);
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
+  subsamples.emplace_back(GetParam() + sizeof(kNALU1), 0);
+
+  // Subsample 1: type-31 NALU where the length prefix and header byte are
+  // clear and the remaining payload bytes overlap cypher_bytes.
+  WriteLength(GetParam(), sizeof(kNaluType31), &buf);
+  buf.insert(buf.end(), kNaluType31.begin(), kNaluType31.end());
+  subsamples.emplace_back(GetParam() + 1, sizeof(kNaluType31) - 1);
+
+  EXPECT_TRUE(AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf,
+                                        &subsamples));
+
+  EXPECT_EQ(buf.size(), (4 + sizeof(kNALU1)) + (4 + sizeof(kNaluType31)));
+  ASSERT_EQ(subsamples.size(), 2u);
+  EXPECT_EQ(subsamples[0].clear_bytes, 4 + sizeof(kNALU1));
+  EXPECT_EQ(subsamples[0].cypher_bytes, 0u);
+  EXPECT_EQ(subsamples[1].clear_bytes, 4u + 1u);
+  EXPECT_EQ(subsamples[1].cypher_bytes, sizeof(kNaluType31) - 1);
+  EXPECT_TRUE(VerifySubsamplesMatchSize(subsamples, buf.size()));
+}
+
+TEST_P(AVCConversionTest, AllNaluType31Rejected) {
+  base::test::ScopedFeatureList feature_list(kH264SkipUnspecifiedNalus);
+  std::vector<uint8_t> buf;
+  WriteLength(GetParam(), sizeof(kNaluType31), &buf);
+  buf.insert(buf.end(), kNaluType31.begin(), kNaluType31.end());
   EXPECT_FALSE(
       AVC::ConvertFrameToAnnexB(GetParam(), VideoCodec::kH264, &buf, nullptr));
 }
