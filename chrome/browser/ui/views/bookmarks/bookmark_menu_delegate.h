@@ -5,24 +5,30 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_DELEGATE_H_
 
+#include <cstddef>
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <variant>
+#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/view.h"
@@ -30,7 +36,6 @@
 class BookmarkMergedSurfaceService;
 class BrowserWindowInterface;
 class Profile;
-
 
 namespace ui {
 class OSExchangeData;

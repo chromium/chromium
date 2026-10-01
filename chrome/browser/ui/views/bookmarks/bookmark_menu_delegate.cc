@@ -44,7 +44,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/url_formatter/url_formatter.h"
-#include "content/public/browser/page_navigator.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -54,7 +53,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -65,7 +63,6 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -73,7 +70,6 @@ using base::UserMetricsAction;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::BookmarkNodeData;
-using content::PageNavigator;
 using views::MenuItemView;
 using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
