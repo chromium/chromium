@@ -5,9 +5,9 @@
 #include "components/origin_gating/core/origin_gating_configuration.h"
 
 #include <algorithm>
-#include <initializer_list>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "components/origin_gating/core/types.h"
@@ -87,7 +87,7 @@ PredicateConfiguration& PredicateConfiguration::operator=(
     const PredicateConfiguration&) = default;
 
 OriginGatingConfiguration::OriginGatingConfiguration(
-    std::initializer_list<PredicateConfiguration> predicates,
+    std::vector<PredicateConfiguration> predicates,
     bool use_site_keyed_cache)
     : predicates_(predicates),
       use_site_keyed_cache_(use_site_keyed_cache),

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ORIGIN_GATING_CORE_ORIGIN_GATING_CONFIGURATION_H_
 #define COMPONENTS_ORIGIN_GATING_CORE_ORIGIN_GATING_CONFIGURATION_H_
 
-#include <initializer_list>
 #include <variant>
 #include <vector>
 
@@ -108,9 +107,8 @@ class OriginGatingConfiguration {
   // Note: `use_site_keyed_cache` is essentially useless if `predicates` does
   // not include a cache predicate (`kCacheWithUserConfirmation` or
   // `kCacheWithoutUserConfirmation`), since the cache will not be used at all.
-  OriginGatingConfiguration(
-      std::initializer_list<PredicateConfiguration> predicates,
-      bool use_site_keyed_cache);
+  OriginGatingConfiguration(std::vector<PredicateConfiguration> predicates,
+                            bool use_site_keyed_cache);
   ~OriginGatingConfiguration();
 
   OriginGatingConfiguration(const OriginGatingConfiguration&);
