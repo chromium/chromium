@@ -18,7 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/common/extensions/api/certificate_provider.h"
+#include "chromeos/ash/experiences/extensions/common/api/certificate_provider.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"

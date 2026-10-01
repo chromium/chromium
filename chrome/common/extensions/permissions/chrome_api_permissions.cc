@@ -67,8 +67,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kBrowsingData, "browsingData",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kCertificateProvider, "certificateProvider",
-     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kContentSettings, "contentSettings"},
     {APIPermissionID::kContextMenus, "contextMenus",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},

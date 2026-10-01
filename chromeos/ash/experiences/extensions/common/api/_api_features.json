@@ -51,6 +51,21 @@
        "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
     ]
   },
+  "certificateProvider": {
+    "dependencies": ["permission:certificateProvider"],
+    "contexts": ["privileged_extension"]
+  },
+  "certificateProvider.onCertificatesRequested": {
+    "max_manifest_version": 2
+  },
+  "certificateProvider.onSignDigestRequested": {
+    "max_manifest_version": 2
+  },
+  "certificateProviderInternal": {
+    "internal": true,
+    "dependencies": ["permission:certificateProvider"],
+    "contexts": ["privileged_extension"]
+  },
   "fileManagerPrivate": [{
     "dependencies": ["permission:fileManagerPrivate"],
     "contexts": ["privileged_extension"]

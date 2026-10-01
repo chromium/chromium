@@ -256,6 +256,7 @@ interface OnSignDigestRequestedEvent : ExtensionEvent {
 
 // Use this API to expose certificates to the platform which can use these
 // certificates for TLS authentications.
+[implemented_in = "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"]
 interface CertificateProvider {
   // Requests the PIN from the user. Only one ongoing request at a time is
   // allowed. The requests issued while another flow is ongoing are rejected.

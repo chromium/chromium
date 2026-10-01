@@ -3,7 +3,6 @@ include_rules = [
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/login/login_display_host.h",
   "+chrome/browser/ui/views/notifications/request_pin_view_chromeos.h",
-  "+chrome/common/extensions/api/certificate_provider.h",
 ]
 
 specific_include_rules = {

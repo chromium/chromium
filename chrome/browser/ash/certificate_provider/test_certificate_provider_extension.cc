@@ -22,7 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/api/certificate_provider.h"
+#include "chromeos/ash/experiences/extensions/common/api/certificate_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "crypto/sign.h"
 #include "extensions/browser/api/test/test_api.h"
