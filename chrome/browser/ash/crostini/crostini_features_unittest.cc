@@ -11,17 +11,21 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crostini {
@@ -96,20 +100,35 @@ class CrostiniFeaturesAllowedTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kCrostini}, {});
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
   }
 
   void AddUserWithAffiliation(bool is_affiliated) {
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-    fake_user_manager_->LoginUser(account_id);
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(
+            AccountId::FromUserEmailGaiaId("test@example.com",
+                                           GaiaId("1234567890")));
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user->GetAccountId(), /*is_managed=*/is_affiliated, is_affiliated);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
   }
 
   content::BrowserTaskEnvironment task_environment_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-  TestingProfile profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -119,7 +138,7 @@ TEST_F(CrostiniFeaturesAllowedTest, TestDefaultUnmanagedBehaviour) {
 
   std::string reason;
   bool crostini_is_allowed_now =
-      crostini_features_.IsAllowedNow(&profile_, &reason);
+      crostini_features_.IsAllowedNow(profile_, &reason);
   EXPECT_TRUE(crostini_is_allowed_now);
 }
 
@@ -128,7 +147,7 @@ TEST_F(CrostiniFeaturesAllowedTest, TestDefaultAffiliatedUserBehaviour) {
 
   std::string reason;
   bool crostini_is_allowed_now =
-      crostini_features_.IsAllowedNow(&profile_, &reason);
+      crostini_features_.IsAllowedNow(profile_, &reason);
   EXPECT_FALSE(crostini_is_allowed_now);
   EXPECT_EQ(reason,
             "Affiliated user is not allowed to run Crostini by default.");
@@ -136,13 +155,13 @@ TEST_F(CrostiniFeaturesAllowedTest, TestDefaultAffiliatedUserBehaviour) {
 
 TEST_F(CrostiniFeaturesAllowedTest, TestPolicyAffiliatedUserBehaviour) {
   AddUserWithAffiliation(true);
-  profile_.GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       crostini::prefs::kUserCrostiniAllowedByPolicy,
       std::make_unique<base::Value>(true));
 
   std::string reason;
   bool crostini_is_allowed_now =
-      crostini_features_.IsAllowedNow(&profile_, &reason);
+      crostini_features_.IsAllowedNow(profile_, &reason);
   EXPECT_TRUE(crostini_is_allowed_now);
 }
 
@@ -150,62 +169,82 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest() = default;
 
+  void SetUp() override {
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
+
   void AddChildUser() {
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    fake_user_manager_->AddChildUser(account_id);
-    fake_user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+    const user_manager::User* user =
+        user_session_test_environment_->AddChildUser(
+            AccountId::FromUserEmailGaiaId("test@example.com",
+                                           GaiaId("1234567890")));
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
+    profile_->SetIsSupervisedProfile();
   }
 
   void AddOwnerUser() {
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    fake_user_manager_->SetOwnerId(account_id);
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(
+            AccountId::FromUserEmailGaiaId("test@example.com",
+                                           GaiaId("1234567890")));
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    user_manager::UserManager::Get()->SetOwnerId(user->GetAccountId());
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
   }
 
   void AddUserWithAffiliation(bool is_affiliated) {
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-    fake_user_manager_->LoginUser(account_id);
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(
+            AccountId::FromUserEmailGaiaId("test@example.com",
+                                           GaiaId("1234567890")));
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user->GetAccountId(), /*is_managed=*/is_affiliated, is_affiliated);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
   }
 
   void SetManagedUser(bool is_managed) {
-    profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+    profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
         is_managed);
   }
 
   void SetDeviceToConsumerOwned() {
-    profile_.ScopedCrosSettingsTestHelper()
-        ->InstallAttributes()
-        ->SetConsumerOwned();
+    scoped_settings_helper_.InstallAttributes()->SetConsumerOwned();
   }
 
   void SetDeviceToEnterpriseManaged() {
-    profile_.ScopedCrosSettingsTestHelper()
-        ->InstallAttributes()
-        ->SetCloudManaged("domain.com", "device_id");
+    scoped_settings_helper_.InstallAttributes()->SetCloudManaged("domain.com",
+                                                                 "device_id");
   }
 
   void AssertCanChangeAdbSideloading(bool expected_can_change) {
     base::test::TestFuture<bool> result_future;
-    crostini_features_.CanChangeAdbSideloading(&profile_,
+    crostini_features_.CanChangeAdbSideloading(profile_,
                                                result_future.GetCallback());
     EXPECT_EQ(result_future.Get(), expected_can_change);
   }
 
   content::BrowserTaskEnvironment task_environment_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-  TestingProfile profile_;
+  ash::ScopedCrosSettingsTestHelper scoped_settings_helper_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ash::ScopedCrosSettingsTestHelper scoped_settings_helper_{
-      /* create_settings_service=*/false};
 };
 
 TEST_F(CrostiniFeaturesAdbSideloadingTest,
@@ -217,6 +256,7 @@ TEST_F(CrostiniFeaturesAdbSideloadingTest,
 
 TEST_F(CrostiniFeaturesAdbSideloadingTest, TestCanChangeAdbSideloadingManaged) {
   SetDeviceToEnterpriseManaged();
+  AddUserWithAffiliation(true);
   SetManagedUser(true);
 
   AssertCanChangeAdbSideloading(false);
@@ -225,8 +265,8 @@ TEST_F(CrostiniFeaturesAdbSideloadingTest, TestCanChangeAdbSideloadingManaged) {
 TEST_F(CrostiniFeaturesAdbSideloadingTest,
        TestCanChangeAdbSideloadingOwnerProfile) {
   SetDeviceToConsumerOwned();
-  SetManagedUser(false);
   AddOwnerUser();
+  SetManagedUser(false);
 
   AssertCanChangeAdbSideloading(true);
 }
@@ -234,8 +274,8 @@ TEST_F(CrostiniFeaturesAdbSideloadingTest,
 TEST_F(CrostiniFeaturesAdbSideloadingTest,
        TestCanChangeAdbSideloadingOwnerProfileManagedUser) {
   SetDeviceToConsumerOwned();
-  SetManagedUser(true);
   AddOwnerUser();
+  SetManagedUser(true);
 
   AssertCanChangeAdbSideloading(false);
 }
