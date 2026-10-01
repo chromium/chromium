@@ -1485,6 +1485,8 @@ safe_browsing::ThreatSubtype ClientSideDetectionHostBase::GetThreatSubtype(
       return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_3;
     case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4:
       return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_4;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING;
     case IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
       return safe_browsing::ThreatSubtype::
           SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;

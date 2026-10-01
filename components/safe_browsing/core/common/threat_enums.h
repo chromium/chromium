@@ -48,6 +48,8 @@ enum class ThreatSubtype {
   SCAM_EXPERIMENT_VERDICT_4,
   // Scam experiment catch all enforcement
   SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT,
+  // Scam experiment verdict for trick-to-bill scams
+  SCAM_EXPERIMENT_VERDICT_BILLING,
 };
 
 }  // namespace safe_browsing

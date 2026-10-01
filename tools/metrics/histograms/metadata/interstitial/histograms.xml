@@ -63,6 +63,8 @@ chromium-metrics-reviews@google.com.
       summary="scam detection verdict 3"/>
   <variant name=".scam_experiment_verdict_4"
       summary="scam detection verdict 4"/>
+  <variant name=".scam_experiment_verdict_billing"
+      summary="scam detection verdict for trick-to-bill scams"/>
 </variants>
 
 <!-- LINT.IfChange(SecurityInterstitialSBWithSourceType) -->
