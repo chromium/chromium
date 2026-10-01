@@ -137,7 +137,10 @@ public class LocationBarModelTest {
         // Restore a tab and return to the BROWSING layout so subsequent batched tests do not race
         // with an in-flight transition to the HUB layout on tablets.
         ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                /* incognito= */ false,
+                /* waitForNtpLoad= */ false);
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
     }
