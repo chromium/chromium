@@ -131,13 +131,20 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 getArguments() != null
                         ? getArguments().getString(GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD)
                         : null;
+        String highlightPrefKey = null;
         if (GlicNavigationUtils.FIELD_LOCATION_PERMISSION.equals(highlightField)) {
-            view.post(
-                    () -> {
-                        if (!isAdded() || getView() == null) return;
-                        scrollAndHighlightPreference(PERMISSION_LOCATION);
-                    });
+            highlightPrefKey = PERMISSION_LOCATION;
+        } else if (GlicNavigationUtils.FIELD_MICROPHONE_PERMISSION.equals(highlightField)) {
+            highlightPrefKey = PERMISSION_MICROPHONE;
         }
+        if (highlightPrefKey == null) return;
+
+        final String prefKey = highlightPrefKey;
+        view.post(
+                () -> {
+                    if (!isAdded() || getView() == null) return;
+                    scrollAndHighlightPreference(prefKey);
+                });
     }
 
     private void scrollAndHighlightPreference(String key) {

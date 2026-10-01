@@ -8,12 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
+import android.os.Bundle;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
@@ -22,14 +21,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -46,6 +48,9 @@ public class GlicMicPermissionDialogCoordinatorUnitTest {
 
     @Mock private ModalDialogManager.Presenter mPresenterMock;
     @Mock private Callback<Boolean> mCallbackMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
+
+    @Captor private ArgumentCaptor<Bundle> mFragmentArgsCaptor;
 
     private TestActivity mActivity;
     private ModalDialogManager mModalDialogManager;
@@ -55,6 +60,7 @@ public class GlicMicPermissionDialogCoordinatorUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
         mModalDialogManager = new ModalDialogManager(mPresenterMock, ModalDialogType.APP);
         mCoordinator = new GlicMicPermissionDialogCoordinator(mActivity, mModalDialogManager);
     }
@@ -130,7 +136,7 @@ public class GlicMicPermissionDialogCoordinatorUnitTest {
     }
 
     @Test
-    public void testShow_SettingsLink_OpensAppInfoAndDismisses() {
+    public void testShow_SettingsLink_OpensGlicSettingsAndDismisses() {
         PropertyModel model = showDialog();
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView messageView = customView.findViewById(R.id.mic_dialog_message);
@@ -141,10 +147,14 @@ public class GlicMicPermissionDialogCoordinatorUnitTest {
 
         spans[0].onClick(messageView);
 
-        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
-        assertNotNull("App info settings should have been opened.", intent);
-        assertEquals(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, intent.getAction());
-        assertEquals(Uri.parse("package:" + mActivity.getPackageName()), intent.getData());
+        verify(mSettingsNavigationMock)
+                .startSettings(
+                        eq(mActivity), eq(GlicSettings.class), mFragmentArgsCaptor.capture());
+        Bundle fragmentArgs = mFragmentArgsCaptor.getValue();
+        assertNotNull("Gemini settings should have been opened with arguments.", fragmentArgs);
+        assertEquals(
+                GlicNavigationUtils.FIELD_MICROPHONE_PERMISSION,
+                fragmentArgs.getString(GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD));
 
         assertNull(
                 "The dialog should be dismissed.", mModalDialogManager.getCurrentDialogForTest());

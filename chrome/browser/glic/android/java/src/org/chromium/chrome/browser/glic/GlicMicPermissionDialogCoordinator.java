@@ -27,8 +27,8 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * Shows a Chrome-owned modal dialog asking the user for microphone permission for Gemini.
  *
  * <p>This is a pre-prompt shown before the Android OS permission dialog so that the user
- * understands why Gemini needs the microphone. The body text contains a link to the Chrome "App
- * info" settings screen, where the permission can also be managed.
+ * understands why Gemini needs the microphone. The body text contains a link to the Gemini settings
+ * screen, where the microphone permission can also be managed.
  */
 @NullMarked
 public class GlicMicPermissionDialogCoordinator {
@@ -84,13 +84,16 @@ public class GlicMicPermissionDialogCoordinator {
                                 mActivity.getString(R.string.no_thanks))
                         .build();
 
-        // Linkifies "Settings" in the body text. This happens after the model is built so that the
+        // Linkifies "settings" in the body text. This happens after the model is built so that the
         // span can dismiss the dialog it belongs to.
         ChromeClickableSpan settingsSpan =
                 new ChromeClickableSpan(
                         mActivity,
                         v -> {
-                            GlicUiUtils.openAppDetailsSettings(mActivity);
+                            GlicNavigationUtils.showGlicSettings(
+                                    mActivity,
+                                    GlicSettingsPage.MAIN,
+                                    GlicNavigationUtils.FIELD_MICROPHONE_PERMISSION);
                             mModalDialogManager.dismissDialog(
                                     dialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
                         });
