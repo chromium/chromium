@@ -1752,6 +1752,71 @@ TEST_P(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandle) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/false);
 }
 
+// Validates that a Dawn representation is successfully created in a Graphite
+// D3D12 context for a D3D11 texture with a keyed mutex.
+TEST_P(D3DImageBackingFactoryTest, KeyedMutexTextureSupportsDawnD3D12Access) {
+  if (!context_state_->IsGraphiteDawnD3D12()) {
+    GTEST_SKIP() << "This test requires the Graphite-Dawn D3D12 backend";
+  }
+
+  // Create a texture with the keyed mutex flag set.
+  constexpr gfx::Size size(32, 32);
+  D3D11_TEXTURE2D_DESC desc = {
+      .Width = size.width(),
+      .Height = size.height(),
+      .MipLevels = 1,
+      .ArraySize = 1,
+      .Format = DXGI_FORMAT_NV12,
+      .SampleDesc = {.Count = 1},
+      .Usage = D3D11_USAGE_DEFAULT,
+      .BindFlags = D3D11_BIND_SHADER_RESOURCE,
+      .MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                   D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX,
+  };
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  ASSERT_HRESULT_SUCCEEDED(
+      shared_image_factory_->GetDeviceForTesting()->CreateTexture2D(
+          &desc, /*pInitialData=*/nullptr, &texture));
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  ASSERT_HRESULT_SUCCEEDED(texture.As(&dxgi_resource));
+  HANDLE handle = nullptr;
+  ASSERT_HRESULT_SUCCEEDED(dxgi_resource->CreateSharedHandle(
+      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
+      &handle));
+  auto shared_handle_state = shared_image_manager_.dxgi_shared_handle_manager()
+                                 ->CreateAnonymousSharedHandleState(
+                                     base::win::ScopedHandle(handle), texture);
+  ASSERT_TRUE(shared_handle_state);
+
+  const Mailbox mailbox = Mailbox::Generate();
+  auto backing = D3DImageBacking::Create(
+      mailbox,
+      SharedImageInfo(
+          viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+          kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+          SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_WEBGPU_READ,
+          "KeyedMutexVideoTexture"),
+      std::move(texture), std::move(shared_handle_state),
+      context_state_->GetGLFormatCaps(), GL_TEXTURE_EXTERNAL_OES,
+      /*array_slice=*/0);
+  ASSERT_TRUE(backing);
+  backing->SetCleared();
+  auto shared_image_ref = shared_image_manager_.Register(
+      std::move(backing), memory_type_tracker_.get());
+  ASSERT_TRUE(shared_image_ref);
+
+  auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
+      mailbox, context_state_->dawn_context_provider()->GetDevice(),
+      wgpu::BackendType::D3D12, {}, context_state_);
+  ASSERT_TRUE(dawn_representation);
+
+  auto scoped_access = dawn_representation->BeginScopedAccess(
+      wgpu::TextureUsage::TextureBinding,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  EXPECT_TRUE(scoped_access);
+}
+
 TEST_P(D3DImageBackingFactoryTest,
        CreateFromVideoTextureViaFactoryMultiplanar) {
   RunVideoTest(/*use_shared_handle=*/true,
