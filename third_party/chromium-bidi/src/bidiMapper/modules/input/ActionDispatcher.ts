@@ -945,8 +945,8 @@ function getTilt(action: {azimuthAngle?: number; altitudeAngle?: number}): {
 
   const factor = 180 / Math.PI;
   return {
-    tiltX: Math.round(tiltXRadians * factor),
-    tiltY: Math.round(tiltYRadians * factor),
+    tiltX: tiltXRadians * factor,
+    tiltY: tiltYRadians * factor,
   };
 }
 
