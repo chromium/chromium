@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/views/js_optimization",
     "//chrome/browser/ui/views/site_data",
+    "//chrome/browser/ui/views/web_apps:web_app_blocked_migration_infobar_delegate",
     "//components/infobars/content",
     "//components/infobars/core",
     "//content/public/browser",

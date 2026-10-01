@@ -104,6 +104,9 @@ enum InfoBarType {
   [EnableIf=enable_extensions]
   kThemeInstalled,
 
+  // Web app blocked migration infobar.
+  kWebAppBlockedMigration,
+
   // Web authentication flow infobar.
   [EnableIf=enable_extensions]
   kWebAuthFlow,

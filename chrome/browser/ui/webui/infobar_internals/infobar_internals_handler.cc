@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
+#include "chrome/browser/ui/views/web_apps/web_app_blocked_migration_infobar_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -146,6 +147,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kObsoleteSystem:
     case InfoBarType::kOSCryptAsyncAvailability:
     case InfoBarType::kPageInfo:
+    case InfoBarType::kWebAppBlockedMigration:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case InfoBarType::kPdf:
     case InfoBarType::kPinToTaskbar:
@@ -388,6 +390,10 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "The Theme Installed infobar is shown when a user installs a "
             "theme. This trigger shows the infobar for the current theme, "
             "allowing you to 'undo' to the state before this trigger.");
+  add_entry(InfoBarType::kWebAppBlockedMigration, "Web App Blocked Migration",
+            "The Web App Blocked Migration infobar tells users that a web app "
+            "migration was blocked. This trigger shows the infobar.");
+
   add_entry(InfoBarType::kWebAuthFlow, "Web Authentication Flow",
             "The Web Authentication Flow infobar is shown when an extension "
             "starts an interactive web authentication flow.");
@@ -945,6 +951,11 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
             profile, theme_name, theme_id,
             theme_service->BuildReinstallerForCurrentTheme());
       }
+      return true;
+    }
+    case InfoBarType::kWebAppBlockedMigration: {
+      web_app::WebAppBlockedMigrationInfoBarDelegate::Create(
+          web_contents, /*on_dismiss_callback=*/base::DoNothing());
       return true;
     }
     case InfoBarType::kWebAuthFlow: {
