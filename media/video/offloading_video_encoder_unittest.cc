@@ -45,6 +45,15 @@ class OffloadingVideoEncoderTest : public testing::Test {
         });
   }
 
+  void TearDown() override {
+    // `offloading_encoder_` deletes the mock on `work_runner_`, so release
+    // `mock_video_encoder_` first to avoid a dangling `raw_ptr`. Flush so the
+    // mock's `Dtor()` expectation is checked before the fixture goes away.
+    mock_video_encoder_ = nullptr;
+    offloading_encoder_.reset();
+    RunLoop();
+  }
+
   void RunLoop() { task_environment_.RunUntilIdle(); }
 
   base::test::TaskEnvironment task_environment_;
