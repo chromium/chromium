@@ -1944,7 +1944,7 @@ TEST_F(ElementTest, TrackPasswordTrackingElementRectCSSHeuristic) {
 
 TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
   {
-    ScopedOverscrollGesturesForTest enabled(true);
+    ScopedOverscrollAreasForTest enabled(true);
 
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style>
@@ -1971,7 +1971,7 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
   }
 
   {
-    ScopedOverscrollGesturesForTest disabled(false);
+    ScopedOverscrollAreasForTest disabled(false);
 
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <style>
@@ -2011,7 +2011,7 @@ class DetachOriginatingElementListener : public NativeEventListener {
 };
 
 TEST_F(ElementTest, OverscrollBackdropClickDisposeCrash) {
-  ScopedOverscrollGesturesForTest enabled(true);
+  ScopedOverscrollAreasForTest enabled(true);
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

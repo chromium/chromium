@@ -1188,7 +1188,7 @@ TEST_F(CullRectUpdateOnPaintPropertyChangeTest,
 }
 
 TEST_F(CullRectUpdaterTest, OverscrollAreaCullRect) {
-  ScopedOverscrollGesturesForTest overscroll_gestures(true);
+  ScopedOverscrollAreasForTest overscroll_areas(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {

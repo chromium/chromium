@@ -332,9 +332,9 @@ TEST_P(ScrollableAreaTest, FilterIncomingScrollDuringSmoothUserScroll) {
 }
 
 class ScrollableAreaOverscrollTest : public testing::Test,
-                                     ScopedOverscrollGesturesForTest {
+                                     ScopedOverscrollAreasForTest {
  public:
-  ScrollableAreaOverscrollTest() : ScopedOverscrollGesturesForTest(true) {}
+  ScrollableAreaOverscrollTest() : ScopedOverscrollAreasForTest(true) {}
 
   void SetUp() override {
     dummy_page_holder_ =

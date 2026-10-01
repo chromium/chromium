@@ -3251,7 +3251,8 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
     return true;
   }
   if (Element::IsOverscrollCommand(command)) {
-    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    CHECK(
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
     return GetTreeScope() == invoker.GetTreeScope();
   }
   return false;
@@ -3268,7 +3269,8 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
   }
 
   if (command == CommandEventType::kToggleOverscroll) {
-    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    CHECK(
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
     if (Element* container = GetOverscrollContainer()) {
       if (auto* tracker = container->GetOverscrollAreaTracker()) {
         tracker->ToggleArea(this);
@@ -3278,7 +3280,8 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
   }
 
   if (command == CommandEventType::kShowOverscroll) {
-    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    CHECK(
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
     if (Element* container = GetOverscrollContainer()) {
       if (auto* tracker = container->GetOverscrollAreaTracker()) {
         tracker->OpenArea(this);
@@ -3288,7 +3291,8 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
   }
 
   if (command == CommandEventType::kHideOverscroll) {
-    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    CHECK(
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
     if (Element* container = GetOverscrollContainer()) {
       if (auto* tracker = container->GetOverscrollAreaTracker()) {
         tracker->CloseArea(this);
@@ -3512,7 +3516,7 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
 
   // Overscroll gestures.
-  if (RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+  if (RuntimeEnabledFeatures::OverscrollAreasEnabled(execution_context)) {
     if (EqualIgnoringAsciiCase(action, keywords::kToggleOverscroll)) {
       return CommandEventType::kToggleOverscroll;
     }

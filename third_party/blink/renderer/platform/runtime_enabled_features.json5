@@ -4775,8 +4775,9 @@
     },
     {
       // https://chromestatus.com/feature/5261280285949952
-      name: "OverscrollGestures",
+      name: "OverscrollAreas",
       status: "experimental",
+      origin_trial_feature_name: "OverscrollAreas",
       depends_on: ["CSSScrollSnapTypePair"],
     },
     {

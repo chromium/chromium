@@ -5036,7 +5036,7 @@
       keywords: ["none", "auto", "push", "overlay"],
       typedom_types: ["Keyword"],
       default_value: "auto",
-      runtime_flag: "OverscrollGestures",
+      runtime_flag: "OverscrollAreas",
     },
     {
       name: "overscroll-behavior-inline",
@@ -5094,7 +5094,7 @@
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
-      runtime_flag: "OverscrollGestures",
+      runtime_flag: "OverscrollAreas",
     },
     {
       name: "-internal-unbounded",

@@ -155,7 +155,8 @@ const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
 
 // static
 bool OverscrollAreaTracker::ShouldBeOverscrollArea(Element& element) {
-  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled() ||
+  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          element.GetExecutionContext()) ||
       !element.FastHasAttribute(html_names::kOverscrollareaAttr)) {
     return false;
   }
@@ -282,7 +283,8 @@ void OverscrollAreaTracker::RemoveOverscroll(Element* element) {
 }
 
 void OverscrollAreaTracker::ToggleArea(Element* overscroll_area) {
-  CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+  CHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
+      overscroll_area->GetExecutionContext()));
   auto* scrollable_area = GetScrollableAreaFor(overscroll_area);
   if (!scrollable_area) {
     return;
@@ -305,7 +307,8 @@ void OverscrollAreaTracker::ToggleArea(Element* overscroll_area) {
 }
 
 void OverscrollAreaTracker::OpenArea(Element* overscroll_area) {
-  CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+  CHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
+      overscroll_area->GetExecutionContext()));
   auto* scrollable_area = GetScrollableAreaFor(overscroll_area);
   if (!scrollable_area) {
     return;
@@ -352,7 +355,8 @@ void OverscrollAreaTracker::OpenArea(Element* overscroll_area) {
 }
 
 void OverscrollAreaTracker::CloseArea(Element* overscroll_area) {
-  CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+  CHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
+      overscroll_area->GetExecutionContext()));
   auto* scrollable_area = GetScrollableAreaFor(overscroll_area);
   if (!scrollable_area) {
     return;

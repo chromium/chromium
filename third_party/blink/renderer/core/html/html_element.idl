@@ -75,8 +75,8 @@
     [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
 
     // Overscroll API
-    [RuntimeEnabled=OverscrollGestures,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollcontainer;
-    [RuntimeEnabled=OverscrollGestures,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollarea;
+    [RuntimeEnabled=OverscrollAreas,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollcontainer;
+    [RuntimeEnabled=OverscrollAreas,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollarea;
 
     // Unbounded Element API
     [ContextEnabled=UnboundedElement,CEReactions,Reflect] attribute boolean unbounded;

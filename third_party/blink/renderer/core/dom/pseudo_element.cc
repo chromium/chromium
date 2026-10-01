@@ -549,7 +549,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   //     - ::overscroll-backdrop
   //     - #item
   if (pseudo_id_ == kPseudoIdOverscrollBackdrop) {
-    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    CHECK(
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
     Element& originating = UltimateOriginatingElement();
     if (PseudoElement* overscroll_parent =
             originating.GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
@@ -903,7 +904,7 @@ void PseudoElement::RetargetAnimations() {
 
 void PseudoElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kClick && !event.DefaultHandled() &&
-      RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+      RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
     if (GetPseudoId() == kPseudoIdOverscrollBackdrop) {
       if (isConnected()) {
         if (Element* container =

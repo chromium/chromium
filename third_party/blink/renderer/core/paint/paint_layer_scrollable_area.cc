@@ -3489,7 +3489,8 @@ void PaintLayerScrollableArea::
     UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
         const cc::TargetSnapAreaElementIds& new_target_ids) {
   if (!RuntimeEnabledFeatures::CSSScrollSnapChangingEventEnabled() &&
-      !RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+      !RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          GetLayoutBox()->GetDocument().GetExecutionContext())) {
     return;
   }
   const cc::SnapContainerData* container_data = GetSnapContainerData();

@@ -1890,7 +1890,8 @@ void StyleAdjuster::AdjustOverscrollInertness(
     std::optional<bool>& html_inert,
     bool& can_escape_overscroll_inertness) {
   DCHECK(state.HasOverscrollContainerAncestor());
-  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled() ||
+  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          state.GetDocument().GetExecutionContext()) ||
       state.IsForPseudoElement() || html_inert.has_value()) {
     return;
   }

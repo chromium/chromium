@@ -952,7 +952,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
        match->type == CSSSelector::kPseudoOverscrollBackdrop ||
        match->type == CSSSelector::kPseudoOverscrollClosed ||
        match->type == CSSSelector::kPseudoOverscrollOpen) &&
-      !RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+      !RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }
 

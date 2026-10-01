@@ -17,7 +17,8 @@ namespace {
 
 // A former overscroll container still has a tracker with areas to remove.
 bool IsOrWasOverscrollContainer(const Element& element) {
-  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          element.GetExecutionContext())) {
     return false;
   }
   const ComputedStyle* style = element.GetComputedStyle();
