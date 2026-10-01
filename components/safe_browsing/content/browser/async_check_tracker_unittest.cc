@@ -327,6 +327,32 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_GlicThreatSource) {
       safe_browsing::ThreatSource::GLIC_COUNTER_ABUSE));
 }
 
+TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_BillingThreatType) {
+  auto rfh_locator = UnsafeResourceLocator::CreateForFrameTreeNodeId(
+      main_rfh()->GetFrameTreeNodeId().value());
+  // Billing verdicts from blocklist checks are performed during navigation, so
+  // the main page load is pending.
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator, /*navigation_id=*/std::nullopt,
+      SBThreatType::SB_THREAT_TYPE_BILLING,
+      safe_browsing::ThreatSource::UNKNOWN));
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator, /*navigation_id=*/std::nullopt,
+      SBThreatType::SB_THREAT_TYPE_BILLING,
+      safe_browsing::ThreatSource::LOCAL_PVER4));
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator, /*navigation_id=*/std::nullopt,
+      SBThreatType::SB_THREAT_TYPE_BILLING,
+      safe_browsing::ThreatSource::URL_REAL_TIME_CHECK));
+
+  // Billing verdicts from client-side detection (CLAMS) happen after the page
+  // has finished loading, so the main page load is not pending.
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(
+      rfh_locator, /*navigation_id=*/std::nullopt,
+      SBThreatType::SB_THREAT_TYPE_BILLING,
+      safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION));
+}
+
 TEST_F(AsyncCheckTrackerTest,
        IsMainPageLoadPending_DeleteExpiredNavigationTimestamps) {
   tracker_->SetNavigationTimestampsSizeThresholdForTesting(
