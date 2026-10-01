@@ -32,7 +32,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
 
   // There is no malicious content if there is no allowed unsafe resource and no
   // pending decision.
-  const GURL& visible_url = visible_item->GetURL();
+  const GURL& visible_url = visible_item->GetVirtualURL();
   std::set<safe_browsing::SBThreatType> threats;
   bool is_unsafe_resource_allowed_or_pending =
       allow_list->AreUnsafeNavigationsAllowed(visible_url, &threats) ||
@@ -98,7 +98,7 @@ GetVisibleSecurityStateForWebState(const web::WebState* web_state) {
     return state;
 
   state->connection_info_initialized = true;
-  state->url = item->GetURL();
+  state->url = item->GetVirtualURL();
   const web::SSLStatus& ssl = item->GetSSL();
   state->certificate = ssl.certificate;
   state->cert_status = ssl.cert_status;

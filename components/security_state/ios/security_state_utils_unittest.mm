@@ -2,27 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/security_state/ios/security_state_utils.h"
+#import "components/security_state/ios/security_state_utils.h"
+
+#import <memory>
 
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/security_state/core/security_state.h"
+#import "components/security_state/core/security_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/security/security_style.h"
+#import "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "net/cert/cert_status_flags.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
-// This test fixture creates an IOSSecurityStateTabHelper, then loads a
-// non-secure HTML document.
-class SecurityStateUtilsTest : public web::WebTestWithWebState {
+// This test fixture sets up a FakeWebState with a FakeNavigationManager and an
+// initial HTTP NavigationItem.
+class SecurityStateUtilsTest : public PlatformTest {
  protected:
   void SetUp() override {
-    web::WebTestWithWebState::SetUp();
-    SafeBrowsingUrlAllowList::CreateForWebState(web_state());
+    PlatformTest::SetUp();
+    SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
 
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     url_ = GURL("http://chromium.test");
-    LoadHtml(@"<html><body></body></html>", url_);
+    std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+    item->SetURL(url_);
+    item->GetSSL().security_style = web::SECURITY_STYLE_UNAUTHENTICATED;
+    navigation_manager->SetVisibleItem(item.get());
+    navigation_item_ = std::move(item);
+    web_state_.SetNavigationManager(std::move(navigation_manager));
   }
 
+  web::WebState* web_state() { return &web_state_; }
+
   GURL url_;
+  std::unique_ptr<web::NavigationItem> navigation_item_;
+  web::FakeWebState web_state_;
 };
 
 // Verifies GetMaliciousContentStatus() return values.
@@ -74,6 +94,46 @@ TEST_F(SecurityStateUtilsTest, GetSecurityLevelForWebStateMaliciousContent) {
       SafeBrowsingUrlAllowList::FromWebState(web_state());
   allow_list->AddPendingUnsafeNavigationDecision(
       url_, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  EXPECT_EQ(security_state::DANGEROUS,
+            security_state::GetSecurityLevelForWebState(web_state()));
+}
+
+// Tests GetSecurityLevelForWebState() when an error page has a virtual URL with
+// a certificate error.
+TEST_F(SecurityStateUtilsTest,
+       GetSecurityLevelForWebStateWithVirtualURLCertError) {
+  web::NavigationItem* item =
+      web_state()->GetNavigationManager()->GetVisibleItem();
+  ASSERT_TRUE(item);
+  item->SetURL(GURL("file:///error_page.html"));
+  item->SetVirtualURL(GURL("https://example.test"));
+  item->GetSSL().security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
+  item->GetSSL().cert_status = net::CERT_STATUS_AUTHORITY_INVALID;
+  item->GetSSL().certificate = net::X509Certificate::CreateFromBytes(
+      net::x509_util::CreateUnusableCert("CN=Error"));
+  ASSERT_TRUE(item->GetSSL().certificate);
+
+  EXPECT_EQ(security_state::DANGEROUS,
+            security_state::GetSecurityLevelForWebState(web_state()));
+}
+
+// Tests GetMaliciousContentStatus() when an error page has a virtual URL with
+// malicious content.
+TEST_F(SecurityStateUtilsTest, GetMaliciousContentStatusWithVirtualURL) {
+  web::NavigationItem* item =
+      web_state()->GetNavigationManager()->GetVisibleItem();
+  ASSERT_TRUE(item);
+  const GURL virtual_url("https://malware.test");
+  item->SetURL(GURL("file:///error_page.html"));
+  item->SetVirtualURL(virtual_url);
+
+  SafeBrowsingUrlAllowList* allow_list =
+      SafeBrowsingUrlAllowList::FromWebState(web_state());
+  allow_list->AddPendingUnsafeNavigationDecision(
+      virtual_url, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+
+  EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_MALWARE,
+            security_state::GetMaliciousContentStatus(web_state()));
   EXPECT_EQ(security_state::DANGEROUS,
             security_state::GetSecurityLevelForWebState(web_state()));
 }
