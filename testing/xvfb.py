@@ -25,15 +25,13 @@ import uuid
 from contextlib import contextmanager
 
 # vpython-provided modules.
-import psutil  # pylint: disable=import-error
+import psutil
 
 # //testing imports.
 import test_env
 
 DEFAULT_XVFB_WHD = '1280x800x24'
 DEFAULT_MUTTER_DISPLAY = '1920x1200'
-
-# pylint: disable=useless-object-inheritance
 
 
 class _ProcessError(Exception):
@@ -71,7 +69,7 @@ def kill(proc, name, timeout_in_seconds=10):
 
 
 @contextmanager
-def dbus_session(env):  # pylint: disable=inconsistent-return-statements
+def dbus_session(env):
   """Starts a DBus session.
 
   Works around a bug in GLib where it performs operations which aren't

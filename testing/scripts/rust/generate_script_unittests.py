@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from generate_script import _parse_args
 from generate_script import _generate_script
@@ -35,7 +35,6 @@ class Tests(fake_filesystem_unittest.TestCase):
         args.script_path = os.path.join(out_dir, 'bin/run_foo_bar')
         args.exe_dir = out_dir
 
-        # pylint: disable=unexpected-keyword-arg
         with tempfile.NamedTemporaryFile(
             delete=False, mode='w', encoding='utf-8'
         ) as f:
@@ -67,7 +66,6 @@ env vpython3 \
         args.script_path = os.path.join(out_dir, 'bin/run_foo_bar')
         args.exe_dir = out_dir
 
-        # pylint: disable=unexpected-keyword-arg
         with tempfile.NamedTemporaryFile(
             delete=False, mode='w', encoding='utf-8'
         ) as f:

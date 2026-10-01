@@ -35,11 +35,9 @@ def setup_job_object():
     return None
 
   try:
-    # pylint: disable=import-outside-toplevel
     import win32api
     import win32con
     import win32job
-    # pylint: enable=import-outside-toplevel
   except ImportError:
     print('Warning: Failed to import win32 libraries', file=sys.stderr)
     return None
@@ -60,7 +58,7 @@ def setup_job_object():
     # automatically inherit this Job Object when spawned
     try:
       win32job.AssignProcessToJobObject(hjob, win32api.GetCurrentProcess())
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
       print(
         'Warning: Failed to assign test_env.py to JobObject: %s' % e,
         file=sys.stderr,
@@ -68,7 +66,7 @@ def setup_job_object():
       return None
 
     return hjob
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     print('Warning: Failed to set up JobObject: %s' % e, file=sys.stderr)
     return None
 
@@ -410,16 +408,14 @@ def forward_signals(procs):
       if p.poll() is not None:
         continue
       # SIGBREAK is defined only for win32.
-      # pylint: disable=no-member
       if sys.platform == 'win32' and sig == signal.SIGBREAK:
         p.send_signal(signal.CTRL_BREAK_EVENT)
       else:
         print('Forwarding signal(%d) to process %d' % (sig, p.pid))
         p.send_signal(sig)
-      # pylint: enable=no-member
 
   if sys.platform == 'win32':
-    signal.signal(signal.SIGBREAK, _sig_handler)  # pylint: disable=no-member
+    signal.signal(signal.SIGBREAK, _sig_handler)
   else:
     signal.signal(signal.SIGTERM, _sig_handler)
     signal.signal(signal.SIGINT, _sig_handler)
@@ -452,7 +448,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   msan = '--msan=1' in cmd
   tsan = '--tsan=1' in cmd
   cfi_diag = '--cfi-diag=1' in cmd
-  detect_odr_violation = not '--asan-detect-odr-violation=0' in cmd
+  detect_odr_violation = '--asan-detect-odr-violation=0' not in cmd
   # Treat sanitizer warnings as test case failures.
   use_sanitizer_warnings_script = '--fail-san=1' in cmd
   if '--skip-symbolization-script=1' in cmd:
@@ -478,16 +474,14 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   if '--coverage-continuous-mode=1' in cmd:
     extra_env.update(get_coverage_continuous_mode_env(env))
 
-  # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
     # //testing imports.
     sys.path.insert(
       0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts')
     )
-    from scripts import common  # pylint: disable=cyclic-import
+    from scripts import common
 
     common.set_lpac_acls(ROOT_DIR, is_test_script=True)
-  # pylint: enable=import-outside-toplevel
 
   cmd = trim_cmd(cmd)
 

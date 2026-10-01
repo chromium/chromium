@@ -29,7 +29,7 @@ root_dir = os.path.abspath(
 
 # //build/util imports.
 sys.path.append(os.path.join(root_dir, 'build', 'util'))
-from lib.common import google_storage_helper
+from lib.common import google_storage_helper  # noqa: E402
 
 
 def get_file_digest(filepath):

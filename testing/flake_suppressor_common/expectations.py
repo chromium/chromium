@@ -20,7 +20,6 @@ from flake_suppressor_common import common_typing as ct
 from typ import expectations_parser
 
 # Disabled instead of fixing to avoid a large amount of churn.
-# pylint: disable=no-self-use
 
 CHROMIUM_SRC_DIR = os.path.realpath(
   os.path.join(os.path.dirname(__file__), '..', '..')
@@ -123,7 +122,6 @@ def FailedBuildWithinRecentDayThreshold(
 
 
 class ExpectationProcessor:
-  # pylint: disable=too-many-locals
   def IterateThroughResultsForUser(
     self,
     result_map: ct.AggregatedResultsType,
@@ -189,9 +187,6 @@ class ExpectationProcessor:
             include_all_tags,
           )
 
-  # pylint: enable=too-many-locals
-
-  # pylint: disable=too-many-locals,too-many-arguments
   def IterateThroughResultsWithThresholds(
     self,
     result_map: ct.AggregatedResultsType,
@@ -324,8 +319,6 @@ class ExpectationProcessor:
               include_all_tags,
             )
 
-  # pylint: enable=too-many-locals,too-many-arguments
-
   def FindFailuresInSameTest(
     self,
     result_map: ct.AggregatedResultsType,
@@ -457,7 +450,6 @@ class ExpectationProcessor:
     response = input(prompt)
     return (expected_result, response)
 
-  # pylint: disable=too-many-locals,too-many-arguments
   def ModifyFileForResult(
     self,
     suite: str,
@@ -533,9 +525,6 @@ class ExpectationProcessor:
     else:
       AppendExpectationToEnd()
 
-  # pylint: enable=too-many-locals,too-many-arguments
-
-  # pylint: disable=too-many-locals
   def FilterToMostSpecificTypTags(
     self, typ_tags: ct.TagTupleType, expectation_file: str
   ) -> ct.TagTupleType:
@@ -590,8 +579,6 @@ class ExpectationProcessor:
     # Sort to keep order consistent with what we were given.
     filtered_tags.sort()
     return tuple(filtered_tags)
-
-  # pylint: enable=too-many-locals
 
   def FindBestInsertionLineForExpectation(
     self, typ_tags: ct.TagTupleType, expectation_file: str

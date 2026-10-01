@@ -17,7 +17,7 @@ BUILD_DIR = os.path.join(CHROMIUM_ROOT, 'build')
 # //build imports.
 if BUILD_DIR not in sys.path:
   sys.path.insert(0, BUILD_DIR)
-import gn_helpers
+import gn_helpers  # noqa: E402
 
 
 # A list of filename regexes that are allowed to have static initializers.

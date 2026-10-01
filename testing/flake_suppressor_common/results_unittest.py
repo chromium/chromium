@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=protected-access
 
 import datetime
 import os
@@ -22,14 +21,12 @@ GENERIC_EXPECTATION_FILE_CONTENTS = """\
 crbug.com/1111 [ win ] foo_test [ Failure ]
 """
 
-# pylint: disable=line-too-long
 GPU_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win ]
 # tags: [ amd nvidia ]
 # results: [ Failure ]
 crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Failure ]
 """
-# pylint: enable=line-too-long
 
 
 class BaseResultsUnittest(unittest.TestCase):

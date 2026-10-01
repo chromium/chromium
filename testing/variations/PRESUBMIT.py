@@ -162,9 +162,7 @@ def PrettyPrint(contents):
   )
 
 
-# pylint: disable=line-too-long
 # LINT.ThenChange(/components/variations/field_trial_config/field_trial_testing_config_schema.json)
-# pylint: enable=line-too-long
 
 
 def ValidateData(json_data, file_path, message_type):
@@ -219,7 +217,7 @@ def _ValidateStudyConfig(study_config, create_message_fn):
   """Validates one config in a configuration entry."""
   if not isinstance(study_config, dict):
     return create_message_fn('Expecting dict for experiment config')
-  if not 'experiments' in study_config:
+  if 'experiments' not in study_config:
     return create_message_fn('Missing valid experiments for experiment config')
   if not isinstance(study_config['experiments'], list):
     return create_message_fn('Expecting list for experiments')
@@ -227,7 +225,7 @@ def _ValidateStudyConfig(study_config, create_message_fn):
     warnings = _ValidateExperimentGroup(experiment_group, create_message_fn)
     if warnings:
       return warnings
-  if not 'platforms' in study_config:
+  if 'platforms' not in study_config:
     return create_message_fn('Missing valid platforms for experiment config')
   if not isinstance(study_config['platforms'], list):
     return create_message_fn('Expecting list for platforms')
@@ -446,10 +444,8 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
     sys.path.append(
       input_api.os_path.join(input_api.PresubmitLocalPath(), 'presubmit')
     )
-    # pylint: disable=import-outside-toplevel
     import find_features
 
-    # pylint: enable=import-outside-toplevel
     declared_features = find_features.FindDeclaredFeatures(input_api)
   finally:
     sys.path = old_sys_path

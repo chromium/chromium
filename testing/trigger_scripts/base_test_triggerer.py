@@ -70,7 +70,7 @@ def strip_unicode(obj):
     return obj
 
 
-class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
+class BaseTestTriggerer(object):
     def __init__(self):
         self._bot_configs = None
         self._bot_statuses = []
@@ -135,7 +135,6 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         return additional_args
 
     # Overridden by subclasses.
-    # pylint: disable=no-self-use
     def append_additional_args(self, args, shard_index):
         """Gives subclasses ability to append additional args if necessary
         # pylint: enable=no-self-use
@@ -168,7 +167,6 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             raise ValueError('Bot configurations must all be dictionaries')
 
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         """List bots having specified bot dimensions.
 
@@ -190,10 +188,7 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             with open(result_json.name) as f:
                 return json.load(f)
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         """List bots having specified task tags.
 
@@ -223,10 +218,7 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             with open(result_json.name) as f:
                 return json.load(f)
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def make_temp_file(self, prefix=None, suffix=None):
         # This trick of closing the file handle is needed on Windows in order to
         # make the file writeable.
@@ -234,37 +226,23 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         os.close(h)
         return temp_file
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def delete_temp_file(self, temp_file):
         os.remove(temp_file)
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def read_json_from_temp_file(self, temp_file):
         with open(temp_file) as f:
             return json.load(f)
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def read_encoded_json_from_temp_file(self, temp_file):
         return strip_unicode(self.read_json_from_temp_file(temp_file))
 
-    # pylint: enable=no-self-use
-
     # Overridden for testing.
-    # pylint: disable=no-self-use
     def write_json_to_file(self, merged_json, output_file):
         with open(output_file, 'w') as f:
             json.dump(merged_json, f)
-
-    # pylint: enable=no-self-use
 
     def run_swarming_go(
         self, args, json_path, shard_index, shards, merged_json=None
@@ -314,7 +292,7 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
 
     def generate_shard_map(self, args, buildername, selected_config):
         """Returns shard map generated on runtime if needed."""
-        pass  # pylint: disable=unnecessary-pass
+        pass
 
     def trigger_tasks(self, args, remaining):
         """Triggers tasks for each bot.
@@ -353,12 +331,10 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         logging.info('DEBUG: After filtered: %s', filtered_remaining_args)
 
         merged_json = {}
-        # pylint: disable=assignment-from-no-return
         selected_config = self.select_config_indices(args)
         shard_map = self.generate_shard_map(
             args, _findBuilderName(filtered_remaining_args), selected_config
         )
-        # pylint: enable=assignment-from-no-return
         # Choose selected configs for this run of the test suite.
         for shard_index, bot_index in selected_config:
             # For each shard that we're going to distribute, do the following:

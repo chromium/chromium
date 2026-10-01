@@ -19,7 +19,7 @@ from http.server import SimpleHTTPRequestHandler
 from threading import Thread
 
 # vpython-provided modules.
-import packaging.version  # pylint: disable=import-error
+import packaging.version
 
 # //third_party/webdriver/pylib imports.
 from selenium import webdriver
@@ -39,7 +39,9 @@ _CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(_THIS_DIR, '..', '..'))
 
 sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'build'))
 # //build imports.
-from skia_gold_common.skia_gold_properties import SkiaGoldProperties
+from skia_gold_common.skia_gold_properties import (  # noqa: E402
+  SkiaGoldProperties,
+)
 
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 _VERSION_STRING = 'PRODUCT_VERSION'
@@ -97,7 +99,7 @@ def _get_platform():
   )
 
 
-def _find_chrome_binary():  # pylint: disable=inconsistent-return-statements
+def _find_chrome_binary():
   """Finds and returns the relative path to the Chrome binary.
 
   This function assumes that the CWD is the build directory.

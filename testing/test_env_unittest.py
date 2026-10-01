@@ -55,15 +55,11 @@ def launch_process_nonwindows(args):
   )
 
 
-# pylint: disable=inconsistent-return-statements
 def read_subprocess_message(proc, starts_with):
   """Finds the value after first line prefix condition."""
   for line in proc.stdout:
     if line.startswith(starts_with):
       return line.rstrip().replace(starts_with, '')
-
-
-# pylint: enable=inconsistent-return-statements
 
 
 def send_and_wait(proc, sig, sleep_time=0.6):
@@ -81,7 +77,7 @@ class SignalingWindowsTest(unittest.TestCase):
 
   def test_send_ctrl_break_event(self):
     proc = launch_process_windows([])
-    send_and_wait(proc, signal.CTRL_BREAK_EVENT)  # pylint: disable=no-member
+    send_and_wait(proc, signal.CTRL_BREAK_EVENT)
     sig = read_subprocess_message(proc, 'Signal :')
     # This test is flaky because it relies on the child process starting quickly
     # "enough", which it fails to do sometimes. This is tracked by
@@ -89,7 +85,7 @@ class SignalingWindowsTest(unittest.TestCase):
     # reduce the flakiness.
     self.assertEqual(
       sig,
-      str(int(signal.SIGBREAK)),  # pylint: disable=no-member
+      str(int(signal.SIGBREAK)),
     )
 
   def test_job_object_kills_leaked_child_process(self):
@@ -112,7 +108,7 @@ class SignalingWindowsTest(unittest.TestCase):
         win32api.CloseHandle(hproc)
         # 259 is STILL_ACTIVE; process should be terminated.
         self.assertNotEqual(exit_code, 259)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       # OpenProcess failing indicates the PID is no longer valid (process dead).
       pass
 

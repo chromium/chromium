@@ -158,7 +158,6 @@ ALL_STALE_COMMENT_REGEXES.add(
 )
 ALL_STALE_COMMENT_REGEXES = frozenset(ALL_STALE_COMMENT_REGEXES)
 
-# pylint: disable=useless-object-inheritance
 
 # TODO(crbug.com/358591565): Refactor this to remove the need for global
 # statements.
@@ -170,14 +169,14 @@ def GetInstance() -> 'Expectations':
 
 
 def RegisterInstance(instance: 'Expectations') -> None:
-  global _registered_instance  # pylint: disable=global-statement
+  global _registered_instance
   assert _registered_instance is None
   assert isinstance(instance, Expectations)
   _registered_instance = instance
 
 
 def ClearInstance() -> None:
-  global _registered_instance  # pylint: disable=global-statement
+  global _registered_instance
   _registered_instance = None
 
 
@@ -192,7 +191,6 @@ class Expectations(object):
     self._cached_tag_groups = {}
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def CreateTestExpectationMap(
     self,
     expectation_files: Optional[Union[str, List[str]]],
@@ -269,8 +267,6 @@ class Expectations(object):
       AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
-
-  # pylint: enable=no-self-use
 
   def RemoveExpectationsFromFile(
     self,
@@ -620,7 +616,6 @@ class Expectations(object):
 
   # Kept as a method so that caching is handled at the object level instead of
   # at the module level.
-  # pylint: disable=no-self-use
   @functools.cache
   def _GetExpectationFileAnnotations(self, expectation_file: str) -> str:
     """Gets all annotations found within the expectation file.
@@ -655,8 +650,6 @@ class Expectations(object):
           found_annotation_lines.append(line)
           break
     return ''.join(found_annotation_lines)
-
-  # pylint: enable=no-self-use
 
   def FilterToKnownTags(self, tags: Iterable[str]) -> Set[str]:
     """Filters |tags| to only include tags known to expectation files.
@@ -739,7 +732,6 @@ class Expectations(object):
     return frozenset(filtered_tags)
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def _ConsolidateKnownOverlappingTags(
     self, typ_tags: FrozenSet[str]
   ) -> FrozenSet[str]:
@@ -749,8 +741,6 @@ class Expectations(object):
     both GPUs.
     """
     return typ_tags
-
-  # pylint: enable=no-self-use
 
   def NarrowSemiStaleExpectationScope(
     self, stale_expectation_map: data_types.TestExpectationMap

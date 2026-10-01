@@ -6,7 +6,7 @@ import os
 from typing import List, Tuple, Iterable
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 # //testing imports.
 from flake_suppressor_common import common_typing as ct
@@ -93,7 +93,6 @@ class UnitTestTagUtils(tag_utils.BaseTagUtils):
     return tuple(tags)
 
 
-# pylint: disable=unused-argument
 class UnitTestExpectationProcessor(expectations_module.ExpectationProcessor):
   def GetExpectationFileForSuite(
     self, suite: str, typ_tags: ct.TagTupleType
@@ -114,6 +113,3 @@ class UnitTestExpectationProcessor(expectations_module.ExpectationProcessor):
 
   def ListOriginExpectationFiles(self) -> List[str]:
     raise NotImplementedError()
-
-
-# pylint: enable=unused-argument

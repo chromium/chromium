@@ -12,12 +12,11 @@ import re
 import unittest
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 # //testing/buildbot imports.
 import generate_buildbot_json
 
-# pylint: disable=super-with-arguments
 
 EMPTY_PYL_FILE = """\
 {
@@ -77,7 +76,7 @@ def dump_on_failure(fbb, dump=True):
     yield
   except:
     if dump:
-      for l in fbb.printed_lines:
+      for l in fbb.printed_lines:  # noqa: E741
         print(l)
     raise
 
@@ -1786,7 +1785,6 @@ GPU_TELEMETRY_GN_ISOLATE_MAP = """\
 }
 """
 
-# pylint: disable=line-too-long
 GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID = """\
 {
   'telemetry_gpu_integration_test_android_chrome': {
@@ -1806,7 +1804,6 @@ GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID_WEBVIEW = """\
       }
 }
 """
-# pylint: enable=line-too-long
 
 GPU_TELEMETRY_GN_ISOLATE_MAP_FUCHSIA = """\
 {

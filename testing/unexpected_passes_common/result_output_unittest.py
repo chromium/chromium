@@ -10,9 +10,7 @@ import unittest
 from unittest import mock
 
 # vpython-provided modules.
-# pylint: disable=import-error
 from pyfakefs import fake_filesystem_unittest
-# pylint: enable=import-error
 
 # //testing imports.
 from unexpected_passes_common import data_types
@@ -23,7 +21,6 @@ from unexpected_passes_common import unittest_utils as uu
 from blinkpy.w3c import buganizer
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
 
@@ -291,7 +288,6 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     }
     result_output._RecursiveHtmlToFile(expectation_map, self._file_handle)
     self._file_handle.close()
-    # pylint: disable=line-too-long
     expected_output = """\
 <button type="button" class="collapsible_group">foo</button>
 <div class="content">
@@ -318,7 +314,6 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
   </div>
 </div>
 """
-    # pylint: enable=line-too-long
     expected_output = _Dedent(expected_output)
     with open(self._filepath) as f:
       self.assertEqual(f.read(), expected_output)
@@ -342,7 +337,6 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     }
     result_output._RecursiveHtmlToFile(unmatched_results, self._file_handle)
     self._file_handle.close()
-    # pylint: disable=line-too-long
     # Order is not guaranteed, so create permutations.
     expected_template = """\
 <button type="button" class="collapsible_group">foo</button>
@@ -368,7 +362,6 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
 """,
     ]
     expected_output = CreateTextOutputPermutations(expected_template, values)
-    # pylint: enable=line-too-long
     expected_output = [_Dedent(e) for e in expected_output]
     with open(self._filepath) as f:
       self.assertIn(f.read(), expected_output)
@@ -438,7 +431,6 @@ foo
     }
     result_output.RecursivePrintToFile(unmatched_results, 0, self._file_handle)
     self._file_handle.close()
-    # pylint: disable=line-too-long
     # Order is not guaranteed, so create permutations.
     expected_template = """\
 foo
@@ -455,7 +447,6 @@ foo
 """,
     ]
     expected_output = CreateTextOutputPermutations(expected_template, values)
-    # pylint: enable=line-too-long
     with open(self._filepath) as f:
       self.assertIn(f.read(), expected_output)
 

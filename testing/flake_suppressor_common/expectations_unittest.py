@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=protected-access
 
 import datetime
 import os
@@ -13,7 +12,7 @@ import unittest
 import unittest.mock as mock
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 # //testing imports.
 from flake_suppressor_common import common_typing as ct

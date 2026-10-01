@@ -49,19 +49,19 @@ ResultSetType = Set['BaseResult']
 # TODO(crbug.com/358591565): Refactor this to remove the need for global
 # statements.
 def SetExpectationImplementation(impl: Type['BaseExpectation']) -> None:
-  global Expectation  # pylint: disable=global-statement
+  global Expectation
   assert issubclass(impl, BaseExpectation)
   Expectation = impl
 
 
 def SetResultImplementation(impl: Type['BaseResult']) -> None:
-  global Result  # pylint: disable=global-statement
+  global Result
   assert issubclass(impl, BaseResult)
   Result = impl
 
 
 def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
-  global BuildStats  # pylint: disable=global-statement
+  global BuildStats
   assert issubclass(impl, BaseBuildStats)
   BuildStats = impl
 
@@ -69,7 +69,7 @@ def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
 def SetTestExpectationMapImplementation(
   impl: Type['BaseTestExpectationMap'],
 ) -> None:
-  global TestExpectationMap  # pylint: disable=global-statement
+  global TestExpectationMap
   assert issubclass(impl, BaseTestExpectationMap)
   TestExpectationMap = impl
 
@@ -367,7 +367,6 @@ class BaseBuildStats:
   def GetStatsAsString(self) -> str:
     return '(%d/%d passed)' % (self.passed_builds, self.total_builds)
 
-  # pylint:disable=unused-argument
   def NeverNeededExpectation(self, expectation: BaseExpectation) -> bool:
     """Returns whether the results tallied in |self| never needed |expectation|.
 
@@ -380,9 +379,6 @@ class BaseBuildStats:
     """
     return self.did_fully_pass
 
-  # pylint:enable=unused-argument
-
-  # pylint:disable=unused-argument
   def AlwaysNeededExpectation(self, expectation: BaseExpectation) -> bool:
     """Returns whether the results tallied in |self| always needed |expectation.
 
@@ -394,8 +390,6 @@ class BaseBuildStats:
       |expectation| being present. Otherwise, False.
     """
     return self.did_never_pass
-
-  # pylint:enable=unused-argument
 
   def __eq__(self, other: Any) -> bool:
     return (
@@ -424,7 +418,7 @@ class BaseTypedMap(dict):
   dictionary go through the type checking in __setitem__.
   """
 
-  def __init__(self, *args, **kwargs):  # pylint:disable=super-init-not-called
+  def __init__(self, *args, **kwargs):
     self.update(*args, **kwargs)
 
   def update(self, *args, **kwargs) -> None:
@@ -643,7 +637,6 @@ class BaseTestExpectationMap(BaseTypedMap):
     return matched_results
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def _AddSingleResult(self, result: BaseResult, stats: BaseBuildStats) -> None:
     """Adds |result| to |self|.
 
@@ -655,8 +648,6 @@ class BaseTestExpectationMap(BaseTypedMap):
       stats.AddPassedBuild(result.tags)
     else:
       stats.AddFailedBuild(result.build_id, result.tags)
-
-  # pylint: enable=no-self-use
 
   def SplitByStaleness(
     self,
@@ -749,7 +740,6 @@ class BaseTestExpectationMap(BaseTypedMap):
     return stale_dict, semi_stale_dict, active_dict
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def _ShouldTreatSemiStaleAsActive(
     self, pass_map: Dict[int, 'BuilderStepMap']
   ) -> bool:
@@ -767,8 +757,6 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     del pass_map
     return False
-
-  # pylint: enable=no-self-use
 
   def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
     """Filters out any unused Expectations from stored data.

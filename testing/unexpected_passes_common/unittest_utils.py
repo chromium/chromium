@@ -6,7 +6,7 @@
 from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
 
 # vpython-provided modules.
-import pandas  # pylint: disable=import-error
+import pandas
 
 # //testing imports.
 from unexpected_passes_common import builders
@@ -105,13 +105,10 @@ def GetArgsForMockCall(
 
 
 class GenericBuilders(builders.Builders):
-  # pylint: disable=useless-super-delegation
   def __init__(
     self, suite: Optional[str] = None, include_internal_builders: bool = False
   ):
     super().__init__(suite, include_internal_builders)
-
-  # pylint: enable=useless-super-delegation
 
   def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True

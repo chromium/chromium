@@ -12,7 +12,7 @@ SRC_DIR = os.path.dirname(
 
 # //tools/perf imports.
 sys.path.append(os.path.join(SRC_DIR, 'tools', 'perf'))
-import process_perf_results
+import process_perf_results  # noqa: E402
 
 if __name__ == '__main__':
   sys.exit(process_perf_results.main())

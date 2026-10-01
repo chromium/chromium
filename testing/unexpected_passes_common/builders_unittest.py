@@ -10,7 +10,7 @@ import unittest
 from unittest import mock
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 # //testing imports.
 from unexpected_passes_common import builders
@@ -19,7 +19,6 @@ from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 
 class FakeFilesystemTestCaseWithFileCreation(fake_filesystem_unittest.TestCase):

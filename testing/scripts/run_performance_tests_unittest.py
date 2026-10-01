@@ -19,7 +19,6 @@ import run_performance_tests
 from run_performance_tests import TelemetryCommandGenerator
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 # The path where the output of a wpt run was written. This is the file that
 # gets processed by BaseWptScriptAdapter.
@@ -154,7 +153,6 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertEqual(content['foo'], 1)
     mock_copy_map_file_to_out_dir.assert_called_with(mock.ANY, 'dir')
 
-  # pylint: disable=no-self-use
   @mock.patch.object(os.path, 'exists')
   @mock.patch.object(shutil, 'copyfile')
   def testCopyMapFileToOutDirSuccess(self, mock_copyfile, mock_exists):
@@ -164,8 +162,6 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     mock_copyfile.assert_called_with(
       'file', str(pathlib.Path('dir/benchmarks_shard_map.json'))
     )
-
-  # pylint: enable=no-self-use
 
   @mock.patch.object(
     run_performance_tests.CrossbenchTest, 'execute_benchmark', return_value=0

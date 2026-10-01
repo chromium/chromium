@@ -17,11 +17,11 @@ _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
 
 # //third_party/node imports.
 sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'node'))
-import node
+import node  # noqa: E402
 
 # //third_party/js_code_coverage imports.
 sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'js_code_coverage'))
-import coverage_modules
+import coverage_modules  # noqa: E402
 
 logging.basicConfig(
   format='[%(asctime)s %(levelname)s] %(message)s', level=logging.DEBUG

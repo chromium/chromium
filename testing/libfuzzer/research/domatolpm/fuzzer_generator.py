@@ -28,11 +28,11 @@ SOURCE_DIR = _GetDirAbove('testing')
 
 # //build imports.
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
-import action_helpers
+import action_helpers  # noqa: E402
 
 # //third_party imports.
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
-import jinja2
+import jinja2  # noqa: E402
 
 _C_STR_TRANS = str.maketrans(
   {'\n': '\\n', '\r': '\\r', '\t': '\\t', '"': '\\"', '\\': '\\\\'}

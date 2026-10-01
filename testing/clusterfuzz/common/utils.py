@@ -23,7 +23,7 @@ def UniformExpoInteger(low, high, base=2):
   return int(math.floor(math.pow(base, random.uniform(low, high))))
 
 
-def WeightedChoice(choices):  # pylint: disable=inconsistent-return-statements
+def WeightedChoice(choices):
   """Chooses an item given a sequence of (choice, weight) tuples"""
   total = sum(w for c, w in choices)
   r = random.uniform(0, total)

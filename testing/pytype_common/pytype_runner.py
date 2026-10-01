@@ -16,11 +16,10 @@ CHROMIUM_SRC_DIR = os.path.realpath(
 
 # //build/util imports.
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'build', 'util'))
-from lib.results import result_sink
-from lib.results import result_types
+from lib.results import result_sink  # noqa: E402
+from lib.results import result_types  # noqa: E402
 
 
-# pylint: disable=too-many-arguments
 def report_results(
     test_name: str,
     test_location: str,
@@ -68,9 +67,6 @@ def report_results(
         )
 
 
-# pylint: enable=too-many-arguments
-
-
 def report_json_results(output_file: str) -> None:
     """'Report' results on bots.
 
@@ -97,7 +93,7 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def run_pytype(  # pylint: disable=too-many-arguments
+def run_pytype(
     test_name: str,
     test_location: str,
     files_to_check: typing.Iterable[str],

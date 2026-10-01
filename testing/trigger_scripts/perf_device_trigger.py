@@ -60,11 +60,11 @@ SRC_DIR = os.path.dirname(
 sys.path.append(os.path.join(SRC_DIR, 'tools', 'perf'))
 
 # //tools/perf imports.
-import generate_perf_sharding
-from core import bot_platforms
+import generate_perf_sharding  # noqa: E402
+from core import bot_platforms  # noqa: E402
 
 
-class Bot(object):  # pylint: disable=useless-object-inheritance
+class Bot(object):
     """Eligible bots to run the task."""
 
     def __init__(self, bot_id, is_alive):
@@ -83,9 +83,7 @@ class Bot(object):  # pylint: disable=useless-object-inheritance
 
 class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
     def __init__(self, args, swarming_args):
-        # pylint: disable=super-with-arguments
         super(PerfDeviceTriggerer, self).__init__()
-        # pylint: enable=super-with-arguments
         self._sharded_query_failed = False
 
         if not args.multiple_trigger_configs:
@@ -140,9 +138,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
 
     def parse_bot_configs(self, args):
         if args.multiple_trigger_configs:
-            # pylint: disable=super-with-arguments
             super(PerfDeviceTriggerer, self).parse_bot_configs(args)
-            # pylint: enable=super-with-arguments
         else:
             self._bot_configs = []
             # For each eligible bot, append the dimension

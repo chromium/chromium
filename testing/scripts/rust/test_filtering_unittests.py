@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 import test_filtering
 from test_filtering import _TestFilter
@@ -18,7 +18,6 @@ from test_filtering import _TestFiltersGroup
 from test_filtering import _SetOfTestFiltersGroups
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 
 class FilterTests(fake_filesystem_unittest.TestCase):
@@ -61,7 +60,6 @@ class FilterTests(fake_filesystem_unittest.TestCase):
 
 
 def _create_group_from_pseudo_file(file_contents):
-    # pylint: disable=unexpected-keyword-arg
     with tempfile.NamedTemporaryFile(
         delete=False, mode='w', encoding='utf-8'
     ) as f:
@@ -241,7 +239,6 @@ class PublicApiTests(fake_filesystem_unittest.TestCase):
         )
 
     def test_filter_file_cmdline_arg(self):
-        # pylint: disable=unexpected-keyword-arg
         f = tempfile.NamedTemporaryFile(
             delete=False, mode='w', encoding='utf-8'
         )

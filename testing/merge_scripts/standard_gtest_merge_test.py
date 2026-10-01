@@ -456,13 +456,10 @@ class LoadShardJsonTest(_StandardGtestMergeTest):
 class MergeShardResultsTest(_StandardGtestMergeTest):
   """Tests for merge_shard_results function."""
 
-  # pylint: disable=super-with-arguments
   def setUp(self):
     super(MergeShardResultsTest, self).setUp()
     self.summary = None
     self.test_files = []
-
-  # pylint: enable=super-with-arguments
 
   def stage(self, summary, files):
     self.summary = self._write_temp_file('summary.json', summary)
@@ -648,11 +645,8 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
 
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
-  # pylint: disable=super-with-arguments
   def __init__(self, methodName='runTest'):
     super(CommandLineTest, self).__init__(methodName, standard_gtest_merge)
-
-  # pylint: enable=super-with-arguments
 
 
 if __name__ == '__main__':

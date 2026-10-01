@@ -11,7 +11,7 @@ import tempfile
 import unittest
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from test_results import TestResult
 

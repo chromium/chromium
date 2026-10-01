@@ -32,20 +32,19 @@ SOURCE_DIR = _GetDirAbove('testing')
 
 # //build imports.
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
-import action_helpers
+import action_helpers  # noqa: E402
 
 # //third_party imports.
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
-import jinja2
+import jinja2  # noqa: E402
 
 # //third_party/domato/src imports.
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party/domato/src'))
-import grammar
+import grammar  # noqa: E402
 
 # TODO(crbug.com/361369290): Remove this disable once DomatoLPM development is
 # finished and upstream changes can be made to expose the relevant protected
 # fields.
-# pylint: disable=protected-access
 
 
 def to_snake_case(name):
@@ -243,11 +242,8 @@ class OneOfProtoMessage(ProtoMessage):
 
 
 class CppExpression:
-  # pylint: disable=no-self-use
   def repr(self):
     raise Exception('Not implemented.')
-
-  # pylint: enable=no-self-use
 
 
 @dataclasses.dataclass
@@ -598,7 +594,6 @@ class DomatoBuilder:
       self.backrefs[field.type.name].append(message.name)
 
   # Handlers should be together even if some of them don't actually use self.
-  # pylint: disable=no-self-use
   def _int_handler(
     self, part, field_name: str
   ) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
@@ -626,8 +621,6 @@ class DomatoBuilder:
     handler = DOMATO_TO_CPP_HANDLERS[part['tagname']]
     contents = CppHandlerCallExpr(handler=handler, field_name=field_name)
     return proto_type, contents
-
-  # pylint: enable=no-self-use
 
   def _lines_handler(
     self, part, field_name: str
@@ -941,7 +934,7 @@ class DomatoBuilder:
         continue
 
       for field in msg.fields:
-        if not field.type.name in self.handlers:
+        if field.type.name not in self.handlers:
           continue
         field_msg = self.handlers[field.type.name].msg
         field_func = self.handlers[field.type.name].func

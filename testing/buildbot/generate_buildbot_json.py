@@ -25,10 +25,8 @@ import dataclasses
 # //testing/buildbot imports.
 import buildbot_json_magic_substitutions as magic_substitutions
 
-# pylint: disable=super-with-arguments,useless-super-delegation
 
 # Disabled instead of fixing to avoid a large amount of churn.
-# pylint: disable=no-self-use
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,7 +41,7 @@ class BBGenErr(Exception):
     super(BBGenErr, self).__init__(message)
 
 
-class BaseGenerator(object):  # pylint: disable=useless-object-inheritance
+class BaseGenerator(object):
   def __init__(self, bb_gen):
     self.bb_gen = bb_gen
 
@@ -264,7 +262,7 @@ def check_matrix_identifier(
       )
     variant = all_variants[variant_name]
 
-    if not 'identifier' in variant:
+    if 'identifier' not in variant:
       raise BBGenErr(
         'Missing required identifier field in matrix '
         'compound suite %s, %s' % (suite, sub_suite)
@@ -281,7 +279,7 @@ def check_matrix_identifier(
       )
 
 
-class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
+class BBJSONGenerator(object):
   def __init__(self, args):
     self.args = args
     self.waterfalls = None
@@ -319,9 +317,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
       @property
       def legacy_path(self):
-        return self._args._pyl_dir_path(  # pylint: disable=protected-access
-          self._filename
-        )
+        return self._args._pyl_dir_path(self._filename)
 
       @property
       def generated_path(self):
@@ -492,10 +488,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'The --json flag can only be used with --query.'
       )  # pragma: no cover
 
-    # pylint: disable=attribute-defined-outside-init
     args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
     args.output_dir = args.output_dir or args.pyl_files_dir
-    # pylint: enable=attribute-defined-outside-init
 
     return args
 
@@ -511,7 +505,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     with open(file_path, 'w', newline='') as fp:
       fp.write(contents)
 
-  # pylint: disable=inconsistent-return-statements
   def load_pyl_file(self, pyl_file_path):
     try:
       return ast.literal_eval(self.read_file(pyl_file_path))
@@ -519,7 +512,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       raise BBGenErr(
         'Failed to parse pyl file "%s": %s' % (pyl_file_path, e)
       ) from e
-    # pylint: enable=inconsistent-return-statements
 
   # TOOD(kbr): require that os_type be specified for all bots in waterfalls.pyl.
   # Currently it is only mandatory for bots which run GPU tests. Change these to
@@ -1184,9 +1176,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     )
     return result
 
-  # pylint: disable=line-too-long
   # LINT.ThenChange(//infra/config/lib/targets-internal/test-types/gpu_telemetry_test.star)
-  # pylint: enable=line-too-long
 
   def get_default_isolate_name(self, tester_config, is_android_webview):
     if self.is_android(tester_config):
@@ -1440,7 +1430,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     for waterfall in self.waterfalls:
       for tester_name, tester in waterfall['machines'].items():
         for suite, value in tester.get('test_suites', {}).items():
-          if not value in self.test_suites:
+          if value not in self.test_suites:
             # Hard / impossible to cover this in the unit test.
             raise self.unknown_test_suite(
               value, tester_name, waterfall['name']
@@ -1575,7 +1565,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         f"got '{mixins}', should be a list of mixin names: {location}"
       )
     for mixin in mixins:
-      if not mixin in self.mixins:
+      if mixin not in self.mixins:
         raise BBGenErr(f'bad mixin {mixin}: {location}')
 
   def apply_mixins(self, test, mixins, mixins_to_ignore, builder=None):
@@ -1791,10 +1781,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       )
     )
     for c in milo_configs:
-      for l in self.read_file(c).splitlines():
+      for l in self.read_file(c).splitlines():  # noqa: E741
         if (
-          not 'name: "buildbucket/luci.chromium.' in l
-          and not 'name: "buildbucket/luci.chrome.' in l
+          'name: "buildbucket/luci.chromium.' not in l
+          and 'name: "buildbucket/luci.chrome.' not in l
         ):
           continue
         # l looks like
@@ -2032,7 +2022,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           ['<snip>\n'],
         )
         # Print out a useful message when a type assertion fails.
-        for l in lines:
+        for l in lines:  # noqa: E741
           self.print_line(l.strip())
 
       node_dumped = ast.dump(node, annotate_fields=False)
@@ -2351,34 +2341,34 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     for param in params_dict:
       # if dimension parameter
       if param in DIMENSION_PARAMS or param in SWARMING_PARAMS:
-        if not 'swarming' in test_info:
+        if 'swarming' not in test_info:
           return False
         swarming = test_info['swarming']
         if param in SWARMING_PARAMS:
-          if not param in swarming:
+          if param not in swarming:
             return False
           if not str(swarming[param]) == params_dict[param]:
             return False
         else:
-          if not 'dimensions' in swarming:
+          if 'dimensions' not in swarming:
             return False
           dimensions = swarming['dimensions']
           # only looking at the first dimension set
-          if not param in dimensions:
+          if param not in dimensions:
             return False
           if not dimensions[param] == params_dict[param]:
             return False
 
       # if flag
       elif param.startswith('--'):
-        if not 'args' in test_info:
+        if 'args' not in test_info:
           return False
-        if not param in test_info['args']:
+        if param not in test_info['args']:
           return False
 
       # not dimension parameter/flag/mixin
       else:
-        if not param in test_info:
+        if param not in test_info:
           return False
         if not test_info[param] == params_dict[param]:
           return False
@@ -2417,7 +2407,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       test_info = tests[test_name]
       if not self.does_test_match(test_info, params_dict):
         continue
-      if not test_name in matching_tests:
+      if test_name not in matching_tests:
         matching_tests.append(test_name)
     return matching_tests
 
@@ -2439,7 +2429,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     TEST_CATS = self.get_test_generator_map().keys()
     tests = []
     for test_cat in TEST_CATS:
-      if not test_cat in bot_info:
+      if test_cat not in bot_info:
         continue
       test_cat_tests = bot_info[test_cat]
       tests = tests + test_cat_tests
@@ -2508,7 +2498,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     else:
       self.print_line(output)
 
-  # pylint: disable=inconsistent-return-statements
   def query(self, args):
     """Queries tests or bots.
 
@@ -2551,7 +2540,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           % str(len(query) - 1)
         )
       bot_id = query[1]
-      if not bot_id in bots:
+      if bot_id not in bots:
         self.error_msg('No bot named "' + bot_id + '" found.')
       bot_info = bots[bot_id]
       if len(query) == 2:
@@ -2607,8 +2596,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'Your command did not match any valid commands. '
         'Try starting with "bots", "bot", "tests", or "test".'
       )
-
-  # pylint: enable=inconsistent-return-statements
 
   def main(self):  # pragma: no cover
     if self.args.check:

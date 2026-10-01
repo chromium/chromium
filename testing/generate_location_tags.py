@@ -4,12 +4,10 @@
 # found in the LICENSE file.
 """Generates the directory->tags mapping used by ResultDB."""
 
-# pylint: disable=line-too-long
 #
 # For more on the tags, see
 # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/location_tag.proto
 #
-# pylint: enable=line-too-long
 
 import argparse
 import logging
@@ -23,7 +21,7 @@ SRC_DIR = os.path.abspath(os.path.dirname(THIS_DIR))
 # //build imports.
 BUILD_DIR = os.path.join(SRC_DIR, 'build')
 sys.path.insert(0, BUILD_DIR)
-import find_depot_tools
+import find_depot_tools  # noqa: E402
 
 
 def main():

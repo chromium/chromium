@@ -15,10 +15,8 @@ from unexpected_passes_common import data_types
 from unexpected_passes_common import unittest_utils as uu
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 # Disabled instead of fixing to avoid a large amount of churn.
-# pylint: disable=no-self-use
 
 NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
 SIMPLE_WILDCARD = data_types.WildcardType.SIMPLE_WILDCARD

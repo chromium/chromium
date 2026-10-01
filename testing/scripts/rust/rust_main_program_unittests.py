@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 from test_results import TestResult
 
@@ -22,7 +22,6 @@ from rust_main_program import _parse_args
 from rust_main_program import _TestExecutableWrapper
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 
 class Tests(fake_filesystem_unittest.TestCase):

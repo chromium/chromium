@@ -10,7 +10,7 @@ import unittest
 from unittest import mock
 
 # vpython-provided modules.
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
@@ -21,7 +21,6 @@ from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu
 
 # Protected access is allowed for unittests.
-# pylint: disable=protected-access
 
 NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
 SIMPLE_WILDCARD = data_types.WildcardType.SIMPLE_WILDCARD
@@ -510,7 +509,6 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
     today_str = today_date.isoformat()
     yesterday_str = yesterday_date.isoformat()
     older_str = older_date.isoformat()
-    # pylint: disable=line-too-long
     blame_output = """\
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  1)# tags: [ tag1 ]
 98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  2)# tags: [ tag2 ]
@@ -521,7 +519,6 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  8)crbug.com/2345 testname [ Failure ]
 3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  9)crbug.com/3456 othertest [ Failure ]"""
-    # pylint: enable=line-too-long
     blame_output = blame_output.format(
       today_date=today_str, yesterday_date=yesterday_str, older_date=older_str
     )
@@ -549,7 +546,6 @@ crbug.com/3456 othertest [ Failure ]"""
     today_str = today_date.isoformat()
     yesterday_str = yesterday_date.isoformat()
     older_str = older_date.isoformat()
-    # pylint: disable=line-too-long
     blame_output = """\
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  1)# tags: [ tag1 ]
 98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  2)# tags: [ tag2 ]
@@ -558,7 +554,6 @@ crbug.com/3456 othertest [ Failure ]"""
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  5)crbug.com/1234 [ tag1 ] testname [ Failure ]
 98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  6)[ tag2 ] testname [ Failure ] # Comment
 3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]"""
-    # pylint: enable=line-too-long
     blame_output = blame_output.format(
       today_date=today_str, yesterday_date=yesterday_str, older_date=older_str
     )
@@ -1990,7 +1985,6 @@ crbug.com/1234 [ mac ] bar/test [ Failure ]
 
   def testInlineComments(self) -> None:
     """Tests that inline disable comments are properly parsed."""
-    # pylint: disable=line-too-long
     contents = """
 crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable-general general-reason
 
@@ -2002,7 +1996,6 @@ crbug.com/1234 [ win ] bar/test [ Failure ]  # finder:disable-narrowing
 
 crbug.com/1234 [ mac ] bar/test [ Failure ]
 """
-    # pylint: enable=line-too-long
     with open('/expectation_file', 'w', encoding='utf-8') as outfile:
       outfile.write(contents)
 

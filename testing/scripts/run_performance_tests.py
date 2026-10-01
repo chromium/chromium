@@ -57,9 +57,7 @@ if sys.platform == 'darwin':
   import plistlib
 
 # vpython-provided modules.
-# pylint: disable=import-error
 import requests
-# pylint: enable=import-error
 
 import common
 
@@ -74,14 +72,14 @@ if (PERF_DIR / 'crossbench_result_converter.py').exists():
   import crossbench_result_converter
 else:
   print('Optional crossbench_result_converter not available.')
-import generate_legacy_perf_dashboard_json
-from core import path_util
-from core import results_merger
+import generate_legacy_perf_dashboard_json  # noqa: E402
+from core import path_util  # noqa: E402
+from core import results_merger  # noqa: E402
 
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
 # //testing imports.
-import xvfb
-import test_env
+import xvfb  # noqa: E402
+import test_env  # noqa: E402
 
 THIRD_PARTY_DIR = CHROMIUM_SRC_DIR / 'third_party'
 CATAPULT_DIR = THIRD_PARTY_DIR / 'catapult'
@@ -102,7 +100,7 @@ ALUM_RUNNER = CHROMIUM_SRC_DIR / 'tools/perf/web_tests_cuj.py'
 ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
 BUNDLETOOL = (
   THIRD_PARTY_DIR / 'android_build_tools/bundletool/cipd/bundletool.jar'
-)  # pylint: disable=line-too-long
+)
 GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
@@ -141,8 +139,6 @@ GTEST_CONVERSION_WHITELIST = [
   'wayland_client_perftests',
   'xr.vr.common_perftests',
 ]
-
-# pylint: disable=useless-object-inheritance
 
 
 class OutputFilePaths(object):
@@ -276,20 +272,14 @@ class GtestCommandGenerator(object):
       return ['--gtest_filter=' + ':'.join(filter_list)]
     return []
 
-  # pylint: disable=no-self-use
   def _generate_repeat_args(self):
     # TODO(crbug.com/40608634): Support --isolated-script-test-repeat.
     return []
 
-  # pylint: enable=no-self-use
-
-  # pylint: disable=no-self-use
   def _generate_also_run_disabled_tests_args(self):
     # TODO(crbug.com/40608634): Support
     # --isolated-script-test-also-run-disabled-tests.
     return []
-
-  # pylint: enable=no-self-use
 
   def _generate_output_args(self, output_dir):
     output_args = []
@@ -437,7 +427,7 @@ def execute_gtest_perf_test(
       )
       with open(output_paths.perf_results, 'w') as fh:
         fh.write(graph_json_string)
-  except Exception:  # pylint: disable=broad-except
+  except Exception:
     traceback.print_exc()
     return_code = 1
   if os.path.exists(output_paths.perf_results):
@@ -445,9 +435,7 @@ def execute_gtest_perf_test(
     if executable_name in GTEST_CONVERSION_WHITELIST:
       # //third_party/catapult/tracing imports.
       with path_util.SysPath(path_util.GetTracingDir()):
-        # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
-        # pylint: enable=no-name-in-module,import-outside-toplevel
       gtest_json_converter.ConvertGtestJsonFile(
         output_paths.perf_results, label=results_label
       )
@@ -683,7 +671,7 @@ def execute_telemetry_benchmark(
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
       shutil.move(csv_file_path, output_paths.csv_perf_results)
-  except Exception:  # pylint: disable=broad-except
+  except Exception:
     print(
       'The following exception may have prevented the code from '
       'outputing structured test results and perf results output:'
@@ -1190,7 +1178,7 @@ class CrossbenchTest(object):
         while bottom_of_log:
           print(f'    {bottom_of_log.popleft()}')
         print('See the complete logs in the CAS Outputs')
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       print(
         'The following exception may have prevented the code from '
         'outputing structured test results and perf results output:'
@@ -1499,13 +1487,11 @@ def get_browser_versions(isolated_out_dir):
         'driver': '/usr/bin/safaridriver',
         'prefix': 'Included with Safari ',
       },
-      # pylint: disable=line-too-long
       'technology-preview': {
         'plist': '/Applications/Safari Technology Preview.app/Contents/Info.plist',
         'driver': '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver',
         'prefix': 'Included with Safari Technology Preview ',
       },
-      # pylint: enable=line-too-long
     }
     for channel, info in channels.items():
       driver_version = subprocess.run(
@@ -1516,11 +1502,9 @@ def get_browser_versions(isolated_out_dir):
       ).stdout.strip()
       prefix = info['prefix']
       if not driver_version.startswith(prefix):
-        # pylint: disable=line-too-long
         print(
           f'Missing expected prefix from Safari {channel} output: {driver_version}'
         )
-        # pylint: enable=line-too-long
         return 1
       driver_version = driver_version[len(prefix) :]
       # For Safari stable, the version reported by safaridriver is complete and

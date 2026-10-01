@@ -110,7 +110,7 @@ def _build_json_data(list_of_test_results, seconds_since_epoch):
         path = res.test_name.split('//')
         group = tests
         for group_name in path[:-1]:
-            if not group_name in group:
+            if group_name not in group:
                 group[group_name] = {}
             group = group[group_name]
 

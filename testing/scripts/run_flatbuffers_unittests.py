@@ -27,8 +27,6 @@ sys.path.append(
 # //testing imports.
 import xvfb
 
-# pylint: disable=super-with-arguments
-
 
 def main():
   parser = argparse.ArgumentParser()

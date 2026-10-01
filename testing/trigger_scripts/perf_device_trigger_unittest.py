@@ -9,10 +9,9 @@ import unittest
 import perf_device_trigger
 
 # Disabled instead of fixing to avoid a large amount of churn.
-# pylint: disable=no-self-use
 
 
-class Args(object):  # pylint: disable=useless-object-inheritance
+class Args(object):
     def __init__(self):
         self.shards = 1
         self.shard_index = None
@@ -33,9 +32,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
         self._triggered_with_swarming_go = 0
         self._list_bots_result = list_bots_result
         self._list_tasks_results = list_tasks_results
-        # pylint: disable=super-with-arguments
         super(FakeTriggerer, self).__init__(args, swarming_args)
-        # pylint: enable=super-with-arguments
 
     def set_files(self, files):
         self._files = files
@@ -192,7 +189,7 @@ class UnitTest(unittest.TestCase):
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
         for run in triggerer.swarming_runs:
-            if not 'trigger' in run:
+            if 'trigger' not in run:
                 continue
             bot_id = run[(run.index('id') + 1)]
 

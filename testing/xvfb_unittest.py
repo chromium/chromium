@@ -18,7 +18,6 @@ from unittest import mock
 
 import xvfb
 
-# pylint: disable=super-with-arguments
 
 TEST_FILE = __file__.replace('.pyc', '.py')
 XVFB = TEST_FILE.replace('_unittest', '')
@@ -35,15 +34,11 @@ def launch_process(args):
   )
 
 
-# pylint: disable=inconsistent-return-statements
 def read_subprocess_message(proc, starts_with):
   """Finds the value after first line prefix condition."""
   for line in proc.stdout.read().decode('utf-8').splitlines(True):
     if str(line).startswith(starts_with):
       return line.rstrip().replace(starts_with, '')
-
-
-# pylint: enable=inconsistent-return-statements
 
 
 def send_signal(proc, sig, sleep_time=0.3):

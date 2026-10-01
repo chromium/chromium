@@ -20,7 +20,7 @@ sys.path.append(
   os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 )
 # //testing imports.
-import test_env
+import test_env  # noqa: E402
 
 if sys.platform.startswith('linux'):
   import xvfb
@@ -58,8 +58,6 @@ CORRECT_ACL_VARIANTS = [
   'APPLICATION PACKAGE AUTHORITY'
   '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)',
 ]
-
-# pylint: disable=useless-object-inheritance
 
 
 def _grant_acls(target_dir, grants):
@@ -245,7 +243,7 @@ def parse_common_test_results(json_results, test_separator='/'):
     for name, data in trie.items():
       if prefix:
         name = prefix + test_separator + name
-      if len(data) and not 'actual' in data and not 'expected' in data:
+      if len(data) and 'actual' not in data and 'expected' not in data:
         result.update(convert_trie_to_flat_paths(data, name))
       else:
         result[name] = data
@@ -436,58 +434,37 @@ class BaseIsolatedScriptArgsAdapter:
     return self._rest_args
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     del output  # unused
     return []
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_test_filter_args(self, test_filter_str):
     del test_filter_str  # unused
     raise RuntimeError('Flag not supported.')
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_test_repeat_args(self, repeat_count):
     del repeat_count  # unused
     raise RuntimeError('Flag not supported.')
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     del retry_limit  # unused
     raise RuntimeError('Flag not supported.')
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_sharding_args(self, total_shards, shard_index):
     del total_shards, shard_index  # unused
     raise RuntimeError('Flag not supported.')
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def generate_test_also_run_disabled_tests_args(self):
     raise RuntimeError('Flag not supported.')
 
-  # pylint: enable=no-self-use
-
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def select_python_executable(self):
     return sys.executable
-
-  # pylint: enable=no-self-use
 
   def generate_isolated_script_cmd(self):
     isolated_script_cmd = [self.select_python_executable()] + self.rest_args
@@ -594,7 +571,7 @@ class BaseIsolatedScriptArgsAdapter:
       print('Command returned exit code %d' % exit_code)
       sys.stdout.flush()
       self.do_post_test_run_tasks()
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       traceback.print_exc()
       exit_code = None
     finally:

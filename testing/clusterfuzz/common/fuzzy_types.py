@@ -118,8 +118,7 @@ def FuzzListInString(s, separators=r', |,|; |;|\r\n|\s'):
 # Pylint doesn't recognize that in this case 'self' is some mutable sequence,
 # so the unsupoorted-assignment-operation and unsupported-delete-operation
 # warnings have been disabled here.
-# pylint: disable=unsupported-assignment-operation,unsupported-delete-operation
-class FuzzySequence(object):  # pylint: disable=useless-object-inheritance
+class FuzzySequence(object):
   """A helpful mixin for writing fuzzy mutable sequence types.
 
   If a method parameter is left at its default value of None, an appropriate
@@ -167,15 +166,14 @@ class FuzzySequence(object):  # pylint: disable=useless-object-inheritance
     del self[location : location + amount]
 
 
-# pylint: enable=unsupported-assignment-operation,unsupported-delete-operation
-
-
 class FuzzyList(list, FuzzySequence):
   """A list with additional methods for fuzzing."""
 
   def RandomMutation(self, count=None, new_element=''):
     """Apply count random mutations chosen from a list."""
-    random_items = lambda: random.choice(self) if self else new_element
+    random_items = (  # noqa: E731
+      lambda: random.choice(self) if self else new_element
+    )
     mutations = [
       lambda: random.shuffle(self),
       self.reverse,
@@ -206,7 +204,7 @@ class FuzzyBuffer(bytearray, FuzzySequence):
 
   def RandomMutation(self, count=None):
     """Apply count random mutations chosen from a weighted list."""
-    random_bytes = lambda: random.randint(0x00, 0xFF)
+    random_bytes = lambda: random.randint(0x00, 0xFF)  # noqa: E731
     mutations = [
       (self.FlipBits, 1),
       (functools.partial(self.Overwrite, random_bytes), 1 / 3.0),

@@ -54,14 +54,14 @@ def GetInstance() -> 'Builders':
 
 
 def RegisterInstance(instance: 'Builders') -> None:
-  global _registered_instance  # pylint: disable=global-statement
+  global _registered_instance
   assert _registered_instance is None
   assert isinstance(instance, Builders)
   _registered_instance = instance
 
 
 def ClearInstance() -> None:
-  global _registered_instance  # pylint: disable=global-statement
+  global _registered_instance
   _registered_instance = None
 
 

@@ -8,11 +8,9 @@ import time
 from typing import Collection, Dict, Generator, Iterable, List, Optional, Tuple
 
 # vpython-provided modules.
-# pylint: disable=import-error
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 import pandas
-# pylint: enable=import-error
 
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
@@ -350,7 +348,6 @@ class BigQueryQuerier:
     raise NotImplementedError()
 
   # Overridden by subclasses.
-  # pylint: disable=no-self-use
   def _ShouldSkipOverResult(self, result: QueryResult) -> bool:
     """Whether |result| should be ignored and skipped over.
 
@@ -362,8 +359,6 @@ class BigQueryQuerier:
     """
     del result
     return False
-
-  # pylint: enable=no-self-use
 
 
 def _StripPrefixFromBuildId(build_id: str) -> str:

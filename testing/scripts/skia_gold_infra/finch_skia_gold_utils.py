@@ -11,8 +11,12 @@ _CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(_THIS_DIR, '..', '..', '..'))
 
 # //build imports.
 sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'build'))
-from skia_gold_common.skia_gold_properties import SkiaGoldProperties
-from skia_gold_common.skia_gold_session_manager import SkiaGoldSessionManager
+from skia_gold_common.skia_gold_properties import (  # noqa: E402
+  SkiaGoldProperties,
+)
+from skia_gold_common.skia_gold_session_manager import (  # noqa: E402
+  SkiaGoldSessionManager,
+)
 
 # This is the corpus used by skia gold to identify the data set.
 # We are not using the same corpus as the rest of the skia gold chromium tests.
