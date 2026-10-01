@@ -975,8 +975,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
       base::Milliseconds(enter_key_down_ts - x_key_up_ts);
 
   // Check the delay between keydown and keyup.
-  EXPECT_GE(x_up_to_enter_down_delta,
-            features::kGlicActorTypeToolEnterDelay.Get());
+  EXPECT_GE(x_up_to_enter_down_delta, kActorTypeToolEnterDelayParam.Get());
 }
 
 }  // namespace

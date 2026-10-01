@@ -332,7 +332,7 @@ void KeyDispatcher::ContinueIncrementalTyping() {
       // ensure a user-like input and to allow the page to process the typed
       // text. Only down is delayed to avoid doubling this longer delay and
       // since most inputs take action on the down event.
-      delay = features::kGlicActorTypeToolEnterDelay.Get();
+      delay = kActorTypeToolEnterDelayParam.Get();
     } else {
       delay = (is_key_down_ ? features::kGlicActorKeyDownDuration
                             : features::kGlicActorKeyUpDuration)

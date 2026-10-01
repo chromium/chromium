@@ -296,12 +296,6 @@ const base::FeatureParam<std::string>
         "glic-experimental-triggering-tab-focus-fallback-url",
         "https://gemini.google.com/app"};
 
-const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
-    &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};
-
-const base::FeatureParam<base::TimeDelta> kGlicActorClickDelay{
-    &kGlicActor, "glic-actor-click-delay", base::Milliseconds(5)};
-
 // Controls whether the Actor UI components are enabled.
 BASE_FEATURE(kGlicActorUi, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActorUiNewIcon, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -448,11 +442,6 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kGlicActorIncrementalTypingClearAutoSelection{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-clear-auto-selection", false};
-
-// If the TypeTool is invoked with followed_by_enter, the enter key is
-// dispatched with this delay.
-const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
-    &kGlicActor, "glic-actor-type-tool-enter-delay", base::Milliseconds(600)};
 
 constexpr base::FeatureParam<std::string> kGlicActorEligibleTiers{
     &kGlicActor, "glic-actor-eligible-tiers", "1,2"};
