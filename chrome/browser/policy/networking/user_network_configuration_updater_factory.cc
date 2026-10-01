@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -14,8 +15,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -67,11 +69,15 @@ UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  DCHECK(user);
+  CHECK(user);
   // Currently, only the network policy of the primary user is supported. See
   // also http://crbug.com/41067885 .
-  if (user != user_manager::UserManager::Get()->GetPrimaryUser())
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  if (user->GetAccountId() != primary_session->account_id()) {
     return nullptr;
+  }
 
   // Note that sessions which don't have policy (e.g. guest sessions) still
   // expect to have UserNetworkConfigurationUpdater, because
