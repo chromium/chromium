@@ -22,6 +22,7 @@
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_loader_ios.h"
+#import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_ios.h"
@@ -94,6 +95,11 @@ void BrowserPolicyConnectorIOS::Init(
       new policy::DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(
       kServiceInitializationStartupDelay);
+
+  policy::PolicyLogger::GetInstance()->EnableLogCompression(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   InitInternal(local_state, std::move(device_management_service));
   MaybeApplyLocalTestPolicies(local_state);
