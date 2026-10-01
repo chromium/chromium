@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_context_menu_builder.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -19,6 +22,36 @@ namespace {
 
 /// The corner radius of the favicon in attach current tab action.
 const CGFloat kAttachCurrentTabIconRadius = 2.0f;
+
+// Helper struct storing the availability of the given menu item.
+struct MenuItemAvailability {
+  bool disabled;
+  bool hidden;
+  bool selected;
+
+  MenuItemAvailability(ComposeboxUIInputState* input_state,
+                       ComposeboxModelOption model_option) {
+    this->disabled = [input_state isModelDisabled:model_option];
+    this->hidden = [input_state isModelHidden:model_option];
+    this->selected = input_state.activeModel == model_option;
+  }
+
+  MenuItemAvailability(ComposeboxUIInputState* input_state,
+                       ComposeboxMode tool) {
+    this->disabled = [input_state isToolDisabled:tool];
+    this->hidden = [input_state isToolHidden:tool];
+    this->selected = input_state.activeTool == tool;
+  }
+
+  MenuItemAvailability(ComposeboxUIInputState* input_state,
+                       ComposeboxAttachmentOption attachment) {
+    this->disabled = [input_state isAttachmentDisabled:attachment];
+    this->hidden = [input_state isAttachmentHidden:attachment];
+    this->selected = false;
+  }
+
+  MenuItemAvailability() : disabled(true), hidden(true), selected(false) {}
+};
 
 }  // namespace
 
@@ -39,283 +72,132 @@ const CGFloat kAttachCurrentTabIconRadius = 2.0f;
 }
 
 - (UIMenu*)createMenu {
-  __weak __typeof(self) weakSelf = self;
-  using enum ComposeboxAttachmentOption;
-  UIAction* galleryAction = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
-                image:SymbolWithPointSize(SymbolPhoto, kSymbolActionPointSize)
-               hidden:[_inputState isAttachmentHidden:kGallery]
-             disabled:[_inputState isAttachmentDisabled:kGallery]
-             selected:NO
-              handler:^{
-                [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                       kAttachmentGallery];
-              }];
-  galleryAction.accessibilityIdentifier =
-      kComposeboxGalleryActionAccessibilityIdentifier;
+  using enum ComposeboxMenuItemType;
 
-  UIAction* cameraAction = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
-                image:SymbolWithPointSize(SymbolSystemCamera,
-                                          kSymbolActionPointSize)
-               hidden:[_inputState isAttachmentHidden:kCamera]
-             disabled:[_inputState isAttachmentDisabled:kCamera]
-             selected:NO
-              handler:^{
-                [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                       kAttachmentCamera];
-              }];
-  cameraAction.accessibilityIdentifier =
-      kComposeboxCameraActionAccessibilityIdentifier;
+  NSMutableArray<UIMenuElement*>* sections = [[NSMutableArray alloc] init];
 
-  UIAction* fileAction = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
-                image:SymbolWithPointSize(SymbolDoc, kSymbolActionPointSize)
-               hidden:[_inputState isAttachmentHidden:kFile]
-             disabled:[_inputState isAttachmentDisabled:kFile]
-             selected:NO
-              handler:^{
-                [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                       kAttachmentFiles];
-              }];
+  if (IsPlusButtonMenuMoreOptionsSubmenu()) {
+    UIMenu* attachmentMenu =
+        [self inlineMenuFromItemTypes:{kCurrentTab, kAttachmentGallery,
+                                       kAttachmentCamera, kAttachmentTabs}];
+    UIMenu* aimMenu = [self inlineMenuFromItemTypes:{kAIM}];
+    UIMenu* moreOptions = [self createMoreOptionsSubmenu];
 
-  fileAction.accessibilityIdentifier =
-      kComposeboxAttachFileActionAccessibilityIdentifier;
+    if (attachmentMenu) {
+      [sections addObject:attachmentMenu];
+    }
+    if (aimMenu) {
+      [sections addObject:aimMenu];
+    }
+    if (moreOptions) {
+      [sections addObject:moreOptions];
+    }
+  } else {
+    UIMenu* attachmentMenu =
+        [self inlineMenuFromItemTypes:{kCurrentTab, kAttachmentTabs,
+                                       kAttachmentCamera, kAttachmentGallery,
+                                       kAttachmentFiles, kAttachmentDrive}];
+    UIMenu* modeMenu = [self
+        inlineMenuFromItemTypes:{kAIM, kCreateImage, kDeepSearch, kCanvas}
+                      withTitle:[_inputState.uiConfig toolsSectionHeader]];
+    UIMenu* modelPickerMenu = [self createModelPickerMenu];
 
-  UIImage* favicon = _inputState.currentTabFavicon;
-  if (favicon) {
-    favicon = ImageWithCornerRadius(favicon, kAttachCurrentTabIconRadius);
+    if (attachmentMenu) {
+      [sections addObject:attachmentMenu];
+    }
+    if (modeMenu) {
+      [sections addObject:modeMenu];
+    }
+    if (modelPickerMenu) {
+      [sections addObject:modelPickerMenu];
+    }
   }
-  UIAction* attachCurrentTabAction =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION)
-                      image:favicon
-                                ?: SymbolWithPointSize(SymbolNewTabGroupAction,
-                                                       kSymbolActionPointSize)
-                     hidden:[_inputState isAttachmentHidden:kCurrentTab]
-                   disabled:[_inputState isAttachmentDisabled:kCurrentTab]
-                   selected:NO
-                    handler:^{
-                      [weakSelf handleItemPickedWithType:
-                                    ComposeboxMenuItemType::kCurrentTab];
-                    }];
-  attachCurrentTabAction.accessibilityIdentifier =
-      kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
-
-  UIAction* selectTabsAction =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
-                      image:SymbolWithPointSize(SymbolNewTabGroupAction,
-                                                kSymbolActionPointSize)
-                     hidden:[_inputState isAttachmentHidden:kTab]
-                   disabled:[_inputState isAttachmentDisabled:kTab]
-                   selected:NO
-                    handler:^{
-                      [weakSelf handleItemPickedWithType:
-                                    ComposeboxMenuItemType::kAttachmentTabs];
-                    }];
-  selectTabsAction.accessibilityIdentifier =
-      kComposeboxSelectTabsActionAccessibilityIdentifier;
-
-  UIAction* aimAction = [self
-      actionWithTitle:[_inputState.uiConfig
-                          menuLabelForTool:ComposeboxMode::kAIM]
-                image:[_inputState.uiConfig iconForTool:ComposeboxMode::kAIM]
-               hidden:[_inputState isToolHidden:ComposeboxMode::kAIM]
-             disabled:NO
-             selected:_inputState.activeTool == ComposeboxMode::kAIM
-              handler:^{
-                [weakSelf
-                    handleItemPickedWithType:ComposeboxMenuItemType::kAIM];
-              }];
-  aimAction.accessibilityIdentifier =
-      kComposeboxAIMActionAccessibilityIdentifier;
-
-  UIAction* createImageAction = [self
-      actionWithTitle:[_inputState.uiConfig
-                          menuLabelForTool:ComposeboxMode::kImageGeneration]
-                image:[_inputState.uiConfig
-                          iconForTool:ComposeboxMode::kImageGeneration]
-               hidden:[_inputState
-                          isToolHidden:ComposeboxMode::kImageGeneration]
-             disabled:[_inputState
-                          isToolDisabled:ComposeboxMode::kImageGeneration]
-             selected:_inputState.activeTool == ComposeboxMode::kImageGeneration
-              handler:^{
-                [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                       kCreateImage];
-              }];
-  createImageAction.accessibilityIdentifier =
-      kComposeboxImageGenerationActionAccessibilityIdentifier;
-
-  UIAction* canvasAction = [self
-      actionWithTitle:[_inputState.uiConfig
-                          menuLabelForTool:ComposeboxMode::kCanvas]
-                image:[_inputState.uiConfig iconForTool:ComposeboxMode::kCanvas]
-               hidden:[_inputState isToolHidden:ComposeboxMode::kCanvas]
-             disabled:[_inputState isToolDisabled:ComposeboxMode::kCanvas]
-             selected:_inputState.activeTool == ComposeboxMode::kCanvas
-              handler:^{
-                [weakSelf
-                    handleItemPickedWithType:ComposeboxMenuItemType::kCanvas];
-              }];
-
-  UIAction* deepSearchAction = [self
-      actionWithTitle:[_inputState.uiConfig
-                          menuLabelForTool:ComposeboxMode::kDeepSearch]
-                image:[_inputState.uiConfig
-                          iconForTool:ComposeboxMode::kDeepSearch]
-               hidden:[_inputState isToolHidden:ComposeboxMode::kDeepSearch]
-             disabled:[_inputState isToolDisabled:ComposeboxMode::kDeepSearch]
-             selected:_inputState.activeTool == ComposeboxMode::kDeepSearch
-              handler:^{
-                [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                       kDeepSearch];
-              }];
-
-  NSMutableArray<UIMenuElement*>* attachmentMenuElements =
-      [[NSMutableArray alloc] init];
-  [attachmentMenuElements addObjectsFromArray:@[
-    attachCurrentTabAction, selectTabsAction, cameraAction, galleryAction,
-    fileAction
-  ]];
-
-  if (IsComposeboxDriveOptionEnabled()) {
-    UIImage* driveSymbol =
-        SymbolWithPointSize(SymbolFolder, kSymbolActionPointSize);
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    driveSymbol =
-        SymbolWithPointSize(SymbolGoogleDrive, kSymbolActionPointSize);
-#endif
-    UIAction* driveAction = [self
-        actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION)
-                  image:driveSymbol
-                 hidden:[_inputState isAttachmentHidden:kDrive]
-               disabled:[_inputState isAttachmentDisabled:kDrive]
-               selected:NO
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kAttachmentDrive];
-                }];
-    [attachmentMenuElements addObject:driveAction];
-  }
-
-  UIMenu* attachmentMenu = [UIMenu menuWithTitle:@""
-                                           image:nil
-                                      identifier:nil
-                                         options:UIMenuOptionsDisplayInline
-                                        children:attachmentMenuElements];
-
-  NSString* toolsSectionTitle = [_inputState.uiConfig toolsSectionHeader];
-  UIMenu* modeMenu = [UIMenu
-      menuWithTitle:toolsSectionTitle
-              image:nil
-         identifier:nil
-            options:UIMenuOptionsDisplayInline
-           children:@[
-             aimAction, createImageAction, deepSearchAction, canvasAction
-           ]];
-
-  NSMutableArray<UIMenuElement*>* sections =
-      [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
-  if (_inputState.allowModelPicker) {
-    BOOL regularHidden =
-        [_inputState isModelHidden:ComposeboxModelOption::kRegular] ||
-        ![_inputState isModelHidden:ComposeboxModelOption::kAuto];
-    // Note: When possible, this is meant to be replaced by 'Auto'.
-    UIAction* regularModelOption = [self
-        actionWithTitle:[_inputState.uiConfig
-                            menuLabelForModel:ComposeboxModelOption::kRegular]
-                  image:[_inputState.uiConfig
-                            iconForModel:ComposeboxModelOption::kRegular]
-                 hidden:regularHidden
-               disabled:[_inputState
-                            isModelDisabled:ComposeboxModelOption::kRegular]
-               selected:_inputState.activeModel ==
-                        ComposeboxModelOption::kRegular
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kModelRegular];
-                }];
-
-    UIAction* autoModelOption = [self
-        actionWithTitle:[_inputState.uiConfig
-                            menuLabelForModel:ComposeboxModelOption::kAuto]
-                  image:[_inputState.uiConfig
-                            iconForModel:ComposeboxModelOption::kAuto]
-                 hidden:[_inputState isModelHidden:ComposeboxModelOption::kAuto]
-               disabled:[_inputState
-                            isModelDisabled:ComposeboxModelOption::kAuto]
-               selected:_inputState.activeModel == ComposeboxModelOption::kAuto
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kModelAuto];
-                }];
-
-    UIAction* thinkingModelOption = [self
-        actionWithTitle:[_inputState.uiConfig
-                            menuLabelForModel:ComposeboxModelOption::kThinking]
-                  image:[_inputState.uiConfig
-                            iconForModel:ComposeboxModelOption::kThinking]
-                 hidden:[_inputState
-                            isModelHidden:ComposeboxModelOption::kThinking]
-               disabled:[_inputState
-                            isModelDisabled:ComposeboxModelOption::kThinking]
-               selected:_inputState.activeModel ==
-                        ComposeboxModelOption::kThinking
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kModelThinking];
-                }];
-
-    UIAction* thinkingModelNoGenUIOption = [self
-        actionWithTitle:
-            [_inputState.uiConfig
-                menuLabelForModel:ComposeboxModelOption::kThinkingNoGenUI]
-                  image:
-                      [_inputState.uiConfig
-                          iconForModel:ComposeboxModelOption::kThinkingNoGenUI]
-                 hidden:[_inputState isModelHidden:ComposeboxModelOption::
-                                                       kThinkingNoGenUI]
-               disabled:[_inputState isModelDisabled:ComposeboxModelOption::
-                                                         kThinkingNoGenUI]
-               selected:_inputState.activeModel ==
-                        ComposeboxModelOption::kThinkingNoGenUI
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kModelThinkingNoGenUI];
-                }];
-
-    UIAction* flashModelOption = [self
-        actionWithTitle:[_inputState.uiConfig
-                            menuLabelForModel:ComposeboxModelOption::kFlash]
-                  image:[_inputState.uiConfig
-                            iconForModel:ComposeboxModelOption::kFlash]
-                 hidden:[_inputState
-                            isModelHidden:ComposeboxModelOption::kFlash]
-               disabled:[_inputState
-                            isModelDisabled:ComposeboxModelOption::kFlash]
-               selected:_inputState.activeModel == ComposeboxModelOption::kFlash
-                handler:^{
-                  [weakSelf handleItemPickedWithType:ComposeboxMenuItemType::
-                                                         kModelFlash];
-                }];
-
-    NSString* modelPickerTitle = [_inputState.uiConfig modelSectionHeader];
-    UIMenu* modelPickerMenu =
-        [UIMenu menuWithTitle:modelPickerTitle
-                        image:nil
-                   identifier:nil
-                      options:UIMenuOptionsDisplayInline
-                     children:@[
-                       regularModelOption, autoModelOption, thinkingModelOption,
-                       thinkingModelNoGenUIOption, flashModelOption
-                     ]];
-
-    [sections addObject:modelPickerMenu];
-  }
-
   return [UIMenu menuWithTitle:@"" children:sections];
+}
+
+#pragma mark - Menu creation
+
+/// Creates the more options submenu.
+- (UIMenu*)createMoreOptionsSubmenu {
+  using enum ComposeboxMenuItemType;
+
+  UIMenu* attachmentSubmenu =
+      [self inlineMenuFromItemTypes:{kAttachmentFiles, kAttachmentDrive}];
+  UIMenu* modeSubmenu =
+      [self inlineMenuFromItemTypes:{kCreateImage, kDeepSearch, kCanvas}];
+  UIMenu* modelPickerSubmenu = [self createModelPickerMenu];
+
+  NSMutableArray<UIMenuElement*>* submenuSections =
+      [[NSMutableArray alloc] init];
+  if (attachmentSubmenu) {
+    [submenuSections addObject:attachmentSubmenu];
+  }
+  if (modeSubmenu) {
+    [submenuSections addObject:modeSubmenu];
+  }
+  if (modelPickerSubmenu) {
+    [submenuSections addObject:modelPickerSubmenu];
+  }
+
+  if ([submenuSections count] == 0) {
+    return nil;
+  }
+
+  return [UIMenu menuWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_COMPOSEBOX_MORE_OPTIONS_MENU_TITLE)
+                         image:SymbolWithPointSize(SymbolEllipsisCircle,
+                                                   kSymbolActionPointSize)
+                    identifier:nil
+                       options:0
+                      children:submenuSections];
+}
+
+// Creates a new inline menu without a title.
+- (UIMenu*)inlineMenuFromItemTypes:
+    (std::vector<ComposeboxMenuItemType>)itemTypes {
+  return [self inlineMenuFromItemTypes:itemTypes withTitle:@""];
+}
+
+// Creates a new inline menu with a title.
+- (UIMenu*)inlineMenuFromItemTypes:
+               (std::vector<ComposeboxMenuItemType>)itemTypes
+                         withTitle:(NSString*)title {
+  NSArray<UIAction*>* actions = [self actionsFromItemTypes:itemTypes];
+  if ([actions count] == 0) {
+    return nil;
+  }
+  return [UIMenu menuWithTitle:[title copy]
+                         image:nil
+                    identifier:nil
+                       options:UIMenuOptionsDisplayInline
+                      children:actions];
+}
+
+// Creates a list of actions from the given menu types.
+// None of the actions in the returned list is `nil`.
+- (NSArray<UIAction*>*)actionsFromItemTypes:
+    (std::vector<ComposeboxMenuItemType>)itemTypes {
+  NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
+  for (ComposeboxMenuItemType itemType : itemTypes) {
+    if (UIAction* action = [self actionForMenuItem:itemType]) {
+      [actions addObject:action];
+    }
+  }
+  return actions;
+}
+
+// Creates the menu component for the model picker section.
+- (UIMenu*)createModelPickerMenu {
+  if (!_inputState.allowModelPicker) {
+    return nil;
+  }
+  using enum ComposeboxMenuItemType;
+
+  // Note: When possible, 'Regular' is meant to be replaced by 'Auto'.
+  return
+      [self inlineMenuFromItemTypes:{kModelRegular, kModelAuto, kModelThinking,
+                                     kModelThinkingNoGenUI, kModelFlash}
+                          withTitle:[_inputState.uiConfig modelSectionHeader]];
 }
 
 #pragma mark - Private
@@ -331,32 +213,197 @@ const CGFloat kAttachCurrentTabIconRadius = 2.0f;
 }
 
 // Creates a new UIAction based on the given configuration.
-- (UIAction*)actionWithTitle:(NSString*)title
-                       image:(UIImage*)image
-                      hidden:(BOOL)hidden
-                    disabled:(BOOL)disabled
-                    selected:(BOOL)selected
-                     handler:(void (^)(void))handler {
-  UIAction* action = [UIAction actionWithTitle:[title copy]
-                                         image:image
-                                    identifier:nil
-                                       handler:^(UIAction*) {
-                                         if (handler) {
-                                           handler();
-                                         }
-                                       }];
-
-  if (hidden) {
-    action.attributes |= UIMenuElementAttributesHidden;
+- (UIAction*)actionForMenuItem:(ComposeboxMenuItemType)menuItemType {
+  MenuItemAvailability availability =
+      [self availabilityStatusForMenuItem:menuItemType];
+  if (availability.hidden) {
+    return nil;
   }
-  if (disabled) {
+
+  __weak __typeof(self) weakSelf = self;
+  UIAction* action =
+      [UIAction actionWithTitle:[self titleForMenuItem:menuItemType]
+                          image:[self imageForMenuItem:menuItemType]
+                     identifier:nil
+                        handler:^(UIAction*) {
+                          [weakSelf handleItemPickedWithType:menuItemType];
+                        }];
+  action.accessibilityIdentifier =
+      AccessibilityIdentifierForMenuItemType(menuItemType);
+  if (availability.disabled) {
     action.attributes |= UIMenuElementAttributesDisabled;
   }
-  if (selected) {
+  if (availability.selected) {
     [action setState:UIMenuElementStateOn];
   }
 
   return action;
+}
+
+#pragma mark - Options customization
+
+// Returns the image for the menu type.
+- (UIImage*)imageForMenuItem:(ComposeboxMenuItemType)menuItemType {
+  switch (menuItemType) {
+    case ComposeboxMenuItemType::kAIM:
+      return [_inputState.uiConfig iconForTool:ComposeboxMode::kAIM];
+    case ComposeboxMenuItemType::kCreateImage:
+      return
+          [_inputState.uiConfig iconForTool:ComposeboxMode::kImageGeneration];
+    case ComposeboxMenuItemType::kDeepSearch:
+      return [_inputState.uiConfig iconForTool:ComposeboxMode::kDeepSearch];
+    case ComposeboxMenuItemType::kCanvas:
+      return [_inputState.uiConfig iconForTool:ComposeboxMode::kCanvas];
+    case ComposeboxMenuItemType::kCurrentTab: {
+      UIImage* favicon = _inputState.currentTabFavicon;
+      if (favicon) {
+        favicon = ImageWithCornerRadius(favicon, kAttachCurrentTabIconRadius);
+      }
+      return favicon
+                 ?: SymbolWithPointSize(SymbolNewTabGroupAction,
+                                        kSymbolActionPointSize);
+    }
+    case ComposeboxMenuItemType::kModelRegular:
+      return
+          [_inputState.uiConfig iconForModel:ComposeboxModelOption::kRegular];
+    case ComposeboxMenuItemType::kModelAuto:
+      return [_inputState.uiConfig iconForModel:ComposeboxModelOption::kAuto];
+    case ComposeboxMenuItemType::kModelThinking:
+      return
+          [_inputState.uiConfig iconForModel:ComposeboxModelOption::kThinking];
+    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
+      return [_inputState.uiConfig
+          iconForModel:ComposeboxModelOption::kThinkingNoGenUI];
+    case ComposeboxMenuItemType::kModelFlash:
+      return [_inputState.uiConfig iconForModel:ComposeboxModelOption::kFlash];
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      return SymbolWithPointSize(SymbolNewTabGroupAction,
+                                 kSymbolActionPointSize);
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      return SymbolWithPointSize(SymbolSystemCamera, kSymbolActionPointSize);
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      return SymbolWithPointSize(SymbolPhoto, kSymbolActionPointSize);
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      return SymbolWithPointSize(SymbolDoc, kSymbolActionPointSize);
+    case ComposeboxMenuItemType::kAttachmentDrive: {
+      UIImage* driveSymbol =
+          SymbolWithPointSize(SymbolFolder, kSymbolActionPointSize);
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+      driveSymbol =
+          SymbolWithPointSize(SymbolGoogleDrive, kSymbolActionPointSize);
+#endif
+
+      return driveSymbol;
+    }
+    case ComposeboxMenuItemType::kAttachmentSharedTabs:
+    case ComposeboxMenuItemType::kUnknown:
+      return nil;
+  }
+}
+
+- (NSString*)titleForMenuItem:(ComposeboxMenuItemType)menuItemType {
+  switch (menuItemType) {
+    case ComposeboxMenuItemType::kAIM:
+      return [_inputState.uiConfig menuLabelForTool:ComposeboxMode::kAIM];
+    case ComposeboxMenuItemType::kCreateImage:
+      return [_inputState.uiConfig
+          menuLabelForTool:ComposeboxMode::kImageGeneration];
+    case ComposeboxMenuItemType::kDeepSearch:
+      return
+          [_inputState.uiConfig menuLabelForTool:ComposeboxMode::kDeepSearch];
+    case ComposeboxMenuItemType::kCanvas:
+      return [_inputState.uiConfig menuLabelForTool:ComposeboxMode::kCanvas];
+    case ComposeboxMenuItemType::kCurrentTab:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION);
+    case ComposeboxMenuItemType::kModelRegular:
+      return [_inputState.uiConfig
+          menuLabelForModel:ComposeboxModelOption::kRegular];
+    case ComposeboxMenuItemType::kModelAuto:
+      return
+          [_inputState.uiConfig menuLabelForModel:ComposeboxModelOption::kAuto];
+    case ComposeboxMenuItemType::kModelThinking:
+      return [_inputState.uiConfig
+          menuLabelForModel:ComposeboxModelOption::kThinking];
+    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
+      return [_inputState.uiConfig
+          menuLabelForModel:ComposeboxModelOption::kThinkingNoGenUI];
+    case ComposeboxMenuItemType::kModelFlash:
+      return [_inputState.uiConfig
+          menuLabelForModel:ComposeboxModelOption::kFlash];
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION);
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION);
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION);
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION);
+    case ComposeboxMenuItemType::kAttachmentDrive:
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION);
+    case ComposeboxMenuItemType::kAttachmentSharedTabs:
+    case ComposeboxMenuItemType::kUnknown:
+      return nil;
+  }
+}
+
+// Returns whether the given menu item is hidden.
+- (MenuItemAvailability)availabilityStatusForMenuItem:
+    (ComposeboxMenuItemType)menuItemType {
+  switch (menuItemType) {
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxAttachmentOption::kGallery);
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxAttachmentOption::kCamera);
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxAttachmentOption::kFile);
+    case ComposeboxMenuItemType::kCurrentTab:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxAttachmentOption::kCurrentTab);
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxAttachmentOption::kTab);
+    case ComposeboxMenuItemType::kAttachmentDrive: {
+      MenuItemAvailability availability(_inputState,
+                                        ComposeboxAttachmentOption::kDrive);
+      availability.hidden |= !IsComposeboxDriveOptionEnabled();
+      return availability;
+    }
+    case ComposeboxMenuItemType::kAIM: {
+      MenuItemAvailability availability(_inputState, ComposeboxMode::kAIM);
+      availability.disabled = NO;
+      return availability;
+    }
+    case ComposeboxMenuItemType::kCreateImage:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxMode::kImageGeneration);
+    case ComposeboxMenuItemType::kDeepSearch:
+      return MenuItemAvailability(_inputState, ComposeboxMode::kDeepSearch);
+    case ComposeboxMenuItemType::kCanvas:
+      return MenuItemAvailability(_inputState, ComposeboxMode::kCanvas);
+    case ComposeboxMenuItemType::kModelRegular: {
+      MenuItemAvailability availability(_inputState,
+                                        ComposeboxModelOption::kRegular);
+      availability.hidden |=
+          ![_inputState isModelHidden:ComposeboxModelOption::kAuto];
+      return availability;
+    }
+    case ComposeboxMenuItemType::kModelAuto:
+      return MenuItemAvailability(_inputState, ComposeboxModelOption::kAuto);
+    case ComposeboxMenuItemType::kModelThinking:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxModelOption::kThinking);
+    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
+      return MenuItemAvailability(_inputState,
+                                  ComposeboxModelOption::kThinkingNoGenUI);
+    case ComposeboxMenuItemType::kModelFlash:
+      return MenuItemAvailability(_inputState, ComposeboxModelOption::kFlash);
+    case ComposeboxMenuItemType::kUnknown:
+    case ComposeboxMenuItemType::kAttachmentSharedTabs:
+      return MenuItemAvailability();
+  }
 }
 
 @end

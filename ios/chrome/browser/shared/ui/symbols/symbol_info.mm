@@ -361,6 +361,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"pencil", SymbolType::kSystem};
     case SymbolEllipsis:
       return {@"ellipsis", SymbolType::kSystem};
+    case SymbolEllipsisCircle:
+      return {@"ellipsis.circle", SymbolType::kSystem};
     case SymbolEllipsisCircleFill:
       return {@"ellipsis.circle.fill", SymbolType::kSystem};
     case SymbolEllipsisRectangle:
