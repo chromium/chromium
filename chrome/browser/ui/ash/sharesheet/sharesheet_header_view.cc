@@ -116,6 +116,11 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
         1));
+    SetBorder(views::CreateRoundedRectBorder(
+        /*thickness=*/1,
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium),
+        cros_tokens::kCrosSysOutline));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),
@@ -188,16 +193,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   }
 
  private:
-  // views::View:
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    SetBorder(views::CreateRoundedRectBorder(
-        /*thickness=*/1,
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kMedium),
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOutline)));
-  }
-
   void AddRowToImageContainerView() {
     auto* row = AddChildView(std::make_unique<views::View>());
     row->SetLayoutManager(std::make_unique<views::BoxLayout>(
