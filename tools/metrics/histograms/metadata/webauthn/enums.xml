@@ -782,6 +782,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc:WebAuthenticationResidentKeyRequirement) -->
 
+<!-- LINT.IfChange(WebAuthenticationUnexportableKeyProviderType) -->
+
+<enum name="WebAuthenticationUnexportableKeyProviderType">
+  <int value="0" label="None"/>
+  <int value="1" label="Hardware"/>
+  <int value="2" label="Microsoft Software Key Storage Provider"/>
+  <int value="3" label="Software Fallback"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/unexportable_key_utils.h:WebAuthenticationUnexportableKeyProviderType) -->
+
 <!-- LINT.IfChange(WindowsForegroundedHelloDialog) -->
 
 <enum name="WindowsForegroundedHelloDialog">

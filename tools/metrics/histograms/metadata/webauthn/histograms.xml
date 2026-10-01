@@ -969,6 +969,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.UnexportableKeyProviderType"
+    enum="WebAuthenticationUnexportableKeyProviderType"
+    expires_after="2027-04-01">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the type of unexportable key provider instantiated for WebAuthn.
+    Recorded at most once per browser process, the first time
+    GetWebAuthnUnexportableKeyProvider() selects a provider.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.ApiVersion" units="version"
     expires_after="2027-09-29">
   <owner>nsatragno@chromium.org</owner>

@@ -484,7 +484,10 @@ source_set("unit_tests") {
     ]
 
     if (is_mac) {
-      sources += [ "local_credential_management_mac_unittest.mm" ]
+      sources += [
+        "local_credential_management_mac_unittest.mm",
+        "unexportable_key_utils_mac_unittest.mm",
+      ]
     }
 
     if (is_win) {

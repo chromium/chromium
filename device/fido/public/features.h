@@ -152,6 +152,11 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveUseAuthDataFromEnclave);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnModalProviderIcons);
 
+// Fall back to software keys when hardware unexportable keys (TPM / Secure
+// Enclave) are absent or do not support the required signing algorithm.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnSoftwareKeysWhenTpmAbsent);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

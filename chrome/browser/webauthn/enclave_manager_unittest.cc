@@ -50,6 +50,7 @@
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
+#include "chrome/browser/webauthn/webauthn_scoped_fake_unexportable_key_provider.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "components/signin/public/base/consent_level.h"
@@ -2133,16 +2134,16 @@ TEST_F(EnclaveManagerTest, LockPINThenChange) {
               GetAssertionResponseExpectation());
 }
 
-// Tests that rely on `ScopedFakeUnexportableKeyProvider` only work on
-// platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
-// to `GetSoftwareUnsecureUnexportableKeyProvider`.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_HardwareKeyLost HardwareKeyLost
-#else
-#define MAYBE_HardwareKeyLost DISABLED_HardwareKeyLost
-#endif
-TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
+TEST_F(EnclaveManagerTest, HardwareKeyLost) {
   crypto::ScopedFakeUserVerifyingKeyProvider scoped_uv_key_provider;
+#if BUILDFLAG(IS_CHROMEOS)
+  OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting([]() {
+    return crypto::GetUserVerifyingKeyProvider(
+        crypto::UserVerifyingKeyProvider::Config());
+  });
+  base::ScopedClosureRunner reset_uv_override(base::BindOnce(
+      &OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting, nullptr));
+#endif
   security_domain_service_->pretend_there_are_members();
   NoArgFuture loaded_future;
   manager_.Load(loaded_future.GetCallback());
@@ -2206,7 +2207,7 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   EXPECT_TRUE(key_future_present.Wait());
   EXPECT_TRUE(key_future_present.Get().has_value());
 
-  crypto::ScopedNullUnexportableKeyProvider null_hw_provider;
+  WebAuthnScopedNullUnexportableKeyProvider null_hw_provider;
   auto signing_callback = manager_.IdentityKeySigningCallback();
   quit_closure = task_env_.QuitClosure();
   std::move(signing_callback)
@@ -2229,6 +2230,10 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
                                               key_future_deleted.GetCallback());
   EXPECT_TRUE(key_future_deleted.Wait());
   EXPECT_FALSE(key_future_deleted.Get().has_value());
+
+  // Wait for the background task posted by `ClearRegistration()` to finish
+  // before `null_hw_provider` is destroyed.
+  task_env_.RunUntilIdle();
 }
 
 // Tests that Chrome resets the local state if joining the physical device to

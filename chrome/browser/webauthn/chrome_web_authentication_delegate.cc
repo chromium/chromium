@@ -451,6 +451,11 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     std::move(callback).Run(false);
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnSoftwareKeysWhenTpmAbsent)) {
+    std::move(callback).Run(true);
+    return;
+  }
   // Check for TPM availability.
   if (tpm_available_.has_value()) {
     std::move(callback).Run(*tpm_available_);

@@ -3949,6 +3949,18 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
+class NoSoftwareKeysFallbackEnclaveAuthenticatorBrowserTest
+    : public EnclaveAuthenticatorBrowserTest {
+ public:
+  NoSoftwareKeysFallbackEnclaveAuthenticatorBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnSoftwareKeysWhenTpmAbsent);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 #if BUILDFLAG(IS_LINUX)
 // These tests are run on Linux because Linux has no platform authenticator
 // that can effect whether IsUVPAA returns true or not.
@@ -3968,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, IsUVPAA_GoogleSite) {
   EXPECT_FALSE(IsUVPAA());
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(NoSoftwareKeysFallbackEnclaveAuthenticatorBrowserTest,
                        IsUVPAA_NoUnexportableKeys) {
   // Without support for unexportable keys, IsUVPAA should return false because
   // the enclave cannot be used.
@@ -4243,7 +4255,8 @@ BlockingUnexportableKeyProviderFactory() {
   return std::make_unique<BlockingUnexportableKeyProvider>();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
+IN_PROC_BROWSER_TEST_F(NoSoftwareKeysFallbackEnclaveAuthenticatorBrowserTest,
+                       CancelRacesTPMCheck) {
   // https://crbug.com/352532554
 
   // Set the UnexportableKeyProvider to one that will block inside

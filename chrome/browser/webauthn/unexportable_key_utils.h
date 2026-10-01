@@ -31,6 +31,22 @@ namespace crypto {
 class UnexportableKeyProvider;
 }  // namespace crypto
 
+inline constexpr char kUnexportableKeyProviderTypeHistogram[] =
+    "WebAuthentication.UnexportableKeyProviderType";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebAuthenticationUnexportableKeyProviderType)
+enum class UnexportableKeyProviderType {
+  kNone = 0,
+  kHardware = 1,
+  kMicrosoftSoftware = 2,
+  kSoftwareFallback = 3,
+  kMaxValue = kSoftwareFallback,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationUnexportableKeyProviderType)
+
 std::unique_ptr<crypto::UnexportableKeyProvider>
 GetWebAuthnUnexportableKeyProvider();
 
@@ -76,5 +92,9 @@ void OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting(
 
 void SetWebAuthnUnexportableKeyProviderForTesting(
     std::unique_ptr<crypto::UnexportableKeyProvider> (*func)());
+
+// Allows `kUnexportableKeyProviderTypeHistogram`, which is normally recorded at
+// most once per process, to be recorded again.
+void ResetUnexportableKeyProviderTypeMetricForTesting();
 
 #endif  // CHROME_BROWSER_WEBAUTHN_UNEXPORTABLE_KEY_UTILS_H_
