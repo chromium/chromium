@@ -3031,6 +3031,21 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
   SetStyle(pseudo_style);
 }
 
+// Returns true if the object paints nothing both before and after the style
+// change, so paint invalidation (and the visual updates and pre-paint tree
+// walks it schedules, e.g. per animation frame on a visibility:hidden
+// element) can be skipped (crbug.com/41254682). Visible descendants get
+// their own style diffs and invalidate themselves independently.
+static bool InvisibleBeforeAndAfterStyleChange(const LayoutObject& object,
+                                               const ComputedStyle* old_style,
+                                               const ComputedStyle& new_style) {
+  return RuntimeEnabledFeatures::
+             SkipPaintInvalidationWhileStayingInvisibleEnabled() &&
+         old_style && object.VisualRectRespectsVisibility() &&
+         old_style->Visibility() != EVisibility::kVisible &&
+         new_style.Visibility() != EVisibility::kVisible;
+}
+
 DISABLE_CFI_PERF
 void LayoutObject::SetStyle(const ComputedStyle& new_style,
                             ApplyStyleChanges apply_changes) {
@@ -3151,7 +3166,11 @@ void LayoutObject::SetStyle(const ComputedStyle& new_style,
   // invalidate paints.
   StyleDifference updated_diff = AdjustStyleDifference(diff);
 
-  if (updated_diff.NeedsSimplePaintInvalidation()) {
+  const bool invisible_before_and_after_style_change =
+      InvisibleBeforeAndAfterStyleChange(*this, old_style, new_style);
+
+  if (updated_diff.NeedsSimplePaintInvalidation() &&
+      !invisible_before_and_after_style_change) {
     DCHECK(!diff.NeedsNormalPaintInvalidation());
     constexpr int kMaxDepth = 5;
     if (auto* painting_layer = PaintingLayer(kMaxDepth)) {
@@ -3198,7 +3217,9 @@ void LayoutObject::SetStyle(const ComputedStyle& new_style,
     if (IsSVGRoot()) {
       // LayoutSVGRoot::LocalVisualRect() depends on some styles.
       SetShouldDoFullPaintInvalidation();
-    } else {
+    } else if (!invisible_before_and_after_style_change) {
+      // Skipped when the object paints nothing before and after the change; see
+      // InvisibleBeforeAndAfterStyleChange().
       // We'll set needing geometry change later if the style change does cause
       // possible layout change or visual overflow change.
       SetShouldDoFullPaintInvalidationWithoutLayoutChange(
@@ -3453,7 +3474,8 @@ void LayoutObject::StyleDidChange(
     }
   }
 
-  if (diff.NeedsNormalPaintInvalidation() && old_style) {
+  if (diff.NeedsNormalPaintInvalidation() && old_style &&
+      !InvisibleBeforeAndAfterStyleChange(*this, old_style, new_style)) {
     if (ResolveColor(*old_style, GetCSSPropertyBackgroundColor()) !=
             ResolveColor(new_style, GetCSSPropertyBackgroundColor()) ||
         old_style->BackgroundLayers() != new_style.BackgroundLayers()) {

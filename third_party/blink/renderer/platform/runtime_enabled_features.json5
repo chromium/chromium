@@ -6008,6 +6008,13 @@
       status: "stable",
     },
     {
+      // Kill switch for crbug.com/41254682: skips paint invalidation for
+      // paint-only style changes (e.g. animation frames) on objects that were
+      // and stay visibility:hidden.
+      name: "SkipPaintInvalidationWhileStayingInvisible",
+      status: "stable",
+    },
+    {
       // crbug.com/517761566
       name: "SkipStaleUndoStepsInIdleSpellCheck",
       status: "stable",
