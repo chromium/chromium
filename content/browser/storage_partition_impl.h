@@ -352,6 +352,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       OnPlatformLocalNetworkPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
+      const std::optional<net::SchemefulSite>& top_level_site,
+      const std::optional<base::UnguessableToken>& nonce,
       const std::string& header_value,
       int load_flags,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key,
@@ -549,8 +551,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       network::OriginatingProcessId process_id;
       std::optional<url::Origin> worker_origin;
       // Holds the storage key of the worker that owns this network context.
-      // When present, `CalculateStorageKey()` uses this key to scope
-      // Clear-Site-Data filter deletions to the worker's top-level site
+      // When present, `CalculateStorageKeyForClearSiteData()` uses this key to
+      // scope Clear-Site-Data filter deletions to the worker's top-level site
       // partition. Is `std::nullopt` for contexts that lack a worker storage
       // key.
       std::optional<blink::StorageKey> storage_key;
@@ -745,9 +747,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   void CreateURLLoaderFactoryForBrowserProcessInternal(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
-  std::optional<blink::StorageKey> CalculateStorageKey(
+  std::optional<blink::StorageKey> CalculateStorageKeyForClearSiteData(
       const url::Origin& origin,
-      const base::UnguessableToken* nonce);
+      const std::optional<net::SchemefulSite>& top_level_site,
+      const std::optional<base::UnguessableToken>& nonce);
 
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 

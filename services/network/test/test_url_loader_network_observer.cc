@@ -62,6 +62,8 @@ void TestURLLoaderNetworkObserver::OnPlatformLocalNetworkPermissionRequired(
 
 void TestURLLoaderNetworkObserver::OnClearSiteData(
     const GURL& url,
+    const std::optional<net::SchemefulSite>& top_level_site,
+    const std::optional<base::UnguessableToken>& nonce,
     const std::string& header_value,
     int32_t load_flags,
     const std::optional<net::CookiePartitionKey>& cookie_partition_key,

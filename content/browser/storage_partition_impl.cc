@@ -2776,12 +2776,31 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
 
 void StoragePartitionImpl::OnClearSiteData(
     const GURL& url,
+    const std::optional<net::SchemefulSite>& top_level_site,
+    const std::optional<base::UnguessableToken>& nonce,
     const std::string& header_value,
     int load_flags,
     const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   CHECK(initialized_, base::NotFatalUntil::M159);
+  // Theoretically, it's possible for CHIPS/3PCP to be off while storage
+  // partitioning is enabled, so we cannot directly derive `nonce` and
+  // `top_level_site` from `cookie_partition_key`. That said, where
+  // `cookie_partition_key` is set, it should match `nonce` and
+  // `top_level_site`. Enforcement is delayed to ensure no WebView problems.
+  if (cookie_partition_key) {
+    CHECK(top_level_site, base::NotFatalUntil::M160);
+    CHECK_EQ(*top_level_site, cookie_partition_key->site(),
+             base::NotFatalUntil::M160);
+    if (cookie_partition_key->nonce()) {
+      CHECK(nonce, base::NotFatalUntil::M160);
+      CHECK_EQ(*nonce, *cookie_partition_key->nonce(),
+               base::NotFatalUntil::M160);
+    } else {
+      CHECK(!nonce, base::NotFatalUntil::M160);
+    }
+  }
 
   URLLoaderNetworkContext& context =
       url_loader_network_observers_.current_context();
@@ -2797,11 +2816,13 @@ void StoragePartitionImpl::OnClearSiteData(
         blink::mojom::WebFeature::kClearSiteData);
   }
 
-  std::optional<blink::StorageKey> storage_key = CalculateStorageKey(
-      url::Origin::Create(url),
-      cookie_partition_key.has_value()
-          ? base::OptionalToPtr(cookie_partition_key.value().nonce())
-          : nullptr);
+  // TODO(crbug.com/567972108): This function is quite fragile as the render
+  // frame host tree may not be able to accurately calculate the StorageKey in
+  // some cases (like cross-site fetches). Ideally the network service would be
+  // able to calculate and send the accurate storage key directly.
+  std::optional<blink::StorageKey> storage_key =
+      CalculateStorageKeyForClearSiteData(url::Origin::Create(url),
+                                          top_level_site, nonce);
 
   ClearSiteDataHandler::HandleHeader(
       browser_context()->GetWeakPtr(), context.navigation_or_document(),
@@ -3714,9 +3735,11 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
                                         base::DoNothing());
 }
 
-std::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
+std::optional<blink::StorageKey>
+StoragePartitionImpl::CalculateStorageKeyForClearSiteData(
     const url::Origin& origin,
-    const base::UnguessableToken* nonce) {
+    const std::optional<net::SchemefulSite>& top_level_site,
+    const std::optional<base::UnguessableToken>& nonce) {
   if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
     return std::nullopt;
   }
@@ -3748,7 +3771,22 @@ std::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
     return std::nullopt;
   }
 
-  return frame_host->CalculateStorageKey(origin, nonce);
+  blink::StorageKey proposed_storage_key =
+      frame_host->CalculateStorageKey(origin, base::OptionalToPtr(nonce));
+
+  // It's possible to get a 1P key above despite being in a cross-site fetch.
+  // The logic below resolves the issue by reconstructing the 3P key using
+  // trusted data from the network service to derive the correct 3P StorageKey.
+  // This ensures when a Clear-Site-Data header is seen in a 1P context on a
+  // fetch we clear 1P and 3P data, but when the same header is seen in a 3P
+  // context, only the 3P data is cleared.
+  if (proposed_storage_key.IsFirstPartyContext() && top_level_site &&
+      *top_level_site != proposed_storage_key.top_level_site()) {
+    proposed_storage_key = blink::StorageKey::Create(
+        proposed_storage_key.origin(), *top_level_site,
+        blink::mojom::AncestorChainBit::kCrossSite);
+  }
+  return proposed_storage_key;
 }
 
 GlobalRenderFrameHostId

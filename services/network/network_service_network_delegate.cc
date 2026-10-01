@@ -433,7 +433,12 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
       net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
 
   url_loader_network_observer->OnClearSiteData(
-      request->url(), *header_value, request->load_flags(),
+      request->url(),
+      request->isolation_info().top_frame_origin()
+          ? std::make_optional(net::SchemefulSite(
+                *request->isolation_info().top_frame_origin()))
+          : std::nullopt,
+      request->isolation_info().nonce(), *header_value, request->load_flags(),
       request->cookie_partition_key(), partitioned_state_allowed_only,
       base::BindOnce(&NetworkServiceNetworkDelegate::FinishedClearSiteData,
                      weak_ptr_factory_.GetWeakPtr(), request->GetWeakPtr(),

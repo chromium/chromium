@@ -14,10 +14,12 @@ import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/ssl_info.mojom";
 import "services/network/public/mojom/x509_certificate.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Result of a Local Network Access permission check.
 enum LocalNetworkAccessResult {
@@ -187,6 +189,8 @@ interface URLLoaderNetworkServiceObserver {
   // TODO(crbug.com/41409604): We might want to move header parsing work to
   // Network Service for security concerns (e.g. |header_value| => booleans).
   OnClearSiteData(url.mojom.Url url,
+                  SchemefulSite? top_level_site,
+                  mojo_base.mojom.UnguessableToken? nonce,
                   string header_value,
                   int32 load_flags,
                   CookiePartitionKey? cookie_partition_key,
