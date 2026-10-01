@@ -30,6 +30,7 @@ public class EdgeToEdgeControllerCreator {
     private final InsetObserver.WindowInsetsConsumer mWindowInsetsConsumer;
     private final WeakReference<Activity> mActivity;
     private final Runnable mInitializeEdgeToEdgeController;
+    private final boolean mSupportsTopInset;
 
     private InsetObserver mInsetObserver;
 
@@ -43,14 +44,19 @@ public class EdgeToEdgeControllerCreator {
      * @param insetObserver The {@link InsetObserver} for observing window insets.
      * @param initializeEdgeToEdgeController The runnable to initialize the {@link
      *     EdgeToEdgeController} when the conditions are right.
+     * @param supportsTopInset Whether top inset edge-to-edge is supported by the caller, so {@code
+     *     shouldInitTopInset} only triggers for ChromeTabbedActivity and not secondary activities
+     *     that use {@link SimpleEdgeToEdgeController}.
      */
     public EdgeToEdgeControllerCreator(
             WeakReference<Activity> activity,
             InsetObserver insetObserver,
-            Runnable initializeEdgeToEdgeController) {
+            Runnable initializeEdgeToEdgeController,
+            boolean supportsTopInset) {
         mActivity = activity;
         mInsetObserver = insetObserver;
         mInitializeEdgeToEdgeController = initializeEdgeToEdgeController;
+        mSupportsTopInset = supportsTopInset;
         mWindowInsetsConsumer = this::onApplyWindowInsets;
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR);
@@ -67,9 +73,19 @@ public class EdgeToEdgeControllerCreator {
         if (activity == null) return insets;
 
         Insets navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
-                && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insets)
-                && !navigationBarInsets.equals(Insets.NONE)) {
+        Insets statusBarsInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+        // Bottom chin requires gesture navigation insets, whereas top edge-to-edge (migrated
+        // from TopInsetCoordinator) only requires status bar insets and operates independently
+        // of the navigation bar mode.
+        boolean shouldInitBottomChin =
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
+                        && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insets)
+                        && !navigationBarInsets.equals(Insets.NONE);
+        boolean shouldInitTopInset =
+                mSupportsTopInset
+                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
+                        && !statusBarsInsets.equals(Insets.NONE);
+        if (shouldInitBottomChin || shouldInitTopInset) {
             mInitializeEdgeToEdgeController.run();
         }
         return insets;

@@ -502,6 +502,18 @@ public class EdgeToEdgeUtils {
     }
 
     /**
+     * Returns whether top edge-to-edge (edgeless top inset) is supported for the given activity.
+     * Top edge-to-edge is supported on phones and not on tablets or automotive devices.
+     */
+    public static boolean isEdgelessTopInsetSupported(@Nullable Activity activity) {
+        if (activity == null || !isEdgeToEdgeRefactorEnabled()) {
+            return false;
+        }
+        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                && !DeviceInfo.isAutomotive();
+    }
+
+    /**
      * Returns whether the given Tab supports drawing top edge to edge.
      *
      * @param tab The Tab to check.

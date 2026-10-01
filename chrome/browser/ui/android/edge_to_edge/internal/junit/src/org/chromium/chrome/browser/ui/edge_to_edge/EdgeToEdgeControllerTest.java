@@ -1761,6 +1761,36 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testOnContentChanged_NavigateFromWebPageToNtp_ConsumesTopInsets() {
+        // 1. Start on a regular web page that does not draw to top edge.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mTopInsetObserver);
+        clearInvocations(mInsetObserver);
+
+        // 2. Navigate to an NTP with custom background within the same tab.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        assertTrue(
+                "Should be drawing to top edge after navigating to NTP",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void
             testOnContentChanged_NavigateFromNtpToWebPage_WithThreeButtonNav_RestoresTopInsets() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
@@ -1775,8 +1805,9 @@ public class EdgeToEdgeControllerTest {
         assertTrue(
                 "Should be drawing to top edge on NTP even with 3-button nav",
                 mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mOsWrapper, atLeastOnce()).setPadding(any(), anyInt(), eq(0), anyInt(), anyInt());
 
-        clearInvocations(mTopInsetObserver);
+        clearInvocations(mTopInsetObserver, mOsWrapper);
 
         // 2. Simulate navigating away from NTP to a standard webpage within the same tab.
         when(mTab.isNativePage()).thenReturn(false);
@@ -1788,6 +1819,166 @@ public class EdgeToEdgeControllerTest {
                 "Should restore top scalp after navigating from NTP even with 3-button nav",
                 mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+        verify(mOsWrapper, atLeastOnce())
+                .setPadding(any(), anyInt(), eq(TOP_INSET), anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testOnContentChanged_NavigateFromWebPageToNtp_WithThreeButtonNav_DrawsTopEdge() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+
+        // 1. Start on standard webpage with 3-button nav enabled.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(
+                "Should not be drawing to top edge on standard webpage",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mOsWrapper, atLeastOnce())
+                .setPadding(any(), anyInt(), eq(TOP_INSET), anyInt(), anyInt());
+
+        clearInvocations(mTopInsetObserver, mOsWrapper);
+
+        // 2. Simulate navigating from standard webpage to NTP within the same tab.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should draw to top edge after navigating to NTP on 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mOsWrapper, atLeastOnce()).setPadding(any(), anyInt(), eq(0), anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testThreeButtonNav_OnNtpTab_DrawsTopEdgeAndPreservesBottomNavBar() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should be drawing to top edge on NTP with 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(
+                "Should not be drawing to bottom edge with 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(
+                BOTTOM_INSET, result.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testOnTabSwitched_FromWebPageToNtp_WithThreeButtonNav_DrawsTopEdge() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+
+        // 1. Start on standard webpage with 3-button nav.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        WindowInsetsCompat webResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertFalse(
+                "Should not draw to top edge on regular web page",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertNotEquals(Insets.NONE, webResult.getInsets(WindowInsetsCompat.Type.statusBars()));
+        verify(mOsWrapper, atLeastOnce())
+                .setPadding(any(), anyInt(), eq(TOP_INSET), anyInt(), anyInt());
+
+        clearInvocations(mTopInsetObserver, mOsWrapper);
+
+        // 2. Switch to NTP with 3-button nav.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        WindowInsetsCompat ntpResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should draw to top edge after switching to NTP with 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertEquals(Insets.NONE, ntpResult.getInsets(WindowInsetsCompat.Type.statusBars()));
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mOsWrapper, atLeastOnce()).setPadding(any(), anyInt(), eq(0), anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testDynamicNavModeSwitch_GestureToThreeButton_OnNtp_PreservesTopEdge() {
+        // 1. Start in gesture navigation mode on NTP.
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should be drawing to top edge on NTP in gesture nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        // 2. Switch to 3-button nav dynamically.
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Top edge should remain active on NTP after switching to 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(
+                BOTTOM_INSET, result.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void
+            testDynamicNavModeSwitch_ThreeButtonToGesture_OnNtp_PreservesTopEdgeAndDrawsBottom() {
+        // 1. Start in 3-button navigation mode on NTP.
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Should be drawing to top edge on NTP in 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(
+                "Should not be drawing to bottom edge in 3-button nav",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+
+        // 2. Switch to gesture nav dynamically.
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
+        when(mInsetObserver.hasSeenNonZeroNavigationBarInsets()).thenReturn(true);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+
+        assertTrue(
+                "Top edge should remain active on NTP after switching to gesture nav",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(
+                "Bottom edge should become active after switching to gesture nav",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.navigationBars()));
     }
 
     @Test
@@ -1850,6 +2041,26 @@ public class EdgeToEdgeControllerTest {
 
         mTabProvider.set(tab);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @Config(qualifiers = "xlarge")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInset_NewNtpTabCreation_OnTablet_DoesNotDrawToTopEdge() {
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        NtpCustomizationConfigManager.getInstance()
+                .setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
+        Tab tab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ false);
+
+        mTabProvider.set(tab);
+        assertFalse(
+                "Tablets do not support top edge-to-edge, even for pending NTP with custom"
+                        + " background.",
+                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
     }
 
     @Test

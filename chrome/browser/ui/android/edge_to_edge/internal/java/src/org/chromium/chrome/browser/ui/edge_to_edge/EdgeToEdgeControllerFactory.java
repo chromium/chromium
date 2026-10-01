@@ -60,7 +60,10 @@ public class EdgeToEdgeControllerFactory {
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
-        assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
+        assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
+                        || EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
+                : "EdgeToEdgeController should only be created when bottom chin or top inset"
+                        + " edge-to-edge is supported";
         return new EdgeToEdgeControllerImpl(
                 activity,
                 windowAndroid,

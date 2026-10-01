@@ -258,17 +258,18 @@ public class EdgeToEdgeControllerImpl
                 new TabObserver() {
                     @Override
                     public void onContentChanged(Tab tab) {
-                        assert tab.getWebContents() != null
-                                : "onContentChanged called on tab w/o WebContents: "
-                                        + tab.getTitle();
+                        if (tab == null || tab != mCurrentTab) {
+                            return;
+                        }
                         boolean wasDrawingToTopEdge = isDrawingToTopEdge();
-                        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
                         drawToEdge(
-                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
+                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab),
                                 /* changedWindowState= */ false);
                         EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
                                 /* scrolling= */ false);
-                        updateWebContentsObserver(tab);
+                        if (tab.getWebContents() != null) {
+                            updateWebContentsObserver(tab);
+                        }
                         // Only retrigger when we draw to the top edge, to reduce the number of
                         // calls to retriggerOnApplyWindowInsets.
                         if (wasDrawingToTopEdge != isDrawingToTopEdge() && mInsetObserver != null) {
@@ -383,7 +384,6 @@ public class EdgeToEdgeControllerImpl
 
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
-        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
         if (tab != null) {
             tab.addObserver(mTabObserver);
             if (tab.getWebContents() != null) {
@@ -430,11 +430,16 @@ public class EdgeToEdgeControllerImpl
     }
 
     private boolean shouldDrawTopEdgeToEdge(@Nullable Tab tab) {
-        if (!mIsEdgeToEdgeRefactorEnabled || mStatusIndicatorVisible) return false;
+        if (!EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity) || mStatusIndicatorVisible) {
+            return false;
+        }
         if (EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(tab)) {
             return true;
         }
-        // Handle pending NTP before NativePage is initialized.
+        // Preserves TopInsetCoordinator parity: During initial tab creation with an NTP URL,
+        // tab.isNativePage() is temporarily false before the NewTabPage object is instantiated.
+        // Check if the tab is a regular NTP with a customized background so insets are consumed
+        // immediately during tab creation without waiting for the NativePage to initialize.
         if (EdgeToEdgeUtils.isRegularNtp(tab)) {
             return NtpCustomizationConfigManager.getInstance().getBackgroundType()
                     != NtpBackgroundType.DEFAULT;
@@ -446,6 +451,7 @@ public class EdgeToEdgeControllerImpl
     public void setStatusIndicatorVisible(boolean visible) {
         if (mStatusIndicatorVisible == visible) return;
         mStatusIndicatorVisible = visible;
+        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ false);
         if (mInsetObserver != null) {
             mInsetObserver.retriggerOnApplyWindowInsets();
         }
@@ -461,18 +467,18 @@ public class EdgeToEdgeControllerImpl
         boolean shouldRefreshWindowInsets = oldType == NtpBackgroundType.DEFAULT;
         if (fromInitialization || !shouldRefreshWindowInsets) return;
 
-        changeConsumeTopInset(shouldDrawTopEdgeToEdge(mCurrentTab));
+        changeConsumeTopInset();
     }
 
     @VisibleForTesting
     void onNtpBackgroundReset(@NtpBackgroundType int oldType) {
         if (oldType == NtpBackgroundType.DEFAULT) return;
 
-        changeConsumeTopInset(shouldDrawTopEdgeToEdge(mCurrentTab));
+        changeConsumeTopInset();
     }
 
-    private void changeConsumeTopInset(boolean consumeTopInset) {
-        mConsumeTopInset = consumeTopInset;
+    private void changeConsumeTopInset() {
+        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ false);
         if (mInsetObserver != null) {
             mInsetObserver.retriggerOnApplyWindowInsets();
         }
@@ -584,6 +590,9 @@ public class EdgeToEdgeControllerImpl
     @Override
     public void onFinishedHiding(int layoutType) {
         if (layoutType == LayoutType.HUB) {
+            // Retrigger window insets when exiting Hub to ensure insets are accurately applied.
+            // If performance issues arise from retriggering on every Hub exit, consider tracking
+            // whether the transition is specifically to a tab with top edge-to-edge support.
             if (mInsetObserver != null) {
                 mInsetObserver.retriggerOnApplyWindowInsets();
             }
@@ -673,15 +682,16 @@ public class EdgeToEdgeControllerImpl
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
         final boolean isChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
 
-        if (!isChinEnabled) {
+        if (!isChinEnabled && !mIsEdgeToEdgeRefactorEnabled) {
             RecordHistogram.recordBooleanHistogram(
                     DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
         }
 
-        // Exit early if there is a tappable navbar (3-button) as the controller should not function
-        // when 3-button nav is enabled.
+        // Exit early if there is a tappable navbar (3-button) as bottom edge to edge should not
+        // function when 3-button nav is enabled, unless top edge to edge is enabled.
         if (!shouldMonitorConfigurationChanges()
-                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())
+                && !mIsEdgeToEdgeRefactorEnabled) {
             return;
         }
 
@@ -691,10 +701,8 @@ public class EdgeToEdgeControllerImpl
         boolean shouldDrawToEdge =
                 EdgeToEdgeUtils.shouldDrawToEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
-        if (shouldMonitorConfigurationChanges()) {
-            shouldDrawToEdge &= isChinEnabled;
-            pageOptedIntoEdgeToEdge &= isChinEnabled;
-        }
+        shouldDrawToEdge &= isChinEnabled;
+        pageOptedIntoEdgeToEdge &= isChinEnabled;
         // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
         // #drawToEdge is called due to tab switching)
         boolean hasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
@@ -719,7 +727,11 @@ public class EdgeToEdgeControllerImpl
             Log.v(TAG, "Switching %s", (mIsDrawingToEdge ? "ToEdge" : "ToNormal"));
         }
 
-        if (changedPageOptedIn || changedDrawToEdge || changedWindowState) {
+        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
+        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
+        boolean changedDrawToTopEdge = wasDrawingToTopEdge != isDrawingToTopEdge();
+
+        if (changedPageOptedIn || changedDrawToEdge || changedDrawToTopEdge || changedWindowState) {
             adjustEdgePaddings();
             pushSafeAreaInsetUpdate();
             updatePadAdjusters();
@@ -794,15 +806,21 @@ public class EdgeToEdgeControllerImpl
                     configurationChanged,
                     SupportedConfigurationSwitch.NUM_ENTRIES);
             mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
+            if (mCurrentTab != null) {
+                mIsPageOptedIntoEdgeToEdge =
+                        EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab)
+                                && mIsBottomChinEnabled;
+            }
             changedWindowState = true;
         }
         if (mIsBottomChinEnabled) {
             verifyInsetsInSupportedConfiguration(windowInsets);
         }
 
-        // Exit early if there is a tappable navbar (3-button) as the controller should not function
-        // when 3-button nav is enabled.
+        // Exit early if there is a tappable navbar (3-button) as bottom edge to edge should not
+        // function when 3-button nav is enabled, unless top edge to edge is enabled.
         if (!shouldMonitorConfigurationChanges()
+                && !mIsEdgeToEdgeRefactorEnabled
                 && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
             return windowInsets;
         }
@@ -827,11 +845,15 @@ public class EdgeToEdgeControllerImpl
             changedWindowState = true;
         }
 
-        if (mIsEdgeToEdgeRefactorEnabled) {
-            if (mCurrentTab != null || !mIsTabSwitcherShowing) {
-                mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
-            }
+        // Note that we cannot call #drawToEdge earlier since we need the system
+        // insets.
+        // Let #drawToEdge update mConsumeTopInset in one place so top padding is updated even when
+        // raw window insets are unchanged (e.g. on retrigger).
+        if (changedWindowState || mConsumeTopInset != shouldDrawTopEdgeToEdge(mCurrentTab)) {
+            drawToEdge(mIsPageOptedIntoEdgeToEdge, changedWindowState);
+        }
 
+        if (mIsEdgeToEdgeRefactorEnabled) {
             @LayoutType
             int activeLayoutType =
                     mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
@@ -843,12 +865,6 @@ public class EdgeToEdgeControllerImpl
                             mSystemInsets.top, isDrawingToTopEdge(), activeLayoutType);
                 }
             }
-        }
-
-        // Note that we cannot call #drawToEdge earlier since we need the system
-        // insets.
-        if (changedWindowState) {
-            drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
         }
 
         // Signal: When configuration is changed, did we pad the system correctly.
@@ -1063,6 +1079,7 @@ public class EdgeToEdgeControllerImpl
             NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
             mHomepageStateListener = null;
         }
+        mTopInsetObservers.clear();
         mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(mEdgeToEdgeToken);
     }
 

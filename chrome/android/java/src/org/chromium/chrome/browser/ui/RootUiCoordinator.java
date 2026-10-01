@@ -1382,7 +1382,8 @@ public class RootUiCoordinator
                     new EdgeToEdgeControllerCreator(
                             new WeakReference<Activity>(mActivity),
                             mWindowAndroid.getInsetObserver(),
-                            this::initializeEdgeToEdgeController);
+                            this::initializeEdgeToEdgeController,
+                            supportsTopInset());
         } else {
             initializeEdgeToEdgeController();
         }
@@ -1460,6 +1461,7 @@ public class RootUiCoordinator
                 transitiveTopInsetProvider.set(topInsetCoordinator);
             }
         }
+
         // Temporarily disable LinkHoverStatusBar on non-desktop devices.
         // TODO(b/542488395): Enable this on non-desktop devices.
         if (DeviceInfo.isDesktop()
@@ -2640,6 +2642,14 @@ public class RootUiCoordinator
     }
 
     /**
+     * Returns whether top inset edge-to-edge is supported for the current activity. Overridden in
+     * {@link TabbedRootUiCoordinator} to return true.
+     */
+    protected boolean supportsTopInset() {
+        return false;
+    }
+
+    /**
      * Returns whether to suppress the tab strip when Chrome starts. Overridden by the subclass that
      * needs the behavior.
      */
@@ -2650,23 +2660,23 @@ public class RootUiCoordinator
     /** Setup drawing using Android Edge-to-Edge. */
     @CallSuper
     protected void initializeEdgeToEdgeController() {
+        if (mEdgeToEdgeControllerCreator != null) {
+            // Clean up the creator before creating the controller to ensure the creator doesn't
+            // receive insets again when the EdgeToEdgeController gets created, as the
+            // controller re-triggers inset consumption during its initialization.
+            mEdgeToEdgeControllerCreator.destroy();
+            mEdgeToEdgeControllerCreator = null;
+        }
+
         boolean eligible = EdgeToEdgeUtils.recordEligibilityOnCreate(mActivity);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
 
         if (supportsEdgeToEdge()) {
-            assert eligible
+            assert eligible || EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)
                     : "The edge-to-edge controller is being initialized, though it should not be"
                             + " eligible!";
-            if (mEdgeToEdgeControllerCreator != null) {
-                // Clean up the creator before creating the controller to ensure the creator doesn't
-                // receive insets again when the EdgeToEdgeController gets created, as the
-                // controller
-                // re-triggers inset consumption during its initialization.
-                mEdgeToEdgeControllerCreator.destroy();
-                mEdgeToEdgeControllerCreator = null;
-            }
 
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
@@ -2686,9 +2696,12 @@ public class RootUiCoordinator
                             instanceof TransitiveTopInsetProvider transitiveTopInsetProvider) {
                 transitiveTopInsetProvider.set(mEdgeToEdgeController);
             }
-            mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
-
-            recordIfMissingNavigationBar();
+            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)) {
+                mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
+                // Only check for missing navbar insets when the bottom chin is enabled to avoid
+                // false positives when initialized solely for top edge-to-edge (e.g. 3-button nav).
+                recordIfMissingNavigationBar();
+            }
         }
     }
 

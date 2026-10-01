@@ -2845,7 +2845,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean supportsEdgeToEdge() {
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
+        // EdgeToEdgeController is needed either for the bottom chin (gesture nav) or for top
+        // edge-to-edge on phones (migrated from TopInsetCoordinator, which supports 3-button nav).
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)
+                || EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
+    }
+
+    @Override
+    protected boolean supportsTopInset() {
+        return true;
     }
 
     @Override
