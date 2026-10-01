@@ -3,34 +3,38 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './side_panel_ghost_loader.html.js';
+import {getCss} from './side_panel_ghost_loader.css.js';
+import {getHtml} from './side_panel_ghost_loader.html.js';
 
 /*
  * Element responsible for rendering the side panel ghost loader.
  */
-export class SidePanelGhostLoaderElement extends PolymerElement {
+export class SidePanelGhostLoaderElement extends CrLitElement {
   static get is() {
     return 'side-panel-ghost-loader';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       darkMode: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('darkMode'),
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
   // Whether the loading results should render in dark mode.
-  declare private darkMode: boolean;
+  private accessor darkMode: boolean = loadTimeData.getBoolean('darkMode');
 }
 
 declare global {

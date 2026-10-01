@@ -15,16 +15,18 @@ build_webui("build") {
     "info_old.svg",
   ]
 
-  web_component_files = [ "searchbox_ghost_loader.ts" ]
-
   ts_files = [
+    "searchbox_ghost_loader.html.ts",
+    "searchbox_ghost_loader.ts",
     "searchbox_ghost_loader_browser_proxy.ts",
     "searchbox/lens_searchbox.ts",
     "searchbox/lens_searchbox.html.ts",
   ]
 
   css_files = [
+    "searchbox_ghost_loader.css",
     "searchbox_shared_style.css",
+    "searchbox_shared_style_lit.css",
     "searchbox/lens_searchbox.css",
   ]
 

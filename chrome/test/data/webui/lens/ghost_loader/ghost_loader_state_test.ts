@@ -21,10 +21,10 @@ suite('SearchboxGhostLoader', () => {
     // LensOverlayVisualSelectionUpdates is enabled. Grab the new UI if it
     // exists, otherwise use the old UI.
     const newLoadingState =
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+        searchboxGhostLoaderElement.shadowRoot.querySelector<HTMLElement>(
             ':host([enable-csb-motion-tweaks]) .suggestion-loader-container');
     return newLoadingState ??
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+        searchboxGhostLoaderElement.shadowRoot.querySelector<HTMLElement>(
             '#loadingState')!;
   }
 
@@ -43,7 +43,7 @@ suite('SearchboxGhostLoader', () => {
     // Initially, the ghost loader should show the loading state and have the
     // error state hidden.
     assertFalse(isVisible(
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+        searchboxGhostLoaderElement.shadowRoot.querySelector<HTMLElement>(
             '#errorState')));
     assertTrue(isVisible(getSearchboxGhostLoaderElement()));
     testBrowserProxy.page.showErrorState();
@@ -52,7 +52,7 @@ suite('SearchboxGhostLoader', () => {
     // should switch to showing the error state.
     assertFalse(isVisible(getSearchboxGhostLoaderElement()));
     assertTrue(isVisible(
-        searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
+        searchboxGhostLoaderElement.shadowRoot.querySelector<HTMLElement>(
             '#errorState')));
   });
 });

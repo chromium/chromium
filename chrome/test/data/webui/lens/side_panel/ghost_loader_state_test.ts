@@ -69,7 +69,7 @@ suite('GhostLoaderState', () => {
     ghostLoader.showErrorStateForTesting();
     lensSidePanelElement.makeGhostLoaderVisibleForTesting();
     await waitAfterNextRender(lensSidePanelElement);
-    assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
+    assertTrue(isVisible(ghostLoader.shadowRoot.getElementById('errorState')));
     // Notify side panel to reset the ghost loader to loading state.
     assertTrue(isVisible(lensSidePanelElement.$.searchbox));
     // Mock sending input to the querying autocomplete.
@@ -101,7 +101,7 @@ suite('GhostLoaderState', () => {
     ghostLoader.showErrorStateForTesting();
     lensSidePanelElement.makeGhostLoaderVisibleForTesting();
     await waitAfterNextRender(lensSidePanelElement);
-    assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
+    assertTrue(isVisible(ghostLoader.shadowRoot.getElementById('errorState')));
     // Click into the searchbox.
     lensSidePanelElement.$.searchbox.fire(
         'query-autocomplete', {inputValue: ''});

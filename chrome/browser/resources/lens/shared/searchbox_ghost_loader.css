@@ -1,4 +1,15 @@
-<style include="searchbox-shared-style cr-spinner-style">
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=./searchbox_shared_style_lit.css.js
+ * #include=searchbox-shared-style-lit cr-spinner-style-lit
+ * #css_wrapper_metadata_end */
+
 #content {
   background-color: var(--color-searchbox-results-background);
   border-radius: calc(0.5 * var(--cr-searchbox-height));
@@ -214,48 +225,3 @@
   :host-context([webui-rounded-icons]) #errorIcon {
     mask-image: url('/lens/shared/info.svg');
   }
-</style>
-<!-- LINT.IfChange(GhostLoaderText) -->
-<div id="content">
-  <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
-    <div id="loadingState" class="status-container">
-      <div class="spinner"></div>
-      <div class="loader-text">
-        <span id="hint-text1" class="hint-text">
-          [[ghostLoaderPrimaryMessage]]
-        </span>
-        <span id="hint-text2" class="hint-text">
-          $i18n{searchboxGhostLoaderHintTextSecondary}
-        </span>
-      </div>
-    </div>
-    <div class="suggestion-loader-container">
-      <template is="dom-repeat"
-          items="[[getSuggestionItems(suggestionCount)]]" as="item">
-        <div class="ghost-loader-item">
-          <cr-searchbox-icon
-            class="searchbox-icon"
-            match=""
-            default-icon="//resources/cr_components/searchbox/icons/search_cr23.svg"
-          ></cr-searchbox-icon>
-          <div class="loading-bar"></div>
-        </div>
-      </template>
-    </div>
-    <div id="errorState" class="status-container">
-      <div id="errorIconContainer">
-        <div id="errorIcon"></div>
-      </div>
-      <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
-    </div>
-  </template>
-  <template is="dom-if" if="[[!showContextualSearchboxLoadingState]]">
-    <div id="hintState" class="status-container">
-      <div id="errorIconContainer">
-        <div id="errorIcon"></div>
-      </div>
-      <span class="loader-text">$i18n{searchboxGhostLoaderNoSuggestText}</span>
-    </div>
-  </template>
-</div>
-<!-- LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderText) -->

@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_spinner_style.css.js';
 import '/strings.m.js';
-import './searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox_icon.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {PageContentType} from './page_content_type.mojom-webui.js';
-import {getTemplate} from './searchbox_ghost_loader.html.js';
+import {getCss} from './searchbox_ghost_loader.css.js';
+import {getHtml} from './searchbox_ghost_loader.html.js';
 import {BrowserProxyImpl} from './searchbox_ghost_loader_browser_proxy.js';
 import type {BrowserProxy} from './searchbox_ghost_loader_browser_proxy.js';
 
-const SearchboxGhostLoaderElementBase = I18nMixin(PolymerElement);
+const SearchboxGhostLoaderElementBase = I18nMixinLit(CrLitElement);
 
 // Displays a loading preview while waiting on autocomplete to return matches.
 export class SearchboxGhostLoaderElement extends
@@ -28,67 +27,55 @@ export class SearchboxGhostLoaderElement extends
     // LINT.ThenChange(/ui/webui/resources/cr_components/searchbox/searchbox.ts:GhostLoaderTagName)
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       enableCsbMotionTweaks: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
-        reflectToAttribute: true,
+        reflect: true,
       },
       showErrorState: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
         notify: true,
       },
       showContextualSearchboxLoadingState: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('showContextualSearchboxLoadingState'),
-        reflectToAttribute: true,
+        reflect: true,
       },
-      pageContentType: {
-        type: Number,
-        value: PageContentType.kUnknown,
-      },
-      ghostLoaderPrimaryMessage: {
-        type: String,
-        computed: `computeGhostLoaderPrimaryMessage(pageContentType)`,
-      },
+      pageContentType: {type: Number},
       enableSummarizeSuggestionHint: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableSummarizeSuggestionHint'),
-        reflectToAttribute: true,
+        reflect: true,
       },
-      suggestionCount: {
-        type: Number,
-        value: 0,
-      },
-      shouldFadeOut:
-          {type: Boolean, computed: 'computeShouldFadeOut(suggestionCount)'},
+      suggestionCount: {type: Number},
     };
   }
 
   // Whether the contextual searchbox motion tweaks are enabled via feature flag.
-  declare private enableCsbMotionTweaks: boolean;
+  private accessor enableCsbMotionTweaks: boolean =
+      loadTimeData.getBoolean('enableCsbMotionTweaks');
   // Whether the autocomplete stop timer has triggered. If it has, we should
   // hide the ghost loader. We also show the error text in this case.
-  declare private showErrorState: boolean;
-  declare private showContextualSearchboxLoadingState: boolean;
+  private accessor showErrorState: boolean = false;
+  protected accessor showContextualSearchboxLoadingState: boolean =
+      loadTimeData.getBoolean('showContextualSearchboxLoadingState');
   // What the current page content type is.
-  declare private pageContentType: PageContentType;
-  declare private enableSummarizeSuggestionHint: boolean;
+  private accessor pageContentType: PageContentType = PageContentType.kUnknown;
+  private accessor enableSummarizeSuggestionHint: boolean =
+      loadTimeData.getBoolean('enableSummarizeSuggestionHint');
   // The number of suggestions to show in the ghost loader.
-  declare private suggestionCount: number;
-  // Whether the ghost loader suggestions should fade out now that suggestions
-  // came in.
-  declare private shouldFadeOut: boolean;
+  private accessor suggestionCount: number = 0;
+
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
-  private listenerIds: number[];
-  declare private ghostLoaderPrimaryMessage: string;
+  private listenerIds: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -118,27 +105,21 @@ export class SearchboxGhostLoaderElement extends
       return this.i18n('searchboxGhostLoaderErrorText');
     }
 
-    return this.computeGhostLoaderPrimaryMessage();
+    return this.getGhostLoaderPrimaryMessage();
   }
-  // LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.html:GhostLoaderText)
+  // LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.html.ts:GhostLoaderText)
 
   showErrorStateForTesting() {
     this.showErrorState = true;
   }
 
-  private computeGhostLoaderPrimaryMessage(): string {
+  protected getGhostLoaderPrimaryMessage(): string {
     return this.pageContentType === PageContentType.kPdf ?
         this.i18n('searchboxGhostLoaderHintTextPrimaryPdf') :
         this.i18n('searchboxGhostLoaderHintTextPrimaryDefault');
   }
 
-  private computeShouldFadeOut() {
-    // Once the suggestionCount is no longer 0, fade out the ghost loader
-    // suggestions.
-    return this.suggestionCount !== 0;
-  }
-
-  private getSuggestionItems(): number[] {
+  protected getSuggestionItems(): number[] {
     if (this.suggestionCount === 0) {
       return Array(5).fill(0);
     }
