@@ -602,6 +602,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   void MarkContextLost(error::ContextLostReason reason) override;
   bool IsContextLost() const override;
   void FlushBackend() override;
+  void ReportProgress() override;
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
@@ -1139,6 +1140,10 @@ void DawnSharedContext::FlushBackend() {
 #if BUILDFLAG(IS_WIN)
   FlushD3D11CommandsIfDelayed();
 #endif
+}
+
+void DawnSharedContext::ReportProgress() {
+  platform_.ReportProgress();
 }
 
 void DawnSharedContext::OnError(wgpu::ErrorType error_type,

@@ -81,6 +81,7 @@ class GPU_GLES2_EXPORT VulkanInProcessContextProvider
   void FlushBackend() override;
   void MarkContextLost(gpu::error::ContextLostReason reason) override;
   bool IsContextLost() const override;
+  void ReportProgress() override;
 
  private:
   friend class VulkanInProcessContextProviderTest;

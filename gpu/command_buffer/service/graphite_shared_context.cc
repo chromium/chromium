@@ -431,8 +431,7 @@ void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {
   CHECK(SubmitImpl(submit_info));
 }
 
-bool GraphiteSharedContext::SubmitImpl(
-    const skgpu::graphite::SubmitInfo& submit_info) {
+bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) {
   const int num_pending_commands = num_pending_commands_;
   num_pending_commands_ = 0;
   num_pending_recordings_ = 0;
@@ -466,18 +465,35 @@ bool GraphiteSharedContext::SubmitImpl(
     start_time = base::TimeTicks::Now();
   }
 
+  const bool sync_to_cpu =
+      submit_info.fSync == skgpu::graphite::SyncToCpu::kYes;
+
+  // Always submit without waiting first. If a wait is requested, it is done by
+  // a separate submit below.
+  submit_info.fSync = skgpu::graphite::SyncToCpu::kNo;
+
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
   if (submit_info.fFinishedProc && task_runner) {
-    auto wrapped_submit_info = submit_info;
-    std::tie(wrapped_submit_info.fFinishedProc,
-             wrapped_submit_info.fFinishedContext) =
+    std::tie(submit_info.fFinishedProc,
+             submit_info.fFinishedContext) =
         CreateFinishedProcThreadSafe(submit_info.fFinishedProc,
                                      submit_info.fFinishedContext,
                                      std::move(task_runner));
-    success = graphite_context_->submit(wrapped_submit_info);
-  } else {
-    success = graphite_context_->submit(submit_info);
+  }
+  success = graphite_context_->submit(submit_info);
+
+  if (success && sync_to_cpu) {
+    // Report progress between the submit and the wait to tell the GPU watchdog
+    // that we are making progress. Otherwise, a long submit followed by a long
+    // wait could be mistaken for a hang and cause the GPU process to be killed.
+    if (delegate_) {
+      delegate_->ReportProgress();
+    }
+    // Submitting without any new recording is fine. Graphite won't generate an
+    // empty command buffer in this case, it will just wait for the last
+    // submitted command buffer.
+    success = graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
   }
 
   if (shoud_record_metric) {

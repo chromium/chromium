@@ -315,6 +315,10 @@ bool VulkanInProcessContextProvider::IsContextLost() const {
   return context_lost_.load(std::memory_order::relaxed);
 }
 
+void VulkanInProcessContextProvider::ReportProgress() {
+  // TODO(crbug.com/552951905): Implement ProgressReporter hook.
+}
+
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
     const {
   // Return nullopt to indicate that there's no limit.

@@ -45,6 +45,8 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
     virtual void FlushBackend() = 0;
     virtual void MarkContextLost(error::ContextLostReason reason) = 0;
     virtual bool IsContextLost() const = 0;
+    // Tells the GPU watchdog that the GPU thread is making progress.
+    virtual void ReportProgress() = 0;
   };
 
   using SkImageReadPixelsCallback = base::OnceCallback<
@@ -239,7 +241,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   class AutoLock;
 
   bool InsertRecordingImpl(const skgpu::graphite::InsertRecordingInfo&);
-  bool SubmitImpl(const skgpu::graphite::SubmitInfo&);
+  bool SubmitImpl(skgpu::graphite::SubmitInfo);
   void SubmitAndFlushBackendImpl(const skgpu::graphite::SubmitInfo&);
 
   // The lock for protecting skgpu::graphite::Context.

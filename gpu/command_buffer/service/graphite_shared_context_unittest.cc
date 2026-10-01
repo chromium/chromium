@@ -45,6 +45,7 @@ class MockDelegate : public GraphiteSharedContext::Delegate {
               (error::ContextLostReason reason),
               (override));
   MOCK_METHOD(bool, IsContextLost, (), (const, override));
+  MOCK_METHOD(void, ReportProgress, (), (override));
 };
 
 // Test fixture for GraphiteSharedContext with thread safety enabled.
