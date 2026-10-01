@@ -258,6 +258,20 @@ TEST_F(ContextualTasksPanelHostDesktopTest,
   ASSERT_TRUE(toolbar_contents);
   EXPECT_EQ(webui::GetBrowserWindowInterface(toolbar_contents),
             browser_window_.get());
+
+  // Simulate hiding the side panel on tab switch (which destroys the view) and
+  // reopening it when switching back. The toolbar WebContents should persist
+  // without being recreated or losing its BrowserWindowInterface association.
+  view.reset();
+  EXPECT_EQ(panel_host_->GetToolbarWebContents(), toolbar_contents);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(toolbar_contents),
+            browser_window_.get());
+
+  std::unique_ptr<views::View> recreated_view =
+      panel_host_->CreateSidePanelView(*side_panel_registry_);
+  EXPECT_EQ(panel_host_->GetToolbarWebContents(), toolbar_contents);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(toolbar_contents),
+            browser_window_.get());
 }
 
 }  // namespace contextual_tasks
