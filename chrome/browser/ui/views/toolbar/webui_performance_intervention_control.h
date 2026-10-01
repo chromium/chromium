@@ -57,6 +57,9 @@ class WebUIPerformanceInterventionControl
   views::BubbleDialogModelHost* GetBubbleDialogModelHostForTesting() const {
     return bubble_dialog_model_host_;
   }
+  PerformanceInterventionButtonController* controller_for_testing() const {
+    return controller_.get();
+  }
 
  private:
   void UpdateState();
