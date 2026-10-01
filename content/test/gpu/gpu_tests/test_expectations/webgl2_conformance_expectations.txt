@@ -852,6 +852,7 @@ crbug.com/446941342 [ android android-pixel-10 ] conformance2/rendering/read-dra
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+crbug.com/568282113 [ android android-pixel-10 ] conformance2/textures/misc/texel-fetch-undefined.html [ Failure ]
 crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/integerstatequery.html [ Failure ]
 crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] deqp/functional/gles3/shaderstruct.html [ Failure ]
