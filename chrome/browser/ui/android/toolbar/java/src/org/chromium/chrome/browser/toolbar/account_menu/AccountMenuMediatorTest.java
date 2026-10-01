@@ -157,14 +157,7 @@ public class AccountMenuMediatorTest {
     @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignedOut_showsPromoCardAndSigninsOnClick() {
         assertEquals(4, mModelList.size());
-        ListItem item = mModelList.get(0);
-        assertEquals(ItemType.PROMO_CARD, item.type);
-
-        OnClickListener onSigninClick =
-                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
-        assertNotNull(onSigninClick);
-
-        onSigninClick.onClick(null);
+        clickPromoSigninButton();
 
         verify(mDismissCallback).run();
         verify(mSigninLauncher)
@@ -179,14 +172,7 @@ public class AccountMenuMediatorTest {
     @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignedOut_activitylessSigninOnClick() {
         assertEquals(4, mModelList.size());
-        ListItem item = mModelList.get(0);
-        assertEquals(ItemType.PROMO_CARD, item.type);
-
-        OnClickListener onSigninClick =
-                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
-        assertNotNull(onSigninClick);
-
-        onSigninClick.onClick(null);
+        clickPromoSigninButton();
 
         verify(mDismissCallback).run();
         verify(mSigninCoordinator).startSigninFlow(any());
@@ -207,18 +193,12 @@ public class AccountMenuMediatorTest {
     @Test
     public void testAutofillItemClick_dismissesAndOpensAutofillSettings() {
         assertEquals(4, mModelList.size());
-        ListItem item = mModelList.get(1);
-        assertEquals(ItemType.MENU_ITEM, item.type);
-
-        PropertyModel model = item.model;
+        PropertyModel model = mModelList.get(1).model;
         assertEquals(R.string.menu_passwords_and_autofill, model.get(MenuItemProperties.TITLE_ID));
         assertEquals(
                 R.drawable.ic_password_manager_24dp, model.get(MenuItemProperties.START_ICON_ID));
 
-        OnClickListener clickListener = model.get(MenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-
-        clickListener.onClick(null);
+        clickMenuItem(/* index= */ 1);
 
         verify(mDismissCallback).run();
         verify(mSettingsNavigation)
@@ -227,24 +207,16 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testAccountSettingsItemClick_dismissesAndOpensAccountSettings() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
 
         assertEquals(6, mModelList.size());
-        ListItem item = mModelList.get(3);
-        assertEquals(ItemType.MENU_ITEM, item.type);
-
-        PropertyModel model = item.model;
+        PropertyModel model = mModelList.get(3).model;
         assertEquals(
                 R.string.profile_menu_account_settings_button,
                 model.get(MenuItemProperties.TITLE_ID));
         assertEquals(R.drawable.settings_cog, model.get(MenuItemProperties.START_ICON_ID));
 
-        OnClickListener clickListener = model.get(MenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-
-        clickListener.onClick(null);
+        clickMenuItem(/* index= */ 3);
 
         verify(mDismissCallback).run();
         verify(mSettingsNavigation).startSettings(mContext, SettingsFragment.MAIN);
@@ -260,15 +232,12 @@ public class AccountMenuMediatorTest {
         assertEquals(4, mModelList.size());
         assertEquals(ItemType.DIVIDER, mModelList.get(2).type);
         ListItem item = mModelList.get(3);
-        assertEquals(ItemType.MENU_ITEM, item.type);
         assertEquals(
                 R.string.menu_new_incognito_window, item.model.get(MenuItemProperties.TITLE_ID));
         assertEquals(
                 R.drawable.ic_incognito_24dp, item.model.get(MenuItemProperties.START_ICON_ID));
 
-        OnClickListener clickListener = item.model.get(MenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-        clickListener.onClick(null);
+        clickMenuItem(/* index= */ 3);
 
         verify(mDismissCallback).run();
         verify(mOrchestrator)
@@ -287,12 +256,9 @@ public class AccountMenuMediatorTest {
 
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(3);
-        assertEquals(ItemType.MENU_ITEM, item.type);
         assertEquals(R.string.menu_new_incognito_tab, item.model.get(MenuItemProperties.TITLE_ID));
 
-        OnClickListener clickListener = item.model.get(MenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
-        clickListener.onClick(null);
+        clickMenuItem(/* index= */ 3);
 
         verify(mDismissCallback).run();
         verify(mIncognitoTabCreator).launchNtp(TabLaunchType.FROM_CHROME_UI);
@@ -313,10 +279,7 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testSignedIn_showsIdentityCard() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
 
         assertEquals(6, mModelList.size());
         ListItem item = mModelList.get(0);
@@ -329,10 +292,7 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testProfileDataUpdated_updatesIdentityCard() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
 
         ListItem item = mModelList.get(0);
         assertEquals(ItemType.IDENTITY_CARD, item.type);
@@ -395,21 +355,14 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testManageGoogleAccountItemClick_opensMyAccount() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
 
         assertEquals(6, mModelList.size());
         ListItem item = mModelList.get(2);
-        assertEquals(ItemType.MENU_ITEM, item.type);
-        assertNotNull(item);
         assertEquals(
                 R.string.manage_your_google_account, item.model.get(MenuItemProperties.TITLE_ID));
-        OnClickListener clickListener = item.model.get(MenuItemProperties.CLICK_LISTENER);
-        assertNotNull(clickListener);
 
-        clickListener.onClick(null);
+        clickMenuItem(/* index= */ 2);
 
         verify(mDismissCallback).run();
         verify(mSigninLauncher).openManageGoogleAccount(eq(mContext));
@@ -499,12 +452,7 @@ public class AccountMenuMediatorTest {
     public void testRecordEvent_signinPromo() {
         HistogramWatcher watcher = expectEvent(Event.SIGNIN_PROMO_CLICKED);
 
-        ListItem item = mModelList.get(0);
-        assertEquals(ItemType.PROMO_CARD, item.type);
-        OnClickListener onSigninClick =
-                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
-        assertNotNull(onSigninClick);
-        onSigninClick.onClick(null);
+        clickPromoSigninButton();
 
         watcher.assertExpected();
     }
@@ -543,9 +491,7 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testRecordEvent_manageGoogleAccount() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
         HistogramWatcher watcher = expectEvent(Event.MANAGE_GOOGLE_ACCOUNT_CLICKED);
 
         clickMenuItem(/* index= */ 2);
@@ -555,14 +501,27 @@ public class AccountMenuMediatorTest {
 
     @Test
     public void testRecordEvent_accountSettings() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+        signInAndUpdateMenu();
         HistogramWatcher watcher = expectEvent(Event.ACCOUNT_SETTINGS_CLICKED);
 
         clickMenuItem(/* index= */ 3);
 
         watcher.assertExpected();
+    }
+
+    private void signInAndUpdateMenu() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+    }
+
+    private void clickPromoSigninButton() {
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.PROMO_CARD, item.type);
+        OnClickListener onSigninClick =
+                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
+        assertNotNull(onSigninClick);
+        onSigninClick.onClick(null);
     }
 
     private void clickMenuItem(int index) {
