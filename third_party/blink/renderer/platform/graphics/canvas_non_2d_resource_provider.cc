@@ -496,12 +496,6 @@ bool CanvasNon2DResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-void CanvasNon2DResourceProvider::SetAnimatedImageFrameIndexes(
-    scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(indexes);
-}
-
 bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
   CHECK(!is_software_);

@@ -124,34 +124,41 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
         animated_image_frame_index_map) {
   auto resource_provider = CanvasNon2DResourceProvider::Create(
       size, format, alpha_type, color_space, hdr_metadata,
-      std::move(context_provider_wrapper), shared_image_usage_flags);
+      context_provider_wrapper, shared_image_usage_flags);
   if (!resource_provider) {
     return nullptr;
-  }
-
-  if (animated_image_frame_index_map) {
-    // GetOrCreateImageProvider() to make sure one is created prior to the
-    // call to SetAnimatedImageFrameIndexes().
-    resource_provider->GetOrCreateImageProvider();
-    resource_provider->SetAnimatedImageFrameIndexes(
-        std::move(animated_image_frame_index_map));
   }
 
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
-    auto* image_provider = resource_provider->GetOrCreateImageProvider();
+    cc::ImageDecodeCache* cache_f16 = nullptr;
+    if (resource_provider->GetSharedImageFormat() ==
+        viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 = context_provider_wrapper->ContextProvider().ImageDecodeCache(
+          kRGBA_F16_SkColorType);
+    }
+    cc::ImageDecodeCache* cache_rgba8 =
+        context_provider_wrapper->ContextProvider().ImageDecodeCache(
+            kN32_SkColorType);
+    CanvasImageProvider image_provider(
+        cache_rgba8, cache_f16, color_space,
+        resource_provider->GetSharedImageFormat(),
+        cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper);
+    if (animated_image_frame_index_map) {
+      image_provider.SetAnimatedImageFrameIndexes(
+          std::move(animated_image_frame_index_map));
+    }
+
     gpu::SyncToken sync_token =
         resource_provider->RasterInterface()->RasterSharedImage(
             resource_provider->resource()->GetSharedImage(),
             resource_provider->resource()->acquire_sync_token(),
-            recorder.ReleaseMainRecording(), image_provider,
+            recorder.ReleaseMainRecording(), &image_provider,
             /*needs_clear=*/true);
     resource_provider->resource()->SetReleaseSyncToken(sync_token);
-    if (image_provider) {
-      image_provider->ReleaseLockedImages();
-      image_provider->UnbindTextureBackedImages();
-    }
+    image_provider.ReleaseLockedImages();
+    image_provider.UnbindTextureBackedImages();
   }
   return resource_provider->Snapshot(orientation);
 }
