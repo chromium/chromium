@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -32,6 +33,7 @@
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -110,6 +112,11 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
   CHECK(g_browser_process);
   PrefService* const pref_service = g_browser_process->local_state();
   CHECK(pref_service);
+#if !defined(ARCH_CPU_X86_FAMILY)
+  pref_service->SetDefaultPrefValue(
+      prefs::kGlassFrameEnabled,
+      base::Value(features::kGlassFrameEnabledByDefault.Get()));
+#endif  // !defined(ARCH_CPU_X86_FAMILY)
   is_glass_frame_enabled_ = pref_service->GetBoolean(prefs::kGlassFrameEnabled);
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
