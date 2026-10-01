@@ -98,7 +98,10 @@ class ExternalPrefLoaderTest : public ::testing::Test {
     sync_service_ = static_cast<TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-    sync_service_->SetInitialSyncFeatureSetupComplete(true);
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+    sync_service_->SetDownloadStatusFor(
+        {syncer::OS_PRIORITY_PREFERENCES},
+        syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
   }
 
   void TearDown() override { profile_.reset(); }
@@ -119,9 +122,6 @@ class ExternalPrefLoaderTest : public ::testing::Test {
   raw_ptr<TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
 };
 
-// TODO(lazyboy): Add a test to cover
-// PrioritySyncReadyWaiter::OnIsSyncingChanged().
-
 // Tests that we fire pref reading correctly after priority sync state
 // is resolved by ExternalPrefLoader.
 TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
@@ -133,10 +133,13 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
       ManifestLocation::kInvalidLocation, Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
-  // Initially CanSyncFeatureStart() returns true, returning false will let
-  // |loader| proceed.
-  sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
+  // Initially OS priority prefs are waiting for updates, so |loader| should
+  // wait. Once they're downloaded, |loader| should proceed.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(run_loop.AnyQuitCalled());
+  sync_service()->SetDownloadStatusFor(
+      {syncer::OS_PRIORITY_PREFERENCES},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   sync_service()->FireOnStateChanged();
   run_loop.Run();
 }

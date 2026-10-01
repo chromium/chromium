@@ -135,7 +135,12 @@ TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
   ExpectNotificationShown(false);
 }
 
-TEST_F(SyncErrorNotifierTest, NotificationClickRedirectsToSyncSetupByDefault) {
+TEST_F(SyncErrorNotifierTest,
+       NotificationClickRedirectsToSyncSetupWithoutReplaceSyncWithSignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   service_.GetUserSettings()->SetPassphraseRequired();
   service_.SetInitialSyncFeatureSetupComplete(true);
 

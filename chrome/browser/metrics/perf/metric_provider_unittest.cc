@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -362,6 +363,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     TestSyncService* sync_service = static_cast<TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile, base::BindRepeating(&TestingSyncFactoryFunction)));
+    // TODO(crbug.com/474082262): Migrate these tests to cover signed-in users
+    // without sync consent. For now, grant sync consent explicitly, since
+    // TestSyncService defaults to ConsentLevel::kSignin when
+    // kReplaceSyncPromosWithSignInPromos is enabled.
+    sync_service->SetSignedIn(signin::ConsentLevel::kSync);
     sync_service->SetInitialSyncFeatureSetupComplete(true);
     return sync_service;
   }

@@ -358,9 +358,14 @@ TEST(SigninPromoTest, IsSignInPromo_SendTabToSelf) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// ChromeOS currently does not show any sign in promos.
+// ChromeOS does not show any sign in promos when
+// `kReplaceSyncPromosWithSignInPromos` is disabled.
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(SigninPromoTest, IsSignInPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
@@ -368,7 +373,21 @@ TEST(SigninPromoTest, IsSignInPromo) {
       IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kSendTabToSelfPromo));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// With `kReplaceSyncPromosWithSignInPromos` enabled, the extension install
+// bubble access point counts as a sign in promo on ChromeOS.
+TEST(SigninPromoTest, IsSignInPromo_ReplaceSyncPromosWithSignInPromos) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
+  EXPECT_TRUE(
+      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kSendTabToSelfPromo));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Extensions explicit signin is not enabled in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)

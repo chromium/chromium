@@ -35,14 +35,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_preferences/pref_service_syncable_observer.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -121,8 +119,7 @@ namespace extensions {
 #if BUILDFLAG(IS_CHROMEOS)
 // Helper class to wait for priority pref sync to be ready.
 class ExternalPrefLoader::PrioritySyncReadyWaiter
-    : public sync_preferences::PrefServiceSyncableObserver,
-      public syncer::SyncServiceObserver {
+    : public syncer::SyncServiceObserver {
  public:
   explicit PrioritySyncReadyWaiter(Profile* profile) : profile_(profile) {
     DCHECK(profile_);
@@ -134,41 +131,29 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   ~PrioritySyncReadyWaiter() override = default;
 
   void Start(base::OnceClosure done_closure) {
-    if (IsPrioritySyncing()) {
+    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
+    if (!IsWaitingForPrioritySync(service)) {
       std::move(done_closure).Run();
       // Note: |this| is deleted here.
       return;
     }
     DCHECK(!done_closure_);
     done_closure_ = std::move(done_closure);
-    MaybeObserveSyncStart();
+    sync_service_observation_.Observe(service);
   }
 
  private:
-  void MaybeObserveSyncStart() {
-    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    if (!service || !service->IsSyncFeatureEnabled()) {
-      Finish();
-      // Note: |this| is deleted.
-      return;
-    }
-    AddObservers();
-  }
-
-  // sync_preferences::PrefServiceSyncableObserver:
-  void OnIsSyncingChanged() override {
-    DCHECK(profile_);
-    if (!IsPrioritySyncing())
-      return;
-
-    Finish();
-    // Note: |this| is deleted here.
+  // Returns whether OS priority prefs are still expected to be downloaded.
+  static bool IsWaitingForPrioritySync(const syncer::SyncService* service) {
+    return service->GetDownloadStatusFor(syncer::OS_PRIORITY_PREFERENCES) ==
+           syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates;
   }
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync) override {
-    if (!sync->IsSyncFeatureEnabled()) {
+    if (!IsWaitingForPrioritySync(sync)) {
       Finish();
+      // Note: |this| is deleted here.
     }
   }
 
@@ -177,32 +162,12 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     sync_service_observation_.Reset();
   }
 
-  bool IsPrioritySyncing() {
-    sync_preferences::PrefServiceSyncable* prefs =
-        PrefServiceSyncableFromProfile(profile_);
-    return prefs->AreOsPriorityPrefsSyncing();
-  }
-
-  void AddObservers() {
-    sync_preferences::PrefServiceSyncable* prefs =
-        PrefServiceSyncableFromProfile(profile_);
-    DCHECK(prefs);
-    syncable_pref_observation_.Observe(prefs);
-
-    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    sync_service_observation_.Observe(service);
-  }
-
   void Finish() { std::move(done_closure_).Run(); }
 
   raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
 
   base::OnceClosure done_closure_;
 
-  // Used for registering observer for sync_preferences::PrefServiceSyncable.
-  base::ScopedObservation<sync_preferences::PrefServiceSyncable,
-                          sync_preferences::PrefServiceSyncableObserver>
-      syncable_pref_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 };
