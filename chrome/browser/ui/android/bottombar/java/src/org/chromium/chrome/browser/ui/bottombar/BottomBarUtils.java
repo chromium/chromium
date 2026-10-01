@@ -8,12 +8,15 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.android.bars_common.CaptureSafeRippleDrawable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.ui.base.ViewUtils;
@@ -143,20 +146,24 @@ public class BottomBarUtils {
      *
      * @param context The context used to resolve resources.
      * @param brandedColorScheme The branded color scheme.
-     * @return The mutated RippleDrawable.
+     * @return The mutated {@link RippleDrawable}.
      */
     public static RippleDrawable createHoverableRipple(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        int rippleResId =
+        @DrawableRes
+        int selectorResId =
                 isIncognito
-                        ? R.drawable.default_icon_background_baseline
-                        : R.drawable.default_icon_background;
-        RippleDrawable ripple =
-                (RippleDrawable) assertNonNull(context.getDrawable(rippleResId)).mutate();
-        ripple.setColor(
-                ColorStateList.valueOf(getRippleColorNoBackground(context, brandedColorScheme)));
-        return ripple;
+                        ? R.drawable.default_icon_background_selector_baseline
+                        : R.drawable.default_icon_background_selector;
+        Drawable content = assertNonNull(context.getDrawable(selectorResId)).mutate();
+        @Px
+        int size =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_size);
+        ColorStateList color =
+                ColorStateList.valueOf(getRippleColorNoBackground(context, brandedColorScheme));
+        return new CaptureSafeRippleDrawable(color, content, size);
     }
 
     /**
