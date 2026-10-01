@@ -69,6 +69,7 @@ source_set("actor") {
   public_deps = [
     ":types",
     "//base",
+    "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/origin_gating",
@@ -221,6 +222,7 @@ source_set("impl") {
     ":actor",
     ":variants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor/tools/registry:impl",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
     "//chrome/browser/affiliations",
@@ -447,6 +449,7 @@ source_set("unit_tests") {
     "ui:event_dispatcher",
     "ui:test_support",
     "//base/test:test_support",
+    "//chrome/browser/actor/tools/registry:unit_tests",
     "//chrome/browser/autofill/actor",
     "//chrome/browser/bookmarks",
     "//chrome/browser/critical_actions",
