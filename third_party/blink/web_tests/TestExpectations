@@ -9124,3 +9124,5 @@ crbug.com/527852129 [ Linux ] external/wpt/scroll-animations/animation-trigger/a
 crbug.com/527852129 [ Mac ] external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
 crbug.com/527852129 [ Linux ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
 crbug.com/527852129 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
+
+crbug.com/564804235 inspector-protocol/emulation/device-emulation-text-size-adjust-two-pages.js [ Failure ]

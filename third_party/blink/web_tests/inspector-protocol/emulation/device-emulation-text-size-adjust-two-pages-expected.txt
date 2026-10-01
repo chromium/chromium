@@ -1,0 +1,7 @@
+Tests that text-size-adjust is updated when mobile emulation is toggled on a second page in the same renderer process.
+Before emulation:
+10px
+Enabling mobile emulation:
+20px
+Clearing emulation:
+10px
