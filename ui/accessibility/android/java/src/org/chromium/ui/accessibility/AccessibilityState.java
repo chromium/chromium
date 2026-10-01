@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -381,5 +382,8 @@ public class AccessibilityState {
             sDelegate.uninitializeForTesting();
         }
         sDelegate = delegate;
+        if (delegate != null) {
+            ResettersForTesting.register(() -> setDelegateForTesting(null));
+        }
     }
 }
