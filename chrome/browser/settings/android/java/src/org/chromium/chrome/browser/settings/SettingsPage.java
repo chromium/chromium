@@ -108,6 +108,13 @@ public class SettingsPage extends BasicNativePage {
     }
 
     @Override
+    public void reload() {
+        // Tab#reload() hands native pages to this method instead of reloading the WebContents,
+        // so re-apply the current URL, which re-creates the settings page shown for it.
+        updateForUrl(getUrl());
+    }
+
+    @Override
     public boolean supportsEdgeToEdge() {
         return true;
     }
