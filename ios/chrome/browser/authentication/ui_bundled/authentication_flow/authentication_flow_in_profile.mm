@@ -294,7 +294,6 @@ enum class AuthenticationFlowInProfileState {
     _accountSwitchingBatchClosureRunner =
         identityManager->StartBatchOfPrimaryAccountChanges();
     [_performer signOutForAccountSwitchWithProfile:profile];
-    return;
   }
   [self continueFlow];
 }
@@ -423,7 +422,7 @@ enum class AuthenticationFlowInProfileState {
   // None of the steps after signin can fail (except for the case of the browser
   // going away, which is more "abort" than "fail)"). If any failable steps
   // after the signin step get added in the future, then a call to
-  // `[_performer signOutImmediatelyFromProfile:...]` should be added here.
+  // `[_performer signOut...]` should be added here.
   CHECK(!_browser || !_didSignIn);
   CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
@@ -445,11 +444,6 @@ enum class AuthenticationFlowInProfileState {
 }
 
 #pragma mark - AuthenticationFlowPerformerDelegate
-
-- (void)didSignOutForAccountSwitch {
-  CHECK_EQ(AuthenticationFlowInProfileState::kSignOutIfNeeded, _state);
-  [self continueFlow];
-}
 
 - (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
                                      completion:(base::OnceClosure)completion {

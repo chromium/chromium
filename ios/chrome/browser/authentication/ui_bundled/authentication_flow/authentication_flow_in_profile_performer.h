@@ -39,12 +39,8 @@ enum class AccessPoint;
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
         currentProfile:(ProfileIOS*)currentProfile;
 
-// Signs out of `profile` and sends `didSignOutForAccountSwitch` to the delegate
-// when complete.
+// Signs out of `profile`.
 - (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile;
-
-// Immediately signs out `profile` without waiting for dependent services.
-- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile;
 
 - (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;

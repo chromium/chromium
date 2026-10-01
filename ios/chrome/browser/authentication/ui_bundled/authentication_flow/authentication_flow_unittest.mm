@@ -422,11 +422,8 @@ class AuthenticationFlowTest : public PlatformTest {
   void SignOutPersonalProfile() {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     authentication_service->SignOut(
-        signin_metrics::ProfileSignout::kSignoutForAccountSwitching,
-        base::CallbackToBlock(run_loop->QuitClosure()));
-    run_loop->Run();
+        signin_metrics::ProfileSignout::kSignoutForAccountSwitching);
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {

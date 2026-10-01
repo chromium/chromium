@@ -105,16 +105,8 @@ TEST_F(AuthenticationFlowInProfilePerformerTest, SignoutForSwitch) {
       AuthenticationServiceFactory::GetForProfile(profile_);
   authentication_service->SignIn(fake_identity_,
                                  signin_metrics::AccessPoint::kStartPage);
-  __block std::unique_ptr<base::RunLoop> run_loop_ =
-      std::make_unique<base::RunLoop>();
-  OCMExpect([authentication_flow_in_profile_performer_delegate_mock_
-                didSignOutForAccountSwitch])
-      .andDo(^(NSInvocation*) {
-        run_loop_->Quit();
-      });
   [authentication_flow_in_profile_performer_
       signOutForAccountSwitchWithProfile:profile_];
-  run_loop_->Run();
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity());
   histogram_tester.ExpectUniqueSample(
       "Signin.SignoutProfile",

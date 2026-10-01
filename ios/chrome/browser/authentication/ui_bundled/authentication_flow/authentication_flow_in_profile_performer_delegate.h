@@ -11,10 +11,6 @@
 @protocol AuthenticationFlowInProfilePerformerDelegate <
     AuthenticationFlowPerformerBaseDelegate>
 
-// Indicates that a profile was signed out, after calling
-// `signOutForAccountSwitchWithProfile`.
-- (void)didSignOutForAccountSwitch;
-
 // Indicates the account of the user was registered for user policy. `dmToken`
 // is empty when registration failed.
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken

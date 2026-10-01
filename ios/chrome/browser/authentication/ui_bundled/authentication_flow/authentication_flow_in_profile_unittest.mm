@@ -183,29 +183,18 @@ TEST_F(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
                                     access_point);
   // Start `authentication_flow_in_profile_` for `identity1_`.
   base::test::TestFuture<signin_ui::CancelationReason> future;
-  [authentication_flow_in_profile_
-      startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect sign-out request.
-  __block std::unique_ptr<base::RunLoop> run_loop =
-      std::make_unique<base::RunLoop>();
   OCMExpect([performer_mock_ signOutForAccountSwitchWithProfile:profile_.get()])
       .andDo(^(NSInvocation* invocation) {
-        run_loop->Quit();
+        authentication_service->SignOut(
+            signin_metrics::ProfileSignout::kSignoutForAccountSwitching);
       });
-  run_loop->Run();
-  run_loop = std::make_unique<base::RunLoop>();
-  // Perform sign-out request, simulating what the real performer would do..
-  authentication_service->SignOut(
-      signin_metrics::ProfileSignout::kSignoutForAccountSwitching,
-      base::CallbackToBlock(run_loop->QuitClosure()));
-  run_loop->Run();
-  // Continue AuthenticationFlowInProfile flow.
   // Expect to call the performer to sign-in.
   OCMExpect([performer_mock_ signInIdentity:identity1_
                               atAccessPoint:access_point
                              currentProfile:profile_.get()]);
-  [GetAuthenticationFlowInProfilePerformerDelegate()
-      didSignOutForAccountSwitch];
+  [authentication_flow_in_profile_
+      startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   EXPECT_TRUE(future.Wait());
 }
 

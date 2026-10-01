@@ -93,16 +93,8 @@
 }
 
 - (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile {
-  __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
-      signin_metrics::ProfileSignout::kSignoutForAccountSwitching, ^{
-        [weakDelegate didSignOutForAccountSwitch];
-      });
-}
-
-- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
+      signin_metrics::ProfileSignout::kSignoutForAccountSwitching);
 }
 
 - (void)registerUserPolicy:(ProfileIOS*)profile
