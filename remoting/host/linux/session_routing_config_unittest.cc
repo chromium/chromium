@@ -25,16 +25,6 @@ constexpr char kValidSessionUserJson[] = R"({
   "sessionUser": "alice"
 })";
 
-constexpr char kValidMatchCorpJson[] = R"({
-  "matchCorpClientUsername": true,
-  "createRemoteUserSessions": true
-})";
-
-constexpr char kMutuallyExclusiveJson[] = R"({
-  "sessionUser": "alice",
-  "matchCorpClientUsername": true
-})";
-
 constexpr char kUnknownKeysJson[] = R"({
   "sessionUser": "bob",
   "unknownFutureSetting": "some_value"
@@ -169,26 +159,12 @@ TEST_F(SessionRoutingConfigTest, InvalidFieldTypesFail) {
                    config_file1, /*is_corp_host=*/false, current_uid_)
                    .has_value());
 
-  // matchCorpClientUsername not a bool
+  // createRemoteUserSessions not a bool
   base::FilePath config_file2 =
-      CreateConfigFile(R"({"matchCorpClientUsername": "true"})");
+      CreateConfigFile(R"({"createRemoteUserSessions": 1})");
   EXPECT_FALSE(SessionRoutingConfig::LoadAndValidate(
                    config_file2, /*is_corp_host=*/false, current_uid_)
                    .has_value());
-
-  // createRemoteUserSessions not a bool
-  base::FilePath config_file3 =
-      CreateConfigFile(R"({"createRemoteUserSessions": 1})");
-  EXPECT_FALSE(SessionRoutingConfig::LoadAndValidate(
-                   config_file3, /*is_corp_host=*/false, current_uid_)
-                   .has_value());
-}
-
-TEST_F(SessionRoutingConfigTest, MutuallyExclusiveFieldsFail) {
-  base::FilePath config_file = CreateConfigFile(kMutuallyExclusiveJson);
-  auto result = SessionRoutingConfig::LoadAndValidate(
-      config_file, /*is_corp_host=*/false, current_uid_);
-  EXPECT_FALSE(result.has_value());
 }
 
 TEST_F(SessionRoutingConfigTest, InvalidUsernameFails) {
@@ -224,7 +200,7 @@ TEST_F(SessionRoutingConfigTest, UnknownKeysIgnoredWithWarning) {
   EXPECT_EQ(result->value().session_user(), "bob");
 }
 
-TEST_F(SessionRoutingConfigTest, EmptyDictSetsRejectAll) {
+TEST_F(SessionRoutingConfigTest, EmptyDictOnNonCorpHostSetsRejectAll) {
   base::FilePath config_file = CreateConfigFile("{}");
   auto result = SessionRoutingConfig::LoadAndValidate(
       config_file, /*is_corp_host=*/false, current_uid_);
@@ -241,8 +217,26 @@ TEST_F(SessionRoutingConfigTest, EmptyDictSetsRejectAll) {
   EXPECT_EQ(user.error(), ErrorCode::SESSION_REJECTED);
 }
 
-TEST_F(SessionRoutingConfigTest, MatchCorpClientUsernameParsed) {
-  base::FilePath config_file = CreateConfigFile(kValidMatchCorpJson);
+TEST_F(SessionRoutingConfigTest, EmptyDictOnCorpHostMatchesCorpUsername) {
+  base::FilePath config_file = CreateConfigFile("{}");
+  auto result = SessionRoutingConfig::LoadAndValidate(
+      config_file, /*is_corp_host=*/true, current_uid_);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result->has_value());
+  EXPECT_EQ(result->value().mode(),
+            SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername);
+  EXPECT_TRUE(result->value().session_user().empty());
+  EXPECT_FALSE(result->value().create_remote_user_sessions());
+  EXPECT_TRUE(result->value().is_corp_host());
+
+  auto user = result->value().ResolveSessionUser("alice@google.com");
+  ASSERT_TRUE(user.has_value());
+  EXPECT_EQ(*user, "alice");
+}
+
+TEST_F(SessionRoutingConfigTest, CreateRemoteUserSessionsOnCorpHost) {
+  base::FilePath config_file =
+      CreateConfigFile(R"({"createRemoteUserSessions": true})");
   auto result = SessionRoutingConfig::LoadAndValidate(
       config_file, /*is_corp_host=*/true, current_uid_);
   ASSERT_TRUE(result.has_value());
@@ -251,6 +245,43 @@ TEST_F(SessionRoutingConfigTest, MatchCorpClientUsernameParsed) {
             SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername);
   EXPECT_TRUE(result->value().create_remote_user_sessions());
   EXPECT_TRUE(result->value().is_corp_host());
+}
+
+TEST_F(SessionRoutingConfigTest, SessionUserOverridesCorpMatching) {
+  base::FilePath config_file = CreateConfigFile(kValidSessionUserJson);
+  auto result = SessionRoutingConfig::LoadAndValidate(
+      config_file, /*is_corp_host=*/true, current_uid_);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result->has_value());
+  EXPECT_EQ(result->value().mode(),
+            SessionRoutingConfig::RoutingMode::kSessionUser);
+  EXPECT_EQ(result->value().session_user(), "alice");
+
+  auto user = result->value().ResolveSessionUser("bob@google.com");
+  ASSERT_TRUE(user.has_value());
+  EXPECT_EQ(*user, "alice");
+}
+
+TEST_F(SessionRoutingConfigTest, MatchCorpClientUsernameKeyIsIgnored) {
+  // The legacy key doesn't enable corp matching on non-corp hosts...
+  base::FilePath config_file1 =
+      CreateConfigFile(R"({"matchCorpClientUsername": true})");
+  auto result1 = SessionRoutingConfig::LoadAndValidate(
+      config_file1, /*is_corp_host=*/false, current_uid_);
+  ASSERT_TRUE(result1.has_value());
+  ASSERT_TRUE(result1->has_value());
+  EXPECT_EQ(result1->value().mode(),
+            SessionRoutingConfig::RoutingMode::kRejectAll);
+
+  // ...and doesn't disable it on corp hosts.
+  base::FilePath config_file2 =
+      CreateConfigFile(R"({"matchCorpClientUsername": false})");
+  auto result2 = SessionRoutingConfig::LoadAndValidate(
+      config_file2, /*is_corp_host=*/true, current_uid_);
+  ASSERT_TRUE(result2.has_value());
+  ASSERT_TRUE(result2->has_value());
+  EXPECT_EQ(result2->value().mode(),
+            SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername);
 }
 
 TEST_F(SessionRoutingConfigTest, ResolveSessionUser_SessionUserMode) {
@@ -298,29 +329,6 @@ TEST_F(SessionRoutingConfigTest, ResolveSessionUser_MatchCorpMode_CorpHost) {
   EXPECT_FALSE(config.ResolveSessionUser("user@domain@extra.com").has_value());
   EXPECT_FALSE(config.ResolveSessionUser("user@").has_value());
   EXPECT_FALSE(config.ResolveSessionUser("@domain.com").has_value());
-}
-
-TEST_F(SessionRoutingConfigTest, ResolveSessionUser_MatchCorpMode_NonCorpHost) {
-  // When is_corp_host is false, it falls back to IsGoogleEmail.
-  SessionRoutingConfig config(
-      SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername,
-      /*session_user=*/{}, /*create_remote_user_sessions=*/false,
-      /*is_corp_host=*/false);
-
-  // Standard Google email succeeds
-  auto resolved1 = config.ResolveSessionUser("john.doe@google.com");
-  ASSERT_TRUE(resolved1.has_value());
-  EXPECT_EQ(*resolved1, "john.doe");
-
-  // Silo domain is rejected on a non-corp host
-  auto resolved_silo = config.ResolveSessionUser("jane.doe@waymo.com");
-  EXPECT_FALSE(resolved_silo.has_value());
-  EXPECT_EQ(resolved_silo.error(), ErrorCode::SESSION_REJECTED);
-
-  // Consumer email is rejected on a non-corp host
-  auto non_corp = config.ResolveSessionUser("john.doe@gmail.com");
-  EXPECT_FALSE(non_corp.has_value());
-  EXPECT_EQ(non_corp.error(), ErrorCode::SESSION_REJECTED);
 }
 
 }  // namespace remoting

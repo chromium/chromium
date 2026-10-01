@@ -16,6 +16,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -28,7 +29,6 @@
 #include "base/values.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/file_path_util_linux.h"
-#include "remoting/base/is_google_email.h"
 #include "remoting/base/loggable.h"
 #include "remoting/signaling/signaling_id_util.h"
 
@@ -184,27 +184,6 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
     }
   }
 
-  const base::Value* match_corp_value = dict.Find("matchCorpClientUsername");
-  bool match_corp = false;
-  if (match_corp_value) {
-    if (!match_corp_value->is_bool()) {
-      return base::unexpected(Loggable(
-          FROM_HERE,
-          base::StringPrintf(
-              "Field 'matchCorpClientUsername' in '%s' must be a boolean.",
-              path.value().c_str())));
-    }
-    match_corp = match_corp_value->GetBool();
-  }
-
-  if (!session_user.empty() && match_corp) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Fields 'sessionUser' and 'matchCorpClientUsername' "
-                           "in '%s' are mutually exclusive.",
-                           path.value().c_str())));
-  }
-
   const base::Value* create_remote_value =
       dict.Find("createRemoteUserSessions");
   bool create_remote = false;
@@ -220,8 +199,7 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
   }
 
   for (const auto [key, value] : dict) {
-    if (key != "sessionUser" && key != "matchCorpClientUsername" &&
-        key != "createRemoteUserSessions") {
+    if (key != "sessionUser" && key != "createRemoteUserSessions") {
       LOG(WARNING) << "Unknown key in session routing config: " << key;
     }
   }
@@ -229,7 +207,9 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
   RoutingMode mode = RoutingMode::kRejectAll;
   if (!session_user.empty()) {
     mode = RoutingMode::kSessionUser;
-  } else if (match_corp) {
+  } else if (is_corp_host) {
+    // Corp hosts route connections to the local user matching the client's
+    // corp username unless `sessionUser` is set.
     mode = RoutingMode::kMatchCorpClientUsername;
   }
 
@@ -265,17 +245,9 @@ base::expected<std::string, ErrorCode> SessionRoutingConfig::ResolveSessionUser(
       return session_user_;
 
     case RoutingMode::kMatchCorpClientUsername: {
+      CHECK(is_corp_host_);
       std::string email;
       SplitSignalingIdResource(client_id, &email, /*resource=*/nullptr);
-      // `is_corp_host_` comes from the host type hint in the host config and
-      // may be a false negative on older hosts without the hint set, so we use
-      // `IsGoogleEmail()` as a fallback. Conversely, `IsGoogleEmail()` only
-      // checks for `@google.com` and is not aware of corporate silo domains,
-      // which are covered when `is_corp_host_` is true.
-      if (!is_corp_host_ && !IsGoogleEmail(email)) {
-        LOG(WARNING) << "Client ID is not a Google corp email: " << client_id;
-        return base::unexpected(ErrorCode::SESSION_REJECTED);
-      }
       auto email_parts = base::SplitStringOnce(email, '@');
       if (!email_parts.has_value() || email_parts->first.empty() ||
           email_parts->second.empty() || email_parts->second.contains('@')) {
