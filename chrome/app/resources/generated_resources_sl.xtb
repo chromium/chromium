@@ -2639,7 +2639,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3001614333383288217">{COUNT,plural, =0{Ni prilagojenih tipk}=1{1 prilagojena tipka}one{{COUNT} prilagojena tipka}two{{COUNT} prilagojeni tipki}few{{COUNT} prilagojene tipke}other{{COUNT} prilagojenih tipk}}</translation>
 <translation id="3002864108328203174">Razdelek na dnu zaslona z Geminijem pri polovični višini.</translation>
 <translation id="3003144360685731741">Prednostna omrežja</translation>
-<translation id="3003152206838282768">Obdelovanje opravila aplikacije Gemini v Chromu. Preverite, ali so v Chromu na voljo dodatne posodobitve.</translation>
+<translation id="3003152206838282768">Obdelovanje opravila aplikacije Gemini v Chromu. Preverite, ali so v Chromu na voljo dodatne informacije.</translation>
 <translation id="3003253259757197230">URL-ji, ki jih obiščete, se pošljejo Googlu zaradi predvidevanja, katera spletna mesta boste morda obiskali, in zaradi prikaza dodatnih informacij o strani, ki ste jo obiskali</translation>
 <translation id="3003623123441819449">Predpomnilnik za CSS</translation>
 <translation id="3003967365858406397">Telefon <ph name="PHONE_NAME" /> bo ustvaril zasebno povezavo Wi-Fi.</translation>
@@ -5092,7 +5092,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4864805589453749318">Izberite starša, ki odobrava dovoljenje za dodajanje šolskega računa.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokirano)</translation>
 <translation id="486505726797718946">Prihranjeno pomnilnika</translation>
-<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Obdelovanje opravila aplikacije Gemini v Chromu. Preverite, ali so v Chromu na voljo dodatne posodobitve.</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Obdelovanje opravila aplikacije Gemini v Chromu. Preverite, ali so v Chromu na voljo dodatne informacije.</translation>
 <translation id="486635084936119914">Samodejno odpiranje nekaterih vrst datotek po prenosu</translation>
 <translation id="4868284252360267853">To pogovorno okno trenutno ni izbrano. Pritisnite Command + Shift + Option A, če ga želite izbrati.</translation>
 <translation id="4869170227080975044">Branje omrežnih podatkov za ChromeOS.</translation>

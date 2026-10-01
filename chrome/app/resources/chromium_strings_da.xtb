@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Hjælp os med at forbedre inkognito ved at deltage i denne undersøgelse, der kun tager 1 minut.</translation>
 <translation id="1065672644894730302">Dine præferencer kan ikke læses. Visse funktioner er muligvis ikke tilgængelige, og ændringer af præferencer gemmes ikke.</translation>
 <translation id="1083934481477628225">Din forælder har deaktiveret "Tilladelser for websites, apps og udvidelser" for Chromium</translation>
+<translation id="109026165963220603">Chromium skal have adgang til dit lokale netværk for at finde og bruge enheder i nærheden</translation>
 <translation id="1090946077924227754">Hvis du vil søge efter en bestemt Chromium-funktion eller -udvidelse, skal du angive genvejen til den i adresselinjen efterfulgt af din valgte tastaturtast</translation>
 <translation id="1098493699368672217">Vis søgning med Chromium i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="1104942323762546749">Chromium anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
@@ -262,7 +263,6 @@
 
           **Foreslå spørgsmål:** Generér en opstilling med punkttegn med 3-5 tankevækkende spørgsmål, som en bruger kan stille for bedre at forstå screenshottet. Disse spørgsmål skal omfatte mindst ét spørgsmål, der specifikt handler om et visuelt objekt, dets design eller dets placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium skal have adgangstilladelse til det lokale netværk for at bruge dette website</translation>
 <translation id="3885770153807205175">Sprogvælger</translation>
 <translation id="388648406173476553">Tilpas og administrer Chromium. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="3889543394854987837">Klik på dit navn for at åbne Chromium og gå i gang med at browse.</translation>

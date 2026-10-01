@@ -903,6 +903,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2493122313108999546">Na-resize</translation>
 <translation id="249376477913017009">Binuksan ang abiso sa autofill mula sa Gmail at higit pa</translation>
 <translation id="2495083838625180221">Pang-parse ng JSON</translation>
+<translation id="2495909791227061512">Kumonekta sa mga kalapit na device?</translation>
 <translation id="2496402116964818747">Puwede mong baguhin kung gagamitin mo ang iyong fingerprint para sa paglalagay ng mga password sa <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Mag-scan ng bagong card</translation>
 <translation id="2501270939904835585">Mga Label (Satin)</translation>
@@ -2615,7 +2616,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5398461103557553443">Para i-autofill ang IBAN na ito sa susunod, i-save ito sa Google Wallet</translation>
 <translation id="5398772614898833570">Na-block ang mga ad</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="5402715318763077894">Payagan ang access sa lokal na network?</translation>
 <translation id="540949333488055151">Plastic (May Kulay)</translation>
 <translation id="540969355065856584">Hindi mapatunayan ng server na ito ay ang <ph name="DOMAIN" />; walang bisa ang certificate sa seguridad nito sa pagkakataong ito. Maaaring dahil ito sa isang maling pag-configure o may isang attacker na humahadlang sa iyong koneksyon.</translation>
 <translation id="5411462078004183575">Murang Opsyon</translation>

@@ -903,6 +903,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2493122313108999546">크기를 조절했습니다</translation>
 <translation id="249376477913017009">Gmail 등의 자동 완성 알림 열림</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
+<translation id="2495909791227061512">근처 기기에 연결하시겠습니까?</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" />에서 비밀번호를 입력할 때 지문을 사용할지 여부를 변경할 수 있습니다.</translation>
 <translation id="2498091847651709837">새 카드 스캔</translation>
 <translation id="2501270939904835585">라벨(새틴)</translation>
@@ -2615,7 +2616,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="5398461103557553443">다음번에 이 IBAN을 자동 완성하려면 Google 월렛에 저장하세요.</translation>
 <translation id="5398772614898833570">광고 차단됨</translation>
 <translation id="5400836586163650660">그레이</translation>
-<translation id="5402715318763077894">로컬 네트워크 액세스를 허용하시겠습니까?</translation>
 <translation id="540949333488055151">플라스틱(컬러)</translation>
 <translation id="540969355065856584">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버의 보안 인증서가 현재 유효하지 않습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="5411462078004183575">저렴한 가격 옵션</translation>
@@ -4817,7 +4817,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9193018794001479794">상세하게 작성</translation>
-<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> 질문하기</translation>
+<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" />에게 물어보기</translation>
 <translation id="9195969368671142407">조직에서 Google 계정에 저장하는 것을 제한하는 경우 탭 그룹을 공유하거나 탭 그룹에 참여할 수 없습니다.</translation>
 <translation id="9198613052465150219">Google 계정의 내 활동(<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>

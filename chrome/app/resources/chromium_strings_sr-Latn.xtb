@@ -10,6 +10,7 @@
 
 Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.</translation>
 <translation id="1083934481477628225">Roditelj je isključio Dozvole za sajtove, aplikacije i dodatke za Chromium</translation>
+<translation id="109026165963220603">Chromium traži pristup vašoj lokalnoj mreži da bi mogao da pronađe i koristi uređaje u blizini</translation>
 <translation id="1090946077924227754">Da biste pretražili određenu Chromium funkciju ili dodatak, unesite njihovu prečicu u traku za adresu, a zatim pritisnite izabrani taster na tastaturi</translation>
 <translation id="1098493699368672217">Prikaži pretragu pomoću Chromium-a na sistemskoj paleti i uključi tastersku prečicu</translation>
 <translation id="1104942323762546749">Chromium želi da izveze lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
@@ -264,7 +265,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 
           **Predložite pitanja:** Generišite listu sa 3 do 5 pitanja koja podstiču na razmišljanje i koja korisnik može da postavi da bi bolje razumeo snimak ekrana. Ova pitanja treba da obuhvataju bar jedno koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium-u treba dozvola za lokalnu mrežu za ovaj sajt</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="388648406173476553">Prilagodite i kontrolišite Chromium. Treba da obratite pažnju na nešto – kliknite za više detalja.</translation>
 <translation id="3889543394854987837">Kliknite na ime da biste otvorili Chromium i počnite da pregledate.</translation>

@@ -10,6 +10,7 @@
 
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
 <translation id="1083934481477628225">In-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium</translation>
+<translation id="109026165963220603">Kailangan ng Chromium ng access sa iyong lokal na network para makatuklas at makagamit ng mga kalapit na device</translation>
 <translation id="1090946077924227754">Para maghanap ng partikular na feature o extension ng Chromium, i-type ang shortcut nito sa address bar, kasunod ang iyong napiling keyboard key</translation>
 <translation id="1098493699368672217">Ipakita ang paghahanap gamit ang Chromium sa system tray at i-on ang keyboard shortcut</translation>
 <translation id="1104942323762546749">Gustong i-export ng Chromium ang iyong mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
@@ -264,7 +265,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 
           **Magmungkahi ng Mga Tanong:** Bumuo ng naka-bullet na listahan ng 3-5 nagpapaisip na tanong na puwedeng magamit ng isang user para mas maintindihan ang screenshot. Ang mga tanong na ito ay dapat may kasamang kahit isang partikular na tanong na tungkol sa visual na object, o sa disenyo o placement nito.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Kailangan ng Chromium ng pahintulot sa lokal na network para sa site na ito</translation>
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="3889543394854987837">I-click ang iyong pangalan upang buksan ang Chromium at simulan ang pagba-browse.</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Palīdziet mums uzlabot pārlūkošanu inkognito režīmā, aizpildot šo vienas minūtes aptauju.</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="1083934481477628225">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium.</translation>
+<translation id="109026165963220603">Pārlūkam Chromium ir nepieciešama piekļuve jūsu lokālajam tīklam, lai atrastu un izmantotu tuvumā esošās ierīces.</translation>
 <translation id="1090946077924227754">Lai meklētu konkrētu Chromium funkciju vai paplašinājumu, adreses joslā ievadiet tā saīsni un pēc tam nospiediet izvēlēto īsinājumtaustiņu</translation>
 <translation id="1098493699368672217">Rādīt meklēšanu pārlūkā Chromium sistēmas teknē un ieslēgt īsinājumtaustiņu</translation>
 <translation id="1104942323762546749">Pārlūkā Chromium tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ievadiet savu Windows paroli.</translation>
@@ -261,7 +262,6 @@
 
           **Jautājumu ieteikšana:** ģenerējiet sarakstu ar aizzīmēm ar 3–5 jautājumiem, kas liek aizdomāties un kurus lietotājs varētu uzdot, lai labāk izprastu ekrānuzņēmumu. Šajos jautājumos ir jābūt vismaz vienam jautājumam, kas ir saistīts ar vizuālu objektu, tā dizainu vai izvietojumu.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> — Chromium</translation>
-<translation id="387514319934708384">Pārlūkam Chromium ir nepieciešama atļauja izmantot lokālo tīklu šajā vietnē.</translation>
 <translation id="3885770153807205175">Valodas atlasītājs</translation>
 <translation id="388648406173476553">Pielāgojiet un kontrolējiet pārlūkprogrammu Chromium. Ir nepieciešama jūsu uzmanība. Noklikšķiniet, lai skatītu plašāku informāciju.</translation>
 <translation id="3889543394854987837">Noklikšķiniet uz sava vārda, lai atvērtu Chromium un sāktu pārlūkošanu.</translation>

@@ -1187,7 +1187,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1910736334623230603">Pretraživanje više slika nije moguće. Dodajte jednu po jednu sliku.</translation>
 <translation id="1910908536872421421">Chrome za testiranje v<ph name="BROWSER_VERSION" /> služi samo za automatsko testiranje. Za standardno pregledanje koristite standardnu verziju Chrome-a koja se ažurira automatski.</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pauzirajte karticu koja usporava pregledač}one{Pauzirajte kartice koje usporavaju pregledač}few{Pauzirajte kartice koje usporavaju pregledač}other{Pauzirajte kartice koje usporavaju pregledač}}</translation>
-<translation id="1913749768968678106">Prebacuj, čuvaj i deli</translation>
+<translation id="1913749768968678106">Prebaci, sačuvaj i deli</translation>
 <translation id="19147273405311768">Resetuj traku s alatkama na podrazumevana podešavanja</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Auta meitä parantamaan Incognitoa vastaamalla tähän minuutin kestävään kyselyyn.</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1083934481477628225">Vanhempasi on laittanut Chromiumin "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
+<translation id="109026165963220603">Chromium tarvitsee pääsyn lähiverkkoon, jotta se voi löytää ja käyttää lähellä olevia laitteita</translation>
 <translation id="1090946077924227754">Etsi tiettyä Chromiumin ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="1098493699368672217">Näytä "Hae Chromiumilla" ilmaisinalueella ja laita pikanäppäimet päälle</translation>
 <translation id="1104942323762546749">Chromium yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -262,7 +263,6 @@
 
           **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium tarvitsee pääsyn lähiverkkoon tällä sivustolla</translation>
 <translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="388648406173476553">Yksilöi ja ylläpidä Chromiumia. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="3889543394854987837">Avaa Chromium klikkaamalla nimeäsi ja aloita selaaminen.</translation>

@@ -204,7 +204,6 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="2970681950995291301">若要从 Chrome 中移除您的 Google 账号，请在“设置”页面中退出 Chrome</translation>
 <translation id="2976869732253036751">在手机上使用 Chrome 接收价格跟踪提醒</translation>
-<translation id="2985091279808606502">Chrome 需要为此网站授予本地网络权限</translation>
 <translation id="2991167882679440829">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chrome 数据。如需在 Chrome 中重新使用这些数据，请重新登录。</translation>
 <translation id="2994465299455873643">提供加密服务，并提供安全的方式来恢复过期的 <ph name="BROWSER_NAME" />。如果停用此服务，<ph name="BROWSER_NAME" /> 可能无法访问加密数据，并且 <ph name="BROWSER_NAME" /> 可能无法恢复。</translation>
 <translation id="3003694935412297923">所有任务</translation>
@@ -753,6 +752,7 @@
 <translation id="8172231188687329735">下载 Chrome 应用，随时随地保存密码</translation>
 <translation id="8177472873527554730">在页面中找不到内容</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
+<translation id="8233224921566021881">Chrome 需要访问您的本地网络，才能发现和使用附近的设备</translation>
 <translation id="8253851811470049684">在任意应用内通过 Chrome 打开链接，并让浏览器始终显示在任务栏中</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
 <translation id="8260086374035800939">如果 Chrome 中的 Gemini 已打开，则在创建新标签页时，侧边栏会保持打开状态</translation>

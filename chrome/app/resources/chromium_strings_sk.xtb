@@ -10,6 +10,7 @@
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
 <translation id="1083934481477628225">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v prehliadači Chromium</translation>
+<translation id="109026165963220603">Chromium potrebuje prístup k vašej miestnej sieti, aby mohol vyhľadávať a používať zariadenia v okolí</translation>
 <translation id="1090946077924227754">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie prehliadača Chromium, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="1098493699368672217">Zobrazovať vyhľadávanie pomocou prehliadača Chromium v oblasti oznámení a zapnúť klávesovú skratku</translation>
 <translation id="1104942323762546749">Prehliadač Chromium sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
@@ -263,7 +264,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 
           **Navrhnite otázky:** vygenerujte nečíslovaný zoznam troch až piatich otázok na zamyslenie, ktoré by používateľ mohol položiť, aby lepšie porozumel snímke obrazovky. Medzi týmito otázkami by mala byť aspoň jedna, ktorá sa bude týkať konkrétneho vizuálneho objektu, jeho vzhľadu alebo umiestnenia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium vyžaduje pre tento web povolenie na prístup k miestnej sieti</translation>
 <translation id="3885770153807205175">Výber jazyka</translation>
 <translation id="388648406173476553">Prispôsobte a ovládajte Chromium. Vyžaduje sa vaša pozornosť. Podrobnosti získate kliknutím.</translation>
 <translation id="3889543394854987837">Ak chcete otvoriť prehliadač Chromium a začať prehliadať, kliknite na svoje meno.</translation>

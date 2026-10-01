@@ -903,6 +903,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2493122313108999546">S'ha canviat la mida</translation>
 <translation id="249376477913017009">S'ha obert l'avís sobre l'emplenament automàtic de Gmail i més</translation>
 <translation id="2495083838625180221">Analitzador JSON</translation>
+<translation id="2495909791227061512">Vols connectar-te a dispositius propers?</translation>
 <translation id="2496402116964818747">A la <ph name="SETTINGS" />, pots canviar si vols utilitzar l'empremta digital per emplenar contrasenyes</translation>
 <translation id="2498091847651709837">Escaneja una targeta nova</translation>
 <translation id="2501270939904835585">Etiquetes (setinades)</translation>
@@ -2615,7 +2616,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5398461103557553443">Perquè aquest IBAN s'empleni automàticament la propera vegada, desa'l a Google Wallet</translation>
 <translation id="5398772614898833570">Anuncis bloquejats</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5402715318763077894">Vols permetre l'accés a la xarxa local?</translation>
 <translation id="540949333488055151">Plàstic (de color)</translation>
 <translation id="540969355065856584">Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat no és vàlid en aquest moment. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la connexió.</translation>
 <translation id="5411462078004183575">Opció de preu baix</translation>

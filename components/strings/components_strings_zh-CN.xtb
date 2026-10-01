@@ -903,6 +903,7 @@
 <translation id="2493122313108999546">已调整大小</translation>
 <translation id="249376477913017009">“从 Gmail 等应用中自动填充”通知已打开</translation>
 <translation id="2495083838625180221">JSON 解析器</translation>
+<translation id="2495909791227061512">要连接到附近的设备吗？</translation>
 <translation id="2496402116964818747">您可以在“<ph name="SETTINGS" />”中更改是否使用指纹填充密码</translation>
 <translation id="2498091847651709837">扫描新的信用卡</translation>
 <translation id="2501270939904835585">标签（磨光）</translation>
@@ -2611,7 +2612,6 @@
 <translation id="5398461103557553443">如需下次自动填充此 IBAN，请将其保存到 Google 钱包中</translation>
 <translation id="5398772614898833570">广告已被拦截</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="5402715318763077894">要授予本地网络访问权限吗？</translation>
 <translation id="540949333488055151">塑料（彩色）</translation>
 <translation id="540969355065856584">此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书目前无效。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="5411462078004183575">低价选项</translation>

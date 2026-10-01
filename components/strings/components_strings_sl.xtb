@@ -903,6 +903,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2493122313108999546">Velikost je spremenjena</translation>
 <translation id="249376477913017009">Obvestilo o samodejnem izpolnjevanju iz Gmaila in drugih virov je odprto</translation>
 <translation id="2495083838625180221">Razčlenjevalnik za JSON</translation>
+<translation id="2495909791227061512">Želite vzpostaviti povezavo z napravami v bližini?</translation>
 <translation id="2496402116964818747">Če želite spremeniti, ali se prstni odtis uporablja za izpolnjevanje gesel, lahko to storite tukaj: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Optično branje nove kartice</translation>
 <translation id="2501270939904835585">Labels (Satin)</translation>
@@ -2615,7 +2616,6 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="5398461103557553443">Če želite, da se številka IBAN naslednjič izpolni samodejno, jo shranite v Google Denarnici</translation>
 <translation id="5398772614898833570">Oglasi blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="5402715318763077894">Želite omogočiti dostop v lokalnem omrežju?</translation>
 <translation id="540949333488055151">Plastic (Colored)</translation>
 <translation id="540969355065856584">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo trenutno ni veljavno. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="5411462078004183575">Možnost z nizko ceno</translation>

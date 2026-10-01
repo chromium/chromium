@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1083934481477628225">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium</translation>
+<translation id="109026165963220603">Chromium necessita accés a la teva xarxa local per descobrir i utilitzar dispositius propers</translation>
 <translation id="1090946077924227754">Per cercar una funció o una extensió específiques de Chromium, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="1098493699368672217">Mostra la cerca amb Chromium a la safata del sistema i activa les tecles de drecera</translation>
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
@@ -262,7 +263,6 @@
 
           **Preguntes suggerides**: genera una llista de pics d'entre 3 i 5 preguntes que facin reflexionar i que un usuari podria fer per entendre millor la captura de pantalla. Aquestes preguntes n'han d'incloure com a mínim una que sigui específicament sobre un objecte visual, el seu disseny o el seu emplaçament.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
-<translation id="387514319934708384">Chromium necessita permís d'accés a la xarxa local per a aquest lloc web</translation>
 <translation id="3885770153807205175">Selector d'idioma</translation>
 <translation id="388648406173476553">Personalitza i controla Chromium. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
 <translation id="3889543394854987837">Feu clic al vostre nom per obrir Chromium i començar a navegar.</translation>

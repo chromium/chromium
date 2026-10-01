@@ -10,6 +10,7 @@
 
 Certaines fonctionnalités ne seront peut-être pas disponibles et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1083934481477628225">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chromium</translation>
+<translation id="109026165963220603">Chromium a besoin d'accéder à votre réseau local pour découvrir et utiliser les appareils à proximité</translation>
 <translation id="1090946077924227754">Pour rechercher une fonctionnalité ou une extension Chromium en particulier, entrez son raccourci dans la barre d'adresse, suivi de la touche de clavier que vous avez sélectionnée</translation>
 <translation id="1098493699368672217">Afficher la recherche avec Chromium dans la barre d'état système et activer le raccourci-clavier</translation>
 <translation id="1104942323762546749">Chromium veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
@@ -263,7 +264,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 
           **Suggérer des questions :** génère une liste à puces de trois à cinq questions stimulantes qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant précisément sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium requiert l'autorisation d'accéder au réseau local pour ce site</translation>
 <translation id="3885770153807205175">Sélecteur de langue</translation>
 <translation id="388648406173476553">Personnaliser et gérer Chromium. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
@@ -600,7 +600,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vous recommande de la retirer}one{Chromium vous recommande de la retirer}other{Chromium vous recommande de les retirer}}</translation>
 <translation id="7296334833518879294">Pour partager l'audio du système, ouvrez les paramètres système et autorisez « Enregistrement audio du système uniquement » pour Chromium. Vous devrez ensuite redémarrer Chromium.</translation>
-<translation id="7299899569525778554">Rechercher à partir d'un ordinateur de bureau</translation>
+<translation id="7299899569525778554">Rechercher à partir du bureau</translation>
 <translation id="731795002583552498">Mise à jour de Chromium en cours…</translation>
 <translation id="7318036098707714271">Votre fichier de préférences est corrompu ou invalide.
 

@@ -10,6 +10,7 @@
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
 <translation id="1083934481477628225">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium</translation>
+<translation id="109026165963220603">Chromium heeft toegang tot je lokale netwerk nodig om apparaten in de buurt te vinden en te gebruiken</translation>
 <translation id="1090946077924227754">Als je naar een specifieke Chromium-functie of -extensie wilt zoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="1098493699368672217">Zoeken met Chromium tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
@@ -263,7 +264,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 
           **Vragen voorstellen:** Genereer een lijst met 3 tot 5 prikkelende vragen die een gebruiker kan stellen om het screenshot beter te begrijpen. Deze vragen moeten minstens één vraag bevatten die specifiek over een visueel object, het ontwerp of de plaatsing ervan gaat.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium heeft rechten voor het lokale netwerk nodig voor deze site</translation>
 <translation id="3885770153807205175">Taalkiezer</translation>
 <translation id="388648406173476553">Pas Chromium aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
 <translation id="3889543394854987837">Klik op je naam om Chromium te openen en begin met surfen.</translation>

@@ -10,6 +10,7 @@
 
 Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.</translation>
 <translation id="1083934481477628225">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium</translation>
+<translation id="109026165963220603">Chromiumu treba pristup vašoj lokalnoj mreži da otkrije i koristi uređaje u blizini</translation>
 <translation id="1090946077924227754">Da pretražite određenu funkciju ili ekstenziju Chromiuma, unesite prečicu te funkcije ili ekstenzije na traci za adresu, a zatim pritisnite odabranu tipku na tastaturi</translation>
 <translation id="1098493699368672217">Prikaži pretraživanje putem Chromiuma na sistemskoj traci i uključi prečicu na tastaturi</translation>
 <translation id="1104942323762546749">Chromium želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
@@ -264,7 +265,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 
           **Predloži pitanja:** generiraj listu s 3–5 pitanja koja potiču na razmišljanje i koja korisnik može postaviti da bolje razumije snimak ekrana. Ova pitanja trebaju uključivati najmanje jedno pitanje koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium treba odobrenje za lokalnu mrežu za ovu web lokaciju</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="388648406173476553">Prilagodite i kontrolirajte Chromium. Potrebna je vaša pažnja - kliknite za detalje.</translation>
 <translation id="3889543394854987837">Kliknite na svoje ime da otvorite Chromium i počnete pretraživati.</translation>

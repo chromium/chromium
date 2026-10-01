@@ -903,6 +903,7 @@ Voit poistaa tämän ehdotuksen Chromesta. Alkuperäistä lähdettä ei poisteta
 <translation id="2493122313108999546">Kokoa muutettu</translation>
 <translation id="249376477913017009">Automaattinen täyttö esimerkiksi Gmailista ‑ilmoitus avattu</translation>
 <translation id="2495083838625180221">JSON-jäsentäjä</translation>
+<translation id="2495909791227061512">Yhdistetäänkö lähellä oleviin laitteisiin?</translation>
 <translation id="2496402116964818747">Voit valita täältä, käytetäänkö sormenjälkeä salasanojen täyttämiseen: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skannaa uusi kortti</translation>
 <translation id="2501270939904835585">Etiketit (satiini)</translation>
@@ -2616,7 +2617,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5398461103557553443">Jos haluat täyttää IBAN-numeron automaattisesti seuraavalla kerralla, tallenna se Google Walletiin</translation>
 <translation id="5398772614898833570">Mainokset estetty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
-<translation id="5402715318763077894">Sallitaanko pääsy paikalliseen verkkoon?</translation>
 <translation id="540949333488055151">Muovi (värillinen)</translation>
 <translation id="540969355065856584">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, sillä sen suojausvarmenne ei tällä hetkellä ole kelvollinen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="5411462078004183575">Edullinen vaihtoehto</translation>

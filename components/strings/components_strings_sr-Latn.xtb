@@ -903,6 +903,7 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2493122313108999546">Promenjena je veličina</translation>
 <translation id="249376477913017009">Otvoreno je obaveštenje o automatskom popunjavanju iz Gmail-a i drugih izvora</translation>
 <translation id="2495083838625180221">Raščlanjivač JSON datoteka</translation>
+<translation id="2495909791227061512">Želite da povežete uređaje u blizini?</translation>
 <translation id="2496402116964818747">Možete da promenite da li ćete koristiti otisak prsta za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skenirajte novu karticu</translation>
 <translation id="2501270939904835585">Nalepnice (saten)</translation>
@@ -2615,7 +2616,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5398461103557553443">Da biste sledeći put automatski popunili ovaj IBAN, sačuvajte ga u Google novčaniku</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="5402715318763077894">Želite da dozvolite pristup lokalnoj mreži?</translation>
 <translation id="540949333488055151">Plastika (u boji)</translation>
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="5411462078004183575">Opcija niske cene</translation>

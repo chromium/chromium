@@ -618,7 +618,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1472675084647422956">Erakutsi gehiago</translation>
 <translation id="1473223074251193484">Ezarri konexioa partekatzeko aukeraren konfigurazioa</translation>
 <translation id="1473616112002966036">&amp;Bideo-fotograma</translation>
-<translation id="1475224725276659152">Irakurketa-zerrenda eta gehiago gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="1475224725276659152">Irakurketa-zerrenda eta bestelako datuak gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="1476607407192946488">&amp;Hizkuntza-ezarpenak</translation>
 <translation id="1477654881618305065">Erakundeak ez dizu eman baimenik eduki hau partekatzeko. Laguntza behar baduzu, jarri administratzailearekin harremanetan.</translation>
 <translation id="1478340334823509079">Xehetasunak: <ph name="FILE_NAME" /></translation>
@@ -4135,7 +4135,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4131283654370308898">Eman fitxa honetan <ph name="EXTENSION_NAME" /> erabiltzeko baimena</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="413193092008917129">Sarearen diagnostiko-errutinak</translation>
-<translation id="4132108564882155194"><ph name="DEVICE" /> gailuko irakurketa-zerrenda eta gehiago lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> gailuko irakurketa-zerrenda eta bestelako datuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="4132137475637520539">Utzi sartzen esteka duten guztiei</translation>
 <translation id="4132364317545104286">Aldatu izena eSIMaren profilari</translation>
 <translation id="4132969033912447558">Berrekin honi: <ph name="FILE_NAME" /></translation>
@@ -8487,7 +8487,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7517292544534877198">Erabili Google-ren enkriptatze lehenetsia Google-ko kontuko pasahitzetarako</translation>
 <translation id="7517959947270534934">Familiako kideak ezin du jaso pasahitzik une honetan. Eska iezaiozu Chrome eguneratzeko eta pasahitzak sinkronizatzeko.</translation>
 <translation id="7518079994230200553">Aukera hau ez dago erabilgarri une honetan.</translation>
-<translation id="752021853309481824">Gordetako informazioa eta bestelako datuak gailu guztietan lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="752021853309481824">Gordetako informazioa eta bestelako datuak gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="7520766081042531487">Ezkutuko moduaren ataria: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Erakutsi lasterbideak</translation>
 <translation id="7521430434164837205">Microsoft 365-eko fitxategiak</translation>
@@ -10201,7 +10201,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8841843049738266382">Onartutakoen zerrendako erabiltzaileak ikusi eta aldatu.</translation>
 <translation id="8841884135319684422">Amaitu zeregina</translation>
 <translation id="8842594465773264717">Ezabatu hatz-marka</translation>
-<translation id="8843160937959801189"><ph name="DEVICE" /> gailuko laster-markak eta bestelako elementuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> gailuko laster-markak eta bestelako datuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
 <translation id="8846132060409673887">Ordenagailuaren fabrikatzaileari eta modeloari buruzko informazioa irakurri.</translation>
 <translation id="8846239054091760429">Audio monofonikoa, abiaraztea, Istanteko azpitituluak eta beste</translation>

@@ -903,6 +903,7 @@ Tento návrh môžete z Chromu odstrániť. Pôvodný zdroj sa neodstráni. <ph
 <translation id="2493122313108999546">Veľkosť poznámky bola zmenená</translation>
 <translation id="249376477913017009">Oznámenie o automatickom dopĺňaní z Gmailu a iných služieb je otvorené</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
+<translation id="2495909791227061512">Chcete sa pripojiť k zariadeniam v okolí?</translation>
 <translation id="2496402116964818747">V sekcii <ph name="SETTINGS" /> môžete zmeniť, či sa má pri vypĺňaní hesiel používať odtlačok prsta</translation>
 <translation id="2498091847651709837">Naskenovať novú kartu</translation>
 <translation id="2501270939904835585">Štítky (saténové)</translation>
@@ -2611,7 +2612,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5398461103557553443">Ak chcete toto číslo IBAN nabudúce automaticky doplniť, uložte si ho do Peňaženky Google</translation>
 <translation id="5398772614898833570">Reklamy sú blokované</translation>
 <translation id="5400836586163650660">Sivá</translation>
-<translation id="5402715318763077894">Chcete povoliť prístup k miestnej sieti?</translation>
 <translation id="540949333488055151">Plast (farebný)</translation>
 <translation id="540969355065856584">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" /> – jej bezpečnostný certifikát je momentálne neplatný. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie napadol útočník.</translation>
 <translation id="5411462078004183575">Možnosť nízkej ceny</translation>

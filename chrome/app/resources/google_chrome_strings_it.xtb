@@ -204,7 +204,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Accesso rete - Chrome</translation>
 <translation id="2970681950995291301">Per rimuovere il tuo Account Google da Chrome, esci da Chrome nella pagina Impostazioni</translation>
 <translation id="2976869732253036751">Ricevi avvisi per il monitoraggio dei prezzi con Chrome sullo smartphone</translation>
-<translation id="2985091279808606502">Chrome deve avere l'autorizzazione di accesso alla rete locale per questo sito</translation>
 <translation id="2991167882679440829">Le password e altri dati di Chrome salvati nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chrome, accedi nuovamente.</translation>
 <translation id="2994465299455873643">Fornisce servizi di crittografia e un modo sicuro per recuperare <ph name="BROWSER_NAME" /> in caso diventasse obsoleto. Se questo servizio viene disattivato, <ph name="BROWSER_NAME" /> potrebbe perdere l'accesso ai dati criptati e <ph name="BROWSER_NAME" /> potrebbe non essere in grado di ripristinarsi.</translation>
 <translation id="3003694935412297923">Tutte le attività</translation>
@@ -751,6 +750,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="8172231188687329735">Scarica l'app Chrome per salvare le password ovunque ti trovi</translation>
 <translation id="8177472873527554730">Impossibile trovare contenuti nella pagina</translation>
 <translation id="8221491193165283816">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic qui.</translation>
+<translation id="8233224921566021881">Chrome deve accedere alla tua rete locale per rilevare e utilizzare i dispositivi nelle vicinanze</translation>
 <translation id="8253851811470049684">Apri i link in Chrome da qualsiasi app e mantieni il browser accessibile sulla barra delle app</translation>
 <translation id="8255190535488645436">Google Chrome sta utilizzando videocamera e microfono.</translation>
 <translation id="8260086374035800939">Se Gemini in Chrome è aperto, il riquadro laterale rimane aperto quando crei nuove schede</translation>

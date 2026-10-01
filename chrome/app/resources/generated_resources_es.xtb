@@ -8581,7 +8581,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7602173054665172958">Gestión de impresión</translation>
 <translation id="7602805861133750578">Ahora puedes gestionar tus grupos de pestañas, interacciones con Gemini y conversaciones del Modo IA en un solo lugar. Puedes desfijarlo en cualquier momento.</translation>
 <translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
-<translation id="7603583710244190070">Tu organización bloquea la pantalla compartida de esta pestaña</translation>
+<translation id="7603583710244190070">Tu organización impide compartir la pantalla de esta pestaña</translation>
 <translation id="7603785829538808504">Los sitios que se indican a continuación tienen una configuración personalizada.</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 contraseña no importada}other{{NUM_PASSWORDS} contraseñas no importadas}}</translation>
 <translation id="7605163396341021431">Permite a las aplicaciones Android controlar dispositivos USB en este Chromebook</translation>
@@ -8775,7 +8775,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7742706086992565332">Puedes configurar cuánto quieres ampliar o reducir determinados sitios web.</translation>
 <translation id="7742879569460013116">Compartir enlace con</translation>
 <translation id="774377079771918250">Elige dónde guardarla</translation>
-<translation id="7743876437245989842">Tu organización bloquea la pantalla compartida de una pestaña</translation>
+<translation id="7743876437245989842">Tu organización impide que se comparta la pantalla de una pestaña</translation>
 <translation id="7744047395460924128">Ver tu historial de impresiones</translation>
 <translation id="7744192722284567281">Encontrada en una brecha de seguridad de datos</translation>
 <translation id="7744649840067671761">Pulsa un nuevo interruptor o tecla del teclado para asignarle una acción.
@@ -10776,7 +10776,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="973558314812359997">Tamaño del ratón</translation>
 <translation id="973788791897303708">Este grupo de pestañas está lleno</translation>
 <translation id="97381968209917373">Eliminar certificado <ph name="CERT_NAME" /></translation>
-<translation id="97570902379088759">Tu organización bloquea la pantalla compartida de <ph name="TAB_NAME" /></translation>
+<translation id="97570902379088759">Tu organización impide compartir la pantalla de <ph name="TAB_NAME" /></translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
 <translation id="976572010712028687">Verifica que eres padre o madre</translation>
 <translation id="977175416263153310">Abrir en una ventana aislada</translation>

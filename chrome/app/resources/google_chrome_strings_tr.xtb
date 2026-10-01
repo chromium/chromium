@@ -204,7 +204,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chrome</translation>
 <translation id="2970681950995291301">Google Hesabınızı Chrome'dan kaldırmak için Ayarlar sayfasında Chrome oturumunu kapatın</translation>
 <translation id="2976869732253036751">Telefonunuzda Chrome ile fiyat takibi uyarıları alın</translation>
-<translation id="2985091279808606502">Chrome'un bu site için yerel ağ iznine ihtiyacı var</translation>
 <translation id="2991167882679440829">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chrome verileri bu cihazdan kaldırılır. Bu bilgileri Chrome'da tekrar kullanmak için yeniden oturum açın.</translation>
 <translation id="2994465299455873643">Şifreleme hizmetlerinin yanı sıra güncelliğini yitirdiği takdirde <ph name="BROWSER_NAME" /> tarayıcıyı kurtarmanın güvenli bir yolunu sunar. Bu hizmet devre dışı bırakılırsa <ph name="BROWSER_NAME" />, şifrelenmiş verilere erişimi kaybedebilir ve <ph name="BROWSER_NAME" /> kendisini kurtaramayabilir.</translation>
 <translation id="3003694935412297923">Tüm görevler</translation>
@@ -754,6 +753,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8172231188687329735">Hareket halindeyken şifreleri kaydetmek için Chrome uygulamasını indirin</translation>
 <translation id="8177472873527554730">Sayfada içerik bulunamadı</translation>
 <translation id="8221491193165283816">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için burayı tıklayın.</translation>
+<translation id="8233224921566021881">Chrome'un yakındaki cihazları bulup kullanabilmesi için yerel ağınıza erişmesi gerekiyor</translation>
 <translation id="8253851811470049684">Uygulamalardaki bağlantıları Chrome'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="8260086374035800939">Chrome'da Gemini açıksa yeni sekme oluştururken yan panel açık kalır.</translation>

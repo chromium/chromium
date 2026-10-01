@@ -903,6 +903,7 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2493122313108999546">Yeniden boyutlandırıldı</translation>
 <translation id="249376477913017009">Gmail'den otomatik doldurma ve daha fazlası bildirimi açıldı</translation>
 <translation id="2495083838625180221">JSON Ayrıştırıcı</translation>
+<translation id="2495909791227061512">Yakındaki cihazlara bağlanılsın mı?</translation>
 <translation id="2496402116964818747">Şifreleri doldurmak için parmak izinizi kullanıp kullanmayacağınızı <ph name="SETTINGS" /> bölümünden değiştirebilirsiniz</translation>
 <translation id="2498091847651709837">Yeni kart tara</translation>
 <translation id="2501270939904835585">Etiketler (Saten)</translation>
@@ -2615,7 +2616,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5398461103557553443">Bir dahaki sefere bu IBAN'ı otomatik doldurmak için Google Cüzdan'a kaydedin</translation>
 <translation id="5398772614898833570">Reklamlar engellendi</translation>
 <translation id="5400836586163650660">Gri</translation>
-<translation id="5402715318763077894">Yerel ağ erişimine izin verilsin mi?</translation>
 <translation id="540949333488055151">Plastik (Renkli)</translation>
 <translation id="540969355065856584">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası şu anda geçerli değil. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="5411462078004183575">Düşük Fiyatlı Seçenek</translation>
@@ -4248,7 +4248,7 @@ Ek ayrıntılar:
 <translation id="8189557652711717875">Seçtiğiniz arama motoru, adres çubuğundan ve web sayfalarındaki resimlerden arama yapma gibi özellikler için kullanılır.</translation>
 <translation id="8190193880870196235">Bir uzantı tarafından yönetiliyor</translation>
 <translation id="8194412401381329820">Bu sayfayı, bu yönetilmeyen cihazdaki yönetilen bir hesaptan kullanamazsınız. Bu sayfayı kullanırsanız bu cihazla aynı varlık tarafından yönetilen hesaplar (ilişkili hesaplar) hariç tüm yönetilen hesaplar kilitlenir.</translation>
-<translation id="8194579937546982778">Her zaman göster: <ph name="AI_ENGINE_NAME" /></translation>
+<translation id="8194579937546982778">Her Zaman Göster: <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">Taşımayı &amp;Geri Al</translation>
 <translation id="8199437620497683918">Optik Disk (Parlak)</translation>
 <translation id="8202097416529803614">Sipariş özeti</translation>

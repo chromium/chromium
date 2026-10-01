@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
 <translation id="1083934481477628225">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium</translation>
+<translation id="109026165963220603">Chromium cần có quyền truy cập vào mạng cục bộ của bạn để tìm và sử dụng thiết bị ở gần</translation>
 <translation id="1090946077924227754">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chromium, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="1098493699368672217">Hiện tính năng tìm kiếm bằng Chromium trên khay hệ thống và bật phím tắt</translation>
 <translation id="1104942323762546749">Chromium muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
@@ -262,7 +263,6 @@
 
           **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium cần có quyền truy cập vào mạng cục bộ đối với trang web này</translation>
 <translation id="3885770153807205175">Bộ chọn ngôn ngữ</translation>
 <translation id="388648406173476553">Tùy chỉnh và kiểm soát Chromium. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="3889543394854987837">Nhấp vào tên của bạn để mở Chromium và bắt đầu duyệt web.</translation>

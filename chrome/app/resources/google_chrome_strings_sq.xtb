@@ -208,7 +208,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
 <translation id="2970681950995291301">Për ta hequr "Llogarinë tënde të Google" nga Chrome, dil nga llogaria në Chrome te faqja e "Cilësimeve"</translation>
 <translation id="2976869732253036751">Merr sinjalizime për monitorimin e çmimeve me Chrome në telefonin tënd</translation>
-<translation id="2985091279808606502">Chrome ka nevojë për lejen e rrjetit lokal për këtë sajt</translation>
 <translation id="2991167882679440829">Fjalëkalimet e tua dhe të dhënat e tjera të Chrome që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chrome, identifikohu përsëri.</translation>
 <translation id="2994465299455873643">Ofron shërbime enkriptimi dhe një mënyrë të sigurt për të rikuperuar <ph name="BROWSER_NAME" /> nëse vjetrohet. Nëse ky shërbim është i çaktivizuar, <ph name="BROWSER_NAME" /> mund të humbasë qasjen në të dhënat e enkriptuara dhe <ph name="BROWSER_NAME" /> mund të mos jetë në gjendje të vetërikuperohet.</translation>
 <translation id="3003694935412297923">Të gjitha detyrat</translation>
@@ -758,6 +757,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8172231188687329735">Merr aplikacionin e Chrome për t'i ruajtur fjalëkalimet kur je në lëvizje</translation>
 <translation id="8177472873527554730">Nuk mund të gjenden përmbajtjet në faqe</translation>
 <translation id="8221491193165283816">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko këtu.</translation>
+<translation id="8233224921566021881">Chrome ka nevojë për qasje te rrjeti yt lokal për të zbuluar dhe përdorur pajisjet në afërsi</translation>
 <translation id="8253851811470049684">Hap lidhjet në Chrome nga çdo aplikacion dhe mbaje shfletuesin të qasshëm në shiritin e detyrave</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8260086374035800939">Nëse Gemini në Chrome është i hapur, paneli anësor qëndron i hapur kur krijohen skeda të reja</translation>

@@ -903,6 +903,7 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2493122313108999546">Størrelsen er tilpasset</translation>
 <translation id="249376477913017009">Meddelelsen om autofyld fra Gmail m.m. åbnet</translation>
 <translation id="2495083838625180221">Værktøj til parsing af JSON-filer</translation>
+<translation id="2495909791227061512">Vil du oprette forbindelse til enheder i nærheden?</translation>
 <translation id="2496402116964818747">Du kan ændre, om du vil bruge dit fingeraftryk til at udfylde adgangskoder, i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Scan et nyt kort</translation>
 <translation id="2501270939904835585">Etiketter (satin)</translation>
@@ -2615,7 +2616,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5398461103557553443">Hvis du vil udfylde dette IBAN-nummer automatisk næste gang, skal du gemme det i Google Wallet</translation>
 <translation id="5398772614898833570">Annoncer er blokeret</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="5402715318763077894">Vild du tillade lokal netværksadgang?</translation>
 <translation id="540949333488055151">Plast (farvet)</translation>
 <translation id="540969355065856584">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat ikke er gyldigt i øjeblikket. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="5411462078004183575">Købsmulighed med lav pris</translation>

@@ -142,7 +142,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1090541560108055381">Pred spárovaním sa uistite, že tento kód je v oboch zariadeniach rovnaký</translation>
 <translation id="1093457606523402488">Viditeľné siete:</translation>
 <translation id="1093645050124056515">ctrl + alt + šípka nadol</translation>
-<translation id="1095398697303758108">Dvojitým stlačením klávesa Ctrl aktivujete vylepšené automatické dopĺňanie</translation>
+<translation id="1095398697303758108">Dvojitým stlačením klávesu Ctrl aktivujete vylepšené automatické dopĺňanie</translation>
 <translation id="1095879482467973146">Správca hesiel Google na internete</translation>
 <translation id="1097016918605049747">Túto stránku sa nepodarilo preložiť</translation>
 <translation id="1099962274138857708">Obrázok bol skopírovaný zo zariadenia <ph name="DEVICE_NAME" /></translation>
@@ -2627,7 +2627,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3001614333383288217">{COUNT,plural, =0{Nie sú prispôsobené žiadne klávesy}=1{1 prispôsobený kláves}few{{COUNT} prispôsobené klávesy}many{{COUNT} customized keys}other{{COUNT} prispôsobených klávesov}}</translation>
 <translation id="3002864108328203174">Dolný hárok Gemini na polovičnú výšku</translation>
 <translation id="3003144360685731741">Preferované siete</translation>
-<translation id="3003152206838282768">Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Skontrolujte, či sú v Chrome k dispozícii ďalšie aktualizácie.</translation>
+<translation id="3003152206838282768">Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Ďalšie informácie nájdete v Chrome.</translation>
 <translation id="3003253259757197230">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol predpokladať weby, ktoré navštívite ako ďalšie, a zobrazovať vám ďalšie informácie o navštevovanej stránke</translation>
 <translation id="3003623123441819449">Vyrovnávacia pamäť CSS</translation>
 <translation id="3003967365858406397">Telefón <ph name="PHONE_NAME" /> vytvorí súkromné pripojenie Wi‑Fi.</translation>
@@ -5079,7 +5079,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4864805589453749318">Vyberte rodiča, ktorý udeľuje povolenie pridať školský účet.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokované)</translation>
 <translation id="486505726797718946">Bola uvoľnená pamäť</translation>
-<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Skontrolujte, či sú v Chrome k dispozícii ďalšie aktualizácie.</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Pracujem na vašej úlohe v aplikácii Gemini v Chrome. Ďalšie informácie nájdete v Chrome.</translation>
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
 <translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
 <translation id="4869170227080975044">Čítať informácie o sieťach v systéme ChromeOS</translation>
@@ -7424,7 +7424,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6710394144992407503">Kontrolovať pravopis pri zadávaní textu na webových stránkach</translation>
 <translation id="6711236403841768371">Do <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Dvojitým stlačením klávesa ⌘ aktivujete vylepšené automatické dopĺňanie</translation>
+<translation id="6711569175139833669">Dvojitým stlačením klávesu ⌘ aktivujete vylepšené automatické dopĺňanie</translation>
 <translation id="6712943853047024245">Už ste si uložili heslo pomocou tohto používateľského mena pre web alebo aplikáciu <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Pridať pracovný profil</translation>
 <translation id="6713441551032149301">Pridržaním klávesa Spúšťač môžete prepínať medzi funkčnými klávesmi a systémovými klávesmi horného radu</translation>

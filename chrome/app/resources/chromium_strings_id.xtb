@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Bantu kami meningkatkan mode Samaran dengan mengikuti survei 1 menit ini.</translation>
 <translation id="1065672644894730302">Preferensi Anda tidak dapat dibaca. Beberapa fitur mungkin tidak tersedia dan perubahan pada preferensi tidak akan disimpan.</translation>
 <translation id="1083934481477628225">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium</translation>
+<translation id="109026165963220603">Chromium memerlukan akses ke jaringan lokal Anda untuk menemukan dan menggunakan perangkat di sekitar</translation>
 <translation id="1090946077924227754">Untuk menelusuri fitur atau ekstensi Chromium tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="1098493699368672217">Tampilkan penelusuran dengan Chromium di area notifikasi dan aktifkan pintasan keyboard</translation>
 <translation id="1104942323762546749">Chromium ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
@@ -262,7 +263,6 @@
 
           **Sarankan Pertanyaan:** Buat daftar berbutir berisi 3-5 pertanyaan yang dapat diajukan pengguna untuk lebih memahami screenshot. Pertanyaan ini harus mencakup setidaknya satu pertanyaan yang secara khusus membahas objek visual, desain, atau penempatannya.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium memerlukan izin jaringan lokal untuk situs ini</translation>
 <translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="388648406173476553">Sesuaikan dan kontrol Chromium. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>
 <translation id="3889543394854987837">Klik nama Anda untuk membuka Chromium dan mulai menjelajah.</translation>

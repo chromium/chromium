@@ -902,6 +902,7 @@
 <translation id="2493122313108999546">已調整大小</translation>
 <translation id="249376477913017009">「自動填入 Gmail 等服務中的資訊」通知已開啟</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
+<translation id="2495909791227061512">要連線到鄰近裝置嗎？</translation>
 <translation id="2496402116964818747">你可以在「<ph name="SETTINGS" />」中變更是否要使用指紋填入密碼</translation>
 <translation id="2498091847651709837">掃描新信用卡</translation>
 <translation id="2501270939904835585">標籤 (光滑)</translation>
@@ -2613,7 +2614,6 @@
 <translation id="5398461103557553443">將 IBAN 儲存到 Google 錢包，下次就會自動填入</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="5402715318763077894">要允許存取區域網路嗎？</translation>
 <translation id="540949333488055151">塑膠 (彩色)</translation>
 <translation id="540969355065856584">這個伺服器無法證明所屬網域為 <ph name="DOMAIN" />；其安全憑證目前無效。這可能是因為設定錯誤，或是有攻擊者攔截您的連線所致。</translation>
 <translation id="5411462078004183575">低價選項</translation>

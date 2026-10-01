@@ -903,6 +903,7 @@ Ovaj prijedlog možete ukloniti iz Chromea. Vaš se izvorni izvor neće izbrisat
 <translation id="2493122313108999546">Promijenjena veličina</translation>
 <translation id="249376477913017009">Otvorena je obavijest o automatskom popunjavanju s Gmaila i iz drugih izvora</translation>
 <translation id="2495083838625180221">Raščlanjivanje JSON datoteka</translation>
+<translation id="2495909791227061512">Želite li se povezati s uređajima u blizini?</translation>
 <translation id="2496402116964818747">U odjeljku <ph name="SETTINGS" /> možete promijeniti želite li upotrebljavati otisak prsta za popunjavanje zaporki</translation>
 <translation id="2498091847651709837">Skeniraj novu karticu</translation>
 <translation id="2501270939904835585">Naljepnice (saten)</translation>
@@ -2614,7 +2615,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5398461103557553443">Da biste sljedeći put automatski popunili ovaj IBAN, spremite ga u Google Wallet</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="5402715318763077894">Želite li dopustiti pristup lokalnoj mreži?</translation>
 <translation id="540949333488055151">Plastika (u boji)</translation>
 <translation id="540969355065856584">Poslužitelj nije uspio dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat trenutačno nije važeći. Uzrok tomu može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="5411462078004183575">Opcija s niskom cijenom</translation>
@@ -4830,7 +4830,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9210152531668884481">U redu</translation>
 <translation id="9213433120051936369">Prilagodi izgled</translation>
 <translation id="9215416866750762878">Aplikacija sprječava sigurno povezivanje Chromea s ovom web-lokacijom</translation>
-<translation id="9217513960785028513">Postavite pitanje tražilici <ph name="ENGINE_NAME" /> ili upišite URL</translation>
+<translation id="9217513960785028513">Pitajte <ph name="ENGINE_NAME" /> ili unesite URL</translation>
 <translation id="92178312226016010">Pratite ovaj proizvod.</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>

@@ -208,7 +208,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="2970681950995291301">Para quitar a túa Conta de Google de Chrome, vai á páxina de configuración e pecha a sesión en Chrome</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimento de prezos con Chrome no teléfono</translation>
-<translation id="2985091279808606502">Chrome necesita permiso de acceso á rede local para este sitio</translation>
 <translation id="2991167882679440829">Os teus contrasinais e outros datos de Chrome que gardases na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chrome, volve iniciar sesión.</translation>
 <translation id="2994465299455873643">Fornece servizos de encriptación e unha maneira segura de recuperar <ph name="BROWSER_NAME" /> se queda desactualizado. Se o servizo se desactiva, <ph name="BROWSER_NAME" /> pode perder acceso aos datos encriptados e <ph name="BROWSER_NAME" /> pode non recuperarse.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
@@ -761,6 +760,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8172231188687329735">Descarga a aplicación Chrome para gardar contrasinais esteas onde esteas</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
 <translation id="8221491193165283816">Adoitas bloquear as notificacións. Para permitir que este sitio che envíe notificacións, fai clic aquí.</translation>
+<translation id="8233224921566021881">Chrome necesita acceso á túa rede local para detectar e usar dispositivos próximos</translation>
 <translation id="8253851811470049684">Abre ligazóns en Chrome desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8260086374035800939">Se Gemini en Chrome está aberto, o panel lateral permanecerá aberto cando crees pestanas novas</translation>

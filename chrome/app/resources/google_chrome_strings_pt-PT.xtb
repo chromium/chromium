@@ -204,7 +204,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chrome</translation>
 <translation id="2970681950995291301">Para remover a sua Conta Google do Chrome, termine sessão no Chrome na página Definições</translation>
 <translation id="2976869732253036751">Receba alertas de acompanhamento de preço com o Chrome no telemóvel</translation>
-<translation id="2985091279808606502">O Chrome precisa da autorização de acesso à rede local para este site</translation>
 <translation id="2991167882679440829">As suas palavras-passe e outros dados do Chrome que guardou na sua Conta Google vão ser removidos deste dispositivo. Para os usar novamente no Chrome, volte a iniciar sessão.</translation>
 <translation id="2994465299455873643">Oferece serviços de encriptação e uma forma segura de recuperar o <ph name="BROWSER_NAME" /> se ficar desatualizado. Se este serviço estiver desativado, o <ph name="BROWSER_NAME" /> pode perder o acesso aos dados encriptados e o <ph name="BROWSER_NAME" /> pode não conseguir recuperar.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
@@ -753,6 +752,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="8172231188687329735">Transfira a app Chrome para guardar palavras-passe em qualquer lugar</translation>
 <translation id="8177472873527554730">Não é possível encontrar conteúdo na página</translation>
 <translation id="8221491193165283816">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique aqui.</translation>
+<translation id="8233224921566021881">O Chrome precisa de aceder à sua rede local para descobrir e usar dispositivos próximos</translation>
 <translation id="8253851811470049684">Abra links no Chrome a partir de qualquer app e mantenha o navegador acessível na barra de tarefas</translation>
 <translation id="8255190535488645436">O Google Chrome está a utilizar a câmara e o microfone.</translation>
 <translation id="8260086374035800939">Se o Gemini no Chrome estiver aberto, o painel lateral permanece aberto quando cria novos separadores</translation>

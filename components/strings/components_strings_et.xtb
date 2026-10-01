@@ -903,6 +903,7 @@ Saate selle soovituse Chrome’ist eemaldada. Teie algset allikat ei kustutata. 
 <translation id="2493122313108999546">Suurust on muudetud</translation>
 <translation id="249376477913017009">Gmaili automaattäide ja muu teatis on avatud</translation>
 <translation id="2495083838625180221">JSON-i parser</translation>
+<translation id="2495909791227061512">Kas ühendada läheduses olevate seadmetega?</translation>
 <translation id="2496402116964818747">Menüüs <ph name="SETTINGS" /> saate muuta, kas kasutate sõrmejälge paroolide sisestamiseks</translation>
 <translation id="2498091847651709837">Uue kaardi skannimine</translation>
 <translation id="2501270939904835585">Etiketid (satiin)</translation>
@@ -2615,7 +2616,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5398461103557553443">Järgmine kord selle IBAN-i automaatselt täitmiseks salvestage see Google Walletisse.</translation>
 <translation id="5398772614898833570">Reklaamid on blokeeritud</translation>
 <translation id="5400836586163650660">Hall</translation>
-<translation id="5402715318763077894">Kas lubada juurdepääs kohalikule võrgule?</translation>
 <translation id="540949333488055151">Plast (värviline)</translation>
 <translation id="540969355065856584">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />; selle turvasertifikaat pole praegu kehtiv. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="5411462078004183575">Soodne valik</translation>

@@ -10,6 +10,7 @@
 
 Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</translation>
 <translation id="1083934481477628225">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření</translation>
+<translation id="109026165963220603">Prohlížeč Chromium potřebuje přístup k vaší místní síti, aby mohl objevovat a používat zařízení v okolí</translation>
 <translation id="1090946077924227754">Pokud chcete při vyhledávání použít konkrétní funkci nebo rozšíření prohlížeče Chromium, zadejte do adresního řádku jejich zkratku a poté stiskněte vybranou klávesu</translation>
 <translation id="1098493699368672217">Zobrazovat Vyhledávání v Chromiu na hlavním panelu systému a zapnout klávesovou zkratku</translation>
 <translation id="1104942323762546749">Chromium chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
@@ -263,7 +264,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 
           **Navrhni otázky:** Vygeneruj seznam 3–5 otázek, které by uživatelé mohli položit s cílem lépe snímku obrazovky porozumět. Alespoň jedna z otázek by se měla týkat konkrétního vizuálního objektu, jeho designu nebo umístění.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium pro tento web potřebuje přístup k místní síti</translation>
 <translation id="3885770153807205175">Výběr jazyka</translation>
 <translation id="388648406173476553">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="3889543394854987837">Chcete-li otevřít Chromium a začít procházet Internet, klikněte na svoje jméno.</translation>

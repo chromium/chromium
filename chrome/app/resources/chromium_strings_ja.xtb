@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">シークレット モードの改善のため、1 分程度のアンケートにご協力ください。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1083934481477628225">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
+<translation id="109026165963220603">付近のデバイスを検出して使用するには、Chromium にローカル ネットワークへのアクセスを許可する必要があります</translation>
 <translation id="1090946077924227754">Chromium の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="1098493699368672217">システムトレイに「Chromium で検索」を表示して、キーボード ショートカットをオンにする</translation>
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
@@ -261,7 +262,6 @@
 
           **質問の提案:** スクリーンショットの理解を深めるためにユーザーが質問しそうな項目を箇条書きで 3～5 つ生成します。視覚的なオブジェクトやそのデザイン、または配置に関する具体的な質問が 1 つ以上含まれます。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">このサイトを利用するには、Chromium でローカル ネットワークの使用を許可する必要があります</translation>
 <translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="388648406173476553">Chromium をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="3889543394854987837">Chromium を開いてブラウジングを始めるには、名前をクリックしてください。</translation>

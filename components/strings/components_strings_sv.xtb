@@ -903,6 +903,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2493122313108999546">Storleken har ändrats</translation>
 <translation id="249376477913017009">Meddelande om autofyll från Gmail med mera har öppnats</translation>
 <translation id="2495083838625180221">JSON-analysator</translation>
+<translation id="2495909791227061512">Vill du ansluta till enheter i närheten?</translation>
 <translation id="2496402116964818747">Du kan ändra om du vill använda fingeravtrycket för att fylla i lösenord eller inte i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Läs in ett nytt kort</translation>
 <translation id="2501270939904835585">Etiketter (satäng)</translation>
@@ -2615,7 +2616,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5398461103557553443">Om du vill fylla i IBAN-numret automatiskt nästa gång sparar du det i Google Wallet</translation>
 <translation id="5398772614898833570">Annonser blockeras</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="5402715318763077894">Vill du tillåta åtkomst till det lokala nätverket?</translation>
 <translation id="540949333488055151">Plast (färgad)</translation>
 <translation id="540969355065856584">Servern kunde inte bevisa att det är <ph name="DOMAIN" />. Dess säkerhetscertifikat är inte giltigt för närvarande. Detta kan bero på en felaktig konfiguration eller att någon kapat din anslutning.</translation>
 <translation id="5411462078004183575">Lågprisalternativ</translation>

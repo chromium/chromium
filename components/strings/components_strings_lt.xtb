@@ -903,6 +903,7 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2493122313108999546">Pakeistas dydis</translation>
 <translation id="249376477913017009">Pranešimas „Automatinis pildymas iš „Gmail“ ir kt.“ atidarytas</translation>
 <translation id="2495083838625180221">JSON analizavimo įrankis</translation>
+<translation id="2495909791227061512">Prisijungti prie netoliese esančių įrenginių?</translation>
 <translation id="2496402116964818747">Galite pakeisti, ar naudoti piršto atspaudą slaptažodžiams užpildyti, skiltyje „<ph name="SETTINGS" />“</translation>
 <translation id="2498091847651709837">Nuskaityti naują kortelę</translation>
 <translation id="2501270939904835585">Etiketės (atlasinės)</translation>
@@ -2616,7 +2617,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5398461103557553443">Jei norite kitą kartą automatiškai užpildyti šį IBAN, išsaugokite jį „Google Wallet“</translation>
 <translation id="5398772614898833570">Skelbimai užblokuoti</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
-<translation id="5402715318763077894">Leisti prieigą prie vietinio tinklo?</translation>
 <translation id="540949333488055151">Plastikas (spalvotas)</translation>
 <translation id="540969355065856584">Šiam serveriui nepavyko patvirtinti, kad jis yra <ph name="DOMAIN" />; šiuo metu jo saugos sertifikatas negalioja. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5411462078004183575">Mažos kainos parinktis</translation>

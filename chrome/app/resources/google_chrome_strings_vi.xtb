@@ -206,7 +206,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng – Chrome</translation>
 <translation id="2970681950995291301">Để xoá Tài khoản Google của bạn khỏi Chrome, hãy vào trang Cài đặt rồi đăng xuất khỏi Chrome</translation>
 <translation id="2976869732253036751">Nhận thông báo theo dõi giá từ Chrome trên điện thoại</translation>
-<translation id="2985091279808606502">Chrome cần có quyền truy cập vào mạng cục bộ đối với trang web này</translation>
 <translation id="2991167882679440829">Mật khẩu và các dữ liệu khác trên Chrome mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chrome, hãy đăng nhập lại.</translation>
 <translation id="2994465299455873643">Cung cấp dịch vụ mã hoá và một phương thức an toàn để khôi phục <ph name="BROWSER_NAME" /> nếu trình duyệt đã lỗi thời. Nếu dịch vụ này tắt, <ph name="BROWSER_NAME" /> có thể mất quyền truy cập vào dữ liệu đã mã hoá và <ph name="BROWSER_NAME" /> có thể không tự khôi phục được.</translation>
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
@@ -757,6 +756,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8172231188687329735">Tải ứng dụng Chrome để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
+<translation id="8233224921566021881">Chrome cần có quyền truy cập vào mạng cục bộ của bạn để tìm và sử dụng thiết bị ở gần</translation>
 <translation id="8253851811470049684">Mở đường liên kết trong Chrome từ ứng dụng bất kỳ và giữ cho trình duyệt luôn có thể truy cập được trên thanh tác vụ</translation>
 <translation id="8255190535488645436">Google Chrome đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="8260086374035800939">Nếu Gemini trong Chrome đang mở, thì bảng điều khiển bên sẽ vẫn mở khi bạn tạo thẻ mới</translation>

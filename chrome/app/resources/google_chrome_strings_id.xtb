@@ -204,7 +204,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="2970681950995291301">Untuk menghapus Akun Google Anda dari Chrome, logout dari Chrome di halaman Setelan</translation>
 <translation id="2976869732253036751">Dapatkan notifikasi pemantauan harga dengan Chrome di ponsel Anda</translation>
-<translation id="2985091279808606502">Chrome memerlukan izin jaringan lokal untuk situs ini</translation>
 <translation id="2991167882679440829">Sandi dan data Chrome Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chrome, login kembali.</translation>
 <translation id="2994465299455873643">Menyediakan layanan enkripsi dan cara yang aman untuk memulihkan <ph name="BROWSER_NAME" /> jika browser tidak update. Jika layanan ini dinonaktifkan, <ph name="BROWSER_NAME" /> mungkin kehilangan akses ke data yang dienkripsi, dan <ph name="BROWSER_NAME" /> mungkin tidak dapat memulihkan data.</translation>
 <translation id="3003694935412297923">Semua tugas</translation>
@@ -751,6 +750,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8172231188687329735">Dapatkan aplikasi Chrome untuk menyimpan sandi kapan saja di mana saja</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
+<translation id="8233224921566021881">Chrome memerlukan akses ke jaringan lokal Anda untuk menemukan dan menggunakan perangkat di sekitar</translation>
 <translation id="8253851811470049684">Buka link di Chrome dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="8260086374035800939">Jika Gemini di Chrome terbuka, panel samping akan tetap terbuka saat membuat tab baru</translation>

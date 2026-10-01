@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responde esta encuesta de 1 minuto para ayudarnos a mejorar la navegación de Incógnito.</translation>
 <translation id="1065672644894730302">No se pueden leer tus preferencias. Es posible que algunas funciones no estén disponibles y que no se guarden los cambios realizados a las preferencias.</translation>
 <translation id="1083934481477628225">Tu madre o padre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chromium.</translation>
+<translation id="109026165963220603">Chromium necesita acceso a tu red local para detectar y usar dispositivos cercanos</translation>
 <translation id="1090946077924227754">Para buscar una función o extensión específica de Chromium, escribe su atajo en la barra de direcciones, seguido de la tecla que seleccionaste</translation>
 <translation id="1098493699368672217">Mostrar la búsqueda con Chromium en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="1104942323762546749">Chromium desea exportar tus contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
@@ -260,7 +261,6 @@
 
           **Sugerir preguntas:** Genera una lista con viñetas de 3 a 5 preguntas que inviten a la reflexión que un usuario podría hacer para comprender mejor la captura de pantalla. Estas preguntas deben incluir al menos una que sea específicamente sobre un objeto visual, su diseño o su ubicación.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium necesita permiso de acceso a la red local para este sitio</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza y controla Chromium. Una alerta necesita tu atención. Haz clic para ver los detalles.</translation>
 <translation id="3889543394854987837">Haz clic en tu nombre para abrir Chromium y empezar a navegar.</translation>

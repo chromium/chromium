@@ -903,6 +903,7 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2493122313108999546">Se ha cambiado el tamaño</translation>
 <translation id="249376477913017009">Aviso de Autocompletar desde Gmail y más abierto</translation>
 <translation id="2495083838625180221">Analizador de archivos JSON</translation>
+<translation id="2495909791227061512">¿Conectar con dispositivos cercanos?</translation>
 <translation id="2496402116964818747">En <ph name="SETTINGS" /> puedes elegir si usar tu huella digital para rellenar contraseñas</translation>
 <translation id="2498091847651709837">Escanear nueva tarjeta</translation>
 <translation id="2501270939904835585">Etiquetas (satinado)</translation>
@@ -2615,7 +2616,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5398461103557553443">Para autocompletar este IBAN la próxima vez, guárdalo en Google Wallet</translation>
 <translation id="5398772614898833570">Anuncios bloqueados</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5402715318763077894">¿Permitir el acceso a la red local?</translation>
 <translation id="540949333488055151">Plástico (color)</translation>
 <translation id="540969355065856584">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, ya que su certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="5411462078004183575">Opción de precio bajo</translation>

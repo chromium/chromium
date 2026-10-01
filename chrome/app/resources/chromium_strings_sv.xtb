@@ -10,6 +10,7 @@
 
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
 <translation id="1083934481477628225">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium.</translation>
+<translation id="109026165963220603">Chromium behöver åtkomst till ditt lokala nätverk för att upptäcka och använda enheter i närheten</translation>
 <translation id="1090946077924227754">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chromium skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
 <translation id="1098493699368672217">Visa Sök med Chromium i systemfältet och aktivera kortkommandot</translation>
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
@@ -264,7 +265,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 
           **Föreslå frågor:** Skapa en punktlista med tre till fem tankeväckande frågor som en användare kan ställa för att bättre förstå skärmbilden. Minst en fråga ska handla specifikt om ett visuellt objekt, dess design eller placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Du behöver ge Chromium behörighet till lokalt nätverk för den här webbplatsen</translation>
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="3889543394854987837">Öppna Chromium genom att klicka på ditt namn och börja surfa.</translation>

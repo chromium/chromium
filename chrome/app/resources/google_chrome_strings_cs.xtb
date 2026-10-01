@@ -208,7 +208,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="2970681950995291301">Pokud z Chromu chcete odebrat svůj účet Google, odhlaste se z Chromu na stránce Nastavení</translation>
 <translation id="2976869732253036751">Nechte si s Chromem na telefon posílat upozornění na ceny</translation>
-<translation id="2985091279808606502">Chrome pro tento web potřebuje přístup k místní síti</translation>
 <translation id="2991167882679440829">Vaše hesla a další data Chromu, která jste si uložili do účtu Google, budou z tohoto zařízení odstraněna. Pokud je budete chtít v Chromu zase použít, znovu se přihlaste.</translation>
 <translation id="2994465299455873643">Poskytuje šifrovací služby a bezpečný způsob obnovení prohlížeče <ph name="BROWSER_NAME" />, pokud zastará. Když je tato služba vypnutá, může <ph name="BROWSER_NAME" /> ztratit přístup k šifrovaným datům a také se <ph name="BROWSER_NAME" /> nemusí dokázat obnovit.</translation>
 <translation id="3003694935412297923">Všechny úkoly</translation>
@@ -760,6 +759,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8172231188687329735">Stáhněte si aplikaci Chrome a ukládejte si hesla i na cestách</translation>
 <translation id="8177472873527554730">Na stránce se nepodařilo najít obsah</translation>
 <translation id="8221491193165283816">Obvykle oznámení blokujete. Chcete-li tomuto webu zobrazování oznámení povolit, klikněte sem.</translation>
+<translation id="8233224921566021881">Chrome potřebuje přístup k vaší místní síti, aby mohl objevovat a používat zařízení v okolí</translation>
 <translation id="8253851811470049684">Otevírejte v Chromu odkazy ze všech aplikací a mějte ho k dispozici na hlavním panelu</translation>
 <translation id="8255190535488645436">Google Chrome používá vaši kameru a mikrofon.</translation>
 <translation id="8260086374035800939">Pokud je otevřený Gemini v Chromu, zůstává při vytváření nových karet boční panel otevřený</translation>

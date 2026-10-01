@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Ajută-ne să îmbunătățim modul incognito, răspunzând la acest sondaj de un minut.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
+<translation id="109026165963220603">Chromium are nevoie de acces la rețeaua locală pentru a descoperi și a folosi dispozitivele din apropiere</translation>
 <translation id="1090946077924227754">Pentru a căuta o anumită funcție sau extensie Chromium, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="1098493699368672217">Afișează căutarea cu Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
@@ -262,7 +263,6 @@
 
           **Sugerează întrebări:** generează o listă cu marcatori cu 3 – 5 întrebări care dau de gândit pe care un utilizator le-ar putea pune pentru a înțelege mai bine captura de ecran. Aceste întrebări trebuie să includă cel puțin una care să se refere în mod specific la un obiect vizual, la designul sau plasarea acestuia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium are nevoie de permisiune pentru rețeaua locală pentru acest site</translation>
 <translation id="3885770153807205175">Selector de limbă</translation>
 <translation id="388648406173476553">Personalizează și controlează Chromium. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="3889543394854987837">Dați clic pe numele dvs. pentru a deschide Chromium și a începe să navigați.</translation>

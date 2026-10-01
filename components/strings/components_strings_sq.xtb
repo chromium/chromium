@@ -903,6 +903,7 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2493122313108999546">Përmasat u ndryshuan</translation>
 <translation id="249376477913017009">Njoftimi për plotësimin automatik nga Gmail etj. u hap</translation>
 <translation id="2495083838625180221">Analizuesi JSON</translation>
+<translation id="2495909791227061512">Të lidhet me pajisjet në afërsi?</translation>
 <translation id="2496402116964818747">Mund të ndryshosh nëse e përdor gjurmën e gishtit për plotësimin e fjalëkalimeve te "<ph name="SETTINGS" />"</translation>
 <translation id="2498091847651709837">Skano një kartë të re</translation>
 <translation id="2501270939904835585">Etiketa (saten)</translation>
@@ -2615,7 +2616,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5398461103557553443">Për të plotësuar automatikisht këtë numër IBAN herën tjetër, ruaje atë te "Portofoli i Google"</translation>
 <translation id="5398772614898833570">Reklamat janë të bllokuara</translation>
 <translation id="5400836586163650660">Gri</translation>
-<translation id="5402715318763077894">Të lejohet qasja në rrjetin lokal?</translation>
 <translation id="540949333488055151">Plastikë (me ngjyra)</translation>
 <translation id="540969355065856584">Ky server nuk mund të provojë se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është e pavlefshme në këtë moment. Kjo mund të shkaktohet për shkak të konfigurimit të pasaktë ose në rast të ndërhyrjes së ndonjë sulmuesi në lidhjen tënde.</translation>
 <translation id="5411462078004183575">Opsion me çmim të ulët</translation>

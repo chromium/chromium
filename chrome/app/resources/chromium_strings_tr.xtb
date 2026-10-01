@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="1083934481477628225">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
+<translation id="109026165963220603">Chromium'un yakındaki cihazları bulup kullanabilmesi için yerel ağınıza erişmesi gerekiyor</translation>
 <translation id="1090946077924227754">Belirli bir Chromium özelliğinde veya uzantısında arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra seçtiğiniz klavye tuşuna basın</translation>
 <translation id="1098493699368672217">Chromium ile arama özelliğini sistem tepsisinde göster ve klavye kısayolunu aç</translation>
 <translation id="1104942323762546749">Chromium, şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -259,7 +260,6 @@
 
           **Soru Öner:** Kullanıcının ekran görüntüsünü daha iyi anlamak için sorabileceği 3-5 düşündürücü sorudan oluşan bir madde işaretli liste oluştur. Bu sorulardan en az biri görsel bir nesne, tasarımı veya yerleşimiyle ilgili olmalı.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium'un bu site için yerel ağ iznine ihtiyacı var</translation>
 <translation id="3885770153807205175">Dil seçici</translation>
 <translation id="388648406173476553">Chromium'u özelleştirin ve kontrol edin. İlgilenmeniz gereken bir konu var. Ayrıntılar için tıklayın.</translation>
 <translation id="3889543394854987837">Chromium'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>

@@ -10,6 +10,7 @@
 
 Es posible que algunas funciones no estén disponibles y que no se guarden los cambios que hagas en las preferencias.</translation>
 <translation id="1083934481477628225">Tus padres han desactivado Permisos de sitios, aplicaciones y extensiones en Chromium</translation>
+<translation id="109026165963220603">Chromium necesita acceder a tu red local para detectar y usar dispositivos cercanos</translation>
 <translation id="1090946077924227754">Para buscar una función o extensión de Chromium específica, escribe su atajo en la barra de direcciones y, después, pulsa la tecla de teclado que hayas seleccionado</translation>
 <translation id="1098493699368672217">Mostrar la búsqueda con Chromium en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="1104942323762546749">Chromium quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
@@ -264,7 +265,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 
           **Sugerir preguntas:** genera una lista con viñetas de entre 3 y 5 preguntas que inviten a la reflexión y que un usuario podría hacer para entender mejor la captura de pantalla. Al menos una de estas preguntas debe referirse específicamente a un objeto visual, su diseño o su ubicación.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium necesita el permiso de red local para este sitio</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza y controla Chromium. Se requiere tu intervención. Haz clic aquí para obtener más información.</translation>
 <translation id="3889543394854987837">Haz clic en tu nombre para abrir Chromium y empezar a navegar.</translation>

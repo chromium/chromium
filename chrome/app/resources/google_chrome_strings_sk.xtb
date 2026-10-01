@@ -206,7 +206,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chrome</translation>
 <translation id="2970681950995291301">Ak chcete odstrániť svoj účet Google z Chromu, odhláste sa z Chromu na stránke Nastavenia</translation>
 <translation id="2976869732253036751">Dostávajte upozornenia sledovania cien v Chrome v telefóne</translation>
-<translation id="2985091279808606502">Chrome vyžaduje pre tento web povolenie na prístup k miestnej sieti</translation>
 <translation id="2991167882679440829">Heslá a ďalšie údaje Chromu, ktoré ste si uložili do účtu Google, budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v Chrome, znova sa prihláste.</translation>
 <translation id="2994465299455873643">Poskytuje služby šifrovania a bezpečný spôsob obnovenia prehliadača <ph name="BROWSER_NAME" />, ak je jeho verzia zastaraná. V prípade deaktivácie tejto služby môže <ph name="BROWSER_NAME" /> stratiť prístup k šifrovaným údajom a <ph name="BROWSER_NAME" /> sa zrejme nebude môcť samočinne obnoviť.</translation>
 <translation id="3003694935412297923">Všetky úlohy</translation>
@@ -758,6 +757,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8172231188687329735">Získajte aplikáciu Chrome a ukladajte si heslá kdekoľvek</translation>
 <translation id="8177472873527554730">Obsah na stránke sa nepodarilo nájsť</translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
+<translation id="8233224921566021881">Chrome potrebuje prístup k vašej miestnej sieti, aby mohol vyhľadávať a používať zariadenia v okolí</translation>
 <translation id="8253851811470049684">Otvárajte v Chrome odkazy z ľubovoľnej aplikácie a majte prehliadač k dispozícii na paneli aplikácií</translation>
 <translation id="8255190535488645436">Google Chrome používa vašu kameru a mikrofón.</translation>
 <translation id="8260086374035800939">Ak je Gemini v Chrome otvorený, bočný panel zostane otvorený aj pri vytváraní nových kariet</translation>

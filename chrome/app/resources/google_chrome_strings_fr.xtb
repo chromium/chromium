@@ -207,7 +207,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chrome</translation>
 <translation id="2970681950995291301">Pour supprimer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page de paramètres</translation>
 <translation id="2976869732253036751">Recevez des alertes de suivi des prix avec Chrome sur votre téléphone</translation>
-<translation id="2985091279808606502">Chrome a besoin de l'autorisation d'accéder au réseau local pour ce site</translation>
 <translation id="2991167882679440829">Vos mots de passe et d'autres données Chrome enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chrome, reconnectez-vous.</translation>
 <translation id="2994465299455873643">Fournit des services de chiffrement et un moyen sécurisé de restaurer <ph name="BROWSER_NAME" /> si la version est ancienne. Si ce service est désactivé, <ph name="BROWSER_NAME" /> pourrait perdre l'accès aux données chiffrées, et <ph name="BROWSER_NAME" /> pourrait ne pas pouvoir se restaurer.</translation>
 <translation id="3003694935412297923">Toutes les tâches</translation>
@@ -432,7 +431,7 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chrome selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5239627039202700673">Utilisez Chrome chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
-<translation id="524751727772074981">Posez une question là où vous êtes avec Gemini dans Chromium</translation>
+<translation id="524751727772074981">Posez vos questions à Gemini dans Chrome sans changer de page</translation>
 <translation id="5251420635869119124">Les invités peuvent utiliser Chrome sans laisser aucune trace.</translation>
 <translation id="5271833978500241046">Utilisez-les avec d'autres fonctionnalités Gemini dans Chrome</translation>
 <translation id="5286907366254680517">Détecté</translation>
@@ -760,6 +759,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8172231188687329735">Téléchargez l'appli Chrome pour enregistrer des mots de passe où que vous soyez</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8221491193165283816">Les notifications sont bloquées par défaut. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
+<translation id="8233224921566021881">Chrome a besoin d'accéder à votre réseau local pour détecter et utiliser les appareils à proximité</translation>
 <translation id="8253851811470049684">Ouvrez les liens dans Chrome depuis n'importe quelle appli et gardez le navigateur à portée de main dans la barre des tâches</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
 <translation id="8260086374035800939">Si Gemini dans Chrome est ouvert, le panneau latéral reste ouvert lorsque vous créez des onglets</translation>

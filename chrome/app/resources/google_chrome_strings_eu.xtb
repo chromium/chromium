@@ -208,7 +208,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chrome</translation>
 <translation id="2970681950995291301">Zure Google-ko kontua Chrome-tik kentzeko, amaitu Chrome-ko saioa Ezarpenak orrian</translation>
 <translation id="2976869732253036751">Jaso prezioen jarraipenari buruzko alertak telefonoan Chrome bidez</translation>
-<translation id="2985091279808606502">Chrome-k sare lokala erabiltzeko baimena behar du webgune honetan</translation>
 <translation id="2991167882679440829">Google-ko kontuan gordetako pasahitzak eta Chrome-ko beste datuak gailu honetatik kenduko dira. Chrome-n haiek berriro ere erabiltzeko, hasi saioa berriro.</translation>
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> zaharkituta geratzen bada, hura modu seguruan berreskuratzeko modu bat eta enkriptatze-zerbitzuak ematen ditu. Zerbitzu hau desgaitzen bada, baliteke <ph name="BROWSER_NAME" /> arakatzaileak datu enkriptatuetarako sarbidea galtzea, eta <ph name="BROWSER_NAME" /> berreskuratu ezin izatea.</translation>
 <translation id="3003694935412297923">Zeregin guztiak</translation>
@@ -760,6 +759,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8172231188687329735">Lortu Chrome aplikazioa pasahitzak edonoiz eta edonon gordetzeko</translation>
 <translation id="8177472873527554730">Ezin da aurkitu edukirik orrian</translation>
 <translation id="8221491193165283816">Jakinarazpenak blokeatu ohi dituzu. Webgune honen jakinarazpenak jasotzeko, egin klik hemen.</translation>
+<translation id="8233224921566021881">Chrome-k sare lokalerako sarbidea behar du inguruko gailuak aurkitu eta erabiltzeko</translation>
 <translation id="8253851811470049684">Ireki edozein aplikaziotako estekak Chrome-n eta mantendu arakatzailea eskura zereginen barran</translation>
 <translation id="8255190535488645436">Google Chrome zure mikrofonoa eta kamera erabiltzen ari da.</translation>
 <translation id="8260086374035800939">Chrome-ko Gemini irekita badago, alboko panela irekita geratzen da fitxak sortzean</translation>

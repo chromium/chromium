@@ -10,6 +10,7 @@
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
 <translation id="1083934481477628225">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium</translation>
+<translation id="109026165963220603">Chromium potrebuje dostop do lokalnega omrežja, da lahko odkrije in uporablja naprave v bližini</translation>
 <translation id="1090946077924227754">Če želite iskati po določeni funkciji ali razširitvi Chromiuma, v naslovni vrstici vnesite ustrezno bližnjico in nato izbrano tipko na tipkovnici</translation>
 <translation id="1098493699368672217">Prikaz iskanja s Chromiumom v sistemski vrstici in vklop bližnjičnih tipk</translation>
 <translation id="1104942323762546749">Chromium želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
@@ -264,7 +265,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 
           **Predlagaj vprašanja:** Generiraj označen seznam s 3–5 vprašanji, ki spodbujajo razmišljanje in jih lahko uporabnik zastavi za boljše razumevanje posnetka zaslona. Ta vprašanja morajo vključevati vsaj eno, ki se nanaša posebej na vizualni predmet, njegovo obliko ali njegovo umestitev.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium za to spletno mesto potrebuje dovoljenje za lokalno omrežje</translation>
 <translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="388648406173476553">Prilagajanje in nadziranje Chromiuma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="3889543394854987837">Kliknite ime, da odprete Chromium in začnete brskati.</translation>

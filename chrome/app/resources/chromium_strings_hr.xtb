@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Pomozite nam da poboljšamo anonimni način rada ispunjavanjem ove jednominutne ankete.</translation>
 <translation id="1065672644894730302">Vaše postavke nije moguće čitati. Neke značajke možda nisu dostupne i promjene postavki neće biti spremljene.</translation>
 <translation id="1083934481477628225">Tvoj je roditelj isključio "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chromium</translation>
+<translation id="109026165963220603">Chromium treba pristup vašoj lokalnoj mreži da bi otkrio i upotrebljavao uređaje u blizini</translation>
 <translation id="1090946077924227754">Da biste pretražili određenu Chromiumovu značajku ili proširenje, u adresnu traku unesite njegov prečac, a zatim odabranu tipku na tipkovnici</translation>
 <translation id="1098493699368672217">Prikaži pretraživanje s Chromiumom na traci sustava i uključi tipkovni prečac</translation>
 <translation id="1104942323762546749">Chromium želi izvesti vaše zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
@@ -262,7 +263,6 @@
 
           **Predložite pitanja:** generirajte popis od tri do pet pitanja koja potiču na razmišljanje, a koja bi korisnik mogao postaviti kako bi bolje razumio snimku zaslona. Ta pitanja trebaju uključivati barem jedno koje se posebno odnosi na vizualni objekt, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium treba dopuštenje za lokalnu mrežu za ovu web-lokaciju</translation>
 <translation id="3885770153807205175">Alat za odabir jezika</translation>
 <translation id="388648406173476553">Prilagodite Chromium i upravljajte njime. Trebate obratiti pozornost na nešto – kliknite za pojedinosti.</translation>
 <translation id="3889543394854987837">Kliknite svoje ime da biste otvorili Chromium i počeli s pregledavanjem.</translation>

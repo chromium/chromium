@@ -903,6 +903,7 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2493122313108999546">Átméretezve</translation>
 <translation id="249376477913017009">A Gmailből és más szolgáltatásokból származó automatikus kitöltésre vonatkozó értesítés meg van nyitva</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
+<translation id="2495909791227061512">Csatlakozik a közeli eszközökhöz?</translation>
 <translation id="2496402116964818747">Itt módosíthatja, hogy szeretne-e ujjlenyomatot használni a jelszavak kitöltéséhez: <ph name="SETTINGS" />.</translation>
 <translation id="2498091847651709837">Új kártya beolvasása</translation>
 <translation id="2501270939904835585">Címkék (szatén)</translation>
@@ -2612,7 +2613,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5398461103557553443">Ha legközelebb automatikusan ki szeretné tölteni ezt az IBAN-számot, mentse a Google Walletbe</translation>
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
-<translation id="5402715318763077894">Engedélyezi a helyi hálózathoz való hozzáférést?</translation>
 <translation id="540949333488055151">Műanyag (színes)</translation>
 <translation id="540969355065856584">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa jelenleg nem érvényes. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="5411462078004183575">Alacsony árú lehetőség</translation>

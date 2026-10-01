@@ -903,6 +903,7 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2493122313108999546">Størrelsen er endret</translation>
 <translation id="249376477913017009">Varselet «Autofyll fra Gmail med mer» er åpnet</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
+<translation id="2495909791227061512">Vil du koble til enheter i nærheten?</translation>
 <translation id="2496402116964818747">Du kan endre om du vil bruke fingeravtrykket til å fylle ut passord, i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skann nytt kort</translation>
 <translation id="2501270939904835585">Etiketter (sateng)</translation>
@@ -2615,7 +2616,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5398461103557553443">Lagre det i Google Wallet for å fylle ut dette IBAN-nummeret automatisk neste gang</translation>
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="5402715318763077894">Vil du gi tilgang til det lokale nettverket?</translation>
 <translation id="540949333488055151">Plast (farget)</translation>
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
 <translation id="5411462078004183575">Alternativ med lav pris</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Aiutaci a migliorare la modalità Incognito partecipando a questo sondaggio di 1 minuto.</translation>
 <translation id="1065672644894730302">Impossibile leggere le preferenze. Alcune funzioni potrebbero non essere disponibili e le modifiche alle preferenze non verranno salvate.</translation>
 <translation id="1083934481477628225">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chromium</translation>
+<translation id="109026165963220603">Chromium deve avere l'accesso alla tua rete locale per rilevare e utilizzare i dispositivi nelle vicinanze</translation>
 <translation id="1090946077924227754">Per cercare una funzionalità o un'estensione specifica di Chromium, digita la relativa scorciatoia nella barra degli indirizzi, seguita dal tasto della tastiera selezionato</translation>
 <translation id="1098493699368672217">Mostra la ricerca con Chromium nella barra delle applicazioni e attiva la scorciatoia da tastiera</translation>
 <translation id="1104942323762546749">Chromium vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
@@ -261,7 +262,6 @@
 
           **Suggerisci domande:** genera un elenco puntato di 3-5 domande stimolanti che un utente potrebbe porre per comprendere meglio lo screenshot. Queste domande devono includerne almeno una che riguardi specificamente un oggetto visivo, il suo design o il suo posizionamento.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium deve avere l'autorizzazione di accesso alla rete locale per questo sito</translation>
 <translation id="3885770153807205175">Selettore lingua</translation>
 <translation id="388648406173476553">Personalizza e controlla Chromium. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="3889543394854987837">Fai clic sul tuo nome per aprire Chromium e iniziare a navigare.</translation>

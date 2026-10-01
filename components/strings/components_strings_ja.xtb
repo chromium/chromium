@@ -903,6 +903,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2493122313108999546">サイズを変更しました</translation>
 <translation id="249376477913017009">Gmail などからの自動入力に関する通知が表示されました</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
+<translation id="2495909791227061512">付近のデバイスに接続しますか？</translation>
 <translation id="2496402116964818747">パスワード入力で指紋認証を使用するかどうかは [<ph name="SETTINGS" />] で変更できます</translation>
 <translation id="2498091847651709837">新しいカードをスキャン</translation>
 <translation id="2501270939904835585">ラベル（サテン）</translation>
@@ -2615,7 +2616,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5398461103557553443">Google ウォレットに保存すると、次回からこの IBAN を自動入力できます</translation>
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
-<translation id="5402715318763077894">ローカル ネットワークへのアクセスを許可しますか？</translation>
 <translation id="540949333488055151">プラスチック（カラー）</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="5411462078004183575">低価格のオプション</translation>

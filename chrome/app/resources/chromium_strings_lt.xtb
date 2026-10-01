@@ -10,6 +10,7 @@
 
 Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išsaugoti.</translation>
 <translation id="1083934481477628225">Vienas iš tėvų išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chromium“</translation>
+<translation id="109026165963220603">„Chromium“ reikalinga prieiga prie vietinio tinklo, kad būtų galima aptikti ir naudoti netoliese esančius įrenginius</translation>
 <translation id="1090946077924227754">Jei norite ieškoti konkrečios „Chromium“ funkcijos ar plėtinio, įveskite šaukinį adreso juostoje ir paspauskite pasirinktą klaviatūros klavišą</translation>
 <translation id="1098493699368672217">Rodyti paiešką naudojant „Chromium“ sistemos juostelėje ir įjungti spartųjį klavišą</translation>
 <translation id="1104942323762546749">„Chromium“ nori eksportuoti jūsų slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
@@ -264,7 +265,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
           **Pasiūlykite klausimų:** sugeneruokite tris–penkis mąstyti skatinančius klausimus, kuriuos naudotojas galėtų užduoti, kad geriau suprastų ekrano kopiją, sąrašą. Šie klausimai turi apimti bent vieną, kuris konkrečiai susijęs su vaizdiniu objektu, jo dizainu ar išdėstymu.</translation>
 <translation id="3848258323044014972">„<ph name="PAGE_TITLE" />“ – „Chromium“</translation>
-<translation id="387514319934708384">„Chromium“ reikalingas vietinio tinklo leidimas šioje svetainėje</translation>
 <translation id="3885770153807205175">Kalbos rinkiklis</translation>
 <translation id="388648406173476553">Tinkinkite ir valdykite „Chromium“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="3889543394854987837">Spustelėkite savo vardą, kad atidarytumėte „Chromium“ ir pradėtumėte naršyti.</translation>

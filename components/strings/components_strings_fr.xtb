@@ -903,6 +903,7 @@ Vous pouvez supprimer cette suggestion de Chrome. Votre source d'origine ne sera
 <translation id="2493122313108999546">Redimensionnée</translation>
 <translation id="249376477913017009">Avis sur la saisie automatique depuis Gmail et plus ouvert</translation>
 <translation id="2495083838625180221">Analyse de fichiers JSON</translation>
+<translation id="2495909791227061512">Se connecter aux appareils à proximité ?</translation>
 <translation id="2496402116964818747">Vous pouvez choisir d'utiliser votre empreinte digitale pour saisir les mots de passe dans <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Lire une nouvelle carte</translation>
 <translation id="2501270939904835585">Étiquettes (satinées)</translation>
@@ -2615,7 +2616,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5398461103557553443">Pour que cet IBAN soit complété automatiquement la prochaine fois, enregistrez-le dans Google Wallet</translation>
 <translation id="5398772614898833570">Annonces bloquées</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="5402715318763077894">Autoriser l'accès au réseau local ?</translation>
 <translation id="540949333488055151">Plastique (couleur)</translation>
 <translation id="540969355065856584">Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité actuel n'est pas valide. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="5411462078004183575">Option à prix bas</translation>
@@ -4819,7 +4819,7 @@ Informations supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9193018794001479794">Développer</translation>
-<translation id="9194783551575429711">Demander au <ph name="AI_ENGINE_NAME" /></translation>
+<translation id="9194783551575429711">Demander à <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
 <translation id="9198613052465150219">Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Impression bloquée</translation>

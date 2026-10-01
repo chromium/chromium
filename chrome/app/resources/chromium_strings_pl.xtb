@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Pomóż nam ulepszać tryb incognito, wypełniając tę 1-minutową ankietę.</translation>
 <translation id="1065672644894730302">Nie można odczytać ustawień. Niektóre funkcje mogą być niedostępne, a zmiany w ustawieniach nie zostaną zapisane.</translation>
 <translation id="1083934481477628225">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chromium</translation>
+<translation id="109026165963220603">Chromium potrzebuje dostępu do sieci lokalnej, aby wykrywać urządzenia w pobliżu i z nich korzystać</translation>
 <translation id="1090946077924227754">Aby wyszukać konkretną funkcję lub rozszerzenie Chromium, wpisz skrót do danego elementu na pasku adresu i naciśnij wybrany klawisz</translation>
 <translation id="1098493699368672217">Pokaż wyszukiwarkę w Chromium w obszarze powiadomień i włącz skrót klawiszowy</translation>
 <translation id="1104942323762546749">Chromium chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
@@ -259,7 +260,6 @@
 
           **Zasugeruj pytania:** wygeneruj listę 3–5 pytań pobudzających do myślenia, które użytkownik może zadać, aby lepiej zrozumieć zrzut ekranu. Te pytania powinny zawierać co najmniej 1 pytanie dotyczące konkretnego obiektu wizualnego, jego wyglądu lub umiejscowienia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Ta strona musi mieć w Chromium dostęp do sieci lokalnej</translation>
 <translation id="3885770153807205175">Selektor języka</translation>
 <translation id="388648406173476553">Dostosuj i kontroluj Chromium. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="3889543394854987837">Otwórz Chromium, klikając swoją nazwę i rozpocznij przeglądanie.</translation>

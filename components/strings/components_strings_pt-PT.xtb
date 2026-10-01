@@ -509,7 +509,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem as suas ideias</translation>
 <translation id="1839551713262164453">A validação dos valores da política falhou devido a erros.</translation>
-<translation id="184153295865602321">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando pagar com o preenchimento automático</translation>
+<translation id="184153295865602321">Para proteção adicional, use sempre a sua impressão digital, cara ou outro bloqueio de ecrã quando pagar com o preenchimento automático</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="184517536440397176">Os teus pais ou tutor têm de indicar que podes visitar este Website. Antes de pedires, temos de validar a tua identidade.</translation>
 <translation id="1846432862466000825">Plástico (de arquivo)</translation>
@@ -903,6 +903,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2493122313108999546">Redimensionada</translation>
 <translation id="249376477913017009">Aviso de preenchimento automático do Gmail e mais aberto</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
+<translation id="2495909791227061512">Ligar a dispositivos próximos?</translation>
 <translation id="2496402116964818747">Pode alterar se usa a sua impressão digital para preencher palavras-passe nas <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Digitalizar novo cartão</translation>
 <translation id="2501270939904835585">Etiquetas (acetinado)</translation>
@@ -2615,7 +2616,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5398461103557553443">Para preencher automaticamente este IBAN da próxima vez, guarde-o na Carteira do Google</translation>
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
-<translation id="5402715318763077894">Permitir o acesso à rede local?</translation>
 <translation id="540949333488055151">Plástico (colorido)</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
 <translation id="5411462078004183575">Opção de preço baixo</translation>
@@ -3759,7 +3759,7 @@ Detalhes adicionais:
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Processadores de protocolos</translation>
 <translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é usado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome quer certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
-<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
+<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, cara ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nenhum site permitido}=1{1 site permitido}other{# sites permitidos}}</translation>
 <translation id="7375818412732305729">É anexado um ficheiro</translation>
 <translation id="7376031331622621328">Secção inferior do comércio</translation>

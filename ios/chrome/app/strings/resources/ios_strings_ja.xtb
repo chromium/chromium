@@ -1615,7 +1615,7 @@
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6196207969502475924">音声検索</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
-<translation id="6210079381482819663"><ph name="THRESHOLD" /> 日間使用していないタブはここに移動されます。これは<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />でいつでも変更できます。</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> 日間以上使用していないタブはここに移動されます。これは<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />でいつでも変更できます。</translation>
 <translation id="6213281885682386884">住所が見つかりませんでした</translation>
 <translation id="6218508144653756827">フューシャピンクのテーマ</translation>
 <translation id="6218758465102657583">アドレスバーを一番上に移動</translation>
@@ -1958,7 +1958,7 @@
 <translation id="7245288034498365666">スマートに整理して時間を節約</translation>
 <translation id="7253951228444156601">パスワードを確認しています…</translation>
 <translation id="7261217796641151584">グループを共有</translation>
-<translation id="7266578100016339897">タブの整理に役立つこの機能は、設定でいつでも変更できます。</translation>
+<translation id="7266578100016339897">タブを整理しやすくするための機能です。設定でいつでも変更できます。</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google 利用規約<ph name="END_LINK" />と <ph name="BEGIN_LINK" />Gemini アプリのプライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="728025568708172005">スタートガイド ツアー</translation>

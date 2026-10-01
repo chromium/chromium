@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">請花 1 分鐘填寫這份問卷調查，幫助我們提供更優質的無痕模式。</translation>
 <translation id="1065672644894730302">系統無法讀取你的偏好設定。部分功能可能無法使用，且系統也不會儲存任何偏好設定的變更。</translation>
 <translation id="1083934481477628225">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定</translation>
+<translation id="109026165963220603">Chromium 需要區域網路存取權，才能偵測及使用鄰近裝置</translation>
 <translation id="1090946077924227754">如要搜尋特定 Chromium 功能或擴充功能，請在網址列輸入其捷徑，然後按下你所選擇的鍵盤按鍵</translation>
 <translation id="1098493699368672217">在系統匣顯示「使用 Chromium 搜尋」，並開啟鍵盤快速鍵</translation>
 <translation id="1104942323762546749">Chromium 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
@@ -261,7 +262,6 @@
 
           **建議問題：** 生成項目符號清單，列出使用者可以提出的 3 至 5 個問題，方便他們深入瞭解螢幕截圖內容。其中至少應有一個問題與某個視覺物件、其設計或位置相關。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium 需要區域網路權限，才能讓這個網站正常運作</translation>
 <translation id="3885770153807205175">語言選單</translation>
 <translation id="388648406173476553">自訂及管理 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下你的名稱即可開啟 Chromium 並開始瀏覽。</translation>

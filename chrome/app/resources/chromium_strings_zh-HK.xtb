@@ -10,6 +10,7 @@
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
 <translation id="1083934481477628225">你的家長已停用 Chromium 的「網站、應用程式和擴充程式權限」設定</translation>
+<translation id="109026165963220603">Chromium 需要取用你的區域網絡，才能探索和使用附近的裝置</translation>
 <translation id="1090946077924227754">如要搜尋特定 Chromium 功能或擴充程式，請在網址列中輸入捷徑，然後按下所選的鍵盤按鍵</translation>
 <translation id="1098493699368672217">在系統列顯示 Chromium 的搜尋功能，並啟用鍵盤快速鍵</translation>
 <translation id="1104942323762546749">Chromium 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
@@ -263,7 +264,6 @@
 
           **建議問題：**以項目符號清單形式生成 3 至 5 條可以啟發思考的問題，幫助使用者深入瞭解螢幕截圖。應該有至少一條具體關於可視物件、其設計或位置的問題。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium 需要區域網絡權限，才能執行此網站要求的功能</translation>
 <translation id="3885770153807205175">語言選擇器</translation>
 <translation id="388648406173476553">自訂及控制 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下您的名稱即可開啟 Chromium 並開始瀏覽。</translation>

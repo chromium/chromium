@@ -903,6 +903,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2493122313108999546">Změněna velikost</translation>
 <translation id="249376477913017009">Oznámení o automatickém vyplňování z Gmailu a dalších služeb je otevřené</translation>
 <translation id="2495083838625180221">Analyzátor souborů JSON</translation>
+<translation id="2495909791227061512">Připojit k zařízením v okolí?</translation>
 <translation id="2496402116964818747">Používání otisku prstu k vyplňování hesel můžete změnit v <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Naskenovat novou kartu</translation>
 <translation id="2501270939904835585">Štítky (saténové)</translation>
@@ -2611,7 +2612,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5398461103557553443">Pokud tenhle kód IBAN chcete příště vyplnit automaticky, uložte si ho do Peněženky Google</translation>
 <translation id="5398772614898833570">Byly zablokovány reklamy</translation>
 <translation id="5400836586163650660">Šedá</translation>
-<translation id="5402715318763077894">Povolit přístup k místní síti?</translation>
 <translation id="540949333488055151">Plast (barevný)</translation>
 <translation id="540969355065856584">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát v tuto chvíli není platný. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="5411462078004183575">Možnost s nízkou cenou</translation>

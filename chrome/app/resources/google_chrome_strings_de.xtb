@@ -204,7 +204,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chrome</translation>
 <translation id="2970681950995291301">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich auf der Seite „Einstellungen“ von Chrome ab</translation>
 <translation id="2976869732253036751">Mit Chrome Preis-Tracking-Benachrichtigungen auf dem Smartphone erhalten</translation>
-<translation id="2985091279808606502">Chrome benötigt die Berechtigung für das lokale Netzwerk für diese Website</translation>
 <translation id="2991167882679440829">Deine Passwörter und anderen in deinem Google-Konto gespeicherten Chrome-Daten werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chrome verwenden möchtest, melde dich einfach wieder an.</translation>
 <translation id="2994465299455873643">Bietet Verschlüsselungsdienste und eine sichere Möglichkeit, <ph name="BROWSER_NAME" /> wiederherzustellen, falls der Browser veraltet ist. Wenn dieser Dienst deaktiviert ist, verliert <ph name="BROWSER_NAME" /> möglicherweise den Zugriff auf verschlüsselte Daten und <ph name="BROWSER_NAME" /> kann sich möglicherweise nicht selbst wiederherstellen.</translation>
 <translation id="3003694935412297923">Alle Tasks</translation>
@@ -426,7 +425,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="521447420733633466">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chrome jeweils nach ihren Wünschen einrichten</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5239627039202700673">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst</translation>
-<translation id="524751727772074981">Mit Gemini in Chrome zu allem, was du siehst, Fragen stellen</translation>
+<translation id="524751727772074981">Mit Gemini in Chrome zu allem Fragen stellen</translation>
 <translation id="5251420635869119124">Gastnutzer können Chrome verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="5271833978500241046">Skills zusammen mit anderen Gemini-Funktionen in Chrome verwenden</translation>
 <translation id="5286907366254680517">Erkannt</translation>
@@ -752,6 +751,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8172231188687329735">Mit der Chrome App kannst du Passwörter unterwegs speichern</translation>
 <translation id="8177472873527554730">Inhalt auf der Seite nicht gefunden</translation>
 <translation id="8221491193165283816">Normalerweise blockierst du Benachrichtigungen. Klicke hier, wenn du von dieser Website Benachrichtigungen erhalten möchtest.</translation>
+<translation id="8233224921566021881">Chrome benötigt Zugriff auf dein lokales Netzwerk, um Geräte in der Nähe zu finden und zu verwenden</translation>
 <translation id="8253851811470049684">So kannst du über jede App Links in Chrome öffnen und den Browser über die Taskleiste aufrufen</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
 <translation id="8260086374035800939">Wenn Gemini in Chrome geöffnet ist, bleibt die Seitenleiste beim Erstellen neuer Tabs geöffnet</translation>

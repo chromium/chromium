@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
 <translation id="1083934481477628225">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja</translation>
+<translation id="109026165963220603">Chromium vajab juurdepääsu teie kohalikule võrgule, et läheduses olevaid seadmeid avastada ja kasutada.</translation>
 <translation id="1090946077924227754">Konkreetse Chromiumi funktsiooni või laienduse otsimiseks sisestage selle otsetee aadressiribale ja lisage enda valitud klaviatuuriklahv.</translation>
 <translation id="1098493699368672217">Kuva Chromiumiga otsimine süsteemisalves ja lülita sisse klaviatuuri otsetee</translation>
 <translation id="1104942323762546749">Chromium soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
@@ -262,7 +263,6 @@
 
           **Soovita küsimusi.** Genereeri täpploend 3–5 mõtlemapaneva küsimusega, mille kasutaja võiks ekraanipildi paremaks mõistmiseks esitada. Nende küsimuste hulgas peaks olema vähemalt üks selline, mis käsitleb konkreetselt visuaalset objekti, selle kujundust või paigutust.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium vajab selle saidi puhul kohaliku võrgu luba</translation>
 <translation id="3885770153807205175">Keelevalija</translation>
 <translation id="388648406173476553">Chromiumi kohandamine ja haldamine. Miski vajab teie tähelepanu – klõpsake üksikasjade nägemiseks.</translation>
 <translation id="3889543394854987837">Chromiumi avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
