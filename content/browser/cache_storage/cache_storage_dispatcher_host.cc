@@ -669,7 +669,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
            blink::mojom::CacheStorage::KeysCallback callback,
-           std::vector<std::u16string> cache_names) {
+           std::vector<std::u16string> cache_names, CacheStorageError) {
           UMA_HISTOGRAM_LONG_TIMES(
               "ServiceWorkerCache.CacheStorage.Browser.Keys",
               base::TimeTicks::Now() - start_time);
@@ -684,7 +684,8 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
 
     // Return error if failed to retrieve bucket from QuotaManager.
     if (!bucket_.has_value()) {
-      std::move(cb).Run(std::vector<std::u16string>());
+      std::move(cb).Run(std::vector<std::u16string>(),
+                        CacheStorageError::kErrorStorage);
       return;
     }
 
@@ -692,7 +693,8 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         [](int64_t trace_id, content::CacheStorage::EnumerateCachesCallback cb,
            content::CacheStorage* cache_storage) {
           if (!cache_storage) {
-            std::move(cb).Run(std::vector<std::u16string>());
+            std::move(cb).Run(std::vector<std::u16string>(),
+                              CacheStorageError::kErrorStorage);
             return;
           }
 

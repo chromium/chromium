@@ -72,7 +72,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       base::OnceCallback<void(CacheStorageCacheHandle,
                               blink::mojom::CacheStorageError)>;
   using EnumerateCachesCallback =
-      base::OnceCallback<void(std::vector<std::u16string> cache_names)>;
+      base::OnceCallback<void(std::vector<std::u16string> cache_names,
+                              blink::mojom::CacheStorageError)>;
 
   static const char kIndexFileName[];
 
@@ -136,8 +137,11 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                  int64_t trace_id,
                  ErrorCallback callback);
 
-  // Calls the callback with the existing cache names.
+  // Calls the callback with the existing cache names and any index load error.
   void EnumerateCaches(int64_t trace_id, EnumerateCachesCallback callback);
+
+  // Whether this instance currently has caches visible to new lookups.
+  bool HasCaches() const;
 
   // Calls match on the cache with the given |cache_name|.
   void MatchCache(const std::u16string& cache_name,
@@ -230,7 +234,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // Initializer and its callback are below.
   void LazyInit();
   void LazyInitImpl();
-  void LazyInitDidLoadIndex(std::unique_ptr<CacheStorageIndex> index);
+  void LazyInitDidLoadIndex(std::unique_ptr<CacheStorageIndex> index,
+                            blink::mojom::CacheStorageError error);
 
   // The Open and CreateCache callbacks are below.
   void OpenCacheImpl(const std::u16string& cache_name,
@@ -335,6 +340,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // Whether or not we've loaded the list of cache names into memory.
   bool initialized_ = false;
   bool initializing_ = false;
+  blink::mojom::CacheStorageError index_load_error_ =
+      blink::mojom::CacheStorageError::kSuccess;
 
   // True if the backend is supposed to reside in memory only.
   const bool memory_only_;
