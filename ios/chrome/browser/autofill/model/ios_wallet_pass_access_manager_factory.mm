@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/network/autofill_ai/fake_wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager_impl.h"
@@ -11,6 +12,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/wallet/core/browser/network/wallet_http_client_impl.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,6 +66,7 @@ IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(
 
   return std::make_unique<autofill::WalletPassAccessManagerImpl>(
       std::make_unique<wallet::WalletHttpClientImpl>(
-          identity_manager, profile->GetSharedURLLoaderFactory()),
+          identity_manager, profile->GetSharedURLLoaderFactory(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()),
       data_manager);
 }

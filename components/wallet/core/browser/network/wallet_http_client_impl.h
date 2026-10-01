@@ -6,6 +6,7 @@
 #define COMPONENTS_WALLET_CORE_BROWSER_NETWORK_WALLET_HTTP_CLIENT_IMPL_H_
 
 #include <list>
+#include <string>
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ref.h"
@@ -35,7 +36,8 @@ class WalletHttpClientImpl : public WalletHttpClient {
  public:
   WalletHttpClientImpl(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::string app_locale);
   ~WalletHttpClientImpl() override;
 
   WalletHttpClientImpl(const WalletHttpClientImpl&) = delete;
@@ -85,6 +87,9 @@ class WalletHttpClientImpl : public WalletHttpClient {
 
   // The factory used to create URLLoaders.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The application locale used for the Accept-Language header.
+  const std::string app_locale_;
 
   // Owns the ongoing SimpleURLLoaders, keeping them alive until completion.
   UrlLoaderList active_loaders_;

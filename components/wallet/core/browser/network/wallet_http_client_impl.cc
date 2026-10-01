@@ -45,9 +45,11 @@ bool IsHttpSuccess(int response_code) {
 
 WalletHttpClientImpl::WalletHttpClientImpl(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string app_locale)
     : identity_manager_(CHECK_DEREF(identity_manager)),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      app_locale_(std::move(app_locale)) {}
 
 WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
@@ -154,6 +156,8 @@ void WalletHttpClientImpl::SendRequestInternal(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       base::StrCat({"Bearer ", *access_token}));
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                                      app_locale_);
   resource_request->headers.MergeFrom(request->GetRequestHeaders());
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
