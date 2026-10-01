@@ -799,6 +799,40 @@ BASE_FEATURE(kPreconnectManagerDirectFastPath,
 // to the server when a prefetched page is activated.
 BASE_FEATURE(kPrefetchActivationBeacon, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the behavior of a prefetch ahead of an actual navigation, i.e. a
+// prefetch triggered by a signal that the navigation is (almost) certain to
+// happen soon. See `PrefetchRequest::is_ahead_of_actual_navigation()`.
+BASE_FEATURE(kPrefetchAheadOfActualNavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<
+    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>::Option
+    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions[] = {
+        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kNotUse,
+         "NotUse"},
+        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
+         "UseIfNoHint"},
+        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kAlwaysUse,
+         "AlwaysUse"},
+    };
+
+// Policy of forcing `PrefetchMatchResolver` to wait for the No-Vary-Search
+// header of a prefetch ahead of an actual navigation.
+const base::FeatureParam<
+    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
+    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy{
+        &kPrefetchAheadOfActualNavigation,
+        "force_wait_no_vary_search_header_policy",
+        PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
+        &kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions};
+
+// If true, `PrefetchMatchResolver` uses `BlockUntilHeadTimeout` also for a
+// prefetch ahead of an actual navigation.
+const base::FeatureParam<bool>
+    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout{
+        &kPrefetchAheadOfActualNavigation, "use_block_until_head_timeout",
+        false};
+
 // Allow starting prefetch request from off the main thread. Please see
 // crbug.com/452389538 for more details.
 BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -824,6 +858,12 @@ BASE_FEATURE(kPrefetchProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 // https://crbug.com/496807663
 BASE_FEATURE(kPrefetchRequestStatusListenerAsync,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature was used to launch the prefetch migration from embedder layer to
+// content/, and this work has finished and the old implementation was deleted.
+// Now this flag is just for injecting parameters through field trials as an
+// umbrella feature.
+BASE_FEATURE(kPrefetchUseContentRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Killswitch for UA override issue fix (crbug.com/441612842) in preloading.
 BASE_FEATURE(kPreloadingRespectUserAgentOverride,

@@ -251,6 +251,26 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPeriodicBackgroundSync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreconnectManagerDirectFastPath);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchActivationBeacon);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAheadOfActualNavigation);
+
+enum class PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy {
+  // Don't force waiting for the No-Vary-Search header.
+  kNotUse,
+  // Force waiting for the No-Vary-Search header only if no No-Vary-Search hint
+  // is available.
+  kUseIfNoHint,
+  // Always force waiting for the No-Vary-Search header, ignoring the
+  // No-Vary-Search hint.
+  kAlwaysUse,
+};
+
+CONTENT_EXPORT extern const base::FeatureParam<
+    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
+    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy;
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout;
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThread);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrefetchOffTheMainThreadUpdateMissingHeaderCache;
@@ -259,6 +279,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchPrerenderIntegration);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchProxy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRequestStatusListenerAsync);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadingRespectUserAgentOverride);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2FallbackPrefetchSpecRules);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2ReuseHost);

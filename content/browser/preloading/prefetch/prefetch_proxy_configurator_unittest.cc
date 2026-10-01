@@ -8,7 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

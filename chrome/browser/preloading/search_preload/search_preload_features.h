@@ -77,7 +77,7 @@ BASE_DECLARE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch);
 // navigation, which makes them matched more aggressively.
 //
 // See `features::kPrefetchAheadOfActualNavigation` in
-// `content/browser/preloading/prefetch/prefetch_features.h`, which must also be
+// `content/public/common/content_features.h`, which must also be
 // enabled to take effect.
 BASE_DECLARE_FEATURE(kDsePreload2AheadOfActualNavigation);
 

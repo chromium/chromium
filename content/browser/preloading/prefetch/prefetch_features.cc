@@ -17,8 +17,6 @@ BASE_FEATURE(kPrefetchTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchTesting, "kPrefetchReusableBodySizeLimit", 4194304};
 
-BASE_FEATURE(kPrefetchUseContentRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchNIKScope, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchClientHints, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -140,32 +138,5 @@ BASE_FEATURE(kPrefetchMatchResolverUnblockAsync,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchRevampAcceptHeader, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchAheadOfActualNavigation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>::Option
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions[] = {
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kNotUse,
-         "NotUse"},
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
-         "UseIfNoHint"},
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kAlwaysUse,
-         "AlwaysUse"},
-};
-
-const base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy{
-        &kPrefetchAheadOfActualNavigation,
-        "force_wait_no_vary_search_header_policy",
-        PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
-        &kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions};
-
-const base::FeatureParam<bool>
-    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout{
-        &kPrefetchAheadOfActualNavigation, "use_block_until_head_timeout",
-        false};
 
 }  // namespace features

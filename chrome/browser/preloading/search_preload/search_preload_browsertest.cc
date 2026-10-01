@@ -2394,20 +2394,47 @@ class SearchPreloadBrowserTest_AheadOfActualNavigation
  public:
   void InitFeatures(
       base::test::ScopedFeatureList& scoped_feature_list) override {
-    // Note that `features::kPrefetchAheadOfActualNavigation` is not visible
-    // from chrome/, so enable features by their names.
-    scoped_feature_list.InitFromCommandLine(
-        "ForceWebRequestProxyForTest,"
-        "DsePreload2:kDsePreload2DeviceMemoryThresholdMiB/0,"
-        "DsePreload2OnPress:kDsePreload2OnPressMouseDown/true/"
-        "kDsePreload2OnPressUpOrDownArrowButton/true/"
-        "kDsePreload2OnPressTouchDown/true,"
-        "DsePreload2AheadOfActualNavigation,"
-        "PrefetchAheadOfActualNavigation:"
-        "force_wait_no_vary_search_header_policy/UseIfNoHint,"
-        "PrefetchUseContentRefactor:"
-        "block_until_head_timeout_embedder_prefetch/100",
-        /*disable_features=*/"");
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                extensions_features::kForceWebRequestProxyForTest,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+            {
+                features::kDsePreload2AheadOfActualNavigation,
+                {},
+            },
+            {
+                features::kPrefetchAheadOfActualNavigation,
+                {
+                    {features::
+                         kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy
+                             .name,
+                     "UseIfNoHint"},
+                },
+            },
+            {
+                features::kPrefetchUseContentRefactor,
+                {
+                    {"block_until_head_timeout_embedder_prefetch", "100"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
   }
 };
 
@@ -2551,16 +2578,37 @@ class SearchPreloadBrowserTest_AheadOfActualNavigationDisabled
  public:
   void InitFeatures(
       base::test::ScopedFeatureList& scoped_feature_list) override {
-    scoped_feature_list.InitFromCommandLine(
-        "ForceWebRequestProxyForTest,"
-        "DsePreload2:kDsePreload2DeviceMemoryThresholdMiB/0,"
-        "DsePreload2OnPress:kDsePreload2OnPressMouseDown/true/"
-        "kDsePreload2OnPressUpOrDownArrowButton/true/"
-        "kDsePreload2OnPressTouchDown/true,"
-        "PrefetchUseContentRefactor:"
-        "block_until_head_timeout_embedder_prefetch/100",
-        /*disable_features=*/
-        "DsePreload2AheadOfActualNavigation,PrefetchAheadOfActualNavigation");
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                extensions_features::kForceWebRequestProxyForTest,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                },
+            },
+            {
+                features::kPrefetchUseContentRefactor,
+                {
+                    {"block_until_head_timeout_embedder_prefetch", "100"},
+                },
+            },
+        },
+        /*disabled_features=*/{
+            features::kDsePreload2AheadOfActualNavigation,
+            features::kPrefetchAheadOfActualNavigation,
+        });
   }
 };
 

@@ -23,12 +23,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchTesting);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrefetchReusableBodySizeLimit;
 
-// This feature was used to launch the prefetch migration from embedder layer to
-// content/, and this work has finished and the old implemnetation was deleted.
-// Now this flag is just for injecting parameters through field trials as an
-// umberella feature.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
-
 // If enabled, navigational prefetch is scoped to the referring document's
 // network isolation key instead of the old behavior of the referring document
 // itself. See crbug.com/1502326
@@ -160,33 +154,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMatchResolverUnblockAsync);
 // - SXG is removed from the "Accept" request header value.
 // - "Accept" request header is added on non-UI thread.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRevampAcceptHeader);
-
-// Controls the behavior of a prefetch ahead of an actual navigation, i.e. a
-// prefetch triggered by a signal that the navigation is (almost) certain to
-// happen soon. See `PrefetchRequest::is_ahead_of_actual_navigation()`.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAheadOfActualNavigation);
-
-enum class PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy {
-  // Don't force waiting for the No-Vary-Search header.
-  kNotUse,
-  // Force waiting for the No-Vary-Search header only if no No-Vary-Search hint
-  // is available.
-  kUseIfNoHint,
-  // Always force waiting for the No-Vary-Search header, ignoring the
-  // No-Vary-Search hint.
-  kAlwaysUse,
-};
-
-// Policy of forcing `PrefetchMatchResolver` to wait for the No-Vary-Search
-// header of a prefetch ahead of an actual navigation.
-CONTENT_EXPORT extern const base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy;
-
-// If true, `PrefetchMatchResolver` uses `BlockUntilHeadTimeout` also for a
-// prefetch ahead of an actual navigation.
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout;
 
 }  // namespace features
 

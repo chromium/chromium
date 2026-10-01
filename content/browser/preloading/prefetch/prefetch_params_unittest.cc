@@ -5,7 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
