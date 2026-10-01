@@ -346,16 +346,6 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameToIt2MeHostWhenStarting) {
   EXPECT_EQ(it2me_host().user_name(), params.user_name);
 }
 
-// TODO(b/309958013): Remove this test when we remove the oauth prefix logic.
-TEST_F(RemoteSupportHostAshTest, ValidLegacyAccessTokenFormatSucceeds) {
-  mojom::SupportSessionParams params = GetSupportSessionParams();
-  params.oauth_access_token = "oauth2:<the-oauth-token>";
-
-  StartSession(params, GetEnterpriseParams());
-
-  EXPECT_TRUE(it2me_host().WaitForConnectCall());
-}
-
 TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
