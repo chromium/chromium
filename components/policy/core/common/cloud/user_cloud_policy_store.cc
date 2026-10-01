@@ -121,6 +121,34 @@ void StorePolicyToDiskOnBackgroundThread(
 
 }  // namespace
 
+PolicyLoadResult::PolicyLoadResult() = default;
+
+PolicyLoadResult::PolicyLoadResult(const PolicyLoadResult& other)
+    : status(other.status),
+      policy(other.policy),
+      key(other.key),
+      doing_key_rotation(other.doing_key_rotation),
+      fallback(other.fallback
+                   ? std::make_unique<PolicyLoadResult>(*other.fallback)
+                   : nullptr) {}
+
+PolicyLoadResult& PolicyLoadResult::operator=(const PolicyLoadResult& other) {
+  if (this != &other) {
+    status = other.status;
+    policy = other.policy;
+    key = other.key;
+    doing_key_rotation = other.doing_key_rotation;
+    fallback = other.fallback
+                   ? std::make_unique<PolicyLoadResult>(*other.fallback)
+                   : nullptr;
+  }
+  return *this;
+}
+
+PolicyLoadResult::PolicyLoadResult(PolicyLoadResult&&) = default;
+PolicyLoadResult& PolicyLoadResult::operator=(PolicyLoadResult&&) = default;
+PolicyLoadResult::~PolicyLoadResult() = default;
+
 DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
@@ -152,7 +180,7 @@ void DesktopCloudPolicyStore::LoadImmediately() {
   PolicyLoadResult result =
       LoadAndFilterPolicyFromDisk(policy_path_, key_path_, policy_load_filter_);
   // ...and install it, reporting success/failure to any observers.
-  PolicyLoaded(false, result);
+  PolicyLoaded(false, std::move(result));
 }
 
 void DesktopCloudPolicyStore::Clear() {
@@ -279,7 +307,8 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
                    &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation,
                    weak_factory_.GetWeakPtr(), doing_key_rotation,
                    result.key.has_signing_key() ? result.key.signing_key()
-                                                : std::string()));
+                                                : std::string(),
+                   std::move(result.fallback), validate_in_background));
       break;
     }
     default:
@@ -351,12 +380,21 @@ void DesktopCloudPolicyStore::ValidateKeyAndSignature(
 void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     bool doing_key_rotation,
     const std::string& signing_key,
+    std::unique_ptr<PolicyLoadResult> fallback,
+    bool fallback_validate_in_background,
     CloudPolicyValidatorBase* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     VLOG_POLICY(1, POLICY_PROCESSING)
         << PolicyTypeLogPrefix(policy_type(), std::string())
         << "Validation failed: status=" << validator->status();
+    if (fallback) {
+      VLOG_POLICY(1, POLICY_PROCESSING)
+          << PolicyTypeLogPrefix(policy_type(), std::string())
+          << "Attempting to load fallback policy cache";
+      PolicyLoaded(fallback_validate_in_background, std::move(*fallback));
+      return;
+    }
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
     return;

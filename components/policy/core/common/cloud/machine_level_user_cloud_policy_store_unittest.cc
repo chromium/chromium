@@ -8,8 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -19,8 +22,6 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/logging.h"
 
 using ::testing::_;
 
@@ -106,6 +107,31 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
         "Machine Level User Cloud Policy");
     ASSERT_TRUE(base::CopyFile(policy_path, updater_policy_info_path()));
     ASSERT_TRUE(base::Move(policy_path, updater_policy_cache_path()));
+  }
+
+  void WritePolicyToUpdaterPath(
+      const enterprise_management::PolicyFetchResponse& policy) {
+    ASSERT_TRUE(base::CreateDirectory(updater_policy_cache_path().DirName()));
+    std::string data;
+    ASSERT_TRUE(policy.SerializeToString(&data));
+    ASSERT_TRUE(base::WriteFile(updater_policy_cache_path(), data));
+    ASSERT_TRUE(base::WriteFile(updater_policy_info_path(), data));
+  }
+
+  void StoreDefaultPolicy(
+      const enterprise_management::PolicyFetchResponse& policy) {
+    std::unique_ptr<MachineLevelUserCloudPolicyStore> store = CreateStore();
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_, OnStoreLoaded(store.get()))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    store->Store(policy);
+    run_loop.Run();
+    const base::FilePath signing_key_path = tmp_policy_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("Machine Level User Cloud Policy Signing Key"));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return base::PathExists(signing_key_path); }));
+    store->RemoveObserver(&observer_);
+    ::testing::Mock::VerifyAndClearExpectations(&observer_);
   }
 
   std::unique_ptr<MachineLevelUserCloudPolicyStore> store_;
@@ -429,6 +455,152 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, KeyRotation) {
 
   EXPECT_EQ(policy_.policy().new_public_key(),
             store_->policy_signature_public_key());
+
+  ::testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStoreTest,
+       FallbackToDefaultWhenRecentExternalPolicyHasInvalidSignature) {
+  // Store a valid older policy in the default browser cache path.
+  policy_.policy_data().set_timestamp(1000);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(false);
+  policy_.policy_data().set_public_key_version(kPublicKeyVersion);
+  policy_.Build();
+  StoreDefaultPolicy(policy_.policy());
+
+  // Write a newer external policy with a corrupted signature.
+  policy_.policy_data().set_timestamp(2000);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  policy_.Build();
+  policy_.policy().set_policy_data_signature("corrupted_signature");
+  WritePolicyToUpdaterPath(policy_.policy());
+
+  // Load policies and expect the store to fall back to the valid default cache.
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore();
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnStoreLoaded(loader.get()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(observer_, OnStoreError(_)).Times(0);
+  loader->Load();
+  run_loop.Run();
+
+  SetExpectedPolicyMap(POLICY_SOURCE_CLOUD);
+  ASSERT_TRUE(loader->policy());
+  EXPECT_TRUE(expected_policy_map_.Equals(loader->policy_map()));
+  EXPECT_EQ(1000, loader->policy()->timestamp());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
+  EXPECT_TRUE(loader->policy()->has_public_key_version());
+  EXPECT_EQ(kPublicKeyVersion, loader->policy()->public_key_version());
+  loader->RemoveObserver(&observer_);
+
+  ::testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStoreTest,
+       FallbackToDefaultWhenRecentExternalPolicyHasMismatchedDMToken) {
+  // Store a valid older policy in the default browser cache path.
+  policy_.policy_data().set_timestamp(1000);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(false);
+  policy_.policy_data().set_public_key_version(kPublicKeyVersion);
+  policy_.Build();
+  StoreDefaultPolicy(policy_.policy());
+
+  // Write a newer external policy signed for a different DM token.
+  policy_.policy_data().set_timestamp(2000);
+  policy_.policy_data().set_request_token("stale_external_dm_token");
+  policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  policy_.Build();
+  WritePolicyToUpdaterPath(policy_.policy());
+
+  // Verify immediate load also falls back to the valid default cache.
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore();
+  EXPECT_CALL(observer_, OnStoreLoaded(loader.get()));
+  EXPECT_CALL(observer_, OnStoreError(_)).Times(0);
+  loader->LoadImmediately();
+
+  SetExpectedPolicyMap(POLICY_SOURCE_CLOUD);
+  ASSERT_TRUE(loader->policy());
+  EXPECT_TRUE(expected_policy_map_.Equals(loader->policy_map()));
+  EXPECT_EQ(1000, loader->policy()->timestamp());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
+  loader->RemoveObserver(&observer_);
+
+  ::testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStoreTest,
+       FallbackToExternalWhenRecentDefaultPolicyHasMismatchedDMToken) {
+  // Write a valid older external policy for the renewed DM token.
+  policy_.policy_data().set_timestamp(1000);
+  policy_.policy_data().set_request_token("renewed_dm_token");
+  policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  policy_.policy_data().set_public_key_version(kPublicKeyVersion);
+  policy_.Build();
+  WritePolicyToUpdaterPath(policy_.policy());
+
+  // Store a newer default policy in the browser cache for the old DM token.
+  policy_.policy_data().set_timestamp(2000);
+  policy_.policy_data().set_request_token(PolicyBuilder::kFakeToken);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(false);
+  policy_.policy_data().set_public_key_version(kPublicKeyVersion);
+  policy_.Build();
+  StoreDefaultPolicy(policy_.policy());
+
+  // Configure loader with the renewed DM token so the newer default policy
+  // fails validation and falls back to the older valid external policy.
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore();
+  loader->SetupRegistration(DMToken::CreateValidToken("renewed_dm_token"),
+                            PolicyBuilder::kFakeDeviceId);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnStoreLoaded(loader.get()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(observer_, OnStoreError(_)).Times(0);
+  loader->Load();
+  run_loop.Run();
+
+  PolicyMap expected_updater_policy_map;
+  expected_updater_policy_map.Set(
+      "SearchSuggestEnabled", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+      POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+
+  ASSERT_TRUE(loader->policy());
+  EXPECT_TRUE(expected_updater_policy_map.Equals(loader->policy_map()));
+  EXPECT_EQ(1000, loader->policy()->timestamp());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
+  loader->RemoveObserver(&observer_);
+
+  ::testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStoreTest,
+       LoadFailsWhenBothExternalAndDefaultPoliciesFailValidation) {
+  // Write a newer external policy.
+  policy_.policy_data().set_timestamp(2000);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(true);
+  policy_.Build();
+  WritePolicyToUpdaterPath(policy_.policy());
+
+  // Store an older default policy.
+  policy_.policy_data().set_timestamp(1000);
+  policy_.payload().mutable_searchsuggestenabled()->set_value(false);
+  policy_.Build();
+  StoreDefaultPolicy(policy_.policy());
+
+  // Configure loader with a DM token that invalidates both caches.
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore();
+  loader->SetupRegistration(DMToken::CreateValidToken("bad_token"),
+                            "invalid_client_id");
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnStoreError(loader.get()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(0);
+  loader->Load();
+  run_loop.Run();
+
+  EXPECT_FALSE(loader->policy());
+  EXPECT_TRUE(loader->policy_map().empty());
+  EXPECT_EQ(CloudPolicyStore::STATUS_VALIDATION_ERROR, loader->status());
+  loader->RemoveObserver(&observer_);
 
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
 }

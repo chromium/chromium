@@ -201,8 +201,14 @@ MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
       external_data.ParseFromString(
           external_policy_cache_load_result.policy.policy_data()) &&
       external_data.timestamp() > default_data.timestamp()) {
+    external_policy_cache_load_result.fallback =
+        std::make_unique<PolicyLoadResult>(
+            std::move(default_cached_policy_load_result));
     return external_policy_cache_load_result;
   }
+  default_cached_policy_load_result.fallback =
+      std::make_unique<PolicyLoadResult>(
+          std::move(external_policy_cache_load_result));
   return default_cached_policy_load_result;
 }
 
