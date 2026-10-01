@@ -94,22 +94,39 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   return self;
 }
 
-- (void)connect {
-  if (_actorService) {
-    _actorService->AddTaskUpdatesObserver(self);
+#pragma mark - Public
+
+- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID {
+  if (_currentTaskId == taskID) {
+    return;
   }
+  [self stopObservingTask];
+  if (!_actorService) {
+    return;
+  }
+  // `_currentTaskId` is set by `didRegisterAsObserverForTaskID:`, which is
+  // called synchronously upon successful registration.
+  _actorService->AddTaskUpdatesObserver(taskID, self);
+}
+
+- (void)stopObservingTask {
+  if (!_currentTaskId) {
+    return;
+  }
+  if (_actorService) {
+    _actorService->RemoveTaskUpdatesObserver(*_currentTaskId, self);
+  }
+  _currentTaskId.reset();
+  [self discardPendingIntervention];
+  _latestEmittedTaskUpdate = nil;
+  [_consumer setActuationActive:NO];
+  [_consumer reset];
 }
 
 - (void)disconnect {
-  if (_actorService) {
-    _actorService->RemoveTaskUpdatesObserver(self);
-    _actorService = nullptr;
-  }
-  [self discardPendingIntervention];
-  [_consumer reset];
+  [self stopObservingTask];
+  _actorService = nullptr;
   _consumer = nil;
-  _currentTaskId.reset();
-  _latestEmittedTaskUpdate = nil;
 }
 
 #pragma mark - Private
@@ -195,18 +212,6 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     return;
   }
   [self processUpdateWithTool:toolType taskUpdate:taskUpdate];
-}
-
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
-  if (_currentTaskId != taskID) {
-    return;
-  }
-  _currentTaskId.reset();
-  [self discardPendingIntervention];
-  _latestEmittedTaskUpdate = nil;
-  [_consumer setActuationActive:NO];
-  [_consumer reset];
 }
 
 #pragma mark - ActorTaskInterventionDelegate

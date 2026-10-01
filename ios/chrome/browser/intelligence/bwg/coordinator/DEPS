@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/actor/core/task_source_info.h",
   "+ios/chrome/browser/assistant/coordinator/assistant_container_commands.h",
   "+ios/chrome/browser/assistant/ui",
   "+ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h",

@@ -9,6 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -16,8 +17,9 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -56,7 +58,7 @@ using ios::provider::GeminiDormantReason;
 using ios::provider::GeminiViewMode;
 using ios::provider::GeminiViewState;
 
-@interface GeminiContainerMediator () <ActorTaskUpdatesObserver,
+@interface GeminiContainerMediator () <ActorTaskLifecycleObserver,
                                        GeminiContainerUIStateManagerDelegate>
 
 // Called when the active `WebState` changes.
@@ -134,6 +136,8 @@ class GeminiContainerMediatorTabHelperObserver
   raw_ptr<ProfileIOS> _profile;
   // Service tracking actor tasks and updates.
   raw_ptr<actor::ActorService> _actorService;
+  // ID of the Gemini actor task driving actuation, if any.
+  std::optional<actor::ActorTaskId> _actuationTaskId;
   // Authentication service used to retrieve the primary identity.
   raw_ptr<AuthenticationService> _authService;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
@@ -267,7 +271,7 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)connect {
   if (_actorService) {
-    _actorService->AddTaskUpdatesObserver(self);
+    _actorService->AddTaskLifecycleObserver(self);
   }
   [self setupInitialUIState];
   [self requestActivePageContextGeneration];
@@ -308,9 +312,10 @@ class GeminiContainerMediatorTabHelperObserver
   [self onFloatyDismiss];
 
   if (_actorService) {
-    _actorService->RemoveTaskUpdatesObserver(self);
+    _actorService->RemoveTaskLifecycleObserver(self);
     _actorService = nullptr;
   }
+  _actuationTaskId.reset();
 
   self.zeroStateConsumer = nil;
   _startupState = nil;
@@ -328,25 +333,35 @@ class GeminiContainerMediatorTabHelperObserver
   _stateManager.delegate = nil;
 }
 
-#pragma mark - ActorTaskUpdatesObserver
+#pragma mark - ActorTaskLifecycleObserver
 
-- (void)didRegisterAsObserverForTaskID:(actor::ActorTaskId)taskID
-                             taskTitle:(NSString*)taskTitle
-                            taskUpdate:(NSString*)taskUpdate
-                          currentState:(actor::ActorTaskState)state
-                             webStates:(NSArray<NSNumber*>*)webStatesIDs {
-  [self setActuationActive:!actor::IsTerminalState(state)];
+- (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID
+                            sourceInfo:
+                                (const actor::TaskSourceInfo&)sourceInfo {
+  if (sourceInfo.type != actor::TaskSourceInfo::Client::kGlic) {
+    return;
+  }
+  // TODO(crbug.com/565875367): Track multiple concurrent tasks.
+  _actuationTaskId = taskID;
+  // Actuation must be active before the worklog starts, otherwise its initial
+  // height updates are ignored by `containerDidChangeActuationHeight:`.
+  [self setActuationActive:YES];
+  [self.delegate geminiContainerMediator:self
+             didStartActuationTaskWithID:taskID];
 }
 
-- (void)actorTaskWithID:(actor::ActorTaskId)taskID
-         didChangeState:(actor::ActorTaskState)newState
-              fromState:(actor::ActorTaskState)oldState {
-  [self setActuationActive:!actor::IsTerminalState(newState)];
-}
-
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
+- (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
+                           sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
+                           finalState:(actor::ActorTaskState)finalState {
+  if (_actuationTaskId != taskID) {
+    return;
+  }
+  // Deactivate first so the worklog reset doesn't override the restored
+  // minimized detent height.
   [self setActuationActive:NO];
+  [self.delegate geminiContainerMediator:self
+              didStopActuationTaskWithID:taskID];
+  _actuationTaskId.reset();
 }
 
 #pragma mark - AssistantContainerDelegate

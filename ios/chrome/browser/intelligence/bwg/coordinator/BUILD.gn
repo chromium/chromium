@@ -6,6 +6,7 @@ source_set("container_mediator") {
   sources = [
     "gemini_container_mediator.h",
     "gemini_container_mediator.mm",
+    "gemini_container_mediator_delegate.h",
     "gemini_container_mediator_event_handler.h",
     "gemini_container_ui_state_manager.h",
     "gemini_container_ui_state_manager.mm",
@@ -19,6 +20,7 @@ source_set("container_mediator") {
   ]
   deps = [
     "//base",
+    "//components/actor/core",
     "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/app/strings",
@@ -136,6 +138,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/actor/core",
     "//components/autofill/core/common",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
@@ -151,6 +154,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
@@ -37,7 +38,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
-@interface GeminiContainerCoordinator ()
+@interface GeminiContainerCoordinator () <GeminiContainerMediatorDelegate>
 @end
 
 @implementation GeminiContainerCoordinator {
@@ -96,6 +97,18 @@
   _geminiZeroStateViewController = nil;
 }
 
+#pragma mark - GeminiContainerMediatorDelegate
+
+- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
+    didStartActuationTaskWithID:(actor::ActorTaskId)taskID {
+  [_actuationWorklogCoordinator startObservingTaskWithID:taskID];
+}
+
+- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
+     didStopActuationTaskWithID:(actor::ActorTaskId)taskID {
+  [_actuationWorklogCoordinator stopObservingTask];
+}
+
 #pragma mark - Private
 
 // Starts and presents the Gemini container.
@@ -117,6 +130,7 @@
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
   _mediator.containerHandler = _containerHandler;
+  _mediator.delegate = self;
 
   [self setSessionCommandHandlers];
 

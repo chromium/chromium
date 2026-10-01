@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 
 namespace actor {
@@ -32,8 +33,13 @@ class ActorService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Starts observing task updates from `ActorService`.
-- (void)connect;
+// Starts displaying the updates of the task identified by `taskID`, replacing
+// any previously observed task.
+- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID;
+
+// Stops observing the current task and resets the worklog. No-op if no task is
+// observed.
+- (void)stopObservingTask;
 
 // Disconnects the mediator and cleans up references.
 - (void)disconnect;

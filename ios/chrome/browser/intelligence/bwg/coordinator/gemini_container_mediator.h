@@ -31,6 +31,7 @@ class GeminiContainerMediatorEventHandler;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
 @protocol GeminiCommands;
+@protocol GeminiContainerMediatorDelegate;
 @protocol GeminiSharedTabsDelegate;
 @protocol GeminiZeroStateConsumer;
 
@@ -39,6 +40,9 @@ class GeminiContainerMediatorEventHandler;
                                                GeminiContainerMutator,
                                                GeminiViewStateDelegate,
                                                GeminiZeroStateMutator>
+
+// Delegate notified of Gemini actuation task transitions.
+@property(nonatomic, weak) id<GeminiContainerMediatorDelegate> delegate;
 
 // Delegate for shared tabs in a Gemini session.
 @property(nonatomic, weak) id<GeminiSharedTabsDelegate> sharedTabsDelegate;

@@ -32,7 +32,6 @@
       [[ActuationWorklogMediator alloc] initWithActorService:actorService];
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
-  [_mediator connect];
 }
 
 - (void)stop {
@@ -40,6 +39,16 @@
   _mediator = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+}
+
+#pragma mark - Public
+
+- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID {
+  [_mediator startObservingTaskWithID:taskID];
+}
+
+- (void)stopObservingTask {
+  [_mediator stopObservingTask];
 }
 
 #pragma mark - Properties

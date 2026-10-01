@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_mediator.h"
 
+#import <optional>
+
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -69,7 +71,6 @@ class ActuationWorklogMediatorTest : public PlatformTest {
     fake_consumer_ = [[FakeActuationWorklogConsumer alloc] init];
     mediator_ = [[ActuationWorklogMediator alloc] initWithActorService:nullptr];
     mediator_.consumer = fake_consumer_;
-    [mediator_ connect];
   }
 
   void TearDown() override {
@@ -96,9 +97,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
                      fromState:old_state];
   }
 
-  void EndActuation(actor::ActorTaskState final_state = kFinished) {
-    [mediator_ actorTaskDidStopWithID:kTaskId finalState:final_state];
-  }
+  void EndActuation() { [mediator_ stopObservingTask]; }
 
   void ExecuteTool(actor::ToolType tool_type, NSString* update = @"") {
     [mediator_ actorTaskWithID:kTaskId

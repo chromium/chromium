@@ -12,6 +12,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -20,6 +21,9 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
@@ -59,10 +63,17 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
-@interface GeminiContainerMediator (Testing)
+@interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver>
 - (void)cancelPageContextGeneration;
 - (void)setActuationActive:(BOOL)actuationActive;
 @end
+
+namespace {
+
+// Task ID used for actuation lifecycle tests.
+constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
+
+}  // namespace
 
 // Fake PageContextWrapper for testing page context generation.
 @interface MediatorFakePageContextWrapper : PageContextWrapper
@@ -133,6 +144,31 @@
 
 - (void)setActuationActive:(BOOL)active {
   _actuationActive = active;
+}
+@end
+
+// Fake delegate recording actuation task notifications and the consumer's
+// actuation state at the time of each notification.
+@interface FakeGeminiContainerMediatorDelegate
+    : NSObject <GeminiContainerMediatorDelegate>
+@property(nonatomic, weak) FakeGeminiContainerConsumer* consumer;
+@property(nonatomic, readonly) std::vector<actor::ActorTaskId> startedTaskIDs;
+@property(nonatomic, readonly) std::vector<actor::ActorTaskId> stoppedTaskIDs;
+@property(nonatomic, readonly) BOOL actuationActiveOnStart;
+@property(nonatomic, readonly) BOOL actuationActiveOnStop;
+@end
+
+@implementation FakeGeminiContainerMediatorDelegate
+- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
+    didStartActuationTaskWithID:(actor::ActorTaskId)taskID {
+  _startedTaskIDs.push_back(taskID);
+  _actuationActiveOnStart = _consumer.isActuationActive;
+}
+
+- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
+     didStopActuationTaskWithID:(actor::ActorTaskId)taskID {
+  _stoppedTaskIDs.push_back(taskID);
+  _actuationActiveOnStop = _consumer.isActuationActive;
 }
 @end
 
@@ -1036,6 +1072,51 @@ TEST_F(GeminiContainerMediatorTest, TestActuationLifecycle) {
   [mediator_ setActuationActive:NO];
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
   EXPECT_FALSE(consumer.isActuationActive);
+}
+
+// Tests that a Gemini actuation task start/stop is forwarded to the delegate,
+// with actuation active while the delegate is notified of both transitions.
+TEST_F(GeminiContainerMediatorTest, TestGeminiActuationTaskNotifiesDelegate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  FakeGeminiContainerMediatorDelegate* delegate =
+      [[FakeGeminiContainerMediatorDelegate alloc] init];
+  delegate.consumer = consumer;
+  mediator_.delegate = delegate;
+
+  const actor::TaskSourceInfo source(actor::TaskSourceInfo::Client::kGlic,
+                                     std::nullopt);
+  [mediator_ actorServiceDidStartTaskWithID:kTaskId sourceInfo:source];
+  EXPECT_EQ(std::vector<actor::ActorTaskId>{kTaskId}, delegate.startedTaskIDs);
+  EXPECT_TRUE(delegate.actuationActiveOnStart);
+
+  [mediator_ actorServiceDidStopTaskWithID:kTaskId
+                                sourceInfo:source
+                                finalState:actor::ActorTaskState::kFinished];
+  EXPECT_EQ(std::vector<actor::ActorTaskId>{kTaskId}, delegate.stoppedTaskIDs);
+  EXPECT_FALSE(delegate.actuationActiveOnStop);
+}
+
+// Tests that non-Gemini actuation tasks are not forwarded to the delegate.
+TEST_F(GeminiContainerMediatorTest, TestNonGeminiActuationTaskIgnored) {
+  FakeGeminiContainerMediatorDelegate* delegate =
+      [[FakeGeminiContainerMediatorDelegate alloc] init];
+  mediator_.delegate = delegate;
+
+  const actor::TaskSourceInfo source(actor::TaskSourceInfo::Client::kTtc,
+                                     std::nullopt);
+  [mediator_ actorServiceDidStartTaskWithID:kTaskId sourceInfo:source];
+  [mediator_ actorServiceDidStopTaskWithID:kTaskId
+                                sourceInfo:source
+                                finalState:actor::ActorTaskState::kFinished];
+
+  EXPECT_TRUE(delegate.startedTaskIDs.empty());
+  EXPECT_TRUE(delegate.stoppedTaskIDs.empty());
 }
 
 // Test that switching the active `WebState` updates the page context via
