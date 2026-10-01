@@ -37,8 +37,6 @@ BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
 BASE_DECLARE_FEATURE(kTabSearchPerformanceImprovements);
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
-BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
-
 BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kTabStripUnification);
@@ -48,8 +46,6 @@ BASE_DECLARE_FEATURE(kNewHorizontalPinnedTabStyling);
 bool IsSplitViewHorizontalIndirectAccessEnabled();
 
 bool IsSplitViewHorizontalDirectAccessEnabledForTab();
-
-bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 
 bool IsNewHorizontalPinnedTabStylingEnabled();
 

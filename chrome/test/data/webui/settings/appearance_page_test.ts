@@ -772,10 +772,6 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.overrideValues({
-      showVerticalTabsExpandOnHoverEnabled: true,
-    });
-
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
 
@@ -808,20 +804,6 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     assertFalse(
         prefService.getPref<boolean>('vertical_tabs.expand_on_hover').value);
     assertFalse(toggle.checked);
-  });
-
-  test('Toggle is hidden when feature flag is disabled', async function() {
-    loadTimeData.overrideValues({
-      showVerticalTabsExpandOnHoverEnabled: false,
-    });
-
-    await createAppearancePage();
-    await prefService.setPrefValue('vertical_tabs.enabled', true);
-    await microtasksFinished();
-
-    const toggle = appearancePage.shadowRoot.querySelector(
-        '#showVerticalTabsExpandOnHover');
-    assertTrue(!toggle);
   });
 
   test(

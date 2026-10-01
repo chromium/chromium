@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -107,7 +106,6 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   ~VerticalTabStripInteractiveUiTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabsExpandOnHover);
     override_ =
         BrowserWindowFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting<FakeImmersiveModeController>(
@@ -151,7 +149,6 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   raw_ptr<FakeImmersiveModeController> fake_controller_ = nullptr;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> override_;
 };
 

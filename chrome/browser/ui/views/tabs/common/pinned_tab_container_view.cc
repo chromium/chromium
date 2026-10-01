@@ -6,7 +6,6 @@
 
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
@@ -414,9 +413,7 @@ views::ProposedLayout PinnedTabContainerView::CalculateVerticalLayout(
     // When we are in collapsed state, only one child should be shown per row.
     // During collapse animation and other cases, fit as many as possible.
     children_on_row =
-        tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
-                collapse_state ==
-                    tabs::VerticalTabStripCollapseState::kCollapsed
+        collapse_state == tabs::VerticalTabStripCollapseState::kCollapsed
             ? 1
             : std::min(
                   children_on_row,

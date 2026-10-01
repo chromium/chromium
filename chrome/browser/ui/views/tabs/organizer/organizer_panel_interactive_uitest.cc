@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -116,9 +115,7 @@ std::vector<base::CallbackListSubscription> SubscribeToAnimations(
 class OrganizerPanelUiTest : public InteractiveBrowserTest {
  public:
   OrganizerPanelUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {organizer_panel::kOrganizerPanel, tabs::kVerticalTabsExpandOnHover},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
   }
 
   void SetUpOnMainThread() override {

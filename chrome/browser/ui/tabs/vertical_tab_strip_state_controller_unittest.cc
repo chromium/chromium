@@ -5,10 +5,8 @@
 #include <optional>
 
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/test_vertical_tab_strip_state_controller_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
@@ -51,7 +49,6 @@ class VerticalTabStripStateControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    feature_list_.InitAndEnableFeature(tabs::kVerticalTabsExpandOnHover);
     tabs::RegisterProfilePrefs(pref_service_.registry());
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
 
@@ -83,7 +80,6 @@ class VerticalTabStripStateControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestVerticalTabStripStateControllerDelegate> delegate_;
   std::unique_ptr<VerticalTabStripStateController> controller_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;

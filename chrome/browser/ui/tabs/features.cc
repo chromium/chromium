@@ -34,8 +34,6 @@ BASE_FEATURE(kTabSearchPerformanceImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVerticalTabsExpandOnHover, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabStripUnification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewHorizontalPinnedTabStyling, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -53,10 +51,6 @@ bool IsSplitViewHorizontalDirectAccessEnabledForTab() {
   return base::FeatureList::IsEnabled(kSplitViewHorizontal) &&
          (kSplitViewHorizontalDirectAccess.Get() ||
           kSplitViewHorizontalDirectTabAccess.Get());
-}
-
-bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kVerticalTabsExpandOnHover);
 }
 
 bool IsNewHorizontalPinnedTabStylingEnabled() {

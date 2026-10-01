@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -321,8 +320,7 @@ void VerticalTabStripTopContainer::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
-      source == collapse_button_) {
+  if (source == collapse_button_) {
     BrowserUserEducationInterface::From(browser_)
         ->NotifyFeaturePromoFeatureUsed(
             feature_engagement::kIPHVerticalTabsExpandOnHoverFeature,

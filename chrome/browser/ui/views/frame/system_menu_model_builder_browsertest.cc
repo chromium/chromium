@@ -222,16 +222,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
 }
 #endif
 
-class SystemMenuModelBuilderVerticalTabsTest : public InProcessBrowserTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabsExpandOnHover);
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SystemMenuModelBuilderVerticalTabsTest = InProcessBrowserTest;
 
 #if BUILDFLAG(IS_MAC)
 constexpr int kSwitchToVerticalTabStringId = IDS_SWITCH_TO_VERTICAL_TAB_MAC;

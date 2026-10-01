@@ -224,6 +224,16 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
       model->SetElementIdentifierAt(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE).value(),
           kToggleVerticalTabsCollapseElementId);
+
+      model->AddItemWithStringId(
+          IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
+          controller->IsExpandOnHoverEnabled()
+              ? IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER
+              : IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER);
+      model->SetElementIdentifierAt(
+          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER)
+              .value(),
+          kToggleVerticalTabsExpandOnHoverElementId);
     } else {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  switch_to_vertical_id);
@@ -237,21 +247,6 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     model->SetElementIdentifierAt(
         model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
         kToggleVerticalTabsElementId);
-
-    const bool show_expand_on_hover =
-        tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
-        controller->ShouldDisplayVerticalTabs();
-    if (show_expand_on_hover) {
-      model->AddItemWithStringId(
-          IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
-          controller->IsExpandOnHoverEnabled()
-              ? IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER
-              : IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER);
-      model->SetElementIdentifierAt(
-          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER)
-              .value(),
-          kToggleVerticalTabsExpandOnHoverElementId);
-    }
 
     model->AddItemWithStringId(IDC_VERTICAL_TABS_SEND_FEEDBACK,
                                IDS_VERTICAL_TABS_SEND_FEEDBACK);

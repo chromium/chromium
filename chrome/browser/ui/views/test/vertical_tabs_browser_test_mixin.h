@@ -89,7 +89,7 @@ class VerticalTabsBrowserTestMixin : public T {
 
   virtual const std::vector<base::test::FeatureRefAndParams>
   GetEnabledFeatures() {
-    return {{tabs::kVerticalTabsExpandOnHover, {}}};
+    return {};
   }
 
   virtual const std::vector<base::test::FeatureRef> GetDisabledFeatures() {

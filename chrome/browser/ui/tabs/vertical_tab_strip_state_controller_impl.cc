@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -66,16 +65,14 @@ VerticalTabStripStateControllerImpl::VerticalTabStripStateControllerImpl(
       base::BindRepeating(&VerticalTabStripStateControllerImpl::OnModeChanged,
                           base::Unretained(this)));
 
-  if (IsVerticalTabsExpandOnHoverFeatureEnabled()) {
-    is_expand_on_hover_enabled_ =
-        pref_service_->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled);
+  is_expand_on_hover_enabled_ =
+      pref_service_->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled);
 
-    pref_change_registrar_.Add(
-        prefs::kVerticalTabsExpandOnHoverEnabled,
-        base::BindRepeating(
-            &VerticalTabStripStateControllerImpl::OnExpandOnHoverEnabledChanged,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_.Add(
+      prefs::kVerticalTabsExpandOnHoverEnabled,
+      base::BindRepeating(
+          &VerticalTabStripStateControllerImpl::OnExpandOnHoverEnabledChanged,
+          base::Unretained(this)));
 
   if (restored_state_collapsed.has_value()) {
     SetCollapsed(restored_state_collapsed.value());
@@ -406,8 +403,7 @@ void VerticalTabStripStateControllerImpl::OnBrowserCreated(
 }
 
 void VerticalTabStripStateControllerImpl::MaybeShowExpandOnHoverIPH() {
-  if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
-      ShouldDisplayVerticalTabs() &&
+  if (ShouldDisplayVerticalTabs() &&
       GetCollapseState() != VerticalTabStripCollapseState::kExpanded &&
       pref_service_->FindPreference(prefs::kVerticalTabsExpandOnHoverEnabled)
           ->IsDefaultValue()) {

@@ -170,7 +170,6 @@ export class SettingsAppearancePageElement extends
       showGlassEffectEnabled_: {type: Boolean},
       ntpSimplificationBookmarksBarEnabled_: {type: Boolean},
       bookmarksBarOptions_: {type: Array},
-      showVerticalTabsExpandOnHoverEnabled_: {type: Boolean},
       showOrganizerPanelEnabled_: {type: Boolean},
       showEverythingMenuEnabled_: {type: Boolean},
       showResetPinnedActionsButton_: {type: Boolean},
@@ -299,8 +298,6 @@ export class SettingsAppearancePageElement extends
       loadTimeData.getBoolean('showGlassEffectEnabled');
   protected accessor ntpSimplificationBookmarksBarEnabled_: boolean =
       loadTimeData.getBoolean('ntpSimplificationBookmarksBarEnabled');
-  protected accessor showVerticalTabsExpandOnHoverEnabled_: boolean =
-      loadTimeData.getBoolean('showVerticalTabsExpandOnHoverEnabled');
   protected accessor showOrganizerPanelEnabled_: boolean =
       loadTimeData.getBoolean('showOrganizerPanelEnabled');
   protected accessor showEverythingMenuEnabled_: boolean =
@@ -698,8 +695,7 @@ export class SettingsAppearancePageElement extends
       return false;
     }
 
-    return this.showVerticalTabsExpandOnHoverEnabled_ &&
-        this.verticalTabsEnabledPref_.value;
+    return this.verticalTabsEnabledPref_.value;
   }
 
 
