@@ -145,8 +145,7 @@ PrivateInsightsService::PrivateInsightsService(
 
   fcp_task_env_ = base::MakeRefCounted<FcpSimpleTaskEnvironment>(
       base_dir.AsUTF8Unsafe(), cache_dir.AsUTF8Unsafe(),
-      std::move(http_request_manager),
-      kFcpUseAttestationTransparencyVerifier.Get());
+      std::move(http_request_manager));
 }
 
 PrivateInsightsService::~PrivateInsightsService() {

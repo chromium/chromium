@@ -42,13 +42,10 @@ class SingleExampleIterator : public fcp::client::ExampleIterator {
 FcpSimpleTaskEnvironment::FcpSimpleTaskEnvironment(
     std::string base_dir,
     std::string cache_dir,
-    scoped_refptr<FcpHttpRequestManager> http_request_manager,
-    bool use_attestation_transparency_verifier)
+    scoped_refptr<FcpHttpRequestManager> http_request_manager)
     : base_dir_(std::move(base_dir)),
       cache_dir_(std::move(cache_dir)),
-      http_request_manager_(std::move(http_request_manager)),
-      use_attestation_transparency_verifier_(
-          use_attestation_transparency_verifier) {}
+      http_request_manager_(std::move(http_request_manager)) {}
 
 FcpSimpleTaskEnvironment::~FcpSimpleTaskEnvironment() = default;
 
@@ -81,28 +78,23 @@ inline constexpr char kEndorsementOptionsParsingOutcomeHistogram[] =
 
 std::unique_ptr<fcp::client::attestation::AttestationVerifier>
 FcpSimpleTaskEnvironment::CreateAttestationVerifier() {
-  if (use_attestation_transparency_verifier_) {
-    fcp::confidentialcompute::AccessPolicyEndorsementOptions options;
-    std::string resource_string =
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            IDR_CONTEXTUAL_CUES_ENDORSEMENT_OPTIONS);
-    bool parse_success = options.ParseFromString(resource_string);
-    base::UmaHistogramBoolean(kEndorsementOptionsParsingOutcomeHistogram,
-                              parse_success);
-    if (!parse_success) {
-      LOG(ERROR)
-          << "Failed to parse AccessPolicyEndorsementOptions from resource. "
-             "Falling back to AlwaysFailingAttestationVerifier.";
-      return std::make_unique<
-          fcp::client::attestation::AlwaysFailingAttestationVerifier>();
-    }
+  fcp::confidentialcompute::AccessPolicyEndorsementOptions options;
+  std::string resource_string =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_CONTEXTUAL_CUES_ENDORSEMENT_OPTIONS);
+  bool parse_success = options.ParseFromString(resource_string);
+  base::UmaHistogramBoolean(kEndorsementOptionsParsingOutcomeHistogram,
+                            parse_success);
+  if (!parse_success) {
+    LOG(ERROR)
+        << "Failed to parse AccessPolicyEndorsementOptions from resource. "
+           "Falling back to AlwaysFailingAttestationVerifier.";
     return std::make_unique<
-        fcp::client::attestation::AttestationTransparencyVerifier>(
-        std::move(options));
-  } else {
-    return std::make_unique<
-        fcp::client::attestation::AlwaysPassingAttestationVerifier>();
+        fcp::client::attestation::AlwaysFailingAttestationVerifier>();
   }
+  return std::make_unique<
+      fcp::client::attestation::AttestationTransparencyVerifier>(
+      std::move(options));
 }
 
 }  // namespace private_insights
