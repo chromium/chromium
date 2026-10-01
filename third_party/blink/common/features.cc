@@ -1925,6 +1925,10 @@ BASE_FEATURE(kLocalCompileHints, base::FEATURE_ENABLED_BY_DEFAULT);
 // cross-origin requests.
 BASE_FEATURE(kReducedReferrerGranularity, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When disabled, cropTo() is rejected while other tracks share the source, as
+// it was before per-track cropping was supported.
+BASE_FEATURE(kRegionCaptureOfClonedTracks, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
 // strong references to resources on memory pressure.
 BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,

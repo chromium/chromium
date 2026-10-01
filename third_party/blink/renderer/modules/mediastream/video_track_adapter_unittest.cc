@@ -18,7 +18,9 @@
 #include "base/time/time.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/limits.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -1571,6 +1573,103 @@ TEST_F(VideoTrackAdapterEncodedTest,
 
   EXPECT_EQ(track1_deliveries, 1);
   EXPECT_EQ(track2_deliveries, 1);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+// With kRegionCaptureOfClonedTracks disabled, all tracks of a source share a
+// single sub-capture target, which is applied on the GPU by Viz. The adapter
+// must therefore pass frames through unmodified and never CPU-crop or drop
+// them based on a track's own target. Each frame below is one that would be
+// CPU-cropped or dropped for some track if the feature were enabled. The test
+// delivers full frames so that any such crop shows up as a visible_rect
+// smaller than the full frame, and any drop as a missing delivery.
+TEST_F(VideoTrackAdapterEncodedTest,
+       DeliverFrameUncroppedWhenRegionCaptureOfClonedTracksDisabled) {
+  // Must be disabled before tracks are added, since the per-settings adapters
+  // cache the feature state on creation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
+
+  std::vector<gfx::Rect> track1_rects;
+  int track2_deliveries = 0;
+
+  MediaStreamVideoSourceCallbacks cb1;
+  cb1.deliver_frame_cb = base::BindLambdaForTesting(
+      [&](scoped_refptr<media::VideoFrame> frame, base::TimeTicks) {
+        track1_rects.push_back(frame->visible_rect());
+      });
+  cb1.frame_dropped_cb = base::DoNothing();
+  cb1.encoded_frame_cb = base::DoNothing();
+  cb1.settings_cb = base::DoNothing();
+  cb1.capture_version_cb = base::DoNothing();
+  cb1.format_cb = base::DoNothing();
+
+  MediaStreamVideoSourceCallbacks cb2;
+  cb2.deliver_frame_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<media::VideoFrame>,
+                                     base::TimeTicks) { track2_deliveries++; });
+  cb2.frame_dropped_cb = base::DoNothing();
+  cb2.encoded_frame_cb = base::DoNothing();
+  cb2.settings_cb = base::DoNothing();
+  cb2.capture_version_cb = base::DoNothing();
+  cb2.format_cb = base::DoNothing();
+
+  auto track1 = AddTrackWithCallbacks(std::move(cb1));
+  auto track2 = AddTrackWithCallbacks(std::move(cb2));
+
+  // Give track1 its own target while track2 has none. This divergence is what
+  // would trigger per-track CPU cropping and dropping if the feature were
+  // enabled; with it disabled, the adapter must ignore it.
+  const base::Token token1(0x11111111, 0x22222222);
+  RunSyncOnRenderThread(
+      [&] { adapter_->SetTrackSubCaptureTarget(track1.get(), token1); });
+
+  const gfx::Size kFrameSize(1920, 1080);
+
+  // Frame 1: full frame with bounds for token1. If enabled, track1 would
+  // receive a CPU crop to (10, 20, 100, 200). Here it must be passed through.
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, base::Milliseconds(33));
+    frame->metadata().region_capture_bounds = {
+        {token1, gfx::Rect(10, 20, 100, 200)}};
+    DeliverFrameAndWait(frame);
+  }
+
+  // Frame 2: full frame without bounds for token1. If enabled, track1 would
+  // drop it since its target cannot be located. Here it must be delivered.
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, base::Milliseconds(66));
+    DeliverFrameAndWait(frame);
+  }
+
+  // Frame 3: frame marked as GPU-cropped via `region_capture_rect`. If
+  // enabled, it would be dropped for both tracks: for track2 because it wants
+  // uncropped content, and for track1 because its bounds are missing. Here it
+  // must be delivered to both. `region_capture_rect` is only metadata, so
+  // `visible_rect` stays full and track1 still observes the full frame.
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, base::Milliseconds(99));
+    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    DeliverFrameAndWait(frame);
+  }
+
+  EXPECT_THAT(track1_rects,
+              testing::ElementsAre(gfx::Rect(kFrameSize), gfx::Rect(kFrameSize),
+                                   gfx::Rect(kFrameSize)));
+  EXPECT_EQ(track2_deliveries, 3);
 
   RunSyncOnRenderThread([&] {
     adapter_->RemoveTrack(track1.get());

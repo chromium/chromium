@@ -13,12 +13,14 @@
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -185,6 +187,12 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
         original_native_track->CreateFromComponent(original_track, clone_id);
     return WebMediaStreamTrack(MakeGarbageCollected<MediaStreamComponentImpl>(
         clone_id, original_track.Source(), std::move(cloned_platform)));
+  }
+
+  // Waits until every message already sent to the dispatcher host has been
+  // received by `mock_dispatcher_host_`.
+  void FlushDispatcherHost() {
+    video_capturer_source_->host_.FlushForTesting();
   }
 
   std::optional<media::CaptureVersion> GetNextCaptureVersion(
@@ -746,6 +754,72 @@ TEST_F(MediaStreamVideoCapturerSourceTest,
 
   native_track2->Stop();
   EXPECT_TRUE(teardown_future.Wait());
+}
+
+TEST_F(MediaStreamVideoCapturerSourceTest,
+       CropTargetOnCloneRejectedWhenRegionCaptureOfClonedTracksDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
+
+  WebMediaStreamTrack track1 = StartTabCaptureSource();
+  WebMediaStreamTrack track2 = CloneTrack(track1, "track2");
+  auto* native_track2 = MediaStreamVideoTrack::From(track2);
+  ASSERT_TRUE(native_track2);
+
+  EXPECT_CALL(mock_dispatcher_host_, ApplySubCaptureTarget(_, _, _, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(
+      GetNextCaptureVersion(media::mojom::SubCaptureTargetType::kCropTarget)
+          .has_value());
+
+  const base::Token token(111, 222);
+  EXPECT_EQ(ApplySubCaptureTarget(
+                native_track2, media::mojom::SubCaptureTargetType::kCropTarget,
+                token, 1u),
+            media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
+  EXPECT_TRUE(GetTrackTarget(native_track2).is_zero());
+  FlushDispatcherHost();
+  testing::Mock::VerifyAndClearExpectations(&mock_dispatcher_host_);
+}
+
+TEST_F(MediaStreamVideoCapturerSourceTest,
+       ClonedTrackInheritsCropWhenRegionCaptureOfClonedTracksDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
+
+  WebMediaStreamTrack track1 = StartTabCaptureSource();
+  auto* native_track1 = MediaStreamVideoTrack::From(track1);
+  ASSERT_TRUE(native_track1);
+
+  // A single track can still be cropped.
+  const base::Token token1(111, 222);
+  ASSERT_NO_FATAL_FAILURE(ApplySubCaptureTargetAndExpectSuccess(
+      native_track1, media::mojom::SubCaptureTargetType::kCropTarget, token1,
+      /*expected_gpu_target=*/token1, /*expected_version=*/1u));
+
+  // The clone inherits the crop, and the GPU keeps cropping to it.
+  EXPECT_CALL(mock_dispatcher_host_, ApplySubCaptureTarget(_, _, _, _, _))
+      .Times(0);
+  WebMediaStreamTrack track2 = CloneTrack(track1, "track2");
+  auto* native_track2 = MediaStreamVideoTrack::From(track2);
+  ASSERT_TRUE(native_track2);
+  EXPECT_EQ(GetTrackTarget(native_track2), token1);
+
+  // Neither track can change its target while the other exists.
+  const base::Token token2(333, 444);
+  EXPECT_EQ(ApplySubCaptureTarget(
+                native_track1, media::mojom::SubCaptureTargetType::kCropTarget,
+                token2, 2u),
+            media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
+  EXPECT_EQ(ApplySubCaptureTarget(
+                native_track2, media::mojom::SubCaptureTargetType::kCropTarget,
+                base::Token(), 2u),
+            media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
+  EXPECT_EQ(GetTrackTarget(native_track1), token1);
+  EXPECT_EQ(GetTrackTarget(native_track2), token1);
+  FlushDispatcherHost();
+  testing::Mock::VerifyAndClearExpectations(&mock_dispatcher_host_);
 }
 
 }  // namespace blink

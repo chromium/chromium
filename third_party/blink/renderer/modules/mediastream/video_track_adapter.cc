@@ -367,6 +367,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // registered in AddCallbacks.
   const scoped_refptr<base::SingleThreadTaskRunner> renderer_task_runner_;
   const bool is_video_desktop_capture_type_;
+  // Cached value of features::kRegionCaptureOfClonedTracks. When false, frames
+  // are delivered as-is instead of being cropped or dropped per track.
+  const bool is_per_track_cropping_enabled_;
   const VideoTrackAdapterSettings settings_;
 
   // The target timestamp delta between video frames, corresponding to the max
@@ -401,6 +404,8 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
     bool is_video_desktop_capture_type)
     : renderer_task_runner_(reader_task_runner),
       is_video_desktop_capture_type_(is_video_desktop_capture_type),
+      is_per_track_cropping_enabled_(
+          base::FeatureList::IsEnabled(features::kRegionCaptureOfClonedTracks)),
       settings_(ReturnSettingsMaybeOverrideMaxFps(settings)),
       target_delta_(settings_.max_frame_rate()
                         ? std::make_optional(base::Seconds(
@@ -661,8 +666,13 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     }
 
     if (!found_in_cache) {
+      // When !is_per_track_cropping_enabled_, every track on the source shares
+      // one target, and Viz already crops frames to it on the GPU, so no
+      // per-track crop is needed.
       scoped_refptr<media::VideoFrame> track_frame =
-          MaybeCropFrameForTrack(video_frame, target_token);
+          is_per_track_cropping_enabled_
+              ? MaybeCropFrameForTrack(video_frame, target_token)
+              : video_frame;
       if (track_frame) {
         adapted_frame =
             AdaptFrameResolution(std::move(track_frame), is_device_rotated);

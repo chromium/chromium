@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -246,8 +247,10 @@ bool MediaStreamVideoCapturerSource::CanApplySubCaptureTarget(
     media::mojom::SubCaptureTargetType type) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Element Capture (restrictTo) requires single-track physical restriction
-  // on GPU and cannot support clones or multi-track mode.
-  if (type == media::mojom::SubCaptureTargetType::kRestrictionTarget) {
+  // on GPU and cannot support clones or multi-track mode. Region Capture
+  // (cropTo) is limited the same way when kRegionCaptureOfClonedTracks is off.
+  if (type == media::mojom::SubCaptureTargetType::kRestrictionTarget ||
+      !base::FeatureList::IsEnabled(features::kRegionCaptureOfClonedTracks)) {
     return NumTracks() == 1;
   }
   return NumTracks() <= 1 || !HasActiveRestrictionTarget();

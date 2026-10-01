@@ -1487,6 +1487,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
+// Kill switch for applying Region Capture (cropTo()) to a video track while
+// other tracks share its source, e.g. after clone().
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureOfClonedTracks);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReleaseResourceDecodedDataOnMemoryPressure);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
