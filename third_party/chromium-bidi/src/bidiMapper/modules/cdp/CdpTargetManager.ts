@@ -468,11 +468,10 @@ export class CdpTargetManager {
     // This is primarily used for service and shared workers. CDP tends to not
     // signal they closed gracefully and instead says they crashed to signal
     // they are closed.
-    const realms = this.#realmStorage.findRealms({
+    // Delete (rather than just dispose) the realms so a subsequent
+    // `Target.detachedFromTarget` event does not dispose them a second time.
+    this.#realmStorage.deleteRealms({
       cdpSessionId: cdpClient.sessionId,
     });
-    for (const realm of realms) {
-      realm.dispose();
-    }
   }
 }

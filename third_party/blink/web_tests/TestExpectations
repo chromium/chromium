@@ -6863,7 +6863,6 @@ crbug.com/41490297 external/wpt/speculation-rules/prerender/prerender-while-prer
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/get_tree/frames.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/script/evaluate/remote_values.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/script/get_realms/get_realms.py [ Failure Timeout ]
-crbug.com/324436866 external/wpt/webdriver/tests/bidi/script/realm_destroyed/realm_destroyed.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/storage/set_cookie/partition.py [ Failure ]
 
 # TODO(crbug.com/328677885): Re-enable this test.
