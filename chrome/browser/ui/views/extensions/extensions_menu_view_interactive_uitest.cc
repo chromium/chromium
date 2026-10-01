@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +65,8 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     // kExtensionsMenuAccessControl is fully enabled.
     scoped_feature_list_.InitWithFeatures(
         {}, {extensions_features::kExtensionsMenuAccessControl,
-             features::kExtensionsPinnedByDefault});
+             features::kExtensionsPinnedByDefault,
+             features::kWebUIExtensionsContainer});
   }
 
   static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
