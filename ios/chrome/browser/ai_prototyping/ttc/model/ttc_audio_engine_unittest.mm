@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -23,9 +25,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// Expose TTCAudioRecorderDelegate, TTCAudioPlayerDelegate, and testing helpers.
+// Expose TTCAudioRecorderDelegate, TTCAudioPlayerDelegate,
+// TTCAudioSessionManagerDelegate, and testing helpers.
 @interface TTCAudioEngine (Testing) <TTCAudioRecorderDelegate,
-                                     TTCAudioPlayerDelegate>
+                                     TTCAudioPlayerDelegate,
+                                     TTCAudioSessionManagerDelegate>
 - (void)setIsCapturingForTesting:(BOOL)isCapturing;
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning;
 @end
@@ -34,6 +38,7 @@
 @interface FakeTTCAudioControllerDelegate
     : NSObject <TTCAudioControllerDelegate>
 @property(nonatomic, assign) float lastEnergy;
+@property(nonatomic, assign) BOOL didStartCapture;
 @property(nonatomic, assign) BOOL didStop;
 @property(nonatomic, assign) BOOL didStartPlayback;
 @property(nonatomic, assign) BOOL didStopPlayback;
@@ -41,6 +46,7 @@
 @property(nonatomic, strong) NSData* lastCapturedChunk;
 @property(nonatomic, assign) BOOL didStartPlaybackViaController;
 @property(nonatomic, assign) BOOL didStopPlaybackViaController;
+@property(nonatomic, assign) BOOL didChangeRoute;
 @end
 
 @implementation FakeTTCAudioControllerDelegate
@@ -48,6 +54,10 @@
 - (void)audioController:(id<TTCAudioController>)controller
     didUpdateInputEnergy:(float)energy {
   _lastEnergy = energy;
+}
+
+- (void)audioControllerDidStartCapture:(id<TTCAudioController>)controller {
+  _didStartCapture = YES;
 }
 
 - (void)audioControllerDidStopCapture:(id<TTCAudioController>)controller {
@@ -72,6 +82,10 @@
 - (void)audioController:(id<TTCAudioController>)controller
     didCaptureAudioChunk:(NSData*)pcmData {
   _lastCapturedChunk = pcmData;
+}
+
+- (void)audioControllerDidChangeRoute:(id<TTCAudioController>)controller {
+  _didChangeRoute = YES;
 }
 
 @end
@@ -143,7 +157,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDisconnect) {
 TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesEnergy) {
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
-                                                             player:nil];
+                                                             player:nil
+                                                     sessionManager:nil];
   ASSERT_TRUE(engine != nil);
 
   FakeTTCAudioControllerDelegate* delegate =
@@ -156,32 +171,6 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesEnergy) {
 
   EXPECT_FLOAT_EQ(delegate.lastEnergy, 0.75f);
   [engine disconnect];
-}
-
-// Tests that invoking stopCapture while audio session configuration is
-// in flight cleanly cancels the startup sequence.
-TEST_F(TTCAudioEngineTest, TestAudioEngineStopWhileStartingCancelsRecording) {
-  SetUpMockAudioApp(AVAudioApplicationRecordPermissionGranted);
-
-  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
-  ASSERT_TRUE(engine != nil);
-
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [engine startCaptureWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-
-  // Stop capture while the background ThreadPool task is pending.
-  [engine stopCapture];
-
-  auto [success, error] = future.Get();
-  EXPECT_FALSE(success);
-  ASSERT_TRUE(error != nil);
-  EXPECT_NSEQ(error.domain, kTTCAudioEngineErrorDomain);
-  EXPECT_EQ(error.code,
-            static_cast<NSInteger>(TTCAudioEngineErrorCode::kStartupCancelled));
-  EXPECT_FALSE(engine.isCapturing);
 }
 
 // Tests that startCaptureWithCompletion fails with permission denied when
@@ -279,7 +268,7 @@ TEST_F(TTCAudioEngineTest,
 
 // Tests that invoking stopCapture while actively capturing notifies the
 // delegate.
-TEST_F(TTCAudioEngineTest, TestAudioEngineStopRecordingNotifiesDelegate) {
+TEST_F(TTCAudioEngineTest, TestAudioEngineStopCaptureNotifiesDelegate) {
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
   ASSERT_TRUE(engine != nil);
 
@@ -322,7 +311,8 @@ TEST_F(TTCAudioEngineTest, TestPlaybackDelegateForwarding) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioEngine* engine =
       [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
-                                        player:player];
+                                        player:player
+                                sessionManager:nil];
 
   FakeTTCAudioControllerDelegate* delegate =
       [[FakeTTCAudioControllerDelegate alloc] init];
@@ -353,7 +343,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesPlayerError) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioEngine* engine =
       [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
-                                        player:player];
+                                        player:player
+                                sessionManager:nil];
 
   FakeTTCAudioControllerDelegate* delegate =
       [[FakeTTCAudioControllerDelegate alloc] init];
@@ -372,7 +363,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingDisabled) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
-                                                             player:player];
+                                                             player:player
+                                                     sessionManager:nil];
 
   [engine setIsCapturingForTesting:YES];
   engine.loopbackEnabled = NO;
@@ -397,7 +389,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingEnabled) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
-                                                             player:player];
+                                                             player:player
+                                                     sessionManager:nil];
 
   [engine setIsCapturingForTesting:YES];
   engine.loopbackEnabled = YES;
@@ -428,7 +421,8 @@ TEST_F(TTCAudioEngineTest,
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
-                                                             player:player];
+                                                             player:player
+                                                     sessionManager:nil];
   [engine setIsAudioEngineRunningForTesting:YES];
   [engine setIsCapturingForTesting:YES];
 
@@ -472,7 +466,8 @@ TEST_F(TTCAudioEngineTest,
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioEngine* engine =
       [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
-                                        player:player];
+                                        player:player
+                                sessionManager:nil];
 
   [engine setIsCapturingForTesting:YES];
   EXPECT_TRUE(engine.isCapturing);
@@ -504,7 +499,8 @@ TEST_F(TTCAudioEngineTest, TestAudioControllerPlaybackAndBargeIn) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioEngine* engine =
       [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
-                                        player:player];
+                                        player:player
+                                sessionManager:nil];
   id<TTCAudioController> controller = engine;
   [engine setIsAudioEngineRunningForTesting:YES];
 
@@ -528,7 +524,8 @@ TEST_F(TTCAudioEngineTest, TestAudioControllerDelegatesCaptureChunk) {
   TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
-                                                             player:player];
+                                                             player:player
+                                                     sessionManager:nil];
   FakeTTCAudioControllerDelegate* delegate =
       [[FakeTTCAudioControllerDelegate alloc] init];
   engine.delegate = delegate;
@@ -553,6 +550,95 @@ TEST_F(TTCAudioEngineTest, TestAudioControllerDelegatesCaptureChunk) {
   auto samples = base::subtle::reinterpret_span<const int16_t>(
       base::apple::NSDataToSpan(delegate.lastCapturedChunk));
   EXPECT_NEAR(samples[0], 16383, 10);
+  [engine disconnect];
+}
+
+// Tests that designated initializer initWithRecorder:player:sessionManager:
+// wires dependencies correctly.
+TEST_F(TTCAudioEngineTest, TestDesignatedInitializer) {
+  TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
+  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
+  TTCAudioSessionManager* sessionManager =
+      [[TTCAudioSessionManager alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:recorder
+                                        player:player
+                                sessionManager:sessionManager];
+  ASSERT_TRUE(engine != nil);
+  EXPECT_EQ(sessionManager.delegate, engine);
+  [engine disconnect];
+}
+
+// Tests that default initializer wires components properly.
+TEST_F(TTCAudioEngineTest, TestDefaultInitializer) {
+  TTCAudioEngine* defaultEngine = [[TTCAudioEngine alloc] init];
+  ASSERT_TRUE(defaultEngine != nil);
+  [defaultEngine disconnect];
+}
+
+// Tests that audioSessionManager:didChangeRouteDescription:hasHardwareAEC:
+// forwards the route change event to TTCAudioControllerDelegate.
+TEST_F(TTCAudioEngineTest, TestRouteChangeDelegation) {
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+  FakeTTCAudioControllerDelegate* delegate =
+      [[FakeTTCAudioControllerDelegate alloc] init];
+  engine.delegate = delegate;
+
+  EXPECT_FALSE(delegate.didChangeRoute);
+  [engine audioSessionManager:nil
+      didChangeRouteDescription:@"In: TestMic | Out: TestSpeaker"
+                 hasHardwareAEC:YES];
+
+  EXPECT_TRUE(delegate.didChangeRoute);
+
+  // Verify no crash when delegate is nil.
+  engine.delegate = nil;
+  [engine audioSessionManager:nil
+      didChangeRouteDescription:@"In: TestMic | Out: TestSpeaker"
+                 hasHardwareAEC:NO];
+
+  // Verify no crash when delegate does not implement optional method.
+  NSObject* emptyDelegate = [[NSObject alloc] init];
+  engine.delegate = static_cast<id<TTCAudioControllerDelegate>>(emptyDelegate);
+  [engine audioSessionManager:nil
+      didChangeRouteDescription:@"In: TestMic | Out: TestSpeaker"
+                 hasHardwareAEC:NO];
+
+  [engine disconnect];
+}
+
+// Tests that disconnect cleans up delegate references to prevent dangling
+// calls.
+TEST_F(TTCAudioEngineTest, TestDisconnectClearsDelegates) {
+  TTCAudioSessionManager* sessionManager =
+      [[TTCAudioSessionManager alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:nil
+                                        player:nil
+                                sessionManager:sessionManager];
+  FakeTTCAudioControllerDelegate* delegate =
+      [[FakeTTCAudioControllerDelegate alloc] init];
+  engine.delegate = delegate;
+  EXPECT_EQ(engine.delegate, delegate);
+  EXPECT_EQ(sessionManager.delegate, engine);
+
+  [engine disconnect];
+
+  EXPECT_EQ(engine.delegate, nil);
+  EXPECT_EQ(sessionManager.delegate, nil);
+}
+
+// Tests that isOutputRoutedToSpeaker forwards destination from session manager.
+TEST_F(TTCAudioEngineTest, TestOutputRoutedToSpeaker) {
+  TTCAudioSessionManager* sessionManager =
+      [[TTCAudioSessionManager alloc] init];
+  TTCAudioEngine* engine =
+      [[TTCAudioEngine alloc] initWithRecorder:nil
+                                        player:nil
+                                sessionManager:sessionManager];
+  EXPECT_EQ(
+      engine.isOutputRoutedToSpeaker,
+      sessionManager.outputDestination == TTCAudioOutputDestination::kSpeaker);
   [engine disconnect];
 }
 

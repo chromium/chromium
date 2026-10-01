@@ -10,16 +10,17 @@
 #import <cmath>
 #import <vector>
 
-#import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/compiler_specific.h"
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/sequence_checker.h"
-#import "base/task/task_traits.h"
-#import "base/task/thread_pool.h"
-#import "base/task/thread_pool/thread_pool_instance.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_player_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_recorder_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -37,42 +38,14 @@ constexpr size_t kTestToneChunkSampleCount = 480;
 constexpr size_t kTestToneTotalChunks = 50;
 constexpr double kTestToneAmplitude = 8000.0;
 
-// Configures the AVAudioSession for simultaneous recording and playback,
-// defaulting to speaker and enabling Bluetooth routes. Must run off the UI
-// thread to prevent UI hitches.
-NSError* ConfigureAudioSessionHardware() {
-  NSError* error = nil;
-  AVAudioSession* session = [AVAudioSession sharedInstance];
-  AVAudioSessionCategoryOptions options =
-      AVAudioSessionCategoryOptionDefaultToSpeaker |
-      AVAudioSessionCategoryOptionAllowBluetoothHFP |
-      AVAudioSessionCategoryOptionAllowBluetoothA2DP;
-
-  if (session.category != AVAudioSessionCategoryPlayAndRecord ||
-      session.categoryOptions != options) {
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord
-                    mode:AVAudioSessionModeDefault
-                 options:options
-                   error:&error];
-  }
-
-  if (!error) {
-    [session setActive:YES error:&error];
-  }
-
-  return error;
-}
-
 }  // namespace
 
-@interface TTCAudioEngine () <TTCAudioRecorderDelegate, TTCAudioPlayerDelegate>
+@interface TTCAudioEngine () <TTCAudioRecorderDelegate,
+                              TTCAudioPlayerDelegate,
+                              TTCAudioSessionManagerDelegate>
 @end
 
 @implementation TTCAudioEngine {
-  // Audio session category active before TalkToChrome was initialized, restored
-  // upon disconnect to preserve the user's prior audio session state.
-  AVAudioSessionCategory _previousCategory;
-
   // Audio engine graph managing hardware input/output nodes.
   AVAudioEngine* _audioEngine;
 
@@ -83,11 +56,14 @@ NSError* ConfigureAudioSessionHardware() {
   // and buffer drain.
   TTCAudioPlayer* _player;
 
+  // Audio session manager handling routing, port selection, and notifications.
+  TTCAudioSessionManager* _sessionManager;
+
   // Flag indicating whether microphone capture is active.
   BOOL _isCapturing;
 
   // Flag tracking whether asynchronous audio session configuration and
-  // engine startup are currently pending on base::ThreadPool.
+  // engine startup are currently in-flight.
   BOOL _isStarting;
 
   // Whether microphone input is routed directly to the speaker for local
@@ -102,11 +78,16 @@ NSError* ConfigureAudioSessionHardware() {
   // audio hardware to simulate that the audio engine is running.
   BOOL _isAudioEngineRunningForTesting;
 
+  // Tracks whether the audio engine has been disconnected.
+  BOOL _isDisconnected;
+
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 @synthesize delegate = _delegate;
 @synthesize loopbackEnabled = _loopbackEnabled;
+
+#pragma mark - Properties
 
 - (BOOL)isCapturing {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -128,8 +109,17 @@ NSError* ConfigureAudioSessionHardware() {
   _loopbackEnabled = loopbackEnabled;
 }
 
+- (BOOL)isOutputRoutedToSpeaker {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _sessionManager.outputDestination ==
+         TTCAudioOutputDestination::kSpeaker;
+}
+
+#pragma mark - Lifecycle
+
 - (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
-                          player:(TTCAudioPlayer*)player {
+                          player:(TTCAudioPlayer*)player
+                  sessionManager:(TTCAudioSessionManager*)sessionManager {
   self = [super init];
   if (self) {
     _audioEngine = [[AVAudioEngine alloc] init];
@@ -138,20 +128,20 @@ NSError* ConfigureAudioSessionHardware() {
     _player = player ?: [[TTCAudioPlayer alloc] init];
     _player.delegate = self;
     [_player attachToAudioEngine:_audioEngine error:nil];
+    _sessionManager = sessionManager ?: [[TTCAudioSessionManager alloc] init];
+    _sessionManager.delegate = self;
+    [_sessionManager registerNotificationObserversWithAudioEngine:_audioEngine];
     _isCapturing = NO;
     _isStarting = NO;
     _loopbackEnabled = NO;
     _isStreamingPlaybackActive = NO;
+    _isDisconnected = NO;
   }
   return self;
 }
 
 - (instancetype)init {
-  return [self initWithRecorder:nil player:nil];
-}
-
-- (void)dealloc {
-  [self disconnect];
+  return [self initWithRecorder:nil player:nil sessionManager:nil];
 }
 
 #pragma mark - Public
@@ -257,19 +247,12 @@ NSError* ConfigureAudioSessionHardware() {
 - (void)proceedWithStartCaptureWithCompletion:
     (void (^)(BOOL success, NSError* error))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // Cache previous category on the UI thread before hopping to ThreadPool.
-  if (!_previousCategory) {
-    _previousCategory = [AVAudioSession sharedInstance].category;
-  }
-
   __weak TTCAudioEngine* weakSelf = self;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ConfigureAudioSessionHardware),
-      base::BindOnce(^(NSError* sessionError) {
+  [_sessionManager
+      configureAudioSessionWithCompletion:^(NSError* sessionError) {
         [weakSelf didFinishAudioSessionConfigurationWithError:sessionError
                                                    completion:completion];
-      }));
+      }];
 }
 
 - (void)stopCapture {
@@ -304,17 +287,6 @@ NSError* ConfigureAudioSessionHardware() {
           respondsToSelector:@selector(audioControllerDidStopCapture:)]) {
     [self.delegate audioControllerDidStopCapture:self];
   }
-}
-
-- (BOOL)isOutputRoutedToSpeaker {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (AVAudioSessionPortDescription* output in [AVAudioSession sharedInstance]
-           .currentRoute.outputs) {
-    if ([output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-      return YES;
-    }
-  }
-  return NO;
 }
 
 - (void)playStreamingAudioChunk:(NSData*)pcm24kData {
@@ -382,6 +354,35 @@ NSError* ConfigureAudioSessionHardware() {
   [self stopPlaybackImmediately];
 }
 
+- (void)disconnect {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+  _isDisconnected = YES;
+
+  // Clear external delegate immediately to prevent dispatching callbacks with
+  // a deallocating or disconnecting instance.
+  self.delegate = nil;
+
+  _isStarting = NO;
+  _isStreamingPlaybackActive = NO;
+  [self stopCapture];
+  [self stopPlaybackImmediately];
+  if (_audioEngine.isRunning) {
+    [_audioEngine stop];
+  }
+  _sessionManager.delegate = nil;
+  [_sessionManager disconnect];
+  _recorder.delegate = nil;
+  [_recorder reset];
+  _player.delegate = nil;
+  [_player detachFromAudioEngine:_audioEngine];
+  [_player reset];
+}
+
+#pragma mark - Testing
+
 - (void)setIsCapturingForTesting:(BOOL)isCapturing {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isCapturing = isCapturing;
@@ -390,24 +391,6 @@ NSError* ConfigureAudioSessionHardware() {
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isAudioEngineRunningForTesting = isRunning;
-}
-
-- (void)disconnect {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _isStarting = NO;
-  _isStreamingPlaybackActive = NO;
-  [self stopCapture];
-  [self stopPlaybackImmediately];
-  if (_audioEngine.isRunning) {
-    [_audioEngine stop];
-  }
-  _recorder.delegate = nil;
-  [_recorder reset];
-  _player.delegate = nil;
-  [_player detachFromAudioEngine:_audioEngine];
-  [_player reset];
-  self.delegate = nil;
-  [self restoreAudioSessionCategory];
 }
 
 #pragma mark - TTCAudioRecorderDelegate
@@ -492,18 +475,19 @@ NSError* ConfigureAudioSessionHardware() {
   }
 }
 
-#pragma mark - Private
+#pragma mark - TTCAudioSessionManagerDelegate
 
-// Configures the AVAudioSession for simultaneous recording and playback,
-// defaulting to speaker and enabling Bluetooth routes. Returns an error if
-// configuration or session activation fails.
-// NOTE: When mic loopback is enabled on a physical device with the built-in
-// speaker, acoustic coupling between speaker and microphone can cause feedback.
-// Headphones or AirPods are strongly recommended for local loopback testing.
-- (NSError*)configureAudioSession {
+- (void)audioSessionManager:(TTCAudioSessionManager*)manager
+    didChangeRouteDescription:(NSString*)routeDescription
+               hasHardwareAEC:(BOOL)hasAEC {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  return ConfigureAudioSessionHardware();
+  if ([self.delegate
+          respondsToSelector:@selector(audioControllerDidChangeRoute:)]) {
+    [self.delegate audioControllerDidChangeRoute:self];
+  }
 }
+
+#pragma mark - Private
 
 // Ensures the audio session is configured and the AVAudioEngine graph is
 // running before scheduling playback buffers.
@@ -513,11 +497,7 @@ NSError* ConfigureAudioSessionHardware() {
     return YES;
   }
 
-  if (!_previousCategory) {
-    _previousCategory = [AVAudioSession sharedInstance].category;
-  }
-
-  NSError* sessionError = [self configureAudioSession];
+  NSError* sessionError = [_sessionManager configureAudioSession];
   if (sessionError) {
     if (error) {
       *error = sessionError;
@@ -526,7 +506,11 @@ NSError* ConfigureAudioSessionHardware() {
   }
 
   [_audioEngine prepare];
-  return [_audioEngine startAndReturnError:error];
+  BOOL started = [_audioEngine startAndReturnError:error];
+  if (!started) {
+    [_sessionManager restoreAudioSessionCategory];
+  }
+  return started;
 }
 
 // Handles completion of background audio session configuration on the main
@@ -538,7 +522,7 @@ NSError* ConfigureAudioSessionHardware() {
   // If startup was cancelled while the background task was in flight, abort
   // and restore the audio session category.
   if (!_isStarting) {
-    [self restoreAudioSessionCategory];
+    [_sessionManager restoreAudioSessionCategory];
     if (completion) {
       NSError* cancelledError = [NSError
           errorWithDomain:kTTCAudioEngineErrorDomain
@@ -555,7 +539,7 @@ NSError* ConfigureAudioSessionHardware() {
   _isStarting = NO;
 
   if (error) {
-    [self restoreAudioSessionCategory];
+    [_sessionManager restoreAudioSessionCategory];
     if (completion) {
       completion(NO, error);
     }
@@ -565,7 +549,7 @@ NSError* ConfigureAudioSessionHardware() {
   NSError* startError = nil;
   BOOL startSuccess = [self startEngineAndInstallTapWithError:&startError];
   if (!startSuccess) {
-    [self restoreAudioSessionCategory];
+    [_sessionManager restoreAudioSessionCategory];
   } else if ([self.delegate
                  respondsToSelector:@selector(
                                         audioControllerDidStartCapture:)]) {
@@ -576,38 +560,14 @@ NSError* ConfigureAudioSessionHardware() {
   }
 }
 
-// Restores the previous AVAudioSession category on a background thread via
-// base::ThreadPool when the audio engine disconnects.
-- (void)restoreAudioSessionCategory {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  AVAudioSessionCategory previousCategory = _previousCategory;
-  _previousCategory = nil;
-  if (!previousCategory) {
-    return;
-  }
-
-  auto restoreBlock = ^{
-    AVAudioSession* session = [AVAudioSession sharedInstance];
-    NSError* error = nil;
-    [session setCategory:previousCategory error:&error];
-    [session setActive:NO
-           withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
-                 error:&error];
-  };
-
-  if (base::ThreadPoolInstance::Get()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(restoreBlock));
-  } else {
-    restoreBlock();
-  }
-}
-
 // Verifies the hardware input node is accessible, installs the audio recorder
 // tap, and starts the AVAudioEngine audio processing graph.
 - (BOOL)startEngineAndInstallTapWithError:(NSError**)error {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isAudioEngineRunningForTesting) {
+    _isCapturing = YES;
+    return YES;
+  }
   AVAudioInputNode* inputNode = nil;
   @try {
     inputNode = _audioEngine.inputNode;

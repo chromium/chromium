@@ -11,6 +11,7 @@
 
 @class TTCAudioPlayer;
 @class TTCAudioRecorder;
+@class TTCAudioSessionManager;
 
 // Domain for errors originated by TTCAudioEngine.
 extern NSString* const kTTCAudioEngineErrorDomain;
@@ -27,11 +28,12 @@ enum class TTCAudioEngineErrorCode : NSInteger {
 // TalkToChrome.
 @interface TTCAudioEngine : NSObject <TTCAudioController>
 
-// Designated initializer. Initializes with the specified audio recorder and
-// audio player components. Passing nil for any component instantiates a default
-// instance.
+// Designated initializer. Initializes with the specified audio recorder,
+// audio player, and audio session manager components. Passing nil for any
+// component instantiates a default instance.
 - (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
                           player:(TTCAudioPlayer*)player
+                  sessionManager:(TTCAudioSessionManager*)sessionManager
     NS_DESIGNATED_INITIALIZER;
 
 @end
