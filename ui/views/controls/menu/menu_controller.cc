@@ -1219,6 +1219,8 @@ void MenuController::OnMouseMoved(SubmenuView* source,
   // which may reset the current hot tracked button.
   if (new_hot_tracked_button) {
     SetHotTrackedButton(new_hot_tracked_button);
+  } else if (hot_button_) {
+    SetHotTrackedButton(nullptr);
   }
 
   MaybeForwardToAnnotation(source, event);
