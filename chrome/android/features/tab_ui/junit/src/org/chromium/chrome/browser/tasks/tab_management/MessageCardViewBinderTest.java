@@ -20,49 +20,38 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.OutlineOverlayHelper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link MessageCardViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardViewBinderTest {
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
     private static final int MARGIN_OVERRIDE = 10;
 
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
-    private static Activity sActivity;
-
-    private ViewGroup mItemView;
-    private PropertyModel mItemViewModel;
-    private PropertyModelChangeProcessor mItemMCP;
     private final AtomicBoolean mReviewButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
 
@@ -79,38 +68,44 @@ public class MessageCardViewBinderTest {
             mMessageServiceDismissHandler =
                     messageType -> mMessageServiceDismissCallbackRan.set(true);
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
+    private Activity mActivity;
+    private ViewGroup mItemView;
+    private PropertyModel mItemViewModel;
+    private PropertyModelChangeProcessor mItemMCP;
 
     @Before
     public void setUp() throws Exception {
-        ViewGroup view = new LinearLayout(sActivity);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mActivity = activity;
+                            ViewGroup view = new LinearLayout(mActivity);
+                            mActivity.setContentView(view);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity.setContentView(view);
+                            mItemView =
+                                    (ViewGroup)
+                                            mActivity
+                                                    .getLayoutInflater()
+                                                    .inflate(
+                                                            R.layout.tab_grid_message_card_item,
+                                                            null);
+                            view.addView(mItemView);
 
-                    mItemView =
-                            (ViewGroup)
-                                    sActivity
-                                            .getLayoutInflater()
-                                            .inflate(R.layout.tab_grid_message_card_item, null);
-                    view.addView(mItemView);
+                            mItemViewModel =
+                                    new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                                            .with(
+                                                    MessageCardViewProperties.ACTION_TEXT,
+                                                    ACTION_TEXT)
+                                            .with(
+                                                    MessageCardViewProperties.DESCRIPTION_TEXT,
+                                                    DESCRIPTION_TEXT)
+                                            .build();
 
-                    mItemViewModel =
-                            new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                                    .with(MessageCardViewProperties.ACTION_TEXT, ACTION_TEXT)
-                                    .with(
-                                            MessageCardViewProperties.DESCRIPTION_TEXT,
-                                            DESCRIPTION_TEXT)
-                                    .build();
-
-                    mItemMCP =
-                            PropertyModelChangeProcessor.create(
-                                    mItemViewModel, mItemView, MessageCardViewBinder::bind);
-                });
+                            mItemMCP =
+                                    PropertyModelChangeProcessor.create(
+                                            mItemViewModel, mItemView, MessageCardViewBinder::bind);
+                        });
     }
 
     private String getDescriptionText() {
@@ -118,8 +113,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testInitialBinding() {
         assertEquals(
                 ACTION_TEXT,
@@ -128,16 +121,12 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testBindingDescription_WithoutTemplate() {
         mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, "test");
         assertEquals("test", getDescriptionText());
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testBindingAndClickingReviewHandler() {
         mReviewButtonClicked.set(false);
         mMessageServiceReviewCallbackRan.set(false);
@@ -153,8 +142,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testBindingAndClickingDismissHandler() {
         mDismissButtonClicked.set(false);
         mMessageServiceDismissCallbackRan.set(false);
@@ -172,12 +159,10 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetIconVisibility() {
         int margin =
                 (int)
-                        sActivity
+                        mActivity
                                 .getResources()
                                 .getDimension(R.dimen.tab_grid_iph_item_description_margin);
         ViewGroup.MarginLayoutParams params =
@@ -195,8 +180,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testUpdateMessageCardColor() {
         TextView description = mItemView.findViewById(R.id.description);
         TextView actionButton = mItemView.findViewById(R.id.action_button);
@@ -215,7 +198,7 @@ public class MessageCardViewBinderTest {
                 equalTo(SemanticColorUtils.getDefaultTextColorLink(mItemView.getContext())));
         assertThat(
                 closeButton.getImageTintList().getDefaultColor(),
-                equalTo(sActivity.getColor(R.color.default_icon_color_tint_list)));
+                equalTo(mActivity.getColor(R.color.default_icon_color_tint_list)));
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(
@@ -226,12 +209,10 @@ public class MessageCardViewBinderTest {
                 equalTo(mItemView.getContext().getColor(R.color.default_text_color_link_light)));
         assertThat(
                 closeButton.getImageTintList().getDefaultColor(),
-                equalTo(sActivity.getColor(R.color.default_icon_color_light)));
+                equalTo(mActivity.getColor(R.color.default_icon_color_light)));
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetLeftMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
         mItemViewModel.set(MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
@@ -247,8 +228,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetTopMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
         mItemViewModel.set(MessageCardViewProperties.TOP_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
@@ -264,8 +243,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetRightMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
         mItemViewModel.set(MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
@@ -281,8 +258,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetBottomMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
         mItemViewModel.set(MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
@@ -298,8 +273,6 @@ public class MessageCardViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testFocusOutline() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
 
@@ -338,6 +311,6 @@ public class MessageCardViewBinderTest {
 
     @After
     public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
+        mItemMCP.destroy();
     }
 }
