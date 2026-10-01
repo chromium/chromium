@@ -250,7 +250,12 @@ void UniversalOptOutService::RecordLocation(
   if (!geo_level1.empty()) {
     std::string day_key = base::TimeToValue(current_day).GetString();
     bool is_eligible = IsEligibleLocation(geo_level1);
-    history_update->Set(day_key, is_eligible);
+    // Only record the day's eligibility if it is unset, or if it changed from
+    // ineligible to eligible. Once a user has been eligible at some point
+    // during a day, that day remains eligible.
+    std::optional<bool> existing = history_update->FindBool(day_key);
+    history_update->Set(
+        day_key, is_eligible || (existing.has_value() && existing.value()));
   }
 }
 
