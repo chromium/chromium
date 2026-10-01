@@ -961,11 +961,9 @@ void BrowsingHistoryHandler::HandleQueryResults(
       actions_by_visit_id;
 
   for (const auto& action : processed_actions) {
-    if (action.visit_id == history::kInvalidVisitID ||
-        action.action_type == critical_actions::ActionType::kUnknown) {
-      continue;
+    if (action.action_type != critical_actions::ActionType::kUnknown) {
+      actions_by_visit_id[action.visit_id].push_back(&action);
     }
-    actions_by_visit_id[action.visit_id].push_back(&action);
   }
 
   std::vector<history::mojom::HistoryEntryPtr> results_mojom;
@@ -973,9 +971,9 @@ void BrowsingHistoryHandler::HandleQueryResults(
     history::mojom::HistoryEntryPtr entry_mojom =
         HistoryEntryToMojom(entry, bookmark_model, *profile_, tracker, clock_);
 
-    if (!actions_by_visit_id.empty() &&
-        base::FeatureList::IsEnabled(
-            critical_actions::features::kCriticalActionHistory)) {
+    if (!actions_by_visit_id.empty()) {
+      CHECK(base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory));
       for (history::VisitID visit_id : entry.all_visit_ids) {
         auto it = actions_by_visit_id.find(visit_id);
         if (it != actions_by_visit_id.end()) {
