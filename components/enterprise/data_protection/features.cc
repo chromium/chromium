@@ -4,6 +4,8 @@
 
 #include "components/enterprise/data_protection/features.h"
 
+#include "build/build_config.h"
+
 namespace enterprise_data_protection {
 
 BASE_FEATURE(kEnableAndroidEnterpriseScreenshotProtection,
@@ -14,7 +16,12 @@ BASE_FEATURE(kEnableDeepScanVerdictCacheSize, base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/533005087): Disable the flag on iOS when changing default
 // state to enabled, then support timestamp timezone formatting for iOS.
 BASE_FEATURE(kEnableWatermarkTimestampTimezone,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(size_t,
                    kVerdictCacheMaxSize,
