@@ -19,10 +19,12 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace ash {
@@ -209,13 +211,17 @@ void VideoConferenceAppServiceClient::OnSessionStateChanged(
     return;
   }
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  Profile* profile =
+      active_session
+          ? Profile::FromBrowserContext(
+                BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                    active_session->account_id()))
+          : nullptr;
 
   // Skip the profile that AppServiceProxy is not available.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile) ||
-      !active_user) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     instance_registry_observation_.Reset();
     app_capability_observation_.Reset();
     return;
@@ -230,7 +236,7 @@ void VideoConferenceAppServiceClient::OnSessionStateChanged(
 
   capability_cache_ =
       apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
-          active_user->GetAccountId());
+          active_session->account_id());
   app_capability_observation_.Reset();
   app_capability_observation_.Observe(capability_cache_);
 }

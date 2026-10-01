@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
@@ -20,7 +21,9 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 namespace multidevice_setup {
@@ -34,14 +37,12 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
       : profile_(Profile::FromBrowserContext(context)) {
     const user_manager::User* user =
         ProfileHelper::Get()->GetUserByProfile(profile_);
-    const user_manager::User* primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-
     DCHECK(user);
-    DCHECK(primary_user);
 
     bool is_secondary_user =
-        user->GetAccountId() != primary_user->GetAccountId();
+        user->GetAccountId() !=
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+            .account_id();
 
     multidevice_setup_service_ = std::make_unique<MultiDeviceSetupService>(
         profile_->GetPrefs(),
