@@ -3857,13 +3857,11 @@ KURL HTMLMediaElement::SelectNextSourceChild(
     // 2. If candidate does not have a src attribute, or if its src
     // attribute's value is the empty string ... jump down to the failed
     // step below
-    const AtomicString& src_value =
-        source->FastGetAttribute(html_names::kSrcAttr);
     if (should_log) {
       DVLOG(3) << "selectNextSourceChild(" << *this << ") - 'src' is "
                << UrlForLoggingMedia(media_url);
     }
-    if (src_value.empty()) {
+    if (source->FastGetAttribute(html_names::kSrcAttr).empty()) {
       goto checkAgain;
     }
 
@@ -3878,7 +3876,11 @@ KURL HTMLMediaElement::SelectNextSourceChild(
     // 4. Let urlRecord be the result of encoding-parsing a URL given
     // candidate's src attribute's value, relative to candidate's node document
     // when the src attribute was last changed.
-    media_url = source->GetDocument().CompleteURL(src_value);
+    // Note: Do not cache `kSrcAttr` in a local reference across step 3, as
+    // `MediaQueryMatches()` can trigger style/layout updates that mutate
+    // attributes or reallocate the element's attribute buffer.
+    media_url = source->GetDocument().CompleteURL(
+        source->FastGetAttribute(html_names::kSrcAttr));
 
     // 5. If urlRecord is failure, then end the synchronous section, and jump
     // down to the failed with elements step below.

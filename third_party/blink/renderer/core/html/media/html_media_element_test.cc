@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_source_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
@@ -613,6 +614,11 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
  protected:
+  KURL SelectNextSourceChild(String* content_type,
+                             HTMLMediaElement::InvalidURLAction action) {
+    return Media()->SelectNextSourceChild(content_type, action);
+  }
+
   // Helpers to call MediaPlayerObserver mojo methods and check their results.
   void NotifyMediaPlaying() {
     media_->DidPlayerStartPlaying();
@@ -3646,6 +3652,31 @@ TEST_P(HTMLMediaElementTest, MediaShouldBeOpaque_NetworkState) {
   // opaque.
   SetNetworkState(WebMediaPlayer::kNetworkStateIdle);
   EXPECT_TRUE(MediaShouldBeOpaque());
+}
+
+TEST_P(HTMLMediaElementTest, SelectNextSourceChildMediaQueryMatching) {
+  auto* source1 =
+      Media()->GetDocument().CreateRawElement(html_names::kSourceTag);
+  source1->setAttribute(html_names::kSrcAttr,
+                        AtomicString("http://example.com/not_matched.mp4"));
+  source1->setAttribute(html_names::kMediaAttr, AtomicString("not all"));
+  // Fill up inline attribute vector capacity to verify attribute stability.
+  for (int i = 0; i < 6; ++i) {
+    source1->setAttribute(AtomicString("data-attr" + String::Number(i)),
+                          AtomicString("val"));
+  }
+  Media()->AppendChild(source1);
+
+  auto* source2 =
+      Media()->GetDocument().CreateRawElement(html_names::kSourceTag);
+  source2->setAttribute(html_names::kSrcAttr,
+                        AtomicString("http://example.com/matched.mp4"));
+  source2->setAttribute(html_names::kMediaAttr, AtomicString("all"));
+  Media()->AppendChild(source2);
+
+  String content_type;
+  KURL url = SelectNextSourceChild(&content_type, HTMLMediaElement::kDoNothing);
+  EXPECT_EQ(url.GetString(), "http://example.com/matched.mp4");
 }
 
 TEST_P(HTMLMediaElementTest, SourceWasAddedIgnoredWithSrcObject) {
