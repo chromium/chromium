@@ -4603,8 +4603,8 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
     {"Enabled with branded entry point", kEphemeralBrandedEntryPointEnabled,
      nullptr},
-    {"Enabled with right dock button",
-     kEphemeralBrandedEntryPointWithRightDock, nullptr},
+    {"Enabled with right dock button", kEphemeralBrandedEntryPointWithRightDock,
+     nullptr},
     {"Enabled with circular button next to battery saver",
      kEphemeralBrandedEntryPointWithCircularNextToBatterySaver, nullptr}};
 
@@ -13920,6 +13920,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillGmailOtpPreLaunchMetrics)},
+
+    {"autofill-show-gmail-otp-suggestions",
+     flag_descriptions::kAutofillShowGmailOtpSuggestionsName,
+     flag_descriptions::kAutofillShowGmailOtpSuggestionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillShowGmailOtpSuggestions)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

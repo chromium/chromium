@@ -1011,6 +1011,11 @@ BASE_FEATURE(kAutofillServerExperimentalSignatures,
 // signatures: go/autofill-signatures-more-data.
 BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, autofill suggestions for one-time passwords (OTPs) from Gmail
+// are shown.
+BASE_FEATURE(kAutofillShowGmailOtpSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, fetch sms otp from gmscore and upload votes for sms otp.
 // TODO(crbug.com/453999673): Clean up when launched.
 BASE_FEATURE(kAutofillSmsOtpCrowdsourcingFetchFromGmscore,

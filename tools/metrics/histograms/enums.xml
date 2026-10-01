@@ -9138,6 +9138,7 @@ from previous Chrome versions.
   <int value="-1758987651" label="ModifierSplit:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
+  <int value="-1757505056" label="AutofillShowGmailOtpSuggestions:enabled"/>
   <int value="-1757014990" label="SystemEmojiPickerVariantGrouping:disabled"/>
   <int value="-1756509749" label="ContentAnalysisClipboardCopy:enabled"/>
   <int value="-1756299290" label="WebSerialAPI:enabled"/>
@@ -12546,6 +12547,7 @@ from previous Chrome versions.
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
   <int value="-726844226"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
+  <int value="-726672442" label="AutofillShowGmailOtpSuggestions:disabled"/>
   <int value="-726567328" label="disable-virtual-keyboard"/>
   <int value="-726485467" label="FilesArchivemount:enabled"/>
   <int value="-726176676" label="AudioHFPNbsWarning:disabled"/>

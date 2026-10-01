@@ -1135,6 +1135,12 @@ inline constexpr char kAutofillGmailOtpPreLaunchMetricsDescription[] =
     "Enables pre-launch metrics for one-time passwords (OTPs) received in "
     "Gmail.";
 
+inline constexpr char kAutofillShowGmailOtpSuggestionsName[] =
+    "Show Gmail OTP Suggestions";
+inline constexpr char kAutofillShowGmailOtpSuggestionsDescription[] =
+    "When enabled, shows autofill suggestions for one-time passwords (OTPs) "
+    "received in Gmail.";
+
 inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
     "Enable new American Express network art";
 inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =
@@ -2636,7 +2642,6 @@ inline constexpr char kCWSReviewPromptingNativeUIDescription[] =
     "Enables native UI affordances (e.g., in the Extensions menu and "
     "management page) for leaving reviews on installed Chrome Web Store "
     "extensions.";
-
 
 inline constexpr char kExtensionsOnChromeUrlsName[] =
     "Extensions on chrome:// URLs";
