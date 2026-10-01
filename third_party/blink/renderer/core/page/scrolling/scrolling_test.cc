@@ -3025,14 +3025,24 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
   auto* scroll_node = ScrollNodeByDOMElementId("scroller");
   auto* layer = ScrollbarLayerForScrollNode(
       scroll_node, cc::ScrollbarOrientation::kVertical);
-  // Solid color scrollbars do not repaint (see:
-  // |SolidColorScrollbarLayer::SetNeedsDisplayRect|).
-  if (layer->GetScrollbarLayerType() != cc::ScrollbarLayerBase::kSolidColor) {
-    layer->ResetUpdateRect();
-    ASSERT_TRUE(layer->update_rect().IsEmpty());
+  ASSERT_TRUE(layer);
+  layer->ResetUpdateRect();
+  ASSERT_TRUE(layer->update_rect().IsEmpty());
 
-    auto* scrollable_area = ScrollableAreaByDOMElementId("scroller");
-    scrollable_area->VerticalScrollbar()->SetNeedsPaintInvalidation(kThumbPart);
+  auto* scrollable_area = ScrollableAreaByDOMElementId("scroller");
+  ASSERT_TRUE(scrollable_area);
+  auto* scrollbar = scrollable_area->VerticalScrollbar();
+  ASSERT_TRUE(scrollbar);
+  scrollbar->SetNeedsPaintInvalidation(kThumbPart);
+  if (layer->GetScrollbarLayerType() == cc::ScrollbarLayerBase::kSolidColor) {
+    // SolidColorScrollbarLayer::SetNeedsDisplayRect() does not set update_rect_
+    // because solid color scrollbars do not rasterize on the main thread;
+    // instead, it schedules UpdateLayers() to pull ThumbColor() when
+    // ThumbNeedsRepaint() is true, and damage is tracked on the impl thread via
+    // SolidColorScrollbarLayerImpl::set_color().
+    EXPECT_TRUE(layer->update_rect().IsEmpty());
+    EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+  } else {
     EXPECT_FALSE(layer->update_rect().IsEmpty());
   }
 }

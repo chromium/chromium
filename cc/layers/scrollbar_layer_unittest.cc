@@ -1008,6 +1008,56 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
             0.25f);
 }
 
+TEST_F(ScrollbarLayerTest, SolidColorScrollbarLayerUpdate) {
+  auto scrollbar =
+      CreateSolidColorScrollbar(ScrollbarOrientation::kHorizontal, 10, 0);
+  scrollbar->set_thumb_color(SkColors::kGreen);
+
+  scoped_refptr<SolidColorScrollbarLayer> layer =
+      SolidColorScrollbarLayer::Create(scrollbar);
+  layer_tree_host_->SetRootLayer(layer);
+
+  std::unique_ptr<LayerImpl> impl =
+      layer->CreateLayerImpl(layer_tree_host_->active_tree());
+  auto* layer_impl = static_cast<SolidColorScrollbarLayerImpl*>(impl.get());
+
+  // Before Update(), the impl layer is initialized with transparent color;
+  // first Update() pulls color, clears ThumbNeedsRepaint(), and pushes it to
+  // SolidColorScrollbarLayerImpl.
+  layer->PushPropertiesTo(layer_impl,
+                          *layer_tree_host_->GetPendingCommitState());
+  EXPECT_EQ(layer_impl->color(), SkColors::kTransparent);
+  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+  EXPECT_TRUE(layer->Update());
+  EXPECT_FALSE(scrollbar->ThumbNeedsRepaint());
+  layer->PushPropertiesTo(layer_impl,
+                          *layer_tree_host_->GetPendingCommitState());
+  EXPECT_EQ(layer_impl->color(), SkColors::kGreen);
+
+  // When ThumbNeedsRepaint() is set, Update() pulls the updated thumb color and
+  // PushPropertiesTo() propagates it to SolidColorScrollbarLayerImpl and marks
+  // the LayerImpl property changed.
+  scrollbar->set_thumb_color(SkColors::kRed);
+  scrollbar->set_thumb_needs_repaint(true);
+  layer_impl->ResetChangeTracking();
+  EXPECT_FALSE(layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+  EXPECT_TRUE(layer->Update());
+  layer->PushPropertiesTo(layer_impl,
+                          *layer_tree_host_->GetPendingCommitState());
+  EXPECT_EQ(layer_impl->color(), SkColors::kRed);
+  EXPECT_TRUE(layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+
+  // Changing LayerTreeHost resets the cached color, so Update() pulls the color
+  // even when ThumbNeedsRepaint() is false.
+  scrollbar->set_thumb_color(SkColors::kBlue);
+  layer->SetLayerTreeHost(nullptr);
+  layer->SetLayerTreeHost(layer_tree_host_.get());
+  EXPECT_TRUE(layer->Update());
+  layer->PushPropertiesTo(layer_impl,
+                          *layer_tree_host_->GetPendingCommitState());
+  EXPECT_EQ(layer_impl->color(), SkColors::kBlue);
+}
+
 TEST_P(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   // Pushing changed bounds of scroll layer can lead to calling
   // OnOpacityAnimated on scrollbar layer which means OnOpacityAnimated should

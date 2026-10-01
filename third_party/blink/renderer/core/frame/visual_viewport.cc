@@ -865,6 +865,7 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
                                 ScrollbarThickness())
                     : gfx::Size(ScrollbarThickness(),
                                 size_.height() - ScrollbarThickness()));
+  scrollbar_layer->SetNeedsDisplay();
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {

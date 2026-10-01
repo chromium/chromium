@@ -35,7 +35,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int ThumbThickness() const override;
 
-  void set_color(SkColor4f color) { color_ = color; }
+  void set_color(SkColor4f color);
 
   int thumb_thickness() const { return thumb_thickness_; }
   int track_start() const { return track_start_; }

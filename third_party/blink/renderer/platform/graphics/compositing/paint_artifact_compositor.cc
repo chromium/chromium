@@ -14,7 +14,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
-#include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
@@ -1754,25 +1753,6 @@ bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
     if (cc::Layer* layer = host->LayerByElementId(element_id)) {
       layer->SetNeedsDisplay();
       return true;
-    }
-  }
-  // The scrollbar isn't currently composited.
-  return false;
-}
-
-bool PaintArtifactCompositor::SetScrollbarSolidColor(
-    CompositorElementId element_id,
-    SkColor4f color) {
-  DCHECK(root_layer_);
-  CHECK(ScrollbarDisplayItem::IsScrollbarElementId(element_id));
-  if (cc::LayerTreeHost* host = root_layer_->layer_tree_host()) {
-    if (cc::Layer* layer = host->LayerByElementId(element_id)) {
-      if (static_cast<cc::ScrollbarLayerBase*>(layer)
-              ->GetScrollbarLayerType() ==
-          cc::ScrollbarLayerBase::kSolidColor) {
-        static_cast<cc::SolidColorScrollbarLayer*>(layer)->SetColor(color);
-        return true;
-      }
     }
   }
   // The scrollbar isn't currently composited.

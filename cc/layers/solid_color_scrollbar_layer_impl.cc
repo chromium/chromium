@@ -59,6 +59,14 @@ void SolidColorScrollbarLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {
   static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color_);
 }
 
+void SolidColorScrollbarLayerImpl::set_color(SkColor4f color) {
+  if (color_ == color) {
+    return;
+  }
+  color_ = color;
+  NoteLayerPropertyChanged();
+}
+
 int SolidColorScrollbarLayerImpl::ThumbThickness() const {
   if (thumb_thickness_ != -1)
     return thumb_thickness_;

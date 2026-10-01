@@ -797,15 +797,8 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
     if (auto* scrollbar = GetScrollbar(orientation)) {
       if (auto* compositor =
               box->GetFrameView()->GetPaintArtifactCompositor()) {
-        CompositorElementId element_id = GetScrollbarElementId(orientation);
-        if (scrollbar->IsSolidColor()) {
-          // This will call SetNeedsDisplay() if the color changes (which is
-          // the only reason for a SolidColorScrollbarLayer to update display).
-          if (compositor->SetScrollbarSolidColor(
-                  element_id, scrollbar->GetTheme().ThumbColor(*scrollbar))) {
-            scrollbar->ClearNeedsUpdateDisplay();
-          }
-        } else if (compositor->SetScrollbarNeedsDisplay(element_id)) {
+        if (compositor->SetScrollbarNeedsDisplay(
+                GetScrollbarElementId(orientation))) {
           scrollbar->ClearNeedsUpdateDisplay();
         }
       }
