@@ -14,6 +14,7 @@ class SkImage;
 class SkPaint;
 
 namespace gfx {
+class ColorSpace;
 struct HDRMetadata;
 }  // namespace gfx
 
@@ -33,6 +34,12 @@ class CC_PAINT_EXPORT ToneMapUtil {
   // using a tone mapping shader.
   static bool UseGlobalToneMapFilter(const SkColorSpace* cs,
                                      const gfx::HDRMetadata& metadata);
+
+  // Return the maximum HDR headroom that this content will render to.
+  static float GetMaxHdrHeadroom(const SkColorSpace* cs,
+                                 const gfx::HDRMetadata& metadata);
+  static float GetMaxHdrHeadroom(const gfx::ColorSpace& cs,
+                                 const gfx::HDRMetadata& metadata);
 
   // Add a color filter to `paint` that will perform tone mapping.
   static void AddGlobalToneMapFilterToPaint(SkPaint& paint,

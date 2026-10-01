@@ -75,6 +75,7 @@ component("accelerated_widget_mac") {
   deps = [
     "//base",
     "//build:ios_buildflags",
+    "//cc/paint",
     "//components/metal_util",
     "//media",
     "//skia",

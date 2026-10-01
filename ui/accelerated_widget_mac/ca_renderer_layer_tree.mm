@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/tone_map_util.h"
 #include "components/metal_util/hdr_copier_layer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -1280,7 +1281,9 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
 
   if (UseCALayerContentsHeadroom() && update_contents) {
     if (@available(macOS 26, iOS 26, *)) {
-      if (io_surface_color_space_.IsHDR()) {
+      float max_hdr_headroom = cc::ToneMapUtil::GetMaxHdrHeadroom(
+          io_surface_color_space_, hdr_metadata_);
+      if (io_surface_color_space_.IsHDR() || max_hdr_headroom > 0.f) {
         // Assume that all HDR content uses the full 4 stops (16x linear)
         // headroom that an XDR display supports. Replace this when an accurate
         // TODO(https://crbug.com/540031280): Accurately track content HDR
