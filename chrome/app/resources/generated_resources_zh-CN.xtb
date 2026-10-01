@@ -6489,7 +6489,7 @@
 <translation id="5999630716831179808">语音</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6002122790816966947">您的设备</translation>
-<translation id="6002210667729577411">将标签页组移至新窗口</translation>
+<translation id="6002210667729577411">将分组移至新窗口</translation>
 <translation id="6002458620803359783">首选语音</translation>
 <translation id="6003143259071779217">移除 eSIM 卡移动网络</translation>
 <translation id="6003479444341796444">标题栏现已显示</translation>
@@ -10675,7 +10675,7 @@
 <translation id="933427034780221291">{NUM_FILES,plural, =1{这个文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}other{这些文件中的部分文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}}</translation>
 <translation id="93343527085570547">如要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将部分账号和系统信息发送给 Google。我们会根据<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />使用您提供的信息，以解决技术问题并改进服务。</translation>
 <translation id="93393615658292258">密码</translation>
-<translation id="934244546219308557">为此组命名</translation>
+<translation id="934244546219308557">为此分组命名</translation>
 <translation id="934691243060106451">在 <ph name="DEVICE_TYPE" /> 上接收价格跟踪提醒</translation>
 <translation id="93480724622239549">问题或错误</translation>
 <translation id="9354763467503131">可以请求在设备上安装 Web 应用</translation>
