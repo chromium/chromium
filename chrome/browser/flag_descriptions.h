@@ -5632,11 +5632,6 @@ inline constexpr char kAndroidStartupImprovementsDescription[] =
     "recording) out of the Chrome Android startup path to reduce startup "
     "latency.";
 
-inline constexpr char kAndroidSurfaceColorUpdateName[] =
-    "Android surface color update.";
-inline constexpr char kAndroidSurfaceColorUpdateDescription[] =
-    "If enabled, updates the android surface colors for toolbar/omnibox.";
-
 inline constexpr char kAndroidTabstripStartupCaptureBugFixName[] =
     "Android Tabstrip Startup Capture Bug Fix";
 inline constexpr char kAndroidTabstripStartupCaptureBugFixDescription[] =
@@ -6290,11 +6285,6 @@ inline constexpr char kGooglePayViaAndroidIntentsName[] =
 inline constexpr char kGooglePayViaAndroidIntentsDescription[] =
     "When enabled, use Android intents for Google Pay payment methods "
     "(https://google.com/pay and https://pay.google.com/authentication).";
-
-inline constexpr char kGridTabSwitcherSurfaceColorUpdateName[] =
-    "Grid tab switcher surface color update";
-inline constexpr char kGridTabSwitcherSurfaceColorUpdateDescription[] =
-    "Enables grid tab switcher surface color update";
 
 inline constexpr char kHistoryPaneAndroidName[] = "History Pane Android";
 inline constexpr char kHistoryPaneAndroidDescription[] =
