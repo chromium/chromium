@@ -27,7 +27,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSensorsAllowAskBlockPermissionModel,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &kAndroidUnknownGamepadExtraAxes,
-    &device::features::kGmsCoreLocationRequestParamOverride,
     &device::features::kGmsCoreFailClosedOnPreciseLeak};
 
 // static

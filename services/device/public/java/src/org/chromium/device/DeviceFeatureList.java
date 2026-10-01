@@ -4,12 +4,9 @@
 
 package org.chromium.device;
 
-import android.text.format.DateUtils;
-
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.MutableFlagWithSafeDefault;
-import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -32,18 +29,8 @@ public abstract class DeviceFeatureList {
     public static final String GMS_CORE_FAIL_CLOSED_ON_PRECISE_LEAK =
             "GmsCoreFailClosedOnPreciseLeak";
 
-    public static final MutableFlagWithSafeDefault sGmsCoreLocationRequestParamOverride =
-            newMutableFlagWithSafeDefault("GmsCoreLocationRequestParamOverride", false);
     public static final MutableFlagWithSafeDefault sGmsCoreFailClosedOnPreciseLeak =
             newMutableFlagWithSafeDefault(GMS_CORE_FAIL_CLOSED_ON_PRECISE_LEAK, true);
-    public static final MutableIntParamWithSafeDefault sGmsCoreLocationRequestUpdateInterval =
-            sGmsCoreLocationRequestParamOverride.newIntParam(
-                    "location_request_min_update_interval_millis",
-                    (int) (9 * DateUtils.SECOND_IN_MILLIS));
-    public static final MutableIntParamWithSafeDefault sGmsCoreLocationRequestMaxLocationAge =
-            sGmsCoreLocationRequestParamOverride.newIntParam(
-                    "location_request_max_location_age_mills",
-                    (int) (5 * DateUtils.SECOND_IN_MILLIS));
 
     private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {

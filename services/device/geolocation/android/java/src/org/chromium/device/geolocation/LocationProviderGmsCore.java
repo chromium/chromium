@@ -145,18 +145,6 @@ public class LocationProviderGmsCore implements LocationProvider {
             locationRequest.setPriority(priority).setInterval(interval);
         }
 
-        if (DeviceFeatureList.sGmsCoreLocationRequestParamOverride.isEnabled()) {
-            locationRequest =
-                    new LocationRequest.Builder(locationRequest)
-                            .setIntervalMillis(
-                                    DeviceFeatureList.sGmsCoreLocationRequestUpdateInterval
-                                            .getValue())
-                            .setMaxUpdateAgeMillis(
-                                    DeviceFeatureList.sGmsCoreLocationRequestMaxLocationAge
-                                            .getValue())
-                            .build();
-        }
-
         final boolean requestedHighAccuracy = enableHighAccuracy;
         stop();
         mLocationCallback =
