@@ -6224,7 +6224,7 @@
   {
     "name": "identity-awareness",
     "owners": [ "jlebel@google.com", "chrome-signin-mobile-team@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "ignore-gpu-blocklist",
