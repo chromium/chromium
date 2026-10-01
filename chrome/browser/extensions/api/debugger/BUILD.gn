@@ -37,6 +37,7 @@ source_set("debugger") {
   ]
 
   deps = [
+    "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/devtools",

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
@@ -39,13 +40,12 @@ ExtensionDevToolsMessageDelegate::ExtensionDevToolsMessageDelegate(
       base::BindOnce(&ExtensionDevToolsMessageDelegate::OnMessageDismissed,
                      base::Unretained(this)));
 
-  const size_t kMaxExtensionNameLength = 1000;
   std::u16string ext_name = base::UTF8ToUTF16(extension_name);
   // TODO(crbug.com/518840663): Rename the IDS and IDR resource names to remove
   // "infobar". Perhaps replace with "warning"?
   message_->SetTitle(
       l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_INFOBAR_LABEL,
-                                 ext_name.substr(0, kMaxExtensionNameLength)));
+                                 GetExtensionNameForDevToolsWarning(ext_name)));
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_APP_CANCEL));
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_PERMISSION_WARNING));

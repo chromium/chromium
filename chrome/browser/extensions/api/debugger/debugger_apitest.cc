@@ -95,8 +95,13 @@
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
+#include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -989,6 +994,64 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
   // Verify inforbar removed.
   EXPECT_EQ(0u, manager->infobars().size());
+}
+
+// Regression test for https://crbug.com/514078071: truncating a long extension
+// name must not strip the PDF that terminates a directional override in it,
+// which would otherwise visually reverse the rest of the infobar message.
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       InfoBarTerminatesDirectionalFormattingInLongName) {
+  // Put an RLO before the 1000 character truncation point, and make the name
+  // long enough that the PDF appended by name sanitization is truncated away.
+  const std::u16string name = std::u16string(980, u'A') +
+                              base::i18n::kRightToLeftOverride +
+                              u".won efas si emorhC" + std::u16string(40, u'B');
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      R"({
+           "name": "%s",
+           "version": "0.1",
+           "manifest_version": 2,
+           "permissions": ["debugger"]
+         })",
+      base::UTF16ToUTF8(name).c_str()));
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const int tab_id =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(extension);
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(),
+      base::StringPrintf(R"([{"tabId": %d}, "1.1"])", tab_id), profile()));
+
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
+  ASSERT_EQ(1u, manager->infobars().size());
+  ConfirmInfoBarDelegate* delegate =
+      manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  const std::u16string message = delegate->GetMessageText();
+
+  // Split the message into the part containing the (truncated) extension name
+  // and the trailing, security-relevant part of the message template.
+  size_t name_offset = 0;
+  const std::u16string message_template = l10n_util::GetStringFUTF16(
+      IDS_DEV_TOOLS_INFOBAR_LABEL, std::u16string(), &name_offset);
+  const std::u16string suffix = message_template.substr(name_offset);
+  ASSERT_FALSE(suffix.empty());
+  ASSERT_TRUE(message.ends_with(suffix)) << base::UTF16ToUTF8(message);
+  ASSERT_NE(std::u16string::npos,
+            message.find(base::i18n::kRightToLeftOverride));
+
+  // All directional formatting must be terminated before the suffix.
+  const std::u16string prefix =
+      message.substr(0, message.size() - suffix.size());
+  std::u16string terminated_prefix = prefix;
+  base::i18n::EnsureTerminatedDirectionalFormatting(&terminated_prefix);
+  EXPECT_EQ(prefix, terminated_prefix);
 }
 
 // Android does not support multiple profiles in Chrome. User switching is

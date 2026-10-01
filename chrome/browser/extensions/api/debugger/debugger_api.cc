@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -859,6 +860,29 @@ ExtensionDevToolsClientHost::GetNavigationInitiatorOrigin() {
   return extension_->origin();
 }
 
+namespace {
+
+// When rendering the text is being truncated to a 10000 characters (see
+// https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/render_text_harfbuzz.cc;l=70-71;drc=736ed6e5da7f81505b547d4b03d31b30ed025a46).
+// If the extension name is longer then this limit, the part of the text saying
+// that "... is debugging the browser" would be truncated. To work this around
+// enforce more modest limit on the name length here, so that the user will see
+// '<end of extension name> is debugging the browser.
+constexpr size_t kMaxExtensionNameLength = 1000;
+
+}  // namespace
+
+std::u16string GetExtensionNameForDevToolsWarning(
+    std::u16string_view extension_name) {
+  std::u16string name(extension_name.substr(0, kMaxExtensionNameLength));
+  // The name was sanitized when the extension was loaded, but the truncation
+  // above may have dropped the characters terminating its directional
+  // formatting. Terminate it again so that it can't spill over into the rest of
+  // the warning.
+  base::i18n::EnsureTerminatedDirectionalFormatting(&name);
+  return name;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // static
 ExtensionDevToolsInfoBarController*
@@ -875,9 +899,8 @@ ExtensionDevToolsInfoBarController::~ExtensionDevToolsInfoBarController() =
 // static
 std::vector<MessageSubstitution>
 ExtensionDevToolsInfoBarController::GetMessageSubstitutions() {
-  const size_t kMaxExtensionNameLength = 1000;
   return {MessageSubstitution(
-      GetInstance()->last_extension_name_.substr(0, kMaxExtensionNameLength),
+      GetExtensionNameForDevToolsWarning(GetInstance()->last_extension_name_),
       /*is_link=*/false, /*accessible_name=*/std::nullopt)};
 }
 
