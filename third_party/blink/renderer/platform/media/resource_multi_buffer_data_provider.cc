@@ -382,7 +382,11 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     // Call callback to let upstream users know about the transfer.
     // This will merge the data from the two multibuffers and
     // cause clients to start using the new UrlData.
+    auto weak_this = weak_factory_.GetWeakPtr();
     old_url_data->RedirectTo(destination_url_data);
+    if (!weak_this) {
+      return;  // "this" may be deleted now.
+    }
   }
 
   if (do_fail) {

@@ -2242,4 +2242,50 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
                                                   UrlData::kNormal));
 }
 
+TEST_F(MultiBufferDataSourceTest, Http_RedirectToCachedUrlWithStopPreloading) {
+  // Populate the cache for `kHttpDifferentPathUrl` with 2 blocks (64KB), which
+  // exceeds the METADATA preload_high threshold (48KB).
+  Initialize(kHttpDifferentPathUrl, true);
+  EXPECT_CALL(host_, SetTotalBytes(response_generator_->content_length()));
+  Respond(response_generator_->Generate206(0));
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
+  ReceiveData(kDataSize);
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize * 2));
+  ReceiveData(kDataSize);
+  Stop();
+
+  // Initialize a new data source for `kHttpUrl` with METADATA preload and
+  // receive less than one full block (1024 bytes) so `init_cb_` stays pending
+  // while `loading_` becomes true. Calling `StopPreloading()` then sets
+  // `cancel_on_defer_` without resetting `reader_`. When the partial-data retry
+  // redirects to the already-cached `kHttpDifferentPathUrl`, `RedirectTo()`
+  // synchronously resets `reader_` and deletes
+  // `ResourceMultiBufferDataProvider` while `DidReceiveResponse` is still on
+  // the stack.
+  set_preload(MultiBufferDataSource::METADATA);
+  Initialize(kHttpUrl, false);
+  Respond(response_generator_->Generate206(0));
+  EXPECT_CALL(host_, AddBufferedByteRange(0, 1024));
+  ReceiveData(1024);
+  data_source_->StopPreloading();
+  ASSERT_TRUE(active_loader());
+
+  base::RunLoop run_loop;
+  data_provider()->DidFinishLoading();
+  data_provider()->RunOnStart(run_loop.QuitClosure());
+  run_loop.Run();
+
+  WebURL redir_url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse redirect_response{KURL(kHttpUrl)};
+  redirect_response.SetHttpStatusCode(307);
+  data_provider()->WillFollowRedirect(redir_url, redirect_response);
+
+  EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize * 2))
+      .Times(testing::AtLeast(1));
+  Respond(response_generator_->Generate206(0));
+
+  EXPECT_FALSE(loading());
+  Stop();
+}
+
 }  // namespace blink
