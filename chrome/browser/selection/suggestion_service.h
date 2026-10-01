@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_SELECTION_SUGGESTION_SERVICE_H_
 #define CHROME_BROWSER_SELECTION_SUGGESTION_SERVICE_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -21,6 +23,15 @@ namespace content {
 class WebContents;
 }
 
+namespace optimization_guide {
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
+class RemoteModelExecutor;
+namespace proto {
+class SmartSelectionSuggestionsRequest;
+}  // namespace proto
+}  // namespace optimization_guide
+
 namespace tabs {
 class TabInterface;
 }
@@ -33,7 +44,9 @@ class SuggestionService {
  public:
   DECLARE_USER_DATA(SuggestionService);
 
-  explicit SuggestionService(tabs::TabInterface* tab);
+  SuggestionService(
+      tabs::TabInterface* tab,
+      optimization_guide::RemoteModelExecutor* remote_model_executor);
   virtual ~SuggestionService();
 
   SuggestionService(const SuggestionService&) = delete;
@@ -61,6 +74,23 @@ class SuggestionService {
  private:
   struct ActiveRequest;
 
+  // Requests suggestions for `aoi` from MES.
+  void RequestServerSuggestions(const AreaOfInterest& aoi,
+                                scoped_refptr<ActiveRequest> active_request);
+
+  // Attaches `png_bytes` (if any) to `request` and sends it to MES.
+  void SendServerSuggestionsRequest(
+      scoped_refptr<ActiveRequest> active_request,
+      optimization_guide::proto::SmartSelectionSuggestionsRequest request,
+      std::optional<std::vector<uint8_t>> png_bytes);
+
+  // Processes the server response by calling tools to convert the response into
+  // `Suggestion`s and calling the initial `callback` with them.
+  void OnServerSuggestions(
+      scoped_refptr<ActiveRequest> active_request,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   void OnToolSuggestions(
       scoped_refptr<ActiveRequest> active_request,
       bool& tool_completed,
@@ -68,6 +98,7 @@ class SuggestionService {
       bool complete);
 
   const raw_ref<tabs::TabInterface> tab_;
+  const raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
   base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>> tools_;
 
   ui::ScopedUnownedUserData<SuggestionService> scoped_unowned_user_data_;

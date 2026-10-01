@@ -5,18 +5,127 @@
 #include "chrome/browser/selection/suggestion_service.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
+#include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/extend.h"
+#include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/selection/features.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/version_info/version_info.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace selection {
+
+namespace {
+
+namespace proto = ::optimization_guide::proto;
+
+// Converts `aoi` into its proto representation, excluding screenshot data.
+proto::AreaOfInterest ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
+  proto::AreaOfInterest proto_aoi;
+  if (const gfx::Rect* rect = std::get_if<gfx::Rect>(&aoi.bounds)) {
+    proto::Rectangle& selection = *proto_aoi.mutable_selection();
+    selection.set_x(rect->x());
+    selection.set_y(rect->y());
+    selection.set_width(rect->width());
+    selection.set_height(rect->height());
+  }
+  *proto_aoi.mutable_annotated_page_content() = aoi.apc;
+  return proto_aoi;
+}
+
+// Builds a request proto for `aoi` and `tools`, excluding screenshot data.
+// Returns `std::nullopt` if no tools with a valid `ToolId` are registered.
+std::optional<proto::SmartSelectionSuggestionsRequest>
+BuildServerSuggestionsRequest(
+    const AreaOfInterest& aoi,
+    const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
+        tools) {
+  proto::SmartSelectionSuggestionsRequest request;
+  proto::SmartSelectionClientCapabilities& capabilities =
+      *request.mutable_client_capabilities();
+  for (const auto& [tool_id, tool] : tools) {
+    // TODO(crbug.com/561489586): Allow tools to exclude themselves from being
+    // shared.
+    if (tool_id == proto::SMART_SELECTION_TOOL_UNSPECIFIED) {
+      continue;
+    }
+    proto::SmartSelectionToolWithCapabilities& tool_cap =
+        *capabilities.add_available_tools();
+    tool_cap.set_tool(tool_id);
+    // TODO(crbug.com/561489586): Populate tool capabilities.
+  }
+  if (capabilities.available_tools().empty()) {
+    return std::nullopt;
+  }
+
+  if (g_browser_process) {
+    capabilities.set_locale(g_browser_process->GetApplicationLocale());
+  }
+  capabilities.set_platform(optimization_guide::GetChromePlatform());
+  capabilities.set_chrome_version(
+      std::string(version_info::GetVersionNumber()));
+
+  *request.add_areas_of_interest() = ToProtoAreaOfInterest(aoi);
+  return request;
+}
+
+// Parses `result` and invokes the corresponding `tools` to create
+// `Suggestion`s.
+std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
+    const optimization_guide::OptimizationGuideModelExecutionResult& result,
+    const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
+        tools) {
+  if (!result.response.has_value()) {
+    return {};
+  }
+
+  const std::optional<proto::SmartSelectionSuggestionsResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          proto::SmartSelectionSuggestionsResponse>(result.response.value());
+  if (!response.has_value()) {
+    return {};
+  }
+
+  std::vector<std::unique_ptr<Suggestion>> suggestions;
+  suggestions.reserve(response->suggestions().size());
+  for (const proto::SmartSelectionSuggestion& server_suggestion :
+       response->suggestions()) {
+    if (server_suggestion.tool() == proto::SMART_SELECTION_TOOL_UNSPECIFIED) {
+      continue;
+    }
+    if (const raw_ptr<SuggestionTool>* tool =
+            base::FindOrNull(tools, server_suggestion.tool())) {
+      if (std::unique_ptr<Suggestion> suggestion =
+              (*tool)->CreateSuggestion(server_suggestion)) {
+        suggestions.emplace_back(std::move(suggestion));
+      }
+    }
+  }
+  return suggestions;
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(SuggestionService);
 
@@ -25,10 +134,15 @@ struct SuggestionService::ActiveRequest
   ActiveRequest(size_t num_tools, SuggestionsCallback cb)
       : remaining_tools(num_tools), callback(std::move(cb)) {}
 
+  bool complete() const {
+    return remaining_tools == 0 && !is_awaiting_server_suggestions;
+  }
+
   size_t remaining_tools;
   SuggestionsCallback callback;
   bool in_synchronous_dispatch = true;
   bool has_synchronous_response = false;
+  bool is_awaiting_server_suggestions = false;
   std::vector<std::unique_ptr<Suggestion>> synchronous_suggestions;
 
  private:
@@ -49,8 +163,11 @@ SuggestionService* SuggestionService::FromTabWebContents(
   return From(tab);
 }
 
-SuggestionService::SuggestionService(tabs::TabInterface* tab)
+SuggestionService::SuggestionService(
+    tabs::TabInterface* tab,
+    optimization_guide::RemoteModelExecutor* remote_model_executor)
     : tab_(CHECK_DEREF(tab)),
+      remote_model_executor_(remote_model_executor),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
 
 SuggestionService::~SuggestionService() {
@@ -104,11 +221,74 @@ void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
   }
 
   active_request->in_synchronous_dispatch = false;
+  RequestServerSuggestions(processed_area, active_request);
+
   if (active_request->has_synchronous_response) {
-    bool all_complete = active_request->remaining_tools == 0;
     active_request->callback.Run(
-        std::move(active_request->synchronous_suggestions), all_complete);
+        std::exchange(active_request->synchronous_suggestions, {}),
+        active_request->complete());
   }
+}
+
+void SuggestionService::RequestServerSuggestions(
+    const AreaOfInterest& aoi,
+    scoped_refptr<ActiveRequest> active_request) {
+  if (!remote_model_executor_ ||
+      !base::FeatureList::IsEnabled(kSmartSelectionServerSuggestions)) {
+    return;
+  }
+
+  std::optional<proto::SmartSelectionSuggestionsRequest> request =
+      BuildServerSuggestionsRequest(aoi, tools_);
+  if (!request.has_value()) {
+    return;
+  }
+
+  active_request->is_awaiting_server_suggestions = true;
+  // TODO(crbug.com/561489586): Investigate alternative image encoding and
+  // compression mechanisms.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, aoi.screenshot,
+                     /*discard_transparency=*/false),
+      base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
+                     weak_factory_.GetWeakPtr(), std::move(active_request),
+                     *std::move(request)));
+}
+
+void SuggestionService::SendServerSuggestionsRequest(
+    scoped_refptr<ActiveRequest> active_request,
+    proto::SmartSelectionSuggestionsRequest request,
+    std::optional<std::vector<uint8_t>> png_bytes) {
+  if (png_bytes.has_value()) {
+    CHECK_EQ(request.areas_of_interest_size(), 1);
+    proto::AreaOfInterest& proto_aoi = *request.mutable_areas_of_interest(0);
+    proto_aoi.set_image_bytes(base::as_string_view(*png_bytes));
+    proto_aoi.set_mime_type("image/png");
+  }
+
+  // TODO(crbug.com/561489586): Consider adding logging.
+  // TODO(crbug.com/561489586): Add a configurable time-out.
+  remote_model_executor_->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
+      request, /*options=*/{},
+      base::BindOnce(&SuggestionService::OnServerSuggestions,
+                     weak_factory_.GetWeakPtr(), std::move(active_request)));
+}
+
+void SuggestionService::OnServerSuggestions(
+    scoped_refptr<ActiveRequest> active_request,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!active_request->is_awaiting_server_suggestions) {
+    return;
+  }
+  active_request->is_awaiting_server_suggestions = false;
+
+  active_request->callback.Run(ExtractSuggestionsFromResponse(result, tools_),
+                               active_request->complete());
 }
 
 void SuggestionService::OnToolSuggestions(
@@ -126,9 +306,8 @@ void SuggestionService::OnToolSuggestions(
                  std::move(suggestions));
     return;
   }
-  bool all_complete = (active_request->remaining_tools == 0);
-  active_request->callback.Run(std::move(suggestions), all_complete);
+  active_request->callback.Run(std::move(suggestions),
+                               active_request->complete());
 }
 
 }  // namespace selection
-

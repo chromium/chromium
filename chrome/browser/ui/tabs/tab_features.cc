@@ -509,8 +509,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);
       selection_suggestion_service_ =
-          GetUserDataFactory()
-              .CreateInstance<selection::SuggestionService>(tab, &tab);
+          GetUserDataFactory().CreateInstance<selection::SuggestionService>(
+              tab, &tab,
+              OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());

@@ -6,6 +6,8 @@ assert(!is_android)
 
 source_set("selection") {
   sources = [
+    "features.cc",
+    "features.h",
     "suggestion.cc",
     "suggestion.h",
     "suggestion_service.cc",
@@ -24,7 +26,11 @@ source_set("selection") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
+    "//components/optimization_guide/core",
     "//components/tabs:public",
+    "//components/version_info",
+    "//ui/gfx/codec",
   ]
 }
 
@@ -39,6 +45,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_interfaces",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/tabs:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
