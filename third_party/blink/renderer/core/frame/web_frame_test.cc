@@ -12467,6 +12467,27 @@ TEST_F(WebFrameTest, DiscardFrame) {
                     ->innerText());
 }
 
+TEST_F(WebFrameTest, DiscardFrameRunsUnloadEvents) {
+  DisableRendererSchedulerThrottling();
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  helper.LocalMainFrame()->ExecuteScript(
+      WebScriptSource("window.name = '';"
+                      "window.addEventListener('pagehide', () => { window.name "
+                      "+= 'pagehide,'; });"
+                      "window.addEventListener('unload', () => { window.name "
+                      "+= 'unload'; });"));
+
+  helper.LocalMainFrame()->GetFrame()->Discard();
+  RunPendingTasks();
+
+  EXPECT_EQ("pagehide,unload",
+            helper.LocalMainFrame()->GetFrame()->Tree().GetName());
+}
+
 // Tests to ensure that DocumentResourceCoordinators are not instantiated for
 // discarded documents, which are installed following a frame discard operation.
 TEST_F(WebFrameTest, ResourceCoordinatorNotCreatedForDiscardedDocument) {
