@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -29,7 +28,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
@@ -141,9 +139,6 @@ public class SiteSearchTest {
 
     @Test
     @LargeTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
-            message = "https://crbug.com/568381256")
     public void testSiteSearchTriggeredByTab() {
         // Open Chrome -> select omnibox -> type "test"
         mOmniboxUtils.requestFocus();
