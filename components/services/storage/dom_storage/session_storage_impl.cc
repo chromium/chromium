@@ -533,6 +533,11 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
     return;
   }
 
+  if (database_ && database_->is_migrating()) {
+    // Don't delete the source database while a migration is in progress.
+    return;
+  }
+
   commit_error_count_++;
   if (commit_error_count_ > kCommitErrorThreshold) {
     if (tried_to_recover_from_commit_errors_) {

@@ -186,7 +186,7 @@ class SessionStorageNamespaceImpl final
       const std::map<std::string, std::unique_ptr<SessionStorageNamespaceImpl>>&
           namespaces_map);
 
-  StorageAreaImpl* GetStorageAreaForTesting(
+  SessionStorageAreaImpl* GetStorageAreaForTesting(
       const blink::StorageKey& storage_key);
   void FlushAreasForTesting();
   void FlushStorageKeyForTesting(const blink::StorageKey& storage_key);
