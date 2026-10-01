@@ -37,12 +37,12 @@ const int64_t kDefaultCurrentTime = 1577843000000L;
 
 // The Base64 encoded values of these raw data strings are, respectively:
 // "Zmlyc3RTZWVk", "c2Vjb25kU2VlZA==", "dGhpcmRTZWVk","Zm91cnRoU2VlZA==".
-const std::string kFirstSeed = "firstSeed";
-const std::string kSecondSeed = "secondSeed";
-const std::string kThirdSeed = "thirdSeed";
-const std::string kFourthSeed = "fourthSeed";
+constexpr char kFirstSeed[] = "firstSeed";
+constexpr char kSecondSeed[] = "secondSeed";
+constexpr char kThirdSeed[] = "thirdSeed";
+constexpr char kFourthSeed[] = "fourthSeed";
 
-const std::string kDefaultAdvertisingDevicePublicKey = "publicKey";
+constexpr char kDefaultAdvertisingDevicePublicKey[] = "publicKey";
 
 cryptauth::BeaconSeed CreateBeaconSeed(const std::string& data,
                                        int64_t start_timestamp_ms,

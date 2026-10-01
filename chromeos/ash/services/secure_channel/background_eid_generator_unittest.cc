@@ -34,10 +34,10 @@ const int64_t kStartPeriodMs = 1577836800000L;
 // 1:43am on 1/1/2020.
 const int64_t kCurrentTimeMs = 1577843000000L;
 
-const std::string kFirstSeed = "firstSeed";
-const std::string kSecondSeed = "secondSeed";
-const std::string kThirdSeed = "thirdSeed";
-const std::string kFourthSeed = "fourthSeed";
+constexpr char kFirstSeed[] = "firstSeed";
+constexpr char kSecondSeed[] = "secondSeed";
+constexpr char kThirdSeed[] = "thirdSeed";
+constexpr char kFourthSeed[] = "fourthSeed";
 
 cryptauth::BeaconSeed CreateBeaconSeed(const std::string& data,
                                        const int64_t start_timestamp_ms,

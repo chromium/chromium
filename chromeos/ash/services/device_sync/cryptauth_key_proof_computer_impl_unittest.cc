@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
@@ -63,7 +64,7 @@ const std::array<uint8_t, 138> kTestPrivateKeyBytes = {
     0x08, 0xb8, 0xbc, 0x99, 0xa4, 0x1a, 0xe9, 0xe9, 0x56, 0x28, 0xbc, 0x64,
     0xf2, 0xf1, 0xb2, 0x0c, 0x2d, 0x7e, 0x9f, 0x51, 0x77, 0xa3, 0xc2, 0x94,
     0xd4, 0x46, 0x22, 0x99};
-const std::string kAsymmetricTestSalt = "salt";
+constexpr char kAsymmetricTestSalt[] = "salt";
 
 // For generating symmetric key proofs, we internally derive a key before
 // signing. Here, we use the first HKDF test case from RFC 5869 so we have a
@@ -89,7 +90,7 @@ const std::array<uint8_t, 32> kExpectedDerivedSymmetricKey32Bytes = {
     0x64, 0xd0, 0x36, 0x2f, 0x2a, 0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a,
     0x5a, 0x4c, 0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, 0xc5, 0xbf};
 
-const std::string kTestPayload = "sample";
+constexpr char kTestPayload[] = "sample";
 
 std::string ByteVectorToString(base::span<const uint8_t> byte_array) {
   return std::string(byte_array.begin(), byte_array.end());
@@ -122,7 +123,7 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   ASSERT_TRUE(public_key);
   EXPECT_TRUE(crypto::sign::Verify(
       crypto::sign::ECDSA_SHA256, *public_key,
-      StringToByteVector(kAsymmetricTestSalt + kTestPayload),
+      StringToByteVector(base::StrCat({kAsymmetricTestSalt, kTestPayload})),
       StringToByteVector(*key_proof)));
 }
 
@@ -142,9 +143,9 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
 
   // Verify the key proof which should be of the form:
   //     HMAC(HKDF(|key|, |salt|, |info|), |payload|)
-  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey32Bytes,
-                                         base::as_byte_span(kTestPayload),
-                                         *hmac));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(
+      kExpectedDerivedSymmetricKey32Bytes,
+      base::byte_span_from_cstring(kTestPayload), *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
@@ -160,9 +161,9 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   auto hmac = base::as_byte_span(*key_proof)
                   .to_fixed_extent<crypto::hash::kSha256Size>();
 
-  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey16Bytes,
-                                         base::as_byte_span(kTestPayload),
-                                         *hmac));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(
+      kExpectedDerivedSymmetricKey16Bytes,
+      base::byte_span_from_cstring(kTestPayload), *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
