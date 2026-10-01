@@ -143,8 +143,7 @@ public class AccountMenuCoordinator {
         // Ensure mContentView is detached from any previous popup window parent.
         UiUtils.removeViewFromParent(mContentView);
 
-        int maxMenuWidth =
-                mContext.getResources().getDimensionPixelSize(R.dimen.account_menu_max_width);
+        int menuWidth = mContext.getResources().getDimensionPixelSize(R.dimen.account_menu_width);
         return new AnchoredPopupWindow.Builder(
                         mContext,
                         anchorView,
@@ -152,7 +151,7 @@ public class AccountMenuCoordinator {
                         () -> mContentView,
                         MenuBuilderHelper.getRectProvider(anchorView))
                 .addOnDismissListener(() -> onPopupDismissed(anchorView))
-                .setMaxWidth(maxMenuWidth)
+                .setDesiredContentWidth(menuWidth)
                 .setAnimateFromAnchor(true)
                 .setDismissOnScreenSizeChange(true)
                 .setFocusable(true)

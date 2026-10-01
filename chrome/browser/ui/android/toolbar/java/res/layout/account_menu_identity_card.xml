@@ -45,7 +45,6 @@ found in the LICENSE file.
             android:id="@+id/account_menu_identity_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:maxLines="1"

@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:id="@+id/account_menu_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minWidth="@dimen/account_menu_min_width"
     android:paddingTop="@dimen/account_menu_padding_vertical"
     android:paddingBottom="@dimen/account_menu_padding_vertical"
     android:paddingHorizontal="0dp"
