@@ -63,9 +63,8 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override { ShowBubble(); }
 
-  void ShowBubble(base::OnceClosure accept_callback = base::DoNothing(),
-                  base::OnceClosure cancel_callback = base::DoNothing(),
-                  base::OnceClosure closed_callback = base::DoNothing(),
+  void ShowBubble(base::OnceCallback<void(PaymentsUiClosedReason)>
+                      closed_callback = base::DoNothing(),
                   bool sign_in = true) {
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page")));
@@ -80,9 +79,7 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
     ASSERT_TRUE(autofill_client);
     autofill_client->GetPaymentsAutofillClient()
         ->GetPaymentsChurnedUsersUiDelegate()
-        ->ShowPaymentsChurnedUsersUI(std::move(accept_callback),
-                                     std::move(cancel_callback),
-                                     std::move(closed_callback));
+        ->ShowPaymentsChurnedUsersUI(std::move(closed_callback));
   }
 
   bool IsIconVisible() {
@@ -268,8 +265,7 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        LogsShowResult_NoAccountInfoPresent) {
   base::HistogramTester histogram_tester;
 
-  ShowBubble(base::DoNothing(), base::DoNothing(), base::DoNothing(),
-             /*sign_in=*/false);
+  ShowBubble(/*closed_callback=*/base::DoNothing(), /*sign_in=*/false);
   EXPECT_FALSE(IsBubbleShowing());
 
   histogram_tester.ExpectUniqueSample(
@@ -296,14 +292,14 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest, ShowBubble) {
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        AcceptCallbackTriggered) {
-  base::test::TestFuture<void> accept_future;
-  ShowBubble(accept_future.GetCallback(), base::DoNothing(), base::DoNothing());
+  base::test::TestFuture<PaymentsUiClosedReason> accept_future;
+  ShowBubble(accept_future.GetCallback());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
   bubble_view->AcceptDialog();
 
-  EXPECT_TRUE(accept_future.Wait());
+  EXPECT_EQ(accept_future.Get(), PaymentsUiClosedReason::kAccepted);
 
   // Wait for the confirmation bubble to be shown.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -329,42 +325,42 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        CancelCallbackTriggered) {
-  base::test::TestFuture<void> cancel_future;
-  ShowBubble(base::DoNothing(), cancel_future.GetCallback(), base::DoNothing());
+  base::test::TestFuture<PaymentsUiClosedReason> cancel_future;
+  ShowBubble(cancel_future.GetCallback());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
   bubble_view->CancelDialog();
 
-  EXPECT_TRUE(cancel_future.Wait());
+  EXPECT_EQ(cancel_future.Get(), PaymentsUiClosedReason::kCancelled);
   EXPECT_FALSE(IsIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        ClosedCallbackTriggered) {
-  base::test::TestFuture<void> closed_future;
-  ShowBubble(base::DoNothing(), base::DoNothing(), closed_future.GetCallback());
+  base::test::TestFuture<PaymentsUiClosedReason> closed_future;
+  ShowBubble(closed_future.GetCallback());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
   bubble_view->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kLostFocus);
 
-  EXPECT_TRUE(closed_future.Wait());
+  EXPECT_EQ(closed_future.Get(), PaymentsUiClosedReason::kLostFocus);
   EXPECT_TRUE(IsIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        CloseButtonCallbackTriggered) {
-  base::test::TestFuture<void> closed_future;
-  ShowBubble(base::DoNothing(), base::DoNothing(), closed_future.GetCallback());
+  base::test::TestFuture<PaymentsUiClosedReason> closed_future;
+  ShowBubble(closed_future.GetCallback());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
   bubble_view->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 
-  EXPECT_TRUE(closed_future.Wait());
+  EXPECT_EQ(closed_future.Get(), PaymentsUiClosedReason::kClosed);
   EXPECT_FALSE(IsIconVisible());
 }
 

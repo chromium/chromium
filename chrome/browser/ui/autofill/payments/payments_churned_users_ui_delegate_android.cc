@@ -26,13 +26,7 @@ PaymentsChurnedUsersUiDelegateAndroid::
     ~PaymentsChurnedUsersUiDelegateAndroid() = default;
 
 void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
-    base::OnceClosure closed_callback) {
-  // TODO(crbug.com/558874126): Consider replacing the 3 callbacks with a
-  // single callback taking `PaymentsUiClosedReason`.
-  accept_callback_ = std::move(accept_callback);
-  cancel_callback_ = std::move(cancel_callback);
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
   closed_callback_ = std::move(closed_callback);
 
   const AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm =
@@ -42,6 +36,8 @@ void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
     case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kConvenience:
       if (auto* bridge = GetOrCreatePaymentsChurnedUsersBottomSheetBridge()) {
         bridge->RequestShowContent(treatment_arm);
+      } else {
+        std::move(closed_callback_).Run(PaymentsUiClosedReason::kUnknown);
       }
       break;
     case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage:

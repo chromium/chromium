@@ -41,7 +41,7 @@ class MockPaymentsChurnedUsersUiDelegate
 
   MOCK_METHOD(void,
               ShowPaymentsChurnedUsersUI,
-              (base::OnceClosure, base::OnceClosure, base::OnceClosure),
+              (base::OnceCallback<void(PaymentsUiClosedReason)>),
               (override));
 };
 
@@ -122,8 +122,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, ShowUiTriggered) {
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
-// Tests that the Payments Churned Users UI's accept callback turns on the
-// autofill credit card enabled pref.
+// Tests that accepting the Payments Churned Users UI turns on the autofill
+// credit card enabled pref.
 TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackTurnsOnPref) {
   feature_list_.InitAndEnableFeature(
       features::kAutofillEnableResurrectingPaymentsUsers);
@@ -132,18 +132,17 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackTurnsOnPref) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  base::OnceClosure accept_callback;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceClosure accept, base::OnceClosure cancel,
-                    base::OnceClosure closed) {
-        accept_callback = std::move(accept);
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
   ASSERT_FALSE(autofill_client().GetPrefs()->GetBoolean(
       prefs::kAutofillCreditCardEnabled));
-  ASSERT_TRUE(accept_callback);
-  std::move(accept_callback).Run();
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kAccepted);
   EXPECT_TRUE(autofill_client().GetPrefs()->GetBoolean(
       prefs::kAutofillCreditCardEnabled));
 }
@@ -283,11 +282,10 @@ TEST_F(PaymentsChurnedUsersManagerTest, CancelCallbackAddsStrikes) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  base::OnceClosure cancel_callback;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceClosure accept, base::OnceClosure cancel,
-                    base::OnceClosure closed) {
-        cancel_callback = std::move(cancel);
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
@@ -295,8 +293,8 @@ TEST_F(PaymentsChurnedUsersManagerTest, CancelCallbackAddsStrikes) {
       autofill_client().GetStrikeDatabase());
   EXPECT_EQ(strike_database.GetStrikes(), 0);
 
-  ASSERT_TRUE(cancel_callback);
-  std::move(cancel_callback).Run();
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kCancelled);
 
   EXPECT_EQ(strike_database.GetStrikes(), strike_database.GetMaxStrikesLimit());
 }
@@ -310,11 +308,10 @@ TEST_F(PaymentsChurnedUsersManagerTest, ClosedCallbackAddsStrike) {
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            false);
 
-  base::OnceClosure closed_callback;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceClosure accept, base::OnceClosure cancel,
-                    base::OnceClosure closed) {
-        closed_callback = std::move(closed);
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
@@ -323,7 +320,85 @@ TEST_F(PaymentsChurnedUsersManagerTest, ClosedCallbackAddsStrike) {
   EXPECT_EQ(strike_database.GetStrikes(), 0);
 
   ASSERT_TRUE(closed_callback);
-  std::move(closed_callback).Run();
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kClosed);
+
+  EXPECT_EQ(strike_database.GetStrikes(), 1);
+}
+
+// Tests that the UI returning kUnknown adds zero strikes to the database.
+TEST_F(PaymentsChurnedUsersManagerTest, UnknownCallbackAddsNoStrikes) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
+  EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
+      });
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  PaymentsChurnedUsersStrikeDatabase strike_database(
+      autofill_client().GetStrikeDatabase());
+  EXPECT_EQ(strike_database.GetStrikes(), 0);
+
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kUnknown);
+
+  EXPECT_EQ(strike_database.GetStrikes(), 0);
+}
+
+// Tests that the UI returning kNotInteracted adds 1 strike to the database.
+TEST_F(PaymentsChurnedUsersManagerTest, NotInteractedCallbackAddsStrike) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
+  EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
+      });
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  PaymentsChurnedUsersStrikeDatabase strike_database(
+      autofill_client().GetStrikeDatabase());
+  EXPECT_EQ(strike_database.GetStrikes(), 0);
+
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kNotInteracted);
+
+  EXPECT_EQ(strike_database.GetStrikes(), 1);
+}
+
+// Tests that the UI returning kLostFocus adds 1 strike to the database.
+TEST_F(PaymentsChurnedUsersManagerTest, LostFocusCallbackAddsStrike) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
+  EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
+      });
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  PaymentsChurnedUsersStrikeDatabase strike_database(
+      autofill_client().GetStrikeDatabase());
+  EXPECT_EQ(strike_database.GetStrikes(), 0);
+
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kLostFocus);
 
   EXPECT_EQ(strike_database.GetStrikes(), 1);
 }
@@ -339,16 +414,15 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackAddsMaxStrikes) {
 
   PaymentsChurnedUsersStrikeDatabase strike_database(
       autofill_client().GetStrikeDatabase());
-  base::OnceClosure accept_callback;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback;
   EXPECT_CALL(ui_delegate(), ShowPaymentsChurnedUsersUI)
-      .WillOnce([&](base::OnceClosure accept, base::OnceClosure cancel,
-                    base::OnceClosure closed) {
-        accept_callback = std::move(accept);
+      .WillOnce([&](base::OnceCallback<void(PaymentsUiClosedReason)> callback) {
+        closed_callback = std::move(callback);
       });
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
-  ASSERT_TRUE(accept_callback);
-  std::move(accept_callback).Run();
+  ASSERT_TRUE(closed_callback);
+  std::move(closed_callback).Run(PaymentsUiClosedReason::kAccepted);
 
   EXPECT_EQ(strike_database.GetStrikes(), strike_database.GetMaxStrikesLimit());
 }

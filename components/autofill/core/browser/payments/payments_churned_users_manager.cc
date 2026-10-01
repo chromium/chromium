@@ -8,7 +8,6 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -112,14 +111,7 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
                 payments_client->GetPaymentsChurnedUsersUiDelegate()) {
           ui_delegate->ShowPaymentsChurnedUsersUI(
               base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                             weak_factory_.GetWeakPtr(),
-                             PaymentsUiClosedReason::kAccepted),
-              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                             weak_factory_.GetWeakPtr(),
-                             PaymentsUiClosedReason::kCancelled),
-              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                             weak_factory_.GetWeakPtr(),
-                             PaymentsUiClosedReason::kUnknown));
+                             weak_factory_.GetWeakPtr()));
         }
       }
     }
@@ -132,18 +124,23 @@ void PaymentsChurnedUsersManager::OnUiClosed(
     if (PrefService* prefs = client_->GetPrefs()) {
       prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, true);
     }
-
-    if (strike_database_) {
+  }
+  if (!strike_database_) {
+    return;
+  }
+  switch (closed_reason) {
+    case PaymentsUiClosedReason::kAccepted:
+    case PaymentsUiClosedReason::kCancelled:
       strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
-    }
-  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
-    if (strike_database_) {
-      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
-    }
-  } else {
-    if (strike_database_) {
+      break;
+    case PaymentsUiClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kClosed:
+    case PaymentsUiClosedReason::kLostFocus:
       strike_database_->AddStrike();
-    }
+      break;
+    case PaymentsUiClosedReason::kUnknown:
+      // kUnknown results in 0 strikes.
+      break;
   }
 }
 

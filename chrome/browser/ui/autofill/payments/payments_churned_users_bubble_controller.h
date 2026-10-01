@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_CHURNED_USERS_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_CHURNED_USERS_BUBBLE_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
@@ -41,10 +41,9 @@ class PaymentsChurnedUsersBubbleController
   static PaymentsChurnedUsersBubbleController* From(
       tabs::TabInterface& tab_interface);
 
-  virtual void Show(base::OnceClosure accept_callback,
-                    base::OnceClosure cancel_callback,
-                    base::OnceClosure closed_callback,
-                    AccountInfo account_info);
+  virtual void Show(
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback,
+      AccountInfo account_info);
   void ReshowBubble();
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason);
   AutofillBubbleBase* GetBubbleViewForTesting() { return bubble_view(); }
@@ -98,9 +97,7 @@ class PaymentsChurnedUsersBubbleController
   // that the bubble is treated as accepted on close.
   bool is_accepted_ = false;
 
-  base::OnceClosure accept_callback_;
-  base::OnceClosure cancel_callback_;
-  base::OnceClosure closed_callback_;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
 
   base::WeakPtrFactory<PaymentsChurnedUsersBubbleController> weak_ptr_factory_{
       this};

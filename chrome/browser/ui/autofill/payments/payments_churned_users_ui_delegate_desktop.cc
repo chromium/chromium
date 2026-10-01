@@ -27,9 +27,7 @@ PaymentsChurnedUsersUiDelegateDesktop::
     ~PaymentsChurnedUsersUiDelegateDesktop() = default;
 
 void PaymentsChurnedUsersUiDelegateDesktop::ShowPaymentsChurnedUsersUI(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
-    base::OnceClosure closed_callback) {
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(&client_->GetWebContents());
   if (!tab_interface) {
@@ -59,8 +57,7 @@ void PaymentsChurnedUsersUiDelegateDesktop::ShowPaymentsChurnedUsersUI(
 
   if (PaymentsChurnedUsersBubbleController* controller =
           PaymentsChurnedUsersBubbleController::From(*tab_interface)) {
-    controller->Show(std::move(accept_callback), std::move(cancel_callback),
-                     std::move(closed_callback), std::move(account_info));
+    controller->Show(std::move(closed_callback), std::move(account_info));
   }
 }
 

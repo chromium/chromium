@@ -37,9 +37,7 @@ class MockPaymentsChurnedUsersBubbleController
 
   MOCK_METHOD(void,
               Show,
-              (base::OnceClosure accept_callback,
-               base::OnceClosure cancel_callback,
-               base::OnceClosure closed_callback,
+              (base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback,
                AccountInfo account_info),
               (override));
 };
@@ -102,14 +100,11 @@ TEST_F(PaymentsChurnedUsersUiDelegateDesktopTest,
       client().GetPaymentsAutofillClient()->GetPaymentsDataManager())
       .SetAccountInfoForPayments(account_info.GetCoreAccountInfo());
 
-  EXPECT_CALL(
-      bubble_controller(),
-      Show(testing::_, testing::_, testing::_,
-           testing::Property(&AccountInfo::GetEmail, "test@example.com")))
-      .Times(1);
+  EXPECT_CALL(bubble_controller(),
+              Show(testing::_, testing::Property(&AccountInfo::GetEmail,
+                                                 "test@example.com")));
 
-  delegate().ShowPaymentsChurnedUsersUI(base::DoNothing(), base::DoNothing(),
-                                        base::DoNothing());
+  delegate().ShowPaymentsChurnedUsersUI(/*closed_callback=*/base::DoNothing());
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateDesktopTest,
@@ -118,8 +113,7 @@ TEST_F(PaymentsChurnedUsersUiDelegateDesktopTest,
 
   EXPECT_CALL(bubble_controller(), Show).Times(0);
 
-  delegate().ShowPaymentsChurnedUsersUI(base::DoNothing(), base::DoNothing(),
-                                        base::DoNothing());
+  delegate().ShowPaymentsChurnedUsersUI(/*closed_callback=*/base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentsChurnedUsersBubble.ShowResult",

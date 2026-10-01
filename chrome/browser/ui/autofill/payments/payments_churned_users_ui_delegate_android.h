@@ -35,9 +35,9 @@ class PaymentsChurnedUsersUiDelegateAndroid
       const PaymentsChurnedUsersUiDelegateAndroid&) = delete;
 
   // PaymentsChurnedUsersUiDelegate:
-  void ShowPaymentsChurnedUsersUI(base::OnceClosure accept_callback,
-                                  base::OnceClosure cancel_callback,
-                                  base::OnceClosure closed_callback) override;
+  void ShowPaymentsChurnedUsersUI(
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback)
+      override;
 
   void SetAutofillPaymentsChurnedUsersBottomSheetBridgeForTesting(
       std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge> bridge);
@@ -48,11 +48,9 @@ class PaymentsChurnedUsersUiDelegateAndroid
   GetOrCreatePaymentsChurnedUsersBottomSheetBridge();
 
   const raw_ref<ContentAutofillClient> client_;
-  // TODO(crbug.com/558874126): Wire callbacks to the bottom sheet bridge and
+  // TODO(crbug.com/558874126): Wire callback to the bottom sheet bridge and
   // message controller.
-  base::OnceClosure accept_callback_;
-  base::OnceClosure cancel_callback_;
-  base::OnceClosure closed_callback_;
+  base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
   std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge>
       autofill_payments_churned_users_bottom_sheet_bridge_;
 };

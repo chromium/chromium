@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_PAYMENTS_CHURNED_USERS_UI_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 
 namespace autofill {
 
@@ -44,9 +45,7 @@ class PaymentsChurnedUsersUiDelegate {
   // resurrection UI, prompting churned users who turned off Autofill payment
   // methods to resurrect and re-enable Autofill.
   virtual void ShowPaymentsChurnedUsersUI(
-      base::OnceClosure accept_callback,
-      base::OnceClosure cancel_callback,
-      base::OnceClosure closed_callback) = 0;
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) = 0;
 };
 
 }  // namespace payments

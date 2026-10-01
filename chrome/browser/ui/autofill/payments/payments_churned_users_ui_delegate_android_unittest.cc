@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/autofill/autofill_payments_churned_users_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -100,8 +101,6 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
       std::move(mock_bridge));
 
   delegate()->ShowPaymentsChurnedUsersUI(
-      /*accept_callback=*/base::DoNothing(),
-      /*cancel_callback=*/base::DoNothing(),
       /*closed_callback=*/base::DoNothing());
 }
 
@@ -121,9 +120,19 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
       std::move(mock_bridge));
 
   delegate()->ShowPaymentsChurnedUsersUI(
-      /*accept_callback=*/base::DoNothing(),
-      /*cancel_callback=*/base::DoNothing(),
       /*closed_callback=*/base::DoNothing());
+}
+
+TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
+       ShowPaymentsChurnedUsersUI_NullBridgeRunsCallbackWithUnknown) {
+  InitFeatureWithTreatmentArm(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kSecurity);
+
+  base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+      closed_callback;
+  EXPECT_CALL(closed_callback, Run(PaymentsUiClosedReason::kUnknown));
+
+  delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
@@ -139,8 +148,6 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
       std::move(mock_bridge));
 
   delegate()->ShowPaymentsChurnedUsersUI(
-      /*accept_callback=*/base::DoNothing(),
-      /*cancel_callback=*/base::DoNothing(),
       /*closed_callback=*/base::DoNothing());
 }
 
@@ -163,8 +170,6 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
       std::move(mock_bridge));
 
   delegate()->ShowPaymentsChurnedUsersUI(
-      /*accept_callback=*/base::DoNothing(),
-      /*cancel_callback=*/base::DoNothing(),
       /*closed_callback=*/base::DoNothing());
 }
 
