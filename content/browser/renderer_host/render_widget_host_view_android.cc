@@ -6,6 +6,8 @@
 
 #include <android/bitmap.h>
 
+#include <algorithm>
+#include <array>
 #include <limits>
 #include <utility>
 
@@ -2822,23 +2824,46 @@ void RenderWidgetHostViewAndroid::OnPointerLockRelease() {
   host()->LostPointerLock();
 }
 
-bool RenderWidgetHostViewAndroid::LockKeyboard(
-    std::optional<base::flat_set<ui::DomCode>> codes) {
-  if (keyboard_locked_) {
+// static
+bool RenderWidgetHostViewAndroid::ShouldCaptureSystemKeys(
+    const std::optional<base::flat_set<ui::DomCode>>& codes) {
+  if (!codes) {
     return true;
   }
+  static constexpr auto kModifierCodes = std::to_array<ui::DomCode>({
+      ui::DomCode::ALT_LEFT,
+      ui::DomCode::ALT_RIGHT,
+      ui::DomCode::CONTROL_LEFT,
+      ui::DomCode::CONTROL_RIGHT,
+      ui::DomCode::META_LEFT,
+      ui::DomCode::META_RIGHT,
+  });
+  return std::ranges::any_of(kModifierCodes, [&codes](ui::DomCode code) {
+    return codes->contains(code);
+  });
+}
 
+bool RenderWidgetHostViewAndroid::LockKeyboard(
+    std::optional<base::flat_set<ui::DomCode>> codes) {
+  // This may be called while already locked, e.g. when the page calls lock()
+  // again with a different set of keys, so the OS capture state and the locked
+  // keys are always updated. If this fails, the window attributes are left
+  // unchanged, so the previous lock state (if any) remains accurate.
   ui::WindowAndroid* window_android = view_.GetWindowAndroid();
   if (!window_android) {
     return false;
   }
 
-  if (!window_android->SetHasKeyboardCapture(true)) {
+  // SetHasKeyboardCapture() returns false without changing window state when
+  // the platform lacks the keyboard capture API (SDK < 36.1) or there is no
+  // Activity window, even when disabling capture. Failing here keeps keyboard
+  // lock unsupported on those Android versions.
+  if (!window_android->SetHasKeyboardCapture(ShouldCaptureSystemKeys(codes))) {
     return false;
   }
 
   keyboard_locked_ = true;
-  locked_keyboard_keys_ = codes;
+  locked_keyboard_keys_ = std::move(codes);
   return true;
 }
 
