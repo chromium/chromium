@@ -155,6 +155,15 @@ class ContextualCueingTabHelper
   // Sets the contextual cue directly for testing purposes.
   void SetContextualCueForTesting(optimization_guide::proto::ContextualCue cue);
 
+  // Sets whether Gemini (Helios) is currently invoked in the window hosting
+  // this tab. Driven by `ContextualCueingBrowserAgent`. While invoked, no new
+  // cues are requested or presented, and a cue already on screen is dismissed.
+  void SetGeminiInvoked(bool is_invoked);
+
+  // Returns whether Gemini (Helios) is currently invoked in the window hosting
+  // this tab, as last set by `SetGeminiInvoked()`.
+  bool is_gemini_invoked() const { return is_gemini_invoked_; }
+
   // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
@@ -275,6 +284,9 @@ class ContextualCueingTabHelper
   // Whether `cue_` has already been presented on a UI surface.
   bool has_presented_cue_ = false;
   bool is_model_execution_in_flight_ = false;
+  // Whether Gemini (Helios) is invoked in the hosting window, as last reported
+  // by `ContextualCueingBrowserAgent` through `SetGeminiInvoked()`.
+  bool is_gemini_invoked_ = false;
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
 

@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_browser_agent.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
@@ -218,6 +220,15 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
       IsPageActionMenuEnabled()) {
     GeminiBrowserAgent::CreateForBrowser(browser);
+  }
+
+  // Must be attached after `GeminiBrowserAgent`, which it observes. Mirrors
+  // the gating used to attach `ContextualCueingTabHelper`.
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
+      (contextual_cueing::IsGeminiContextualSuggestionsCuesEnabled() ||
+       contextual_cueing::
+           IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled())) {
+    contextual_cueing::ContextualCueingBrowserAgent::CreateForBrowser(browser);
   }
 
   if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record) {
