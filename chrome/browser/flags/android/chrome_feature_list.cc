@@ -128,7 +128,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillAiUseMaterialDatePickerInEntityEditor,
     &autofill::features::kAutofillAiUsePrivateAi,
     &autofill::features::kAutofillAiWalletPassBranding2026,
-    &autofill::features::kAutofillAiWalletPrivatePassesDeepLink,
     &autofill::features::kAutofillAiWalletShopping,
     &autofill::features::kAutofillAiWithDataSchema,
     &autofill::features::kAutofillAmbientAutofill,

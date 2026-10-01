@@ -913,7 +913,6 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
     public void testAutofillAiEntities_opensWalletDefaultPage_whenUrlIsNull() throws Exception {
         EntityType passportType = TestUtils.getPassportEntityType();
 
@@ -951,7 +950,6 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
     public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick() throws Exception {
         EntityType passportType = TestUtils.getPassportEntityType();
 
@@ -978,47 +976,6 @@ public class AutofillIdentityDocsFragmentTest {
         Instrumentation.ActivityResult result =
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
         var intentMatcher = allOf(hasAction(Intent.ACTION_VIEW), hasData(Uri.parse(expectedUrl)));
-        intending(intentMatcher).respondWith(result);
-
-        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
-
-        intended(intentMatcher);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
-    public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick_featureDisabled()
-            throws Exception {
-        EntityType passportType = TestUtils.getPassportEntityType();
-
-        EntityInstanceWithLabels entity1 =
-                TestUtils.buildGermanyPassportWithLabels(
-                        "guid1",
-                        /* storedInWallet= */ true,
-                        /* walletEntityUrl= */ "https://wallet.com/private");
-
-        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
-                new LinkedHashMap<>();
-        instancesMap.put(passportType, Arrays.asList(entity1));
-
-        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-
-        mSettingsTestRule.startSettingsActivity();
-
-        Preference passportEntity =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mSettingsTestRule.getFragment().findPreference("guid1"));
-        assertNotNull(passportEntity);
-
-        // Mock the intent that should be fired.
-        Instrumentation.ActivityResult result =
-                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
-        // Since the deep link feature is disabled, it should fallback to the general passes page.
-        var intentMatcher =
-                allOf(
-                        hasAction(Intent.ACTION_VIEW),
-                        hasData(Uri.parse(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL)));
         intending(intentMatcher).respondWith(result);
 
         ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);

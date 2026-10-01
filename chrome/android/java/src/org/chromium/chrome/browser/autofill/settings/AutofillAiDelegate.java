@@ -588,10 +588,7 @@ public class AutofillAiDelegate {
                             }
                             if (entity.isStoredInWallet()) {
                                 String walletEntityUrl = entity.getWalletEntityUrl();
-                                if (ChromeFeatureList.isEnabled(
-                                                ChromeFeatureList
-                                                        .AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
-                                        && walletEntityUrl != null) {
+                                if (!TextUtils.isEmpty(walletEntityUrl)) {
                                     GoogleWalletLauncher.openGoogleWalletWithFallbackUrl(
                                             context, context.getPackageManager(), walletEntityUrl);
                                 } else {

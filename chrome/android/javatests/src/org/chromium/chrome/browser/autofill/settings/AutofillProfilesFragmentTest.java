@@ -1750,7 +1750,6 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletOnClick() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -1797,7 +1796,6 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletDefaultPage_whenUrlIsNull() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
@@ -1845,7 +1843,6 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick() throws Exception {
         EntityType passportType = TestUtils.getPassportEntityType();
@@ -1876,52 +1873,6 @@ public class AutofillProfilesFragmentTest {
         Instrumentation.ActivityResult result =
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
         var intentMatcher = allOf(hasAction(Intent.ACTION_VIEW), hasData(Uri.parse(expectedUrl)));
-        intending(intentMatcher).respondWith(result);
-
-        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
-
-        intended(intentMatcher);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
-    public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick_featureDisabled()
-            throws Exception {
-        EntityType passportType = TestUtils.getPassportEntityType();
-
-        EntityInstanceWithLabels entity1 =
-                buildGermanyPassportWithLabels(
-                        "guid1", true, /* walletEntityUrl= */ "https://wallet.com/private");
-
-        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
-                new LinkedHashMap<>();
-        instancesMap.put(passportType, Arrays.asList(entity1));
-
-        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
-
-        // Trigger a rebuild of the profile list to pick up the new mock entities.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mSettingsTestRule.getFragment().onPersonalDataChanged());
-
-        Preference passportEntity =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mSettingsTestRule.getFragment().findPreference("guid1"));
-        assertNotNull(passportEntity);
-
-        // Mock the intent that should be fired.
-        Instrumentation.ActivityResult result =
-                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
-        // Since the deep link feature is disabled, it should fallback to the general passes page.
-        var intentMatcher =
-                allOf(
-                        hasAction(Intent.ACTION_VIEW),
-                        hasData(Uri.parse(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL)));
         intending(intentMatcher).respondWith(result);
 
         ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
