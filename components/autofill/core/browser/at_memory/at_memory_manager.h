@@ -267,6 +267,12 @@ class AtMemoryManager {
       bool reauth_attempted,
       bool did_fetch_from_server);
 
+  // Fills `field_id` with `value` and triggers a HaTS survey.
+  void FillField(BrowserAutofillManager& bam,
+                 const FormGlobalId& form_id,
+                 const FieldGlobalId& field_id,
+                 const std::u16string& value);
+
   // Returns the active target field origin depending on whether search
   // statefulness is enabled.
   const url::Origin& target_field_origin() const;

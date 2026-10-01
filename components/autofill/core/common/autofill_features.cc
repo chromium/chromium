@@ -934,6 +934,8 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/543741063): Transform to killswitch after some time.
 BASE_FEATURE(kAutofillPersonalizationAndTrustAddressSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustAtMemorySurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustCreditCardSurvey,

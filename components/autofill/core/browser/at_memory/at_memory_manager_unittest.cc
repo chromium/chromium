@@ -118,6 +118,10 @@ class MockAutofillClient : public TestAutofillClient {
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
+  MOCK_METHOD(void,
+              TriggerPersonalizationAndTrustSurveys,
+              (FillingProduct, const HatsSurveyStringData&),
+              (override));
 
   // Overridden to simulate policy-based blocking using profile preferences.
   // This allows `AtMemoryManagerPolicyTest` and `AtMemoryManagerPrefTest`
@@ -3379,6 +3383,25 @@ TEST_F(AtMemoryManagerTestBase,
               ElementsAre(ElementsAre(Suggestion::Text(expected_field_name))));
   EXPECT_EQ(child.GetPayload<Suggestion::AtMemoryPayload>().type_name,
             expected_field_name);
+}
+
+// Tests that a survey is shown after accepting an AtMemory suggestion.
+TEST_F(AtMemoryManagerTestBase, FillSearchResult_TriggersSurvey) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kAtMemory, _));
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+  manager().FillSearchResult(
+      autofill_manager(), form_id, field_id,
+      test::CreateAutofillSuggestion(SuggestionType::kAtMemorySearchResult, u"",
+                                     Suggestion::AtMemoryPayload()),
+      /*metadata=*/std::nullopt);
 }
 
 }  // namespace

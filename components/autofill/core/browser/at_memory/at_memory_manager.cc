@@ -533,11 +533,7 @@ IsAsync AtMemoryManager::FillSearchResult(
     if (metrics) {
       metrics->MarkFilled();
     }
-    bam.FillOrPreviewField(mojom::ActionPersistence::kFill,
-                           mojom::FieldActionType::kReplaceSelectionForAtMemory,
-                           form_id, field_id, payload.value,
-                           FillingProduct::kAtMemory,
-                           /*field_type_used=*/std::nullopt);
+    FillField(bam, form_id, field_id, payload.value);
     return IsAsync(false);
   };
 
@@ -1116,11 +1112,7 @@ void AtMemoryManager::FillIban(
               Iban mutable_iban = *iban;
               pdm.RecordUseOfIban(mutable_iban);
             }
-            bam->FillOrPreviewField(
-                mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
-                field_id, *unmasked_value, FillingProduct::kAtMemory,
-                /*field_type_used=*/std::nullopt);
+            manager->FillField(*bam, form_id, field_id, *unmasked_value);
           },
           fill_weak_ptr_factory_.GetWeakPtr(),
           bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id, suggestion,
@@ -1188,11 +1180,7 @@ void AtMemoryManager::FillCreditCard(
               default:
                 NOTREACHED();
             }
-            bam->FillOrPreviewField(
-                mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
-                field_id, fill_value, FillingProduct::kAtMemory,
-                /*field_type_used=*/std::nullopt);
+            manager->FillField(*bam, form_id, field_id, fill_value);
           },
           fill_weak_ptr_factory_.GetWeakPtr(),
           bam.GetBrowserAutofillManagerWeakPtr(), form_id, field_id, suggestion,
@@ -1285,11 +1273,20 @@ void AtMemoryManager::OnAutofillAiFetched(
     edm->RecordEntityUsed(fetched_entity.guid(), base::Time::Now());
   }
 
-  bam->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                          mojom::FieldActionType::kReplaceSelectionForAtMemory,
-                          form_id, field_id, std::move(*attribute_fill_value),
-                          FillingProduct::kAtMemory,
-                          /*field_type_used=*/std::nullopt);
+  FillField(*bam, form_id, field_id, *attribute_fill_value);
+}
+
+void AtMemoryManager::FillField(BrowserAutofillManager& bam,
+                                const FormGlobalId& form_id,
+                                const FieldGlobalId& field_id,
+                                const std::u16string& value) {
+  bam.FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         form_id, field_id, value, FillingProduct::kAtMemory,
+                         /*field_type_used=*/std::nullopt);
+  client_->TriggerPersonalizationAndTrustSurveys(
+      FillingProduct::kAtMemory,
+      /*field_filling_stats_data=*/{});
 }
 
 }  // namespace autofill
