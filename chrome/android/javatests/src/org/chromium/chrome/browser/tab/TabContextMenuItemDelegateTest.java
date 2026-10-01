@@ -40,7 +40,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -142,7 +141,6 @@ public class TabContextMenuItemDelegateTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568380847
     public void testOpenInOtherWindow_ExistingWindow_ShowsDialog() {
         createContextMenuForCurrentTab();
 
