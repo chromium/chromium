@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
@@ -418,6 +419,7 @@ public class ToolbarTablet extends ToolbarLayout {
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             HomeButtonCoordinator homeButtonCoordinator,
             @Nullable SigninButtonCoordinator signinButtonCoordinator,
+            @Nullable DownloadButtonCoordinator downloadButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier,
@@ -437,6 +439,7 @@ public class ToolbarTablet extends ToolbarLayout {
                 forwardButtonCoordinator,
                 homeButtonCoordinator,
                 signinButtonCoordinator,
+                downloadButtonCoordinator,
                 themeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier,
@@ -472,6 +475,7 @@ public class ToolbarTablet extends ToolbarLayout {
             signinButtonCoordinator.setShowOnAllPages(
                     SigninFeatureMap.sProfileDiscOnAllPages.isEnabled());
         }
+        mToolbarWidthConsumers[ToolbarComponentId.DOWNLOAD_BUTTON] = downloadButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
@@ -1179,6 +1183,11 @@ public class ToolbarTablet extends ToolbarLayout {
     void setSigninButtonCoordinatorForTesting(SigninButtonCoordinator coordinator) {
         mSigninButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.SIGNIN_BUTTON] = coordinator;
+    }
+
+    void setDownloadButtonCoordinatorForTesting(
+            @Nullable DownloadButtonCoordinator downloadButtonCoordinator) {
+        mToolbarWidthConsumers[ToolbarComponentId.DOWNLOAD_BUTTON] = downloadButtonCoordinator;
     }
 
     void setHomeButtonWidthConsumerForTesting(ToolbarWidthConsumer consumer) {

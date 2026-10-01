@@ -1212,6 +1212,7 @@ public class ToolbarControlContainerTest {
                 mForwardButtonCoordinator,
                 mHomeButtonCoordinator,
                 /* signinButtonCoordinator= */ null,
+                /* downloadButtonCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null,

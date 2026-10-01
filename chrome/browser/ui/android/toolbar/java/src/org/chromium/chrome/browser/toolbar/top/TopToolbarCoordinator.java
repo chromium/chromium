@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
@@ -125,6 +126,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private @Nullable SigninButtonCoordinator mSigninButtonCoordinator;
+    private @Nullable DownloadButtonCoordinator mDownloadButtonCoordinator;
 
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
@@ -298,6 +300,22 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 incognitoStateProvider);
             }
         }
+        if (ToolbarFeatures.isDownloadButtonEnabled()) {
+            ViewStub downloadButtonStub = mToolbarLayout.findViewById(R.id.download_button_stub);
+            if (downloadButtonStub != null) {
+                // TODO(crbug.com/564646561): Wire up onButtonClickedRunnable to open the downloads
+                // page and drive button visibility via setShouldShow(...) from
+                // DownloadToolbarButtonController.
+                mDownloadButtonCoordinator =
+                        new DownloadButtonCoordinator(
+                                mToolbarLayout.getContext(),
+                                downloadButtonStub,
+                                normalThemeColorProvider,
+                                incognitoStateProvider,
+                                /* onButtonClickedRunnable= */ () -> {},
+                                mToolbarLayout::onWidthConsumerVisibilityChanged);
+            }
+        }
         mResourceManagerSupplier = resourceManagerSupplier;
         mTabCountSupplier = tabCountSupplier;
         mToolbarColorObserverManager = new ToolbarColorObserverManager();
@@ -378,6 +396,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 forwardButtonCoordinator,
                 homeButtonCoordinator,
                 mSigninButtonCoordinator,
+                mDownloadButtonCoordinator,
                 normalThemeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier,
@@ -616,6 +635,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         if (mSigninButtonCoordinator != null) {
             mSigninButtonCoordinator.destroy();
             mSigninButtonCoordinator = null;
+        }
+
+        if (mDownloadButtonCoordinator != null) {
+            mDownloadButtonCoordinator.destroy();
+            mDownloadButtonCoordinator = null;
         }
 
         if (mReloadButtonCoordinator != null) {

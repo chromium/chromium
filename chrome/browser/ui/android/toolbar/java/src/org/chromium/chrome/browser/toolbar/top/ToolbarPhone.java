@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -414,6 +415,7 @@ public class ToolbarPhone extends ToolbarLayout
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             HomeButtonCoordinator homeButtonCoordinator,
             @Nullable SigninButtonCoordinator signinButtonCoordinator,
+            @Nullable DownloadButtonCoordinator downloadButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier,
@@ -433,6 +435,7 @@ public class ToolbarPhone extends ToolbarLayout
                 forwardButtonCoordinator,
                 homeButtonCoordinator,
                 signinButtonCoordinator,
+                downloadButtonCoordinator,
                 themeColorProvider,
                 incognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null,

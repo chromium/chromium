@@ -97,6 +97,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.incognito.IncognitoIndicatorCoordinator;
@@ -143,6 +144,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private BackButtonCoordinator mBackButtonCoordinator;
     @Mock private HomeButtonCoordinator mHomeButtonCoordinator;
     @Mock private SigninButtonCoordinator mSigninButtonCoordinator;
+    @Mock private DownloadButtonCoordinator mDownloadButtonCoordinator;
     @Mock private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private ThemeColorProvider mThemeColorProvider;
@@ -321,6 +323,7 @@ public final class ToolbarTabletUnitTest {
         mockToolbarWidthConsumer(mLocationBarLensButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mLocationBarZoomButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mSigninButtonCoordinator, buttonWidth);
+        mockToolbarWidthConsumer(mDownloadButtonCoordinator, buttonWidth);
 
         mTrackerSupplier.set(mTracker);
 
@@ -392,6 +395,7 @@ public final class ToolbarTabletUnitTest {
                 mForwardButtonCoordinator,
                 mHomeButtonCoordinator,
                 mSigninButtonCoordinator,
+                mDownloadButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1,
@@ -469,6 +473,7 @@ public final class ToolbarTabletUnitTest {
                 mForwardButtonCoordinator,
                 mHomeButtonCoordinator,
                 mSigninButtonCoordinator,
+                mDownloadButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1,
@@ -540,6 +545,7 @@ public final class ToolbarTabletUnitTest {
                 mForwardButtonCoordinator,
                 mHomeButtonCoordinator,
                 mSigninButtonCoordinator,
+                mDownloadButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1,
@@ -1629,5 +1635,76 @@ public final class ToolbarTabletUnitTest {
         ButtonDataImpl buttonData =
                 new ButtonDataImpl(/* canShow= */ false, /* isEnabled= */ false, buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
+    }
+
+    @Test
+    public void testDownloadButton_onWidthConsumerVisibilityChanged() {
+        mToolbarTablet.setDownloadButtonCoordinatorForTesting(mDownloadButtonCoordinator);
+
+        int locationBarMidWidth = 200;
+        int padding =
+                mToolbarTablet
+                                .getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tablet_toolbar_start_padding)
+                        * 2;
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        Runnable onVisibilityChanged = mToolbarTablet::onWidthConsumerVisibilityChanged;
+
+        // When space is constrained, DOWNLOAD_BUTTON is not allocated width.
+        doReturn(padding + 8 * buttonWidth + locationBarMidWidth).when(mToolbarTablet).getWidth();
+        onVisibilityChanged.run();
+        verify(mDownloadButtonCoordinator, never())
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+
+        // When space is available, width re-allocation allocates width to DOWNLOAD_BUTTON.
+        doReturn(padding + 9 * buttonWidth + locationBarMidWidth).when(mToolbarTablet).getWidth();
+        onVisibilityChanged.run();
+        verify(mDownloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+    }
+
+    @Test
+    public void testToolbarResizeRefactor_withDownloadButton() {
+        mToolbarTablet.setDownloadButtonCoordinatorForTesting(mDownloadButtonCoordinator);
+
+        int locationBarMidWidth = 200;
+        int padding =
+                mToolbarTablet
+                                .getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tablet_toolbar_start_padding)
+                        * 2;
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+
+        // Width accounting: PADDING consumes |padding|, the location bar consumes
+        // |locationBarMidWidth|, and each remaining ranked component consumes one |buttonWidth|,
+        // except INCOGNITO_INDICATOR which is mocked to consume 3 * |buttonWidth|.
+        //
+        // With 8 button widths, only the components ranked ahead of DOWNLOAD_BUTTON fit:
+        // MENU (1) + TAB_SWITCHER (1) + BACK (1) + INCOGNITO_INDICATOR (3) + ADAPTIVE_BUTTON (1)
+        // + SIGNIN_BUTTON (1) = 8, so DOWNLOAD_BUTTON is NOT allocated width.
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(
+                        padding + 8 * buttonWidth + locationBarMidWidth, EXACTLY),
+                UNSPECIFIED);
+        verify(mDownloadButtonCoordinator, never())
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+
+        // With 9 button widths, the extra |buttonWidth| goes to the next ranked component,
+        // DOWNLOAD_BUTTON, so it is allocated width and its visibility is updated.
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(
+                        padding + 9 * buttonWidth + locationBarMidWidth, EXACTLY),
+                UNSPECIFIED);
+        verify(mDownloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
     }
 }

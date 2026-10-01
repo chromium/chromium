@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
@@ -157,6 +158,10 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param reloadButtonCoordinator The coordinator for the reload button.
      * @param backButtonCoordinator The coordinator for the back button.
      * @param forwardButtonCoordinator The coordinator for the forward button.
+     * @param homeButtonCoordinator The coordinator for the home button.
+     * @param signinButtonCoordinator The coordinator for the signin button.
+     * @param downloadButtonCoordinator The coordinator for the download button.
+     * @param themeColorProvider The provider for theme colors.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} for observering incognito
      *     state.
      * @param incognitoWindowCountSupplier A supplier for the number of incognito windows, used by
@@ -179,6 +184,7 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             HomeButtonCoordinator homeButtonCoordinator,
             @Nullable SigninButtonCoordinator signinButtonCoordinator,
+            @Nullable DownloadButtonCoordinator downloadButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier,

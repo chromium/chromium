@@ -97,6 +97,13 @@ found in the LICENSE file.
             android:visibility="gone" />
 
         <ViewStub
+            android:id="@+id/download_button_stub"
+            android:layout="@layout/download_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <ViewStub
             android:id="@+id/signin_button_stub"
             android:layout="@layout/signin_button_view"
             android:layout_width="wrap_content"

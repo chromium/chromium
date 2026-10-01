@@ -28,12 +28,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 
 /** Unit tests for {@link DownloadButtonCoordinator} and {@link DownloadButtonMediator}. */
@@ -196,5 +199,33 @@ public class DownloadButtonCoordinatorTest {
         assertEquals(
                 ToolbarUtils.getToolbarIconRippleId(/* isIncognito= */ false),
                 shadowOf(view.getButton().getBackground()).getCreatedFromResId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP)
+    public void testIsDownloadButtonEnabled_featureEnabled_desktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(ToolbarFeatures.isDownloadButtonEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP)
+    public void testIsDownloadButtonEnabled_featureEnabled_notDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(ToolbarFeatures.isDownloadButtonEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP)
+    public void testIsDownloadButtonEnabled_featureDisabled_desktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(ToolbarFeatures.isDownloadButtonEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP)
+    public void testIsDownloadButtonEnabled_featureDisabled_notDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(ToolbarFeatures.isDownloadButtonEnabled());
     }
 }
