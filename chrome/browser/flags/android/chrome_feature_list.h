@@ -43,7 +43,6 @@ BASE_DECLARE_FEATURE(kAndroidAutoProjected);
 BASE_DECLARE_FEATURE(kAndroidAutofillPrefObserver);
 BASE_DECLARE_FEATURE(kAndroidBeforeUnloadSupport);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
-BASE_DECLARE_FEATURE(kAndroidBottomBarAim);
 BASE_DECLARE_FEATURE(kAndroidBricksNativePage);
 BASE_DECLARE_FEATURE(kAndroidCloseAllTabsRetainsPinnedTabs);
 BASE_DECLARE_FEATURE(kAndroidContextMenuDisabledMenuItems);

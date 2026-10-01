@@ -268,7 +268,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_AUTO_PROJECTED = "AndroidAutoProjected";
     public static final String ANDROID_BEFORE_UNLOAD_SUPPORT = "AndroidBeforeUnloadSupport";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
-    public static final String ANDROID_BOTTOM_BAR_AIM = "AndroidBottomBarAim";
     public static final String ANDROID_BRICKS_NATIVE_PAGE = "AndroidBricksNativePage";
     public static final String ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS =
             "AndroidCloseAllTabsRetainsPinnedTabs";
@@ -969,8 +968,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_AUTO_PROJECTED, false);
     public static final CachedFlag sAndroidBottomBar =
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
-    public static final CachedFlag sAndroidBottomBarAim =
-            newCachedFlag(ANDROID_BOTTOM_BAR_AIM, false);
     public static final CachedFlag sAndroidDesktopWebUiHistory =
             newCachedFlag(ANDROID_DESKTOP_WEB_UI_HISTORY, /* defaultValue= */ false);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -1515,7 +1512,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAutoMintedTwa,
                     sAndroidAutoProjected,
                     sAndroidBottomBar,
-                    sAndroidBottomBarAim,
                     sAndroidDesktopWebUiHistory,
                     sAndroidElegantTextHeight,
                     sAndroidKeyboardShortcutOpenFile,
@@ -1995,8 +1991,6 @@ public abstract class ChromeFeatureList {
     // go/keep-sorted start
     public static final BooleanCachedFeatureParam sAndroidBottomBarAlwaysUseFilledGlicIcon =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "always_use_filled_glic_icon", false);
-    public static final BooleanCachedFeatureParam sAndroidBottomBarBypassAimGeofencing =
-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "bypass_aim_geofencing", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarBypassGlicGeofencing =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "bypass_glic_geofencing", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarDisableOnNtp =
@@ -2396,7 +2390,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
-                    sAndroidBottomBarBypassAimGeofencing,
                     sAndroidBottomBarBypassGlicGeofencing,
                     sAndroidBottomBarDisableOnNtp,
                     sAndroidBottomBarHeightDp,

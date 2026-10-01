@@ -36,11 +36,6 @@ public class BottomBarConfigUtils {
     }
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java:isToolbarUiRefactorEnabled)
 
-    /** Whether AI Mode is enabled in the bottom bar. */
-    public static boolean isAimEnabled() {
-        return ChromeFeatureList.sAndroidBottomBarAim.isEnabled();
-    }
-
     /**
      * Returns the configured height of the bottom bar in DP (clamped to [{@link
      * #MIN_BOTTOM_BAR_HEIGHT_DP}, {@link #MAX_BOTTOM_BAR_HEIGHT_DP}]).
@@ -118,11 +113,6 @@ public class BottomBarConfigUtils {
     /** Whether to bypass geofencing country check for GLIC. */
     public static boolean bypassGlicGeofencing() {
         return ChromeFeatureList.sAndroidBottomBarBypassGlicGeofencing.getValue();
-    }
-
-    /** Whether to bypass geofencing country check for AI Mode. */
-    public static boolean bypassAimGeofencing() {
-        return ChromeFeatureList.sAndroidBottomBarBypassAimGeofencing.getValue();
     }
 
     private static boolean isNtpWithBottomBar(Tab tab, Context context) {

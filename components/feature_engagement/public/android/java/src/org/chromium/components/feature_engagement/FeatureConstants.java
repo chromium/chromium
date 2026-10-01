@@ -28,8 +28,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE,
     FeatureConstants.AIM_ACTIVATION_HINT,
-    FeatureConstants.ANDROID_BOTTOM_BAR_AIM,
-    FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG,
     FeatureConstants.ANDROID_BOTTOM_BAR_GLIC,
     FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB,
     FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG,
@@ -173,12 +171,6 @@ public @interface FeatureConstants {
 
     /** A hint to activate AI Mode on Android Desktop via keystrokes. */
     String AIM_ACTIVATION_HINT = "IPH_AimActivationHint";
-
-    /** Describes the AI Mode button added in the bottom bar. */
-    String ANDROID_BOTTOM_BAR_AIM = "IPH_AndroidBottomBarAim";
-
-    /** For the promo dialog shown to introduce AI Mode with the bottom bar. */
-    String ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG = "IPH_AndroidBottomBarAimPromoDialog";
 
     /** Describes the GLIC button on the new bottom bar. */
     String ANDROID_BOTTOM_BAR_GLIC = "IPH_AndroidBottomBarGlic";

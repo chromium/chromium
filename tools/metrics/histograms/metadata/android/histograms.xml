@@ -1167,38 +1167,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BottomBar.Aim.IneligibilityReason"
-    enum="AndroidBottomBarAimIneligibilityReason" expires_after="2027-05-26">
-  <owner>madhavpruthi@google.com</owner>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>polardz@google.com</owner>
-  <summary>
-    Records the reason why AI Mode was evaluated and determined to be ineligible
-    or not shown in the Android Bottom Bar.
-  </summary>
-</histogram>
-
-<histogram name="Android.BottomBar.Aim.LaunchResult"
-    enum="AndroidBottomBarAimLaunchResult" expires_after="2027-05-26">
-  <owner>madhavpruthi@google.com</owner>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>polardz@google.com</owner>
-  <summary>
-    Records the result of attempting to launch AI Mode when the AI Mode button
-    is pressed in the Android Bottom Bar.
-  </summary>
-</histogram>
-
 <histogram name="Android.BottomBar.ExtraAction.CandidateDecisionTime"
     units="ms" expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>polardz@google.com</owner>
   <summary>
-    Records the time taken to evaluate and decide the candidate extra action
-    (GLIC or AI Mode) in the bottom bar. This includes the time spent in
-    GlicEnabling and geofencing checks. Recorded when the candidate extra action
-    resolution is evaluated.
+    Records the time taken to evaluate and decide the candidate extra action in
+    the bottom bar. This includes the time spent in GlicEnabling and geofencing
+    checks. Recorded when the candidate extra action resolution is evaluated.
   </summary>
 </histogram>
 
@@ -1209,8 +1186,8 @@ chromium-metrics-reviews@google.com.
   <owner>polardz@google.com</owner>
   <summary>
     Records the candidate action resolved for the Android Bottom Bar's extra
-    button container slot (None, Glic, or Aim). Recorded when the candidate
-    resolution is computed.
+    button container slot (None or Glic). Recorded when the candidate resolution
+    is computed.
   </summary>
 </histogram>
 
@@ -1274,7 +1251,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(AndroidBottomBarIphFeature) -->
 
   <token key="IPHType">
-    <variant name="Aim" summary="AI Mode button"/>
     <variant name="Glic" summary="Gemini button"/>
     <variant name="NewTab" summary="New Tab button"/>
   </token>

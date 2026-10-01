@@ -43,12 +43,11 @@ public class BottomBarMetrics {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarIphEvent)
 
     // LINT.IfChange(AndroidBottomBarIphFeature)
-    @StringDef({IphFeature.GLIC, IphFeature.NEW_TAB, IphFeature.AIM})
+    @StringDef({IphFeature.GLIC, IphFeature.NEW_TAB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface IphFeature {
         String GLIC = "Glic";
         String NEW_TAB = "NewTab";
-        String AIM = "Aim";
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:AndroidBottomBarIphFeature)
@@ -88,12 +87,12 @@ public class BottomBarMetrics {
 
     // LINT.IfChange(AndroidBottomBarCandidateAction)
     /** Candidate action resolved for the bottom bar's extra button container slot. */
-    @IntDef({CandidateAction.NONE, CandidateAction.GLIC, CandidateAction.AIM})
+    @IntDef({CandidateAction.NONE, CandidateAction.GLIC, CandidateAction.DEPRECATED_AIM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CandidateAction {
         int NONE = 0;
         int GLIC = 1;
-        int AIM = 2;
+        int DEPRECATED_AIM = 2;
         int COUNT = 3;
     }
 
@@ -115,44 +114,6 @@ public class BottomBarMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarGlicIneligibilityReason)
-
-    // LINT.IfChange(AndroidBottomBarAimIneligibilityReason)
-    /** Reasons why AI Mode was determined ineligible or not shown in the bottom bar. */
-    @IntDef({
-        AimIneligibilityReason.FEATURE_FLAG_DISABLED,
-        AimIneligibilityReason.COUNTRY_GEOFENCED,
-        AimIneligibilityReason.COUNTRY_IN_GLIC_SOON_LIST,
-        AimIneligibilityReason.PREEMPTED_BY_GLIC,
-        AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AimIneligibilityReason {
-        int FEATURE_FLAG_DISABLED = 0;
-        int COUNTRY_GEOFENCED = 1;
-        int COUNTRY_IN_GLIC_SOON_LIST = 2;
-        int PREEMPTED_BY_GLIC = 3;
-        int DEFAULT_SEARCH_ENGINE_NOT_GOOGLE = 4;
-        int COUNT = 5;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarAimIneligibilityReason)
-
-    // LINT.IfChange(AndroidBottomBarAimLaunchResult)
-    /** Results of attempting to launch AI Mode from the bottom bar. */
-    @IntDef({
-        AimLaunchResult.SUCCESS,
-        AimLaunchResult.TAB_NULL,
-        AimLaunchResult.MISSING_OR_INVALID_URL
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AimLaunchResult {
-        int SUCCESS = 0;
-        int TAB_NULL = 1;
-        int MISSING_OR_INVALID_URL = 2;
-        int COUNT = 3;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarAimLaunchResult)
 
     /**
      * Records the visual state of the Glic button in the bottom bar at the moment of the user
@@ -211,7 +172,7 @@ public class BottomBarMetrics {
      * Records In-Product Help (IPH) trigger events for Bottom Bar actions.
      *
      * @param event The IPH event (Shown or Dismissed).
-     * @param featureType The feature type suffix for the histogram (e.g. "Glic", "NewTab", "Aim").
+     * @param featureType The feature type suffix for the histogram (e.g. "Glic", "NewTab").
      */
     public static void recordIphEvent(@IphEvent int event, @IphFeature String featureType) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -231,7 +192,7 @@ public class BottomBarMetrics {
 
     /**
      * Records the decision and processing time taken to evaluate candidate extra action resolution
-     * (GLIC vs AI Mode) in the bottom bar.
+     * in the bottom bar.
      *
      * @param durationMs The elapsed time in milliseconds.
      */
@@ -243,7 +204,7 @@ public class BottomBarMetrics {
     /**
      * Records the candidate extra action resolved for the bottom bar.
      *
-     * @param candidateAction The candidate extra action (None, Glic, or Aim).
+     * @param candidateAction The candidate extra action (None or Glic).
      */
     public static void recordCandidateExtraAction(@CandidateAction int candidateAction) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -262,25 +223,5 @@ public class BottomBarMetrics {
                 "Android.BottomBar.Glic.IneligibilityReason",
                 reason,
                 GlicIneligibilityReason.COUNT);
-    }
-
-    /**
-     * Records the reason why AI Mode was determined ineligible or not shown in the bottom bar.
-     *
-     * @param reason The ineligibility reason.
-     */
-    public static void recordAimIneligibilityReason(@AimIneligibilityReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.BottomBar.Aim.IneligibilityReason", reason, AimIneligibilityReason.COUNT);
-    }
-
-    /**
-     * Records the result of attempting to launch AI Mode from the bottom bar.
-     *
-     * @param result The launch result (Success, TabNull, or MissingOrInvalidUrl).
-     */
-    public static void recordAimLaunchResult(@AimLaunchResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.BottomBar.Aim.LaunchResult", result, AimLaunchResult.COUNT);
     }
 }

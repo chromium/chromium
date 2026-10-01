@@ -254,11 +254,6 @@ should be able to be added at any place in this file.
       summary="For AddToHomescreen IPH feature using text bubble (obsolete)."/>
   <variant name="_AimActivationHint"
       summary="A hint to activate AI Mode on Android Desktop via keystrokes."/>
-  <variant name="_AndroidBottomBarAim"
-      summary="Describes the AI Mode button added in the bottom bar."/>
-  <variant name="_AndroidBottomBarAimPromoDialog"
-      summary="For the promo dialog shown to introduce AI Mode with the
-               bottom bar."/>
   <variant name="_AndroidBottomBarGlic"
       summary="Describes the GLIC button added in the bottom bar."/>
   <variant name="_AndroidBottomBarNewTab"
@@ -19653,15 +19648,6 @@ should be able to be added at any place in this file.
   <description>
     Reported when the user denies the confirmation dialog to move their local
     bookmarks to their account. iOS only.
-  </description>
-</action>
-
-<action name="MobileBottomBar.Aim.Clicked">
-  <owner>madhavpruthi@google.com</owner>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>polardz@google.com</owner>
-  <description>
-    Recorded when the AI Mode button in the Android Bottom Bar is clicked.
   </description>
 </action>
 

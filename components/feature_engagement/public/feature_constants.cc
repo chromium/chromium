@@ -343,12 +343,6 @@ BASE_FEATURE(kIPHExtensionsPinnedByDefaultFeature,
 BASE_FEATURE(kIPHAccountSettingsHistorySync,
              "IPH_AccountSettingsHistorySync",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAndroidBottomBarAim,
-             "IPH_AndroidBottomBarAim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAndroidBottomBarAimPromoDialog,
-             "IPH_AndroidBottomBarAimPromoDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidBottomBarGlic,
              "IPH_AndroidBottomBarGlic",
              base::FEATURE_DISABLED_BY_DEFAULT);

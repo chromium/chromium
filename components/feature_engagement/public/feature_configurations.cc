@@ -714,52 +714,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
   // CONFIGURATION_ANDROID_START
-  if (kIPHAndroidBottomBarAim.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-
-    // IPH is always available at start-up.
-    config.availability = kAlwaysAvailable;
-
-    // IPH only shows if no other IPH has shown this session.
-    config.session_rate = Comparator(EQUAL, 0);
-
-    // IPH only shows once per 360 days.
-    config.trigger = EventConfig("android_bottom_bar_aim_trigger",
-                                 Comparator(EQUAL, 0), 360, 360);
-
-    // IPH will not show if the user has interacted with the AI Mode button.
-    config.used = EventConfig("android_bottom_bar_aim_used",
-                              Comparator(EQUAL, 0), 360, 360);
-
-    // Require that the aim promo dialog IPH has been shown at least once.
-    config.event_configs.insert(
-        EventConfig("android_bottom_bar_aim_promo_dialog_trigger",
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), 360, 360));
-    return config;
-  }
-
-  if (kIPHAndroidBottomBarAimPromoDialog.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-
-    // IPH is always available at start-up.
-    config.availability = kAlwaysAvailable;
-
-    // IPH only shows if no other IPH has shown this session.
-    config.session_rate = Comparator(EQUAL, 0);
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
-
-    // IPH only shows once per 360 days.
-    config.trigger = EventConfig("android_bottom_bar_aim_promo_dialog_trigger",
-                                 Comparator(EQUAL, 0), 360, 360);
-
-    // IPH will not show if the user has interacted with the AIM Promo Dialog.
-    config.used = EventConfig("android_bottom_bar_aim_promo_dialog_used",
-                              Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
-
   if (kIPHAndroidBottomBarGlic.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
