@@ -2,7 +2,7 @@
 <html>
 <head>
   <style>
-    geolocation {
+    geolocation, usermedia, camera, microphone {
       font-size: xxx-large;
       margin: 0px;
       border: 0px;
@@ -12,6 +12,9 @@
 <body>
   <div id="parent">
     <geolocation id="geolocation"></geolocation>
+    <usermedia id="usermedia"></usermedia>
+    <camera id="camera"></camera>
+    <microphone id="microphone"></microphone>
   </div>
   <script>
     function checkGeolocation() {
@@ -27,6 +30,69 @@
       navigator.permissions.query({name: 'geolocation'}).then(permission => {
         domAutomationController.send(permission.state);
       });
+    }
+
+    function getPermissionState(name) {
+      navigator.permissions.query({name: name}).then(permission => {
+        domAutomationController.send(permission.state);
+      });
+    }
+
+    const mediaResolvers = {};
+
+    function recordMediaResult(el, summary) {
+      el.dataset.resultSummary = summary;
+      if (mediaResolvers[el.id]) {
+        const resolve = mediaResolvers[el.id];
+        delete mediaResolvers[el.id];
+        resolve(summary);
+      }
+    }
+
+    ['usermedia', 'camera', 'microphone'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('stream', () => {
+        const s = el.stream;
+        const summary = `stream:active=${Boolean(s && s.active)},video=${s ? s.getVideoTracks().length : 0},audio=${s ? s.getAudioTracks().length : 0}`;
+        recordMediaResult(el, summary);
+      });
+      el.addEventListener('track', () => {
+        const t = el.track;
+        const summary = `track:kind=${t ? t.kind : ''},state=${t ? t.readyState : ''}`;
+        recordMediaResult(el, summary);
+      });
+      el.addEventListener('cancel', () => {
+        const summary = `cancel:error=${el.error ? el.error.name : ''}`;
+        recordMediaResult(el, summary);
+      });
+      el.addEventListener('error', () => {
+        const summary = `error:name=${el.error ? el.error.name : ''}`;
+        recordMediaResult(el, summary);
+      });
+    });
+
+    function waitForMediaCaptureResult(id) {
+      const el = document.getElementById(id);
+      if (el.dataset.resultSummary) {
+        domAutomationController.send(el.dataset.resultSummary);
+      } else {
+        mediaResolvers[id] = (summary) => {
+          domAutomationController.send(summary);
+        };
+      }
+    }
+
+    function resetMediaCaptureElement(id) {
+      const el = document.getElementById(id);
+      if (el.stream) {
+        el.stream.getTracks().forEach(t => t.stop());
+      }
+      if (el.track) {
+        el.track.stop();
+      }
+      delete el.dataset.resultSummary;
+      delete mediaResolvers[id];
+      domAutomationController.send('reset');
     }
 
     document.getElementById('parent').addEventListener('promptaction', (event) => {

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    usermedia, camera, microphone {
+      font-size: xxx-large;
+      margin: 0px;
+      border: 0px;
+      width: 188px;
+      height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div id="parent">
+    <usermedia id="usermedia"></usermedia>
+    <camera id="camera"></camera>
+    <microphone id="microphone"></microphone>
+  </div>
+  <script>
+    function attachCaptureListeners(el) {
+      el.addEventListener('stream', () => {
+        const s = el.stream;
+        el.setAttribute('data-stream-active', String(Boolean(s && s.active)));
+        el.setAttribute('data-video-tracks', String(s ? s.getVideoTracks().length : 0));
+        el.setAttribute('data-audio-tracks', String(s ? s.getAudioTracks().length : 0));
+        el.setAttribute('data-error-name', el.error ? el.error.name : '');
+        el.setAttribute('data-last-event', 'stream');
+      });
+      el.addEventListener('track', () => {
+        const t = el.track;
+        el.setAttribute('data-track-kind', t ? t.kind : '');
+        el.setAttribute('data-track-ready-state', t ? t.readyState : '');
+        el.setAttribute('data-error-name', el.error ? el.error.name : '');
+        el.setAttribute('data-last-event', 'track');
+      });
+      el.addEventListener('cancel', () => {
+        el.setAttribute('data-stream-active', String(Boolean(el.stream && el.stream.active)));
+        el.setAttribute('data-track-kind', el.track ? el.track.kind : '');
+        el.setAttribute('data-error-name', el.error ? el.error.name : '');
+        el.setAttribute('data-last-event', 'cancel');
+      });
+      el.addEventListener('error', () => {
+        el.setAttribute('data-error-name', el.error ? el.error.name : '');
+        el.setAttribute('data-last-event', 'error');
+      });
+    }
+
+    document.querySelectorAll('usermedia, camera, microphone').forEach(attachCaptureListeners);
+
+    function clickById(element_id) {
+      click(document.getElementById(element_id));
+    }
+
+    function click(element) {
+      element.click();
+    }
+
+    function resetMediaElement(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.stream) {
+        el.stream.getTracks().forEach(t => t.stop());
+      }
+      if (el.track) {
+        el.track.stop();
+      }
+      el.removeAttribute('data-last-event');
+      el.removeAttribute('data-stream-active');
+      el.removeAttribute('data-video-tracks');
+      el.removeAttribute('data-audio-tracks');
+      el.removeAttribute('data-track-kind');
+      el.removeAttribute('data-track-ready-state');
+      el.removeAttribute('data-error-name');
+    }
+  </script>
+</body>
+</html>

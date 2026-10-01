@@ -33,6 +33,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kApproximateGeolocationPermission,
     &media::kAutoPictureInPictureAndroid,
     &blink::features::kBypassPepcSecurityForTesting,
+    &blink::features::kCameraAndMicrophoneElements,
     &blink::features::kUserMediaElement,
     &blink::features::kGeolocationElement,
 };

@@ -61,6 +61,7 @@ import org.chromium.components.permissions.PermissionDialogDelegate;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -73,8 +74,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(PermissionsAndroidFeatureList.BYPASS_PEPC_SECURITY_FOR_TESTING)
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM
+})
+@Features.EnableFeatures({
+    PermissionsAndroidFeatureList.BYPASS_PEPC_SECURITY_FOR_TESTING,
+    PermissionsAndroidFeatureList.USER_MEDIA_ELEMENT,
+    PermissionsAndroidFeatureList.CAMERA_AND_MICROPHONE_ELEMENTS
+})
 @Batch(Batch.PER_CLASS)
 @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/394097674
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288462
@@ -111,7 +119,9 @@ public class EmbeddedPermissionPromptTest {
         String[] requestablePermission =
                 new String[] {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO
                 };
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
@@ -121,6 +131,7 @@ public class EmbeddedPermissionPromptTest {
     @After
     public void tearDown() throws Exception {
         setPermission(ContentSetting.DEFAULT);
+        setMediaPermissions(ContentSetting.DEFAULT, ContentSetting.DEFAULT);
     }
 
     /**
@@ -161,9 +172,22 @@ public class EmbeddedPermissionPromptTest {
         setNativeContentSetting(getGeolocationType(), mPermissionRule.getURL(TEST_PAGE), value);
     }
 
+    private void setMediaPermissions(
+            @ContentSetting int cameraValue, @ContentSetting int micValue) {
+        String url = mPermissionRule.getURL(TEST_PAGE);
+        setNativeContentSetting(ContentSettingsType.MEDIASTREAM_CAMERA, url, cameraValue);
+        setNativeContentSetting(ContentSettingsType.MEDIASTREAM_MIC, url, micValue);
+    }
+
     private String getGeolocationPermissionStateFromJS() throws Exception {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
                 mActivityTestRule.getWebContents(), "getGeolocationPermissionState();");
+    }
+
+    private String waitForMediaCaptureResultFromJS(String elementId) throws Exception {
+        return JavaScriptUtils.runJavascriptWithAsyncResult(
+                mActivityTestRule.getWebContents(),
+                "waitForMediaCaptureResult('" + elementId + "');");
     }
 
     private void waitForTitleUpdate(String title, ChromeActivity activity) throws Exception {
@@ -583,5 +607,221 @@ public class EmbeddedPermissionPromptTest {
 
         waitForTitleUpdate("promptaction", activity);
         assertEquals("\"denied\"", getGeolocationPermissionStateFromJS());
+    }
+
+    private void assertMediaDialogTexts(
+            ChromeActivity activity,
+            String expectedMessage,
+            String expectedPositive,
+            String expectedEphemeral,
+            String expectedNegative) {
+        PropertyModel dialogModel = getCurrentDialogModel(activity);
+        PermissionDialogDelegate delegate = getPermissionDialogDelegate(dialogModel);
+        assertEquals(expectedMessage, delegate.getMessageText());
+        assertEquals(expectedPositive, delegate.getPositiveButtonText());
+        assertEquals(expectedEphemeral, delegate.getPositiveEphemeralButtonText());
+        assertEquals(expectedNegative, delegate.getNegativeButtonText());
+        assertLocationChooserVisible(dialogModel, false);
+    }
+
+    private void runSingleTrackElementAskAndPreviouslyDeniedFlows(
+            String elementId, String permissionLabel, String trackKind, boolean isCamera)
+            throws Exception {
+        setMediaPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        final ChromeActivity activity = prepareActivity();
+        final String expectedLiveTrack = "\"track:kind=" + trackKind + ",state=live\"";
+
+        // 1. Ask flow -> Allow delivers live track via ontrack.
+        triggerPrompt(elementId);
+        assertMediaDialogTexts(
+                activity,
+                LOOPBACK_ADDRESS + " wants to use your " + permissionLabel,
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow");
+        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW, activity);
+        waitForTitleUpdate("promptaction", activity);
+        assertEquals(expectedLiveTrack, waitForMediaCaptureResultFromJS(elementId));
+
+        // 2. Previously denied flow -> Allow this time delivers live track.
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                mActivityTestRule.getWebContents(),
+                "resetMediaCaptureElement('" + elementId + "');");
+        setMediaPermissions(
+                isCamera ? ContentSetting.BLOCK : ContentSetting.ASK,
+                isCamera ? ContentSetting.ASK : ContentSetting.BLOCK);
+
+        triggerPrompt(elementId);
+        assertMediaDialogTexts(
+                activity,
+                "You previously didn't allow " + permissionLabel + " for this site",
+                "Continue not allowing",
+                "",
+                "Allow this time");
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
+        waitForTitleUpdate("promptaction", activity);
+        assertEquals(expectedLiveTrack, waitForMediaCaptureResultFromJS(elementId));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaAskPromptInteractionAllow() throws Exception {
+        setMediaPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                LOOPBACK_ADDRESS + " wants to use your camera and microphone",
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow");
+
+        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW, activity);
+        waitForTitleUpdate("promptaction", activity);
+        assertEquals(
+                "\"stream:active=true,video=1,audio=1\"",
+                waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaAskPromptInteractionAllowEphemeral() throws Exception {
+        setMediaPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                LOOPBACK_ADDRESS + " wants to use your camera and microphone",
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow");
+
+        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW_ONCE, activity);
+        waitForTitleUpdate("promptaction", activity);
+        assertEquals(
+                "\"stream:active=true,video=1,audio=1\"",
+                waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaAskPromptInteractionDeny() throws Exception {
+        setMediaPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                LOOPBACK_ADDRESS + " wants to use your camera and microphone",
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow");
+
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
+        waitForTitleUpdate("promptdismiss", activity);
+        assertEquals(
+                "\"cancel:error=NotAllowedError\"", waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaPreviousDeniedInteractionAllowThisTime() throws Exception {
+        setMediaPermissions(ContentSetting.BLOCK, ContentSetting.BLOCK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                "You previously didn't allow camera and microphone for this site",
+                "Continue not allowing",
+                "",
+                "Allow this time");
+
+        PermissionTestRule.replyToDialogForgiving(PermissionTestRule.PromptDecision.DENY, activity);
+        waitForTitleUpdate("promptaction", activity);
+        assertEquals(
+                "\"stream:active=true,video=1,audio=1\"",
+                waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaPreviousDeniedInteractionContinue() throws Exception {
+        setMediaPermissions(ContentSetting.BLOCK, ContentSetting.BLOCK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                "You previously didn't allow camera and microphone for this site",
+                "Continue not allowing",
+                "",
+                "Allow this time");
+
+        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW, activity);
+        waitForTitleUpdate("promptdismiss", activity);
+        assertEquals(
+                "\"cancel:error=NotAllowedError\"", waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaOsSettingsPromptTextAndCancel() throws Exception {
+        String productName = BuildConfig.IS_CHROME_BRANDED ? "Chrome" : "Chromium";
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(new String[] {}, RuntimePromptResponse.DENY);
+
+        setMediaPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        final ChromeActivity activity = prepareActivity();
+
+        triggerPrompt("usermedia");
+        assertMediaDialogTexts(
+                activity,
+                "To use your camera and microphone on this site, give " + productName + " access",
+                "Android settings",
+                "",
+                "Cancel");
+
+        dismissDialog(activity);
+        waitForTitleUpdate("promptdismiss", activity);
+        assertEquals(
+                "\"cancel:error=NotAllowedError\"", waitForMediaCaptureResultFromJS("usermedia"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserMediaAlreadyGrantedSkipsPromptAndDeliversStream() throws Exception {
+        String[] grantedPermissions =
+                new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        grantedPermissions, RuntimePromptResponse.ALREADY_GRANTED);
+
+        setMediaPermissions(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        prepareActivity();
+
+        clickNodeWithId("usermedia");
+        assertEquals(
+                "\"stream:active=true,video=1,audio=1\"",
+                waitForMediaCaptureResultFromJS("usermedia"));
+        boolean isDialogShown =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> PermissionDialogController.getInstance().isDialogShownForTest());
+        assertEquals(false, isDialogShown);
+    }
+
+    @Test
+    @MediumTest
+    public void testCameraElementAskAndPreviouslyDeniedFlows() throws Exception {
+        runSingleTrackElementAskAndPreviouslyDeniedFlows("camera", "camera", "video", true);
+    }
+
+    @Test
+    @MediumTest
+    public void testMicrophoneElementAskAndPreviouslyDeniedFlows() throws Exception {
+        runSingleTrackElementAskAndPreviouslyDeniedFlows(
+                "microphone", "microphone", "audio", false);
     }
 }

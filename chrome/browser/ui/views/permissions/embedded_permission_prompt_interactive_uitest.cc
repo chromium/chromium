@@ -47,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -1971,10 +1972,267 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       [&]() { return !deletion_observer.IsWidgetAlive(); }));
 }
 
+class MediaCaptureElementInteractiveUiTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  MediaCaptureElementInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kUserMediaElement,
+         blink::features::kCameraAndMicrophoneElements,
+         blink::features::kBypassPepcSecurityForTesting},
+        {blink::features::kUserMediaElementLegacy});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EmbeddedPermissionPromptInteractiveTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+  }
+
+  GURL GetMediaCaptureURL() {
+    return https_server()->GetURL("a.test",
+                                  "/permissions/media_capture_element.html");
+  }
+
+  auto WaitForElementSelector(const std::string& selector) {
+    StateChange state_change;
+    state_change.where = DeepQuery{selector};
+    state_change.type = StateChange::Type::kExists;
+    state_change.event = kDoneVisibleEvent;
+    return WaitForStateChange(kWebContentsElementId, state_change);
+  }
+
+  auto ResetMediaElementState(const std::string& element_id) {
+    return ExecuteJs(
+        kWebContentsElementId,
+        base::StrCat({"() => { resetMediaElement('", element_id, "'); }"}));
+  }
+
+  void RunSingleTrackElementPrimaryAndSecondaryUiCuj(
+      const std::string& element_id,
+      ContentSettingsType content_settings_type,
+      const std::u16string& expected_label,
+      const std::u16string& expected_denied_title,
+      const std::string& expected_track_kind) {
+    std::vector<std::u16string> expected_titles = {
+        u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+        expected_denied_title};
+    std::vector<std::u16string> expected_labels1 = {expected_label};
+    const std::string track_selector = base::StrCat(
+        {"#", element_id, "[data-last-event='track'][data-track-kind='",
+         expected_track_kind, "'][data-track-ready-state='live']"});
+    const std::string cancel_selector =
+        base::StrCat({"#", element_id,
+                      "[data-last-event='cancel']"
+                      "[data-error-name='NotAllowedError']"});
+
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetMediaCaptureURL()),
+
+        // 1. Click element when ASK -> Secondary UI AskView appears -> Allow
+        // delivers live MediaStreamTrack via ontrack.
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                   expected_titles, /*expected_label_index=*/0),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                   expected_labels1, /*expected_label_index=*/0),
+        PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+        CheckContentSettingsValue({content_settings_type},
+                                  CONTENT_SETTING_ALLOW),
+        WaitForElementSelector(track_selector),
+
+        // 2. Stop track and click again while already ALLOW -> skips Secondary
+        // UI and directly delivers a new live MediaStreamTrack.
+        ResetMediaElementState(element_id), ClickOnPEPCElement(element_id),
+        WaitForElementSelector(track_selector),
+        EnsureNotPresent(EmbeddedPermissionPromptBaseView::kMainViewId),
+
+        // 3. Set permission to BLOCK -> click element -> Secondary UI
+        // PreviouslyDeniedView appears -> AllowThisTime delivers live track.
+        ResetMediaElementState(element_id), Do([this, content_settings_type]() {
+          SetContentSetting(content_settings_type, CONTENT_SETTING_BLOCK);
+        }),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                   expected_titles, /*expected_label_index=*/1),
+        PushPEPCPromptButton(
+            EmbeddedPermissionPromptPreviouslyDeniedView::kAllowThisTimeId),
+        CheckContentSettingsValue({content_settings_type},
+                                  CONTENT_SETTING_ALLOW),
+        WaitForElementSelector(track_selector),
+
+        // 4. Dismissing Secondary UI fires oncancel with NotAllowedError.
+        ResetMediaElementState(element_id), Do([this, content_settings_type]() {
+          SetContentSetting(content_settings_type, CONTENT_SETTING_ASK);
+        }),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        InAnyContext(
+            PressButton(views::BubbleFrameView::kCloseButtonElementId)),
+        WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId),
+        WaitForElementSelector(cancel_selector));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
+                       UserMediaElementAskAllowAndPreviouslyDeniedCuj) {
+  std::vector<ContentSettingsType> media_types = {
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::MEDIASTREAM_MIC};
+  std::vector<std::u16string> expected_titles = {
+      u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+      u"You have allowed camera and microphone for this site",
+      u"You previously didn't allow camera and microphone for this site"};
+  std::vector<std::u16string> expected_labels1 = {u"Use your cameras"};
+  std::vector<std::u16string> expected_labels2 = {u"Use your microphones"};
+  constexpr char kActiveStreamSelector[] =
+      "#usermedia[data-last-event='stream'][data-stream-active='true']"
+      "[data-video-tracks='1'][data-audio-tracks='1']";
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetMediaCaptureURL()),
+
+      // 1. Click <usermedia> when ASK -> Secondary UI AskView appears.
+      ClickOnPEPCElement("usermedia"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                 expected_titles, /*expected_label_index=*/0),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                 expected_labels1, /*expected_label_index=*/0),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
+                 expected_labels2, /*expected_label_index=*/0),
+
+      // Allow via Secondary UI -> Primary UI receives active MediaStream with
+      // both video and audio tracks.
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      CheckContentSettingsValue(media_types, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(kActiveStreamSelector),
+
+      // 2. Stop active stream and click <usermedia> while already ALLOW ->
+      // skips Secondary UI and directly delivers a new active MediaStream.
+      ResetMediaElementState("usermedia"), ClickOnPEPCElement("usermedia"),
+      WaitForElementSelector(kActiveStreamSelector),
+      EnsureNotPresent(EmbeddedPermissionPromptBaseView::kMainViewId),
+
+      // 3. Stop active stream, set permissions to BLOCK, and click <usermedia>
+      // again -> Secondary UI PreviouslyDeniedView appears -> AllowThisTime
+      // delivers a new active MediaStream.
+      ResetMediaElementState("usermedia"), Do([&, this]() {
+        for (const auto& type : media_types) {
+          SetContentSetting(type, CONTENT_SETTING_BLOCK);
+        }
+      }),
+      ClickOnPEPCElement("usermedia"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                 expected_titles, /*expected_label_index=*/2),
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptPreviouslyDeniedView::kAllowThisTimeId),
+      CheckContentSettingsValue(media_types, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(kActiveStreamSelector));
+}
+
+IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
+                       UserMediaElementAllowThisTimeAndDismissCancelCuj) {
+  std::vector<ContentSettingsType> media_types = {
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::MEDIASTREAM_MIC};
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetMediaCaptureURL()),
+
+      // 1. Click <usermedia> and choose "Allow this time" on Secondary UI.
+      ClickOnPEPCElement("usermedia"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowThisTimeId),
+      CheckContentSettingsValue(media_types, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(
+          "#usermedia[data-last-event='stream'][data-stream-active='true']"
+          "[data-video-tracks='1'][data-audio-tracks='1']"),
+
+      // 2. Reset permissions to ASK, click <usermedia>, and dismiss via X
+      // button on Secondary UI -> Primary UI fires cancel with NotAllowedError.
+      ResetMediaElementState("usermedia"), Do([&, this]() {
+        for (const auto& type : media_types) {
+          SetContentSetting(type, CONTENT_SETTING_ASK);
+        }
+      }),
+      ClickOnPEPCElement("usermedia"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(PressButton(views::BubbleFrameView::kCloseButtonElementId)),
+      WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId),
+      WaitForElementSelector(
+          "#usermedia[data-last-event='cancel'][data-stream-active='false']"
+          "[data-error-name='NotAllowedError']"));
+}
+
+IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
+                       UserMediaElementPartialPermissionCuj) {
+  std::vector<std::u16string> expected_labels1 = {u"Use your microphones"};
+  std::vector<std::u16string> empty_labels;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetMediaCaptureURL()),
+      Do([this]() {
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                          CONTENT_SETTING_ALLOW);
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+                          CONTENT_SETTING_ASK);
+      }),
+
+      // Clicking <usermedia> when Camera is ALLOW and Mic is ASK shows
+      // Secondary UI asking only for Microphone.
+      ClickOnPEPCElement("usermedia"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                 expected_labels1, /*expected_label_index=*/0),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2, empty_labels,
+                 /*expected_label_index=*/0),
+
+      // Allowing Microphone completes the combined requirement and delivers a
+      // MediaStream with both video and audio tracks to <usermedia>.
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      CheckContentSettingsValue({ContentSettingsType::MEDIASTREAM_CAMERA,
+                                 ContentSettingsType::MEDIASTREAM_MIC},
+                                CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(
+          "#usermedia[data-last-event='stream'][data-stream-active='true']"
+          "[data-video-tracks='1'][data-audio-tracks='1']"));
+}
+
+IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
+                       CameraElementPrimaryAndSecondaryUiCuj) {
+  RunSingleTrackElementPrimaryAndSecondaryUiCuj(
+      "camera", ContentSettingsType::MEDIASTREAM_CAMERA, u"Use your cameras",
+      u"You previously didn't allow camera for this site", "video");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
+                       MicrophoneElementPrimaryAndSecondaryUiCuj) {
+  RunSingleTrackElementPrimaryAndSecondaryUiCuj(
+      "microphone", ContentSettingsType::MEDIASTREAM_MIC,
+      u"Use your microphones",
+      u"You previously didn't allow microphone for this site", "audio");
+}
+
 // Setting up to run all tests with two screen scale factors.
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptInteractiveTest,
                          testing::Values(1.0, 2.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         MediaCaptureElementInteractiveUiTest,
+                         testing::Values(1.0));
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptPolicyInteractiveTest,
                          testing::Values(1.0));
