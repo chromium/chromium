@@ -191,24 +191,12 @@ enum AppLaunchBucket {
   APP_LAUNCH_BUCKET_INVALID
 };
 
-// The extension id of the helper extension for Reading Mode to work on Google
-// Docs.
-inline constexpr char kReadingModeGDocsHelperExtensionId[] =
-    "cjlaeehoipngghikfjogbdkpbdgebppb";
-// The path to the the helper extension for Reading Mode to work on Google Docs.
-inline constexpr char kReadingModeGDocsHelperExtensionPath[] = "accessibility";
-
 // The directory name of the AIM Eligibility component extension, relative to
 // DIR_COMPONENT_USER, when updated via component updater, or DIR_RESOURCES,
 // when bundled.
 inline constexpr base::FilePath::CharType kAimEligibilityExtensionDirName[] =
     FILE_PATH_LITERAL("aim_eligibility_extension");
 
-// The name of the manifest file for the extension that enables Reading Mode to
-// work on Google Docs.
-inline constexpr base::FilePath::CharType
-    kReadingModeGDocsHelperManifestFilename[] =
-        FILE_PATH_LITERAL("reading_mode_gdocs_helper_manifest.json");
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // The extension id of the google tts engine extension to use on-device natural
 // Google voices.
@@ -259,7 +247,6 @@ inline constexpr auto kBuiltInFirstPartyExtensionIds =
         kEspeakSpeechSynthesisExtensionId,
         kGoogleSpeechSynthesisExtensionId,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        kReadingModeGDocsHelperExtensionId,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
         kTTSEngineExtensionId,
         kComponentUpdaterTTSEngineExtensionId,

@@ -70,10 +70,6 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // Install an extension.
   // `manifest_name` must live for the duration of the program. (e.g. be
   // statically allocated)
-  void InstallExtensionWithId(const std::string& extension_id,
-                              const std::string& extension_resource_directory,
-                              const base::FilePath::CharType* manifest_name,
-                              bool should_localize);
   void InstallExtensionWithIdAndPath(
       const std::string& extension_id,
       const base::FilePath& extension_path,

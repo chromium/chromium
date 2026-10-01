@@ -36,47 +36,41 @@ class EmbeddedA11yExtensionLoaderTest : public InProcessBrowserTest {
             base::Unretained(this)));
   }
 
-  void WaitForExtensionLoaded(Profile* profile,
-                              const std::string& extension_id) {
+  void InstallAndWaitForExtensionLoaded(Profile* profile) {
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+    base::FilePath extension_path = source_root_dir.AppendASCII("chrome")
+                                        .AppendASCII("test")
+                                        .AppendASCII("data")
+                                        .AppendASCII("accessibility")
+                                        .AppendASCII("extension");
+    auto* embedded_a11y_extension_loader =
+        EmbeddedA11yExtensionLoader::GetInstance();
+    embedded_a11y_extension_loader->InstallExtensionWithIdAndPath(
+        extension_misc::kIndigoExtensionId, extension_path,
+        FILE_PATH_LITERAL("manifest.json"),
+        /*should_localize=*/false);
+
     auto* component_loader = extensions::ComponentLoader::Get(profile);
-    while (!component_loader->Exists(extension_id)) {
+    while (!component_loader->Exists(extension_misc::kIndigoExtensionId)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
     }
-
-    EXPECT_TRUE(component_loader->Exists(extension_id));
+    EXPECT_TRUE(component_loader->Exists(extension_misc::kIndigoExtensionId));
   }
 
-  void WaitForExtensionUnloaded(Profile* profile,
-                                const std::string& extension_id) {
+  void RemoveAndWaitForExtensionUnloaded(Profile* profile) {
+    auto* embedded_a11y_extension_loader =
+        EmbeddedA11yExtensionLoader::GetInstance();
+    embedded_a11y_extension_loader->RemoveExtensionWithId(
+        extension_misc::kIndigoExtensionId);
+
     auto* component_loader = extensions::ComponentLoader::Get(profile);
-    while (component_loader->Exists(extension_id)) {
+    while (component_loader->Exists(extension_misc::kIndigoExtensionId)) {
       waiter_ = std::make_unique<base::RunLoop>();
       waiter_->Run();
     }
-
-    EXPECT_FALSE(component_loader->Exists(extension_id));
-  }
-
-  void InstallAndWaitForExtensionLoaded(
-      Profile* profile,
-      const std::string& extension_id,
-      const std::string& extension_path,
-      const base::FilePath::CharType* manifest_name,
-      bool should_localize) {
-    auto* embedded_a11y_extension_loader =
-        EmbeddedA11yExtensionLoader::GetInstance();
-    embedded_a11y_extension_loader->InstallExtensionWithId(
-        extension_id, extension_path, manifest_name, should_localize);
-    WaitForExtensionLoaded(profile, extension_id);
-  }
-
-  void RemoveAndWaitForExtensionUnloaded(Profile* profile,
-                                         const std::string& extension_id) {
-    auto* embedded_a11y_extension_loader =
-        EmbeddedA11yExtensionLoader::GetInstance();
-    embedded_a11y_extension_loader->RemoveExtensionWithId(extension_id);
-    WaitForExtensionUnloaded(profile, extension_id);
+    EXPECT_FALSE(component_loader->Exists(extension_misc::kIndigoExtensionId));
   }
 
  private:
@@ -96,44 +90,10 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   ASSERT_GT(profiles.size(), 0u);
   Profile* profile = profiles[0];
 
-  InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
-  InstallAndWaitForExtensionLoaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      profile, extension_misc::kReadingModeGDocsHelperExtensionId);
-}
-
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
-                       InstallExtensionWithIdAndPath) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const auto& profiles = profile_manager->GetLoadedProfiles();
-  ASSERT_GT(profiles.size(), 0u);
-  Profile* profile = profiles[0];
-
-  char manifest_id[] = "cjlaeehoipngghikfjogbdkpbdgebppb";
-  base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-  base::FilePath extension_path = source_root_dir.AppendASCII("chrome")
-                                      .AppendASCII("test")
-                                      .AppendASCII("data")
-                                      .AppendASCII("accessibility")
-                                      .AppendASCII("extension");
-  base::FilePath::CharType manifest_name[] = FILE_PATH_LITERAL("manifest.json");
-  auto* embedded_a11y_extension_loader =
-      EmbeddedA11yExtensionLoader::GetInstance();
-  embedded_a11y_extension_loader->InstallExtensionWithIdAndPath(
-      manifest_id, extension_path, manifest_name, /*should_localize=*/false);
-  WaitForExtensionLoaded(profile, manifest_id);
-  RemoveAndWaitForExtensionUnloaded(profile, manifest_id);
+  InstallAndWaitForExtensionLoaded(profile);
+  RemoveAndWaitForExtensionUnloaded(profile);
+  InstallAndWaitForExtensionLoaded(profile);
+  RemoveAndWaitForExtensionUnloaded(profile);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -155,25 +115,12 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), num_extra_profiles + 1);
   const auto& profiles = profile_manager->GetLoadedProfiles();
 
-  // Install extension for Reading Mode.
-  auto* embedded_a11y_extension_loader =
-      EmbeddedA11yExtensionLoader::GetInstance();
-  embedded_a11y_extension_loader->InstallExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
   for (auto* const profile : profiles) {
-    WaitForExtensionLoaded(profile,
-                           extension_misc::kReadingModeGDocsHelperExtensionId);
+    InstallAndWaitForExtensionLoaded(profile);
   }
 
-  // Remove the extension.
-  embedded_a11y_extension_loader->RemoveExtensionWithId(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
   for (auto* const profile : profiles) {
-    WaitForExtensionUnloaded(
-        profile, extension_misc::kReadingModeGDocsHelperExtensionId);
+    RemoveAndWaitForExtensionUnloaded(profile);
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -185,15 +132,8 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
       CreateIncognitoBrowser(profile_manager->GetLastUsedProfile());
   content::RunAllTasksUntilIdle();
 
-  InstallAndWaitForExtensionLoaded(
-      incognito->GetProfile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      incognito->GetProfile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId);
+  InstallAndWaitForExtensionLoaded(incognito->GetProfile());
+  RemoveAndWaitForExtensionUnloaded(incognito->GetProfile());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -203,14 +143,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yExtensionLoaderTest,
   BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   content::RunAllTasksUntilIdle();
 
-  InstallAndWaitForExtensionLoaded(
-      guest_browser->GetProfile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId,
-      extension_misc::kReadingModeGDocsHelperExtensionPath,
-      extension_misc::kReadingModeGDocsHelperManifestFilename,
-      /*should_localize=*/false);
-  RemoveAndWaitForExtensionUnloaded(
-      guest_browser->GetProfile(),
-      extension_misc::kReadingModeGDocsHelperExtensionId);
+  InstallAndWaitForExtensionLoaded(guest_browser->GetProfile());
+  RemoveAndWaitForExtensionUnloaded(guest_browser->GetProfile());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

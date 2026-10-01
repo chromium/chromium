@@ -55,7 +55,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kQuickOfficeComponentExtensionId,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      extension_misc::kReadingModeGDocsHelperExtensionId,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       extension_misc::kTTSEngineExtensionId,
       extension_misc::kComponentUpdaterTTSEngineExtensionId,
@@ -98,7 +97,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_GLIC_EXTENSION_MANIFEST:
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST:
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST_MV3:
-    case IDR_READING_MODE_GDOCS_HELPER_MANIFEST:
     case IDR_WEBSTORE_MANIFEST:
 
 #if BUILDFLAG(IS_CHROMEOS)
