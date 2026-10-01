@@ -160,6 +160,7 @@ source_set("impl") {
     "//components/ukm",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/blink/public/common",
+    "//ui/events/blink:blink_features",
   ]
 
   if (is_android) {
