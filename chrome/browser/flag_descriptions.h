@@ -3613,6 +3613,32 @@ inline constexpr char kOmniboxFuseboxPopupVariationsDescription[] =
     "Enables popup variations (with the accordion menu) for the mobile "
     "Fusebox popup.";
 
+inline constexpr char kOmniboxFuseboxUserEdModelSubtitlesName[] =
+    "Omnibox Fusebox User Ed: Model Subtitles";
+inline constexpr char kOmniboxFuseboxUserEdModelSubtitlesDescription[] =
+    "Enables model subtext and popup subtext in the Fusebox popup.";
+
+inline constexpr char kOmniboxFuseboxUserEdPlusButtonIphName[] =
+    "Omnibox Fusebox User Ed: (+) Button IPH";
+inline constexpr char kOmniboxFuseboxUserEdPlusButtonIphDescription[] =
+    "Enables the educational popup pointing to the (+) attachment button in "
+    "the Omnibox.";
+
+inline constexpr char kOmniboxFuseboxUserEdTabPickerIphName[] =
+    "Omnibox Fusebox User Ed: Tab Picker IPH";
+inline constexpr char kOmniboxFuseboxUserEdTabPickerIphDescription[] =
+    "Enables the first-time educational popup in the Tab Picker.";
+
+inline constexpr char kOmniboxFuseboxUserEdFakeboxAnimationName[] =
+    "Omnibox Fusebox User Ed: Fakebox Animation";
+inline constexpr char kOmniboxFuseboxUserEdFakeboxAnimationDescription[] =
+    "Enables the cold-start hint animation in the NTP search box.";
+
+inline constexpr char kOmniboxFuseboxUserEdGuidedTourName[] =
+    "Omnibox Fusebox User Ed: Guided Tour";
+inline constexpr char kOmniboxFuseboxUserEdGuidedTourDescription[] =
+    "Enables the Fusebox guided tour and NTP promo card.";
+
 inline constexpr char kOmniboxDisableTabsForCanvasName[] =
     "Omnibox Disable Tabs For Canvas";
 inline constexpr char kOmniboxDisableTabsForCanvasDescription[] =

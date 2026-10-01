@@ -6962,6 +6962,35 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxFuseboxPopupVariationsVariants,
                                     "OmniboxFuseboxPopupVariations")},
 
+    {"omnibox-fusebox-user-ed-model-subtitles",
+     flag_descriptions::kOmniboxFuseboxUserEdModelSubtitlesName,
+     flag_descriptions::kOmniboxFuseboxUserEdModelSubtitlesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxUserEdModelSubtitles)},
+
+    {"omnibox-fusebox-user-ed-plus-button-iph",
+     flag_descriptions::kOmniboxFuseboxUserEdPlusButtonIphName,
+     flag_descriptions::kOmniboxFuseboxUserEdPlusButtonIphDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxUserEdPlusButtonIph)},
+
+    {"omnibox-fusebox-user-ed-tab-picker-iph",
+     flag_descriptions::kOmniboxFuseboxUserEdTabPickerIphName,
+     flag_descriptions::kOmniboxFuseboxUserEdTabPickerIphDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxUserEdTabPickerIph)},
+
+    {"omnibox-fusebox-user-ed-fakebox-animation",
+     flag_descriptions::kOmniboxFuseboxUserEdFakeboxAnimationName,
+     flag_descriptions::kOmniboxFuseboxUserEdFakeboxAnimationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxUserEdFakeboxAnimation)},
+
+    {"omnibox-fusebox-user-ed-guided-tour",
+     flag_descriptions::kOmniboxFuseboxUserEdGuidedTourName,
+     flag_descriptions::kOmniboxFuseboxUserEdGuidedTourDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxUserEdGuidedTour)},
+
     {"omnibox-aim-image-downscaling",
      flag_descriptions::kOmniboxAimImageDownscalingName,
      flag_descriptions::kOmniboxAimImageDownscalingDescription, kOsAndroid,

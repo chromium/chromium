@@ -8494,6 +8494,7 @@ from previous Chrome versions.
   <int value="-1956656203" label="ShowForceRespectUiGainsToggle:disabled"/>
   <int value="-1956349722" label="disable-smooth-scrolling"/>
   <int value="-1956231275" label="ForceSpectreVariant2Mitigation:enabled"/>
+  <int value="-1956008813" label="OmniboxFuseboxUserEdPlusButtonIph:disabled"/>
   <int value="-1955923385" label="EnableGamepadButtonAxisEvents:enabled"/>
   <int value="-1955891825" label="RichBubbleWithoutImage:enabled"/>
   <int value="-1954918413" label="AccountManagementFlowsV2:disabled"/>
@@ -10360,6 +10361,7 @@ from previous Chrome versions.
   <int value="-1396365071" label="AutofillAiDedupeEntities:disabled"/>
   <int value="-1396348326" label="DarkLightModeKMeansColor:enabled"/>
   <int value="-1396284128" label="WebUiAndroidTheming:disabled"/>
+  <int value="-1395797826" label="OmniboxFuseboxUserEdTabPickerIph:enabled"/>
   <int value="-1395598866" label="SidePanelResizing:disabled"/>
   <int value="-1395162885" label="enable-search-engine-choice:disabled"/>
   <int value="-1394604617" label="FlyoutInBookmarksBar:disabled"/>
@@ -11767,6 +11769,8 @@ from previous Chrome versions.
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
   <int value="-968896078" label="AllowWgcScreenCapturer:enabled"/>
+  <int value="-968740534"
+      label="OmniboxFuseboxUserEdFakeboxAnimation:disabled"/>
   <int value="-968675274" label="Rar2Fs:enabled"/>
   <int value="-968486209" label="GlicShareImage:enabled"/>
   <int value="-968010468" label="SharedArrayBuffer:disabled"/>
@@ -14183,6 +14187,7 @@ from previous Chrome versions.
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
   <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
+  <int value="-229586228" label="OmniboxFuseboxUserEdFakeboxAnimation:enabled"/>
   <int value="-228933177" label="ToastFramework:disabled"/>
   <int value="-228847300" label="OmniboxLimitKeywordModeSuggestions:disabled"/>
   <int value="-227487160" label="TreesInViz:enabled"/>
@@ -15217,6 +15222,7 @@ from previous Chrome versions.
   <int value="92106937" label="CloseTabSuggestions:disabled"/>
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
+  <int value="93597985" label="OmniboxFuseboxUserEdTabPickerIph:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
   <int value="94950485" label="HideAimEntrypointForUrlSuggestions:enabled"/>
@@ -16267,6 +16273,7 @@ from previous Chrome versions.
   <int value="409978710" label="GetAllScreensMedia:disabled"/>
   <int value="410101856" label="PictureInPictureMuteControl:enabled"/>
   <int value="410400234" label="WebAppEnableProtocolHandlers:disabled"/>
+  <int value="410657895" label="OmniboxFuseboxUserEdModelSubtitles:enabled"/>
   <int value="411250226" label="AutoplayMutedVideos:disabled"/>
   <int value="411536809" label="AutofillAcrossIframes:enabled"/>
   <int value="411673190" label="PermissionsAIv4:disabled"/>
@@ -16638,6 +16645,7 @@ from previous Chrome versions.
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
+  <int value="533592681" label="OmniboxFuseboxUserEdGuidedTour:disabled"/>
   <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
   <int value="534306691" label="TranslateStreamingBySentence:disabled"/>
   <int value="534614617" label="QuickAnswersMaterialNextUI:disabled"/>
@@ -16970,6 +16978,7 @@ from previous Chrome versions.
   <int value="636425179" label="mhtml-generator-option"/>
   <int value="636689698"
       label="AutofillEnableAllowlistForBmoCardCategoryBenefits:enabled"/>
+  <int value="636736348" label="OmniboxFuseboxUserEdGuidedTour:enabled"/>
   <int value="636909796" label="VaapiAV1Decoder:enabled"/>
   <int value="637396292" label="AllBookmarks:enabled"/>
   <int value="637452937" label="ChromeHomeSurvey:enabled"/>
@@ -18244,6 +18253,7 @@ from previous Chrome versions.
   <int value="1024560563" label="EnableFuzzyAppSearch:enabled"/>
   <int value="1025089469" label="GlicTabGroups:disabled"/>
   <int value="1025383624" label="FilesLocalImageSearch:enabled"/>
+  <int value="1025812317" label="OmniboxFuseboxUserEdModelSubtitles:disabled"/>
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026805166" label="SidePanelTopHairlineRefactorAndroid:disabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
@@ -18427,6 +18437,7 @@ from previous Chrome versions.
   <int value="1082064896" label="WebAuthenticationAmbientSignin:enabled"/>
   <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
+  <int value="1083107573" label="OmniboxFuseboxUserEdPlusButtonIph:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
   <int value="1083575298" label="LoadCryptoTokenExtension:enabled"/>
   <int value="1083781462"

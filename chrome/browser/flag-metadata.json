@@ -7646,6 +7646,31 @@
     "expiry_milestone": 160
   },
   {
+    "name": "omnibox-fusebox-user-ed-fakebox-animation",
+    "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 185
+  },
+  {
+    "name": "omnibox-fusebox-user-ed-guided-tour",
+    "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 185
+  },
+  {
+    "name": "omnibox-fusebox-user-ed-model-subtitles",
+    "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 185
+  },
+  {
+    "name": "omnibox-fusebox-user-ed-plus-button-iph",
+    "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 185
+  },
+  {
+    "name": "omnibox-fusebox-user-ed-tab-picker-iph",
+    "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 185
+  },
+  {
     "name": "omnibox-grouping-framework-non-zps",
     "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "ender@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150

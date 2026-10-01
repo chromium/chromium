@@ -203,6 +203,20 @@ BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
 // Enables popup variations (e.g. accordion menu) for mobile Fusebox.
 BASE_FEATURE(kOmniboxFuseboxPopupVariations, DISABLED);
 
+// Enables model subtext and popup subtext in the Fusebox popup.
+BASE_FEATURE(kOmniboxFuseboxUserEdModelSubtitles, DISABLED);
+
+// Enables the (+) attachment button IPH in the Omnibox.
+BASE_FEATURE(kOmniboxFuseboxUserEdPlusButtonIph, DISABLED);
+
+// Enables the first-time tab selection IPH in the Tab Picker.
+BASE_FEATURE(kOmniboxFuseboxUserEdTabPickerIph, DISABLED);
+
+// Enables the cold-start hint animation in the NTP search box.
+BASE_FEATURE(kOmniboxFuseboxUserEdFakeboxAnimation, DISABLED);
+
+// Enables the Fusebox guided tour and NTP promo card.
+BASE_FEATURE(kOmniboxFuseboxUserEdGuidedTour, DISABLED);
 
 // Disables tab attachments for Canvas requests and disables Canvas if tabs are
 // attached.
@@ -657,6 +671,11 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
       &kOmniboxFuseboxPopupVariations,
+      &kOmniboxFuseboxUserEdModelSubtitles,
+      &kOmniboxFuseboxUserEdPlusButtonIph,
+      &kOmniboxFuseboxUserEdTabPickerIph,
+      &kOmniboxFuseboxUserEdFakeboxAnimation,
+      &kOmniboxFuseboxUserEdGuidedTour,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kAim3pEntrypoint,

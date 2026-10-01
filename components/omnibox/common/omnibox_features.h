@@ -127,6 +127,13 @@ extern const base::FeatureParam<bool> kAim3pEntrypointDebug;
 // Enables popup variations (e.g. accordion menu) for mobile Fusebox.
 BASE_DECLARE_FEATURE(kOmniboxFuseboxPopupVariations);
 
+// Enables Fusebox user education features on Android.
+BASE_DECLARE_FEATURE(kOmniboxFuseboxUserEdModelSubtitles);
+BASE_DECLARE_FEATURE(kOmniboxFuseboxUserEdPlusButtonIph);
+BASE_DECLARE_FEATURE(kOmniboxFuseboxUserEdTabPickerIph);
+BASE_DECLARE_FEATURE(kOmniboxFuseboxUserEdFakeboxAnimation);
+BASE_DECLARE_FEATURE(kOmniboxFuseboxUserEdGuidedTour);
+
 // Navigation experiments.
 BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];

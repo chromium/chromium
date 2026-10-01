@@ -175,6 +175,29 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS,
                     FeatureState.ENABLED_IN_TEST);
 
+    public static final CachedFlag sFuseboxUserEdModelSubtitles =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_MODEL_SUBTITLES,
+                    FeatureState.DISABLED);
+
+    public static final CachedFlag sFuseboxUserEdPlusButtonIph =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_PLUS_BUTTON_IPH,
+                    FeatureState.DISABLED);
+
+    public static final CachedFlag sFuseboxUserEdTabPickerIph =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_TAB_PICKER_IPH,
+                    FeatureState.DISABLED);
+
+    public static final CachedFlag sFuseboxUserEdFakeboxAnimation =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_FAKEBOX_ANIMATION,
+                    FeatureState.DISABLED);
+
+    public static final CachedFlag sFuseboxUserEdGuidedTour =
+            newFlag(OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_GUIDED_TOUR, FeatureState.DISABLED);
+
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
 
