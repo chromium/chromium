@@ -14,7 +14,9 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,6 +73,46 @@ public class TabStripTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Before
+    public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CompositorAnimationHandler.setTestingMode(false);
+                    LocalizationUtils.setRtlForTesting(false);
+                });
+        resetTabStripsOnUiThread();
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CompositorAnimationHandler.setTestingMode(false);
+                    LocalizationUtils.setRtlForTesting(false);
+                });
+        resetTabStripsOnUiThread();
+    }
+
+    private void resetTabStripsOnUiThread() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+                    if (activity == null || activity.getLayoutManager() == null) return;
+                    StripLayoutHelperManager manager =
+                            activity.getLayoutManager().getStripLayoutHelperManager();
+                    if (manager == null) return;
+                    manager.updateHelperEndMargins();
+                    for (boolean incognito : new boolean[] {false, true}) {
+                        StripLayoutHelper helper = manager.getStripLayoutHelper(incognito);
+                        helper.finishAnimationsAndPushTabUpdates();
+                        helper.finishScrollForTesting();
+                        helper.updateLayout(LayoutManagerImpl.time());
+                        helper.finishAnimations();
+                        helper.clearTabHoverState();
+                    }
+                });
+    }
 
     /**
      * Tests that the initial state of the system is good. This is so the default TabStrips match
@@ -701,7 +744,8 @@ public class TabStripTest {
      */
     private void testScrollingStripStackersWithLastTabSelected(boolean isRtl)
             throws ExecutionException {
-        LocalizationUtils.setRtlForTesting(isRtl);
+        ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(isRtl));
+        resetTabStripsOnUiThread();
 
         // Open enough regular tabs to cause the strip to scroll
         ChromeTabUtils.newTabsFromMenu(
@@ -1288,6 +1332,7 @@ public class TabStripTest {
      * @param id The id of the tab to click.
      */
     protected void selectTab(final boolean incognito, final int id) {
+        resetTabStripsOnUiThread();
         ChromeTabUtils.selectTabWithAction(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
@@ -1310,6 +1355,7 @@ public class TabStripTest {
      * @param id The id of the tab to click.
      */
     protected void closeTab(final boolean incognito, final int id) {
+        resetTabStripsOnUiThread();
         ChromeTabUtils.closeTabWithAction(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
@@ -1437,13 +1483,7 @@ public class TabStripTest {
         TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
         int selectedTabIndex = getIndexOnUiThread(model);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), true)
-                            .updateScrollOffsetLimits();
-                    TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false)
-                            .updateScrollOffsetLimits();
-                });
+        resetTabStripsOnUiThread();
 
         // Assert that the same tab is still selected.
         Assert.assertEquals(

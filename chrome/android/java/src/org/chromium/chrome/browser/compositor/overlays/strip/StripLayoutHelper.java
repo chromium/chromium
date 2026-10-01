@@ -2087,6 +2087,8 @@ public class StripLayoutHelper
         // selected, scroll the currently selected tab to view. Skip auto-scrolling if the tab is
         // being created due to a tab closure being undone.
         if (stripTab != null && !closureCancelled && !collapsed) {
+            updateScrollOffsetLimits();
+            computeIdealViewPositions();
             boolean animate = !onStartup;
             if (selected) {
                 float delta = calculateDeltaToMakeViewVisible(stripTab);
@@ -3670,6 +3672,8 @@ public class StripLayoutHelper
     /** Returns Whether or not the tabs are moving. */
     public boolean isAnimatingForTesting() {
         return (mRunningAnimator != null && mRunningAnimator.isRunning())
+                || mCloseAnimationsRequested
+                || !mQueuedAnimators.isEmpty()
                 || !mScrollDelegate.isFinished();
     }
 
@@ -3701,6 +3705,9 @@ public class StripLayoutHelper
             mRunningAnimator.end();
         }
         mRunningAnimator = null;
+        for (StripLayoutTab tab : mStripTabs) {
+            tab.finishAnimations();
+        }
     }
 
     @Override
@@ -3821,14 +3828,12 @@ public class StripLayoutHelper
     /**
      * Finishes any outstanding animations.
      *
-     * <p>TODO(crbug.com/503472587): This (and finishAnimationsAndPushTabUpdates above) no longer
-     * explicitly post closures for dying tabs, and should now be safe to clean up now that the
-     * close refactor flag has been cleaned up. However, this method used to only trigger if there
-     * actually was a running animator (it didn't account for queued animations). Remove this method
-     * after verifying it's safe to just call #finishAnimations.
+     * <p>TODO(crbug.com/503472587): Remove this method and just call #finishAnimations.
      */
     private void finishAnimationsAndCloseDyingTabs() {
-        if (mRunningAnimator != null) finishAnimations();
+        if (mRunningAnimator != null || mCloseAnimationsRequested || !mQueuedAnimators.isEmpty()) {
+            finishAnimations();
+        }
     }
 
     private void updateSpinners(long time) {
@@ -5012,9 +5017,13 @@ public class StripLayoutHelper
                 && closeButton.getParentView() instanceof StripLayoutTab stripTab) {
             view = stripTab;
         }
-        final float deltaToFarLeft = leftBound - view.getIdealX();
+        float optimalLeft = view.getIdealX();
+        if (LocalizationUtils.isLayoutRtl() && view instanceof StripLayoutTab) {
+            optimalLeft += view.getWidth() - getCachedTabWidth(/* isPinned= */ false);
+        }
+        final float deltaToFarLeft = leftBound - optimalLeft;
         final float deltaToFarRight =
-                rightBound - getCachedTabWidth(/* isPinned= */ false) - view.getIdealX();
+                rightBound - getCachedTabWidth(/* isPinned= */ false) - optimalLeft;
 
         // 3. The following case means the view is already completely in the visible area of the
         // strip, i.e., it needs to be:
@@ -5153,7 +5162,7 @@ public class StripLayoutHelper
      * locally marked as selected (through {@link StripLayoutTab#getIsSelected()}).
      *
      * @return the ID of the {@link StripLayoutTab} for which {@link StripLayoutTab#getIsSelected}
-     * was true.
+     *     was true.
      */
     private @TabId int findSelectedStripTabId() {
         for (int i = 0; i < mStripTabs.length; i++) {
@@ -5472,6 +5481,7 @@ public class StripLayoutHelper
     }
 
     void finishScrollForTesting() {
+        updateScrollOffsetLimits();
         mScrollDelegate.finishScrollForTesting();
     }
 

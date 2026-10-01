@@ -1028,8 +1028,7 @@ public class StripLayoutHelperTest {
                 .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
 
         // Notify strip of tab closure
-        mStripLayoutHelper.willCloseTabs(
-                List.of(), /* isAllTabs= */ true, /* allowUndo= */ false);
+        mStripLayoutHelper.willCloseTabs(List.of(), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         // Verify strip has no tabs.
         assertTrue(mStripLayoutHelper.getStripLayoutTabsForTesting().length == 0);
@@ -2538,6 +2537,40 @@ public class StripLayoutHelperTest {
                 expectedScrollOffset,
                 actualScrollOffset,
                 EPSILON);
+    }
+
+    @Test
+    public void testTabCreated_SelectedNewTab_Autoscrolls_Rtl() {
+        initializeTest(
+                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 9, /* numTabs= */ 10);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Create a new selected tab at the end of the full strip in RTL.
+        mModel.addTab("new tab");
+        int newTabId = mModel.getTabAt(10).getId();
+        mModel.setIndex(10);
+        mStripLayoutHelper.tabCreated(
+                TIMESTAMP,
+                newTabId,
+                /* selected= */ true,
+                /* closureCancelled= */ false,
+                /* onStartup= */ false);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        StripLayoutTab newStripTab = mStripLayoutHelper.findTabById(newTabId);
+        assertEquals(
+                "We should scroll to the new selected tab at the end of the strip in RTL.",
+                mStripLayoutHelper.getScrollOffsetLimitForTesting(),
+                mStripLayoutHelper.getScrollOffset(),
+                EPSILON);
+        assertTrue("New selected tab in RTL should be visible.", newStripTab.isVisible());
     }
 
     @Test

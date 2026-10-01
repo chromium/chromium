@@ -539,7 +539,9 @@ public class StripLayoutTab extends StripLayoutView {
         mObservers.addObserver(observer);
     }
 
-    /** @param observer The observer to remove. */
+    /**
+     * @param observer The observer to remove.
+     */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -781,6 +783,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * Additive spinner rotation update.
+     *
      * @param rotation The amount to rotate the spinner by in degrees.
      */
     public void addLoadingSpinnerRotation(float rotation) {
@@ -981,6 +984,7 @@ public class StripLayoutTab extends StripLayoutView {
      * This is used to determine if the tab is a placeholder or not. If it is a placeholder, it will
      * show as an empty tab on the tab strip (without tab contents, such as title & favicon,
      * generated).
+     *
      * @return Whether or not the tab is a placeholder used on startup.
      */
     public boolean getIsPlaceholder() {
@@ -1126,6 +1130,10 @@ public class StripLayoutTab extends StripLayoutView {
         return TabUiThemeUtil.getLineWidth(mContext);
     }
 
+    void finishAnimations() {
+        if (mButtonOpacityAnimator != null) mButtonOpacityAnimator.end();
+    }
+
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
     private void checkCloseButtonVisibility(boolean animate) {
         boolean shouldShow = mCanShowCloseButton && !mIsPlaceholder;
@@ -1151,6 +1159,7 @@ public class StripLayoutTab extends StripLayoutView {
                         });
                 mButtonOpacityAnimator.start();
             } else {
+                if (mButtonOpacityAnimator != null) mButtonOpacityAnimator.end();
                 mCloseButton.setOpacity(opacity);
             }
             mShowingCloseButton = shouldShow;

@@ -1842,7 +1842,8 @@ public class StripLayoutHelperManager
         mUpdateHost.requestUpdate();
     }
 
-    private void updateHelperEndMargins() {
+    @VisibleForTesting
+    void updateHelperEndMargins() {
         float trailingButtonsTouchTargetSize =
                 mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding();
         mNormalHelper.updateEndMarginForStripButtons(trailingButtonsTouchTargetSize);
