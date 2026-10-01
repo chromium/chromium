@@ -61,10 +61,18 @@ std::unique_ptr<media::VoiceIsolationComponent> CreateVoiceIsolationComponent(
 
 class VoiceIsolationHandler::StartupMetricsLogger {
  public:
-  StartupMetricsLogger() : start_time_(base::TimeTicks::Now()) {}
+  explicit StartupMetricsLogger(const void* track_owner)
+      : trace_track_(
+            perfetto::NamedTrack::FromPointer("audio::VoiceIsolationHandler",
+                                              track_owner)),
+        start_time_(base::TimeTicks::Now()) {
+    TRACE_EVENT_BEGIN("audio", "VoiceIsolationHandler::Initialize",
+                      trace_track_);
+  }
   StartupMetricsLogger(const StartupMetricsLogger&) = delete;
   StartupMetricsLogger& operator=(const StartupMetricsLogger&) = delete;
   ~StartupMetricsLogger() {
+    TRACE_EVENT_END("audio", trace_track_);
     base::UmaHistogramEnumeration(
         "Media.Audio.Capture.VoiceIsolation.StartupResult", result_);
     const base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
@@ -87,6 +95,7 @@ class VoiceIsolationHandler::StartupMetricsLogger {
   void SetResult(StartupResult result) { result_ = result; }
 
  private:
+  const perfetto::NamedTrack trace_track_;
   const base::TimeTicks start_time_;
   StartupResult result_{StartupResult::kAborted};
 };
@@ -105,7 +114,7 @@ VoiceIsolationHandler::VoiceIsolationHandler(
       output_bus_(media::AudioBus::Create(output_params)),
       debug_recorder_(std::move(debug_recorder)),
       bypass_voice_isolation_(true),
-      startup_metrics_logger_(std::make_unique<StartupMetricsLogger>()) {
+      startup_metrics_logger_(std::make_unique<StartupMetricsLogger>(this)) {
   CHECK(!deliver_processed_audio_callback_.is_null());
   CHECK(!log_callback_.is_null());
   CHECK(output_bus_);
@@ -116,10 +125,6 @@ VoiceIsolationHandler::VoiceIsolationHandler(
                          output_params_.AsHumanReadableString().c_str()));
 
   processing_fifo_ = MaybeCreateProcessingFifo();
-
-  TRACE_EVENT_BEGIN(
-      "audio", "VoiceIsolationHandler::Initialize",
-      perfetto::NamedTrack::FromPointer("audio::VoiceIsolationHandler", this));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -182,10 +187,6 @@ VoiceIsolationHandler::~VoiceIsolationHandler() {
   SendLogMessage(
       base::StringPrintf("%s({initialized=%s})", __func__,
                          base::ToString(voice_isolation_ != nullptr)));
-  if (!voice_isolation_) {
-    TRACE_EVENT_END("audio", perfetto::NamedTrack::FromPointer(
-                                 "audio::VoiceIsolationHandler", this));
-  }
 }
 
 void VoiceIsolationHandler::OnComponentCreated(
@@ -206,8 +207,6 @@ void VoiceIsolationHandler::OnComponentCreated(
   }
   voice_isolation_ =
       media::VoiceIsolation::Create(std::move(component), output_params_);
-  TRACE_EVENT_END("audio", perfetto::NamedTrack::FromPointer(
-                               "audio::VoiceIsolationHandler", this));
   if (voice_isolation_enabled_) {
     bypass_voice_isolation_.store(false, std::memory_order_release);
   }
