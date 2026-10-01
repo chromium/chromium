@@ -16,6 +16,7 @@ export function getHtml(this: TopToolbarElement) {
   <if expr="not is_android">
     ${this.isPermissionShowing_() ? html`
       <permission-dashboard
+          .delegate="${this.permissionChipDelegate_}"
           .dashboardState="${this.permissionDashboardState}">
       </permission-dashboard>
     ` : ''}

@@ -57,6 +57,11 @@
   white-space: nowrap;
 }
 
+permission-dashboard {
+  flex-shrink: 0;
+  margin-inline-end: 8px;
+}
+
 .top-toolbar-logo-container {
   flex: 0;
   height: 18px;

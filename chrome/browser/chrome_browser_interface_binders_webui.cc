@@ -277,7 +277,15 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks_toolbar::mojom::PageHandlerFactory,
-        ::ContextualTasksUI>(map);
+        ::ContextualTasksUI,
+        contextual_tasks::ContextualTasksUIPostRearchitecture>(map);
+    // TODO(crbug.com/564686493): Remove ContextualTasksUI once the
+    // post-rearchitecture migration is complete and CreateWebUIController
+    // instantiates ContextualTasksUIPostRearchitecture.
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService,
+        ::ContextualTasksUI,
+        contextual_tasks::ContextualTasksUIPostRearchitecture>(map);
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks_internals::mojom::
             ContextualTasksInternalsPageHandlerFactory,
