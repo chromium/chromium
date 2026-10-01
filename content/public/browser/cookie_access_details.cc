@@ -33,5 +33,9 @@ CookieAccessDetails::CookieAccessDetails(const CookieAccessDetails& details) =
     default;
 CookieAccessDetails& CookieAccessDetails::operator=(
     const CookieAccessDetails& details) = default;
+CookieAccessDetails::CookieAccessDetails(
+    CookieAccessDetails&& details) noexcept = default;
+CookieAccessDetails& CookieAccessDetails::operator=(
+    CookieAccessDetails&& details) noexcept = default;
 
 }  // namespace content

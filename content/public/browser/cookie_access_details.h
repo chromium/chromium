@@ -42,6 +42,10 @@ struct CONTENT_EXPORT CookieAccessDetails {
 
   CookieAccessDetails(const CookieAccessDetails&);
   CookieAccessDetails& operator=(const CookieAccessDetails&);
+  // noexcept so that std::vector moves, rather than copies, its elements when
+  // it grows.
+  CookieAccessDetails(CookieAccessDetails&&) noexcept;
+  CookieAccessDetails& operator=(CookieAccessDetails&&) noexcept;
 
   Type type;
   GURL url;
