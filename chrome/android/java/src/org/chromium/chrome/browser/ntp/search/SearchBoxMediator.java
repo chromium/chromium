@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -221,6 +222,9 @@ class SearchBoxMediator implements DestroyObserver {
      * @return Whether the Lens is currently enabled.
      */
     boolean isLensEnabled(@LensEntryPoint int lensEntryPoint, boolean isIncognito, boolean isLff) {
+        if (BrowserUiUtils.isAndroidAutoProjected(mContext)) {
+            return false;
+        }
         return LensController.getInstance()
                 .isLensEnabled(
                         new LensQueryParams.Builder(lensEntryPoint, isIncognito, isLff).build());

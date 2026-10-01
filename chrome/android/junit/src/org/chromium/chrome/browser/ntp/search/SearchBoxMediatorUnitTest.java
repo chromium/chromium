@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBrid
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -725,5 +727,19 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 R.style.TextAppearance_FakeSearchBoxTextMedium,
                 SearchBoxMediator.getFakeSearchBoxTextStyle(/* apply= */ false));
+    }
+
+    @Test
+    public void testIsLensEnabled_suppressedWhenAndroidAutoProjected() {
+        when(mLensController.isLensEnabled(any())).thenReturn(true);
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
+        assertTrue(
+                mMediator.isLensEnabled(
+                        LensEntryPoint.NEW_TAB_PAGE, /* isIncognito= */ false, /* isLff= */ false));
+
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        assertFalse(
+                mMediator.isLensEnabled(
+                        LensEntryPoint.NEW_TAB_PAGE, /* isIncognito= */ false, /* isLff= */ false));
     }
 }

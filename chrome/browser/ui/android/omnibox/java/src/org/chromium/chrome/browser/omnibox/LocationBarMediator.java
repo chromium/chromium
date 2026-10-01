@@ -3503,6 +3503,7 @@ public class LocationBarMediator
 
     @Override
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
+        if (BrowserUiUtils.isAndroidAutoProjected(mContext)) return false;
         return mLensController.isLensEnabled(
                 new LensQueryParams.Builder(
                                 lensEntryPoint, mLocationBarDataProvider.isIncognito(), mIsTablet)

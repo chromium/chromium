@@ -60,6 +60,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.config.ConfigurationRegistry;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -117,6 +118,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -302,8 +304,8 @@ public class LocationBarMediatorUnitTest {
      * Pre-warms Robolectric bytecode instrumentation and Mockito ByteBuddy dynamic mock generation
      * before any individual {@code @Test} method's 30-second timeout timer starts.
      *
-     * <p>{@link BaseRobolectricTestRunner} wraps each individual test method (including its {@code
-     * @Rule}s such as {@link MockitoRule} and {@code @Before setUp()}) in a 30-second {@code
+     * <p>{@link BaseRobolectricTestRunner} wraps each individual test method (including its
+     * {@code @Rule}s such as {@link MockitoRule} and {@code @Before setUp()}) in a 30-second {@code
      * BaseTimeLimitedStatement}. Because this test class declares ~58 {@code @Mock} fields spanning
      * deep Android View/Activity hierarchies and large Omnibox coordinators, the very first test
      * method to execute in the class (determined by JUnit's {@code MethodSorter.DEFAULT} hashCode
@@ -324,6 +326,7 @@ public class LocationBarMediatorUnitTest {
      */
     @BeforeClass
     public static void setUpClass() throws Exception {
+        if (ConfigurationRegistry.instance == null) return;
         Class.forName(LocationBarMediator.class.getName());
         MockitoAnnotations.openMocks(new LocationBarMediatorUnitTest()).close();
     }
@@ -2313,6 +2316,16 @@ public class LocationBarMediatorUnitTest {
     public void testLensButtonVisibility_lensEnabled_suppressedByUiOverrides() {
         mUiOverrides.setLensEntrypointAllowed(false);
         verifyLensButtonVisibilityWhenFocusChanges(false, "");
+    }
+
+    @Test
+    public void testLensButtonVisibility_lensEnabled_suppressedWhenAndroidAutoProjected() {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
+        verifyLensButtonVisibilityWhenFocusChanges(/* shouldBeVisible= */ true, "");
+
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        verifyLensButtonVisibilityWhenFocusChanges(/* shouldBeVisible= */ false, "");
     }
 
     private void verifyLensButtonVisibilityWhenFocusChanges(
