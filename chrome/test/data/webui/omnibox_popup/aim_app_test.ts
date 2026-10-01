@@ -144,6 +144,36 @@ suite('AimAppTest', function() {
     assertTrue(!app.$.composebox.input);
   });
 
+  // Regression test for b/558982300: `AddContext` can be delivered while the
+  // popup document is hidden (e.g. still occluded by a file picker). It must
+  // not throw and must still reset `preserveContextOnClose`.
+  test('AddContextWhileHiddenResetsPreserveContext', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    page.setPreserveContextOnClose(true);
+    await microtasksFinished();
+
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', configurable: true});
+    try {
+      page.addContext({
+        input: 'test context',
+        attachments: [],
+        toolMode: 0,
+      });
+      await microtasksFinished();
+    } finally {
+      // Remove the own-property override to restore the prototype getter.
+      delete (document as {visibilityState?: DocumentVisibilityState})
+          .visibilityState;
+    }
+
+    page.clearPopup();
+    await microtasksFinished();
+    assertTrue(!app.$.composebox.input);
+  });
+
   test('PlaysGlowAnimationOnShowByDefault', async function() {
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
