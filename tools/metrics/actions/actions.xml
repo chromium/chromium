@@ -847,8 +847,6 @@ should be able to be added at any place in this file.
   <variant name="_SharedHighlightingReceiver"
       summary="For SharedHighlightingReceiver feature."/>
   <variant name="_ShareScreenshot" summary="For ShareScreenshot feature."/>
-  <variant name="_SharingHubLinkToggle"
-      summary="For Sharing Hub link toggle feature."/>
   <variant name="_SharingHubWebnotesStylize"
       summary="For SharingHubWebnotesStylize feature."/>
   <variant name="_ShoppingCollectionFeature"

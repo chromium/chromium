@@ -705,8 +705,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_SharedHighlightingReceiver"
       summary="the in product help message encouraging users to create
                highlights"/>
-  <variant name="IPH_SharingHubLinkToggle"
-      summary="turning on link sharing in the Sharing Hub"/>
   <variant name="IPH_SharingHubWebnotesStylize"
       summary="informing users about the Webnotes Stylize feature in Sharing
                Hub"/>

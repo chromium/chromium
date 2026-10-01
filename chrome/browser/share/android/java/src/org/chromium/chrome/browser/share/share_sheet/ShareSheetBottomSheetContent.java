@@ -10,10 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,26 +36,19 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.user_education.IphCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.base.ViewUtils;
@@ -69,7 +59,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -85,10 +74,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             new BottomSheetType.Builder().setUserInitiated(true).build();
 
     private final Activity mActivity;
-    private final Profile mProfile;
     private final LargeIconBridge mIconBridge;
     private final ShareSheetCoordinator mShareSheetCoordinator;
-    private final Tracker mFeatureEngagementTracker;
     private ViewGroup mContentView;
     private ShareParams mParams;
     private ScrollView mContentScrollableView;
@@ -100,25 +87,19 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
      *
      * @param activity The containing {@link Activity}.
-     * @param profile The active {@link Profile}.
      * @param iconBridge The {@link LargeIconBridge} to generate the icon in the preview.
      * @param shareSheetCoordinator The Coordinator that instantiated this BottomSheetContent.
      * @param params The {@link ShareParams} for the current share.
-     * @param featureEngagementTracker The {@link Tracker} for tracking feature engagement.
      */
     ShareSheetBottomSheetContent(
             Activity activity,
-            Profile profile,
             LargeIconBridge iconBridge,
             ShareSheetCoordinator shareSheetCoordinator,
-            ShareParams params,
-            Tracker featureEngagementTracker) {
+            ShareParams params) {
         mActivity = activity;
-        mProfile = profile;
         mIconBridge = iconBridge;
         mShareSheetCoordinator = shareSheetCoordinator;
         mParams = params;
-        mFeatureEngagementTracker = featureEngagementTracker;
 
         // Set |mLinkGenerationState| to invalid value of |COUNT| if |getLinkToTextSuccessful|
         // is not set in order to distinguish it from failure state. |getLinkToTextSuccessful| will
@@ -473,47 +454,14 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         linkToggleView.setContentDescription(
                 mActivity.getResources().getString(contentDescription));
         centerIcon(linkToggleView);
-        if (Objects.equals(mLinkToggleState, LinkToggleState.NO_LINK)) {
-            maybeShowToggleIph();
-        }
-
         linkToggleView.setOnClickListener(
                 v -> {
-                    mFeatureEngagementTracker.notifyEvent(
-                            EventConstants.SHARING_HUB_LINK_TOGGLE_CLICKED);
                     if (detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT) {
                         updateLinkGenerationState();
                     } else {
                         updateLinkToggleState(detailedContentType);
                     }
                 });
-    }
-
-    /**
-     * Shows the IPH for the toggle if the link is turned off by default and if it meets the feature
-     * engagement tracker requirements.
-     */
-    void maybeShowToggleIph() {
-        View anchorView = getContentView().findViewById(R.id.link_toggle_view);
-        int yInsetPx = mActivity.getResources().getDimensionPixelOffset(R.dimen.toggle_iph_y_inset);
-        Rect insetRect = new Rect(0, -yInsetPx, 0, -yInsetPx);
-
-        UserEducationHelper userEducationHelper =
-                new UserEducationHelper(mActivity, mProfile, new Handler(Looper.getMainLooper()));
-        userEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mActivity.getResources(),
-                                FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
-                                R.string.link_toggle_iph,
-                                R.string.link_toggle_iph)
-                        .setAnchorView(anchorView)
-                        .setHighlightParams(
-                                new ViewHighlighter.HighlightParams(
-                                        ViewHighlighter.HighlightShape.CIRCLE))
-                        .setInsetRect(insetRect)
-                        .setPreferredVerticalOrientation(
-                                AnchoredPopupWindow.VerticalOrientation.ABOVE)
-                        .build());
     }
 
     private void showToast(int resource) {

@@ -79,7 +79,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
     FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
-    FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
     FeatureConstants.IPH_TAB_SWITCHER_XR,
     FeatureConstants.IPH_TAB_TEARING_XR,
     FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
@@ -320,9 +319,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the screenshot sharing feature. */
     String IPH_SHARE_SCREENSHOT_FEATURE = "IPH_ShareScreenshot";
-
-    /** An IPH feature to inform users about the Sharing Hub link toggle. */
-    String IPH_SHARING_HUB_LINK_TOGGLE_FEATURE = "IPH_SharingHubLinkToggle";
 
     /** An IPH feature to inform users about the tab switcher feature on an XR device. */
     String IPH_TAB_SWITCHER_XR = "IPH_TabSwitcherXR";

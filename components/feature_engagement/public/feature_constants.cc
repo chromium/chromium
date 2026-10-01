@@ -664,9 +664,6 @@ BASE_FEATURE(kIPHChromeReengagementNotification3Feature,
 BASE_FEATURE(kIPHShareScreenshotFeature,
              "IPH_ShareScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHSharingHubLinkToggleFeature,
-             "IPH_SharingHubLinkToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSharedHighlightingBuilder,
              "IPH_SharedHighlightingBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);

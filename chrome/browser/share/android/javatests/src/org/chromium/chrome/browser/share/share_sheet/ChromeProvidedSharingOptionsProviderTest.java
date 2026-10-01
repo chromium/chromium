@@ -537,12 +537,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mTabProvider,
                         mBottomSheetController,
                         new ShareSheetBottomSheetContent(
-                                mActivity,
-                                mProfile,
-                                null,
-                                mShareSheetCoordinator,
-                                /* params= */ shareParams,
-                                null),
+                                mActivity, null, mShareSheetCoordinator, /* params= */ shareParams),
                         shareParams,
                         /* printTab= */ null,
                         isIncognito,
