@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "chrome/services/readaloud/audio_segment_queue.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "media/base/audio_bus.h"
@@ -19,6 +20,14 @@ class ReadAloudAudioRendererTest : public testing::Test {
   void SetUp() override {
     queue_ = std::make_unique<AudioSegmentQueue>();
     renderer_ = std::make_unique<ReadAloudAudioRenderer>();
+  }
+
+  // 48 kHz stereo with 480-frame (10 ms) buffers.
+  static media::AudioParameters MakeParams() {
+    return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  media::ChannelLayoutConfig::Stereo(),
+                                  /*sample_rate=*/48000,
+                                  /*frames_per_buffer=*/480);
   }
 
   scoped_refptr<DecodedAudioSegment> GenerateSegment(
@@ -39,6 +48,15 @@ class ReadAloudAudioRendererTest : public testing::Test {
     auto buffer = media::AudioBuffer::CopyFrom(params.sample_rate(),
                                                base::TimeDelta(), bus.get());
     return base::MakeRefCounted<DecodedAudioSegment>(std::move(buffer));
+  }
+
+  // Renders one buffer of `params.frames_per_buffer()` frames with the given
+  // output `delay`.
+  void RenderOnce(const media::AudioParameters& params,
+                  base::TimeDelta delay = base::TimeDelta()) {
+    std::unique_ptr<media::AudioBus> dest = media::AudioBus::Create(params);
+    renderer_->Render(delay, /*delay_timestamp=*/base::TimeTicks::Now(),
+                      /*glitch_info=*/media::AudioGlitchInfo(), dest.get());
   }
 
   // Verifies that a range of the destination AudioBus matches the expected
@@ -344,6 +362,114 @@ TEST_F(ReadAloudAudioRendererTest, FlushClearsInternalAlgorithmBuffers) {
 
   EXPECT_EQ(frames_after_flush, 0);
   EXPECT_TRUE(dest_after_flush->AreFramesZero());
+}
+
+TEST_F(ReadAloudAudioRendererTest, GetMediaTimeIsZeroBeforeInitialize) {
+  EXPECT_EQ(renderer_->GetMediaTime(), base::TimeDelta());
+}
+
+TEST_F(ReadAloudAudioRendererTest, RenderAdvancesMediaTimeAsAudioPlaysOut) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/1440)));
+
+  // With no output delay, each Render() hands the previous 10 ms buffer to the
+  // output, so the audible media time trails the written audio by one buffer.
+  RenderOnce(params);
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(0));
+  RenderOnce(params);
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(10));
+  RenderOnce(params);
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(20));
+}
+
+TEST_F(ReadAloudAudioRendererTest, RenderScalesMediaTimeByPlaybackRate) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  renderer_->SetPlaybackRate(2.0);
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/2880)));
+
+  RenderOnce(params);
+  RenderOnce(params);
+
+  // At 2x, the 10 ms output buffer that has played out carried 20 ms of media.
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(20));
+}
+
+TEST_F(ReadAloudAudioRendererTest, RenderSubtractsOutputDelayFromMediaTime) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/960)));
+
+  RenderOnce(params, /*delay=*/base::Milliseconds(5));
+  RenderOnce(params, /*delay=*/base::Milliseconds(5));
+
+  // 5 ms of the first buffer is still in the output pipeline.
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(5));
+}
+
+TEST_F(ReadAloudAudioRendererTest, RenderTreatsNegativeDelayAsZero) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/960)));
+
+  // AudioClock::WroteAudio() CHECKs on a negative delay.
+  RenderOnce(params, /*delay=*/base::Milliseconds(-5));
+  RenderOnce(params, /*delay=*/base::Milliseconds(-5));
+
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(10));
+}
+
+TEST_F(ReadAloudAudioRendererTest, RenderCapsOutputDelay) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  // With a delay of N buffers, the clock stays at zero for the first N + 1
+  // renders and then advances by one buffer per render. So after
+  // `cap_buffers + 2` renders, a delay capped at `kMaxAcceptableDelay` leaves
+  // exactly one buffer played out, while an uncapped (larger) one leaves none.
+  const base::TimeDelta buffer_duration = params.GetBufferDuration();
+  const int64_t cap_buffers =
+      ReadAloudAudioRenderer::kMaxAcceptableDelay.IntDiv(buffer_duration);
+  const int64_t renders = cap_buffers + 2;
+  ASSERT_TRUE(queue_->Push(GenerateSegment(
+      params,
+      /*frames=*/base::checked_cast<int>((renders + 1) *
+                                         params.frames_per_buffer()))));
+
+  for (int64_t i = 0; i < renders; ++i) {
+    RenderOnce(params,
+               /*delay=*/ReadAloudAudioRenderer::kMaxAcceptableDelay * 2);
+  }
+
+  EXPECT_EQ(renderer_->GetMediaTime(), buffer_duration);
+}
+
+TEST_F(ReadAloudAudioRendererTest, FlushRestartsMediaTimeAtZero) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/1440)));
+  RenderOnce(params);
+  RenderOnce(params);
+  ASSERT_EQ(renderer_->GetMediaTime(), base::Milliseconds(10));
+
+  renderer_->Flush();
+
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(0));
+}
+
+TEST_F(ReadAloudAudioRendererTest, MediaTimeAfterFlushCountsOnlyNewAudio) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/1440)));
+  RenderOnce(params);
+  RenderOnce(params);
+  renderer_->Flush();
+
+  ASSERT_TRUE(queue_->Push(GenerateSegment(params, /*frames=*/960)));
+  RenderOnce(params);
+  RenderOnce(params);
+
+  EXPECT_EQ(renderer_->GetMediaTime(), base::Milliseconds(10));
 }
 
 }  // namespace readaloud

@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_READALOUD_AUDIO_RENDERER_READ_ALOUD_AUDIO_RENDERER_H_
 
 #include <atomic>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,6 +16,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/media_util.h"
+#include "media/filters/audio_clock.h"
 #include "media/filters/audio_renderer_algorithm.h"
 
 namespace media {
@@ -28,9 +30,14 @@ class AudioSegmentQueue;
 
 // Handles rendering of decoded audio segments for ReadAloud playback.
 // Implements the RenderCallback interface, which is driven by the real-time
-// audio thread.
+// audio thread. Tracks the media time of the audio being played out with a
+// `media::AudioClock`.
 class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
  public:
+  // Upper bound on the output delay fed to the audio clock. Used to clamp
+  // the delay reported by the audio sink.
+  static constexpr base::TimeDelta kMaxAcceptableDelay = base::Seconds(5);
+
   ReadAloudAudioRenderer();
 
   ReadAloudAudioRenderer(const ReadAloudAudioRenderer&) = delete;
@@ -58,9 +65,17 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // Must be called on the owning sequence.
   void SetPlaybackRate(double rate);
 
-  // Flushes internal time-stretching algorithm buffer.
+  // Flushes the internal time-stretching algorithm buffer and restarts the
+  // media time at zero.
   // Must be called on the owning sequence.
   virtual void Flush();
+
+  // Returns the media time of the audio currently being played out: the
+  // position, in the audio consumed since the last Initialize() or Flush(),
+  // that is audible now. Only advances when Render() is called, so it holds
+  // still while playback is paused. Returns zero before Initialize().
+  // Must be called on the owning sequence.
+  base::TimeDelta GetMediaTime() const;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -80,10 +95,15 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
 
   media::NullMediaLog media_log_;
 
-  // Protects algorithm_ against concurrent accesses on the real-time audio
-  // thread (Render()) and main sequence thread (Flush()).
+  // Protects the state below against concurrent accesses on the real-time
+  // audio thread (Render()) and the owning sequence (e.g. Flush()).
   mutable base::Lock lock_;
   media::AudioRendererAlgorithm algorithm_ GUARDED_BY(lock_);
+
+  // Tracks the media time of the audio being played out. Updated by every
+  // Render() with the frames written, the playback rate and the output delay
+  // reported by the sink. Created in Initialize() and recreated by Flush().
+  std::optional<media::AudioClock> audio_clock_ GUARDED_BY(lock_);
 };
 
 }  // namespace readaloud

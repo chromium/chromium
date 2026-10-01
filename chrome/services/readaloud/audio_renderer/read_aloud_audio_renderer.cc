@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
+#include "base/numerics/safe_conversions.h"
 #include "chrome/services/readaloud/audio_segment_queue.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_timestamp_helper.h"
 
 namespace readaloud {
 
@@ -33,6 +35,8 @@ bool ReadAloudAudioRenderer::Initialize(const media::AudioParameters& params,
   base::AutoLock auto_lock(lock_);
   algorithm_.Initialize(params, /*is_encrypted=*/false);
   algorithm_.SetPreservesPitch(true);
+  audio_clock_.emplace(/*start_timestamp=*/base::TimeDelta(),
+                       params_.sample_rate());
   initialized_ = true;
   return true;
 }
@@ -64,13 +68,24 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
   }
 
   // 2. Call FillBuffer to fill the destination bus.
-  int frames_written = algorithm_.FillBuffer(
-      dest, 0, dest->frames(), playback_rate_.load(std::memory_order_relaxed));
+  const double playback_rate = playback_rate_.load(std::memory_order_relaxed);
+  int frames_written =
+      algorithm_.FillBuffer(dest, 0, dest->frames(), playback_rate);
 
   // 3. Zero out any remaining frames if we underflowed.
   if (frames_written < dest->frames()) {
     dest->ZeroFramesPartial(frames_written, dest->frames() - frames_written);
   }
+
+  // 4. Advance the audio clock. `delay` comes from the sink and is clamped
+  // because `media::AudioClock::WroteAudio()` CHECKs that it is not negative.
+  const base::TimeDelta clamped_delay =
+      std::clamp(delay, base::TimeDelta(), kMaxAcceptableDelay);
+  const int64_t delay_frames = media::AudioTimestampHelper::TimeToFrames(
+      clamped_delay, params_.sample_rate());
+  audio_clock_->WroteAudio(frames_written, dest->frames(),
+                           base::checked_cast<int>(delay_frames),
+                           playback_rate);
 
   return frames_written;
 }
@@ -84,6 +99,16 @@ void ReadAloudAudioRenderer::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock auto_lock(lock_);
   algorithm_.FlushBuffers();
+  if (initialized_) {
+    audio_clock_.emplace(/*start_timestamp=*/base::TimeDelta(),
+                         params_.sample_rate());
+  }
+}
+
+base::TimeDelta ReadAloudAudioRenderer::GetMediaTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock auto_lock(lock_);
+  return audio_clock_ ? audio_clock_->front_timestamp() : base::TimeDelta();
 }
 
 void ReadAloudAudioRenderer::OnRenderError() {
