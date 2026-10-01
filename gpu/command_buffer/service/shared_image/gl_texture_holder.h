@@ -22,13 +22,8 @@ class SharedContextState;
 class GPU_GLES2_EXPORT GLTextureHolder
     : public base::RefCounted<GLTextureHolder> {
  public:
-  // Returns the equivalent SharedImageFormat for plane specified by
-  // `plane_index`.
-  static viz::SharedImageFormat GetPlaneFormat(viz::SharedImageFormat format,
-                                               int plane_index);
-
-  // `format` must be single-planar format.
   GLTextureHolder(viz::SharedImageFormat format,
+                  int plane_index,
                   const gfx::Size& size,
                   bool is_passthrough,
                   gl::ProgressReporter* progress_reporter);
@@ -77,8 +72,13 @@ class GPU_GLES2_EXPORT GLTextureHolder
   friend class base::RefCounted<GLTextureHolder>;
   ~GLTextureHolder();
 
+  // The format and size of the shared image.
   viz::SharedImageFormat format_;
   gfx::Size size_;
+  // The index of the plane we are interested in. Used to determine plane size
+  // and plane format.
+  int plane_index_;
+
   bool is_passthrough_;
   bool context_lost_ = false;
 

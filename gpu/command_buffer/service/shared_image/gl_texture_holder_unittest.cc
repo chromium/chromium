@@ -74,7 +74,7 @@ TEST_F(GLTextureHolderTest, ReadbackToMemoryRestoresFramebufferBeforeDelete) {
   constexpr gfx::Size kSize(4, 4);
 
   auto holder = base::MakeRefCounted<GLTextureHolder>(
-      viz::SinglePlaneFormat::kRGBA_8888, kSize,
+      viz::SinglePlaneFormat::kRGBA_8888, /*plane_index=*/0, kSize,
       /*is_passthrough=*/true,
       /*progress_reporter=*/nullptr);
   GLFormatDesc format_desc;

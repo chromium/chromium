@@ -829,10 +829,9 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   auto& vk_texture = vk_textures_[plane_index];
   auto& vulkan_image = vk_texture.vulkan_image;
   gfx::Size plane_size = vulkan_image->size();
-  auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane_index);
   DCHECK_EQ(gl_textures_.size(), plane_index);
   auto gl_texture = base::MakeRefCounted<GLTextureHolder>(
-      plane_format, plane_size, is_passthrough, nullptr);
+      format(), plane_index, size(), is_passthrough, nullptr);
 
   std::optional<ScopedDedicatedMemoryObject> memory_object;
   if (!use_separate_gl_texture()) {

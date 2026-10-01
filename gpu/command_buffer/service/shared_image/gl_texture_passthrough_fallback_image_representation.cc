@@ -83,8 +83,7 @@ GLTexturePassthroughFallbackImageRepresentation::
     const GLFormatDesc format_desc =
         GetGLFormatDesc(format(), plane, gl_format_caps);
     auto texture_holder = base::MakeRefCounted<GLTextureHolder>(
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(plane_ct), plane_size,
-        /*is_passthrough=*/true, progress_reporter);
+        format(), plane, size(), /*is_passthrough=*/true, progress_reporter);
     texture_holder->InitializeWithTexture(
         format_desc,
         CreateGLTexture(format_desc, plane_size, progress_reporter));

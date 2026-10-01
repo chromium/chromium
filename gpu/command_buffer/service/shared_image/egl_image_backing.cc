@@ -554,10 +554,8 @@ EGLImageBacking::GenEGLImageSiblings(base::span<const uint8_t> pixel_data) {
   std::vector<scoped_refptr<GLTextureHolder>> texture_holders;
   texture_holders.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
-    auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane);
-    gfx::Size plane_size = format().GetPlaneSize(plane, size());
     auto holder = base::MakeRefCounted<GLTextureHolder>(
-        plane_format, plane_size, use_passthrough_, nullptr);
+        format(), plane, size(), use_passthrough_, nullptr);
 
     GLFormatDesc format_desc;
     format_desc.target = GL_TEXTURE_2D;
@@ -577,6 +575,7 @@ EGLImageBacking::GenEGLImageSiblings(base::span<const uint8_t> pixel_data) {
     } else {
       auto* texture = gles2::CreateGLES2TextureWithLightRef(service_ids[plane],
                                                             GL_TEXTURE_2D);
+      gfx::Size plane_size = format().GetPlaneSize(plane, size());
       // If the backing is already cleared, no need to clear it again.
       gfx::Rect cleared_rect;
       if (IsCleared()) {

@@ -9,10 +9,10 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,6 +24,33 @@ namespace gpu {
 // GLCommonImageBackingFactory
 
 namespace {
+
+// Returns the equivalent SharedImageFormat for plane specified by
+// `plane_index`.
+viz::SharedImageFormat GetPlaneFormat(viz::SharedImageFormat format,
+                                      int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  if (format.is_single_plane()) {
+    return format;
+  }
+
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
+                               : viz::SinglePlaneFormat::kR_8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
+                               : viz::SinglePlaneFormat::kR_16;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      CHECK_EQ(num_channels, 1);
+      return viz::SinglePlaneFormat::kR_F16;
+  }
+  NOTREACHED();
+}
+
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
     const GLFormatCaps& caps) {
@@ -57,8 +84,7 @@ std::vector<GLCommonImageBackingFactory::FormatInfo> GetMultiPlaneFormatInfo(
     viz::SharedImageFormat format) {
   std::vector<viz::SharedImageFormat> plane_formats;
   for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
-    viz::SharedImageFormat plane_format =
-        GLTextureHolder::GetPlaneFormat(format, plane);
+    viz::SharedImageFormat plane_format = GetPlaneFormat(format, plane);
     auto fallback_format =
         GetFallbackFormatIfNotSupported(plane_format, gl_format_caps);
     if (!fallback_format) {
