@@ -399,8 +399,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   std::optional<lens::LensOverlayInvocationSource> invocation_source;
   if (auto* browser = GetBrowser()) {
     if (auto* active_tab = browser->GetActiveTabInterface()) {
-      if (auto* controller = LensSearchController::FromTabWebContents(
-              active_tab->GetContents())) {
+      if (auto* controller = LensSearchController::From(active_tab)) {
         invocation_source = controller->invocation_source();
       }
     }
@@ -826,6 +825,9 @@ void ContextualTasksUI::CreatePageHandler(
     PushTaskDetailsToPage(task_id_, url,
                           /*replace_navigation_entry=*/true);
   }
+  if (GetThreadTitle().has_value()) {
+    page_->SetThreadTitle(*GetThreadTitle());
+  }
   OnInitComplete();
 }
 
@@ -888,13 +890,13 @@ void ContextualTasksUI::SetThreadId(std::optional<std::string> id) {
 }
 
 const std::optional<std::string>& ContextualTasksUI::GetThreadTitle() {
-  return thread_title_;
+  return ContextualTasksUIBase::GetThreadTitle();
 }
 
 void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
-  thread_title_ = title;
+  ContextualTasksUIBase::SetThreadTitle(std::move(title));
   if (page_) {
-    page_->SetThreadTitle(thread_title_.value_or(std::string()));
+    page_->SetThreadTitle(GetThreadTitle().value_or(std::string()));
   }
 }
 
@@ -922,7 +924,11 @@ bool ContextualTasksUI::IsCoBrowseOmniboxAction() const {
 }
 
 void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
-  NotifyAiPageStatusChanged(is_ai_page);
+  ContextualTasksUIBase::SetIsAiPage(is_ai_page);
+
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return;
+  }
 
   // When AI page is first loaded, close the Lens overlay if it's open,
   // unless opened for Omnibox Co-Browse visual selection.
