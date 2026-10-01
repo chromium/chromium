@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -2118,14 +2119,35 @@ class FullWebUIOmniboxAimInteractiveTestBase
         omnibox_context_entrypoint_contents_id, kPopupSearchbox);
   }
 
+  // Returns the active `LocationBar`. Works for both `LocationBarView` and
+  // `WebUILocationBar` (when WebUIToolbar is enabled,
+  // `BrowserView::GetLocationBarView()` returns null).
+  LocationBar* GetActiveLocationBar() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view ? browser_view->GetLocationBar() : nullptr;
+  }
+
+  // Returns the `OmniboxController` owned by the active `LocationBar`, or null
+  // if there is no active location bar.
+  OmniboxController* GetActiveOmniboxController() {
+    auto* location_bar = GetActiveLocationBar();
+    return location_bar ? location_bar->GetOmniboxController() : nullptr;
+  }
+
+  // Returns the AIM popup presenter of the active `LocationBar`, obtained via
+  // its `OmniboxPopupPresenterDelegate`, or null if unavailable.
+  OmniboxPopupAimPresenter* GetActiveAimPresenter() {
+    auto* location_bar = GetActiveLocationBar();
+    auto* presenter_delegate =
+        location_bar ? location_bar->GetPresenterDelegate() : nullptr;
+    return presenter_delegate
+               ? presenter_delegate->GetOmniboxPopupAimPresenter()
+               : nullptr;
+  }
+
   auto GetActiveAimPopupWebView() {
     return base::BindLambdaForTesting([this]() -> views::View* {
-      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-      if (!browser_view || !browser_view->GetLocationBarView()) {
-        return nullptr;
-      }
-      auto* aim_presenter =
-          browser_view->GetLocationBarView()->GetOmniboxPopupAimPresenter();
+      auto* aim_presenter = GetActiveAimPresenter();
       if (!aim_presenter) {
         return nullptr;
       }
@@ -2136,16 +2158,12 @@ class FullWebUIOmniboxAimInteractiveTestBase
   auto WaitForPopupState(OmniboxPopupState expected_state) {
     return PollUntil(
         [this, expected_state]() -> bool {
-          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-          if (!browser_view || !browser_view->GetLocationBarView() ||
-              !browser_view->GetLocationBarView()->GetOmniboxController()) {
+          auto* controller = GetActiveOmniboxController();
+          if (!controller) {
             return false;
           }
-          auto current_state = browser_view->GetLocationBarView()
-                                   ->GetOmniboxController()
-                                   ->popup_state_manager()
-                                   ->popup_state();
-          return current_state == expected_state;
+          return controller->popup_state_manager()->popup_state() ==
+                 expected_state;
         },
         "WaitForPopupState");
   }
@@ -2155,13 +2173,7 @@ class FullWebUIOmniboxAimInteractiveTestBase
         WaitForPopupState(OmniboxPopupState::kAim),
         PollUntil(
             [this]() -> bool {
-              auto* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser());
-              if (!browser_view || !browser_view->GetLocationBarView()) {
-                return false;
-              }
-              auto* aim_presenter = browser_view->GetLocationBarView()
-                                        ->GetOmniboxPopupAimPresenter();
+              auto* aim_presenter = GetActiveAimPresenter();
               auto* widget =
                   aim_presenter ? aim_presenter->GetWidget() : nullptr;
               auto* content =
@@ -2181,17 +2193,12 @@ class FullWebUIOmniboxAimInteractiveTestBase
     return Steps(
         PollUntil(
             [this]() -> bool {
-              auto* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser());
-              if (!browser_view || !browser_view->GetLocationBarView() ||
-                  !browser_view->GetLocationBarView()->GetOmniboxController()) {
-                return true;
+              auto* controller = GetActiveOmniboxController();
+              if (!controller) {
+                return false;
               }
-              auto state = browser_view->GetLocationBarView()
-                               ->GetOmniboxController()
-                               ->popup_state_manager()
-                               ->popup_state();
-              return state != OmniboxPopupState::kAim;
+              return controller->popup_state_manager()->popup_state() !=
+                     OmniboxPopupState::kAim;
             },
             "WaitForAimPopupHidden"),
         UninstrumentWebContents(kAimPopupWebView));
@@ -2237,13 +2244,25 @@ class FullWebUIOmniboxAimInteractiveTestBase
         InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)));
   }
 
+  // Clicks `element` inside the Full WebUI popup with a real mouse click.
+  //
+  // Readiness is determined by the popup itself rather than by a first-paint
+  // signal: the popup presenter shows the widget only once the renderer's
+  // visual state is ready, and callers wait for `element` to render before
+  // clicking. The mouse is moved directly to the center of `element`.
+  auto ClickPopupElement(const DeepQuery& element) {
+    return Steps(
+        MoveMouseTo(kPopupWebView, DeepQueryToRelativePosition(element)),
+        ClickMouse());
+  }
+
   auto OpenAimPopup() {
     return Steps(
         SetAimEligibleResponse(),
         OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
         InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
         InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
-        InSameContext(ClickElement(kPopupWebView, kComposeButton)),
+        InSameContext(ClickPopupElement(kComposeButton)),
         WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
   }
