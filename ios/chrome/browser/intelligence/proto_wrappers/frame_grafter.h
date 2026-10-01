@@ -8,6 +8,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 #import <map>
+#import <string>
 #import <vector>
 
 #import "base/functional/callback_forward.h"
@@ -67,8 +68,18 @@ class FrameGrafter {
   // Returns the remote frame tokens for all registered placeholders.
   std::vector<autofill::RemoteFrameToken> GetRemoteFrames() const;
 
+  // Records metadata (bounding box, URL, and security origin) for an un-grafted
+  // cross-site iframe placeholder before it is redacted in the APC tree.
+  void RecordCrossSiteIframePlaceholder(
+      const optimization_guide::proto::ContentNode& placeholder);
+
+  // Populates `gemini_in_chrome_page_metadata.screenshot_info` on `apc` with
+  // the screenshot size and recorded cross-site iframe information.
+  void PopulateScreenshotInfo(
+      optimization_guide::proto::AnnotatedPageContent* apc);
+
   // Traverses the fully assembled ContentNode tree and populates
-  // universal_bounding_boxes_for_redaction_ with top-level absolute
+  // `universal_bounding_boxes_for_redaction_` with top-level absolute
   // coordinates for form controls, recursively accumulating ancestor iframe
   // offsets.
   void CollectFormControlRedactionBoxesFromTree(
@@ -108,10 +119,31 @@ class FrameGrafter {
           autofill::RemoteFrameToken)> mapping_lookup,
       base::RepeatingCallback<void(FrameContent unregistered)> placer,
       base::RepeatingCallback<
-          void(optimization_guide::proto::ContentNode* unresolved)>
+          void(const autofill::RemoteFrameToken& remote_token,
+               optimization_guide::proto::ContentNode* unresolved)>
           unresolved_placeholder_handler);
 
  private:
+  // Internal record of a cross-site iframe placeholder awaiting tree assembly.
+  // `node` is only used for pointer-identity lookup during tree traversal and
+  // must not be dereferenced once tree resolution completes.
+  struct CrossSiteIframeRecord {
+    raw_ptr<const optimization_guide::proto::ContentNode> node = nullptr;
+    std::string url;
+    optimization_guide::proto::SecurityOrigin security_origin;
+    bool has_security_origin = false;
+  };
+
+  // Recursively traverses the grafted tree starting from `node`, accumulating
+  // ancestor iframe bounding box offsets, and records resolved iframe info
+  // for any encountered cross-site iframe placeholders.
+  static void TraverseAndCollectCrossSiteIframes(
+      const optimization_guide::proto::ContentNode& node,
+      CGPoint accumulated_offset,
+      const std::map<const optimization_guide::proto::ContentNode*,
+                     const CrossSiteIframeRecord*>& records_by_node,
+      optimization_guide::proto::ScreenshotInfo* screenshot_info);
+
   // Frame content that wasn't claimed yet (unregistered).
   std::map<autofill::LocalFrameToken, FrameContent> unregistered_content_;
   // Placeholders waiting for content.
@@ -120,6 +152,8 @@ class FrameGrafter {
       placeholders_;
   // Flat registry of all redaction boxes translated to top-level coordinates.
   std::vector<RedactionBoxEntry> universal_bounding_boxes_for_redaction_;
+  // Recorded metadata for cross-site iframes.
+  std::vector<CrossSiteIframeRecord> cross_site_iframe_records_;
   // True if any form control on the page requires redaction.
   bool has_sensitive_fields_to_redact_ = false;
 };

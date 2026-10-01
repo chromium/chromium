@@ -16,6 +16,7 @@
 #import "url/origin.h"
 
 namespace web {
+class WebFramesManager;
 class WebState;
 }
 
@@ -92,14 +93,18 @@ void PopulateAutofillInformation(
 // placeholders to their content in `grafter`, fulfilling matching placeholder
 // nodes in `apc`'s content tree. Unregistered/orphan frame content that does
 // not match any placeholder in the tree is dropped to prevent node ID
-// collisions. If `include_same_site_only` is true, cross-site frame content is
-// redacted with REASON_CROSS_SITE rather than grafted into the
-// AnnotatedPageContent tree.
+// collisions. Also populates `apc`'s `screenshot_info` (`screenshot_size` and
+// `iframe_info`) for server-side screenshot redaction. If
+// `include_same_site_only` is true, cross-site frame content is redacted with
+// REASON_CROSS_SITE rather than grafted into the AnnotatedPageContent tree.
+// `web_frames_manager` must correspond to the content world used by the
+// `registrar`'s frame tokens (e.g., `kPageContentWorld`).
 void ResolveCrossSiteFrameContent(
     FrameGrafter& grafter,
     autofill::ChildFrameRegistrar* registrar,
     bool include_same_site_only,
-    optimization_guide::proto::AnnotatedPageContent* apc);
+    optimization_guide::proto::AnnotatedPageContent* apc,
+    web::WebFramesManager* web_frames_manager);
 
 // Resolves the focused frame by mapping local tokens to remote tokens and
 // sets the focused_frame in `apc`.

@@ -324,11 +324,16 @@ TEST_F(FrameGrafterTest, UnresolvedPlaceholdersHandled) {
   auto placer = base::BindRepeating(
       [](FrameGrafter::FrameContent unregistered) { FAIL(); });
 
-  std::vector<optimization_guide::proto::ContentNode*> unresolved;
+  std::vector<std::pair<autofill::RemoteFrameToken,
+                        optimization_guide::proto::ContentNode*>>
+      unresolved;
   auto unresolved_handler = base::BindRepeating(
-      [](std::vector<optimization_guide::proto::ContentNode*>* unresolved_list,
+      [](std::vector<std::pair<autofill::RemoteFrameToken,
+                               optimization_guide::proto::ContentNode*>>*
+             unresolved_list,
+         const autofill::RemoteFrameToken& remote_token,
          optimization_guide::proto::ContentNode* unresolved_placeholder) {
-        unresolved_list->push_back(unresolved_placeholder);
+        unresolved_list->emplace_back(remote_token, unresolved_placeholder);
       },
       &unresolved);
 
@@ -336,7 +341,8 @@ TEST_F(FrameGrafterTest, UnresolvedPlaceholdersHandled) {
                                      unresolved_handler);
 
   ASSERT_EQ(unresolved.size(), 1u);
-  EXPECT_EQ(unresolved[0], &placeholder);
+  EXPECT_EQ(unresolved[0].first, remote_token);
+  EXPECT_EQ(unresolved[0].second, &placeholder);
 }
 
 // Test that redaction bounding boxes from root and child frames are translated
@@ -596,4 +602,150 @@ TEST_F(FrameGrafterTest,
   grafter.CollectFormControlRedactionBoxesFromTree(root_node);
 
   EXPECT_TRUE(grafter.universal_bounding_boxes_for_redaction().empty());
+}
+
+// Test that FrameGrafter records cross-site iframe placeholders and correctly
+// populates screenshot_info on AnnotatedPageContent.
+TEST_F(FrameGrafterTest,
+       RecordCrossSiteIframePlaceholderAndPopulateScreenshotInfo) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  auto* placeholder = apc.mutable_root_node()->add_children_nodes();
+  FrameGrafter grafter;
+  auto* content_attrs = placeholder->mutable_content_attributes();
+  content_attrs->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  auto* box = content_attrs->mutable_geometry()->mutable_visible_bounding_box();
+  box->set_x(15);
+  box->set_y(45);
+  box->set_width(320);
+  box->set_height(240);
+
+  auto* frame_data = content_attrs->mutable_iframe_data()->mutable_frame_data();
+  frame_data->set_url("https://cross-site.example/embed");
+  auto* security_origin = frame_data->mutable_security_origin();
+  security_origin->set_opaque(false);
+  security_origin->set_value("https://cross-site.example");
+
+  grafter.RecordCrossSiteIframePlaceholder(*placeholder);
+
+  apc.mutable_viewport_geometry()->set_width(390);
+  apc.mutable_viewport_geometry()->set_height(844);
+
+  grafter.PopulateScreenshotInfo(&apc);
+
+  ASSERT_TRUE(apc.has_gemini_in_chrome_page_metadata());
+  ASSERT_TRUE(apc.gemini_in_chrome_page_metadata().has_screenshot_info());
+  const auto& screenshot_info =
+      apc.gemini_in_chrome_page_metadata().screenshot_info();
+  EXPECT_EQ(screenshot_info.screenshot_size().width(), 390);
+  EXPECT_EQ(screenshot_info.screenshot_size().height(), 844);
+  ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
+
+  const auto& info = screenshot_info.iframe_info(0);
+  EXPECT_EQ(info.url(), "https://cross-site.example/embed");
+  EXPECT_FALSE(info.security_origin().opaque());
+  EXPECT_EQ(info.security_origin().value(), "https://cross-site.example");
+  EXPECT_EQ(info.bounding_box().x(), 15);
+  EXPECT_EQ(info.bounding_box().y(), 45);
+  EXPECT_EQ(info.bounding_box().width(), 320);
+  EXPECT_EQ(info.bounding_box().height(), 240);
+  EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
+}
+
+// Test that a cross-site iframe nested inside an ancestor iframe accumulates
+// the ancestor's offset in its screenshot bounding box.
+TEST_F(FrameGrafterTest, NestedCrossSiteIframeAccumulatesAncestorOffsets) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  FrameGrafter grafter;
+  autofill::LocalFrameToken parent_local_token = CreateLocalToken();
+  autofill::RemoteFrameToken parent_remote_token = CreateRemoteToken();
+  autofill::RemoteFrameToken nested_remote_token = CreateRemoteToken();
+
+  auto* root_node = apc.mutable_root_node();
+
+  // Parent iframe placeholder in root at (50, 100, 300, 200).
+  auto* parent_placeholder = root_node->add_children_nodes();
+  parent_placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* parent_box = parent_placeholder->mutable_content_attributes()
+                         ->mutable_geometry()
+                         ->mutable_visible_bounding_box();
+  parent_box->set_x(50);
+  parent_box->set_y(100);
+  parent_box->set_width(300);
+  parent_box->set_height(200);
+  grafter.RegisterPlaceholder(parent_remote_token, parent_placeholder);
+
+  // Content for parent iframe contains a nested cross-site iframe placeholder
+  // at (20, 30, 100, 80).
+  FrameGrafter::FrameContent* parent_content =
+      grafter.DeclareContent(parent_local_token);
+  auto* nested_placeholder = parent_content->content.add_children_nodes();
+  nested_placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  auto* nested_box = nested_placeholder->mutable_content_attributes()
+                         ->mutable_geometry()
+                         ->mutable_visible_bounding_box();
+  nested_box->set_x(20);
+  nested_box->set_y(30);
+  nested_box->set_width(100);
+  nested_box->set_height(80);
+
+  auto* nested_frame_data = nested_placeholder->mutable_content_attributes()
+                                ->mutable_iframe_data()
+                                ->mutable_frame_data();
+  nested_frame_data->set_url("https://nested.example/frame");
+  auto* security_origin = nested_frame_data->mutable_security_origin();
+  security_origin->set_opaque(false);
+  security_origin->set_value("https://nested.example");
+
+  grafter.RegisterPlaceholder(nested_remote_token, nested_placeholder);
+
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::RemoteFrameToken parent_remote,
+         autofill::LocalFrameToken parent_local,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        if (requested_remote == parent_remote) {
+          return parent_local;
+        }
+        return std::nullopt;
+      },
+      parent_remote_token, parent_local_token);
+
+  auto placer = base::BindRepeating(
+      [](FrameGrafter::FrameContent unregistered) { FAIL(); });
+
+  auto unresolved_handler = base::BindRepeating(
+      [](FrameGrafter* g, const autofill::RemoteFrameToken& token,
+         optimization_guide::proto::ContentNode* unresolved) {
+        g->RecordCrossSiteIframePlaceholder(*unresolved);
+      },
+      &grafter);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer,
+                                     unresolved_handler);
+
+  apc.mutable_viewport_geometry()->set_width(390);
+  apc.mutable_viewport_geometry()->set_height(844);
+
+  grafter.PopulateScreenshotInfo(&apc);
+
+  ASSERT_TRUE(apc.has_gemini_in_chrome_page_metadata());
+  ASSERT_TRUE(apc.gemini_in_chrome_page_metadata().has_screenshot_info());
+  const auto& screenshot_info =
+      apc.gemini_in_chrome_page_metadata().screenshot_info();
+  ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
+
+  const auto& info = screenshot_info.iframe_info(0);
+  EXPECT_EQ(info.url(), "https://nested.example/frame");
+  EXPECT_FALSE(info.security_origin().opaque());
+  EXPECT_EQ(info.security_origin().value(), "https://nested.example");
+  // Expected coordinates: 50 + 20 = 70, 100 + 30 = 130.
+  EXPECT_EQ(info.bounding_box().x(), 70);
+  EXPECT_EQ(info.bounding_box().y(), 130);
+  EXPECT_EQ(info.bounding_box().width(), 100);
+  EXPECT_EQ(info.bounding_box().height(), 80);
+  EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
 }

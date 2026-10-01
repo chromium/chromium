@@ -947,7 +947,8 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     if (_config->graft_cross_origin_frame_content() && registrar) {
       ResolveCrossSiteFrameContent(
           _grafter, registrar, _config->include_same_site_only(),
-          _pageContext->mutable_annotated_page_content());
+          _pageContext->mutable_annotated_page_content(),
+          [self webFramesManager]);
     }
     if (_rawScreenshotImage) {
       [self applyRedactionsAndEncodeScreenshot:_rawScreenshotImage];
@@ -1103,6 +1104,32 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   if (_webState && _webState->GetWebViewProxy() &&
       _webState->GetWebViewProxy().scrollViewProxy) {
     zoomScale = _webState->GetWebViewProxy().scrollViewProxy.zoomScale;
+  }
+
+  if (_pageContext && _pageContext->has_annotated_page_content() &&
+      _pageContext->annotated_page_content()
+          .gemini_in_chrome_page_metadata()
+          .has_screenshot_info()) {
+    auto* screenshot_info = _pageContext->mutable_annotated_page_content()
+                                ->mutable_gemini_in_chrome_page_metadata()
+                                ->mutable_screenshot_info();
+    // Centralize screenshot_size to match the captured screenshot image size.
+    screenshot_info->mutable_screenshot_size()->set_width(
+        static_cast<int32_t>(image.size.width));
+    screenshot_info->mutable_screenshot_size()->set_height(
+        static_cast<int32_t>(image.size.height));
+
+    // Scale iframe bounding boxes by zoomScale to align with the screenshot
+    // image.
+    if (zoomScale != 1.0 && zoomScale > 0) {
+      for (auto& info : *screenshot_info->mutable_iframe_info()) {
+        auto* box = info.mutable_bounding_box();
+        box->set_x(static_cast<int32_t>(box->x() * zoomScale));
+        box->set_y(static_cast<int32_t>(box->y() * zoomScale));
+        box->set_width(static_cast<int32_t>(box->width() * zoomScale));
+        box->set_height(static_cast<int32_t>(box->height() * zoomScale));
+      }
+    }
   }
 
   _universalBoundingBoxesForRedaction.clear();

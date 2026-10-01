@@ -3074,8 +3074,10 @@ TEST_P(PageContextWrapperTest,
       [wrapper rootAPCNodeForTesting];
   ASSERT_TRUE(apc);
 
-  ResolveCrossSiteFrameContent([wrapper grafterForTesting], registrar,
-                               /*include_same_site_only=*/false, apc);
+  ResolveCrossSiteFrameContent(
+      [wrapper grafterForTesting], registrar,
+      /*include_same_site_only=*/false, apc,
+      web_state()->GetWebFramesManager(web::ContentWorld::kPageContentWorld));
 
   // Verify the entire tree makeup:
   // Root contains exactly 2 children: (1) Main text paragraph, (2) Grafted

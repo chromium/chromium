@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/schemeful_site.h"
 #import "url/gurl.h"
@@ -787,6 +789,32 @@ void PopulateGeometry(const base::DictValue& geometry_dict,
     }
   }
 }
+// Extracts the placeholder's initial security origin from its `sourceUrl`
+// attribute, falling back to `fallback_origin` if `sourceUrl` is not
+// valid (e.g. about:blank).
+url::Origin ExtractPlaceholderOrigin(const base::DictValue& iframe_data,
+                                     const url::Origin& fallback_origin) {
+  const base::DictValue* content_dict = iframe_data.FindDict(kContentKey);
+  if (!content_dict) {
+    return fallback_origin;
+  }
+  const base::DictValue* local_frame_data =
+      content_dict->FindDict(kLocalFrameDataKey);
+  if (!local_frame_data) {
+    return fallback_origin;
+  }
+  const std::string* url_ptr = local_frame_data->FindString(kSourceURLKey);
+  if (!url_ptr) {
+    return fallback_origin;
+  }
+  GURL source_gurl(*url_ptr);
+  if (source_gurl.is_valid() && !source_gurl.IsAboutBlank() &&
+      !source_gurl.SchemeIs(url::kAboutScheme)) {
+    return url::Origin::Create(source_gurl);
+  }
+  return fallback_origin;
+}
+
 }  // namespace
 
 void PopulateAPCNodeFromContentTree(
@@ -899,10 +927,16 @@ void PopulateAPCNodeFromContentTree(
           // redacted.
           if (std::optional<autofill::RemoteFrameToken> remote =
                   DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
+            // Derive the placeholder's initial security origin from its own
+            // `sourceUrl` attribute, falling back to the parent frame's
+            // `origin`.
+            url::Origin placeholder_origin =
+                ExtractPlaceholderOrigin(*iframe_data, origin);
             // Populate iframe data before registering placeholder to ensure
-            // URL is available for unresolved cross-site redaction.
-            PopulateIframeData(*iframe_data, destination_node, origin,
-                               on_frame_extracted);
+            // URL and security origin are available for screenshot_info and
+            // unresolved cross-site redaction.
+            PopulateIframeData(*iframe_data, destination_node,
+                               placeholder_origin, on_frame_extracted);
             grafter.RegisterPlaceholder(*remote, destination_node);
             // Break rather than return so that the placeholder node's geometry
             // is populated below
@@ -1112,13 +1146,35 @@ void PopulateAutofillInformation(
   }
 }
 
+namespace {
+
+// Finds the child WebFrame associated with `remote_token` via `registrar`
+// and `web_frames_manager`. Returns nullptr if unresolvable.
+web::WebFrame* FindChildWebFrame(const autofill::RemoteFrameToken& remote_token,
+                                 autofill::ChildFrameRegistrar* registrar,
+                                 web::WebFramesManager* web_frames_manager) {
+  if (!registrar || !web_frames_manager) {
+    return nullptr;
+  }
+  std::optional<autofill::LocalFrameToken> local_token =
+      registrar->LookupChildFrame(remote_token);
+  if (!local_token) {
+    return nullptr;
+  }
+  return web_frames_manager->GetFrameWithId(local_token->ToString());
+}
+
+}  // namespace
+
 void ResolveCrossSiteFrameContent(
     FrameGrafter& grafter,
     autofill::ChildFrameRegistrar* registrar,
     bool include_same_site_only,
-    optimization_guide::proto::AnnotatedPageContent* apc) {
+    optimization_guide::proto::AnnotatedPageContent* apc,
+    web::WebFramesManager* web_frames_manager) {
   CHECK(registrar);
   CHECK(apc);
+
   auto mapping_lookup = base::BindRepeating(
       [](autofill::ChildFrameRegistrar* registrar,
          autofill::RemoteFrameToken remote) {
@@ -1130,37 +1186,75 @@ void ResolveCrossSiteFrameContent(
   net::SchemefulSite main_frame_site(main_frame_url);
 
   auto unresolved_handler = base::BindRepeating(
-      [](bool include_same_site_only, net::SchemefulSite main_frame_site,
+      [](FrameGrafter* grafter, autofill::ChildFrameRegistrar* registrar,
+         web::WebFramesManager* web_frames_manager, bool include_same_site_only,
+         net::SchemefulSite main_frame_site,
+         const autofill::RemoteFrameToken& remote_token,
          optimization_guide::proto::ContentNode* placeholder) {
-        if (!include_same_site_only) {
+        if (!placeholder || !include_same_site_only) {
           return;
         }
-        const optimization_guide::proto::ContentAttributes& content_attributes =
-            placeholder->content_attributes();
+        const auto& content_attributes = placeholder->content_attributes();
         if (content_attributes.attribute_type() !=
                 optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME ||
             !content_attributes.iframe_data().has_frame_data()) {
           return;
         }
-        GURL iframe_url(content_attributes.iframe_data().frame_data().url());
-        // If `iframe_url` is invalid, `net::SchemefulSite` will construct an
-        // opaque site. Comparing `main_frame_site` (which is typically not
-        // opaque) to an opaque site using `!=` will return `true`, causing
-        // invalid/malformed iframe URLs to be redacted. This is the desired
-        // defensive behavior.
-        if (main_frame_site == net::SchemefulSite(iframe_url)) {
+
+        // Check for an authoritative committed child WebFrame.
+        web::WebFrame* child_frame =
+            FindChildWebFrame(remote_token, registrar, web_frames_manager);
+
+        // Enrich the placeholder's frame data with committed origin and URL
+        // if available, preserving data: URL scrubbing.
+        if (child_frame) {
+          auto* mutable_frame_data = placeholder->mutable_content_attributes()
+                                         ->mutable_iframe_data()
+                                         ->mutable_frame_data();
+          if (child_frame->GetUrl().is_valid()) {
+            if (child_frame->GetUrl().SchemeIs(url::kDataScheme)) {
+              mutable_frame_data->set_url("data:");
+            } else {
+              mutable_frame_data->set_url(child_frame->GetUrl().spec());
+            }
+          }
+          optimization_guide::SecurityOriginSerializer::Serialize(
+              child_frame->GetSecurityOrigin(),
+              mutable_frame_data->mutable_security_origin());
+        }
+
+        const auto& frame_data =
+            placeholder->content_attributes().iframe_data().frame_data();
+        url::Origin frame_origin;
+        if (child_frame) {
+          frame_origin = child_frame->GetSecurityOrigin();
+        } else if (frame_data.has_security_origin()) {
+          frame_origin = frame_data.security_origin().opaque()
+                             ? url::Origin()
+                             : url::Origin::Create(
+                                   GURL(frame_data.security_origin().value()));
+        }
+        // Compare origins using SchemefulSite to determine if the frame is
+        // cross-site. An opaque or invalid origin will not match the main
+        // frame's site, correctly classifying it as cross-site.
+        if (main_frame_site == net::SchemefulSite(frame_origin)) {
           return;
         }
-        // Redact the placeholder.
-        optimization_guide::proto::IframeData::RedactedFrameMetadata*
-            proto_metadata = placeholder->mutable_content_attributes()
-                                 ->mutable_iframe_data()
-                                 ->mutable_redacted_frame_metadata();
-        proto_metadata->set_reason(
-            optimization_guide::proto::
-                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+        // Record the cross-site iframe for screenshot redaction before clearing
+        // frame_data.
+        grafter->RecordCrossSiteIframePlaceholder(*placeholder);
+
+        // Redact the placeholder in the APC tree (clears `frame_data`).
+        placeholder->mutable_content_attributes()
+            ->mutable_iframe_data()
+            ->mutable_redacted_frame_metadata()
+            ->set_reason(
+                optimization_guide::proto::
+                    IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
       },
-      include_same_site_only, main_frame_site);
+      &grafter, registrar, web_frames_manager, include_same_site_only,
+      main_frame_site);
 
   // Unregistered/orphan frames (e.g. invisible utility or tracking iframes that
   // are omitted from the main DOM layout walk) are dropped from the tree to
@@ -1171,6 +1265,8 @@ void ResolveCrossSiteFrameContent(
   grafter.ResolveUnregisteredContent(mapping_lookup,
                                      /*placer=*/base::DoNothing(),
                                      unresolved_handler);
+
+  grafter.PopulateScreenshotInfo(apc);
 }
 
 void ResolveFocusedFrame(

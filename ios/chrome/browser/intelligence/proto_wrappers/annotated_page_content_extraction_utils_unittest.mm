@@ -11,6 +11,8 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -208,10 +210,15 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       apc.mutable_root_node()->add_children_nodes();
   same_origin_placeholder->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  same_origin_placeholder->mutable_content_attributes()
-      ->mutable_iframe_data()
-      ->mutable_frame_data()
-      ->set_url("https://example.com/same-origin");
+  auto* same_origin_frame_data =
+      same_origin_placeholder->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_frame_data();
+  same_origin_frame_data->set_url("https://example.com/same-origin");
+  auto* same_origin_security_origin =
+      same_origin_frame_data->mutable_security_origin();
+  same_origin_security_origin->set_opaque(false);
+  same_origin_security_origin->set_value("https://example.com/same-origin");
   grafter.RegisterPlaceholder(same_origin_token, same_origin_placeholder);
 
   // Create same-site cross-origin placeholder (not grafted).
@@ -219,10 +226,15 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       apc.mutable_root_node()->add_children_nodes();
   same_site_placeholder->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  same_site_placeholder->mutable_content_attributes()
-      ->mutable_iframe_data()
-      ->mutable_frame_data()
-      ->set_url("https://sub.example.com/same-site");
+  auto* same_site_frame_data =
+      same_site_placeholder->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_frame_data();
+  same_site_frame_data->set_url("https://sub.example.com/same-site");
+  auto* same_site_security_origin =
+      same_site_frame_data->mutable_security_origin();
+  same_site_security_origin->set_opaque(false);
+  same_site_security_origin->set_value("https://sub.example.com/same-site");
   grafter.RegisterPlaceholder(same_site_token, same_site_placeholder);
 
   // Create cross-site placeholder (not grafted).
@@ -230,14 +242,21 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       apc.mutable_root_node()->add_children_nodes();
   cross_site_placeholder->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  cross_site_placeholder->mutable_content_attributes()
-      ->mutable_iframe_data()
-      ->mutable_frame_data()
-      ->set_url("https://different-domain.com/cross-site");
+  auto* cross_site_frame_data =
+      cross_site_placeholder->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_frame_data();
+  cross_site_frame_data->set_url("https://different-domain.com/cross-site");
+  auto* cross_site_security_origin =
+      cross_site_frame_data->mutable_security_origin();
+  cross_site_security_origin->set_opaque(false);
+  cross_site_security_origin->set_value(
+      "https://different-domain.com/cross-site");
   grafter.RegisterPlaceholder(cross_site_token, cross_site_placeholder);
 
-  ResolveCrossSiteFrameContent(grafter, registrar,
-                               /*include_same_site_only=*/true, &apc);
+  ResolveCrossSiteFrameContent(
+      grafter, registrar, /*include_same_site_only=*/true, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
 
   // Same-origin placeholder should not be redacted.
   EXPECT_TRUE(same_origin_placeholder->content_attributes()
@@ -293,14 +312,21 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       apc.mutable_root_node()->add_children_nodes();
   cross_site_placeholder->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  cross_site_placeholder->mutable_content_attributes()
-      ->mutable_iframe_data()
-      ->mutable_frame_data()
-      ->set_url("https://different-domain.com/cross-site");
+  auto* cross_site_frame_data =
+      cross_site_placeholder->mutable_content_attributes()
+          ->mutable_iframe_data()
+          ->mutable_frame_data();
+  cross_site_frame_data->set_url("https://different-domain.com/cross-site");
+  auto* cross_site_security_origin =
+      cross_site_frame_data->mutable_security_origin();
+  cross_site_security_origin->set_opaque(false);
+  cross_site_security_origin->set_value(
+      "https://different-domain.com/cross-site");
   grafter.RegisterPlaceholder(cross_site_token, cross_site_placeholder);
 
-  ResolveCrossSiteFrameContent(grafter, registrar,
-                               /*include_same_site_only=*/false, &apc);
+  ResolveCrossSiteFrameContent(
+      grafter, registrar, /*include_same_site_only=*/false, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
 
   // Cross-site placeholder should NOT be redacted when same-site gating is off.
   EXPECT_TRUE(cross_site_placeholder->content_attributes()
@@ -415,8 +441,9 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
   ASSERT_EQ(root_node->children_nodes_size(), 1);
 
   // Run resolution.
-  ResolveCrossSiteFrameContent(grafter, registrar,
-                               /*include_same_site_only=*/false, &apc);
+  ResolveCrossSiteFrameContent(
+      grafter, registrar, /*include_same_site_only=*/false, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
 
   // The orphan frame should NOT be appended to root_node.
   EXPECT_EQ(root_node->children_nodes_size(), 1);
@@ -517,4 +544,134 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, ModalDialogPopulated) {
   ASSERT_TRUE(node.has_content_attributes());
   EXPECT_EQ(node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODAL);
+}
+
+// Test that ResolveCrossSiteFrameContent populates
+// gemini_in_chrome_page_metadata.screenshot_info (screenshot_size and
+// iframe_info with root-relative bounding boxes, URLs, and security origins)
+// before redacting cross-site iframe nodes in the APC tree.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       ResolveCrossSiteFrameContentPopulatesScreenshotIframeInfo) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_url("https://example.com/main");
+  apc.mutable_viewport_geometry()->set_x(0);
+  apc.mutable_viewport_geometry()->set_y(0);
+  apc.mutable_viewport_geometry()->set_width(400);
+  apc.mutable_viewport_geometry()->set_height(800);
+
+  url::Origin main_origin =
+      url::Origin::Create(GURL("https://example.com/main"));
+  FrameGrafter grafter;
+
+  base::Value root_json = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800},
+          "visibleBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800}
+        }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 3,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 10,
+                "y": 50,
+                "width": 300,
+                "height": 200
+              },
+              "visibleBoundingBox": {
+                "x": 10,
+                "y": 50,
+                "width": 300,
+                "height": 200
+              }
+            },
+            "iframeData": {
+              "remoteFrameToken": {"value": "00112233445566778899aabbccddeeff"},
+              "content": {
+                "localFrameData": {
+                  "sourceUrl": "https://cross-site.org/embed"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  )");
+  ASSERT_TRUE(root_json.is_dict());
+  PopulateAPCNodeFromContentTree(
+      root_json.GetDict(), main_origin, grafter,
+      /*autofill_context=*/nullptr, apc.mutable_root_node(),
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  auto local_token =
+      autofill::LocalFrameToken(base::UnguessableToken::Create());
+  std::optional<autofill::RemoteFrameToken> remote_token =
+      DeserializeFrameIdAsRemoteFrameToken("00112233445566778899aabbccddeeff");
+  ASSERT_TRUE(remote_token.has_value());
+
+  GURL committed_url("https://committed-cross-site.org/redirected");
+  auto fake_frame =
+      web::FakeWebFrame::Create(local_token.ToString(), /*is_main_frame=*/false,
+                                url::Origin::Create(committed_url));
+  fake_frame->set_url(committed_url);
+
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  frames_manager->AddWebFrame(std::move(fake_frame));
+
+  web::FakeWebState web_state;
+  web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                std::move(frames_manager));
+  web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(&web_state);
+  registrar->RegisterMapping(*remote_token, local_token);
+
+  ResolveCrossSiteFrameContent(
+      grafter, registrar,
+      /*include_same_site_only=*/true, &apc,
+      web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
+
+  // 1. The cross-site iframe node in `root_node` must be redacted with
+  // REASON_CROSS_SITE and have its `frame_data` stripped.
+  ASSERT_EQ(apc.root_node().children_nodes_size(), 1);
+  const auto& iframe_node = apc.root_node().children_nodes(0);
+  EXPECT_FALSE(iframe_node.content_attributes().iframe_data().has_frame_data());
+  ASSERT_TRUE(iframe_node.content_attributes()
+                  .iframe_data()
+                  .has_redacted_frame_metadata());
+  EXPECT_EQ(iframe_node.content_attributes()
+                .iframe_data()
+                .redacted_frame_metadata()
+                .reason(),
+            optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+  // 2. `screenshot_info` must be populated with `screenshot_size` and the
+  // cross-site iframe's `IframeInfo` (including its committed security_origin,
+  // committed URL, and screenshot-relative bounding box).
+  ASSERT_TRUE(apc.has_gemini_in_chrome_page_metadata());
+  ASSERT_TRUE(apc.gemini_in_chrome_page_metadata().has_screenshot_info());
+  const auto& screenshot_info =
+      apc.gemini_in_chrome_page_metadata().screenshot_info();
+  EXPECT_EQ(screenshot_info.screenshot_size().width(), 400);
+  EXPECT_EQ(screenshot_info.screenshot_size().height(), 800);
+  ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
+
+  const auto& info = screenshot_info.iframe_info(0);
+  EXPECT_EQ(info.url(), "https://committed-cross-site.org/redirected");
+  EXPECT_FALSE(info.security_origin().opaque());
+  EXPECT_EQ(info.security_origin().value(), "https://committed-cross-site.org");
+  EXPECT_EQ(info.bounding_box().x(), 10);
+  EXPECT_EQ(info.bounding_box().y(), 50);
+  EXPECT_EQ(info.bounding_box().width(), 300);
+  EXPECT_EQ(info.bounding_box().height(), 200);
+  EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
 }
