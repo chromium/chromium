@@ -100,7 +100,6 @@ message SmartSelectionSuggestion {
   string label = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Corresponds 1:1 to the native smart_selection::SuggestionToolId enum.
 enum SmartSelectionToolId {
   SMART_SELECTION_TOOL_UNSPECIFIED = 0;
 
@@ -109,4 +108,6 @@ enum SmartSelectionToolId {
   SMART_SELECTION_TOOL_GOOGLE_LENS = 2;
 
   SMART_SELECTION_TOOL_GOOGLE_SEARCH = 3;
+
+  SMART_SELECTION_TOOL_QUICK_ANSWERS = 4;
 }

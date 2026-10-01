@@ -400,10 +400,23 @@ message AttemptOtpFillingAction {
 // in the specialized Automated Password Change flow.
 //
 // This action is only here to allow testing from the chat panel.
-// Next ID: 2
+// Next ID: 6
 message ChangePasswordAction {
   // The tab ID in which to perform password change.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+
+  // The input field for the current password, if present.
+  ActionTarget current_password_field = 2 [features = { field_presence: EXPLICIT }];
+
+  // The input field for the new password, if present.
+  ActionTarget new_password_field = 3 [features = { field_presence: EXPLICIT }];
+
+  // The input field to confirm the new password, if present.
+  ActionTarget confirm_new_password_field = 4 [features = { field_presence: EXPLICIT }];
+
+  // The button, if present, which will confirm the password change or proceed
+  // in a multi-step form.
+  ActionTarget confirm_button = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // Scrolls the DOM element into viewport.
