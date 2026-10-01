@@ -29,7 +29,6 @@ component("content") {
   deps = [
     "//components/pref_registry",
     "//content/public/browser",
-    "//content/public/common",
   ]
 }
 
