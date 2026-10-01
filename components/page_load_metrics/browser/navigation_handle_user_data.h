@@ -10,36 +10,29 @@
 
 namespace page_load_metrics {
 
-// Stores information about the location where a navigation was initiated from.
+// Records that the navigation was served by DSEv1 search prefetch.
+//
+// History: This used to carry the initiator of the navigation too, as a pair
+// of `(InitiatorLocation, std::string)`, which is where the generic name of
+// this class comes from. That role was taken over by
+// `page_load_metrics::NavigationInitiator` and `NavigationInitiatorHolder`,
+// and the DSEv1 search prefetch flag is all that is left.
 //
 // Timing of availability:
-// This user data is attached to a `content::NavigationHandle`. While some
-// navigations attach it during the handle's creation (e.g., via a callback),
-// other navigations (such as those initiated from the Omnibox) attach it
-// immediately after the navigation is initiated. Consequently, this user data
-// is NOT guaranteed to be present during `PageLoadMetricsObserver::OnStart()`.
+// This user data is attached to a `content::NavigationHandle` while the
+// navigation is in flight, so it is NOT guaranteed to be present during
+// `PageLoadMetricsObserver::OnStart()`.
+// `PageLoadMetricsObserver::OnCommit()` (or `DidActivatePrerenderedPage()` for
+// prerender activation) is a reliable time to retrieve this data. Note that
+// once the navigation has finished committing, the `NavigationHandle` is
+// destroyed, making the user data no longer accessible.
 //
-// Instead, `PageLoadMetricsObserver::OnCommit()` (or
-// `DidActivatePrerenderedPage()` for prerender activation) is a reliable time
-// to retrieve this data, because:
-// 1. By the time of commit, any post-initiation attachment code has already
-//    run.
-// 2. The `NavigationHandle` (and therefore this user data) is still alive.
-// Note that once the navigation has finished committing, the
-// `NavigationHandle` is destroyed, making the user data no longer accessible.
+// TODO(https://crbug.com/517725655): Rename this to something that tells what
+// it carries, now that it no longer carries the navigation initiator.
 class NavigationHandleUserData
     : public content::NavigationHandleUserData<NavigationHandleUserData> {
  public:
-  using InitiatorLocation = int16_t;
-  static constexpr InitiatorLocation kInitiatorLocationOther = 0;
-
   ~NavigationHandleUserData() override;
-
-  InitiatorLocation navigation_type() const { return navigation_type_; }
-
-  const std::string& navigation_type_string() const {
-    return navigation_type_string_;
-  }
 
   bool is_served_by_legacy_search_prefetch() const {
     return is_served_by_legacy_search_prefetch_;
@@ -49,23 +42,7 @@ class NavigationHandleUserData
   }
 
  private:
-  // Constructs an instance whose initiator is unknown. This exists for
-  // `GetOrCreateForNavigationHandle()`, which is used to set
-  // `is_served_by_legacy_search_prefetch_` on a navigation whose trigger did
-  // not create this user data.
   explicit NavigationHandleUserData(content::NavigationHandle& navigation);
-
-  NavigationHandleUserData(content::NavigationHandle& navigation,
-                           InitiatorLocation navigation_type,
-                           std::string navigation_type_string);
-
-  // `navigation_type` is used to store where this navigation is initiated from.
-  // This information is used to identify the source of the navigation, and this
-  // kind of information is utilized by PageLoadMetricsObservers.
-  const InitiatorLocation navigation_type_;
-
-  // Stringified information of `navigation_type_`.
-  const std::string navigation_type_string_;
 
   // Indicates whether this navigation was served by a legacy search prefetch
   // mechanism (i.e., DSEv1 search prefetch). Legacy search prefetch refers to

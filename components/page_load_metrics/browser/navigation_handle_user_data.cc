@@ -9,17 +9,7 @@ namespace page_load_metrics {
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationHandleUserData);
 
 NavigationHandleUserData::NavigationHandleUserData(
-    content::NavigationHandle& navigation)
-    : NavigationHandleUserData(navigation,
-                               kInitiatorLocationOther,
-                               /*navigation_type_string=*/"Other") {}
-
-NavigationHandleUserData::NavigationHandleUserData(
-    content::NavigationHandle& navigation,
-    InitiatorLocation navigation_type,
-    std::string navigation_type_string)
-    : navigation_type_(navigation_type),
-      navigation_type_string_(std::move(navigation_type_string)) {}
+    content::NavigationHandle& navigation) {}
 
 NavigationHandleUserData::~NavigationHandleUserData() = default;
 
