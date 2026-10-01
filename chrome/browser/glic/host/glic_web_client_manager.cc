@@ -20,20 +20,26 @@
 #include "url/origin.h"
 
 namespace glic {
-
 namespace {
 
+// Classifies URLs into GuestPageType.
+// Reverse proxy authentication paths (e.g. `/_up` or `/_up/...`) and SSO
+// login endpoints are classified as kLogin so the guest WebContents is
+// displayed directly to the user to authenticate rather than triggering
+// an error overlay or treating them as a broken web client.
 mojom::GuestPageType GetGuestPageType(const GURL& url) {
   if (IsAdminBlockedUrl(url)) {
     return mojom::GuestPageType::kDisabledByAdmin;
   }
+  const std::string_view path = url.path();
   if (url.DomainIs("login.corp.google.com") ||
       url.DomainIs("accounts.google.com") ||
       url.DomainIs("accounts.googlers.com") ||
-      url.DomainIs("gaiastaging.corp.google.com")) {
+      url.DomainIs("gaiastaging.corp.google.com") || path == "/_up" ||
+      path.starts_with("/_up/")) {
     return mojom::GuestPageType::kLogin;
   }
-  if (url.path().starts_with("/sorry/")) {
+  if (path.starts_with("/sorry/")) {
     return mojom::GuestPageType::kGuestError;
   }
   return mojom::GuestPageType::kRegular;
@@ -188,7 +194,7 @@ void GlicWebClientManager::UnsetWebClient(
 
 void GlicWebClientManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -199,7 +205,7 @@ void GlicWebClientManager::DidStartNavigation(
 
 void GlicWebClientManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;
@@ -212,7 +218,9 @@ void GlicWebClientManager::DidFinishNavigation(
       IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin(),
                              guest_main_frame->GetBrowserContext());
   mojom::GuestPageType page_type =
-      GetGuestPageType(guest_main_frame->GetLastCommittedURL());
+      navigation_handle->IsErrorPage()
+          ? mojom::GuestPageType::kLoadError
+          : GetGuestPageType(guest_main_frame->GetLastCommittedURL());
   bool is_initial_commit = !has_navigation_committed_;
   has_navigation_committed_ = true;
 

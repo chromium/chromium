@@ -33,6 +33,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -111,6 +113,20 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
   void SetUpOnMainThread() override {
     embedded_https_test_server().SetCertHostnames(
         {"login.corp.google.com", "127.0.0.1"});
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == "/_up" ||
+              request.relative_url.starts_with("/_up/")) {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_OK);
+            http_response->set_content_type("text/html");
+            http_response->set_content("<html><body>Proxy Auth</body></html>");
+            return http_response;
+          }
+          return nullptr;
+        }));
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "chrome/test/data");
     GlicBrowserTest::SetUpOnMainThread();
@@ -852,6 +868,32 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
             ClientLoadErrorReason::kClientLoadTimeout);
   EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
   ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ProxyAuthPathShowsGuestDirectly) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
+
+  // Navigating the guest to a proxy auth path (/_up/auth) classifies as
+  // kLogin and swaps directly to the guest WebContents so the user can
+  // authenticate, without waiting for the loading timeout.
+  const GURL proxy_auth_url =
+      embedded_https_test_server().GetURL("127.0.0.1", "/_up/auth");
+  ASSERT_TRUE(
+      content::NavigateToURL(manager->guest_contents(), proxy_auth_url));
+
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLogin);
+  EXPECT_FALSE(manager->loading_timer_for_testing().IsRunning());
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
 }
 
 }  // namespace glic
