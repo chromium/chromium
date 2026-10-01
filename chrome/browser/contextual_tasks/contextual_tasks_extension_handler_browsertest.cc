@@ -1079,19 +1079,33 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillRepeatedly(Return(std::vector<contextual_search::FileInfo>{}));
 
-  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
-      "data:image/png;base64,test_crop");
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  model->SetLensCrop("data:image/png;base64,test_crop");
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(model->lens_crop().has_value());
 
+  bool received_submit_response = false;
+  bool received_lens_chip_unmount = false;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
-        if (!message.has_value() || !message->has_on_submit_query_response()) {
-          return;
+        ASSERT_TRUE(message.has_value());
+        if (message->has_on_submit_query_response()) {
+          const auto& response = message->on_submit_query_response();
+          EXPECT_EQ(0, response.added_contexts_size());
+          received_submit_response = true;
+        } else if (message->has_inject_chrome_input()) {
+          const auto& inject_input = message->inject_chrome_input();
+          EXPECT_EQ(inject_input.input_type(),
+                    lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+          EXPECT_FALSE(inject_input.is_active());
+          received_lens_chip_unmount = true;
         }
-        const auto& response = message->on_submit_query_response();
-        EXPECT_EQ(0, response.added_contexts_size());
-        run_loop.Quit();
+        if (received_submit_response && received_lens_chip_unmount) {
+          run_loop.Quit();
+        }
       });
 
   lens::SearchToClientMessage request;
@@ -1103,6 +1117,8 @@ IN_PROC_BROWSER_TEST_F(
   SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
+
+  EXPECT_FALSE(model->lens_crop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1153,8 +1169,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*mock_session_handle_, GetVisualSearchInteractionData(_, _))
       .WillOnce(Return(std::make_optional(mock_vsint)));
 
-  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
-      "data:image/png;base64,test_crop");
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  model->SetLensCrop("data:image/png;base64,test_crop");
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(model->lens_crop().has_value());
 
   EXPECT_CALL(mock_overlay, ClearRegionSelection()).Times(0);
   EXPECT_CALL(
@@ -1163,30 +1182,41 @@ IN_PROC_BROWSER_TEST_F(
           lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
       .Times(1);
 
+  bool received_submit_response = false;
+  bool received_lens_chip_unmount = false;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
-        if (!message.has_value() || !message->has_on_submit_query_response()) {
-          return;
+        ASSERT_TRUE(message.has_value());
+        if (message->has_on_submit_query_response()) {
+          const auto& response = message->on_submit_query_response();
+          ASSERT_EQ(1, response.added_contexts_size());
+          const auto& added = response.added_contexts(0);
+          EXPECT_EQ("session_sticky_id", added.search_session_id());
+          EXPECT_EQ(999u, added.request_id().uuid());
+          EXPECT_EQ(888, added.request_id().context_id());
+          EXPECT_EQ(1, added.request_id().image_sequence_id());
+          EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
+                    added.request_id().media_type());
+          EXPECT_TRUE(added.has_visual_search_interaction_data());
+          EXPECT_EQ(lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH,
+                    added.visual_search_interaction_data().interaction_type());
+          EXPECT_EQ(
+              lens::LensOverlayContextualInputUploadType::
+                  CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY,
+              added.contextual_input_upload_type());
+          received_submit_response = true;
+        } else if (message->has_inject_chrome_input()) {
+          const auto& inject_input = message->inject_chrome_input();
+          EXPECT_EQ(inject_input.input_type(),
+                    lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+          EXPECT_FALSE(inject_input.is_active());
+          received_lens_chip_unmount = true;
         }
-        const auto& response = message->on_submit_query_response();
-        ASSERT_EQ(1, response.added_contexts_size());
-        const auto& added = response.added_contexts(0);
-        EXPECT_EQ("session_sticky_id", added.search_session_id());
-        EXPECT_EQ(999u, added.request_id().uuid());
-        EXPECT_EQ(888, added.request_id().context_id());
-        EXPECT_EQ(1, added.request_id().image_sequence_id());
-        EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
-                  added.request_id().media_type());
-        EXPECT_TRUE(added.has_visual_search_interaction_data());
-        EXPECT_EQ(lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH,
-                  added.visual_search_interaction_data().interaction_type());
-        EXPECT_EQ(
-            lens::LensOverlayContextualInputUploadType::
-                CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY,
-            added.contextual_input_upload_type());
-        run_loop.Quit();
+        if (received_submit_response && received_lens_chip_unmount) {
+          run_loop.Quit();
+        }
       });
 
   lens::SearchToClientMessage request;
@@ -1198,6 +1228,8 @@ IN_PROC_BROWSER_TEST_F(
   SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
+
+  EXPECT_FALSE(model->lens_crop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1512,8 +1544,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*mock_session_handle_, GetVisualSearchInteractionData(_, _))
       .WillRepeatedly(Return(std::make_optional(mock_vsint)));
 
-  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
-      "data:image/png;base64,test_crop");
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  model->SetLensCrop("data:image/png;base64,test_crop");
+  mock_page_.FlushForTesting();
 
   lens::SearchToClientMessage request;
   request.mutable_on_submit_query_request();
@@ -1537,6 +1571,13 @@ IN_PROC_BROWSER_TEST_F(
 
   handler_->OnWebviewMessage(serialized_message);
   run_loop1.Run();
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(model->lens_crop().has_value());
+
+  // Set a new crop so that if the replay were processed, it would attach a
+  // context and clear the crop.
+  model->SetLensCrop("data:image/png;base64,test_crop_2");
+  mock_page_.FlushForTesting();
 
   // 2. Replay the same OnSubmitQueryRequest WITHOUT a new user interaction.
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
@@ -1548,6 +1589,7 @@ IN_PROC_BROWSER_TEST_F(
       });
   handler_->OnWebviewMessage(serialized_message);
   mock_page_.FlushForTesting();
+  EXPECT_TRUE(model->lens_crop().has_value());
 
   // 3. Simulate a new user interaction and verify submission succeeds again.
   SimulateUserInteraction();
@@ -1565,6 +1607,7 @@ IN_PROC_BROWSER_TEST_F(
 
   handler_->OnWebviewMessage(serialized_message);
   run_loop2.Run();
+  EXPECT_FALSE(model->lens_crop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
