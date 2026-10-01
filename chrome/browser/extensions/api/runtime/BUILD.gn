@@ -26,7 +26,7 @@ source_set("runtime") {
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/navigator",
     "//components/update_client",
@@ -36,10 +36,9 @@ source_set("runtime") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/components/kiosk" ]
-  }
-
-  if (is_android) {
-    deps += [ "//chrome/browser/ui/android/tab_model" ]
+    deps += [
+      "//chromeos/components/kiosk",
+      "//chromeos/dbus/power",
+    ]
   }
 }
