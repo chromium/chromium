@@ -531,7 +531,13 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
           'type' in message &&
           (message.type === 'documentLoaded' ||
            message.type === 'passwordPrompted')) {
-        targetOrigin = '*';
+        // Address these to the origin the embedder had when it contacted the
+        // viewer, so that they are not delivered to a different origin if the
+        // embedder has since navigated away. An embedder with an opaque
+        // origin, such as one loaded from a data: or file: URL, reports its
+        // origin as 'null', which cannot be named as a target origin, so the
+        // wildcard remains the only way to reach it.
+        targetOrigin = this.parentOrigin_ === 'null' ? '*' : this.parentOrigin_;
       } else {
         targetOrigin = this.originalUrl;
       }
