@@ -246,6 +246,10 @@ bool IsANGLEPassthroughShadersAllowed() {
   return base::FeatureList::IsEnabled(kAllowANGLEPassthroughShaders);
 }
 
+#if BUILDFLAG(IS_APPLE)
+BASE_FEATURE(kANGLEPurgeableBufferPool, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_APPLE)
+
 void GetANGLEFeaturesFromCommandLineAndFinch(
     const base::CommandLine* command_line,
     std::vector<std::string>& enabled_angle_features,
@@ -263,6 +267,12 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
     SplitAndAppendANGLEFeatureList(kForcedANGLEDisabledFeaturesFP.Get(),
                                    disabled_angle_features);
   }
+
+#if BUILDFLAG(IS_APPLE)
+  if (base::FeatureList::IsEnabled(kANGLEPurgeableBufferPool)) {
+    enabled_angle_features.push_back("purgeableBufferPool");
+  }
+#endif
 }
 
 
