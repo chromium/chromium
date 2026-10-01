@@ -1107,6 +1107,27 @@
             ]
         }
     ],
+    "AndroidWindowOcclusion": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "FlexibleOcclusionMediumRateLimit",
+                    "params": {
+                        "calculate_occlusion_rate_limit_ms": "100",
+                        "minimum_visibility_size_threshold": "10",
+                        "occlusion_optimizations": "true",
+                        "tracking_mode": "self_occlusion"
+                    },
+                    "enable_features": [
+                        "AndroidWindowOcclusion"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidYuvOverlayEvenAlignment": [
         {
             "platforms": [

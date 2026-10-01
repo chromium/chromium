@@ -220,9 +220,10 @@ public class WindowOcclusionTrackerUnitTest {
 
         verify(
                         topWindow,
-                        org.mockito.Mockito.never()
-                                .description("Stopped top window should be skipped entirely"))
-                .setOccluded(anyBoolean(), any(), any());
+                        description(
+                                "Stopped top window should have its occlusion state reset to"
+                                        + " false"))
+                .setOccluded(eq(false), any(), any());
         verify(
                         bottomWindow,
                         description(

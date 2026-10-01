@@ -214,9 +214,18 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             ActivityWindowAndroid window = windows.get(i);
             // Skip all windows that are not currently active (such as windows that are minimized,
             // on different desktops, or while the device is locked).
-            // Inactive windows will keep their last reported occlusion state and when they become
-            // active again will be included in the calculation.
+            // Reset their occlusion state to false while stopped so that:
+            // 1) Stopped windows on inactive desks do not accumulate occluded duration metrics.
+            // 2) When a stopped Activity starts again in onStart() (e.g. after unlocking the
+            //    device, where onStop() previously set WebContents to Visibility.HIDDEN and
+            //    destroyed the SurfaceView), TabImpl.show() transitions WebContents through
+            //    Visibility.VISIBLE first rather than directly from HIDDEN to OCCLUDED.
+            //    RenderWidgetHostViewAndroid's OCCLUDED state only preserves an existing
+            //    frontbuffer from VISIBLE and does not unhide the layer or re-attach the
+            //    DelegatedFrameHost when entered directly from HIDDEN, which otherwise leaves
+            //    the window blank in the Android Overview (b/564940899).
             if (!isActive(window)) {
+                window.setOccluded(false, null, null);
                 continue;
             }
             View view = getPrimaryView(window);

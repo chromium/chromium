@@ -334,4 +334,45 @@ public class WindowZOrderTrackerUnitTest {
 
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testOnActivityResumedRunsCallbackWithoutInvertingZOrder() {
+        when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay1);
+        mTracker.track(mWindowAndroid1); // index 1 (top)
+        mTracker.track(mWindowAndroid2); // index 0 (bottom)
+
+        ArgumentCaptor<WindowAndroid.ActivityStateObserver> captor =
+                ArgumentCaptor.forClass(WindowAndroid.ActivityStateObserver.class);
+        verify(mWindowAndroid2, atLeastOnce()).addActivityStateObserver(captor.capture());
+        captor.getValue().onActivityResumed();
+
+        List<ActivityWindowAndroid> display1Windows = mTracker.getWindowZOrder().get(DISPLAY_ID_1);
+        assertEquals(mWindowAndroid2, display1Windows.get(0));
+        assertEquals(mWindowAndroid1, display1Windows.get(1));
+        verify(mCallback).run();
+    }
+
+    @Test
+    public void testOnActivityPausedRunsCallback() {
+        mTracker.track(mWindowAndroid1);
+
+        ArgumentCaptor<WindowAndroid.ActivityStateObserver> captor =
+                ArgumentCaptor.forClass(WindowAndroid.ActivityStateObserver.class);
+        verify(mWindowAndroid1, atLeastOnce()).addActivityStateObserver(captor.capture());
+        captor.getValue().onActivityPaused();
+
+        verify(mCallback).run();
+    }
+
+    @Test
+    public void testOnActivityStoppedRunsCallback() {
+        mTracker.track(mWindowAndroid1);
+
+        ArgumentCaptor<WindowAndroid.ActivityStateObserver> captor =
+                ArgumentCaptor.forClass(WindowAndroid.ActivityStateObserver.class);
+        verify(mWindowAndroid1, atLeastOnce()).addActivityStateObserver(captor.capture());
+        captor.getValue().onActivityStopped();
+
+        verify(mCallback).run();
+    }
 }
