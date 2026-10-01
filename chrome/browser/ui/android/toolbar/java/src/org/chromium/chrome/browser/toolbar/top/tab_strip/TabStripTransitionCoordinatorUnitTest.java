@@ -1079,7 +1079,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
                 + ":adjust_tab_strip_on_startup/true"
     })
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void adjustOnStartup_OnDesktopWindowUpdate_Wide() {
         // Deliberately having the resource adapter no-op to test startup flow.
         doNothing().when(mViewResourceAdapter).triggerBitmapCapture();
