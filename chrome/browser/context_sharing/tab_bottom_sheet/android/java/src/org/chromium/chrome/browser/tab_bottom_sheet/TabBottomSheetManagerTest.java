@@ -41,6 +41,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -398,6 +399,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testBottomSheetHiddenOnTabSwitcher() {
         showBottomSheetAndBlockUntilReady();
 
@@ -512,6 +514,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testSheetEventsCallback_onBottomSheetClosed_Suppressed() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
@@ -546,6 +549,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testTryToCloseBottomSheet_WhenSuppressed() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
@@ -649,6 +653,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568382414
     public void testTabSwitcherSuppression_OnlyOneObserverActive() {
         NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
         showBottomSheetAndBlockUntilReady(mockDelegate);
