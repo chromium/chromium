@@ -308,9 +308,6 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   if (log_menu_metrics_callback_) {
     log_menu_metrics_callback_.Run(command_id);
   }
-  if (command_id == IDC_SHOW_HISTORY) {
-    LogWrenchMenuAction(MENU_ACTION_SHOW_HISTORY);
-  }
 
   if (command_id == IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL ||
       command_id == IDC_SHOW_HISTORY) {

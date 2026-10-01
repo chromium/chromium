@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
@@ -125,8 +126,6 @@ void VerifyModel(const ui::MenuModel* model, base::span<const ModelData> data) {
   VerifyModel(*model, std::move(data));
 }
 
-}  // namespace
-
 class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
  public:
   RecentTabsSubMenuModelTest() = default;
@@ -212,16 +211,7 @@ class TestLogMetricsAppMenuModel : public AppMenuModel {
  public:
   using AppMenuModel::AppMenuModel;
 
-  void LogMenuAction(AppMenuAction action_id) override {
-    ++log_metrics_call_count_;
-  }
-
   void CallLogMenuMetrics(int command_id) { LogMenuMetrics(command_id); }
-
-  int log_metrics_call_count() const { return log_metrics_call_count_; }
-
- private:
-  int log_metrics_call_count_ = 0;
 };
 
 class FakeIconDelegate : public AppMenuIconController::Delegate {
@@ -229,6 +219,8 @@ class FakeIconDelegate : public AppMenuIconController::Delegate {
   void UpdateTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity) override {}
 };
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        LogMenuMetricsForShowHistory) {
@@ -243,8 +235,10 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
       base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
                           base::Unretained(&app_menu_model)));
+  base::HistogramTester histogram_tester;
   recent_tab_sub_menu_model.ExecuteCommand(IDC_SHOW_HISTORY, 0);
-  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuAction",
+                                      MENU_ACTION_SHOW_HISTORY, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
@@ -260,9 +254,11 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
       base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
                           base::Unretained(&app_menu_model)));
+  base::HistogramTester histogram_tester;
   recent_tab_sub_menu_model.ExecuteCommand(IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                                            0);
-  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+  histogram_tester.ExpectUniqueSample(
+      "WrenchMenu.MenuAction", MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
@@ -278,9 +274,12 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
       base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
                           base::Unretained(&app_menu_model)));
+  base::HistogramTester histogram_tester;
   recent_tab_sub_menu_model.ExecuteCommand(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, 0);
-  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+  histogram_tester.ExpectUniqueSample(
+      "WrenchMenu.MenuAction", MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
+      1);
 
   // Check that we arrive at the expected page.
   EXPECT_EQ(GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kPeopleSubPage),
@@ -300,8 +299,10 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
       base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
                           base::Unretained(&app_menu_model)));
+  base::HistogramTester histogram_tester;
   recent_tab_sub_menu_model.ExecuteCommand(IDC_RECENT_TABS_SEE_DEVICE_TABS, 0);
-  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+  histogram_tester.ExpectUniqueSample(
+      "WrenchMenu.MenuAction", MENU_ACTION_RECENT_TABS_SEE_DEVICE_TABS, 1);
 
   // Check that we arrive at the expected page.
   EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL)
