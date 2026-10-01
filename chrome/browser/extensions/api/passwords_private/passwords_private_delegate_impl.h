@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -337,7 +338,7 @@ class PasswordsPrivateDelegateImpl
   void ClearClipboard(ui::ClipboardSequenceNumberToken sequence_number);
 
   // Writes the given password to the clipboard and starts a timer to clear it.
-  void WriteToClipboardAndScheduleClear(const std::u16string& password);
+  void WriteToClipboardAndScheduleClear(std::u16string_view password);
 
   // Authenticate the user using os-authentication.
   void AuthenticateUser(base::TimeDelta auth_validity_period,

@@ -304,7 +304,10 @@ source_set("password_string") {
     "password_string.cc",
     "password_string.h",
   ]
-  public_deps = [ "//crypto" ]
+  public_deps = [
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
   deps = [
     "//base",
     "//components/password_manager/core/browser/features:password_features",
@@ -638,6 +641,7 @@ source_set("unit_tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:test_support",
     "//ui/base",
     "//ui/gfx:test_support",
   ]

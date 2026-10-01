@@ -143,7 +143,8 @@ bool CheckForDuplicates(
   password_manager::CredentialUIEntry credential;
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
-  credential.password = SysNSStringToUTF16(password);
+  credential.password =
+      password_manager::PasswordString(SysNSStringToUTF16(password));
 
   base::UmaHistogramBoolean(
       kPasswordManagerPasswordSettingsiOSSavedPasswordIsGenerated,

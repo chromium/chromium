@@ -18,6 +18,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_store/stored_credential.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -168,8 +169,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
                                  credential.GetFirstSignonRealm())] &&
          [old_username
              isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
-         [old_password
-             isEqualToString:base::SysUTF16ToNSString(credential.password)] &&
+         credential.password == base::SysNSStringToUTF16(old_password) &&
          [old_note isEqualToString:base::SysUTF16ToNSString(credential.note)];
 }
 
@@ -424,7 +424,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     originalCredential = *it;
     updatedCredential = originalCredential;
     updatedCredential.username = SysNSStringToUTF16(credentialDetails.username);
-    updatedCredential.password = SysNSStringToUTF16(credentialDetails.password);
+    updatedCredential.password = password_manager::PasswordString(
+        SysNSStringToUTF16(credentialDetails.password));
     updatedCredential.note = SysNSStringToUTF16(credentialDetails.note);
   } else {
     return;

@@ -5,12 +5,16 @@
 #include "components/password_manager/core/browser/password_string.h"
 
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "crypto/process_bound_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 namespace password_manager {
 
@@ -79,6 +83,30 @@ TEST_P(PasswordStringTest, EqualityRejectsDifferentValues) {
   PasswordString a(u"one");
   PasswordString b(u"two");
   EXPECT_FALSE(a == b);
+}
+
+TEST_P(PasswordStringTest, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      {PasswordString(), PasswordString(), PasswordString(u"same"),
+       PasswordString(u"same"), PasswordString(u"different")}));
+}
+
+TEST_P(PasswordStringTest, HeterogeneousAbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      std::make_tuple(PasswordString(), std::u16string_view(),
+                      PasswordString(u"same"), std::u16string_view(u"same"),
+                      PasswordString(u"different"),
+                      std::u16string_view(u"different")),
+      PasswordString::TransparentEqual{}));
+}
+
+TEST_P(PasswordStringTest, HeterogeneousLookup) {
+  absl::flat_hash_set<PasswordString> passwords = {PasswordString(),
+                                                   PasswordString(u"same")};
+
+  EXPECT_TRUE(passwords.contains(std::u16string_view()));
+  EXPECT_TRUE(passwords.contains(std::u16string_view(u"same")));
+  EXPECT_FALSE(passwords.contains(std::u16string_view(u"different")));
 }
 
 // Moving must hand the password over completely: the moved-from object has to

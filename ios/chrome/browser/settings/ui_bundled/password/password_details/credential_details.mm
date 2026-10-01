@@ -43,7 +43,7 @@
     _userDisplayName = base::SysUTF16ToNSString(credential.user_display_name);
 
     if (!credential.federation_origin.IsValid()) {
-      _password = base::SysUTF16ToNSString(credential.password);
+      _password = base::SysUTF16ToNSString(credential.password.secure_value());
     } else {
       _federation =
           base::SysUTF8ToNSString(credential.federation_origin.host());

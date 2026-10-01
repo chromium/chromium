@@ -32,7 +32,8 @@ std::map<std::string, std::string> PasswordFormToRecord(
     record[kUrlColumnName] = domain.url.spec();
   }
   record[kUsernameColumnName] = base::UTF16ToUTF8(credential.username);
-  record[kPasswordColumnName] = base::UTF16ToUTF8(credential.password);
+  record[kPasswordColumnName] =
+      base::UTF16ToUTF8(credential.password.secure_value());
   record[kNoteColumnName] = base::UTF16ToUTF8(credential.note);
   return record;
 }

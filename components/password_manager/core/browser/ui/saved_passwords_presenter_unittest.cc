@@ -508,7 +508,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   updated_password.password_issues.clear();
 
   CredentialUIEntry credential_to_edit(form);
-  credential_to_edit.password = new_password;
+  credential_to_edit.password = PasswordString(std::u16string(new_password));
 
   base::HistogramTester histogram_tester;
   // Verify that editing a password triggers the right notifications.
@@ -696,7 +696,7 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
 
   CredentialUIEntry credential_to_edit(form);
   credential_to_edit.username = new_username;
-  credential_to_edit.password = new_password;
+  credential_to_edit.password = PasswordString(std::u16string(new_password));
 
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
@@ -736,7 +736,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
               ElementsAre(Pair(form1.signon_realm, ElementsAre(form1, form2))));
 
   credential_to_edit = CredentialUIEntry(form1);
-  credential_to_edit.password = u"";
+  credential_to_edit.password = PasswordString(u"");
   // Updating the form with the empty password fails.
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kEmptyPassword,
             presenter().EditSavedCredentials(CredentialUIEntry(form1),
@@ -1718,7 +1718,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordsInCredentialGroup) {
   // Prepare updated credential.
   const std::u16string new_password = u"new_password";
   CredentialUIEntry updated_credential(original_forms);
-  updated_credential.password = new_password;
+  updated_credential.password = PasswordString(std::u16string(new_password));
 
   // Expect successful passwords editing.
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
@@ -2265,7 +2265,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
 
   CredentialUIEntry updated_credential(profile_store_form);
   updated_credential.username = new_username;
-  updated_credential.password = new_password;
+  updated_credential.password = PasswordString(std::u16string(new_password));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(
                 CredentialUIEntry(profile_store_form), updated_credential));

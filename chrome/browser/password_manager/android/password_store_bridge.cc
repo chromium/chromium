@@ -112,7 +112,7 @@ bool PasswordStoreBridge::EditPassword(
   password_manager::CredentialUIEntry original_credential(
       ConvertJavaObjectToPasswordForm(env, credential));
   password_manager::CredentialUIEntry updated_credential = original_credential;
-  updated_credential.password = new_password;
+  updated_credential.password = PasswordString(std::u16string(new_password));
   return saved_passwords_presenter_.EditSavedCredentials(original_credential,
                                                          updated_credential) ==
          password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
@@ -150,7 +150,7 @@ void PasswordStoreBridge::GetAllCredentials(
     const auto& credential = credentials[i];
     Java_PasswordStoreBridge_insertCredential(
         env, java_credentials, i, credential.GetURL(), credential.username,
-        credential.password);
+        credential.password.value());
   }
 }
 
@@ -184,7 +184,8 @@ void PasswordStoreBridge::OnEdited(
   Java_PasswordStoreBridge_onEditCredential(
       env, java_bridge_,
       Java_PasswordStoreBridge_createPasswordStoreCredential(
-          env, credential.GetURL(), credential.username, credential.password));
+          env, credential.GetURL(), credential.username,
+          credential.password.value()));
 }
 
 DEFINE_JNI(PasswordStoreBridge)

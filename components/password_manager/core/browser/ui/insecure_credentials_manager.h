@@ -21,6 +21,7 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace password_manager {
 
@@ -80,13 +81,14 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // Updates |weak_passwords| set and notifies observers that weak credentials
   // were changed.
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
-                       base::flat_set<std::u16string> weak_passwords);
-  void OnPartialWeakCheckDone(base::flat_set<std::u16string> weak_passwords);
+                       absl::flat_hash_set<PasswordString> weak_passwords);
+  void OnPartialWeakCheckDone(
+      absl::flat_hash_set<PasswordString> weak_passwords);
 
   // Updates |reused_passwords| set and notifies observers that insecure
   // credentials were changed.
   void OnReuseCheckDone(base::ElapsedTimer timer_since_reuse_check_start,
-                        base::flat_set<std::u16string> reused_passwords);
+                        absl::flat_hash_set<PasswordString> reused_passwords);
 
   // SavedPasswordsPresenter::Observer:
   void OnSavedPasswordsChanged(const PasswordStoreChangeList& changes) override;
@@ -99,10 +101,10 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   raw_ptr<SavedPasswordsPresenter> presenter_ = nullptr;
 
   // Cache of the most recently obtained weak passwords.
-  base::flat_set<std::u16string> weak_passwords_;
+  absl::flat_hash_set<PasswordString> weak_passwords_;
 
   // Cache of the most recently obtained reused passwords.
-  base::flat_set<std::u16string> reused_passwords_;
+  absl::flat_hash_set<PasswordString> reused_passwords_;
 
   // A scoped observer for |presenter_|.
   base::ScopedObservation<SavedPasswordsPresenter,

@@ -100,7 +100,7 @@ CredentialUIEntry::CredentialUIEntry() = default;
 
 CredentialUIEntry::CredentialUIEntry(const StoredCredential& credential)
     : username(credential.username_value),
-      password(credential.password_value.value()),
+      password(credential.password_value),
       federation_origin(credential.federation_origin),
       creation_time(credential.date_created),
       password_issues(credential.password_issues),
@@ -133,7 +133,7 @@ CredentialUIEntry::CredentialUIEntry(
   CHECK(!credentials.empty());
 
   username = credentials[0].username_value;
-  password = credentials[0].password_value.value();
+  password = credentials[0].password_value;
   federation_origin = credentials[0].federation_origin;
   password_issues = credentials[0].password_issues;
   blocked_by_user = credentials[0].blocked_by_user;
@@ -352,10 +352,9 @@ bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
 }
 
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  // Intentionally does not include password. While it would be trivial to do
-  // now, a follow up CL will change |password| to a |PasswordString| object,
-  // which uses base::ProcessBoundString to encrypt the password in memory and
-  // thus doesn't expose a |operator<|.
+  // Intentionally does not include password since password is a PasswordString
+  // which intentionally does not include an operator< to avoid decrypting
+  // for ordering.
   return CreateCredentialSortKey(lhs) < CreateCredentialSortKey(rhs);
 }
 

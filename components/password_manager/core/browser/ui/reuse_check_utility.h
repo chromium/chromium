@@ -7,9 +7,10 @@
 
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace password_manager {
 
@@ -21,7 +22,7 @@ namespace password_manager {
 //    # don't belong to internal network.
 // TODO(crbug.com/40252723): Refactor the code to accept only 'groups' after
 // password grouping is fully adopted.
-base::flat_set<std::u16string> BulkReuseCheck(
+absl::flat_hash_set<PasswordString> BulkReuseCheck(
     const std::vector<CredentialUIEntry>& credentials,
     const std::vector<AffiliatedGroup>& groups);
 

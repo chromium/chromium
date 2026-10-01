@@ -23,7 +23,7 @@ CredentialUIEntry CreateCredential(
     const std::vector<std::string>& signon_realms) {
   CredentialUIEntry credential;
   credential.username = username;
-  credential.password = password;
+  credential.password = PasswordString(std::u16string(password));
   std::ranges::transform(signon_realms, std::back_inserter(credential.facets),
                          [](const std::string& signon_realm) {
                            CredentialFacet facet;

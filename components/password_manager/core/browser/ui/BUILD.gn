@@ -115,5 +115,6 @@ source_set("unit_tests") {
     "//components/sync/protocol",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:test_support",
   ]
 }

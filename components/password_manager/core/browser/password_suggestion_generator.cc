@@ -255,7 +255,7 @@ Suggestion CreateFillPasswordChildSuggestion(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       SuggestionType::kFillPassword);
   fill_password.payload = Suggestion::PasswordSuggestionDetails(
-      credential.username, credential.password,
+      credential.username, credential.password.value(),
       credential.GetFirstSignonRealm(),
       password_manager_util::GetHumanReadableRealm(
           credential.GetFirstSignonRealm()),
@@ -315,7 +315,8 @@ void AppendManualFallbackSuggestions(
         ReplaceEmptyUsername(credential.username, &replaced);
     suggestion.labels = {{autofill::Suggestion::Text(maybe_username)}};
     Suggestion::PasswordSuggestionDetails payload(
-        credential.username, credential.password, domain_info.signon_realm,
+        credential.username, credential.password.value(),
+        domain_info.signon_realm,
         /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
     suggestion.payload = payload;

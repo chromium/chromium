@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 
-#import <set>
+#import <algorithm>
 
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/credential_utils.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -18,11 +19,13 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
+using password_manager::PasswordString;
 using State = password_manager::BulkLeakCheckServiceInterface::State;
 
 // Key used to attach UserData to a LeakCheckCredential.
@@ -294,16 +297,24 @@ void IOSChromePasswordCheckManager::UnmuteCredential(
 void IOSChromePasswordCheckManager::LogInsecureCredentialsCountMetrics() {
   std::vector<CredentialUIEntry> insecure_credentials =
       GetInsecureCredentials();
-  std::set<std::pair<std::u16string, std::u16string>> unique_entries;
-  std::set<std::pair<std::u16string, std::u16string>> unique_unmuted_entries;
+  // Key is the username/password pair, value is a bool indicating if there is
+  // an unmuted entry with the username/password pair.
+  absl::flat_hash_map<std::pair<std::u16string, PasswordString>, bool>
+      unique_entries;
+  unique_entries.reserve(insecure_credentials.size());
 
   for (const auto& credential : insecure_credentials) {
-    unique_entries.insert({credential.username, credential.password});
+    auto it = unique_entries.insert(
+        {{credential.username, credential.password}, false});
+    if (!it.second && it.first->second) {
+      // If the entry already existed and was flagged as unmuted, no further
+      // checking is needed.
+      continue;
+    }
     for (const auto& [insecure_type, insecure_metadata] :
          credential.password_issues) {
       if (!insecure_metadata.is_muted.value()) {
-        unique_unmuted_entries.insert(
-            {credential.username, credential.password});
+        it.first->second = true;
         break;
       }
     }
@@ -312,5 +323,6 @@ void IOSChromePasswordCheckManager::LogInsecureCredentialsCountMetrics() {
   password_manager::LogCountOfInsecureUsernamePasswordPairs(
       unique_entries.size());
   password_manager::LogCountOfUnmutedInsecureUsernamePasswordPairs(
-      unique_unmuted_entries.size());
+      std::count_if(unique_entries.begin(), unique_entries.end(),
+                    [](const auto& value) { return value.second; }));
 }

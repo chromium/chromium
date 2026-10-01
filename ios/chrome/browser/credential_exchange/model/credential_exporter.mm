@@ -84,7 +84,8 @@
 
   for (const password_manager::CredentialUIEntry& credential : passwords) {
     NSString* username = base::SysUTF16ToNSString(credential.username) ?: @"";
-    NSString* password = base::SysUTF16ToNSString(credential.password) ?: @"";
+    NSString* password =
+        base::SysUTF16ToNSString(credential.password.secure_value()) ?: @"";
     NSString* note = base::SysUTF16ToNSString(credential.note) ?: @"";
     NSURL* URL =
         net::NSURLWithGURL(credential.GetURL()) ?: [NSURL URLWithString:@""];

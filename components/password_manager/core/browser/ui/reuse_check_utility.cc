@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -109,17 +111,34 @@ bool AllDomainsAreEquivalent(
 
 }  // namespace
 
-base::flat_set<std::u16string> BulkReuseCheck(
+absl::flat_hash_set<PasswordString> BulkReuseCheck(
     const std::vector<CredentialUIEntry>& credentials,
     const std::vector<AffiliatedGroup>& groups) {
-  absl::flat_hash_map<std::u16string, std::vector<const CredentialUIEntry*>>
+  absl::flat_hash_map<PasswordString, std::vector<const CredentialUIEntry*>>
       password_to_credentials;
+  absl::flat_hash_set<PasswordString> reused_passwords;
 
+  auto trigger_histograms = [](size_t checked_passwords_size,
+                               size_t reused_passwords_size) {
+    base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.CheckedPasswords",
+                                 checked_passwords_size);
+    base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.ReusedPasswords",
+                                 reused_passwords_size);
+  };
+
+  if (credentials.empty()) {
+    trigger_histograms(0, 0);
+    return {};
+  }
+
+  // Reserve up front so the table never grows: each growth would re-hash every
+  // key, and hashing a PasswordString decrypts it.
+  password_to_credentials.reserve(credentials.size());
   for (const auto& credential : credentials) {
     password_to_credentials[credential.password].push_back(&credential);
   }
 
-  base::flat_set<std::u16string> reused_passwords;
+  reused_passwords.reserve(password_to_credentials.size());
   auto signon_realm_to_group = MapSignonRelamsToAffiliationGroups(groups);
 
   for (const auto& [password, matching_credentials] : password_to_credentials) {
@@ -141,10 +160,7 @@ base::flat_set<std::u16string> BulkReuseCheck(
     reused_passwords.insert(password);
   }
 
-  base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.CheckedPasswords",
-                               password_to_credentials.size());
-  base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.ReusedPasswords",
-                               reused_passwords.size());
+  trigger_histograms(password_to_credentials.size(), reused_passwords.size());
   return reused_passwords;
 }
 

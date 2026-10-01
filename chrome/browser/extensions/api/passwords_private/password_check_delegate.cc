@@ -8,13 +8,11 @@
 
 #include <algorithm>
 #include <iterator>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -37,6 +35,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -44,6 +43,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
@@ -58,6 +58,7 @@ using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordForm;
+using password_manager::PasswordString;
 using ui::TimeFormat;
 
 using State = password_manager::BulkLeakCheckService::State;
@@ -71,6 +72,10 @@ constexpr char kPasswordCheckDataKey[] = "password-check-data-key";
 // Password Check.
 class PasswordCheckProgress : public base::RefCounted<PasswordCheckProgress> {
  public:
+  explicit PasswordCheckProgress(size_t expected_credential_count) {
+    counts_.reserve(expected_credential_count);
+  }
+
   base::WeakPtr<PasswordCheckProgress> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -110,7 +115,8 @@ class PasswordCheckProgress : public base::RefCounted<PasswordCheckProgress> {
   // canonicalized credential corresponds to.
   size_t already_processed_ = 0;
   size_t remaining_in_queue_ = 0;
-  std::map<password_manager::CanonicalizedCredential, size_t> counts_;
+  absl::flat_hash_map<password_manager::CanonicalizedCredential, size_t>
+      counts_;
 
   base::WeakPtrFactory<PasswordCheckProgress> weak_ptr_factory_{this};
 };
@@ -261,28 +267,44 @@ PasswordCheckDelegate::GetInsecureCredentials() {
 
 std::vector<api::passwords_private::PasswordUiEntryList>
 PasswordCheckDelegate::GetCredentialsWithReusedPassword() {
-  // Group credentials by password value.
-  std::map<std::u16string, std::vector<api::passwords_private::PasswordUiEntry>>
-      password_to_credentials;
-  for (auto& credential :
-       insecure_credentials_manager_.GetInsecureCredentialEntries()) {
-    if (credential.IsReused()) {
-      password_to_credentials[credential.password].push_back(
-          ConstructInsecureCredentialUiEntry(credential));
+  std::vector<CredentialUIEntry> insecure_credentials =
+      insecure_credentials_manager_.GetInsecureCredentialEntries();
+
+  // Group credentials by password value. Keying on PasswordString keeps the
+  // passwords encrypted while grouping; the key itself is never read. The map
+  // stores an index into `groups` rather than the group itself, so that groups
+  // are emitted in first-seen order: hash table iteration order is randomized
+  // per table, which would otherwise reshuffle same-sized groups in the UI on
+  // every call. Reserve up front so the table never grows, as each growth would
+  // re-hash - and so re-decrypt - every key.
+  absl::flat_hash_map<PasswordString, size_t> password_to_group;
+  std::vector<std::vector<api::passwords_private::PasswordUiEntry>> groups;
+  password_to_group.reserve(insecure_credentials.size());
+  groups.reserve(insecure_credentials.size());
+  for (const auto& credential : insecure_credentials) {
+    if (!credential.IsReused()) {
+      continue;
     }
+    auto [it, inserted] =
+        password_to_group.try_emplace(credential.password, groups.size());
+    if (inserted) {
+      groups.emplace_back();
+    }
+    groups[it->second].push_back(
+        ConstructInsecureCredentialUiEntry(credential));
   }
 
   std::vector<api::passwords_private::PasswordUiEntryList> result;
-  result.reserve(password_to_credentials.size());
-  for (auto& pair : password_to_credentials) {
+  result.reserve(groups.size());
+  for (auto& group : groups) {
     // This check is relevant in the cases where the password store has changed
     // after the password check was already run. (e.g if a reused password has
     // been deleted)
-    if (pair.second.size() < 2) {
+    if (group.size() < 2) {
       continue;
     }
     api::passwords_private::PasswordUiEntryList api_result;
-    api_result.entries = std::move(pair.second);
+    api_result.entries = std::move(group);
     result.push_back(std::move(api_result));
   }
   return result;
@@ -346,8 +368,9 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   insecure_credentials_manager_.StartReuseCheck(
       base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
                      weak_ptr_factory_.GetWeakPtr()));
-  auto progress = base::MakeRefCounted<PasswordCheckProgress>();
-  for (const auto& password : saved_passwords_presenter_->GetSavedPasswords()) {
+  const auto passwords = saved_passwords_presenter_->GetSavedPasswords();
+  auto progress = base::MakeRefCounted<PasswordCheckProgress>(passwords.size());
+  for (const auto& password : passwords) {
     progress->IncrementCounts(password);
   }
 

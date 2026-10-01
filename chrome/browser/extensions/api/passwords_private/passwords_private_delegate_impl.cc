@@ -276,8 +276,6 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
 
 #endif
 
-
-
 extensions::api::passwords_private::PasswordManagerActionableError
 ToActionableApiError(password_manager::ActionableError error) {
   using extensions::api::passwords_private::PasswordManagerActionableError;
@@ -469,7 +467,8 @@ bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
   facet.signon_realm = password_manager::GetSignonRealm(facet.url);
   credential.facets.push_back(std::move(facet));
   credential.username = username;
-  credential.password = password;
+  credential.password =
+      password_manager::PasswordString(std::u16string(password));
   credential.note = note;
   credential.stored_in = {store_to_use};
   return saved_passwords_presenter_.AddCredential(credential);
@@ -485,7 +484,8 @@ bool PasswordsPrivateDelegateImpl::ChangeCredential(
   CredentialUIEntry updated_credential = *original_credential;
   updated_credential.username = base::UTF8ToUTF16(credential.username);
   if (credential.password) {
-    updated_credential.password = base::UTF8ToUTF16(*credential.password);
+    updated_credential.password = password_manager::PasswordString(
+        base::UTF8ToUTF16(*credential.password));
   }
   if (credential.note) {
     updated_credential.note = base::UTF8ToUTF16(*credential.note);
@@ -1062,14 +1062,14 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
   }
 
   if (reason == api::passwords_private::PlaintextReason::kCopy) {
-    WriteToClipboardAndScheduleClear(entry->password);
+    WriteToClipboardAndScheduleClear(entry->password.secure_value());
 
     // In case of copy we don't need to give password back to UI. callback
     // will receive either empty string in case of success or null otherwise.
     // Copying occurs here so javascript doesn't need plaintext password.
     std::move(callback).Run(std::u16string());
   } else {
-    std::move(callback).Run(entry->password);
+    std::move(callback).Run(entry->password.value());
   }
   EmitHistogramsForCredentialAccess(*entry, reason);
 }
@@ -1084,7 +1084,7 @@ void PasswordsPrivateDelegateImpl::ClearClipboard(
 }
 
 void PasswordsPrivateDelegateImpl::WriteToClipboardAndScheduleClear(
-    const std::u16string& password) {
+    std::u16string_view password) {
   {
     // ScopedClipboardWriter commits to the clipboard on destruction.
     // This block ensures the clipboard sequence number is updated before we
@@ -1144,7 +1144,8 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
 
     api::passwords_private::PasswordUiEntry password_ui_entry =
         CreatePasswordUiEntryFromCredentialUiEntry(*credential);
-    password_ui_entry.password = base::UTF16ToUTF8(credential->password);
+    password_ui_entry.password =
+        base::UTF16ToUTF8(credential->password.secure_value());
     password_ui_entry.note = base::UTF16ToUTF8(credential->note);
     // password_manager::MovePasswordsToAccountStore() takes care of moving the
     // entire equivalence class, so passing the first element is fine.

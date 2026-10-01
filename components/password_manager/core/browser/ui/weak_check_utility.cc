@@ -7,10 +7,15 @@
 #include <functional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/i18n/break_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/password_string.h"
+#include "crypto/secure_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/time_estimates.hpp"
@@ -61,11 +66,21 @@ constexpr int kZxcvbnLengthCap = 40;
 constexpr int kLowSeverityScore = 2;
 
 // Returns the |password| score.
-int PasswordWeakCheck(std::u16string_view password16) {
-  // zxcvbn's computation time explodes for long passwords, so cap at that
-  // number.
+int PasswordWeakCheck(std::u16string_view plaintext) {
   std::string password =
-      base::UTF16ToUTF8(SafeTruncateUTF16(password16, kZxcvbnLengthCap));
+      base::UTF16ToUTF8(SafeTruncateUTF16(plaintext, kZxcvbnLengthCap));
+  absl::Cleanup password_cleanup = [&password]() {
+    // SecureZero the plain text when done with it.
+    crypto::SecureZeroBuffer(base::as_writable_byte_span(password));
+  };
+  // zxcvbn's computation time explodes for long passwords, so cap at that
+  // number. Hold the decrypted password in a self-zeroing buffer so the
+  // main plaintext is wiped when this scope exits. zxcvbn::Match objects do
+  // hold substrings of the password and most_guessable_match_sequence copies
+  // more substrings. Currently these heap buffers are never zeroed so the
+  // self-zeroing buffer does not perfect wipe all traces of the plaintext.
+  // TODO(crbug.com/513276101): Investigate how to purge the |zxcvbn|'s
+  // internal copies.
   std::vector<zxcvbn::Match> matches = zxcvbn::omnimatch(password);
   zxcvbn::ScoringResult result =
       zxcvbn::most_guessable_match_sequence(password, matches);
@@ -73,20 +88,44 @@ int PasswordWeakCheck(std::u16string_view password16) {
   int score = zxcvbn::estimate_attack_times(result.guesses).score;
   base::UmaHistogramEnumeration("PasswordManager.WeakCheck.PasswordScore",
                                 static_cast<PasswordWeaknessScore>(score));
+
   return score;
+}
+
+int PasswordWeakCheck(const PasswordString& password_string) {
+  // zxcvbn's computation time explodes for long passwords, so cap at that
+  // number. Hold the decrypted password in a self-zeroing buffer so the
+  // main plaintext is wiped when this scope exits. zxcvbn::Match objects do
+  // hold substrings of the password and most_guessable_match_sequence copies
+  // more substrings. Currently these heap buffers are never zeroed so the
+  // self-zeroing buffer does not perfect wipe all traces of the plaintext.
+  // TODO(crbug.com/513276101): Investigate how to purge the |zxcvbn|'s
+  // internal copies.
+  const crypto::SecureU16String plaintext = password_string.secure_value();
+  return PasswordWeakCheck(plaintext);
 }
 
 }  // namespace
 
-IsWeakPassword IsWeak(std::u16string_view password) {
+IsWeakPassword IsWeak(const PasswordString& password) {
   return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
 }
 
-base::flat_set<std::u16string> BulkWeakCheck(
-    base::flat_set<std::u16string> passwords) {
+IsWeakPassword IsWeak(std::u16string password) {
+  absl::Cleanup password_cleanup = [&password]() {
+    // SecureZero the plain text when done with it.
+    crypto::SecureZeroBuffer(base::as_writable_byte_span(password));
+  };
+  return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
+}
+
+absl::flat_hash_set<PasswordString> BulkWeakCheck(
+    absl::flat_hash_set<PasswordString> passwords) {
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
                                passwords.size());
-  base::EraseIf(passwords, std::not_fn(&IsWeak));
+  absl::erase_if(passwords, [](const PasswordString& password) {
+    return !IsWeak(password).value();
+  });
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.WeakPasswords",
                                passwords.size());
   return passwords;

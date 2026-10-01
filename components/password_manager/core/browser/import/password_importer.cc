@@ -110,7 +110,7 @@ ImportEntry CreateValidImportEntry(const CredentialUIEntry& credential,
   result.id = id;
   result.url = credential.GetAffiliatedDomains()[0].name;
   result.username = base::UTF16ToUTF8(credential.username);
-  result.password = base::UTF16ToUTF8(credential.password);
+  result.password = base::UTF16ToUTF8(credential.password.secure_value());
   result.status = ImportEntry::VALID;
   return result;
 }
@@ -369,8 +369,7 @@ void ProcessParsedCredential(
     // Password notes are not taken into account when conflicting passwords
     // are overwritten. Only the local note is persisted.
     for (StoredCredential& credential : conflicting_credentials) {
-      credential.password_value =
-          PasswordString(std::u16string(imported_credential.password));
+      credential.password_value = imported_credential.password;
     }
     conflicts.push_back(std::move(conflicting_credentials));
     return;

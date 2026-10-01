@@ -6,8 +6,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace password_manager {
 
@@ -19,23 +21,33 @@ constexpr char16_t kWeakLongPassword[] =
 constexpr char16_t kStrongShortPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char16_t kStrongLongPassword[] =
     u"pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
+constexpr char16_t kLongPasswordWithEmoji[] =
+    u"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\U0001F995";
 
-using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 }  // namespace
 
 TEST(WeakCheckUtilityTest, IsWeak) {
-  EXPECT_TRUE(IsWeak(kWeakShortPassword));
-  EXPECT_TRUE(IsWeak(kWeakLongPassword));
-  EXPECT_FALSE(IsWeak(kStrongShortPassword));
-  EXPECT_FALSE(IsWeak(kStrongLongPassword));
+  EXPECT_TRUE(IsWeak(PasswordString(kWeakShortPassword)));
+  EXPECT_TRUE(IsWeak(PasswordString(kWeakLongPassword)));
+  EXPECT_FALSE(IsWeak(PasswordString(kStrongShortPassword)));
+  EXPECT_FALSE(IsWeak(PasswordString(kStrongLongPassword)));
+}
+
+TEST(WeakCheckUtilityTest, IsWeakPlaintext) {
+  EXPECT_TRUE(IsWeak(std::u16string(kWeakShortPassword)));
+  EXPECT_TRUE(IsWeak(std::u16string(kWeakLongPassword)));
+  EXPECT_FALSE(IsWeak(std::u16string(kStrongShortPassword)));
+  EXPECT_FALSE(IsWeak(std::u16string(kStrongLongPassword)));
+  EXPECT_TRUE(IsWeak(std::u16string(kLongPasswordWithEmoji)));
 }
 
 TEST(WeakCheckUtilityTest, IsWeakRecordsMetrics) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(IsWeak(kWeakLongPassword));
-  EXPECT_FALSE(IsWeak(kStrongShortPassword));
+  EXPECT_TRUE(IsWeak(PasswordString(kWeakLongPassword)));
+  EXPECT_FALSE(IsWeak(PasswordString(kStrongShortPassword)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("PasswordManager.WeakCheck.PasswordScore"),
@@ -43,32 +55,28 @@ TEST(WeakCheckUtilityTest, IsWeakRecordsMetrics) {
 }
 
 TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {
-  base::flat_set<std::u16string> passwords = {kStrongShortPassword,
-                                              kStrongLongPassword};
+  absl::flat_hash_set<PasswordString> passwords = {
+      PasswordString(kStrongShortPassword),
+      PasswordString(kStrongLongPassword)};
 
   EXPECT_THAT(BulkWeakCheck(passwords), testing::IsEmpty());
 }
 
 TEST(WeakCheckUtilityTest, DetectedShortAndLongWeakPasswords) {
-  base::flat_set<std::u16string> passwords = {
-      kStrongLongPassword, kWeakShortPassword, kStrongShortPassword,
-      kWeakLongPassword};
+  absl::flat_hash_set<PasswordString> passwords = {
+      PasswordString(kStrongLongPassword), PasswordString(kWeakShortPassword),
+      PasswordString(kStrongShortPassword), PasswordString(kWeakLongPassword)};
 
-  base::flat_set<std::u16string> weak_passwords = BulkWeakCheck(passwords);
+  absl::flat_hash_set<PasswordString> weak_passwords = BulkWeakCheck(passwords);
 
   EXPECT_THAT(weak_passwords,
-              ElementsAre(kWeakShortPassword, kWeakLongPassword));
+              UnorderedElementsAre(kWeakShortPassword, kWeakLongPassword));
 }
 
 TEST(WeakCheckUtilityTest, HandlesUTF16SurrogatePairs) {
   // Password with dinosaur emojis: pass🦕word🦖123
   // Consists of: pass + 🦕 + word + 🦖 + 123
   const char16_t kPasswordWithEmojis[] = u"pass\U0001F995word\U0001F996123";
-
-  // Long password with emoji: aaaaa...🦕
-  // Consists of: 37 'a' characters + 🦕
-  const char16_t kLongPasswordWithEmoji[] =
-      u"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\U0001F995";
 
   // Long with complex emoji: aaaaa...👨‍👩‍👧‍👦
   // Consists of: 37 'a' characters + 👨 + ZWJ + 👩 + ZWJ + 👧 + ZWJ + 👦
@@ -86,19 +94,21 @@ TEST(WeakCheckUtilityTest, HandlesUTF16SurrogatePairs) {
       u"\U0001F469\u200D\U0001F52C"
       u"\U0001F468\u200D\U0001F468\u200D\U0001F467\u200D\U0001F467";
 
-  EXPECT_FALSE(static_cast<bool>(IsWeak(kPasswordWithEmojis)));
+  EXPECT_FALSE(static_cast<bool>(IsWeak(PasswordString(kPasswordWithEmojis))));
 
-  IsWeakPassword is_weak = IsWeak(kLongPasswordWithEmoji);
+  IsWeakPassword is_weak = IsWeak(PasswordString(kLongPasswordWithEmoji));
 
   EXPECT_TRUE(static_cast<bool>(is_weak));
 
-  base::flat_set<std::u16string> passwords = {
-      kPasswordWithEmojis, kLongPasswordWithEmoji,
-      kLongPasswordWithComplexEmoji, kComplexEmojiPassword};
+  absl::flat_hash_set<PasswordString> passwords = {
+      PasswordString(kPasswordWithEmojis),
+      PasswordString(kLongPasswordWithEmoji),
+      PasswordString(kLongPasswordWithComplexEmoji),
+      PasswordString(kComplexEmojiPassword)};
 
-  base::flat_set<std::u16string> weak_passwords = BulkWeakCheck(passwords);
+  absl::flat_hash_set<PasswordString> weak_passwords = BulkWeakCheck(passwords);
 
-  EXPECT_THAT(weak_passwords, ElementsAre(kLongPasswordWithEmoji));
+  EXPECT_THAT(weak_passwords, UnorderedElementsAre(kLongPasswordWithEmoji));
 }
 
 TEST(WeakCheckUtilityTest, SafeTruncateUTF16HandlesEmojis) {

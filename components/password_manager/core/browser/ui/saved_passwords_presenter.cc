@@ -855,8 +855,7 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
     }
 
     if (password_changed) {
-      new_credential.password_value =
-          PasswordString(std::u16string(updated_credential.password));
+      new_credential.password_value = updated_credential.password;
       new_credential.date_password_modified = base::Time::Now();
       new_credential.password_issues.clear();
     }

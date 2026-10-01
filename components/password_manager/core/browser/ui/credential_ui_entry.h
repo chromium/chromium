@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_string.h"
 
 namespace password_manager {
 
@@ -155,7 +156,7 @@ struct CredentialUIEntry {
   std::u16string user_display_name;
 
   // The current password.
-  std::u16string password;
+  PasswordString password;
 
   // Recovery password for automatic password change.
   std::optional<BackupPasswordInfo> backup_password;

@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/service/sync_service.h"
@@ -27,10 +28,12 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using password_manager::CredentialUIEntry;
+using password_manager::PasswordString;
 using password_manager::WarningType;
 
 namespace {
@@ -71,23 +74,19 @@ NSArray<PasswordIssueGroup*>* GroupIssuesByPassword(
   NSMutableArray<NSMutableArray<PasswordIssue*>*>* same_password_issues =
       [NSMutableArray array];
   // Used for grouping issues by passsword.
-  NSMutableDictionary<NSString*, NSMutableArray*>* issue_groups =
-      [NSMutableDictionary dictionary];
+  absl::flat_hash_map<PasswordString, NSMutableArray<PasswordIssue*>*>
+      issue_groups;
+  issue_groups.reserve(password_issues.count);
 
   for (PasswordIssue* issue in password_issues) {
-    NSString* password = base::SysUTF16ToNSString(issue.credential.password);
-
-    NSMutableArray<PasswordIssue*>* issues_in_group =
-        [issue_groups objectForKey:password];
-    // Add issue to existing group with same password.
-    if (issues_in_group) {
-      [issues_in_group addObject:issue];
-    } else {
+    const auto [it, inserted] =
+        issue_groups.try_emplace(issue.credential.password);
+    if (inserted) {
       // First issue with this password, add it to its own group.
-      issues_in_group = [NSMutableArray arrayWithObject:issue];
-      [same_password_issues addObject:issues_in_group];
-      issue_groups[password] = issues_in_group;
+      it->second = [NSMutableArray array];
+      [same_password_issues addObject:it->second];
     }
+    [it->second addObject:issue];
   }
 
   // Map issue groups to PasswordIssueGroups.

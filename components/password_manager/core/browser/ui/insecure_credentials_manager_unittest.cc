@@ -111,7 +111,7 @@ class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
     for (const auto& password : saved_passwords) {
       if (password.GetFirstSignonRealm() == signon_realm &&
           password.username == username) {
-        return password.password;
+        return password.password.value();
       }
     }
     return std::u16string();
@@ -1006,7 +1006,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
 
   CredentialUIEntry original_credential(password_form),
       updated_credential = original_credential;
-  updated_credential.password = kPassword216;
+  updated_credential.password = PasswordString(kPassword216);
   presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 
@@ -1029,7 +1029,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
 
   CredentialUIEntry original_credential(password_form),
       updated_credential = original_credential;
-  updated_credential.password = kPassword216;
+  updated_credential.password = PasswordString(kPassword216);
   presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 
@@ -1052,7 +1052,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
 
   CredentialUIEntry original_credential(password_form),
       updated_credential = original_credential;
-  updated_credential.password = kWeakPassword216;
+  updated_credential.password = PasswordString(kWeakPassword216);
   presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 
@@ -1139,7 +1139,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
               ElementsAre(CredentialUIEntry(form1), CredentialUIEntry(form2)));
 
   CredentialUIEntry updated_credential(form1);
-  updated_credential.password = kPassword216;
+  updated_credential.password = PasswordString(kPassword216);
   presenter().EditSavedCredentials(CredentialUIEntry(form1),
                                    updated_credential);
   RunUntilIdle();

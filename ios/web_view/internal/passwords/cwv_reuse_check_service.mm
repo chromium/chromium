@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/containers/flat_set.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/passwords_grouper.h"
@@ -17,6 +17,7 @@
 #import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 @implementation CWVReuseCheckService {
   affiliations::AffiliationService* _affiliation_service;
@@ -44,14 +45,17 @@
   std::vector<password_manager::AffiliatedGroup> groups =
       _passwords_grouper->GetAffiliatedGroupsWithGroupingInfo();
 
-  base::flat_set<std::u16string> reusedPasswords =
+  absl::flat_hash_set<password_manager::PasswordString> reusedPasswords =
       password_manager::BulkReuseCheck(credentialEntries, groups);
 
-  NSMutableArray<NSString*>* reusedPasswordsArray = [NSMutableArray array];
+  NSMutableArray<NSString*>* reusedPasswordsArray =
+      [NSMutableArray arrayWithCapacity:reusedPasswords.size()];
 
-  for (auto string : reusedPasswords) {
-    NSString* reusedPassword = base::SysUTF16ToNSString(string);
-    [reusedPasswordsArray addObject:reusedPassword];
+  // The CWV API hands back plaintext NSStrings, so decrypt only here, at the
+  // boundary, rather than holding every reused password in the clear.
+  for (const auto& reusedPassword : reusedPasswords) {
+    [reusedPasswordsArray
+        addObject:base::SysUTF16ToNSString(reusedPassword.secure_value())];
   }
 
   completionHandler([NSSet setWithArray:reusedPasswordsArray]);

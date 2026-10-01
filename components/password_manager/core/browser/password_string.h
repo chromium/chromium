@@ -6,7 +6,10 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STRING_H_
 
 #include <cstddef>
+#include <functional>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <variant>
 
 #include "crypto/process_bound_string.h"
@@ -50,11 +53,70 @@ class PasswordString {
 
   void clear();
 
+  struct TransparentHash {
+    using is_transparent = void;
+
+    size_t operator()(const PasswordString& password) const {
+      if (std::holds_alternative<crypto::ProcessBoundU16String>(
+              password.value_)) {
+        return operator()(
+            std::get<crypto::ProcessBoundU16String>(password.value_)
+                .secure_value());
+      }
+      return operator()(std::get<std::u16string>(password.value_));
+    }
+
+    size_t operator()(std::u16string_view password) const {
+      return std::hash<std::u16string_view>{}(password);
+    }
+  };
+
+  struct TransparentEqual {
+    using is_transparent = void;
+
+    bool operator()(const PasswordString& lhs,
+                    const PasswordString& rhs) const {
+      return lhs == rhs;
+    }
+
+    bool operator()(const PasswordString& lhs, std::u16string_view rhs) const {
+      if (lhs.size() != rhs.size()) {
+        return false;
+      }
+      return lhs.secure_value() == rhs;
+    }
+
+    bool operator()(std::u16string_view lhs, const PasswordString& rhs) const {
+      if (lhs.size() != rhs.size()) {
+        return false;
+      }
+      return lhs == rhs.secure_value();
+    }
+
+    bool operator()(std::u16string_view lhs, std::u16string_view rhs) const {
+      return lhs == rhs;
+    }
+  };
+
   friend bool operator==(const PasswordString& lhs, const PasswordString& rhs);
   friend bool operator==(const PasswordString& lhs,
                          const crypto::SecureU16String& rhs);
   friend bool operator==(const PasswordString& lhs, const std::u16string& rhs);
   friend bool operator==(const PasswordString& lhs, const char16_t* rhs);
+
+  template <typename H>
+  friend H AbslHashValue(H h, const PasswordString& password) {
+    if (std::holds_alternative<crypto::ProcessBoundU16String>(
+            password.value_)) {
+      return H::combine(std::move(h),
+                        std::get<crypto::ProcessBoundU16String>(password.value_)
+                            .secure_value());
+    }
+    return H::combine(std::move(h), std::get<std::u16string>(password.value_));
+  }
+
+  using absl_container_hash = TransparentHash;
+  using absl_container_eq = TransparentEqual;
 
  private:
   std::variant<std::u16string, crypto::ProcessBoundU16String> value_;

@@ -22,6 +22,7 @@
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/password_manager/ios/test_helpers.h"
@@ -635,7 +636,8 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
 
   password_manager::CredentialUIEntry expectedCredential;
   expectedCredential.username = u"test1";
-  expectedCredential.password = u"test1password";
+  expectedCredential.password =
+      password_manager::PasswordString(u"test1password");
   password_manager::CredentialFacet facet;
   GURL URL(u"http://www.example.com/");
   facet.signon_realm = URL.spec();
@@ -662,7 +664,8 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
 
   password_manager::CredentialUIEntry expectedCredential;
   expectedCredential.username = u"test1";
-  expectedCredential.password = u"test1password";
+  expectedCredential.password =
+      password_manager::PasswordString(u"test1password");
   password_manager::CredentialFacet facet;
   GURL URL(u"http://www.example.com/");
   facet.signon_realm = URL.spec();

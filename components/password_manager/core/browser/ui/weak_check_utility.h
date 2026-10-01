@@ -8,20 +8,22 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
 #include "base/types/strong_alias.h"
+#include "components/password_manager/core/browser/password_string.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace password_manager {
 
 using IsWeakPassword = base::StrongAlias<class IsWeakPasswordTag, bool>;
 
 // Returns whether `password` is weak.
-IsWeakPassword IsWeak(std::u16string_view password);
+IsWeakPassword IsWeak(const PasswordString& password);
+IsWeakPassword IsWeak(std::u16string password);
 
 // Checks each password for weakness and removes strong passwords from the
 // |passwords|.
-base::flat_set<std::u16string> BulkWeakCheck(
-    base::flat_set<std::u16string> passwords);
+absl::flat_hash_set<PasswordString> BulkWeakCheck(
+    absl::flat_hash_set<PasswordString> passwords);
 
 // Safely truncates a UTF-16 string to a maximum length by breaking at character
 // boundaries, correctly handling complex characters like emojis. If the string
