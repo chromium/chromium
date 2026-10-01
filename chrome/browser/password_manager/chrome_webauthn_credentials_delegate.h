@@ -52,6 +52,7 @@ class ChromeWebAuthnCredentialsDelegate final :
   // password_manager::WebAuthnCredentialsDelegate:
   void LaunchSecurityKeyOrHybridFlow() override;
   std::optional<std::string> GetCableQrString() const override;
+  void OnPasskeyQrCodeSuggestionShown() override;
   void SelectPasskey(
       const std::string& backend_id,
       password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback

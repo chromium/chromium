@@ -124,6 +124,22 @@ class ChromeAuthenticatorRequestDelegate
     kPhoneConnected,
     kPhoneReady,
   };
+
+  // Whether a hybrid passkey QR code scan was detected during an attempt in
+  // which the inline QR code was shown in the Autofill dropdown. Chrome cannot
+  // attribute a scan to a particular surface, because the dropdown and the
+  // WebAuthn modal render the same QR code, and a scan is only observed
+  // indirectly, through the phone's BLE advert.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SigninHybridPasskeyEngagement)
+  enum class HybridPasskeyEngagement {
+    kScanDetected = 0,
+    kNoScanDetected = 1,
+    kMaxValue = kNoScanDetected,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninHybridPasskeyEngagement)
 #endif
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -245,6 +261,10 @@ class ChromeAuthenticatorRequestDelegate
       std::unique_ptr<PasswordCredentialFetcher> fetcher);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Called when the inline hybrid passkey QR code suggestion is shown in the
+  // Autofill dropdown. May be called repeatedly within one attempt.
+  void OnHybridPasskeyQrCodeShownInAutofill();
+
   void OnCableEventForTesting(device::cablev2::Event event) {
     OnCableEvent(event);
   }
@@ -402,8 +422,19 @@ class ChromeAuthenticatorRequestDelegate
   // code) are recorded as `kOtherAuthenticatorUsed` instead.
   void MaybeRecordHybridPasskeyOutcome(InterestingFailureReason reason);
 
+  // Records `Signin.HybridPasskey.InlineQrEngagement` if this is a Chrome
+  // sign-in request and the inline QR code was shown, then clears the
+  // per-attempt state so that at most one sample is emitted per attempt.
+  void MaybeRecordHybridPasskeyEngagement();
+
   bool is_chrome_signin_request_ = false;
   std::optional<HybridPasskeySessionStage> hybrid_passkey_stage_;
+  bool hybrid_passkey_qr_shown_ = false;
+
+  // Tracked separately from `hybrid_passkey_stage_` because that field is reset
+  // when an outcome is recorded, which may happen before the engagement sample
+  // is emitted.
+  bool hybrid_passkey_scanned_ = false;
 #endif
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{

@@ -40,6 +40,10 @@ class WebAuthnCredentialsDelegate {
   // Returns the pre-generated CaBLEv2 QR code string if available.
   virtual std::optional<std::string> GetCableQrString() const = 0;
 
+  // Called when the inline hybrid passkey QR code suggestion is shown to the
+  // user in the Autofill dropdown.
+  virtual void OnPasskeyQrCodeSuggestionShown() {}
+
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to
   // GetPasskeys(). `callback` should be invoked when the selected passkey is
