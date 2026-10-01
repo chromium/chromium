@@ -8,7 +8,9 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -131,7 +133,7 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   cursor_ = std::min(cursor_, size);
 }
 
-uint64_t FileSystemSyncAccessHandle::read(const AllowSharedBufferSource* buffer,
+uint64_t FileSystemSyncAccessHandle::read(V8AllowSharedBufferSource* buffer,
                                           FileSystemReadWriteOptions* options,
                                           ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -149,7 +151,9 @@ uint64_t FileSystemSyncAccessHandle::read(const AllowSharedBufferSource* buffer,
   }
 
   ASSIGN_OR_RETURN(
-      int result, file_delegate()->Read(file_offset, AsByteSpan(*buffer)),
+      int result,
+      file_delegate()->Read(file_offset,
+                            AsSpan<SharedBufferPolicy::kAllow>(*buffer)),
       [&](auto) {
         exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                           "Failed to read the content");

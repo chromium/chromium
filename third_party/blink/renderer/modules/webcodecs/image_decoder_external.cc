@@ -220,20 +220,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  base::span<const uint8_t> array_span;
-  switch (init->data()->GetContentType()) {
-    case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
-      array_span =
-          init->data()->GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
-      break;
-    case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
-      array_span = init->data()
-                       ->GetAsArrayBufferViewAllowShared()
-                       ->ByteSpanMaybeShared();
-      break;
-    case V8ImageBufferSource::ContentType::kReadableStream:
-      NOTREACHED();
-  }
+  base::span<const uint8_t> array_span =
+      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
 
   auto buffer_contents =
       TransferArrayBufferForSpan(init->transfer(), array_span, exception_state,

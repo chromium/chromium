@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/array_buffer_util.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -17,11 +17,11 @@ uint64_t RtcReceivedPacket::payloadByteLength() const {
   return data_.size();
 }
 
-void RtcReceivedPacket::copyPayloadTo(
-    const AllowSharedBufferSource* destination,
-    ExceptionState& exception_state) {
+void RtcReceivedPacket::copyPayloadTo(AllowSharedBufferSource* destination,
+                                      ExceptionState& exception_state) {
   // Validate destination buffer.
-  auto dest_wrapper = RtcTransportBufferSourceAsByteSpan(*destination);
+  base::span<uint8_t> dest_wrapper =
+      AsSpan<SharedBufferPolicy::kAllow>(*destination);
   if (dest_wrapper.size() < data_.size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;

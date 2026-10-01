@@ -30,7 +30,7 @@ class MODULES_EXPORT RtcReceivedPacket final : public ScriptWrappable {
 
   using AllowSharedBufferSource =
       V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
-  void copyPayloadTo(const AllowSharedBufferSource* destination,
+  void copyPayloadTo(AllowSharedBufferSource* destination,
                      ExceptionState& exception_state);
 
   DOMHighResTimeStamp receiveTime() { return receive_time_; }

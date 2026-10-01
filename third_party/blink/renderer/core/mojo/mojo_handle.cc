@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/mojo/mojo_watcher.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -36,20 +37,6 @@
 static const size_t kHandleVectorInlineCapacity = 4;
 
 namespace blink {
-
-namespace {
-
-base::span<uint8_t> ByteSpanForBufferSource(const V8BufferSource& buffer) {
-  switch (buffer.GetContentType()) {
-    case V8BufferSource::ContentType::kArrayBuffer:
-      return buffer.GetAsArrayBuffer()->ByteSpan();
-    case V8BufferSource::ContentType::kArrayBufferView:
-      return buffer.GetAsArrayBufferView()->ByteSpan();
-  }
-  return {};
-}
-
-}  // namespace
 
 mojo::ScopedHandle MojoHandle::TakeHandle() {
   return std::move(handle_);
@@ -84,7 +71,8 @@ MojoResult MojoHandle::writeMessage(
   if (has_invalid_handles)
     return MOJO_RESULT_INVALID_ARGUMENT;
 
-  base::span<const uint8_t> bytes = ByteSpanForBufferSource(*buffer);
+  base::span<const uint8_t> bytes =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer);
 
   auto message = mojo::Message(bytes, base::span(scoped_handles));
   DCHECK(!message.IsNull());
@@ -154,7 +142,8 @@ MojoWriteDataResult* MojoHandle::writeData(
   if (options_dict->allOrNone())
     flags |= MOJO_WRITE_DATA_FLAG_ALL_OR_NONE;
 
-  base::span<const uint8_t> bytes = ByteSpanForBufferSource(*buffer);
+  base::span<const uint8_t> bytes =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer);
 
   ::MojoWriteDataOptions options;
   options.struct_size = sizeof(options);
@@ -204,7 +193,7 @@ MojoReadDataResult* MojoHandle::discardData(
 }
 
 MojoReadDataResult* MojoHandle::readData(
-    const V8BufferSource* buffer,
+    V8BufferSource* buffer,
     const MojoReadDataOptions* options_dict) const {
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_NONE;
   if (options_dict->allOrNone())
@@ -212,7 +201,7 @@ MojoReadDataResult* MojoHandle::readData(
   if (options_dict->peek())
     flags |= MOJO_READ_DATA_FLAG_PEEK;
 
-  base::span<uint8_t> bytes = ByteSpanForBufferSource(*buffer);
+  base::span<uint8_t> bytes = AsSpan<SharedBufferPolicy::kDisallow>(*buffer);
 
   ::MojoReadDataOptions options;
   options.struct_size = sizeof(options);

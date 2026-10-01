@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 
+#include <array>
+
 #include "gin/array_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -11,7 +13,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
@@ -19,6 +29,42 @@
 namespace blink {
 
 namespace {
+
+template <typename T, SharedBufferPolicy policy = SharedBufferPolicy::kDisallow>
+concept CanCallAsSpan = requires(T t) { AsSpan<policy>(t); };
+
+static_assert(CanCallAsSpan<V8UnionArrayBufferOrArrayBufferView&>);
+static_assert(CanCallAsSpan<const V8UnionArrayBufferOrArrayBufferView&>);
+static_assert(CanCallAsSpan<V8UnionArrayBufferOrArrayBufferView&,
+                            SharedBufferPolicy::kAllow>);
+static_assert(
+    std::same_as<decltype(AsSpan<SharedBufferPolicy::kDisallow>(
+                     std::declval<V8UnionArrayBufferOrArrayBufferView&>())),
+                 base::span<uint8_t>>);
+static_assert(std::same_as<
+              decltype(AsSpan<SharedBufferPolicy::kDisallow>(
+                  std::declval<const V8UnionArrayBufferOrArrayBufferView&>())),
+              base::span<const uint8_t>>);
+static_assert(
+    !CanCallAsSpan<V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared&,
+                   SharedBufferPolicy::kDisallow>);
+static_assert(!CanCallAsSpan<
+              const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared&,
+              SharedBufferPolicy::kDisallow>);
+static_assert(
+    CanCallAsSpan<V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared&,
+                  SharedBufferPolicy::kAllow>);
+static_assert(CanCallAsSpan<
+              const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared&,
+              SharedBufferPolicy::kAllow>);
+static_assert(CanCallAsSpan<V8UnionArrayBufferOrArrayBufferViewOrString&>);
+static_assert(CanCallAsSpan<V8UnionArrayBufferOrString&>);
+static_assert(!CanCallAsSpan<V8UnionArrayBufferOrArrayBufferView*>);
+static_assert(!CanCallAsSpan<V8UnionBooleanOrString&>);
+static_assert(!CanCallAsSpan<const V8UnionBooleanOrString&>);
+static_assert(
+    !CanCallAsSpan<V8UnionBooleanOrString&, SharedBufferPolicy::kAllow>);
+static_assert(!CanCallAsSpan<DOMArrayBuffer&>);
 
 ScriptState* IsolatedWorldScriptState(V8TestingScope& v8_scope,
                                       int32_t world_id) {
@@ -250,6 +296,60 @@ TEST(DOMArrayBufferTest, WrapInIsolatedWorldAfterMainWorldWrapperDetached) {
   EXPECT_TRUE(isolated_wrapper->WasDetached());
   EXPECT_EQ(0u, isolated_wrapper->ByteLength());
   EXPECT_TRUE(buffer->IsDetached());
+}
+
+TEST(DOMArrayBufferTest, AsSpanBufferSource) {
+  constexpr std::array<uint8_t, 8> kData = {1, 2, 3, 4, 5, 6, 7, 8};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+
+  auto* buffer_union =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(buffer);
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kDisallow>(*buffer_union),
+            buffer->ByteSpan());
+
+  const auto* const_buffer_union = buffer_union;
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kDisallow>(*const_buffer_union),
+            buffer->ByteSpan());
+
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/2, /*length=*/4);
+  auto* view_union = MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      NotShared<DOMArrayBufferView>(view));
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kDisallow>(*view_union),
+            buffer->ByteSpan().subspan(2u, 4u));
+}
+
+TEST(DOMArrayBufferTest, AsSpanAllowSharedBufferSource) {
+  constexpr std::array<uint8_t, 8> kData = {10, 20, 30, 40, 50, 60, 70, 80};
+  auto* shared_buffer = DOMSharedArrayBuffer::Create(kData);
+
+  auto* shared_buffer_union = MakeGarbageCollected<
+      V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared>(shared_buffer);
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kAllow>(*shared_buffer_union),
+            shared_buffer->ByteSpanMaybeShared());
+
+  auto* shared_view =
+      DOMUint8Array::Create(shared_buffer, /*byte_offset=*/3, /*length=*/3);
+  auto* shared_view_union = MakeGarbageCollected<
+      V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared>(
+      MaybeShared<DOMArrayBufferView>(shared_view));
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kAllow>(*shared_view_union),
+            shared_buffer->ByteSpanMaybeShared().subspan(3u, 3u));
+}
+
+TEST(DOMArrayBufferTest, AsSpanMixedUnion) {
+  constexpr std::array<uint8_t, 4> kData = {9, 8, 7, 6};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+
+  auto* ab_or_str = MakeGarbageCollected<V8UnionArrayBufferOrString>(buffer);
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kDisallow>(*ab_or_str),
+            buffer->ByteSpan());
+
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/1, /*length=*/2);
+  auto* ab_abv_or_str =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          NotShared<DOMArrayBufferView>(view));
+  EXPECT_EQ(AsSpan<SharedBufferPolicy::kDisallow>(*ab_abv_or_str),
+            buffer->ByteSpan().subspan(1u, 2u));
 }
 
 }  // namespace blink

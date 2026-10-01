@@ -17,7 +17,7 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
-#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -104,10 +104,11 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
                                                ScriptState* script_state,
                                                ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> ReadTensorImpl(webnn::ScopedTrace scoped_trace,
-                                             ScriptState* script_state,
-                                             AllowSharedBufferSource* dst_data,
-                                             ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> ReadTensorImpl(
+      webnn::ScopedTrace scoped_trace,
+      ScriptState* script_state,
+      V8AllowSharedBufferSource* dst_data,
+      ExceptionState& exception_state);
 
   // Write data to the MLTensor. If write was successful, the data will be
   // stored in the MLTensor.
@@ -123,7 +124,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
                        webnn::mojom::blink::ReadTensorResultPtr result);
   void OnDidReadTensorByob(webnn::ScopedTrace scoped_trace,
                            ScriptPromiseResolver<IDLUndefined>* resolver,
-                           AllowSharedBufferSource* dst_data,
+                           V8AllowSharedBufferSource* dst_data,
                            base::ElapsedTimer read_tensor_timer,
                            webnn::mojom::blink::ReadTensorResultPtr result);
 

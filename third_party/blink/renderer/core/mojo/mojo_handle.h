@@ -52,7 +52,7 @@ class CORE_EXPORT MojoHandle final : public ScriptWrappable {
   MojoReadDataResult* queryData() const;
   MojoReadDataResult* discardData(unsigned num_bytes,
                                   const MojoDiscardDataOptions*);
-  MojoReadDataResult* readData(const V8BufferSource* buffer,
+  MojoReadDataResult* readData(V8BufferSource* buffer,
                                const MojoReadDataOptions* options) const;
 
   // SharedBuffer handle.

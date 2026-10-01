@@ -31,6 +31,7 @@
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_bigint_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -64,6 +65,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
@@ -1670,7 +1672,7 @@ MLOperand* MLGraphBuilder::input(ScriptState* script_state,
 
 MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     const MLOperandDescriptor* desc,
-                                    AllowSharedBufferSource* buffer,
+                                    const V8AllowSharedBufferSource* buffer,
                                     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLGraphBuilder::constant");
   CHECK(buffer);
@@ -1710,7 +1712,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     }
   }
 
-  base::span<uint8_t> bytes = AsByteSpan(*buffer);
+  base::span<const uint8_t> bytes = AsSpan<SharedBufferPolicy::kAllow>(*buffer);
   if (descriptor.PackedByteLength() != bytes.size()) {
     exception_state.ThrowTypeError(
         Format("The buffer's byte length ({}) doesn't match the expected "

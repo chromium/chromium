@@ -26,10 +26,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
-#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -94,12 +94,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   ScriptPromise<MLTensor> createConstantTensor(
       ScriptState* script_state,
       const MLOperandDescriptor* descriptor,
-      AllowSharedBufferSource* src_data,
+      const V8AllowSharedBufferSource* src_data,
       ExceptionState& exception_state);
 
   void writeTensor(ScriptState* script_state,
                    MLTensor* dst_tensor,
-                   AllowSharedBufferSource* src_data,
+                   const V8AllowSharedBufferSource* src_data,
                    ExceptionState& exception_state);
 
   ScriptPromise<DOMArrayBuffer> readTensor(ScriptState* script_state,
@@ -108,7 +108,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   ScriptPromise<IDLUndefined> readTensor(ScriptState* script_state,
                                          MLTensor* src_tensor,
-                                         AllowSharedBufferSource* dst_data,
+                                         V8AllowSharedBufferSource* dst_data,
                                          ExceptionState& exception_state);
 
   void dispatch(ScriptState* script_state,

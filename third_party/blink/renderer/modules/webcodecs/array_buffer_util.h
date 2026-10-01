@@ -13,28 +13,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 using AllowSharedBufferSource =
     V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
-
-// Helper function for turning various DOMArray-like things into a pointer+size.
-inline base::span<uint8_t> AsSpan(AllowSharedBufferSource* buffer_union) {
-  switch (buffer_union->GetContentType()) {
-    case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared:
-      return buffer_union->GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
-    case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared:
-      return buffer_union->GetAsArrayBufferViewAllowShared()
-          ->ByteSpanMaybeShared();
-  }
-}
-
-inline base::span<const uint8_t> AsSpan(
-    const AllowSharedBufferSource* buffer_union) {
-  return AsSpan(const_cast<AllowSharedBufferSource*>(buffer_union));
-}
 
 // Ensures that the underlying memory for `buffer_union` remains valid
 // (owned by a returned instance of ArrayBufferContents)

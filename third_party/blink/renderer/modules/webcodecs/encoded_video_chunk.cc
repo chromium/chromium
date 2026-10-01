@@ -18,7 +18,8 @@ namespace blink {
 EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
                                              const EncodedVideoChunkInit* init,
                                              ExceptionState& exception_state) {
-  base::span<const uint8_t> array_span = AsSpan(init->data());
+  base::span<const uint8_t> array_span =
+      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
   auto* isolate = script_state->GetIsolate();
 
   // Try if we can transfer `init.data` into this chunk without copying it.
@@ -102,7 +103,8 @@ uint64_t EncodedVideoChunk::byteLength() const {
 void EncodedVideoChunk::copyTo(AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
-  base::span<uint8_t> dest_wrapper = AsSpan(destination);
+  base::span<uint8_t> dest_wrapper =
+      AsSpan<SharedBufferPolicy::kAllow>(*destination);
   auto buffer_span = base::span(*buffer_);
   if (dest_wrapper.size() < buffer_span.size()) {
     exception_state.ThrowTypeError("destination is not large enough.");

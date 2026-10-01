@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_binary_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -1513,7 +1515,7 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
 ScriptPromise<MLTensor> MLContext::createConstantTensor(
     ScriptState* script_state,
     const MLOperandDescriptor* descriptor,
-    AllowSharedBufferSource* src_data,
+    const V8AllowSharedBufferSource* src_data,
     ExceptionState& exception_state) {
   // TODO(crbug.com/516844144): No backend currently supports constant tensors.
   // Reject early until support is added.
@@ -1524,7 +1526,7 @@ ScriptPromise<MLTensor> MLContext::createConstantTensor(
 
 void MLContext::writeTensor(ScriptState* script_state,
                             MLTensor* dst_tensor,
-                            AllowSharedBufferSource* src_data,
+                            const V8AllowSharedBufferSource* src_data,
                             ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::writeTensor");
   if (!script_state->ContextIsValid()) {
@@ -1548,7 +1550,8 @@ void MLContext::writeTensor(ScriptState* script_state,
   // TODO(crbug.com/378604909): When `src_data` is an ArrayBufferView, check its
   // element type being compatible with the MLTensor data type.
 
-  base::span<const uint8_t> bytes = AsByteSpan(*src_data);
+  base::span<const uint8_t> bytes =
+      AsSpan<SharedBufferPolicy::kAllow>(*src_data);
   if (bytes.size() != dst_tensor->PackedByteLength()) {
     exception_state.ThrowTypeError(
         "The sizes of the source buffer and destination tensor do not match.");
@@ -1588,7 +1591,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
 ScriptPromise<IDLUndefined> MLContext::readTensor(
     ScriptState* script_state,
     MLTensor* src_tensor,
-    AllowSharedBufferSource* dst_data,
+    V8AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {

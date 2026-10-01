@@ -291,7 +291,8 @@ AudioData::AudioData(ScriptState* script_state,
     return;
   }
 
-  base::span<uint8_t> array_span = AsSpan(init->data());
+  base::span<uint8_t> array_span =
+      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
   if (!array_span.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return;
@@ -521,7 +522,8 @@ void AudioData::copyTo(AllowSharedBufferSource* destination,
     return;
 
   // Validate destination buffer.
-  base::span<uint8_t> dest_wrapper = AsSpan(destination);
+  base::span<uint8_t> dest_wrapper =
+      AsSpan<SharedBufferPolicy::kAllow>(*destination);
   if (!dest_wrapper.data()) {
     exception_state.ThrowRangeError("destination is detached.");
     return;

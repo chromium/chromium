@@ -14,8 +14,10 @@
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -171,7 +173,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
 ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
     webnn::ScopedTrace scoped_trace,
     ScriptState* script_state,
-    AllowSharedBufferSource* dst_data,
+    V8AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
@@ -181,7 +183,7 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
     return EmptyPromise();
   }
 
-  base::span<uint8_t> bytes = AsByteSpan(*dst_data);
+  base::span<uint8_t> bytes = AsSpan<SharedBufferPolicy::kAllow>(*dst_data);
   if (bytes.size() < PackedByteLength()) {
     exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
@@ -254,7 +256,7 @@ void MLTensor::OnDidReadTensor(
 void MLTensor::OnDidReadTensorByob(
     webnn::ScopedTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    AllowSharedBufferSource* dst_data,
+    V8AllowSharedBufferSource* dst_data,
     base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
@@ -267,7 +269,7 @@ void MLTensor::OnDidReadTensorByob(
     return;
   }
 
-  base::span<uint8_t> bytes = AsByteSpan(*dst_data);
+  base::span<uint8_t> bytes = AsSpan<SharedBufferPolicy::kAllow>(*dst_data);
   if (bytes.size() == 0) {
     if (result->get_buffer().size() == 0 &&
         ml_context_->read_tensor_consumer()) {

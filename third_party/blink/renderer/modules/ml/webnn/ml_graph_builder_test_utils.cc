@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -107,7 +108,7 @@ MLOperand* BuildConstant(
     return nullptr;
   }
   auto* buffer_source =
-      MakeGarbageCollected<AllowSharedBufferSource>(buffer_view);
+      MakeGarbageCollected<V8AllowSharedBufferSource>(buffer_view);
   return builder->constant(script_state, desc, buffer_source, exception_state);
 }
 

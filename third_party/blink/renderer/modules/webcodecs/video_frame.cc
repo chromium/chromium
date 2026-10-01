@@ -988,7 +988,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Validate data.
-  base::span<const uint8_t> buffer = AsSpan(data);
+  base::span<const uint8_t> buffer = AsSpan<SharedBufferPolicy::kAllow>(*data);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return nullptr;
@@ -1418,7 +1418,7 @@ VideoFrame::CopyToPromise VideoFrame::copyTo(
   }
 
   // Validate destination buffer.
-  base::span<uint8_t> buffer = AsSpan(destination);
+  base::span<uint8_t> buffer = AsSpan<SharedBufferPolicy::kAllow>(*destination);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("destination is detached.");
     return CopyToPromise();

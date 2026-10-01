@@ -36,9 +36,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_candidate.h"
@@ -543,7 +543,7 @@ void RtcTransport::sendPackets(
   for (const auto& packet : packets) {
     // Copy from the data buffer source into a new Vector.
     packet_payloads->emplace_back(
-        RtcTransportBufferSourceAsByteSpan(*packet->data()));
+        AsSpan<SharedBufferPolicy::kAllow>(*packet->data()));
   }
 
   async_datagram_connection_->SendPackets(std::move(packet_payloads));

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -885,7 +886,7 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tester.Value());
 
   auto* src_data =
-      MakeGarbageCollected<AllowSharedBufferSource>(array_buffer_view);
+      MakeGarbageCollected<V8AllowSharedBufferSource>(array_buffer_view);
   ml_context->writeTensor(scope.GetScriptState(), ml_tensor, src_data,
                           scope.GetExceptionState());
   return ml_tensor;
@@ -1115,7 +1116,8 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   ASSERT_THAT(array_buffer, testing::NotNull());
 
   // Write data to the tensor.
-  auto* src_data = MakeGarbageCollected<AllowSharedBufferSource>(array_buffer);
+  auto* src_data =
+      MakeGarbageCollected<V8AllowSharedBufferSource>(array_buffer);
   ml_context->writeTensor(script_state, ml_tensor, src_data,
                           scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
@@ -1127,7 +1129,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   DOMArrayBuffer* new_array_buffer = DOMArrayBuffer::Create(new_data);
   ASSERT_THAT(new_array_buffer, testing::NotNull());
   auto* new_src_data =
-      MakeGarbageCollected<AllowSharedBufferSource>(new_array_buffer);
+      MakeGarbageCollected<V8AllowSharedBufferSource>(new_array_buffer);
   ml_context->writeTensor(script_state, ml_tensor, new_src_data,
                           scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
@@ -1164,7 +1166,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   ml_tensor->destroy();
 
   auto* src_data =
-      MakeGarbageCollected<AllowSharedBufferSource>(CreateDOMArrayBufferView(
+      MakeGarbageCollected<V8AllowSharedBufferSource>(CreateDOMArrayBufferView(
           base::checked_cast<wtf_size_t>(ml_tensor->PackedByteLength()),
           V8MLOperandDataType::Enum::kUint8));
   ml_context->writeTensor(script_state, ml_tensor, src_data,
