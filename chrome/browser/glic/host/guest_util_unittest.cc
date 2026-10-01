@@ -5,12 +5,14 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_browser_locale.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -59,8 +62,21 @@ class GuestUtilMultiInstanceTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
-  TestingProfile* CreateTestingProfile() {
-    return profile_manager_.CreateTestingProfile("test_profile");
+  TestingProfile* CreateTestingProfile(
+      const std::string& name = "test_profile") {
+    return profile_manager_.CreateTestingProfile(name);
+  }
+
+  TestingProfile* CreateTestingProfileWithPrimaryAccount(
+      const std::string& email,
+      const std::string& name = "signed_in_profile") {
+    TestingProfile* profile = profile_manager_.CreateTestingProfile(
+        name, IdentityTestEnvironmentProfileAdaptor::
+                  GetIdentityTestEnvironmentFactories());
+    IdentityTestEnvironmentProfileAdaptor adaptor(profile);
+    adaptor.identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSignin);
+    return profile;
   }
 
  protected:
@@ -96,6 +112,70 @@ TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
             GetGuestURL(CreateTestingProfile()));
 }
 
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedInAccount_NoWebviewDisabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicNoWebview);
+
+  TestingProfile* profile =
+      CreateTestingProfileWithPrimaryAccount("user@gmail.com");
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedInAccount_NoWebviewEnabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  TestingProfile* profile =
+      CreateTestingProfileWithPrimaryAccount("user@gmail.com");
+  EXPECT_EQ(
+      GURL("https://www.example.com/glic?authuser=user%40gmail.com&hl=en"),
+      GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedOutAccount_NoWebviewEnabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"),
+            GetGuestURL(CreateTestingProfile()));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedInAccount_SetAuthUserDisabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicNoWebview},
+      /*disabled_features=*/{features::kGlicSetAuthUser});
+
+  TestingProfile* profile =
+      CreateTestingProfileWithPrimaryAccount("user@gmail.com");
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLDoesNotOverwriteExistingAuthUser) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGlicGuestURL,
+      "https://www.example.com/glic?authuser=existing@gmail.com");
+  TestingProfile* profile =
+      CreateTestingProfileWithPrimaryAccount("user@gmail.com");
+  EXPECT_EQ(GURL("https://www.example.com/"
+                 "glic?authuser=existing@gmail.com&hl=en"),
+            GetGuestURL(profile));
+}
+
 // When features::kGeic is enabled with a GEiC guest URL, GetGuestURL loads the
 // GEiC guest URL for the profile.
 TEST_F(GuestUtilMultiInstanceTest, GeicEnabledLoadsGeicGuestURL) {
@@ -109,6 +189,22 @@ TEST_F(GuestUtilMultiInstanceTest, GeicEnabledLoadsGeicGuestURL) {
 
   EXPECT_EQ(GURL("https://business.gemini.google/side-panel?hl=en"),
             GetGuestURL(CreateTestingProfile()));
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GeicEnabledDoesNotAddAuthUser) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{features::kGeicGuestURL.name,
+          "https://business.gemini.google/side-panel"}}},
+       {features::kGlicSetAuthUser, {}}},
+      {});
+
+  TestingProfile* profile =
+      CreateTestingProfileWithPrimaryAccount("user@enterprise.com");
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?hl=en"),
+            GetGuestURL(profile));
 }
 
 TEST_F(GuestUtilMultiInstanceTest,

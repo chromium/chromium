@@ -230,6 +230,9 @@ BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
 BASE_DECLARE_FEATURE(kGlicNoWebview);
 // Returns true if kGlicNoWebview is enabled or if GEiC is enabled.
 bool IsGlicNoWebviewEnabled();
+// When enabled, appends the primary account email as the authuser query
+// parameter to the guest URL when NoWebview is enabled.
+BASE_DECLARE_FEATURE(kGlicSetAuthUser);
 BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);

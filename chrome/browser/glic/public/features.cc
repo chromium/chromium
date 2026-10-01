@@ -346,6 +346,7 @@ bool IsGlicNoWebviewEnabled() {
   return base::FeatureList::IsEnabled(kGlicNoWebview) ||
          (base::FeatureList::IsEnabled(kGeic) && kGeicEnabledParam.Get());
 }
+BASE_FEATURE(kGlicSetAuthUser, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 // Whether to disallow webview communication directly with the glic host
 // (chrome/browser/resources/glic/glic_api_impl/host). When enabled, some
 // functionality implemented by glic's webview.ts is implemented instead by c++

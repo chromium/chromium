@@ -41,6 +41,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
@@ -55,6 +56,7 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
@@ -252,6 +254,40 @@ void ConfigureGuestZoom(content::WebContents& guest_contents) {
 #endif
 }
 
+GURL MaybeAppendAuthUser(const GURL& guest_url,
+                         content::BrowserContext* browser_context) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSetAuthUser) ||
+      !features::IsGlicNoWebviewEnabled()) {
+    return guest_url;
+  }
+  if (guest_url.is_empty() || !guest_url.is_valid()) {
+    return guest_url;
+  }
+  std::string unused_output;
+  if (net::GetValueForKeyInQuery(guest_url, "authuser", &unused_output)) {
+    return guest_url;
+  }
+  if (!browser_context) {
+    return guest_url;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
+    return guest_url;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return guest_url;
+  }
+  std::string email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  if (email.empty()) {
+    return guest_url;
+  }
+  return net::AppendQueryParameter(guest_url, "authuser", email);
+}
+
 }  // namespace
 
 void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
@@ -365,6 +401,7 @@ GURL GetGuestURL(content::BrowserContext* browser_context) {
     return GURL();
   }
 
+  url = MaybeAppendAuthUser(url, browser_context);
   return GetLocalizedGuestURL(url);
 }
 
