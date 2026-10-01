@@ -331,7 +331,10 @@ suite('TabDiscardExceptionList', function() {
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
     performanceBrowserProxy.resetResolver('validateTabDiscardExceptionRule');
     await microtasksFinished();
+    const whenClosed = eventToPromise('close', dialog);
     dialog.$.actionButton.click();
+    await whenClosed;
+    await microtasksFinished();
   }
 
   test('ExceptionListAdd', async function() {
@@ -429,15 +432,15 @@ suite('TabDiscardExceptionList', function() {
     }
 
     assertFalse(addDialog.$.actionButton.disabled);
+    const whenClosed = eventToPromise('close', addDialog);
     addDialog.$.actionButton.click();
+    await whenClosed;
     await microtasksFinished();
 
     assertFalse(exceptionList.$.collapse.opened);
     assertExceptionListEquals([existingEntry, ...entries]);
   });
 
-  // TODO(crbug.com/542289420): Flaky test.
-  // <if expr="not is_linux">
   test('ExceptionListOverflowEdit', async function() {
     const entries = [
       ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1).keys(),
@@ -451,7 +454,6 @@ suite('TabDiscardExceptionList', function() {
     const editDialog = getEditDialog();
     assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'foo');
-    await microtasksFinished();
     assertExceptionListEquals([...entries.slice(0, -1), 'foo']);
 
     const updatedEntry =
@@ -460,10 +462,8 @@ suite('TabDiscardExceptionList', function() {
     clickEditMenuItem();
     await microtasksFinished();
     await inputDialog(getEditDialog(), getExceptionListEntry(0).entry.site);
-    await microtasksFinished();
     assertExceptionListEquals(entries.slice(0, -1));
   });
-  // </if>
 
   test('ExceptionListOverflowDelete', async function() {
     const entries = [
