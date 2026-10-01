@@ -2085,27 +2085,6 @@
     "expires": "Dec 1, 2024"
   },
   {
-    "prefix": "media-gpu-accelerated",
-    "owners": [
-      "media-dev@chromium.org",
-      "dalecurtis@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win",
-      "Fuchsia"
-    ],
-    "bases": [
-      "external/wpt/media-source",
-      "media"
-    ],
-    "args": [
-      "--use-gpu-in-tests"
-    ],
-    "expires": "Dec 1, 2024"
-  },
-  {
     "prefix": "media-caption-settings-button-disabled",
     "owners": [
       "media-dev@chromium.org",

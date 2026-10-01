@@ -912,13 +912,6 @@ virtual/gpu/fast/canvas/canvas-filter-frameless-document.html
 virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html
 virtual/gpu-rasterization/images/drag-image-descendant-painting-sibling.html
 
-# Include //media/OWNERS on review of changes to media-gpu-accelerated SmokeTests coverage.
-virtual/media-gpu-accelerated/media/video-autoplay.html
-virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-play.html
-virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-change-mp4-av-audio-bitrate.html
-virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-change-mp4-av-framesize.html
-virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html
-
 # Test synthetic gestures since telemetry and layout tests rely on these being correct.
 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html
 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html
