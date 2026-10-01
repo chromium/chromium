@@ -57,10 +57,12 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,6 +80,7 @@ public class BottomBarMediatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private BottomBarMediator.VisibilityDelegate mVisibilityDelegate;
     @Mock private Tab mTab;
+    @Mock private NativePage mNativePage;
     @Mock private Profile mProfile;
     @Mock private BottomBarButtonManager mButtonManager;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
@@ -223,6 +226,44 @@ public class BottomBarMediatorUnitTest {
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
+    public void testVisibility_NavigatingAwayFromNtp_BarStaysHidden() {
+        when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
+        createMediator(/* shouldIncludeHomeButton= */ true);
+
+        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
+
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab);
+        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
+
+        when(mTab.getNativePage()).thenReturn(null);
+        mTabObserverCaptor.getValue().onContentChanged(mTab);
+        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
+    public void testVisibility_NavigatingToNtp_BarHidesWhenNativePageShown() {
+        // The URL updates when the navigation starts; the native page is shown on commit.
+        when(mTab.getNativePage()).thenReturn(null);
+        setupTab(JUnitTestGURLs.NTP_URL, false);
+        createMediator(/* shouldIncludeHomeButton= */ true);
+
+        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
+
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+
+        when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        mTabObserverCaptor.getValue().onContentChanged(mTab);
+
+        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
     }
 
     @Test

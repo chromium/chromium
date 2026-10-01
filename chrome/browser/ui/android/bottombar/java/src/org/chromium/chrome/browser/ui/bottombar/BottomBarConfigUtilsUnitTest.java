@@ -270,6 +270,16 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
+    public void testIsRegularNtp_NtpUrlWithoutNativePage() {
+        // A navigation to the NTP updates the URL before the native page is shown.
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+
+        assertFalse(BottomBarConfigUtils.isRegularNtp(mTab));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testIsGlicButtonEnabled() {
         assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());

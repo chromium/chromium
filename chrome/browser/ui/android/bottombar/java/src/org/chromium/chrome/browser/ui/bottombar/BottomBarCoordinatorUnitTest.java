@@ -57,7 +57,9 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -84,6 +86,7 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
+    @Mock private NativePage mNativePage;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private GlicKeyedService mGlicKeyedService;
 
@@ -345,7 +348,7 @@ public class BottomBarCoordinatorUnitTest {
     @Test
     public void testMaybeShowPromoDialog_Visible() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
@@ -362,7 +365,9 @@ public class BottomBarCoordinatorUnitTest {
     @Test
     public void testMaybeShowPromoDialog_NtpDisabled() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
@@ -379,7 +384,7 @@ public class BottomBarCoordinatorUnitTest {
     @Test
     public void testMaybeShowPromoDialog_Incognito() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.isOffTheRecord()).thenReturn(true);
         mTabSupplier.set(mTab);
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))

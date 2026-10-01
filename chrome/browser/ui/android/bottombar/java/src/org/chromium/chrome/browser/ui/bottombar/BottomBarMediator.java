@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.CandidateAction
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -174,6 +173,11 @@ public class BottomBarMediator
                     public void onUrlUpdated(Tab tab) {
                         updateVisibility();
                     }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        updateVisibility();
+                    }
                 };
 
         mThemeColorProvider.addTintObserver(this);
@@ -223,10 +227,7 @@ public class BottomBarMediator
     }
 
     private void updateVisibility() {
-        boolean currentTabIsRegularNtp =
-                mCurrentTab != null
-                        && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
-                        && !mCurrentTab.isOffTheRecord();
+        boolean currentTabIsRegularNtp = BottomBarConfigUtils.isRegularNtp(mCurrentTab);
         boolean isOmniboxFocused = mOmniboxFocusStateSupplier.get();
         boolean shouldDisableOnNtp =
                 BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp;

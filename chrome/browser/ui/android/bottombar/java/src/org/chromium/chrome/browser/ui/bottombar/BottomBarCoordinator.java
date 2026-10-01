@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarButtonManager.ActionConfig;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -209,10 +208,10 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             return false;
         }
         Tab tab = mTabSupplier.get();
-        if (tab == null || tab.isIncognito()) {
+        if (tab == null || tab.isOffTheRecord()) {
             return false;
         }
-        if (UrlUtilities.isNtpUrl(tab.getUrl()) && BottomBarConfigUtils.shouldDisableOnNtp()) {
+        if (BottomBarConfigUtils.isRegularNtp(tab) && BottomBarConfigUtils.shouldDisableOnNtp()) {
             return false;
         }
         return mPromoDialogCoordinator.maybeShowPromoDialog(profile);
