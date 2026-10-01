@@ -11,6 +11,8 @@ declare_args() {
 
 if (use_dummy_lastchange) {
   lastchange_file = "//build/util/LASTCHANGE.dummy"
+  minibranch_file = "//build/util/MINIBRANCH.dummy"
 } else {
   lastchange_file = "//build/util/LASTCHANGE"
+  minibranch_file = "//build/util/MINIBRANCH"
 }
