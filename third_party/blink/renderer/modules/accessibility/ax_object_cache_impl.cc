@@ -6125,15 +6125,17 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* focused_node) {
   // - Is visible in AXTree (not display:none / visibility:hidden / aria-hidden)
   if (active_aria_modal_dialog_) {
     const AXObject* ax_dialog = Get(active_aria_modal_dialog_);
-    bool is_valid_modal = ax_dialog && !ax_dialog->IsIgnored() &&
-                          ax_dialog->IsVisible() && ax_dialog->IsModal();
+    bool is_valid_modal = active_aria_modal_dialog_->isConnected() &&
+                          ax_dialog && !ax_dialog->IsMissingParent() &&
+                          !ax_dialog->IsIgnored() && ax_dialog->IsVisible() &&
+                          ax_dialog->IsModal();
     if (!is_valid_modal) {
       active_aria_modal_dialog_ = nullptr;
       MarkDocumentDirty();
     }
   }
 
-  if (!focused_node) {
+  if (!focused_node || !focused_node->isConnected()) {
     return;
   }
 
@@ -6170,8 +6172,8 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* focused_node) {
     // If focus is on a strict ancestor of the active modal dialog in the a11y
     // tree (e.g. body/root), preserve active_aria_modal_dialog_.
     if (ax_dialog && ax_focus) {
-      for (const AXObject* ancestor = ax_dialog->ParentObject(); ancestor;
-           ancestor = ancestor->ParentObject()) {
+      for (const AXObject* ancestor = ax_dialog->ParentObjectIfPresent();
+           ancestor; ancestor = ancestor->ParentObjectIfPresent()) {
         if (ancestor == ax_focus) {
           return;
         }
@@ -6185,12 +6187,12 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* focused_node) {
 }
 
 Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
-  if (!node) {
+  if (!node || !node->isConnected()) {
     return nullptr;
   }
 
   if (const AXObject* obj = Get(node)) {
-    for (; obj; obj = obj->ParentObject()) {
+    for (; obj; obj = obj->ParentObjectIfPresent()) {
       if (obj->IsModal()) {
         return obj->GetElement();
       }

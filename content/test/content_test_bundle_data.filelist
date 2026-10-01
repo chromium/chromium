@@ -2883,6 +2883,7 @@ data/accessibility/aria/toggle-button-expand-collapse-expected-win.txt
 data/accessibility/aria/toggle-button-expand-collapse.html
 data/accessibility/crash/area-crash.html
 data/accessibility/crash/area-serialization-crash.html
+data/accessibility/crash/aria-modal-move-before-crash.html
 data/accessibility/crash/aria-owns-child-and-hidden-descendant-crash.html
 data/accessibility/crash/aria-owns-crash-2.html
 data/accessibility/crash/aria-owns-crash.html

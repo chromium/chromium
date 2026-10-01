@@ -1,0 +1,69 @@
+<!--
+@WAIT-FOR:moved, still alive.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>aria-modal moveBefore crash</title>
+<style>
+  body { font: 15px/1.45 system-ui, sans-serif; margin: 24px; max-width: 760px; }
+  code { background: #eee; padding: 0 3px; }
+  .row { border: 1px dashed #999; padding: 12px; margin: 16px 0; }
+  [role=dialog] { border: 2px solid #333; padding: 12px; background: #fafafa; }
+  button { font: inherit; padding: 6px 12px; margin: 4px 4px 4px 0; }
+  #log { white-space: pre-wrap; font: 12px/1.4 ui-monospace, monospace; background: #f4f4f4; padding: 8px; }
+</style>
+</head>
+<body>
+<h1>Renderer crash: atomic <code>moveBefore</code> of an active <code>aria-modal</code> dialog's parent</h1>
+<p><b>Needs macOS (or Android) with accessibility on.</b> <code>AriaModalPrunesAXTree</code> is only enabled there.
+Open <code>chrome://accessibility</code> and tick <i>Native accessibility API support</i> + <i>Web accessibility</i>
+(or turn VoiceOver on). Reload this page, then click one of the buttons <i>inside</i> the dialog.</p>
+
+<div class="row" id="row">
+  <p>Parent of the dialog (this is what gets moved)</p>
+  <div role="dialog" aria-modal="true" aria-labelledby="dlg-title" id="dlg">
+    <h2 id="dlg-title">Dialog</h2>
+    <p>Each button disables itself (focus falls back to &lt;body&gt;, which keeps this dialog the
+    <i>active</i> aria-modal dialog), then moves this dialog's parent into a hidden element after &lt;body&gt;.</p>
+    <button data-op="moveBefore">A: moveBefore (expected: crash)</button>
+    <button data-op="insertBefore">B: insertBefore (control)</button>
+    <button data-op="moveBefore-keep-focus">C: moveBefore, focus kept (control)</button>
+  </div>
+</div>
+<div id="log"></div>
+<script>
+  const log = m => { document.getElementById("log").textContent += m + "\n"; };
+  log(`${navigator.userAgent}\nElement.prototype.moveBefore: ${"moveBefore" in Element.prototype}`);
+  // Same place idiomorph (Turbo 8) puts its "pantry": a hidden div right after <body>.
+  const pantry = document.createElement("div");
+  pantry.hidden = true;
+  document.body.insertAdjacentElement("afterend", pantry);
+
+  document.getElementById("dlg").addEventListener("click", event => {
+    const button = event.target.closest("button[data-op]");
+    if (!button) return;
+    const op = button.dataset.op;
+    button.focus();
+    if (op !== "moveBefore-keep-focus") button.disabled = true;
+    setTimeout(() => {
+      log(`${op}: activeElement at move = <${document.activeElement.tagName.toLowerCase()}>`);
+      const row = document.getElementById("row");
+      if (op === "insertBefore") pantry.insertBefore(row, null);
+      else pantry.moveBefore(row, null);
+      log(`${op}: moved, still alive. Moving back.`);
+      document.body.insertBefore(row, document.getElementById("log"));
+      button.disabled = false;
+    }, 100);
+  });
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      document.querySelector('button[data-op="moveBefore"]').click();
+    }, 50);
+  });
+</script>
+</body>
+</html>

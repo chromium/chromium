@@ -1500,6 +1500,72 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
 }
 
+TEST_F(AccessibilityTest, AriaModalMoveBeforeAncestorDoesNotCrash) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div class="row" id="row">
+      <p>Parent of the dialog (this is what gets moved)</p>
+      <div role="dialog" aria-modal="true" aria-labelledby="dlg-title" id="dlg">
+        <h2 id="dlg-title">Dialog</h2>
+        <button id="btn_a">A: moveBefore</button>
+        <button id="btn_c">C: moveBefore, focus kept</button>
+      </div>
+    </div>
+    <div id="log"></div>
+  )HTML");
+
+  // Insert hidden pantry right after <body>, matching
+  // aria-modal-move-before-crash.html.
+  Element* pantry = GetDocument().CreateRawElement(html_names::kDivTag);
+  pantry->setAttribute(html_names::kHiddenAttr, g_empty_atom);
+  GetDocument().documentElement()->appendChild(pantry);
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.UpdateAXForAllDocuments();
+
+  Element* row = GetElementById("row");
+  Element* dlg = GetElementById("dlg");
+  Element* btn_a = GetElementById("btn_a");
+  Element* btn_c = GetElementById("btn_c");
+  Element* log = GetElementById("log");
+  ASSERT_NE(row, nullptr);
+  ASSERT_NE(dlg, nullptr);
+  ASSERT_NE(btn_a, nullptr);
+  ASSERT_NE(btn_c, nullptr);
+  ASSERT_NE(log, nullptr);
+
+  // Case A: Focus button inside dialog, disable it so focus falls back to
+  // <body> (keeping #dlg as the active aria-modal dialog), then moveBefore()
+  // #row into the hidden pantry after <body>.
+  btn_a->Focus();
+  cache.HandleFocusedUIElementChanged(nullptr, btn_a);
+  btn_a->setAttribute(html_names::kDisabledAttr, g_empty_atom);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  cache.HandleFocusedUIElementChanged(btn_a, GetDocument().body());
+  cache.UpdateAXForAllDocuments();
+  EXPECT_EQ(cache.GetActiveAriaModalDialog(), dlg);
+
+  pantry->moveBefore(row, nullptr, ASSERT_NO_EXCEPTION);
+  cache.UpdateAXForAllDocuments();
+
+  // Move row back into body and re-enable button, matching
+  // aria-modal-move-before-crash.html.
+  GetDocument().body()->insertBefore(row, log, ASSERT_NO_EXCEPTION);
+  btn_a->removeAttribute(html_names::kDisabledAttr);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  cache.UpdateAXForAllDocuments();
+
+  // Case C: Focus kept inside the dialog during moveBefore().
+  btn_c->Focus();
+  cache.HandleFocusedUIElementChanged(GetDocument().body(), btn_c);
+  cache.UpdateAXForAllDocuments();
+  EXPECT_EQ(cache.GetActiveAriaModalDialog(), dlg);
+
+  pantry->moveBefore(row, nullptr, ASSERT_NO_EXCEPTION);
+  cache.UpdateAXForAllDocuments();
+}
+
 TEST_F(AccessibilityTest, AriaOwnsWithUnmappedOrDetachedChildDoesNotCrash) {
   // Test case based on ClusterFuzz issue 521081377 reproducer.
   SetBodyInnerHTML(R"HTML(
