@@ -150,6 +150,11 @@ def GetHostCargoEnv(cargo_home=CARGO_HOME_DIR):
     env['CXXFLAGS'] += ' ' + ' '.join(GetHostCFlags())
     env['LDFLAGS'] += ' ' + ' '.join(GetHostLinkArgs())
     env['RUSTFLAGS'] += ' ' + ' '.join(GetHostLinkerRustFlags())
+    if sys.platform == 'win32':
+        # Link the C runtime statically, like `rustc.exe` and the LLVM
+        # libraries (`/MT`), so that the tools need no `VCRUNTIME140.dll`.
+        # This also makes the `cc` crate use `/MT`.
+        env['RUSTFLAGS'] += ' -Ctarget-feature=+crt-static'
     return env
 
 

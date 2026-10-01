@@ -26,6 +26,7 @@ import argparse
 import contextlib
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -42,13 +43,8 @@ from build import (
     GetLibXml2Dirs,
 )
 
+from host_tools import EXE, GetHostCargoEnv, RunHostCargo
 from update_rust import CHROMIUM_DIR, CRUBIT_REVISION, RUST_TOOLCHAIN_OUT_DIR
-
-# Get `RunCargo` from `//tools/crates/run_cargo.py`.
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates')
-)
-from run_cargo import RunCargo
 
 CRUBIT_GIT = (
     'https://chromium.googlesource.com/external/github.com/google/crubit'
@@ -62,10 +58,14 @@ CRUBIT_SRC_DIR = os.path.join(
 # members of the root cargo workspace (see Crubit's `Cargo.toml`).
 CRUBIT_BINS = ['cc_bindings_from_rs']
 
+# One argument per binary that makes it start, print a short text, and exit
+# with 0 (see `SmokeTestCrubit`).
+SMOKE_TEST_ARGS = {
+    'cc_bindings_from_rs': '--help',
+}
+
 IS_WIN = sys.platform == 'win32'
 IS_MAC = sys.platform == 'darwin'
-
-EXE = '.exe' if IS_WIN else ''
 
 
 def GetLatestCrubitCommit():
@@ -132,8 +132,17 @@ def GetNativeLibsRustFlags():
     ]
 
 
-def BuildCrubitBinaries(rust_sysroot, target_dir, home_dir):
-    """Builds all of `CRUBIT_BINS`; returns the cargo exit code."""
+def GetCrubitRustFlags():
+    """Returns the Crubit-specific rustflags.
+
+    `BuildCrubitBinaries` adds them to the rustflags that `GetHostCargoEnv`
+    uses for all host tools.
+    """
+    return GetRustcDriverRpathFlags() + GetNativeLibsRustFlags()
+
+
+def BuildCrubitBinaries(target_dir, home_dir):
+    """Builds all of `CRUBIT_BINS`; exits if `cargo` fails."""
     # All of `CRUBIT_BINS` are members of the root cargo workspace, so one
     # `cargo build` against the workspace manifest builds all of them.
     bins = ' and '.join(CRUBIT_BINS)
@@ -148,10 +157,10 @@ def BuildCrubitBinaries(rust_sysroot, target_dir, home_dir):
     cargo_args += ['--target-dir', target_dir]
     workspace_cargo_toml = os.path.join(CRUBIT_SRC_DIR, 'Cargo.toml')
     cargo_args += ['--manifest-path', workspace_cargo_toml]
-    extra_rustflags = GetRustcDriverRpathFlags() + GetNativeLibsRustFlags()
-    cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags)
-    print(f'Building {bins} ... done.  Result: {cargo_result}')
-    return cargo_result
+    env = GetHostCargoEnv(cargo_home=home_dir)
+    env['RUSTFLAGS'] += ' ' + ' '.join(GetCrubitRustFlags())
+    RunHostCargo(cargo_args, env)
+    print(f'Building {bins} ... done.')
 
 
 def InstallCrubit(release_dir):
@@ -182,17 +191,26 @@ def InstallCrubit(release_dir):
             shutil.copy2(source_path, target_path)
 
 
-def BuildCrubit(rust_sysroot, out_dir):
+def SmokeTestCrubit():
+    """Runs each installed binary once, to find loader and start-up errors."""
+    for bin_name in CRUBIT_BINS:
+        exe = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin_name + EXE)
+        # Keep stderr: loader errors go there.
+        subprocess.run(
+            [exe, SMOKE_TEST_ARGS[bin_name]],
+            stdout=subprocess.DEVNULL,
+            check=True,
+        )
+
+
+def BuildCrubit(out_dir):
     target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
     release_dir = os.path.join(target_dir, 'release')
     home_dir = os.path.join(target_dir, 'cargo_home')
 
-    cargo_result = BuildCrubitBinaries(rust_sysroot, target_dir, home_dir)
-    if cargo_result:
-        return cargo_result
-
+    BuildCrubitBinaries(target_dir, home_dir)
     InstallCrubit(release_dir)
-    return 0
+    SmokeTestCrubit()
 
 
 def main():
@@ -230,7 +248,8 @@ def main():
         out_dir = args.out_dir or stack.enter_context(
             tempfile.TemporaryDirectory()
         )
-        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir)
+        BuildCrubit(out_dir)
+    return 0
 
 
 if __name__ == '__main__':
