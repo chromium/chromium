@@ -52,28 +52,21 @@ namespace policy {
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Metrics should not be enforced so if this policy is set as mandatory
 // downgrade it to a recommended level policy.
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
-  // Capture both the Chrome-only and device-level policies on Chrome OS.
-  const std::vector<const char*> metrics_keys = {
-#if BUILDFLAG(IS_CHROMEOS)
-      policy::key::kDeviceMetricsReportingEnabled,
-#else
-      policy::key::kMetricsReportingEnabled,
-#endif
-  };
-  for (const char* policy_key : metrics_keys) {
-    PolicyMap::Entry* policy = policies->GetMutable(policy_key);
-    if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
-        policy->value(base::Value::Type::BOOLEAN) &&
-        policy->value(base::Value::Type::BOOLEAN)->GetBool()) {
-      policy->level = POLICY_LEVEL_RECOMMENDED;
-      policy->AddMessage(PolicyMap::MessageType::kInfo,
-                         IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
-    }
+  PolicyMap::Entry* policy =
+      policies->GetMutable(policy::key::kMetricsReportingEnabled);
+  if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
+      policy->value(base::Value::Type::BOOLEAN) &&
+      policy->value(base::Value::Type::BOOLEAN)->GetBool()) {
+    policy->level = POLICY_LEVEL_RECOMMENDED;
+    policy->AddMessage(PolicyMap::MessageType::kInfo,
+                       IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Returns the string values of |policy|. Returns an empty set if the values are
 // not strings.
@@ -472,10 +465,11 @@ PolicyBundle PolicyServiceImpl::MergePolicyBundles(
     // Clone only the chrome-namespace PolicyMap for pre-merge mutations.
     PolicyMap chrome_clone = policy_bundle->Get(chrome_namespace).Clone();
     IgnoreUserCloudPrecedencePolicies(&chrome_clone);
+#if !BUILDFLAG(IS_CHROMEOS)
     DowngradeMetricsReportingToRecommendedPolicy(&chrome_clone);
-#if BUILDFLAG(IS_CHROMEOS)
+#else
     chrome_apps_migrator.Migrate(&chrome_clone);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     bundle.Get(chrome_namespace).MergeFrom(std::move(chrome_clone));
   }
 

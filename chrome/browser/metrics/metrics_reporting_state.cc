@@ -210,6 +210,12 @@ void ApplyMetricsReportingPolicy() {
 
 bool IsMetricsReportingPolicyManaged() {
 #if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, whether metrics reporting is enterprise-managed is governed
+  // by whether the device is enrolled (BrowserPolicyConnectorAsh::
+  // IsDeviceEnterpriseManaged()), rather than whether the pref is locked in
+  // MANAGED_STORE. Device policy is decoded into CrosSettings and reflected
+  // into Local State via USER_STORE to allow per-user consent and ephemeral
+  // login support.
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return policy_connector->IsDeviceEnterpriseManaged();
