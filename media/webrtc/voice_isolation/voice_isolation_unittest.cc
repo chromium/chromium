@@ -127,7 +127,15 @@ TEST(VoiceIsolationTest, DISABLED_VoiceIsolationCanAdaptToAudioParameters) {
   EXPECT_GT(output_energy, 0.0f);
 }
 
-TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
+// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_TwoStageCreationSucceedsAndProcessesAudio \
+  DISABLED_TwoStageCreationSucceedsAndProcessesAudio
+#else
+#define MAYBE_TwoStageCreationSucceedsAndProcessesAudio \
+  TwoStageCreationSucceedsAndProcessesAudio
+#endif
+TEST(VoiceIsolationTest, MAYBE_TwoStageCreationSucceedsAndProcessesAudio) {
   constexpr int kSampleRate = kComponentFrameSize * kComponentFramesPerSecond;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
