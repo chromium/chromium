@@ -346,22 +346,13 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
 
-  // The error is only signaled after AuthenticationService::Signout() and
-  // that's async.
-  __block auto error_wait_loop = std::make_unique<base::RunLoop>();
   OCMExpect([mediator_delegate_mock_
-                consistencyPromoSigninMediator:mediator_
-                                errorDidHappen:
-                                    ConsistencyPromoSigninMediatorErrorGeneric
-                                  withIdentity:kDefaultIdentity])
-      .andDo(^(NSInvocation*) {
-        error_wait_loop->Quit();
-      });
+      consistencyPromoSigninMediator:mediator_
+                      errorDidHappen:ConsistencyPromoSigninMediatorErrorGeneric
+                        withIdentity:kDefaultIdentity]);
 
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kOtherError);
-
-  error_wait_loop->Run();
 
   [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
@@ -397,22 +388,13 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
 
-  // The error is only signaled after AuthenticationService::Signout() and
-  // that's async.
-  __block auto error_wait_loop = std::make_unique<base::RunLoop>();
   OCMExpect([mediator_delegate_mock_
-                consistencyPromoSigninMediator:mediator_
-                                errorDidHappen:
-                                    ConsistencyPromoSigninMediatorErrorTimeout
-                                  withIdentity:kDefaultIdentity])
-      .andDo(^(NSInvocation*) {
-        error_wait_loop->Quit();
-      });
+      consistencyPromoSigninMediator:mediator_
+                      errorDidHappen:ConsistencyPromoSigninMediatorErrorTimeout
+                        withIdentity:kDefaultIdentity]);
 
   CHECK(captured_callback_);
   captured_callback_.Run(signin::WebSigninTracker::Result::kTimeout);
-
-  error_wait_loop->Run();
 
   [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
@@ -444,19 +426,10 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
                                   signin_metrics::AccessPoint::kWebSignin,
                                   signin_ui::CancelationReason::kFailed);
 
-  // The error is only signaled after AuthenticationService::Signout() and
-  // that's async (note: the user never really signed-in in this case, but the
-  // call is made nonetheless).
-  __block auto error_wait_loop = std::make_unique<base::RunLoop>();
   OCMExpect([mediator_delegate_mock_
-                consistencyPromoSigninMediatorSignInCancelled:mediator_])
-      .andDo(^(NSInvocation*) {
-        error_wait_loop->Quit();
-      });
+      consistencyPromoSigninMediatorSignInCancelled:mediator_]);
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
-
-  error_wait_loop->Run();
 
   [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 

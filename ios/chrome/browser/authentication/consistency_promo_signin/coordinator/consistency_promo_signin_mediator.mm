@@ -356,13 +356,10 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
           _accessPoint);
       break;
   }
-  __weak __typeof(self) weakSelf = self;
-  _authenticationService->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, ^() {
-        [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
-                                           errorDidHappen:error
-                                             withIdentity:signinIdentity];
-      });
+  _authenticationService->SignOut(signin_metrics::ProfileSignout::kAbortSignin);
+  [self.delegate consistencyPromoSigninMediator:self
+                                 errorDidHappen:error
+                                   withIdentity:signinIdentity];
 }
 
 #pragma mark - IdentityManagerObserving
