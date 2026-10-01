@@ -13,6 +13,7 @@ namespace {
 constexpr CGFloat kMostVisitedIconTitleSpacing = 10.0;
 constexpr CGFloat kMostVisitedIconTitleSpacingUICleanup = 8.0;
 constexpr CGFloat kMostVisitedIconTitleSpacingWithoutBackground = 13.0;
+constexpr CGFloat kMostVisitedTileImageContainerSquareCornerRadius = 16.0;
 
 constexpr CGFloat kContainerTopInset = 20.0;
 constexpr CGFloat kContainerHorizontalInset = 20.0;
@@ -39,10 +40,14 @@ CGFloat MostVisitedIconContainerSize() {
   return kMagicStackImageContainerWidth;
 }
 
+CGFloat MostVisitedIconContainerCornerRadius() {
+  return IsNewTabPageUICleanupEnabled()
+             ? kMostVisitedTileImageContainerSquareCornerRadius
+             : (kMagicStackImageContainerWidth / 2);
+}
+
 const NSDirectionalEdgeInsets kMostVisitedContainerInsets = {
     kContainerTopInset, kContainerHorizontalInset, 0.0,
     kContainerHorizontalInset};
-
-const CGFloat kMostVisitedTileImageContainerSquareCornerRadius = 16.0;
 
 const CGFloat kMostVisitedTileIconSize = 56.0;

@@ -14,11 +14,11 @@ CGFloat MostVisitedIconTitleSpacing();
 // The size of the container for a Most Visited Tile's favicon.
 CGFloat MostVisitedIconContainerSize();
 
+// The corner radius of the container for a Most Visited Tile's icon.
+CGFloat MostVisitedIconContainerCornerRadius();
+
 // Insets for the Most Visited collection in a container.
 extern const NSDirectionalEdgeInsets kMostVisitedContainerInsets;
-
-// The corner radius to give the MVT image background rounded square corners.
-extern const CGFloat kMostVisitedTileImageContainerSquareCornerRadius;
 
 // Size of the favicon or icon in a most visited tile.
 extern const CGFloat kMostVisitedTileIconSize;
