@@ -81,10 +81,12 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/util/DimensionCompatUnitTest.java",
     "java/src/org/chromium/components/browser_ui/util/DownloadUtilsTest.java",
     "java/src/org/chromium/components/browser_ui/util/TimeTextResolverUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/util/ToolbarUtilsTest.java",
     "java/src/org/chromium/components/browser_ui/util/motion/MotionEventInfoUnitTest.java",
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -92,11 +94,14 @@ robolectric_library("junit") {
     "//cc:cc_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
   ]
+  resources_package = "org.chromium.components.browser_ui.util"
 }
 
 android_library("unit_device_javatests") {
@@ -104,7 +109,6 @@ android_library("unit_device_javatests") {
   sources = [
     "java/src/org/chromium/components/browser_ui/util/AvatarGeneratorTest.java",
     "java/src/org/chromium/components/browser_ui/util/FirstDrawDetectorTest.java",
-    "java/src/org/chromium/components/browser_ui/util/ToolbarUtilsTest.java",
     "java/src/org/chromium/components/browser_ui/util/motion/OnPeripheralClickListenerTest.java",
   ]
   deps = [
@@ -113,7 +117,6 @@ android_library("unit_device_javatests") {
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
