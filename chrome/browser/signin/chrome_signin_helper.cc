@@ -66,6 +66,7 @@
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/tabs/public/tab_interface.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -202,7 +203,9 @@ bool IsWebContentsForemost(Profile* profile,
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   // Do not do anything if the navigation happened in the "background".
-  if (!browser || !browser->GetWindow()->IsActive()) {
+  if (!browser || !browser->GetWindow()->IsActive() ||
+      !browser->GetActiveTabInterface() ||
+      browser->GetActiveTabInterface()->GetContents() != web_contents) {
     return false;
   }
 
