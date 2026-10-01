@@ -710,7 +710,10 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
       /*disabled_features=*/{});
   SetupScreenshotUploadConfig();
 
-  EXPECT_CALL(delegate(), OnScreensharePickerOpened());
+  bool picker_opened_synchronously = false;
+  EXPECT_CALL(delegate(), OnScreensharePickerOpened()).WillOnce([&]() {
+    picker_opened_synchronously = true;
+  });
   EXPECT_CALL(delegate(), OnScreensharePickerClosed());
 
   content::desktop_capture::ScopedDesktopCapturerForTesting scoped_capturer(
@@ -745,6 +748,8 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
   base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
   controller().StartScreenshare(/*prefer_entire_screen=*/false,
                                 future.GetCallback());
+  EXPECT_TRUE(picker_opened_synchronously);
+  EXPECT_TRUE(controller().IsScreenshareInProgressForTesting());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(*future.Get(), expected_token);
