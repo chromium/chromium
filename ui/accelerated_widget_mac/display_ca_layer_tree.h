@@ -63,11 +63,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
 
   // A CALayer that has its content set to an IOSurface.
   CALayer* __strong io_surface_layer_;
-
-  // Mach ports that keep the last three frames alive until they are released
-  // by the window server.
-  base::circular_deque<base::apple::ScopedMachSendRight>
-      ca_context_fence_mach_ports_;
 };
 
 }  // namespace ui
