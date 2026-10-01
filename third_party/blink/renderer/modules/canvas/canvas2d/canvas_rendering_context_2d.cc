@@ -256,21 +256,10 @@ bool CanvasRenderingContext2D::IsComposited() const {
 }
 
 bool CanvasRenderingContext2D::Is2DCanvasAccelerated() const {
-  if (IsHibernating()) {
+  if (IsHibernating() || !canvas()) {
     return false;
   }
-  if (canvas()) {
-    if (shared_image_provider_) {
-      return shared_image_provider_->IsAccelerated();
-    }
-    if (bitmap_provider_) {
-      return false;
-    }
-  }
-  if (!Host()) {
-    return false;
-  }
-  return Host()->ShouldTryToUseGpuRaster();
+  return BaseRenderingContext2D::Is2DCanvasAccelerated();
 }
 
 void CanvasRenderingContext2D::Stop() {

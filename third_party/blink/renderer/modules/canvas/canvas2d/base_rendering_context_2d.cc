@@ -186,6 +186,19 @@ bool BaseRenderingContext2D::IsPaintable() const {
   return HasResourceProvider();
 }
 
+bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
+  if (shared_image_provider_) {
+    return shared_image_provider_->IsAccelerated();
+  }
+  if (bitmap_provider_) {
+    return false;
+  }
+  if (!Host()) {
+    return false;
+  }
+  return Host()->ShouldTryToUseGpuRaster();
+}
+
 base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   if (shared_image_provider_) {
     return shared_image_provider_->EstimatedSizeInBytes();
