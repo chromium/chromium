@@ -22,7 +22,6 @@ source_set("util") {
 
   deps = [
     "//base",
-    "//content/public/common",
     "//extensions/buildflags",
     "//pdf:buildflags",
     "//url",

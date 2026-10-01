@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
-#include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 #include "url/origin.h"
