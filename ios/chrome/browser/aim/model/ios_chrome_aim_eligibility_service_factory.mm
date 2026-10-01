@@ -32,6 +32,9 @@ AimEligibilityService::Configuration CreateConfiguration(
   config.user_agent_with_cobrowse_suffix = base::StrCat(
       {web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE), " ",
        contextual_tasks::GetContextualTasksUserAgentSuffix()});
+  config.search_capabilities_version =
+      contextual_tasks::GetContextualTasksSearchCapabilitiesVersion();
+
   // TODO(crbug.com/486945769): Add support for `Sec-CH-UA-Full-Version-List`
   // Header.
   config.full_version_list = "";
