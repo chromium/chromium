@@ -970,6 +970,7 @@ test("gfx_unittests") {
       "//mojo/public/cpp/test_support:test_utils",
       "//ui/gfx/geometry/mojom:unit_test",
       "//ui/gfx/image/mojom:unit_test",
+      "//ui/gfx/mojom:hdr_metadata",
       "//ui/gfx/mojom:test_interfaces",
       "//ui/gfx/range/mojom:unit_test",
     ]
