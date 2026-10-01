@@ -4,31 +4,27 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.pm.PackageInfo;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -62,27 +58,29 @@ import java.util.HashMap;
 
 /** Tests for {@link CustomTabDelegateFactory} and its internal delegates. */
 @RunWith(BaseRobolectricTestRunner.class)
-// TODO(567604165): Remove mocking of Views / Activities
-@SuppressWarnings({"deprecation", "DoNotMock"})
+@SuppressWarnings("deprecation")
 public class CustomTabDelegateFactoryUnitTest {
     private static final String TEST_WEBAPK_PACKAGE_NAME = "org.chromium.webapk.testpackage";
+    private static final String TEST_TWA_PACKAGE_NAME = "org.chromium.twa.testpackage";
+    private static final String TWA_FOCUS_ACTIVITY_CLASS_NAME =
+            "com.google.androidbrowserhelper.trusted.FocusActivity";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
-    @Mock private PackageManager mPackageManager;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Tab mTab;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
 
+    private Activity mActivity;
     private CustomTabDelegateFactory mFactory;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        shadowOf(mActivity).setInMultiWindowMode(true);
         // Common mocks for activateContents() execution.
-        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.isIncognitoBranded()).thenReturn(false);
         when(mTab.isInitialized()).thenReturn(true);
@@ -90,7 +88,25 @@ public class CustomTabDelegateFactoryUnitTest {
         when(mTabModel.indexOf(mTab)).thenReturn(0);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.isActivityTopResumedSupported()).thenReturn(false);
-        when(mActivity.isInMultiWindowMode()).thenReturn(true);
+    }
+
+    /** Installs the TWA package, optionally granting it the REORDER_TASKS permission. */
+    private void installTwaPackage(boolean grantReorderTasks) {
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = TEST_TWA_PACKAGE_NAME;
+        packageInfo.requestedPermissions = new String[] {Manifest.permission.REORDER_TASKS};
+        packageInfo.requestedPermissionsFlags =
+                new int[] {grantReorderTasks ? PackageInfo.REQUESTED_PERMISSION_GRANTED : 0};
+        shadowOf(mActivity.getPackageManager()).installPackage(packageInfo);
+    }
+
+    /** Adds the TWA's FocusActivity with the given task affinity. */
+    private void addTwaFocusActivity(String taskAffinity) {
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = TEST_TWA_PACKAGE_NAME;
+        activityInfo.name = TWA_FOCUS_ACTIVITY_CLASS_NAME;
+        activityInfo.taskAffinity = taskAffinity;
+        shadowOf(mActivity.getPackageManager()).addOrUpdateActivity(activityInfo);
     }
 
     private void createFactory(@ActivityType int activityType) {
@@ -151,11 +167,8 @@ public class CustomTabDelegateFactoryUnitTest {
         // Invoke activateContents() which delegates to bringActivityToForeground().
         delegate.activateContents();
 
-        // Intercept and verify the Intent.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mActivity).startActivity(intentCaptor.capture());
-
-        Intent intent = intentCaptor.getValue();
+        // Verify the started Intent.
+        Intent intent = shadowOf(mActivity).getNextStartedActivity();
         Assert.assertNotNull(intent);
 
         ComponentName component = intent.getComponent();
@@ -177,17 +190,12 @@ public class CustomTabDelegateFactoryUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION)
     public void testBringActivityToForeground_Twa() {
-        final String twaPackageName = "org.chromium.twa.testpackage";
-        when(mPackageManager.checkPermission(Manifest.permission.REORDER_TASKS, twaPackageName))
-                .thenReturn(PackageManager.PERMISSION_GRANTED);
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.taskAffinity = twaPackageName;
-        when(mPackageManager.resolveActivity(any(), anyInt())).thenReturn(resolveInfo);
+        installTwaPackage(/* grantReorderTasks= */ true);
+        addTwaFocusActivity(/* taskAffinity= */ TEST_TWA_PACKAGE_NAME);
 
         // Mock TWA configurations using doReturn to bypass final method calls.
         doReturn(ActivityType.TRUSTED_WEB_ACTIVITY).when(mIntentDataProvider).getActivityType();
-        doReturn(twaPackageName).when(mIntentDataProvider).getClientPackageName();
+        doReturn(TEST_TWA_PACKAGE_NAME).when(mIntentDataProvider).getClientPackageName();
         createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
 
         TabWebContentsDelegateAndroid delegate = mFactory.createWebContentsDelegate(mTab);
@@ -196,18 +204,14 @@ public class CustomTabDelegateFactoryUnitTest {
         // Invoke activateContents() which delegates to bringActivityToForeground().
         delegate.activateContents();
 
-        // Intercept and verify the Intent.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mActivity).startActivity(intentCaptor.capture());
-
-        Intent intent = intentCaptor.getValue();
+        // Verify the started Intent.
+        Intent intent = shadowOf(mActivity).getNextStartedActivity();
         Assert.assertNotNull(intent);
 
         ComponentName component = intent.getComponent();
         Assert.assertNotNull(component);
-        Assert.assertEquals(twaPackageName, component.getPackageName());
-        Assert.assertEquals(
-                "com.google.androidbrowserhelper.trusted.FocusActivity", component.getClassName());
+        Assert.assertEquals(TEST_TWA_PACKAGE_NAME, component.getPackageName());
+        Assert.assertEquals(TWA_FOCUS_ACTIVITY_CLASS_NAME, component.getClassName());
 
         Assert.assertEquals(
                 Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -219,12 +223,11 @@ public class CustomTabDelegateFactoryUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION)
     public void testBringActivityToForeground_Twa_MissingReorderPermission_FallsBack() {
-        final String twaPackageName = "org.chromium.twa.testpackage";
-        when(mPackageManager.checkPermission(Manifest.permission.REORDER_TASKS, twaPackageName))
-                .thenReturn(PackageManager.PERMISSION_DENIED);
+        installTwaPackage(/* grantReorderTasks= */ false);
+        addTwaFocusActivity(/* taskAffinity= */ TEST_TWA_PACKAGE_NAME);
 
         doReturn(ActivityType.TRUSTED_WEB_ACTIVITY).when(mIntentDataProvider).getActivityType();
-        doReturn(twaPackageName).when(mIntentDataProvider).getClientPackageName();
+        doReturn(TEST_TWA_PACKAGE_NAME).when(mIntentDataProvider).getClientPackageName();
         createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
 
         TabWebContentsDelegateAndroid delegate = mFactory.createWebContentsDelegate(mTab);
@@ -232,20 +235,16 @@ public class CustomTabDelegateFactoryUnitTest {
 
         delegate.activateContents();
 
-        verify(mActivity, never()).startActivity(any());
-        verify(mActivity).getTaskId();
+        Assert.assertNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION)
     public void testBringActivityToForeground_Twa_FocusActivityNotFound_FallsBack() {
-        final String twaPackageName = "org.chromium.twa.testpackage";
-        when(mPackageManager.checkPermission(Manifest.permission.REORDER_TASKS, twaPackageName))
-                .thenReturn(PackageManager.PERMISSION_GRANTED);
-        when(mPackageManager.resolveActivity(any(), anyInt())).thenReturn(null);
+        installTwaPackage(/* grantReorderTasks= */ true);
 
         doReturn(ActivityType.TRUSTED_WEB_ACTIVITY).when(mIntentDataProvider).getActivityType();
-        doReturn(twaPackageName).when(mIntentDataProvider).getClientPackageName();
+        doReturn(TEST_TWA_PACKAGE_NAME).when(mIntentDataProvider).getClientPackageName();
         createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
 
         TabWebContentsDelegateAndroid delegate = mFactory.createWebContentsDelegate(mTab);
@@ -253,23 +252,17 @@ public class CustomTabDelegateFactoryUnitTest {
 
         delegate.activateContents();
 
-        verify(mActivity, never()).startActivity(any());
-        verify(mActivity).getTaskId();
+        Assert.assertNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION)
     public void testBringActivityToForeground_Twa_EmptyTaskAffinity_FallsBack() {
-        final String twaPackageName = "org.chromium.twa.testpackage";
-        when(mPackageManager.checkPermission(Manifest.permission.REORDER_TASKS, twaPackageName))
-                .thenReturn(PackageManager.PERMISSION_GRANTED);
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.taskAffinity = "";
-        when(mPackageManager.resolveActivity(any(), anyInt())).thenReturn(resolveInfo);
+        installTwaPackage(/* grantReorderTasks= */ true);
+        addTwaFocusActivity(/* taskAffinity= */ "");
 
         doReturn(ActivityType.TRUSTED_WEB_ACTIVITY).when(mIntentDataProvider).getActivityType();
-        doReturn(twaPackageName).when(mIntentDataProvider).getClientPackageName();
+        doReturn(TEST_TWA_PACKAGE_NAME).when(mIntentDataProvider).getClientPackageName();
         createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
 
         TabWebContentsDelegateAndroid delegate = mFactory.createWebContentsDelegate(mTab);
@@ -277,8 +270,7 @@ public class CustomTabDelegateFactoryUnitTest {
 
         delegate.activateContents();
 
-        verify(mActivity, never()).startActivity(any());
-        verify(mActivity).getTaskId();
+        Assert.assertNull(shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test

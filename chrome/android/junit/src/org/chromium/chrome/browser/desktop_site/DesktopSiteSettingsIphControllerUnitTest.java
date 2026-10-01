@@ -67,14 +67,12 @@ import java.util.List;
 
 /** Unit tests for {@link DesktopSiteSettingsIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DesktopSiteSettingsIphControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private WebsitePreferenceBridge mWebsitePreferenceBridge;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private View mToolbarMenuButton;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private WeakReference<Context> mWeakReferenceContext;
@@ -91,6 +89,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     private DesktopSiteSettingsIphController mController;
     private GURL mTabUrl;
     private Context mContext;
+    private View mToolbarMenuButton;
 
     @Before
     public void setUp() {
@@ -99,7 +98,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         doReturn(mWeakReferenceContext).when(mWindowAndroid).getContext();
         doReturn(mContext).when(mWeakReferenceContext).get();
-        doReturn(mContext).when(mToolbarMenuButton).getContext();
+        mToolbarMenuButton = new View(mContext);
 
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTracker.wouldTriggerHelpUi(

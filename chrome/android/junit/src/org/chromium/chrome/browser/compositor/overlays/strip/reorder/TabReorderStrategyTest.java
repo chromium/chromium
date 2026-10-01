@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
@@ -28,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
@@ -186,7 +186,9 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
 
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mAnimationHost).startAnimations(anyList(), isNull());
-        verify(mContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        assertEquals(
+                HapticFeedbackConstants.LONG_PRESS,
+                Shadows.shadowOf(mContainerView).lastHapticFeedbackPerformed());
     }
 
     /**

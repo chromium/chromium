@@ -21,6 +21,7 @@ import android.view.HapticFeedbackConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
@@ -140,7 +141,9 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mAnimationHost).startAnimations(anyList(), isNull());
-        verify(mContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        assertEquals(
+                HapticFeedbackConstants.LONG_PRESS,
+                Shadows.shadowOf(mContainerView).lastHapticFeedbackPerformed());
     }
 
     /**

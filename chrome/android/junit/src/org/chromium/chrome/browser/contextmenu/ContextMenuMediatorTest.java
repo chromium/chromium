@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -57,7 +58,6 @@ import java.util.List;
 /** Unit tests for the context menu mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuMediatorTest {
 
     // For submenu navigation tests
@@ -70,14 +70,14 @@ public class ContextMenuMediatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private ContextMenuHeaderCoordinator mHeaderCoordinator;
     @Mock private Callback<Integer> mClickCallback;
     @Mock private OnClickListener mItemClickListener;
     @Mock private Runnable mDismissDialog;
     @Mock private Profile mProfile;
-    @Mock private ListView mListView;
 
+    private Activity mActivity;
+    private ListView mListView;
     private ContextMenuMediator mMediator;
 
     // For submenu navigation tests
@@ -92,6 +92,8 @@ public class ContextMenuMediatorTest {
     @Before
     public void setup() {
         FeatureList.setDisableNativeForTesting(true);
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mListView = new ListView(mActivity);
         mMediator =
                 new ContextMenuMediator(
                         mActivity,

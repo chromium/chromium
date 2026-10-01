@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,8 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
@@ -44,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit test for {@link BrandingSecurityButtonAnimationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class, ShadowDrawable.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BrandingSecurityButtonAnimationDelegateUnitTest {
     private static final @DrawableRes int ICON_16_DP =
             R.drawable.focused_outline_overlay_corners_16dp;
@@ -54,7 +47,7 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenario =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Spy ImageButton mImageButton;
+    ImageButton mImageButton;
     Activity mActivity;
 
     private BrandingSecurityButtonAnimationDelegate mAnimationDelegate;
@@ -67,7 +60,7 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
         content.setOrientation(LinearLayout.HORIZONTAL);
         mActivity.setContentView(content);
 
-        mImageButton = Mockito.spy(new ImageButton(mActivity, null));
+        mImageButton = new ImageButton(mActivity, null);
         content.addView(mImageButton);
 
         mAnimationDelegate = new BrandingSecurityButtonAnimationDelegate(mImageButton);
@@ -98,7 +91,6 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
         // Advance looper so the animation finishes.
         advanceLooper(BrandingSecurityButtonAnimationDelegate.ICON_ANIMATION_DURATION_MS);
         assertDrawableResource(ICON_24_DP, mImageButton.getDrawable());
-        verify(mImageButton, atLeastOnce()).setRotation(anyFloat());
         Assert.assertEquals("Rotation should be reset.", 0, mImageButton.getRotation(), 0.01f);
     }
 
@@ -120,7 +112,6 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
         mAnimationDelegate.updateDrawableResource(ICON_16_DP);
         advanceLooper(BrandingSecurityButtonAnimationDelegate.ICON_ANIMATION_DURATION_MS);
         assertDrawableResource(ICON_16_DP, mImageButton.getDrawable());
-        verify(mImageButton, atLeastOnce()).setRotation(anyFloat());
         Assert.assertEquals("Rotation should be reset.", 0, mImageButton.getRotation(), 0.01f);
     }
 

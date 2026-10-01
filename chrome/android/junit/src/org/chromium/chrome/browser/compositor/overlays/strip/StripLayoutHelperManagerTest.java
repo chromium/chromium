@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -43,7 +42,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -148,7 +146,6 @@ import java.util.List;
     ChromeFeatureList.GLIC,
     ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;
@@ -161,7 +158,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
-    @Mock private View mControlContainer;
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -169,7 +165,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private Profile mProfile;
     @Mock private Tab mSelectedTab;
     @Mock private StripLayoutTab mHoveredStripTab;
-    @Mock private ViewStub mTabHoverCardViewStub;
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private ToolbarManager mToolbarManager;
@@ -199,7 +194,6 @@ public class StripLayoutHelperManagerTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private final SettableMonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =
             ObservableSuppliers.createMonotonic();
@@ -209,6 +203,8 @@ public class StripLayoutHelperManagerTest {
             mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Activity mActivity;
+    private View mControlContainer;
+    private ViewStub mTabHoverCardViewStub;
     private SettableMonotonicObservableSupplier<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private int mToolbarPrimaryColor;
@@ -243,7 +239,8 @@ public class StripLayoutHelperManagerTest {
         mTabContentManagerSupplier.set(mTabContentManager);
         mTabModelSupplier.set(mStandardTabModel);
 
-        when(mControlContainer.getContext()).thenReturn(mActivity);
+        mControlContainer = new View(mActivity);
+        mTabHoverCardViewStub = new ViewStub(mActivity);
         when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
         when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
@@ -880,23 +877,19 @@ public class StripLayoutHelperManagerTest {
 
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mControlContainer, atLeastOnce())
-                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
+        List<Rect> exclusionRects = mControlContainer.getSystemGestureExclusionRects();
 
         if (showStrip) {
-            assertEquals(
-                    "Number of exclusion rects is wrong.",
-                    2,
-                    mSystemExclusionRectCaptor.getValue().size());
+            assertEquals("Number of exclusion rects is wrong.", 2, exclusionRects.size());
 
-            Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+            Rect rect = exclusionRects.get(0);
             assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
             assertEquals(
                     "rect.bottom should be the height of the strip.",
                     TAB_STRIP_HEIGHT_PX + topPadding,
                     rect.bottom);
 
-            Rect rect2 = mSystemExclusionRectCaptor.getValue().get(1);
+            Rect rect2 = exclusionRects.get(1);
             // Left: 732 = width(800) - rightPadding(20) - modelSelectorWidth(32) - endPadding(8) -
             // clickSlop(8)
             // Top: 5 = max(topPadding(5) , topPadding(5) + modelSelectorYOffset(3) -
@@ -909,12 +902,9 @@ public class StripLayoutHelperManagerTest {
                     new Rect(732, 5, 780, 45),
                     rect2);
         } else {
-            assertEquals(
-                    "Number of exclusion rects is wrong.",
-                    1,
-                    mSystemExclusionRectCaptor.getValue().size());
+            assertEquals("Number of exclusion rects is wrong.", 1, exclusionRects.size());
 
-            Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+            Rect rect = exclusionRects.get(0);
             assertEquals("rect.left should be 0.", 0, rect.left);
             assertEquals("rect.top should be 0.", 0, rect.top);
             assertEquals("rect.right should be 0.", 0, rect.right);
@@ -949,14 +939,10 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mControlContainer, atLeastOnce())
-                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
-        assertEquals(
-                "Number of exclusion rects is wrong.",
-                1,
-                mSystemExclusionRectCaptor.getValue().size());
+        List<Rect> exclusionRects = mControlContainer.getSystemGestureExclusionRects();
+        assertEquals("Number of exclusion rects is wrong.", 1, exclusionRects.size());
 
-        Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+        Rect rect = exclusionRects.get(0);
         assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
         assertEquals(
                 "rect.bottom should be the height of the strip.",
@@ -995,21 +981,17 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mControlContainer, atLeastOnce())
-                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
-        assertEquals(
-                "Number of exclusion rects is wrong.",
-                2,
-                mSystemExclusionRectCaptor.getValue().size());
+        List<Rect> exclusionRects = mControlContainer.getSystemGestureExclusionRects();
+        assertEquals("Number of exclusion rects is wrong.", 2, exclusionRects.size());
 
-        Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+        Rect rect = exclusionRects.get(0);
         assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
         assertEquals(
                 "rect.bottom should be the height of the strip.",
                 TAB_STRIP_HEIGHT_PX + topPadding,
                 rect.bottom);
 
-        Rect ntbRect = mSystemExclusionRectCaptor.getValue().get(1);
+        Rect ntbRect = exclusionRects.get(1);
         // The NTB touch target is calculated based on its draw position, expanded by click slop,
         // and then offset by the top padding.
         // Expected drawX for NTB with one tab is ~271dp.

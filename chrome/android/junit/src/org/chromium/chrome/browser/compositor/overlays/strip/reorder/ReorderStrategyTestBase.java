@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -45,7 +46,6 @@ import org.chromium.components.tabs.TabAlert;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -76,12 +76,12 @@ public abstract class ReorderStrategyTestBase {
     @Mock protected ActionConfirmationManager mActionConfirmationManager;
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
-    @Mock protected View mContainerView;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
     @Mock protected Supplier<Long> mLastReorderScrollTimeSupplier;
     @Mock protected TabUngrouper mTabUnGrouper;
     @Spy protected AnimationHost mAnimationHost = new TestAnimationHost();
+    protected final View mContainerView = new View(ContextUtils.getApplicationContext());
 
     // Data
     protected SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier =

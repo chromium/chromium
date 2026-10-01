@@ -66,6 +66,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
@@ -101,7 +102,6 @@ import java.util.function.Supplier;
 
 /** Tests for {@link CustomTabIntentDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabIntentDataProviderTest {
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
@@ -879,11 +879,11 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 "extra.activity.referrer",
                 CustomTabIntentDataProvider.getAppIdFromReferrer(
-                        buildMockActivity("android-app://extra.activity.referrer")));
+                        buildActivityWithReferrer("android-app://extra.activity.referrer")));
         assertEquals(
                 "co.abc.xyz",
                 CustomTabIntentDataProvider.getAppIdFromReferrer(
-                        buildMockActivity("android-app://co.abc.xyz")));
+                        buildActivityWithReferrer("android-app://co.abc.xyz")));
 
         assertNonPackageUriReferrer("");
         assertNonPackageUriReferrer("invalid");
@@ -1682,14 +1682,13 @@ public class CustomTabIntentDataProviderTest {
     private void assertNonPackageUriReferrer(String referrerStr) {
         assertEquals(
                 referrerStr,
-                CustomTabIntentDataProvider.getAppIdFromReferrer(buildMockActivity(referrerStr)));
+                CustomTabIntentDataProvider.getAppIdFromReferrer(
+                        buildActivityWithReferrer(referrerStr)));
     }
 
-    private Activity buildMockActivity(String referrer) {
-        Activity mockActivity = Mockito.mock(Activity.class);
-        Mockito.doReturn(new Intent()).when(mockActivity).getIntent();
-        Mockito.doReturn(Uri.parse(referrer)).when(mockActivity).getReferrer();
-        return mockActivity;
+    private Activity buildActivityWithReferrer(String referrer) {
+        Intent intent = new Intent().putExtra(Intent.EXTRA_REFERRER, Uri.parse(referrer));
+        return Robolectric.buildActivity(Activity.class, intent).get();
     }
 
     @Test

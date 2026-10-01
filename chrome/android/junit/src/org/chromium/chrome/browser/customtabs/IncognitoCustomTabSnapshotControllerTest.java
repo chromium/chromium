@@ -4,76 +4,78 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.os.Build;
-import android.view.Window;
 import android.view.WindowManager;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /** Robolectric tests for {@link IncognitoCustomTabSnapshotController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoCustomTabSnapshotControllerTest {
+    /** Activity that records setRecentsScreenshotEnabled() calls. */
+    private static class FakeActivity extends Activity {
+        private final List<Boolean> mRecentsScreenshotEnabledCalls = new ArrayList<>();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Window mWindowMock;
+        @Override
+        public void setRecentsScreenshotEnabled(boolean enabled) {
+            mRecentsScreenshotEnabledCalls.add(enabled);
+        }
+    }
 
-    @Mock private Activity mActivityMock;
-
+    private FakeActivity mActivity;
     private boolean mIsIncognitoShowing;
-    private WindowManager.LayoutParams mParams;
     private final Supplier<Boolean> mIsIncognitoShowingSupplier = () -> mIsIncognitoShowing;
 
     @Before
     public void setUp() {
-        mParams = new WindowManager.LayoutParams();
-        doReturn(mParams).when(mWindowMock).getAttributes();
-        doReturn(mWindowMock).when(mActivityMock).getWindow();
+        mActivity = Robolectric.buildActivity(FakeActivity.class).get();
     }
 
     @Test
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsAdded() {
-        mParams.flags = 0;
+        mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         mIsIncognitoShowing = true;
-        new IncognitoCustomTabSnapshotController(mActivityMock, mIsIncognitoShowingSupplier);
+        new IncognitoCustomTabSnapshotController(mActivity, mIsIncognitoShowingSupplier);
 
-        verify(mWindowMock, times(1)).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        assertEquals(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                mActivity.getWindow().getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_SECURE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            verify(mActivityMock, never()).setRecentsScreenshotEnabled(anyBoolean());
+            assertTrue(mActivity.mRecentsScreenshotEnabledCalls.isEmpty());
         }
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsRemoved() {
-        mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
+        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         mIsIncognitoShowing = true;
-        new IncognitoCustomTabSnapshotController(mActivityMock, mIsIncognitoShowingSupplier);
+        new IncognitoCustomTabSnapshotController(mActivity, mIsIncognitoShowingSupplier);
 
-        verify(mWindowMock, times(1)).clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        assertEquals(
+                0,
+                mActivity.getWindow().getAttributes().flags
+                        & WindowManager.LayoutParams.FLAG_SECURE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            verify(mActivityMock, times(1)).setRecentsScreenshotEnabled(false);
+            assertEquals(List.of(false), mActivity.mRecentsScreenshotEnabledCalls);
         }
     }
 }

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -23,8 +22,6 @@ import android.net.Uri;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -64,15 +62,24 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
 @Features.DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeDragAndDropBrowserDelegateUnitTest {
+    /** An Activity that returns canned {@link DragAndDropPermissions}. */
+    private static class TestDragAndDropActivity extends Activity {
+        private DragAndDropPermissions mDragAndDropPermissions;
+
+        @Override
+        public DragAndDropPermissions requestDragAndDropPermissions(DragEvent event) {
+            return mDragAndDropPermissions;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private DragEvent mDragEvent;
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
     @Mock private Profile mProfile;
 
+    private TestDragAndDropActivity mActivity;
     private Context mApplicationContext;
     private ChromeDragAndDropBrowserDelegate mDelegate;
 
@@ -82,10 +89,8 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         ContextUtils.initApplicationContextForTests(mApplicationContext);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        when(mActivity.requestDragAndDropPermissions(mDragEvent))
-                .thenReturn(mDragAndDropPermissions);
-        when(mActivity.getApplicationContext())
-                .thenReturn(ApplicationProvider.getApplicationContext());
+        mActivity = Robolectric.buildActivity(TestDragAndDropActivity.class).get();
+        mActivity.mDragAndDropPermissions = mDragAndDropPermissions;
 
         mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
     }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -31,6 +32,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.shadows.ShadowPowerManager;
 
 import org.chromium.base.ActivityState;
@@ -51,11 +54,9 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED,
     ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityTimeoutHandlerUnitTest {
     @Mock private Runnable mFinishRunnable;
     @Mock private PendingIntent mPendingIntent;
-    @Mock private Activity mActivity;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -63,6 +64,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     private CustomTabActivityTimeoutHandler mTimeoutHandler;
 
     private static final int TIMEOUT_MINUTES = 5;
+    private Activity mActivity;
     private Intent mIntentWithExtra;
     private Context mContext;
     private ShadowPowerManager mShadowPowerManager;
@@ -70,6 +72,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ChromeFeatureList.sCctResetMinimumTimeoutMinutesAllowed.setForTesting(1);
         ChromeFeatureList.sCctResetTimeoutMinutesOverride.setForTesting(0);
         mIntentWithExtra = new Intent();
@@ -83,7 +86,6 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mShadowPowerManager = shadowOf(powerManager);
         mShadowPowerManager.setIsInteractive(true);
-        when(mActivity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
@@ -410,24 +412,34 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         verify(constructorContext, never()).getSystemService(Context.POWER_SERVICE);
     }
 
+    /** Returns an Activity instance that was torn down due to a configuration change. */
+    private static Activity createActivityChangingConfigurations() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
+        Activity activity = controller.get();
+        // recreate() marks the original instance as changing configurations before stopping it.
+        controller.recreate();
+        assertTrue(activity.isChangingConfigurations());
+        return activity;
+    }
+
     @Test
     public void onStop_isChangingConfigurations_doesNotSetTimestamp() {
-        when(mActivity.isChangingConfigurations()).thenReturn(true);
-        mTimeoutHandler.onStop(mActivity);
+        Activity activity = createActivityChangingConfigurations();
+        mTimeoutHandler.onStop(activity);
 
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
-        mTimeoutHandler.onResume(mActivity);
+        mTimeoutHandler.onResume(activity);
         verify(mFinishRunnable, never()).run();
     }
 
     @Test
     @DisableFeatures({ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES})
     public void onStop_isChangingConfigurations_flagDisabled_setsTimestamp() {
-        when(mActivity.isChangingConfigurations()).thenReturn(true);
-        mTimeoutHandler.onStop(mActivity);
+        Activity activity = createActivityChangingConfigurations();
+        mTimeoutHandler.onStop(activity);
 
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
-        mTimeoutHandler.onResume(mActivity);
+        mTimeoutHandler.onResume(activity);
         verify(mFinishRunnable).run();
     }
 

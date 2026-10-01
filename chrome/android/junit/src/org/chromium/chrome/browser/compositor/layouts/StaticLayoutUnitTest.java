@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -76,7 +77,6 @@ import java.util.List;
 /** Unit tests for {@link StaticLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StaticLayoutUnitTest {
 
     private static final int TAB1_ID = 0;
@@ -116,12 +116,11 @@ public class StaticLayoutUnitTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
-    @Mock private View mTabView;
-
     private Tab mTab1;
     private Tab mTab2;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
+    private final View mTabView = new View(ContextUtils.getApplicationContext());
     private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
             ObservableSuppliers.createNonNull(0L);
     private CompositorAnimationHandler mCompositorAnimationHandler;
@@ -135,6 +134,8 @@ public class StaticLayoutUnitTest {
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
+        mTabView.setFocusable(true);
+        mTabView.setFocusableInTouchMode(true);
         mTab1 = prepareTab(TAB1_ID, new GURL(TAB1_URL));
         mTab2 = prepareTab(TAB2_ID, new GURL(TAB2_URL));
 
@@ -388,14 +389,13 @@ public class StaticLayoutUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testTabGainsFocusOnPhoneOnLayoutDoneShowing() {
         doReturn(mTabView).when(mTab1).getView();
-        doReturn(true).when(mTabView).requestFocus();
 
         mStaticLayout.doneShowing();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT)) {
-            verify(mTabView, never()).requestFocus();
+            assertFalse(mTabView.isFocused());
         } else {
-            verify(mTabView).requestFocus();
+            assertTrue(mTabView.isFocused());
         }
     }
 
@@ -403,7 +403,7 @@ public class StaticLayoutUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testTabDoesNotGainFocusOnTabletOnLayoutDoneShowing() {
         mStaticLayout.doneShowing();
-        verify(mTabView, never()).requestFocus();
+        assertFalse(mTabView.isFocused());
     }
 
     @Test

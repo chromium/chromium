@@ -97,7 +97,6 @@ import java.util.function.Supplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripLayoutTrailingButtonsCoordinatorTest {
     private static final float DEFAULT_AVAILABLE_SPACE_DP = 1000f;
 
@@ -108,7 +107,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private GlicButtonDelegate mGlicClickHandler;
-    @Mock private View mToolbarContainerView;
     @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -130,6 +128,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private final long mBwiPtr = 123L;
 
     private Activity mActivity;
+    private View mToolbarContainerView;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
     private TintedCompositorButton mModelSelectorButton;
     private TintedCompositorTextButton mGlicButton;
@@ -163,8 +162,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
-        when(mToolbarContainerView.getRootView()).thenReturn(mToolbarContainerView);
-        when(mToolbarContainerView.getResources()).thenReturn(mActivity.getResources());
+        mToolbarContainerView = new View(mActivity);
         when(mTaskTracker.get(anyInt())).thenReturn(mTask);
         when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(mBwiPtr);
         doAnswer(
