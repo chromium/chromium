@@ -6,6 +6,8 @@ import type {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 import {GenericAssociatedInterfacePendingReceiver} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 import type {GenericAssociatedInterfacePendingReceiverEndpoint, GenericPendingAssociatedReceiver} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 
+import * as explainFulfillment from './explain_fulfillment.js';
+
 // The parts of a generated mojom remote (e.g. `FooRemote`) the host uses.
 export interface InlineFulfillmentRemote {
   $: {
@@ -30,11 +32,12 @@ export interface InlineFulfillmentModule {
 export type InlineFulfillmentLoader = () => Promise<InlineFulfillmentModule>;
 
 // Maps `InlineFulfillment.resource_name` to its module. Names not listed here
-// are ignored.
-// TODO(liuwilliam): Import latency-sensitive cards such as Explain statically,
-// so the click doesn't wait on a module load before the browser gets the
-// channel.
-const LOADERS = new Map<string, InlineFulfillmentLoader>();
+// are ignored. Latency-sensitive cards such as Explain are imported
+// statically, so the click doesn't wait on a module fetch before the browser
+// gets the channel.
+const LOADERS = new Map<string, InlineFulfillmentLoader>([
+  ['explain_fulfillment.js', () => Promise.resolve(explainFulfillment)],
+]);
 
 function toGenericChannel(
     interfaceName: string,

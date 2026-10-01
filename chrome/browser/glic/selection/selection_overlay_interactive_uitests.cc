@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,14 +18,12 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/selection/mojom/action.mojom.h"
-#include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
-#include "chrome/browser/selection/suggestion_tool.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -41,24 +37,17 @@
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/web_ui_test_data_source.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -1615,206 +1604,150 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
 
 namespace {
 
-class InlineEchoSuggestion : public ::selection::Suggestion,
-                             public ::test::mojom::Echo {
- public:
-  InlineEchoSuggestion() {
-    SetInterface<::test::mojom::Echo>(base::BindRepeating(
-        &InlineEchoSuggestion::BindEcho, base::Unretained(this)));
-  }
-
-  // ::selection::Suggestion:
-  const std::u16string& GetLabel() const override { return label_; }
-  void OnSuggestionPresented() override {}
-  void OnSuggestionExecuted() override {}
-  ::selection::mojom::ActionPtr GetAction() const override {
-    return ::selection::mojom::Action::NewInlineFulfillment(
-        ::selection::mojom::InlineFulfillment::New("test_card.js"));
-  }
-
-  // ::test::mojom::Echo:
-  void EchoString(const std::string& input,
-                  EchoStringCallback callback) override {
-    std::move(callback).Run(input);
-  }
-
- private:
-  void BindEcho(mojo::PendingAssociatedReceiver<::test::mojom::Echo> receiver) {
-    receiver_.Bind(std::move(receiver));
-  }
-
-  std::u16string label_ = u"Inline";
-  mojo::AssociatedReceiver<::test::mojom::Echo> receiver_{this};
-};
-
-class InlineEchoSuggestionTool : public ::selection::SuggestionTool {
- public:
-  ToolId GetToolId() const override {
-    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
-  }
-
-  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
-                          ::selection::SuggestionsCallback callback) override {
-    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<InlineEchoSuggestion>());
-    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
-  }
-};
-
 class SelectionOverlayInteractiveTestWithInlineFulfillment
     : public SelectionOverlayInteractiveTest {
  public:
   SelectionOverlayInteractiveTestWithInlineFulfillment() {
     feature_list_.InitFromCommandLine(
-        "GlicSelectionOverlayPrompt,GlicSelectionSmallChip,GlicSelectionPrompt",
-        "");
+        /*enable_features=*/
+        "GlicSelectionOverlayPrompt,GlicSelectionSmallChip,GlicSelectionPrompt,"
+        "QuickAnswersSelectionSuggestions",
+        /*disable_features=*/"");
   }
 
-  void SetUpOnMainThread() override {
-    SelectionOverlayInteractiveTest::SetUpOnMainThread();
-    tab_ = browser()->tab_strip_model()->GetActiveTab();
-    ::selection::SuggestionService::From(tab_)->RegisterTool(&tool_);
+ protected:
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
 
-    // `::test::mojom::Echo`'s JS binding, even after generation, is not bundled
-    // within selection-overlay's own resource bundle. For that we need to
-    // explicitly include the test bundle.
-    base::FilePath pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path.AppendASCII("browser_tests.pak"), ui::kScaleFactorNone);
-    webui::CreateAndAddUntrustedWebUITestDataSource(browser()->GetProfile());
-  }
+  auto OpenExplainCard(ui::ElementIdentifier tab,
+                       ui::ElementIdentifier overlay) {
+    const DeepQuery kOverlayApp = {"selection-overlay-app"};
 
-  void TearDownOnMainThread() override {
-    ::selection::SuggestionService::From(tab_)->UnregisterTool(&tool_);
-    tab_ = nullptr;
-    SelectionOverlayInteractiveTest::TearDownOnMainThread();
+    // Text for the user to select.
+    static constexpr char kAddTextJs[] = R"js(
+      () => {
+        document.body.innerHTML = '<p>Explain this sentence please</p>';
+      }
+    )js";
+    static constexpr char kClickExplainChipJs[] = R"js(
+      el => {
+        const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
+            c => c.querySelector('.chip-label')?.textContent === 'Explain');
+        chip?.click();
+        return !!chip;
+      }
+    )js";
+
+    return Steps(
+        InstrumentTab(tab), NavigateWebContents(tab, GetEmptyDocURL()),
+        ExecuteJs(tab, kAddTextJs),
+        // Select the text. The small chip shows up on it. This avoids an OS
+        // mouse drag, which can hang on Windows bots.
+        WaitForWebContentsPainted(tab), Do([this] {
+          content::WebContents* contents =
+              browser()->tab_strip_model()->GetActiveWebContents();
+          contents->Focus();
+          contents->SelectAll();
+        }),
+        // The chip is its own widget, outside the browser's context.
+        InAnyContext(
+            WaitForShow(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId),
+            PressButton(
+                GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
+        // The overlay opens on the selected text.
+        WaitForShow(OverlayBaseController::kOverlayId),
+        InstrumentNonTabWebView(overlay, OverlayBaseController::kOverlayId),
+        WaitForJsResultAt(overlay, kOverlayApp,
+                          "el => el.screenshot_ !== null"),
+        WaitForElementVisible(overlay, kSelectionOverlay),
+        WaitForJsResultAt(overlay, kSelectionOverlay, kClickExplainChipJs));
   }
 
  private:
-  InlineEchoSuggestionTool tool_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<tabs::TabInterface> tab_ = nullptr;
 };
 
 }  // namespace
 
-// TODO(liuwilliam): Rewrite this once a real fulfillment WebUI component is
-// added.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       ClickInlineChipConnectsCardToSuggestion) {
+                       ClickExplainChipShowsCard) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-
-  // Text for the user to select.
-  static constexpr char kAddTextJs[] = R"js(
-    () => {
-      document.body.innerHTML = '<p>Explain this sentence please</p>';
-    }
-  )js";
-  // Stands in for a real card module. The card keeps an Echo remote, which
-  // the host binds to the interface the suggestion binds.
-  static constexpr char kAddCardModuleJs[] = R"js(
-    async el => {
-      // Loaded from `browser_tests.pak`
-      const {EchoRemote} = await import(
-          '//webui-test/glic/selection_overlay/echo.test-mojom-webui.js');
-      const host = el.shadowRoot.querySelector('#inlineFulfillmentHost');
-      // test_card.js is the named resource to load in InlineEchoSuggestion.
-      host.loaders.set('test_card.js', async () => ({
-        create() {
-          const element = document.createElement('div');
-          element.id = 'testCard';
-          element.echo = new EchoRemote();
-          return {
-            element,
-            interfaceName: 'test.mojom.Echo',
-            remote: element.echo,
-          };
-        },
-      }));
-    }
-  )js";
-  static constexpr char kClickInlineChipJs[] = R"js(
-    el => {
-      const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
-          // Label from `InlineEchoSuggestion`
-          c => c.querySelector('.chip-label')?.textContent === 'Inline');
-      chip?.click();
-      return !!chip;
-    }
-  )js";
-  static constexpr char kCardShownJs[] = R"js(
-    el => !!el.shadowRoot.querySelector('#inlineFulfillmentHost > #testCard')
-  )js";
-  // Round trip from the card to `InlineEchoSuggestion`.
-  static constexpr char kEchoJs[] = R"js(
-    async el => {
-      const card =
-          el.shadowRoot.querySelector('#inlineFulfillmentHost > #testCard');
-      return (await card.echo.echoString('hello')).echoedInput;
-    }
+  static constexpr char kCardTextJs[] = R"js(
+    el => el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment > .explanation')
+        ?.textContent
   )js";
   static constexpr char kChipsHiddenJs[] = R"js(
     el => getComputedStyle(
         el.shadowRoot.querySelector('.action-chips-row')).display === 'none'
   )js";
-  // The chip is hidden, so click it from script. A second show() would
-  // replace the card once the module loads.
-  static constexpr char kClickChipAgainKeepsCardJs[] = R"js(
-    async el => {
-      const card =
-          el.shadowRoot.querySelector('#inlineFulfillmentHost > #testCard');
-      [...el.shadowRoot.querySelectorAll('.action-chip')]
-          .find(c => c.querySelector('.chip-label')?.textContent === 'Inline')
-          .click();
-      await new Promise(resolve => setTimeout(resolve));
-      return el.shadowRoot.querySelector(
-                 '#inlineFulfillmentHost > #testCard') === card;
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      // The card shows the explanation in place of the chips.
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardTextJs,
+                        ExplainSuggestion::kPlaceholderText),
+      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kChipsHiddenJs),
+      // The overlay stays up for inline fulfillment.
+      CheckResult(GetOverlayVisibilityAt(0), true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       GrowingCardStaysInViewport) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  static constexpr char kCardShownJs[] = R"js(
+    el => !!el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment')
+  )js";
+  // In WebUI, updateFloatingPromptPosition() keeps a 16px margin from the
+  // viewport edges and from the selection. Grows the card until the prompt is
+  // exactly as tall as the space inside the top and bottom margins (innerHeight
+  // - 2 * 16). It can no longer go below the selection, so it must move up. If
+  // it didn't, it would run off the bottom by (selection bottom - 16px), which
+  // is > 0 here since the selected text ends ~26px down.
+  static constexpr char kGrowCardJs[] = R"js(
+    el => {
+      const container =
+          el.shadowRoot.querySelector('#floatingPromptContainer');
+      const host = el.shadowRoot.querySelector('#inlineFulfillmentHost');
+      const grow = innerHeight - 32 - container.getBoundingClientRect().height;
+      host.style.height = `${host.getBoundingClientRect().height + grow}px`;
+    }
+  )js";
+  static constexpr char kPromptInViewportJs[] = R"js(
+    el => {
+      const rect = el.shadowRoot.querySelector('#floatingPromptContainer')
+                       .getBoundingClientRect();
+      return rect.top >= 0 && rect.bottom <= innerHeight;
     }
   )js";
 
   RunTestSequence(
-      InstrumentTab(kActiveTab),
-      NavigateWebContents(kActiveTab, GetEmptyDocURL()),
-      ExecuteJs(kActiveTab, kAddTextJs),
-      // Select the text. The small chip shows up on it. This avoids an OS
-      // mouse drag, which can hang on Windows bots.
-      WaitForWebContentsPainted(kActiveTab), Do([this] {
-        content::WebContents* contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        contents->Focus();
-        contents->SelectAll();
-      }),
-      // The chip is its own widget, outside the browser's context.
-      InAnyContext(
-          WaitForShow(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId),
-          PressButton(GlicSelectionWidgetDelegate::kAskGeminiButtonElementId)),
-      // The overlay opens on the selected text.
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay, kAddCardModuleJs),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        kClickInlineChipJs),
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
       WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
-      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kEchoJs,
-                      "hello"),
-      // The card takes the chips' place.
-      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kChipsHiddenJs),
-      // Clicking the chip again keeps the card, and its channel still works.
-      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                      kClickChipAgainKeepsCardJs),
-      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kEchoJs,
-                      "hello"),
-      // The overlay stays up for inline fulfillment.
-      CheckResult(GetOverlayVisibilityAt(0), true));
+      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay, kGrowCardJs),
+      // The prompt moves so the card stays on screen.
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        kPromptInViewportJs));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       ClickCardAskGeminiOpensSidePanel) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kAskGemini = {
+      "selection-overlay-app", "glic-selection-overlay",
+      "#inlineFulfillmentHost > glic-explain-fulfillment > .ask-gemini"};
+
+  RunTestSequence(OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+                  WaitForElementVisible(kOverlayWebContentsId, kAskGemini),
+                  ClickElement(kOverlayWebContentsId, kAskGemini),
+                  // Glic opens in the side panel.
+                  WaitForShow(kSidePanelElementId),
+                  InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 
 namespace {

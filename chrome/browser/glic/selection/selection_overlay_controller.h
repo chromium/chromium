@@ -72,6 +72,10 @@ class SelectionOverlayController
   static SelectionOverlayController* FromTabWebContents(
       content::WebContents* tab_web_contents);
 
+  // Returns the main frame of the overlay WebUI, or null if there's no
+  // overlay WebUI.
+  content::RenderFrameHost* GetOverlayMainFrame() const;
+
   size_t GetSelectedRegionCount() const { return selected_regions_.size(); }
   std::vector<int> GetPolylineCounts() const;
 

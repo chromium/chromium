@@ -358,6 +358,19 @@
   justify-content: center;
 }
 
+#inlineFulfillmentHost {
+  background-color: #FFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  color: #1F1F1F;
+  font-size: 14px;
+  line-height: 20px;
+  max-width: 100%;
+  padding: 12px 16px;
+  width: 360px;
+}
+
 /* Hidden until it holds a card, so it doesn't add a flex gap. */
 #inlineFulfillmentHost:not(:has(*)) {
   display: none;
@@ -366,4 +379,8 @@
 /* The card takes the chips' place. */
 .action-chips-row:has(~ #inlineFulfillmentHost > *) {
   display: none;
+}
+
+#inlineFulfillmentHost .ask-gemini {
+  margin-top: 12px;
 }

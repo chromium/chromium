@@ -6,16 +6,22 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/prompt_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -911,6 +917,112 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   ASSERT_TRUE(tool.last_suggestion());
   EXPECT_FALSE(tool.last_suggestion()->channel_bound());
+}
+
+namespace {
+
+void Connect(ExplainSuggestion& suggestion,
+             mojo::AssociatedRemote<selection::ExplainFulfillment>& remote) {
+  suggestion.Execute(mojo::GenericPendingAssociatedReceiver(
+      remote.BindNewEndpointAndPassDedicatedReceiver()));
+}
+
+}  // namespace
+
+using ExplainSuggestionBrowserTest = SelectionOverlayBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, GetExplanation) {
+  ExplainSuggestion suggestion(*CreateAndActivateTab(GetSimpleTestUrl()));
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+
+  base::test::TestFuture<const std::string&> explanation;
+  remote->GetExplanation(explanation.GetCallback());
+  EXPECT_EQ(explanation.Get(), ExplainSuggestion::kPlaceholderText);
+}
+
+namespace {
+
+// Makes `search_url` the default search engine.
+void SetTestDefaultSearchEngine(Profile* profile, const GURL& search_url) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+  TemplateURLData data;
+  data.SetShortName(u"Test");
+  data.SetKeyword(u"test");
+  data.SetURL(search_url.spec());
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      template_url_service->Add(std::make_unique<TemplateURL>(data)));
+}
+
+// Shows the overlay on `tab` and returns the overlay WebUI's main frame.
+content::RenderFrameHost* ShowOverlay(tabs::TabInterface* tab) {
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  CHECK(controller);
+  controller->Show(/*options=*/nullptr);
+  EXPECT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+  return controller->GetOverlayMainFrame();
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
+                       OpenTabForSearchUsesDefaultSearchEngine) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  SetTestDefaultSearchEngine(tab->GetProfile(),
+                             GetTestUrl("page.html?q={searchTerms}"));
+  content::RenderFrameHost* overlay = ShowOverlay(tab);
+  ASSERT_TRUE(overlay);
+
+  ExplainSuggestion suggestion(*tab);
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+  auto* tabs = GetTabListInterface();
+  const int tab_count = tabs->GetTabCount();
+
+  // Gives the overlay a user activation, like the click on the card.
+  ASSERT_TRUE(content::ExecJs(overlay, "true"));
+  remote->OpenTabForSearch("hello");
+  remote.FlushForTesting();
+
+  // The search opens in a new foreground tab.
+  EXPECT_EQ(tabs->GetTabCount(), tab_count + 1);
+  EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetVisibleURL(),
+            GetTestUrl("page.html?q=hello"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
+                       OpenTabForSearchNeedsUserActivation) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  SetTestDefaultSearchEngine(tab->GetProfile(),
+                             GetTestUrl("page.html?q={searchTerms}"));
+  ASSERT_TRUE(ShowOverlay(tab));
+
+  ExplainSuggestion suggestion(*tab);
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+  auto* tabs = GetTabListInterface();
+  const int tab_count = tabs->GetTabCount();
+
+  remote->OpenTabForSearch("hello");
+  remote.FlushForTesting();
+
+  EXPECT_EQ(tabs->GetTabCount(), tab_count);
+}
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, AskGeminiOpensGlic) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ExplainSuggestion suggestion(*tab);
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+
+  remote->AskGemini();
+  EXPECT_TRUE(WaitForGlicOpen(tab).has_value());
 }
 
 }  // namespace glic

@@ -315,6 +315,15 @@ SelectionOverlayController* SelectionOverlayController::FromTabWebContents(
                  ->GetUnownedUserDataHost());
 }
 
+content::RenderFrameHost* SelectionOverlayController::GetOverlayMainFrame()
+    const {
+  views::WebView* web_view = GetOverlayWebView();
+  if (!web_view || !web_view->web_contents()) {
+    return nullptr;
+  }
+  return web_view->web_contents()->GetPrimaryMainFrame();
+}
+
 std::vector<int> SelectionOverlayController::GetPolylineCounts() const {
   std::vector<int> polyline_counts;
   for (const auto& [id, region_data] : selected_regions_) {

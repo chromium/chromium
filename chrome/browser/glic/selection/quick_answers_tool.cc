@@ -5,36 +5,14 @@
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 
 namespace glic {
-namespace {
-
-class ExplainSuggestion : public ::selection::Suggestion {
- public:
-  ExplainSuggestion() = default;
-  ~ExplainSuggestion() override = default;
-
-  // ::selection::Suggestion:
-  const std::u16string& GetLabel() const override { return label_; }
-  void OnSuggestionPresented() override {}
-  void OnSuggestionExecuted() override {}
-  ::selection::mojom::ActionPtr GetAction() const override {
-    return ::selection::mojom::Action::NewInlineFulfillment(
-        ::selection::mojom::InlineFulfillment::New("explain_fulfillment.js"));
-  }
-
- private:
-  const std::u16string label_ = u"Explain";
-};
-
-}  // namespace
 
 QuickAnswersTool::QuickAnswersTool(tabs::TabInterface& tab) : tab_(tab) {}
 
@@ -48,7 +26,7 @@ void QuickAnswersTool::RequestSuggestions(
     const ::selection::AreaOfInterest& processed_area,
     ::selection::SuggestionsCallback callback) {
   std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-  suggestions.push_back(std::make_unique<ExplainSuggestion>());
+  suggestions.push_back(std::make_unique<ExplainSuggestion>(*tab_));
   std::move(callback).Run(std::move(suggestions), /*complete=*/true);
 }
 

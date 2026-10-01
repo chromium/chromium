@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.selection;
+
+// Implemented by C++'s `ExplainSuggestion`. The WebUI element sends the
+// receiver as the channel of
+// `SelectionOverlayPageHandler.ExecuteSuggestedAction()`.
+interface ExplainFulfillment {
+  // Returns the explanation of the selection.
+  GetExplanation() => (string explanation);
+
+  // Searches for `query` with the default search engine, in a new tab next to
+  // the selection's tab.
+  OpenTabForSearch(string query);
+
+  // Invokes the side panel to ask Gemini.
+  AskGemini();
+};

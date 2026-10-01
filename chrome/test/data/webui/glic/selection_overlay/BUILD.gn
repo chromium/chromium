@@ -7,10 +7,10 @@ import("../../build_webui_tests.gni")
 build_webui_tests("build") {
   is_chrome_untrusted = true
   cc_test_files = [ "selection_overlay_browsertest.cc" ]
-  files = [ "inline_fulfillment_host_test.ts" ]
-
-  mojo_files = [ "$root_gen_dir/chrome/test/mojom/echo.test-mojom-webui.ts" ]
-  mojo_files_deps = [ "//chrome/test:test_interfaces_ts__generator" ]
+  files = [
+    "explain_fulfillment_test.ts",
+    "inline_fulfillment_host_test.ts",
+  ]
 
   ts_path_mappings = [ "chrome-untrusted://glic/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/glic/selection_overlay/tsc/*",

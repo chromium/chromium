@@ -14,6 +14,7 @@ build_webui("build") {
 
   ts_files = [
     "browser_proxy.ts",
+    "explain_fulfillment.ts",
     "glic_selection_overlay.ts",
     "glic_selection_overlay.html.ts",
     "inline_fulfillment_host.ts",
@@ -32,6 +33,7 @@ build_webui("build") {
     "//chrome/browser/selection/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/glic/selection/explain_fulfillment.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/selection/selection_overlay.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/selection/mojom/action.mojom-webui.ts",
   ]

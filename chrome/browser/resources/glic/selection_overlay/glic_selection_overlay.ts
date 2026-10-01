@@ -239,7 +239,26 @@ export class SelectionOverlayElementElement extends
         this.updateFloatingPromptPosition();
       }
     });
+
+    const container =
+        this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
+    if (container) {
+      this.floatingPromptResizeObserver_.observe(container);
+    }
   }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.floatingPromptResizeObserver_.disconnect();
+  }
+
+  // Repositions the prompt when its size changes, e.g. when a card is added
+  // or its content grows, so it doesn't overflow the viewport.
+  private floatingPromptResizeObserver_ = new ResizeObserver(() => {
+    if (this.showFloatingPrompt) {
+      this.updateFloatingPromptPosition();
+    }
+  });
 
   private updateThemeColors() {
     const selectionColor = this.getSelectionElementColor();
@@ -298,9 +317,6 @@ export class SelectionOverlayElementElement extends
     return 'url("/glic_region_selection_cursor_icon.svg")';
   }
 
-  // TODO(liuwilliam): Also call this when `#floatingPromptContainer` resizes
-  // (e.g. with a `ResizeObserver`). Otherwise a card that is added or grows
-  // after this runs can overflow the viewport.
   private updateFloatingPromptPosition() {
     if (!this.enableSelectionOverlayPrompt) {
       this.showFloatingPrompt = false;
