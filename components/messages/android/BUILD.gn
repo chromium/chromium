@@ -29,11 +29,13 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/banners/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -169,6 +171,7 @@ static_library("feature_flags") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.components.messages"
   sources =
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
@@ -177,7 +180,9 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

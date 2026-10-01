@@ -40,4 +40,10 @@ TEST_F(MessageWrapperTest, ClearsJavaPointerOnDestruction) {
   EXPECT_EQ(0, helper_.GetNativePtr(java_object));
 }
 
+TEST_F(MessageWrapperTest, ShowLoadingSpinnerWithNullWindowReturnsFalse) {
+  auto message_wrapper =
+      std::make_unique<MessageWrapper>(MessageIdentifier::TEST_MESSAGE);
+  EXPECT_FALSE(message_wrapper->ShowLoadingSpinner(nullptr));
+}
+
 }  // namespace messages

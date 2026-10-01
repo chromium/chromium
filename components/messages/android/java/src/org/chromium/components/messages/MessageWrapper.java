@@ -12,6 +12,7 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -20,6 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -220,6 +222,32 @@ public final class MessageWrapper implements ListMenu.Delegate {
     void disableIconTint() {
         mMessageProperties.set(
                 MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
+    }
+
+    @CalledByNative
+    boolean showLoadingSpinner(@Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return false;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return false;
+        CircularProgressDrawable spinner =
+                new CircularProgressDrawable(context) {
+                    @Override
+                    public boolean setVisible(boolean visible, boolean restart) {
+                        boolean changed = super.setVisible(visible, restart);
+                        if (!visible) {
+                            stop();
+                        } else if (changed || restart) {
+                            start();
+                        }
+                        return changed;
+                    }
+                };
+        spinner.setStyle(CircularProgressDrawable.DEFAULT);
+        spinner.setColorSchemeColors(SemanticColorUtils.getDefaultIconColorAccent1(context));
+        spinner.start();
+        mMessageProperties.set(MessageBannerProperties.ICON, spinner);
+        disableIconTint();
+        return true;
     }
 
     @CalledByNative
