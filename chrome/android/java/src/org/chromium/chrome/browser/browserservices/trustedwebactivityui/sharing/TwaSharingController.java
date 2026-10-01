@@ -35,7 +35,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.function.Function;
 
-/** Handles sharing intents coming to Trusted Web Activities. */
+/**
+ * Delivers incoming share data to the Web Share Target of the web app hosted in a {@code
+ * BaseCustomTabActivity}. This class serves both Trusted Web Activities and WebAPKs, which launch
+ * differently: TWAs arrive via {@code LaunchIntentDispatcher} with a Custom Tabs session, while
+ * WebAPKs arrive via {@code WebappLauncherActivity} with no session.
+ */
 @NullMarked
 public class TwaSharingController {
     private final CustomTabActivityTabProvider mTabProvider;
@@ -77,9 +82,12 @@ public class TwaSharingController {
                     (tab != null && tab.getWindowAndroid() != null)
                             ? tab.getWindowAndroid().getActivity().get()
                             : null;
-            // Pass null for caller because activity.getInitialCaller() in CustomTabActivity
-            // would return Chrome's own UID (due to trampoline dispatch). Passing null
-            // forces fallback to session UID/PID verification.
+            // Pass null for caller: activity.getInitialCaller() would return Chrome's own UID
+            // because of trampoline dispatch. filterShareData() instead uses the share data
+            // verified at launch (by LaunchIntentDispatcher for TWAs, or WebappLauncherActivity
+            // for WebAPKs). Otherwise, it falls back to checking URI permissions against the
+            // Custom Tabs session UID (TWAs) or the WebAPK package UID (WebAPKs). If activity is
+            // null, shared file URIs are dropped.
             shareData =
                     WebAppLaunchHandler.filterShareData(
                             intentDataProvider, activity, /* caller= */ null);
