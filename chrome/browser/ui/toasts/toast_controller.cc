@@ -369,6 +369,7 @@ void ToastController::CreateToast(ToastParams params,
                      params.action_button_string_replacement_params,
                      std::nullopt),
         spec->GetActionButtonCallback(
+                browser_window_interface_,
                 std::move(params.action_button_callback_data))
             .Then(base::BindRepeating(&RecordToastActionButtonClicked,
                                       params.toast_id)));

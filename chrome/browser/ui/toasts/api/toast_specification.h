@@ -18,9 +18,17 @@
 #include "base/values.h"
 #include "ui/gfx/vector_icon_types.h"
 
+class BrowserWindowInterface;
+
 // ToastSpecification details what the toast should contain when shown.
 class ToastSpecification {
  public:
+  using ActionButtonCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  using ActionButtonDataCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*,
+                                   const base::Value&)>;
+
   class Builder final {
    public:
     Builder(const gfx::VectorIcon& icon, int body_string_id);
@@ -40,14 +48,16 @@ class ToastSpecification {
     // for the label. All toasts with an action button must also have a close
     // button.
     Builder& AddActionButton(int action_button_string_id,
-                             base::RepeatingClosure closure);
+                             ActionButtonCallback callback);
 
     // Adds a rounded action button whose `callback` receives the identifier
     // passed in `ToastParams::action_button_callback_data` when the toast is
     // invoked. All toasts with an action button must also have a close button.
     template <std::same_as<base::Value> T = base::Value>
-    Builder& AddActionButton(int action_button_string_id,
-                             base::RepeatingCallback<void(const T&)> callback) {
+    Builder& AddActionButton(
+        int action_button_string_id,
+        base::RepeatingCallback<void(BrowserWindowInterface*, const T&)>
+            callback) {
       toast_specification_->AddActionButton(action_button_string_id,
                                             std::move(callback));
       return *this;
@@ -106,13 +116,14 @@ class ToastSpecification {
   std::optional<int> action_button_string_id() const {
     return action_button_string_id_;
   }
-  base::RepeatingClosure action_button_callback() const {
-    return action_button_closure_;
+  const ActionButtonCallback& action_button_callback() const {
+    return action_button_callback_;
   }
   bool has_action_button_data_callback() const {
     return !action_button_data_callback_.is_null();
   }
   base::RepeatingClosure GetActionButtonCallback(
+      BrowserWindowInterface* browser_window_interface,
       std::optional<base::Value> data = std::nullopt) const;
 
   bool has_menu() const { return has_menu_; }
@@ -125,10 +136,8 @@ class ToastSpecification {
   bool has_actionable_override() const { return actionable_toast_override_; }
 
   void AddCloseButton();
-  void AddActionButton(int string_id, base::RepeatingClosure closure);
-  void AddActionButton(
-      int string_id,
-      base::RepeatingCallback<void(const base::Value&)> callback);
+  void AddActionButton(int string_id, ActionButtonCallback callback);
+  void AddActionButton(int string_id, ActionButtonDataCallback callback);
   void AddMenu();
   void AddGlobalScope();
   void SetPersistOnNavigation();
@@ -141,9 +150,8 @@ class ToastSpecification {
   bool has_close_button_ = false;
   bool has_menu_ = false;
   std::optional<int> action_button_string_id_;
-  base::RepeatingClosure action_button_closure_;
-  base::RepeatingCallback<void(const base::Value&)>
-      action_button_data_callback_;
+  ActionButtonCallback action_button_callback_;
+  ActionButtonDataCallback action_button_data_callback_;
   bool is_global_scope_ = false;
   bool persist_on_navigation_ = false;
   bool has_throbber_ = false;

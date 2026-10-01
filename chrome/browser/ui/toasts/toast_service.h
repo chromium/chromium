@@ -33,7 +33,7 @@ class ToastService {
  private:
   ui::ScopedUnownedUserData<ToastService> scoped_unowned_user_data_;
 
-  void RegisterToasts(BrowserWindowInterface* browser_window_interface);
+  void RegisterToasts();
   std::unique_ptr<ToastRegistry> toast_registry_;
   std::unique_ptr<ToastController> toast_controller_;
 };

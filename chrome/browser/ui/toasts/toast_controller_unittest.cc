@@ -349,12 +349,12 @@ TEST_F(ToastControllerUnitTest, ShowToastWithActionButtonCallbackData) {
                                       ? vector_icons::kMailFilledIcon
                                       : vector_icons::kEmailOldIcon,
                                   kTestStringResId)
-          .AddActionButton(kTestStringResId,
-                           base::BindRepeating(
-                               [](int* out, const base::Value& data) {
-                                 *out = data.GetInt();
-                               },
-                               &received_id))
+          .AddActionButton(
+              kTestStringResId,
+              base::BindRepeating(
+                  [](int* out, BrowserWindowInterface* window,
+                     const base::Value& data) { *out = data.GetInt(); },
+                  &received_id))
           .AddCloseButton()
           .Build());
 
@@ -363,6 +363,7 @@ TEST_F(ToastControllerUnitTest, ShowToastWithActionButtonCallbackData) {
   EXPECT_CALL(*controller, CreateToast)
       .WillOnce([](ToastParams params, const ToastSpecification* spec) {
         base::RepeatingClosure action_callback = spec->GetActionButtonCallback(
+            /*browser_window_interface=*/nullptr,
             std::move(params.action_button_callback_data));
         action_callback.Run();
       });

@@ -100,12 +100,12 @@ TEST_F(ToastRegistryTest, ToastWithActionButtonData) {
                                       ? vector_icons::kMailFilledIcon
                                       : vector_icons::kEmailOldIcon,
                                   body_string_id)
-          .AddActionButton(action_button_string_id,
-                           base::BindRepeating(
-                               [](std::string* out, const base::Value& data) {
-                                 *out = data.GetString();
-                               },
-                               &received_id))
+          .AddActionButton(
+              action_button_string_id,
+              base::BindRepeating(
+                  [](std::string* out, BrowserWindowInterface* window,
+                     const base::Value& data) { *out = data.GetString(); },
+                  &received_id))
           .AddCloseButton()
           .Build();
 
@@ -115,13 +115,14 @@ TEST_F(ToastRegistryTest, ToastWithActionButtonData) {
   EXPECT_EQ(action_button_string_id, spec->action_button_string_id().value());
   EXPECT_TRUE(spec->has_action_button_data_callback());
 
-  base::RepeatingClosure bound_callback =
-      spec->GetActionButtonCallback(base::Value("toast-123"));
+  base::RepeatingClosure bound_callback = spec->GetActionButtonCallback(
+      /*browser_window_interface=*/nullptr, base::Value("toast-123"));
   bound_callback.Run();
   EXPECT_EQ("toast-123", received_id);
 
   // Missing data should hit a CHECK.
-  EXPECT_DEATH(spec->GetActionButtonCallback(), "");
+  EXPECT_DEATH(
+      spec->GetActionButtonCallback(/*browser_window_interface=*/nullptr), "");
 }
 
 TEST_F(ToastRegistryTest, ToastWithMenu) {

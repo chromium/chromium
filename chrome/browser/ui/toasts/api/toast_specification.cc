@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
 ToastSpecification::Builder::Builder(const gfx::VectorIcon& icon,
@@ -47,9 +48,9 @@ ToastSpecification::Builder& ToastSpecification::Builder::AddCloseButton() {
 
 ToastSpecification::Builder& ToastSpecification::Builder::AddActionButton(
     int action_button_string_id,
-    base::RepeatingClosure closure) {
+    ActionButtonCallback callback) {
   toast_specification_->AddActionButton(action_button_string_id,
-                                        std::move(closure));
+                                        std::move(callback));
   return *this;
 }
 
@@ -137,13 +138,16 @@ ToastSpecification::ToastSpecification(
 ToastSpecification::~ToastSpecification() = default;
 
 base::RepeatingClosure ToastSpecification::GetActionButtonCallback(
+    BrowserWindowInterface* browser_window_interface,
     std::optional<base::Value> data) const {
   CHECK_EQ(has_action_button_data_callback(), data.has_value());
   if (has_action_button_data_callback()) {
     return base::BindRepeating(action_button_data_callback_,
+                               base::Unretained(browser_window_interface),
                                base::OwnedRef(std::move(*data)));
   }
-  return action_button_closure_;
+  return base::BindRepeating(action_button_callback_,
+                             base::Unretained(browser_window_interface));
 }
 
 void ToastSpecification::AddCloseButton() {
@@ -151,16 +155,15 @@ void ToastSpecification::AddCloseButton() {
 }
 
 void ToastSpecification::AddActionButton(int string_id,
-                                         base::RepeatingClosure closure) {
-  CHECK(!closure.is_null());
+                                         ActionButtonCallback callback) {
+  CHECK(!callback.is_null());
   CHECK(!action_button_string_id_.has_value());
   action_button_string_id_ = string_id;
-  action_button_closure_ = std::move(closure);
+  action_button_callback_ = std::move(callback);
 }
 
-void ToastSpecification::AddActionButton(
-    int string_id,
-    base::RepeatingCallback<void(const base::Value&)> callback) {
+void ToastSpecification::AddActionButton(int string_id,
+                                         ActionButtonDataCallback callback) {
   CHECK(!callback.is_null());
   CHECK(!action_button_string_id_.has_value());
   action_button_string_id_ = string_id;
