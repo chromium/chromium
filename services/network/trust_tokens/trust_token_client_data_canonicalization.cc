@@ -39,12 +39,10 @@ CanonicalizeTrustTokenClientDataForRedemption(
   if (redemption_timestamp_minus_unix_epoch.is_negative())
     return std::nullopt;
 
-  map.emplace(cbor::Value(kRedemptionTimestampKey, cbor::Value::Type::STRING),
+  map.emplace(kRedemptionTimestampKey,
               redemption_timestamp_minus_unix_epoch.InSeconds());
 
-  map.emplace(
-      cbor::Value(kRedeemingOriginKey, cbor::Value::Type::STRING),
-      cbor::Value(top_frame_origin.Serialize(), cbor::Value::Type::STRING));
+  map.emplace(kRedeemingOriginKey, top_frame_origin.Serialize());
 
   return cbor::Writer::Write(cbor::Value(std::move(map)));
 }

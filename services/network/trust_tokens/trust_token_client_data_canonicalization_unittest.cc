@@ -39,13 +39,10 @@ TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
 
   const cbor::Value::MapValue& map = maybe_deserialized_cbor->GetMap();
 
-  ASSERT_EQ(
-      map.at(cbor::Value("redemption-timestamp", cbor::Value::Type::STRING))
-          .GetUnsigned(),
-      (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
+  ASSERT_EQ(map.at(cbor::Value("redemption-timestamp")).GetUnsigned(),
+            (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
 
-  ASSERT_EQ(map.at(cbor::Value("redeeming-origin", cbor::Value::Type::STRING))
-                .GetString(),
+  ASSERT_EQ(map.at(cbor::Value("redeeming-origin")).GetString(),
             "https://topframe.example");
 }
 
