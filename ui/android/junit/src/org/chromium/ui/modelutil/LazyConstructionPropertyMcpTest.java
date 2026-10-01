@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -37,7 +38,6 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 /** Unit tests for LazyConstructionPropertyMcp. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LazyConstructionPropertyMcpTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
@@ -49,8 +49,8 @@ public class LazyConstructionPropertyMcpTest {
     private PropertyModel mModel;
     private FakeViewProvider<View> mViewProvider;
     private @Nullable PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
-    @Mock private View mView;
     @Mock private ViewBinder<PropertyModel, View, PropertyKey> mViewBinder;
 
     @Before

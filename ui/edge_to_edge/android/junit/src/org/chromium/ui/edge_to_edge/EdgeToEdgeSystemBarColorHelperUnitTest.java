@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -41,18 +42,17 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit test for {@link EdgeToEdgeSystemBarColorHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Window mWindow;
-    @Mock private View mDecorView;
     @Mock private WindowInsetsController mWindowInsetsController;
     @Captor private ArgumentCaptor<Integer> mStatusBarAppearanceCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarAppearanceCaptor;
     @Mock private SystemBarColorHelper mDelegateColorHelper;
 
+    private View mDecorView;
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeColorHelper;
     private final SettableNonNullObservableSupplier<Boolean>
             mShouldContentFitsWindowInsetsSupplier = ObservableSuppliers.createNonNull(false);
@@ -61,8 +61,14 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Before
     public void setup() {
+        mDecorView =
+                new View(ContextUtils.getApplicationContext()) {
+                    @Override
+                    public WindowInsetsController getWindowInsetsController() {
+                        return mWindowInsetsController;
+                    }
+                };
         doReturn(mDecorView).when(mWindow).getDecorView();
-        doReturn(mWindowInsetsController).when(mDecorView).getWindowInsetsController();
         doNothing()
                 .when(mWindowInsetsController)
                 .setSystemBarsAppearance(
@@ -169,14 +175,13 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mDelegateColorHelper, times(0)).setNavigationBarColor(anyInt());
         verify(mWindow).setNavigationBarContrastEnforced(true);
         verifyNavigationBarAppearance(/* isLight= */ false);
-        clearInvocations(mDecorView);
 
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper, times(0)).setStatusBarColor(anyInt());
         verify(mWindow).setStatusBarContrastEnforced(true);
         verifyStatusBarAppearance(/* isLight= */ false);
 
-        clearInvocations(mWindow, mDecorView);
+        clearInvocations(mWindow);
         doReturn(Color.RED).when(mWindow).getNavigationBarColor();
         doReturn(Color.RED).when(mWindow).getStatusBarColor();
 
@@ -201,7 +206,6 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow, times(0)).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
         verifyNavigationBarAppearance(/* isLight= */ false);
-        clearInvocations(mDecorView);
 
         mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
         verify(mDelegateColorHelper).setStatusBarColor(Color.RED);
@@ -210,7 +214,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verifyStatusBarAppearance(/* isLight= */ false);
 
         // Color will switch automatically when leaving edge to edge mode.
-        clearInvocations(mDelegateColorHelper, mDecorView);
+        clearInvocations(mDelegateColorHelper);
         mShouldContentFitsWindowInsetsSupplier.set(true);
         verify(mWindow).setNavigationBarColor(Color.RED);
         verify(mWindow).setStatusBarColor(Color.RED);
@@ -288,7 +292,6 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
                         mShouldContentFitsWindowInsetsSupplier,
                         mDelegateHelperSupplier,
                         /* canColorStatusBarColor= */ true);
-        clearInvocations(mDecorView);
     }
 
     private void verifyStatusBarAppearance(boolean isLight) {

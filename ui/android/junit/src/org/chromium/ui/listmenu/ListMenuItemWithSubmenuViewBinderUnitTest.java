@@ -4,18 +4,19 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,34 +32,32 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ListMenuItemWithSubmenuViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ListMenuItemWithSubmenuViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ViewGroup mListItemView;
-    @Mock private TextView mTextView;
-    @Mock private ImageView mStartIcon;
-    @Mock private ImageView mSubmenuArrow;
     @Mock private View.OnTouchListener mOnTouchListener;
     @Mock private View.OnGenericMotionListener mOnGenericMotionListener;
 
     private Context mContext;
+    private ViewGroup mListItemView;
+    private TextView mTextView;
+    private ImageView mStartIcon;
+    private ImageView mSubmenuArrow;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
-        when(mListItemView.getContext()).thenReturn(mContext);
-        when(mListItemView.getResources()).thenReturn(mContext.getResources());
-        when(mListItemView.findViewById(R.id.menu_row_text)).thenReturn(mTextView);
-        when(mListItemView.findViewById(R.id.menu_item_icon)).thenReturn(mStartIcon);
-        when(mListItemView.findViewById(R.id.submenu_arrow)).thenReturn(mSubmenuArrow);
-        when(mStartIcon.getContext()).thenReturn(mContext);
-        when(mSubmenuArrow.getContext()).thenReturn(mContext);
+        mListItemView = new LinearLayout(mContext);
+        mStartIcon = new ImageView(mContext);
+        mStartIcon.setId(R.id.menu_item_icon);
+        mTextView = new TextView(mContext);
+        mTextView.setId(R.id.menu_row_text);
+        mSubmenuArrow = new ImageView(mContext);
+        mSubmenuArrow.setId(R.id.submenu_arrow);
 
-        when(mListItemView.getChildCount()).thenReturn(3);
-        when(mListItemView.getChildAt(0)).thenReturn(mStartIcon);
-        when(mListItemView.getChildAt(1)).thenReturn(mTextView);
-        when(mListItemView.getChildAt(2)).thenReturn(mSubmenuArrow);
+        mListItemView.addView(mStartIcon);
+        mListItemView.addView(mTextView);
+        mListItemView.addView(mSubmenuArrow);
     }
 
     @Test
@@ -72,14 +71,16 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
         ListMenuItemWithSubmenuViewBinder.bind(
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
 
-        verify(mStartIcon).setImageTintList(any(ColorStateList.class));
-        verify(mSubmenuArrow).setImageTintList(any(ColorStateList.class));
+        ColorStateList expectedTint =
+                mContext.getColorStateList(R.color.default_text_color_link_baseline);
+        Assert.assertEquals(expectedTint, mStartIcon.getImageTintList());
+        Assert.assertEquals(expectedTint, mSubmenuArrow.getImageTintList());
 
         propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, Resources.ID_NULL);
         ListMenuItemWithSubmenuViewBinder.bind(
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
-        verify(mStartIcon).setImageTintList(null);
-        verify(mSubmenuArrow).setImageTintList(null);
+        Assert.assertNull(mStartIcon.getImageTintList());
+        Assert.assertNull(mSubmenuArrow.getImageTintList());
     }
 
     @Test
@@ -90,7 +91,9 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
                         .build();
         ListMenuItemWithSubmenuViewBinder.bind(
                 propertyModel, mListItemView, ListMenuItemProperties.TOUCH_LISTENER);
-        verify(mListItemView).setOnTouchListener(mOnTouchListener);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        mListItemView.dispatchTouchEvent(event);
+        verify(mOnTouchListener).onTouch(mListItemView, event);
     }
 
     @Test
@@ -103,6 +106,8 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
                         .build();
         ListMenuItemWithSubmenuViewBinder.bind(
                 propertyModel, mListItemView, ListMenuItemProperties.GENERIC_MOTION_LISTENER);
-        verify(mListItemView).setOnGenericMotionListener(mOnGenericMotionListener);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_BUTTON_PRESS, 0, 0, 0);
+        mListItemView.dispatchGenericMotionEvent(event);
+        verify(mOnGenericMotionListener).onGenericMotion(mListItemView, event);
     }
 }

@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -22,7 +21,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
@@ -32,8 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -50,35 +46,30 @@ import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
 /** Unit tests for {@link AnchoredPopupWindow}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowView.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class AnchoredPopupWindowTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Activity mActivity;
-    private Drawable mDrawable;
-    @Mock private FrameLayout mContentView;
     @Mock private ChromePopupWindow mPopupWindow;
     @Mock private UiWidgetFactory mUiWidgetFactory;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+
+    private Activity mActivity;
+    private Drawable mDrawable;
+    private FrameLayout mContentView;
     private View mView;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mDrawable = new ColorDrawable(Color.RED);
+        mView = new View(mActivity);
+        mActivity.setContentView(mView);
+        mContentView = new FrameLayout(mActivity);
+        setContentViewSize(/* width= */ 500, /* height= */ 500);
 
         UiWidgetFactory.setInstance(mUiWidgetFactory);
         when(mUiWidgetFactory.createPopupWindow(any())).thenReturn(mPopupWindow);
         when(mPopupWindow.getBackground()).thenReturn(mock(Drawable.class));
         when(mPopupWindow.getContentView()).thenReturn(mContentView);
-
-        when(mContentView.getMeasuredWidth()).thenReturn(500);
-        when(mContentView.getMeasuredHeight()).thenReturn(500);
-
-        DisplayMetrics fakeMetrics = new DisplayMetrics();
-        fakeMetrics.density = 1;
-        when(mView.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
-        when(mView.getRootView().isAttachedToWindow()).thenReturn(true);
     }
 
     @After
@@ -156,8 +147,7 @@ public final class AnchoredPopupWindowTest {
     @Test
     public void testVerySmallPopupsDoNotShow() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mContentView.getMeasuredHeight()).thenReturn(1);
-        when(mContentView.getMeasuredWidth()).thenReturn(1);
+        setContentViewSize(/* width= */ 1, /* height= */ 1);
 
         AnchoredPopupWindow anchoredPopupWindow = createAnchorPopupWindow();
         anchoredPopupWindow.show();
@@ -168,8 +158,7 @@ public final class AnchoredPopupWindowTest {
     @Test
     public void testAllowVerySmallPopups() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mContentView.getMeasuredHeight()).thenReturn(1);
-        when(mContentView.getMeasuredWidth()).thenReturn(1);
+        setContentViewSize(/* width= */ 1, /* height= */ 1);
 
         AnchoredPopupWindow anchoredPopupWindow = createAnchorPopupWindow();
         anchoredPopupWindow.setAllowNonTouchableSize(true);
@@ -181,8 +170,7 @@ public final class AnchoredPopupWindowTest {
     @Test
     public void testWebContentsRectChangesUpdatesPopup() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mContentView.getMeasuredHeight()).thenReturn(200);
-        when(mContentView.getMeasuredWidth()).thenReturn(800);
+        setContentViewSize(/* width= */ 800, /* height= */ 200);
 
         RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 1000, 1000));
         RectProvider visibleWebContentsRectSupplier = new RectProvider(new Rect(0, 100, 1000, 900));
@@ -309,8 +297,7 @@ public final class AnchoredPopupWindowTest {
     @Test
     public void testPopupResizesOnRotationFromPortraitToLandscape() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mContentView.getMeasuredWidth()).thenReturn(800);
-        when(mContentView.getMeasuredHeight()).thenReturn(200);
+        setContentViewSize(/* width= */ 800, /* height= */ 200);
 
         // Initial portrait viewport (width: 400px, height: 1000px).
         RectProvider viewportRectProvider = new RectProvider(new Rect(0, 0, 400, 1000));
@@ -363,11 +350,13 @@ public final class AnchoredPopupWindowTest {
                         .build();
 
         popupWindow.show();
-        ArgumentCaptor<Integer> heightSpecCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(mContentView, atLeastOnce()).measure(anyInt(), heightSpecCaptor.capture());
-        assertEquals(400, View.MeasureSpec.getSize(heightSpecCaptor.getValue()));
-        assertEquals(
-                View.MeasureSpec.AT_MOST, View.MeasureSpec.getMode(heightSpecCaptor.getValue()));
+        // The content view wants to be 500px tall, but is constrained by the max height.
+        assertEquals(400, mContentView.getMeasuredHeight());
+    }
+
+    private void setContentViewSize(int width, int height) {
+        mContentView.setMinimumWidth(width);
+        mContentView.setMinimumHeight(height);
     }
 
     private AnchoredPopupWindow createAnchorPopupWindow() {

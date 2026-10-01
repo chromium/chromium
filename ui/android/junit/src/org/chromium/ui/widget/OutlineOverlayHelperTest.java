@@ -6,10 +6,10 @@ package org.chromium.ui.widget;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -31,7 +31,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link OutlineOverlayHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OutlineOverlayHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -51,11 +50,11 @@ public class OutlineOverlayHelperTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         mParent = new FrameLayout(mActivity);
-        mHost = spy(new View(mActivity));
+        mHost = new View(mActivity);
+        mHost.setFocusable(true);
+        mHost.setFocusableInTouchMode(true);
         mParent.addView(mHost);
-
-        doReturn(false).when(mHost).hasFocus();
-        doReturn(mActivity.getResources()).when(mHost).getResources();
+        mActivity.setContentView(mParent);
 
         // Spy on the real drawable to verify interactions without mocking its behavior.
         Drawable realDrawable =
@@ -78,8 +77,7 @@ public class OutlineOverlayHelperTest {
 
     @Test
     public void testFocusGain() {
-        doReturn(true).when(mHost).hasFocus();
-        mHelper.onFocusChange(mHost, true);
+        mHost.requestFocus();
 
         // Verify that the overlay is added when the view gains focus.
         assertTrue(
@@ -90,15 +88,17 @@ public class OutlineOverlayHelperTest {
     @Test
     public void testFocusLoss() {
         // First, gain focus.
-        doReturn(true).when(mHost).hasFocus();
-        mHelper.onFocusChange(mHost, true);
+        mHost.requestFocus();
         assertTrue(
                 "Outline should be visible when host view has focus.",
                 mHelper.isOutlineAttachedForTesting());
 
-        // Then, lose focus.
-        doReturn(false).when(mHost).hasFocus();
-        mHelper.onFocusChange(mHost, false);
+        // Then, lose focus by moving it to another view.
+        View otherView = new View(mActivity);
+        otherView.setFocusable(true);
+        otherView.setFocusableInTouchMode(true);
+        mParent.addView(otherView);
+        otherView.requestFocus();
 
         // Verify that the overlay is removed when the view loses focus.
         assertFalse(
@@ -109,8 +109,7 @@ public class OutlineOverlayHelperTest {
     @Test
     public void testLayoutChange_UpdatesBounds() {
         // Gain focus to show the outline.
-        doReturn(true).when(mHost).hasFocus();
-        mHelper.onFocusChange(mHost, true);
+        mHost.requestFocus();
 
         // Simulate a layout change.
         int left = 10;
@@ -134,16 +133,18 @@ public class OutlineOverlayHelperTest {
     @Test
     public void testDestroy() {
         // Gain focus to show the outline.
-        doReturn(true).when(mHost).hasFocus();
-        mHelper.onFocusChange(mHost, true);
+        mHost.requestFocus();
         assertTrue(
                 "Outline should be visible when host view has focus.",
                 mHelper.isOutlineAttachedForTesting());
 
+        assertNotNull(mOutlineDrawable.getCallback());
+
         mHelper.destroy();
 
-        verify(mHost).setOnFocusChangeListener(null);
-        verify(mHost).removeOnLayoutChangeListener(mHelper);
+        assertNull(mHost.getOnFocusChangeListener());
+        // The outline drawable should have been removed from the parent overlay.
+        assertNull(mOutlineDrawable.getCallback());
     }
 
     @Test
@@ -158,7 +159,7 @@ public class OutlineOverlayHelperTest {
 
         // Re-attach the host to the parent. This should trigger the creation of the helper.
         mParent.addView(mHost);
-        doReturn(true).when(mHost).hasFocus();
+        mHost.requestFocus();
         mHelper.onFocusChange(mHost, true);
         assertTrue(
                 "Outline should be visible when host view is attached and has focus.",

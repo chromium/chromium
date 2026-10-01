@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
@@ -48,7 +49,6 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InsetsRectProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -58,8 +58,8 @@ public class InsetsRectProviderTest {
 
     private InsetsRectProvider mInsetsRectProvider;
     private final CallbackHelper mConsumerCallback = new CallbackHelper();
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
-    @Mock private View mView;
     @Mock private InsetObserver mInsetObserver;
 
     private final Answer<Object> mBuildNewMockInsets =
