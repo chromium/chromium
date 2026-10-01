@@ -43,7 +43,10 @@ std::unique_ptr<KeyedService>
 IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiWalletPrivatePasses)) {
+          autofill::features::kAutofillAiWalletPrivatePasses) &&
+      !base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletDisclosureNoticePublicPass)) {
     return nullptr;
   }
 

@@ -48,7 +48,9 @@ WalletPassAccessManagerFactory::~WalletPassAccessManagerFactory() = default;
 std::unique_ptr<KeyedService>
 WalletPassAccessManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDisclosureNoticePublicPass)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
