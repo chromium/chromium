@@ -471,7 +471,7 @@ Color StyleColor::Resolve(const Color& current_color,
     Color result =
         color_or_unresolved_color_function_.unresolved_color_function->Resolve(
             current_color);
-    if (Color::IsLegacyColorSpace(result.GetColorSpace()) &&
+    if (result.IsLegacy() &&
         color_or_unresolved_color_function_.unresolved_color_function
                 ->GetType() != UnresolvedColorFunction::Type::kContrastColor) {
       result.ConvertToColorSpace(Color::ColorSpace::kSRGB);

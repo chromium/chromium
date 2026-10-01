@@ -1015,7 +1015,20 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
   }
 }
 
-static String ColorParamToString(float param, int precision = 6) {
+namespace {
+
+enum class ParamType {
+  kNumber,
+  kPercentage,
+};
+
+String ColorParamToString(float param,
+                          int precision = 6,
+                          ParamType param_type = ParamType::kNumber) {
+  const bool is_percentage = param_type == ParamType::kPercentage;
+  if (is_percentage) {
+    param *= 100;
+  }
   StringBuilder result;
   if (!isfinite(param)) {
     // https://www.w3.org/TR/css-values-4/#calc-serialize
@@ -1026,13 +1039,21 @@ static String ColorParamToString(float param, int precision = 6) {
     } else {
       result.AppendNumber(param, precision);
     }
+    if (is_percentage) {
+      result.Append(" * 1%");
+    }
     result.Append(")");
     return result.ToString();
   }
 
   result.AppendNumber(param, precision);
+  if (is_percentage) {
+    result.Append('%');
+  }
   return result.ToString();
 }
+
+}  // namespace
 
 String Color::SerializeAsCanvasColor() const {
   if (IsOpaque() && IsLegacyColorSpace(color_space_)) {
@@ -1128,11 +1149,49 @@ String Color::SerializeInternal() const {
   return result.ToString();
 }
 
+String Color::SerializeModernHslAndHwb() const {
+  StringBuilder result;
+  if (color_space_ == Color::ColorSpace::kHSL) {
+    result.Append("hsl");
+  } else {
+    result.Append("hwb");
+  }
+  result.Append('(');
+
+  param0_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(param0_));
+  result.Append(" ");
+  param1_is_none_
+      ? result.Append("none")
+      : result.Append(ColorParamToString(param1_, 6, ParamType::kPercentage));
+  result.Append(" ");
+  param2_is_none_
+      ? result.Append("none")
+      : result.Append(ColorParamToString(param2_, 6, ParamType::kPercentage));
+
+  if (alpha_ != 1.0 || alpha_is_none_) {
+    result.Append(" / ");
+    alpha_is_none_ ? result.Append("none") : result.AppendNumber(alpha_);
+  }
+  result.Append(")");
+  return result.ToString();
+}
+
 String Color::SerializeAsCSSColor() const {
-  if (IsLegacyColorSpace(color_space_)) {
+  // https://drafts.csswg.org/css-color/#css-serialization-of-srgb
+  if (IsLegacy()) {
     return SerializeLegacyColorAsCSSColor();
   }
-
+  if (color_space_ == Color::ColorSpace::kHWB ||
+      color_space_ == Color::ColorSpace::kHSL) {
+    return SerializeModernHslAndHwb();
+  }
+  if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
+    Color c = *this;
+    c.ConvertToColorSpace(Color::ColorSpace::kSRGB,
+                          /*resolve_missing_components=*/false);
+    return c.SerializeInternal();
+  }
   return SerializeInternal();
 }
 
@@ -1279,11 +1338,9 @@ Color Color::InvertSRGB() const {
 Color::ColorSpace Color::GetColorInterpolationSpace() const {
   // If the color space is legacy and does not contain none, it should be
   // interpolated in srgb-legacy.
-  if (IsLegacyColorSpace(color_space_) && !param0_is_none_ &&
-      !param1_is_none_ && !param2_is_none_ && !alpha_is_none_) {
+  if (IsLegacy()) {
     return ColorSpace::kSRGBLegacy;
   }
-
   return ColorSpace::kOklab;
 }
 

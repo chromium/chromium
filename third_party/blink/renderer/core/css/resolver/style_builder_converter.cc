@@ -3061,7 +3061,7 @@ StyleColor ResolveColorValue(const CSSValue& value,
   StyleColor result = ResolveColorValueImpl(value, context);
   if (ShouldConvertLegacyColorSpaceToSRGB(value) && result.IsAbsoluteColor()) {
     Color color = result.GetColor();
-    if (Color::IsLegacyColorSpace(color.GetColorSpace())) {
+    if (color.IsLegacy()) {
       // Missing components can be carried forward when converting rgb(...) to
       // color(srgb, ...) since the two color spaces have analogous components.
       // For other legacy spaces, conversion to color(srgb, ...) requires

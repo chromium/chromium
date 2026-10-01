@@ -1,13 +1,5 @@
 This is a testharness.js-based test.
-Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property color value 'color-mix(in hsl, hsl(none none none), hsl(none none none))'
-  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
-[FAIL] Property color value 'color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / none))'
-  Colors do not match.\nActual:   color(srgb 0.56 0.56 0.24 / none)\nExpected: hsl(60 40% 40% / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 60 +/- 0.01, expected 60 but got 0.56
-[FAIL] Property color value 'color-mix(in hwb, hwb(none none none), hwb(none none none))'
-  Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hwb(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
-[FAIL] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / none))'
-  Colors do not match.\nActual:   color(srgb 0.575 0.7 0.2 / none)\nExpected: hwb(75 20% 30% / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 75 +/- 0.01, expected 75 but got 0.575
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'color-mix(in lch shorter hue, red, white)'
   Colors do not match.\nActual:   lch(77.1444 53.4365 40.856)\nExpected: lch(77.145 53.4186 40.858).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 53.4186 +/- 0.01, expected 53.4186 but got 53.4365
 [FAIL] Property color value 'color-mix(in lch shorter hue, red, transparent)'
@@ -48,14 +40,6 @@ Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   oklch(0.725989 0.156617 264.051)\nExpected: oklch(0.726 0.156 264.052).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 264.052 +/- 0.001, expected 264.052 but got 264.051
 [FAIL] Property color value 'color-mix(in oklch, oklch(100% 0 0), blue)'
   Colors do not match.\nActual:   oklch(0.725991 0.156605 312.025)\nExpected: oklch(0.726 0.1567 312.026).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 312.026 +/- 0.001, expected 312.026 but got 312.025
-[FAIL] Property color value 'color-mix(in hsl, hwb(none none none), hsl(none 0.2 0.4))'
-  Colors do not match.\nActual:   color(srgb 0.004008 0.003992 0.003992)\nExpected: hsl(none 0.2% 0.4%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
-[FAIL] Property color value 'color-mix(in hwb, hsl(none none none), hwb(none 0.2 0.4))'
-  Colors do not match.\nActual:   color(srgb 0.996 0.002 0.002)\nExpected: hwb(none 0.2% 0.4%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
-[FAIL] Property color value 'color-mix(in hsl, hwb(none 40% none), hsl(none 0.2 0.4))'
-  Colors do not match.\nActual:   color(srgb 0.528352 0.175648 0.175648)\nExpected: hsl(none 50.1% 35.2%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
-[FAIL] Property color value 'color-mix(in hwb, hsl(none none 20%), hwb(none 0.2 0.4))'
-  Colors do not match.\nActual:   color(srgb 0.598 0.101 0.101)\nExpected: hwb(none 10.1% 40.2%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'color-mix(in srgb, red)'
   assert_true: 'color-mix(in srgb, red)' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in srgb, red 50%)'
