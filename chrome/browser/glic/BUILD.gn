@@ -915,6 +915,8 @@ source_set("unit_tests") {
       "//chrome/test/base:scoped_metrics_service",
       "//components/live_caption",
       "//components/live_caption:constants",
+      "//components/metrics/structured:structured_events",
+      "//components/metrics/structured/buildflags",
       "//components/skills:features",
       "//components/skills/public",
       "//components/skills/public:metrics",

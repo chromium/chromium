@@ -58,6 +58,9 @@ class GlicInvokeHandler {
   static ResolvedTarget ResolveTargetSurface(Profile* profile,
                                              const Target& target);
 
+  // Returns the embedder type `resolved_target` will be shown in.
+  static EmbedderType GetEmbedderType(const ResolvedTarget& resolved_target);
+
   // `tab` must be non-nullptr.
   // `completion_callback` should be called exactly once and results in
   // destruction of `this`.
@@ -92,6 +95,9 @@ class GlicInvokeHandler {
   // Whether this invocation will send an invoke message to the web client.
   // See RequiresClientInvoke().
   bool requires_client_invoke() const { return requires_client_invoke_; }
+
+  // The metrics invocation ID for this invocation.
+  uint64_t invocation_id() const { return metrics_->GetInvocationId(); }
 
  private:
   bool IsFloatingTarget() const;

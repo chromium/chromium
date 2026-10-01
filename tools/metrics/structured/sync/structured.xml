@@ -3729,6 +3729,13 @@
     <variant value="11">CLIENT_LOAD_TIMEOUT</variant>
     <variant value="12">WARMED_TIMEOUT</variant>
   </enum>
+
+  <enum name="GlicEmbedderType">
+    <variant value="0">SIDE_PANEL</variant>
+    <variant value="1">FLOATY</variant>
+    <variant value="2">TAB</variant>
+    <variant value="3">UNKNOWN</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -3748,9 +3755,12 @@
         The feature mode to use for the invocation, mapped from mojom::FeatureMode.
       </summary>
     </metric>
-    <metric name="EmbedderType" type="int">
+    <metric name="EmbedderType" type="GlicEmbedderType">
       <summary>
-        The embedder type for the UI (e.g. Tab vs Floaty).
+        The embedder type for the UI (e.g. side panel vs Floaty). Mirrors
+        glic::EmbedderType in //chrome/browser/glic/glic_enums.h, which is
+        translated into this enum by an exhaustive switch in
+        glic_invoke_metrics.cc.
       </summary>
     </metric>
   </event>
@@ -3783,6 +3793,38 @@
     <metric name="TimeSinceStart" type="int">
       <summary>
         Total latency in milliseconds from the start of the invocation.
+      </summary>
+    </metric>
+    <metric name="InvocationSource" type="int">
+      <summary>
+        The source of the invocation, mapped from mojom::InvocationSource. This
+        duplicates InvokeStarted.InvocationSource because invocations that are
+        rejected before they start (e.g. with kInvokeInProgress, kInvalidTab or
+        kProfileNotEnabled) record InvokeTerminated without a matching
+        InvokeStarted, so the source cannot be recovered by joining on
+        InvocationId.
+      </summary>
+    </metric>
+    <metric name="InProgressInvocationId" type="int">
+      <summary>
+        Only set when InvokeError is kInvokeInProgress. The InvocationId of the
+        already-running invocation that caused this one to be rejected, joining
+        this event to that invocation's InvokeStarted and InvokeTerminated.
+      </summary>
+    </metric>
+    <metric name="FeatureMode" type="int">
+      <summary>
+        The feature mode requested for the invocation, mapped from
+        mojom::FeatureMode. Duplicates InvokeStarted.FeatureMode for invocations
+        rejected before they start (see InvocationSource).
+      </summary>
+    </metric>
+    <metric name="EmbedderType" type="GlicEmbedderType">
+      <summary>
+        The embedder type the invocation targeted. Duplicates
+        InvokeStarted.EmbedderType for invocations rejected before they start
+        (see InvocationSource). Absent if the invocation was rejected before its
+        target surface was resolved (e.g. kProfileNotEnabled).
       </summary>
     </metric>
   </event>

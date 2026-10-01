@@ -153,8 +153,8 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
   tab_observer_ = GlicTabObserver::Create(
       profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                     weak_ptr_factory_.GetWeakPtr()));
-  hotkey_manager_ =
-      std::make_unique<InstanceIndependentHotkeyManager>(this, profile_, enabling);
+  hotkey_manager_ = std::make_unique<InstanceIndependentHotkeyManager>(
+      this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
   metrics_.StartPeriodicMemoryMetricsRecording();
@@ -682,6 +682,8 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     bool bypass_in_progress_check) {
   auto metrics =
       std::make_unique<GlicInvokeMetrics>(options.GetInvocationSource());
+  metrics->SetFeatureMode(
+      options.feature_mode.value_or(mojom::FeatureMode::kUnspecified));
 
   if (!GlicEnabling::IsEnabledForProfile(profile_)) {
     metrics->RecordError(GlicInvokeError::kProfileNotEnabled);
@@ -724,6 +726,8 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
   auto resolve_surface = [&]() -> bool {
     resolved_target =
         GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
+    metrics->SetEmbedderType(
+        GlicInvokeHandler::GetEmbedderType(resolved_target));
     if (const auto* tab_surface =
             std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
       tab = tab_surface->tab;
@@ -899,7 +903,7 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
             RemoveInvokeHandler(instance, in_progress);
         old_handler->Cancel(GlicInvokeError::kSuperseded);
       } else {
-        metrics->RecordError(GlicInvokeError::kInvokeInProgress);
+        metrics->RecordInvokeInProgressError(in_progress->invocation_id());
         if (options.on_error) {
           std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
         }
@@ -1217,7 +1221,6 @@ GlicInstanceCoordinatorImpl::CreateInstanceImpl(std::optional<InstanceId> id) {
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics(),
       contextual_cueing_service_);
 }
-
 
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {

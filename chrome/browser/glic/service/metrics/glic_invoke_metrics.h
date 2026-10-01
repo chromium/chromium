@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/time/time.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
@@ -35,8 +37,18 @@ class GlicInvokeMetrics {
 
   uint64_t GetInvocationId() const { return invocation_id_; }
 
+  // Set as soon as they are known. They are attached to InvokeStarted and
+  // InvokeTerminated, including when the invocation is rejected before
+  // RecordStarted() is called.
+  void SetFeatureMode(mojom::FeatureMode feature_mode) {
+    feature_mode_ = feature_mode;
+  }
+  void SetEmbedderType(EmbedderType embedder_type) {
+    embedder_type_ = embedder_type;
+  }
+
   // Called when the invocation orchestrator starts execution.
-  void RecordStarted(mojom::FeatureMode feature_mode, int embedder_type) const;
+  void RecordStarted() const;
 
   // Called when a sequentially blocking task phase completes.
   void RecordTaskPhaseCompleted(std::optional<GlicTaskType> task_type,
@@ -48,12 +60,29 @@ class GlicInvokeMetrics {
       GlicInvokeError result,
       std::optional<GlicTaskType> stopped_task = std::nullopt) const;
 
+  // Records a kInvokeInProgress error. `in_progress_invocation_id` is the
+  // invocation ID of the already-running invocation that blocked this one.
+  void RecordInvokeInProgressError(uint64_t in_progress_invocation_id) const;
+
  private:
+  void RecordErrorInternal(
+      GlicInvokeError result,
+      std::optional<GlicTaskType> stopped_task,
+      std::optional<uint64_t> in_progress_invocation_id) const;
+  // Records the InvokeTerminated structured event. `error` is nullopt on
+  // success.
+  void RecordTerminated(
+      std::optional<GlicInvokeError> error,
+      std::optional<GlicTaskType> task_type,
+      base::TimeDelta duration,
+      std::optional<uint64_t> in_progress_invocation_id) const;
   void RecordTimeoutStage(std::optional<GlicTaskType> stage) const;
 
   mojom::InvocationSource source_;
   base::TimeTicks invoke_start_time_;
   uint64_t invocation_id_;
+  std::optional<mojom::FeatureMode> feature_mode_;
+  std::optional<EmbedderType> embedder_type_;
 };
 
 }  // namespace glic
