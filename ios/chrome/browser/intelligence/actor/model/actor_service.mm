@@ -5,15 +5,19 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
 #import <algorithm>
+#import <optional>
 #import <set>
 
 #import "base/barrier_callback.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/location.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/task_source_info.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
@@ -67,6 +71,14 @@ void LogActionsProto(
   journal->LogProto(GURL(), task_id, "PerformActions", /*details=*/{},
                     actions_proto,
                     "chrome_intelligence_proto_features.Actions");
+}
+
+// Posts `callback` with `result`. Early replies are posted so that callers are
+// never re-entered from within `ActorService::PerformActions()`.
+void PostPerformActionsReply(PerformActionsCallback callback,
+                             PerformActionsResult result) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 }  // namespace
@@ -130,8 +142,22 @@ void ActorService::PerformActions(
   if (it == active_tasks_.end()) {
     // TODO(crbug.com/503054406): Return high level error for non-existent
     // task.
+    PostPerformActionsReply(std::move(callback), PerformActionsResult());
+    return;
+  }
+
+  // Reject before `AddControlledWebStates`, so that a rejected request does not
+  // leave its target WebStates controlled by the task.
+  // TODO(crbug.com/568338837): Rely on the `ActorTask::Act()` check once the
+  // task registers its controlled WebStates.
+  if (it->second->HasPendingAct()) {
+    constexpr mojom::ActionResultCode kRejectionCode =
+        mojom::ActionResultCode::kExecutionEngineExistingAction;
+    LogActRejection(*journal_, task_id, "ActorService::PerformActions",
+                    kRejectionCode);
     PerformActionsResult actions_result;
-    std::move(callback).Run(std::move(actions_result));
+    actions_result.action_results = MakeActionResults(kRejectionCode);
+    PostPerformActionsReply(std::move(callback), std::move(actions_result));
     return;
   }
 

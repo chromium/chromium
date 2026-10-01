@@ -10,6 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/types/id_type.h"
 #import "components/actor/core/task_id.h"
+#import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/web_state_id.h"
@@ -94,6 +95,12 @@ struct ActionResult {
 
 // Callback for when ActorTask/ActorEngine's `Act` finishes executing actions.
 using ActCallback = base::OnceCallback<void(std::vector<ActionResult>)>;
+
+// Returns the results reported for an `Act()` request rejected or aborted as a
+// whole (e.g. `kExecutionEngineExistingAction` for a concurrent request): a
+// single result carrying `code`. An empty vector is not used because it is
+// indistinguishable from a successful empty action sequence.
+std::vector<ActionResult> MakeActionResults(mojom::ActionResultCode code);
 
 // Represents a response for a tab observation (PageContext extraction),
 // associating the WebStateID with the extraction response or failure reason.

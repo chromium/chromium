@@ -26,6 +26,7 @@ source_set("model") {
     "//base",
     "//components/actor/core",
     "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",

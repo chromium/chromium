@@ -6,12 +6,14 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/safety_list_manager.h"
 #import "components/actor/core/task_source_info.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
@@ -312,11 +314,6 @@ class ActorTaskTest : public PlatformTest {
     return main_frame_ptr;
   }
 
-  void TriggerOnActCompleted(ActCallback callback,
-                             std::vector<ActionResult> results) {
-    task_->OnActCompleted(std::move(callback), std::move(results));
-  }
-
   bool IsHeartbeatTimerRunning() const {
     return task_->heartbeat_timer_.IsRunning();
   }
@@ -594,14 +591,11 @@ TEST_F(ActorTaskTest, NewObserverRegistrationIsIsolated) {
 // when non-empty, preserves the cached blurb when given an empty string, and
 // provides the latest cached update to subsequent observer registrations.
 TEST_F(ActorTaskTest, CachesLatestTaskUpdateAcrossActs) {
-  std::unique_ptr<web::FakeWebState> web_state =
-      std::make_unique<web::FakeWebState>();
-  AddControlledWebState(web_state->GetWeakPtr());
-
   std::vector<std::unique_ptr<ActorToolRequest>> actions_1;
-  actions_1.push_back(
-      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
-  task_->Act(std::move(actions_1), "First Update", base::DoNothing());
+  actions_1.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future_1;
+  task_->Act(std::move(actions_1), "First Update", future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
 
   FakeActorTaskUpdatesObserver* observer1 =
       [[FakeActorTaskUpdatesObserver alloc] init];
@@ -610,9 +604,10 @@ TEST_F(ActorTaskTest, CachesLatestTaskUpdateAcrossActs) {
 
   // An empty task update should not overwrite the previously cached update.
   std::vector<std::unique_ptr<ActorToolRequest>> actions_empty;
-  actions_empty.push_back(
-      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
-  task_->Act(std::move(actions_empty), "", base::DoNothing());
+  actions_empty.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future_empty;
+  task_->Act(std::move(actions_empty), "", future_empty.GetCallback());
+  ASSERT_TRUE(future_empty.Wait());
 
   FakeActorTaskUpdatesObserver* observer_empty =
       [[FakeActorTaskUpdatesObserver alloc] init];
@@ -620,8 +615,7 @@ TEST_F(ActorTaskTest, CachesLatestTaskUpdateAcrossActs) {
   EXPECT_NSEQ(@"First Update", observer_empty.registeredTaskUpdate);
 
   std::vector<std::unique_ptr<ActorToolRequest>> actions_2;
-  actions_2.push_back(
-      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
+  actions_2.push_back(MakeSuccessfulActorToolRequest());
   task_->Act(std::move(actions_2), "Second Update", base::DoNothing());
 
   FakeActorTaskUpdatesObserver* observer2 =
@@ -775,6 +769,94 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
 
   EXPECT_TRUE(callback_executed);
   EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
+}
+
+// Test that an `Act` issued while a previous one is pending is rejected
+// with `kExecutionEngineExistingAction`, without affecting the first one.
+TEST_F(ActorTaskTest, ConcurrentActIsRejected) {
+  // Untargeted requests, so tool creation does not fail synchronously on tab
+  // resolution.
+  std::vector<std::unique_ptr<ActorToolRequest>> first_actions;
+  first_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> first_future;
+  task_->Act(std::move(first_actions), "First", first_future.GetCallback());
+  ASSERT_FALSE(first_future.IsReady());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
+  second_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> second_future;
+  task_->Act(std::move(second_actions), "Second", second_future.GetCallback());
+
+  EXPECT_FALSE(second_future.IsReady());
+  const std::vector<ActionResult>& second_results = second_future.Get();
+  ASSERT_EQ(1u, second_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kExecutionEngineExistingAction,
+            second_results[0].tool_result.code());
+
+  ASSERT_TRUE(first_future.Wait());
+  for (const ActionResult& result : first_future.Get()) {
+    EXPECT_TRUE(result.tool_result.IsOk());
+  }
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
+// Test that an `Act` issued while a previous one is waiting for page loading to
+// complete is rejected with `kExecutionEngineExistingAction`.
+TEST_F(ActorTaskTest, ConcurrentActWhileDeferredPageLoadingIsRejected) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  // Untargeted, so the tool runs instead of failing on tab resolution.
+  std::vector<std::unique_ptr<ActorToolRequest>> first_actions;
+  first_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> first_future;
+  task_->Act(std::move(first_actions), "First", first_future.GetCallback());
+
+  // Let the tool complete on the engine. The request is now waiting for the
+  // page to finish loading.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(first_future.IsReady());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
+  second_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> second_future;
+  task_->Act(std::move(second_actions), "Second", second_future.GetCallback());
+
+  EXPECT_FALSE(second_future.IsReady());
+  const std::vector<ActionResult>& second_results = second_future.Get();
+  ASSERT_EQ(1u, second_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kExecutionEngineExistingAction,
+            second_results[0].tool_result.code());
+
+  // Finish loading to allow the first request to complete.
+  web_state->SetLoading(false);
+  ASSERT_TRUE(first_future.Wait());
+  for (const ActionResult& result : first_future.Get()) {
+    EXPECT_TRUE(result.tool_result.IsOk());
+  }
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+}
+
+// Test that the next `Act` can be issued from within the previous `Act`
+// callback.
+TEST_F(ActorTaskTest, ActFromActCallbackIsAccepted) {
+  base::test::TestFuture<std::vector<ActionResult>> second_future;
+  std::vector<std::unique_ptr<ActorToolRequest>> first_actions;
+  first_actions.push_back(MakeSuccessfulActorToolRequest());
+  task_->Act(std::move(first_actions), "First",
+             base::BindLambdaForTesting([&](std::vector<ActionResult>) {
+               std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
+               second_actions.push_back(MakeSuccessfulActorToolRequest());
+               task_->Act(std::move(second_actions), "Second",
+                          second_future.GetCallback());
+             }));
+
+  ASSERT_TRUE(second_future.Wait());
+  for (const ActionResult& result : second_future.Get()) {
+    EXPECT_TRUE(result.tool_result.IsOk());
+  }
 }
 
 // Test that stopping a task resets the tab helper's control state to
@@ -1220,11 +1302,14 @@ TEST_F(ActorTaskBackgroundingTest, HeartbeatPersistsDuringReflecting) {
   ASSERT_TRUE(main_frame);
 
   AddControlledWebState(web_state->GetWeakPtr());
-  task_->Act({}, "Executing tool", base::DoNothing());
+  // Untargeted, so the tool runs instead of failing on tab resolution.
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  task_->Act(std::move(actions), "Executing tool", base::DoNothing());
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 
-  // Trigger completion of tool execution, transitioning to reflecting.
-  TriggerOnActCompleted(base::DoNothing(), {});
+  // Let the tool complete, transitioning to reflecting.
+  task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(task_->GetState(), ActorTaskState::kReflecting);
   EXPECT_TRUE(IsHeartbeatTimerRunning());
 

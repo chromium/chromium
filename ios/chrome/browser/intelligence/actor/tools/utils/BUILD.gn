@@ -68,6 +68,7 @@ source_set("logging_util") {
   ]
   public_deps = [
     "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//url",

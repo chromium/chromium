@@ -9,11 +9,10 @@
 #import <vector>
 
 #import "components/actor/core/aggregated_journal.h"
+#import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "url/gurl.h"
-
-class AggregatedJournal;
 
 namespace actor {
 
@@ -35,6 +34,13 @@ void LogToolExecutionResult(AggregatedJournal& journal,
                             std::string_view event_name,
                             const ToolExecutionResult& result,
                             std::string_view success_details_key = "details");
+
+// Logs to `journal` that an `Act()` request for `task_id` was rejected with
+// `code` before any of its actions ran.
+void LogActRejection(AggregatedJournal& journal,
+                     ActorTaskId task_id,
+                     std::string_view event_name,
+                     mojom::ActionResultCode code);
 
 // Starts an async event during tool execution.
 std::unique_ptr<AggregatedJournal::PendingAsyncEntry> StartAsyncJournalEntry(

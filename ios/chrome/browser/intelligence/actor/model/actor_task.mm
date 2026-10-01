@@ -5,15 +5,19 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 
 #import <algorithm>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/location.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
@@ -95,7 +99,24 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
   }
 }
 
+// Posts `callback` with a single `code` result. Posted so that callers are
+// never re-entered from within `ActorTask::Act()`.
+void PostActReply(ActCallback callback, mojom::ActionResultCode code) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), MakeActionResults(code)));
+}
+
 }  // namespace
+
+#pragma mark - ActorTask::PendingAct
+
+ActorTask::PendingAct::PendingAct(ActCallback callback)
+    : callback(std::move(callback)) {}
+ActorTask::PendingAct::PendingAct(PendingAct&&) = default;
+ActorTask::PendingAct& ActorTask::PendingAct::operator=(PendingAct&&) = default;
+ActorTask::PendingAct::~PendingAct() = default;
+
+#pragma mark - ActorTask
 
 ActorTask::ActorTask(ActorTaskId task_id,
                      const std::string& title,
@@ -176,7 +197,17 @@ ActorTaskState ActorTask::GetState() const {
 void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                     const std::string& task_update,
                     ActCallback callback) {
-  // TODO(crbug.com/503054406): Check for invalid states.
+  // TODO(crbug.com/503054406): Reject `Act()` in invalid states (e.g. stopped
+  // with `kTaskWentAway`, paused with `kTaskPaused`, `kWaitingOnUser`).
+  if (pending_act_) {
+    constexpr mojom::ActionResultCode kRejectionCode =
+        mojom::ActionResultCode::kExecutionEngineExistingAction;
+    LogActRejection(*journal_, task_id_, "ActorTask::Act", kRejectionCode);
+    PostActReply(std::move(callback), kRejectionCode);
+    return;
+  }
+
+  pending_act_.emplace(std::move(callback));
   SetState(ActorTaskState::kActing);
   if (!task_update.empty()) {
     last_task_update_ = task_update;
@@ -185,10 +216,13 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
   UpdateBackgroundTaskSubtitle(task_update);
   StartHeartbeatTimer();
 
-  engine_->Act(
-      std::move(actions),
-      base::BindOnce(&ActorTask::OnActCompleted, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+  engine_->Act(std::move(actions),
+               base::BindOnce(&ActorTask::OnActCompleted,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool ActorTask::HasPendingAct() const {
+  return pending_act_.has_value();
 }
 
 void ActorTask::AddControlledWebState(web::WebState* web_state) {
@@ -495,17 +529,17 @@ void ActorTask::SetState(ActorTaskState new_state) {
                     fromState:old_state];
 }
 
-void ActorTask::OnActCompleted(ActCallback callback,
-                               std::vector<ActionResult> results) {
+void ActorTask::OnActCompleted(std::vector<ActionResult> results) {
+  // `Act()` registers `pending_act_` before starting the engine, and only
+  // `FinishAct()` clears it.
+  CHECK(pending_act_);
   // TODO(crbug.com/503054406): Check for tool errors.
 
   if (ObserveLoadingWebStates()) {
-    DeferActCompletion(std::move(callback), std::move(results));
+    DeferActCompletion(std::move(results));
     return;
   }
-
-  SetState(ActorTaskState::kReflecting);
-  std::move(callback).Run(std::move(results));
+  FinishAct(std::move(results));
 }
 
 bool ActorTask::ObserveLoadingWebStates() {
@@ -519,14 +553,29 @@ bool ActorTask::ObserveLoadingWebStates() {
   return scoped_web_state_observations_.IsObservingAnySource();
 }
 
-void ActorTask::DeferActCompletion(ActCallback callback,
-                                   std::vector<ActionResult> results) {
-  deferred_act_callback_ =
-      base::BindOnce(std::move(callback), std::move(results));
+void ActorTask::DeferActCompletion(std::vector<ActionResult> results) {
+  pending_act_->deferred_results = std::move(results);
 
   load_timeout_timer_.Start(FROM_HERE, kPageLoadTimeout,
                             base::BindOnce(&ActorTask::OnPageLoadedTimeout,
                                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorTask::FinishAct(std::vector<ActionResult> results) {
+  // Detached before replying so that an `Act()` issued from the callback is
+  // accepted.
+  ActCallback callback = std::move(pending_act_->callback);
+  pending_act_.reset();
+  SetState(ActorTaskState::kReflecting);
+  std::move(callback).Run(std::move(results));
+}
+
+void ActorTask::FinishDeferredAct() {
+  // Load observations and the timeout only exist after `DeferActCompletion()`,
+  // and are cleared before `FinishAct()` resets `pending_act_`.
+  CHECK(pending_act_);
+  CHECK(pending_act_->deferred_results);
+  FinishAct(std::move(*pending_act_->deferred_results));
 }
 
 void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
@@ -539,22 +588,15 @@ void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
     return;
   }
 
-  // Stop the timeout and execute the deferred callback since no more observed
+  // Stop the timeout and finish the deferred `Act()` since no more observed
   // WebStates are still loading.
   load_timeout_timer_.Stop();
-  SetState(ActorTaskState::kReflecting);
-  if (deferred_act_callback_) {
-    std::move(deferred_act_callback_).Run();
-  }
+  FinishDeferredAct();
 }
 
 void ActorTask::OnPageLoadedTimeout() {
   scoped_web_state_observations_.RemoveAllObservations();
-
-  SetState(ActorTaskState::kReflecting);
-  if (deferred_act_callback_) {
-    std::move(deferred_act_callback_).Run();
-  }
+  FinishDeferredAct();
 }
 
 void ActorTask::OnWillExecuteTool(ToolType tool_type,

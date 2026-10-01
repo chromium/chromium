@@ -11,7 +11,10 @@ source_set("actor_types") {
     "actor_types.h",
     "actor_types.mm",
   ]
-  public_deps = [ "//components/actor/core:task_id" ]
+  public_deps = [
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
+  ]
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/actor/tools/public",

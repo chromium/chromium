@@ -8,10 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import <set>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/strings/stringprintf.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -470,6 +472,52 @@ TEST_F(ActorServiceTest, AddControlledWebState) {
 
   EXPECT_EQ(fake_web_state_ptr,
             service->GetWebStateForID(web_state_id, task_id));
+
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Test that `PerformActions` issued while a previous request is executing is
+// rejected with `kExecutionEngineExistingAction` without adding its target
+// WebState to the task.
+TEST_F(ActorServiceTest, PerformActionsWhileActingDoesNotAddWebStates) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_id = fake_web_state->GetUniqueIdentifier();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  // Untargeted, so the first request stays in flight until its tool completes.
+  base::test::TestFuture<PerformActionsResult> first_future;
+  service->PerformActions(task_id, {MakeSuccessfulActorAction()}, "First",
+                          first_future.GetCallback());
+  ASSERT_FALSE(first_future.IsReady());
+
+  base::test::TestFuture<PerformActionsResult> second_future;
+  service->PerformActions(task_id, {MakeSuccessfulActorAction(web_state_id)},
+                          "Second", second_future.GetCallback());
+  EXPECT_FALSE(second_future.IsReady());
+  EXPECT_EQ(nullptr, service->GetWebStateForID(web_state_id, task_id));
+
+  const PerformActionsResult& second_result = second_future.Get();
+  ASSERT_EQ(1u, second_result.action_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kExecutionEngineExistingAction,
+            second_result.action_results[0].tool_result.code());
+  EXPECT_EQ(nullptr, service->GetWebStateForID(web_state_id, task_id));
+  EXPECT_TRUE(HasJournalEntryWithDetail(
+      *GetJournal(service), "ActorService::PerformActions", "error",
+      base::StringPrintf(
+          "Act rejected with mojom::ActionResultCode[%d]",
+          std::to_underlying(
+              mojom::ActionResultCode::kExecutionEngineExistingAction))));
+
+  ASSERT_TRUE(first_future.Wait());
 
   browser_list->RemoveBrowser(test_browser.get());
 }
