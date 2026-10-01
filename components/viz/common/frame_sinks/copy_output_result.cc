@@ -229,6 +229,20 @@ const SkBitmap& CopyOutputSkBitmapResult::AsSkBitmap() const {
 
 CopyOutputSkBitmapResult::~CopyOutputSkBitmapResult() = default;
 
+// static
+scoped_refptr<gpu::ClientSharedImage>
+CopyOutputSharedImageResult::CreateUnownedSharedImage(
+    Format format,
+    const gfx::Size& size,
+    const gpu::Mailbox& mailbox,
+    const gfx::ColorSpace& color_space,
+    std::string_view debug_label) {
+  return base::WrapRefCounted(new gpu::ClientSharedImage(
+      mailbox,
+      gpu::SharedImageInfo{GetSharedImageFormatFor(format), size, color_space,
+                           kDefaultSharedImageUsage, debug_label}));
+}
+
 CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     Format format,
     const gfx::Rect& rect,
@@ -236,15 +250,14 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     const gfx::ColorSpace& color_space,
     std::string_view debug_label,
     ReleaseCallback release_callback)
-    : CopyOutputSharedImageResult(
-          format,
-          rect,
-          base::WrapRefCounted(new gpu::ClientSharedImage(
-              mailbox,
-              gpu::SharedImageInfo{GetSharedImageFormatFor(format), rect.size(),
-                                   color_space, kDefaultSharedImageUsage,
-                                   debug_label})),
-          std::move(release_callback)) {}
+    : CopyOutputSharedImageResult(format,
+                                  rect,
+                                  CreateUnownedSharedImage(format,
+                                                           rect.size(),
+                                                           mailbox,
+                                                           color_space,
+                                                           debug_label),
+                                  std::move(release_callback)) {}
 
 CopyOutputSharedImageResult::CopyOutputSharedImageResult(
     Format format,

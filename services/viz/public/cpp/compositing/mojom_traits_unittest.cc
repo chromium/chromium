@@ -40,6 +40,7 @@
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "ipc/param_traits_utils.h"
@@ -1730,7 +1731,12 @@ TEST_F(CompositingStructTraitsTest, CopyOutputResult_Texture) {
       [](base::OnceClosure quit_closure,
          const gpu::SyncToken& expected_sync_token,
          const gpu::SyncToken& sync_token, bool is_lost) {
-        EXPECT_EQ(expected_sync_token, sync_token);
+        if (base::FeatureList::IsEnabled(
+                features::kUseAutomaticSyncTokenManagement)) {
+          EXPECT_FALSE(sync_token.HasData());
+        } else {
+          EXPECT_EQ(expected_sync_token, sync_token);
+        }
         EXPECT_TRUE(is_lost);
         std::move(quit_closure).Run();
       },
@@ -1754,14 +1760,23 @@ TEST_F(CompositingStructTraitsTest, CopyOutputResult_Texture) {
   EXPECT_EQ(output->GetSharedImage()->mailbox(), mailbox);
   EXPECT_EQ(output->GetSharedImage()->color_space(), result_color_space);
 
+  gpu::SyncToken release_sync_token = output->GetSharedImage()->EndExport(
+      gpu::SharedImageExportResult::CreateForTesting(sync_token));
   ReleaseCallback out_callback = output->TakeSharedImageOwnership();
 
   ASSERT_TRUE(out_callback);
-  std::move(out_callback).Run(sync_token, true /* is_lost */);
+  std::move(out_callback).Run(release_sync_token, true /* is_lost */);
 
   // If the CopyOutputResult callback is called (which is the intended
   // behaviour), this will exit. Otherwise, this test will time out and fail.
   run_loop.Run();
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_EQ(input->GetSharedImage()->GetSyncTokensForDisplayCompositor(
+                  gpu::SyncToken()),
+              std::vector<gpu::SyncToken>{sync_token});
+  }
 }
 
 TEST_F(CompositingStructTraitsTest, TreesInVizTimingTest) {

@@ -7,6 +7,7 @@
 
 #include <array>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -280,6 +281,13 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
 // will be released when this class is destroyed.
 class VIZ_COMMON_EXPORT CopyOutputSharedImageResult : public CopyOutputResult {
  public:
+  static scoped_refptr<gpu::ClientSharedImage> CreateUnownedSharedImage(
+      Format format,
+      const gfx::Size& size,
+      const gpu::Mailbox& mailbox,
+      const gfx::ColorSpace& color_space,
+      std::string_view debug_label);
+
   // Construct a non-empty shared-image result;
   // will create unowned `ClientSharedImage` with the provided metadata.
   CopyOutputSharedImageResult(Format format,

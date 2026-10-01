@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -22,19 +24,29 @@ namespace {
 // attached to it goes away (i.e. SelfOwnedReceiver is used).
 class TextureReleaserImpl : public viz::mojom::TextureReleaser {
  public:
-  explicit TextureReleaserImpl(viz::ReleaseCallback release_callback)
-      : release_callback_(std::move(release_callback)) {}
+  TextureReleaserImpl(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                      viz::ReleaseCallback release_callback)
+      : shared_image_(std::move(shared_image)),
+        release_callback_(std::move(release_callback)) {
+    CHECK(shared_image_);
+  }
 
   // mojom::TextureReleaser implementation:
-  void Release(const gpu::SyncToken& sync_token, bool is_lost) override {
+  void Release(gpu::SharedImageExportResult export_result,
+               bool is_lost) override {
+    gpu::SyncToken sync_token =
+        shared_image_->EndExport(std::move(export_result));
+    shared_image_.reset();
     std::move(release_callback_).Run(sync_token, is_lost);
   }
 
  private:
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   viz::ReleaseCallback release_callback_;
 };
 
 void Release(mojo::PendingRemote<viz::mojom::TextureReleaser> pending_remote,
+             scoped_refptr<gpu::ClientSharedImage> shared_image,
              const gpu::SyncToken& sync_token,
              bool is_lost) {
   // By default Mojo binds to the current task runner. If there is not one, such
@@ -44,7 +56,7 @@ void Release(mojo::PendingRemote<viz::mojom::TextureReleaser> pending_remote,
     return;
   }
   mojo::Remote<viz::mojom::TextureReleaser> remote(std::move(pending_remote));
-  remote->Release(sync_token, is_lost);
+  remote->Release(shared_image->EndImport(sync_token), is_lost);
 }
 
 }  // namespace
@@ -236,7 +248,8 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
 
   mojo::PendingRemote<viz::mojom::TextureReleaser> releaser;
   MakeSelfOwnedReceiver(
-      std::make_unique<TextureReleaserImpl>(std::move(release_callback)),
+      std::make_unique<TextureReleaserImpl>(result->GetSharedImage(),
+                                            std::move(release_callback)),
       releaser.InitWithNewPipeAndPassReceiver());
   return releaser;
 }
@@ -326,6 +339,11 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
             return true;
           }
 
+          scoped_refptr<gpu::ClientSharedImage> shared_image =
+              viz::CopyOutputSharedImageResult::CreateUnownedSharedImage(
+                  viz::CopyOutputResult::Format::RGBA, rect.size(), *mailbox,
+                  *color_space, "ReadStructTraits");
+
           viz::ReleaseCallback release_callback;
           auto releaser = data.TakeReleaser<
               mojo::PendingRemote<viz::mojom::TextureReleaser>>();
@@ -333,13 +351,16 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
           if (releaser) {
             // Returns a result with a ReleaseCallback that will return here and
             // proxy the callback over mojo to the CopyOutputResult's origin via
-            // a mojo::Remote<viz::mojom::TextureReleaser> remote.
-            release_callback = base::BindOnce(&Release, std::move(releaser));
+            // a mojo::Remote<viz::mojom::TextureReleaser> remote. The same
+            // `shared_image` that is handed to the client is bound, so that the
+            // SyncTokens it tracks can be sent back to the origin.
+            release_callback =
+                base::BindOnce(&Release, std::move(releaser), shared_image);
           }
 
           *out_p = std::make_unique<viz::CopyOutputSharedImageResult>(
-              viz::CopyOutputResult::Format::RGBA, rect, *mailbox, *color_space,
-              "ReadStructTraits", std::move(release_callback));
+              viz::CopyOutputResult::Format::RGBA, rect,
+              std::move(shared_image), std::move(release_callback));
           return true;
         }
       }
