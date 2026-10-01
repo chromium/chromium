@@ -1030,7 +1030,7 @@ BUILDERS = {
     'platform': 'linux',
     'dimension': {
       'cpu': 'arm64',
-      'os': 'Ubuntu-24.04.4',
+      'os': 'Ubuntu-24.04',
       'pool': 'chrome.tests.perf',
     },
   },
