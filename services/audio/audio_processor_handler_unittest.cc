@@ -4,7 +4,11 @@
 
 #include "services/audio/audio_processor_handler.h"
 
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <memory>
+#include <numbers>
 #include <optional>
 #include <vector>
 
@@ -118,6 +122,32 @@ class MockAudioDebugRecorder : public media::AudioDebugRecorder {
 };
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Constant levels used to tell the microphone signal apart from the voice
+// isolation output in the transition (fade) tests.
+constexpr float kMicLevel = 1.0f;
+constexpr float kDenoisedLevel = -1.0f;
+constexpr float kFadeTolerance = 1e-6f;
+// The first fade-in gain is sin^2(pi / (2 * kFramesPerBuffer)) ~= 1.07e-5
+// rather than exactly 0.0, so edge samples are checked with a looser tolerance.
+constexpr float kFadeEdgeTolerance = 1e-4f;
+// Index of the mid-frame sample, where the fade-in gain is sin^2(pi / 4) = 0.5.
+constexpr int kMidFrameIndex = kFramesPerBuffer / 2 - 1;
+
+// Fills every channel of `bus` with `value`.
+void FillBus(media::AudioBus& bus, float value) {
+  for (int ch = 0; ch < bus.channels(); ++ch) {
+    std::ranges::fill(bus.channel(ch), value);
+  }
+}
+
+// Reference rising half-Hann fade-in gain: sin^2(pi * (i + 1) / (2 * N)).
+float ExpectedFadeIn(int index, int num_frames) {
+  const float sine =
+      std::sin(std::numbers::pi_v<float> * static_cast<float>(index + 1) /
+               static_cast<float>(2 * num_frames));
+  return sine * sine;
+}
+
 // Matches VoiceIsolationStartupResult in enums.xml.
 enum class VoiceIsolationStartupResult {
   kSuccess = 0,
@@ -336,11 +366,12 @@ TEST_F(AudioProcessorHandlerTest,
   remote->SetVoiceIsolation(false);
   remote.FlushForTesting();
 
-  // With voice isolation disabled, the mock component should not process audio,
-  // and ClearBuffers() should be called once to purge lookahead frames.
+  // On the first frame after disabling, the mock component processes audio
+  // once more to crossfade to the microphone signal, and ClearBuffers() is
+  // called once to purge lookahead frames.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
     EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
     EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
@@ -1206,12 +1237,14 @@ TEST_F(AudioProcessorHandlerTest,
     run_loop.Run();
   }
 
-  // 2. Disable voice isolation: audio passes through without ProcessAudio call.
+  // 2. Disable voice isolation: the first frame runs ProcessAudio once more to
+  // crossfade to the microphone signal.
   handler->SetVoiceIsolation(false);
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*mock_ptr, ClearBuffers()).Times(1);
     EXPECT_CALL(deliver_callback_, Run(_, _, _)).WillOnce([&]() {
       run_loop.Quit();
     });
@@ -1286,11 +1319,13 @@ TEST_F(AudioProcessorHandlerTest,
   // 2. Disable voice isolation.
   handler->SetVoiceIsolation(false);
 
-  // 3. First captured frame after disabling: ON -> OFF transition triggers
-  // ClearBuffers() exactly once to purge stranded lookahead frames.
-  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  // 3. First captured frame after disabling: ON -> OFF transition runs voice
+  // isolation once to crossfade, then triggers ClearBuffers() exactly once.
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
   EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
-  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  EXPECT_CALL(deliver_callback_,
+              Run(testing::Not(testing::Ref(*input_bus)), _, _))
+      .Times(1);
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
                                 media::AudioGlitchInfo());
   testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
@@ -1316,11 +1351,13 @@ TEST_F(AudioProcessorHandlerTest,
   testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
   testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
 
-  // 6. Disable again: triggers ClearBuffers() once more on the next frame.
+  // 6. Disable again: crossfades and triggers ClearBuffers() once more.
   handler->SetVoiceIsolation(false);
-  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
   EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
-  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  EXPECT_CALL(deliver_callback_,
+              Run(testing::Not(testing::Ref(*input_bus)), _, _))
+      .Times(1);
   handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
                                 media::AudioGlitchInfo());
   testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
@@ -1393,10 +1430,10 @@ TEST_F(AudioProcessorHandlerTest,
   handler->SetVoiceIsolation(false);
 
   // 3. When the next frame is processed on the FIFO thread, ClearBuffers() must
-  // be called once to purge lookahead frames.
+  // be called once, after a final crossfade frame, to purge lookahead frames.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
     EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
     EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus&, base::TimeTicks,
@@ -1444,6 +1481,299 @@ TEST_F(AudioProcessorHandlerTest,
   }
 
   handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerCrossfadesMicToDenoisedOnEnable) {
+  // The fade logic is thread-agnostic; pin the synchronous (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  std::unique_ptr<media::MockVoiceIsolation> mock_voice_isolation =
+      std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Must be set after CreateVoiceIsolationHandlerWithMock() to override its
+  // pass-through default action. Records the voice isolation input.
+  std::unique_ptr<media::AudioBus> voice_isolation_input =
+      media::AudioBus::Create(output_params_);
+  ON_CALL(*mock_ptr, ProcessAudio(_, _))
+      .WillByDefault(
+          [&](const media::AudioBus& input, media::AudioBus& output) {
+            input.CopyTo(voice_isolation_input.get());
+            FillBus(output, kDenoisedLevel);
+          });
+
+  std::unique_ptr<media::AudioBus> input_bus =
+      media::AudioBus::Create(input_params_);
+  FillBus(*input_bus, kMicLevel);
+  std::vector<float> delivered(kFramesPerBuffer);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
+      .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
+                          const media::AudioGlitchInfo&) {
+        base::span(delivered).copy_from(bus.channel(0));
+      });
+
+  // First active frame (OFF -> ON edge).
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  testing::Mock::VerifyAndClearExpectations(mock_ptr);
+
+  // Voice isolation is fed the unmodified microphone signal: its cleared
+  // internal state already makes its output ramp up from silence.
+  for (float sample : voice_isolation_input->channel(0)) {
+    EXPECT_FLOAT_EQ(sample, kMicLevel);
+  }
+
+  // The delivered signal crossfades from the microphone signal to the voice
+  // isolation output.
+  for (int i = 0; i < kFramesPerBuffer; ++i) {
+    const float fade_in = ExpectedFadeIn(i, kFramesPerBuffer);
+    EXPECT_NEAR(delivered[i],
+                (1.0f - fade_in) * kMicLevel + fade_in * kDenoisedLevel,
+                kFadeTolerance)
+        << "sample " << i;
+  }
+
+  // Oracle-independent anchors: continuous with the bypassed microphone
+  // signal, halfway at mid-frame, strictly monotonic, and ending exactly on
+  // the voice isolation output.
+  EXPECT_NEAR(delivered.front(), kMicLevel, kFadeEdgeTolerance);
+  EXPECT_NEAR(delivered[kMidFrameIndex], 0.5f * (kMicLevel + kDenoisedLevel),
+              kFadeTolerance);
+  for (int i = 1; i < kFramesPerBuffer; ++i) {
+    EXPECT_LT(delivered[i], delivered[i - 1]) << "sample " << i;
+  }
+  EXPECT_NEAR(delivered.back(), kDenoisedLevel, kFadeTolerance);
+
+  // Steady state: the unmodified microphone signal is fed to voice isolation
+  // and its output is delivered untouched.
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  for (float sample : voice_isolation_input->channel(0)) {
+    EXPECT_FLOAT_EQ(sample, kMicLevel);
+  }
+  for (float sample : delivered) {
+    EXPECT_FLOAT_EQ(sample, kDenoisedLevel);
+  }
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerCrossfadesToMicAndClearsBuffersOnDisable) {
+  // The fade logic is thread-agnostic; pin the synchronous (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  std::unique_ptr<media::MockVoiceIsolation> mock_voice_isolation =
+      std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Must be set after CreateVoiceIsolationHandlerWithMock() to override its
+  // pass-through default action.
+  ON_CALL(*mock_ptr, ProcessAudio(_, _))
+      .WillByDefault([](const media::AudioBus&, media::AudioBus& output) {
+        FillBus(output, kDenoisedLevel);
+      });
+
+  std::unique_ptr<media::AudioBus> input_bus =
+      media::AudioBus::Create(input_params_);
+  FillBus(*input_bus, kMicLevel);
+  std::vector<float> delivered(kFramesPerBuffer);
+  const media::AudioBus* delivered_bus = nullptr;
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
+      .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
+                          const media::AudioGlitchInfo&) {
+        delivered_bus = &bus;
+        base::span(delivered).copy_from(bus.channel(0));
+      });
+
+  // Reach steady-state active processing (first frame is the OFF -> ON fade).
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(2);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  testing::Mock::VerifyAndClearExpectations(mock_ptr);
+
+  // ON -> OFF edge: one final ProcessAudio(), crossfade, then ClearBuffers().
+  handler->SetVoiceIsolation(false);
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*mock_ptr, ClearBuffers()).Times(1);
+  }
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  EXPECT_NE(delivered_bus, input_bus.get());
+  for (int i = 0; i < kFramesPerBuffer; ++i) {
+    const float fade_in = ExpectedFadeIn(i, kFramesPerBuffer);
+    EXPECT_NEAR(delivered[i],
+                (1.0f - fade_in) * kDenoisedLevel + fade_in * kMicLevel,
+                kFadeTolerance)
+        << "sample " << i;
+  }
+
+  // Oracle-independent anchors: continuous with the previous voice isolation
+  // output, halfway at mid-frame, strictly monotonic, and ending exactly on
+  // the microphone signal.
+  EXPECT_NEAR(delivered.front(), kDenoisedLevel, kFadeEdgeTolerance);
+  EXPECT_NEAR(delivered[kMidFrameIndex], 0.5f * (kMicLevel + kDenoisedLevel),
+              kFadeTolerance);
+  for (int i = 1; i < kFramesPerBuffer; ++i) {
+    EXPECT_GT(delivered[i], delivered[i - 1]) << "sample " << i;
+  }
+  EXPECT_NEAR(delivered.back(), kMicLevel, kFadeTolerance);
+  testing::Mock::VerifyAndClearExpectations(mock_ptr);
+
+  // Steady bypass: zero-copy pass-through, no processing, no clearing.
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*mock_ptr, ClearBuffers()).Times(0);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  EXPECT_EQ(delivered_bus, input_bus.get());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerTransitionsAreContinuousOnRapidToggle) {
+  // The fade logic is thread-agnostic; pin the synchronous (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  std::unique_ptr<media::MockVoiceIsolation> mock_voice_isolation =
+      std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Must be set after CreateVoiceIsolationHandlerWithMock() to override its
+  // pass-through default action.
+  ON_CALL(*mock_ptr, ProcessAudio(_, _))
+      .WillByDefault([](const media::AudioBus&, media::AudioBus& output) {
+        FillBus(output, kDenoisedLevel);
+      });
+
+  std::unique_ptr<media::AudioBus> input_bus =
+      media::AudioBus::Create(input_params_);
+  FillBus(*input_bus, kMicLevel);
+  std::vector<float> delivered(kFramesPerBuffer);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
+      .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
+                          const media::AudioGlitchInfo&) {
+        base::span(delivered).copy_from(bus.channel(0));
+      });
+
+  // Reach steady-state active processing.
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+
+  // Frame N: ON -> OFF. Frame N + 1: OFF -> ON. Both frames run voice isolation
+  // once, and buffers are cleared exactly once.
+  EXPECT_CALL(*mock_ptr, ProcessAudio(_, _)).Times(2);
+  EXPECT_CALL(*mock_ptr, ClearBuffers()).Times(1);
+
+  handler->SetVoiceIsolation(false);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  const float last_sample_of_disable_frame = delivered.back();
+
+  handler->SetVoiceIsolation(true);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  const float first_sample_of_enable_frame = delivered.front();
+
+  // The ON -> OFF frame ends on the microphone signal and the OFF -> ON frame
+  // starts from it, so there is no step across the frame boundary.
+  EXPECT_NEAR(last_sample_of_disable_frame, kMicLevel, kFadeTolerance);
+  EXPECT_NEAR(first_sample_of_enable_frame, kMicLevel, kFadeEdgeTolerance);
+  EXPECT_NEAR(delivered.back(), kDenoisedLevel, kFadeTolerance);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerTransitionsFadeEveryChannel) {
+  // The fade logic is thread-agnostic; pin the synchronous (no FIFO) path.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      media::kWebRtcVoiceIsolationProcessingFifo);
+
+  const media::AudioParameters stereo_params(
+      media::AudioParameters::Format::AUDIO_PCM_LINEAR,
+      media::ChannelLayoutConfig::Stereo(), kSampleRate, kFramesPerBuffer);
+  // Distinct microphone level per channel to detect channel mix-ups.
+  constexpr std::array<float, 2> kMicLevels = {kMicLevel, 0.5f * kMicLevel};
+
+  std::unique_ptr<media::MockVoiceIsolation> mock_voice_isolation =
+      std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* mock_ptr = mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          stereo_params,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Must be set after CreateVoiceIsolationHandlerWithMock() to override its
+  // pass-through default action. Records the voice isolation input.
+  std::unique_ptr<media::AudioBus> voice_isolation_input =
+      media::AudioBus::Create(stereo_params);
+  ON_CALL(*mock_ptr, ProcessAudio(_, _))
+      .WillByDefault(
+          [&](const media::AudioBus& input, media::AudioBus& output) {
+            input.CopyTo(voice_isolation_input.get());
+            FillBus(output, kDenoisedLevel);
+          });
+
+  std::unique_ptr<media::AudioBus> input_bus =
+      media::AudioBus::Create(stereo_params);
+  for (int ch = 0; ch < input_bus->channels(); ++ch) {
+    std::ranges::fill(input_bus->channel(ch), kMicLevels[ch]);
+  }
+  std::unique_ptr<media::AudioBus> delivered =
+      media::AudioBus::Create(stereo_params);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _))
+      .WillRepeatedly(
+          [&](const media::AudioBus& bus, base::TimeTicks,
+              const media::AudioGlitchInfo&) { bus.CopyTo(delivered.get()); });
+
+  // OFF -> ON edge: every channel is fed unmodified to voice isolation and
+  // crossfaded from the microphone signal at the output.
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  for (int ch = 0; ch < stereo_params.channels(); ++ch) {
+    for (int i = 0; i < kFramesPerBuffer; ++i) {
+      const float fade_in = ExpectedFadeIn(i, kFramesPerBuffer);
+      EXPECT_FLOAT_EQ(voice_isolation_input->channel(ch)[i], kMicLevels[ch])
+          << "channel " << ch << ", sample " << i;
+      EXPECT_NEAR(delivered->channel(ch)[i],
+                  (1.0f - fade_in) * kMicLevels[ch] + fade_in * kDenoisedLevel,
+                  kFadeTolerance)
+          << "channel " << ch << ", sample " << i;
+    }
+  }
+
+  // ON -> OFF edge: every channel is crossfaded back to its microphone signal.
+  handler->SetVoiceIsolation(false);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), {});
+  for (int ch = 0; ch < stereo_params.channels(); ++ch) {
+    for (int i = 0; i < kFramesPerBuffer; ++i) {
+      const float fade_in = ExpectedFadeIn(i, kFramesPerBuffer);
+      EXPECT_NEAR(delivered->channel(ch)[i],
+                  (1.0f - fade_in) * kDenoisedLevel + fade_in * kMicLevels[ch],
+                  kFadeTolerance)
+          << "channel " << ch << ", sample " << i;
+    }
+  }
 }
 #endif
 

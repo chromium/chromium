@@ -112,6 +112,7 @@ VoiceIsolationHandler::VoiceIsolationHandler(
           std::move(deliver_processed_audio_callback)),
       log_callback_(std::move(log_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
+      transition_crossfader_(output_params.frames_per_buffer()),
       debug_recorder_(std::move(debug_recorder)),
       bypass_voice_isolation_(true),
       startup_metrics_logger_(std::make_unique<StartupMetricsLogger>(this)) {
@@ -145,6 +146,7 @@ VoiceIsolationHandler::VoiceIsolationHandler(
           std::move(deliver_processed_audio_callback)),
       log_callback_(std::move(log_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
+      transition_crossfader_(output_params.frames_per_buffer()),
       debug_recorder_(std::move(debug_recorder)),
       voice_isolation_(std::move(voice_isolation)),
       bypass_voice_isolation_(false) {
@@ -256,25 +258,44 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
               audio_source.channels());
 
   const media::AudioBus* delivered_bus = &audio_source;
-  if (IsVoiceIsolationBypassed()) {
-    if (!was_previously_bypassed_) {
-      // Stop using voice_isolation, purge trapped lookahead frames immediately.
-      // Note: Because the voice isolation pipeline introduces lookahead and
-      // algorithmic delay (~10-20ms), immediately discarding buffered frames
-      // and forwarding raw audio introduces a minor time discontinuity.
-      // Dropping these lookahead frames is intentional to prevent stale or
-      // echoed speech from leaking when voice isolation is re-enabled.
-      was_previously_bypassed_ = true;
-      CHECK(voice_isolation_);
-      voice_isolation_->ClearBuffers();
-    }
-  } else {
+  const bool is_bypassed = IsVoiceIsolationBypassed();
+
+  // Run voice isolation while it is enabled, and one last time on the ON -> OFF
+  // transition frame to crossfade back to the microphone signal. In steady
+  // state bypass, deliver `audio_source` untouched.
+  if (!is_bypassed || !was_previously_bypassed_) {
     CHECK(voice_isolation_);
     DCHECK_EQ(output_bus_->channels(), audio_source.channels());
     DCHECK_EQ(output_bus_->frames(), audio_source.frames());
-    was_previously_bypassed_ = false;
     voice_isolation_->ProcessAudio(audio_source, *output_bus_);
     delivered_bus = output_bus_.get();
+
+    if (is_bypassed) {
+      // ON -> OFF transition: switch from the denoised signal to the original
+      // signal. Crossfade to the microphone signal, then purge the lookahead
+      // frames so that stale speech does not leak when voice isolation is
+      // re-enabled.
+      // Note: the voice isolation output lags the microphone signal by its
+      // algorithmic delay, so this transition still skips the buffered
+      // lookahead. The crossfade only removes the amplitude discontinuity.
+      CHECK(!was_previously_bypassed_);
+      transition_crossfader_.Crossfade(/*from=*/*output_bus_,
+                                       /*to=*/audio_source,
+                                       /*destination=*/*output_bus_);
+      voice_isolation_->ClearBuffers();
+    }
+
+    if (was_previously_bypassed_) {
+      // OFF -> ON transition: crossfade from the microphone signal to the voice
+      // isolation output. The voice isolation internal state is silence (fresh
+      // or cleared), so its output ramps up from zeros on its own and its input
+      // needs no fade.
+      CHECK(!is_bypassed);
+      transition_crossfader_.Crossfade(/*from=*/audio_source,
+                                       /*to=*/*output_bus_,
+                                       /*destination=*/*output_bus_);
+    }
+    was_previously_bypassed_ = is_bypassed;
   }
 
   if (debug_recorder_) {

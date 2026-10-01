@@ -20,6 +20,7 @@
 #include "media/audio/audio_debug_recording_helper.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+#include "services/audio/crossfader.h"
 
 namespace media {
 class AudioBus;
@@ -150,6 +151,10 @@ class VoiceIsolationHandler {
   // ProcessCapturedAudioInternal() on the capture or FIFO thread.
   std::unique_ptr<media::AudioBus> output_bus_;
 
+  // Smooths enable/disable transitions within a single buffer. Immutable and
+  // real-time safe, used only in ProcessCapturedAudioInternal().
+  const Crossfader transition_crossfader_;
+
   // Thread-safe recorder feeding debug audio data. Immutable after
   // construction.
   const std::unique_ptr<media::AudioDebugRecorder> debug_recorder_;
@@ -169,8 +174,9 @@ class VoiceIsolationHandler {
   std::atomic<bool> bypass_voice_isolation_{true};
 
   // Tracks whether voice isolation was bypassed on the previous captured audio
-  // frame to detect ON -> OFF transitions and clear internal buffers. Only used
-  // in ProcessCapturedAudioInternal().
+  // frame to detect OFF -> ON transitions (fade to silence while priming) and
+  // ON -> OFF transitions (crossfade to microphone and clear internal
+  // buffers). Only used in ProcessCapturedAudioInternal().
   bool was_previously_bypassed_ = true;
 
   class StartupMetricsLogger;

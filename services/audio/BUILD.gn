@@ -13,6 +13,8 @@ source_set("audio") {
   configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
   sources = [
     "audio_manager_power_user.h",
+    "crossfader.cc",
+    "crossfader.h",
     "debug_recording.cc",
     "debug_recording.h",
     "delay_buffer.cc",
@@ -168,6 +170,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "crossfader_unittest.cc",
     "debug_recording_unittest.cc",
     "delay_buffer_unittest.cc",
     "device_listener_output_stream_unittest.cc",
