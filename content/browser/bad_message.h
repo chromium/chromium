@@ -431,6 +431,7 @@ enum BadMessageReason {
   BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY = 403,
   RFH_DETACH_WHILE_BFCACHED = 404,
   RFH_DOWNLOAD_URL_BLOB_WITHOUT_TOKEN = 405,
+  RPH_DUPLICATE_MEMORY_COORDINATOR_HOST = 406,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

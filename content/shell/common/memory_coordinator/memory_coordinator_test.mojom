@@ -9,6 +9,10 @@ import "mojo/public/mojom/base/memory_limit.mojom";
 
 // An interface for driving memory coordinator tests in the renderer process.
 interface MemoryCoordinatorTest {
+  // Forwards `receiver` from the renderer to the browser's process binder.
+  // Used to test duplicate registry binding. Sends no reply.
+  BindRegistryHost(pending_receiver<ChildMemoryConsumerRegistryHost> receiver);
+
   // Registers a memory consumer in the renderer process with the given name
   // and traits. Signals received by the consumer will be echoed to |client|.
   RegisterConsumer(string name,

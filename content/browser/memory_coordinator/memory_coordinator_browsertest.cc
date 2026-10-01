@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -12,10 +16,11 @@
 #include "base/hash/hash.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
@@ -27,6 +32,7 @@
 #include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/memory_coordinator/memory_coordinator_test.mojom.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -125,6 +131,30 @@ class MemoryCoordinatorBrowserTest : public ContentBrowserTest {
  protected:
   mojo::Remote<mojom::MemoryCoordinatorTest> memory_coordinator_test_;
 };
+
+IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, DuplicateHostBind) {
+  MemoryCoordinatorPolicyManager& manager =
+      BrowserMemoryCoordinator::Get().policy_manager();
+  TestPolicy policy(manager);
+  MemoryCoordinatorPolicyRegistration registration(manager, policy);
+
+  // Wait for the renderer's initial host before requesting a second one.
+  auto consumer = RegisterChildConsumer(
+      "DuplicateBindConsumer",
+      base::MemoryConsumerTraits(
+          base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+          base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+          base::MemoryConsumerTraits::InformationRetention::kLossless,
+          base::MemoryConsumerTraits::ExecutionType::kSynchronous));
+  ASSERT_TRUE(policy.WaitUntilRegistered("DuplicateBindConsumer"));
+
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(GetProcess());
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> duplicate_host;
+  memory_coordinator_test_->BindRegistryHost(
+      duplicate_host.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(bad_message::RPH_DUPLICATE_MEMORY_COORDINATOR_HOST,
+            kill_waiter.Wait());
+}
 
 IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
   MemoryCoordinatorPolicyManager& manager =

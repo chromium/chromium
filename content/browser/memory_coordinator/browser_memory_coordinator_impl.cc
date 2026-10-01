@@ -11,7 +11,6 @@
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
-#include "mojo/public/cpp/bindings/message.h"
 
 namespace content {
 
@@ -81,14 +80,13 @@ void BrowserMemoryCoordinatorImpl::RemoveDiagnosticObserver(
 }
 #endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 
-void BrowserMemoryCoordinatorImpl::Bind(
+bool BrowserMemoryCoordinatorImpl::Bind(
     ProcessType process_type,
     ChildProcessId child_process_id,
     mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver) {
   auto [it, inserted] = hosts_.try_emplace(child_process_id);
   if (!inserted) {
-    mojo::ReportBadMessage("Duplicate MemoryCoordinator host registration");
-    return;
+    return false;
   }
 
   it->second = std::make_unique<ChildMemoryConsumerRegistryHost>(
@@ -101,6 +99,7 @@ void BrowserMemoryCoordinatorImpl::Bind(
     it->second->EnableDiagnosticsReporting();
   }
 #endif
+  return true;
 }
 
 void BrowserMemoryCoordinatorImpl::OnHostDisconnected(

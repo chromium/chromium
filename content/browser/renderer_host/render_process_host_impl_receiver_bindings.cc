@@ -12,6 +12,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/single_sample_metrics.h"
 #include "components/viz/host/gpu_client.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -27,6 +28,7 @@
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/common/features.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/common/content_client.h"
@@ -142,8 +144,11 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
           [](ChildProcessId rph_id,
              mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
                  receiver) {
-            BrowserMemoryCoordinatorImpl::Get().Bind(
-                PROCESS_TYPE_RENDERER, rph_id, std::move(receiver));
+            if (!BrowserMemoryCoordinatorImpl::Get().Bind(
+                    PROCESS_TYPE_RENDERER, rph_id, std::move(receiver))) {
+              bad_message::ReceivedBadMessage(
+                  rph_id, bad_message::RPH_DUPLICATE_MEMORY_COORDINATOR_HOST);
+            }
           },
           GetID()));
 

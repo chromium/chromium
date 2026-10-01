@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 #include "content/shell/common/memory_coordinator/memory_coordinator_test.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,6 +34,9 @@ class MemoryCoordinatorTestImpl : public mojom::MemoryCoordinatorTest {
   ~MemoryCoordinatorTestImpl() override;
 
   // mojom::MemoryCoordinatorTest:
+  void BindRegistryHost(
+      mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver)
+      override;
   void RegisterConsumer(
       const std::string& name,
       base::MemoryConsumerTraits traits,

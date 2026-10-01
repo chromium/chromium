@@ -591,6 +591,7 @@ Called by update_bad_message_reasons.py.-->
       label="BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="404" label="RFH_DETACH_WHILE_BFCACHED"/>
   <int value="405" label="RFH_DOWNLOAD_URL_BLOB_WITHOUT_TOKEN"/>
+  <int value="406" label="RPH_DUPLICATE_MEMORY_COORDINATOR_HOST"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -4,23 +4,22 @@
 
 #include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 
-#include <cstddef>
-#include <memory>
+#include <cstdint>
+#include <vector>
 
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/memory_consumer_update.h"
 #include "content/public/common/process_type.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#endif
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
@@ -30,8 +29,6 @@ namespace {
 using ::testing::_;
 #endif
 using ::testing::Test;
-
-#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 
 class MockChildCoordinator : public mojom::ChildMemoryCoordinator {
  public:
@@ -47,13 +44,16 @@ class MockChildCoordinator : public mojom::ChildMemoryCoordinator {
               ClearOverrideLimit,
               (uint32_t consumer_id, base::MemoryLimit policy_limit),
               (override));
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   MOCK_METHOD(
       void,
       EnableDiagnosticsReporting,
       (mojo::PendingRemote<mojom::MemoryCoordinatorDiagnosticsHost> host),
       (override));
+#endif
 };
 
+#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 class MockDiagnosticObserver
     : public MemoryCoordinatorPolicyManager::DiagnosticObserver {
  public:
@@ -77,26 +77,48 @@ class BrowserMemoryCoordinatorImplTest : public Test {
 TEST_F(BrowserMemoryCoordinatorImplTest, DuplicateBind) {
   const ChildProcessId kChildId(1);
 
-  mojo::test::BadMessageObserver bad_message_observer;
-
-  // First bind should succeed.
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host1;
-  {
-    mojo::FakeMessageDispatchContext context;
-    browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
-                              remote_host1.BindNewPipeAndPassReceiver());
-  }
-  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  ASSERT_TRUE(
+      browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
+                                remote_host1.BindNewPipeAndPassReceiver()));
 
-  // Second bind for the same ID should be reported as a bad message.
+  // A second bind for the same ID should be rejected without requiring a
+  // Mojo message dispatch context.
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host2;
-  {
-    mojo::FakeMessageDispatchContext context;
-    browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
-                              remote_host2.BindNewPipeAndPassReceiver());
-  }
-  EXPECT_EQ("Duplicate MemoryCoordinator host registration",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_FALSE(
+      browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
+                                remote_host2.BindNewPipeAndPassReceiver()));
+
+  remote_host2.FlushForTesting();
+  EXPECT_FALSE(remote_host2.is_connected());
+  remote_host1.FlushForTesting();
+  EXPECT_TRUE(remote_host1.is_connected());
+}
+
+TEST_F(BrowserMemoryCoordinatorImplTest, BindAfterDisconnect) {
+  const ChildProcessId kChildId(1);
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  ASSERT_TRUE(
+      browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
+                                remote_host.BindNewPipeAndPassReceiver()));
+
+  MockChildCoordinator mock_child_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_child_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+  remote_host.FlushForTesting();
+
+  // Host destruction closes the coordinator pipe after disconnect cleanup.
+  base::RunLoop disconnect_loop;
+  coordinator_receiver.set_disconnect_handler(disconnect_loop.QuitClosure());
+  remote_host.reset();
+  disconnect_loop.Run();
+
+  ASSERT_TRUE(
+      browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
+                                remote_host.BindNewPipeAndPassReceiver()));
+  remote_host.FlushForTesting();
+  EXPECT_TRUE(remote_host.is_connected());
 }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -105,8 +127,9 @@ TEST_F(BrowserMemoryCoordinatorImplTest, DiagnosticReporting) {
 
   // 1. Bind a child process.
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
-  browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
-                            remote_host.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(
+      browser_coordinator_.Bind(PROCESS_TYPE_UTILITY, kChildId,
+                                remote_host.BindNewPipeAndPassReceiver()));
 
   // 2. Setup the child-side coordinator mock.
   MockChildCoordinator mock_child_coordinator;

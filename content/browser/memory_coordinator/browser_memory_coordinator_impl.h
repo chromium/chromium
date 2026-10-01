@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_IMPL_H_
 #define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_IMPL_H_
 
+#include <cstddef>
 #include <memory>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
@@ -13,7 +14,7 @@
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
-#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 #include "content/public/browser/browser_memory_coordinator.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
@@ -55,9 +56,10 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
       MemoryCoordinatorPolicyManager::DiagnosticObserver* observer);
 #endif
 
-  // Connects a MemoryConsumerRegistry in a child process with the browser
-  // process.
-  void Bind(
+  // Connects a MemoryConsumerRegistry in a child process with the browser.
+  // Returns false for a duplicate `child_process_id`, leaving the existing
+  // host intact and closing `receiver`. The caller must handle rejection.
+  [[nodiscard]] bool Bind(
       ProcessType process_type,
       ChildProcessId child_process_id,
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
