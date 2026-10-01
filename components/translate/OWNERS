@@ -4,12 +4,12 @@
 #   CSP and isolated worlds: toyoshim@chromium.org
 basiaz@google.com
 cuianthony@chromium.org
-iwells@chromium.org
 jzw@chromium.org
-megjablon@chromium.org
 perrier@chromium.org
 toyoshim@chromium.org
 danft@google.com
+ktlu@google.com
+mardelpi@google.com
 # Specialized reviewers
 # UMA and UKM translate metrics
 per-file *metric*=curranmax@chromium.org
