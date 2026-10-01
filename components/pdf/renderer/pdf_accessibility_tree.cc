@@ -467,7 +467,15 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                 l10n_util::GetPluralStringFUTF8(
                                     IDS_PDF_DOCUMENT_PAGE_COUNT, page_count_));
-  if (doc_structure_tree_root_ && !doc_structure_tree_root_->language.empty()) {
+  // Prefer the validated language tag from the document metadata, which is
+  // available for both tagged and untagged PDFs. Fall back to the structure
+  // tree root's /Lang entry, which only exists for tagged PDFs.
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      !doc_info->language.empty()) {
+    doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
+                                  doc_info->language);
+  } else if (doc_structure_tree_root_ &&
+             !doc_structure_tree_root_->language.empty()) {
     doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                   doc_structure_tree_root_->language);
   }

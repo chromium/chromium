@@ -5449,6 +5449,127 @@ TEST_F(PdfAccessibilityTreeTest, DocumentLanguageOnRootNode) {
                          ax::mojom::StringAttribute::kLanguage));
 }
 
+TEST_F(PdfAccessibilityTreeTest, UntaggedDocumentLanguageOnRootNode) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  CreatePdfAccessibilityTree();
+
+  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = false;
+  doc_info->language = "en-US";
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+  EXPECT_EQ("en-US", pdf_root->GetStringAttribute(
+                         ax::mojom::StringAttribute::kLanguage));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       UntaggedDocumentLanguageOnRootNodeFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  CreatePdfAccessibilityTree();
+
+  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = false;
+  doc_info->language = "en-US";
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+  EXPECT_FALSE(
+      pdf_root->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       DocumentInfoLanguageTakesPrecedenceOverStructureTreeLanguage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome_pdf::features::kPdfTags,
+       ::features::kPdfAccessibilityHeuristicEnhancements},
+      {});
+  CreatePdfAccessibilityTree();
+
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+  doc_structure_root->language = "es";
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
+                kFourthRunMultiLine};
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+
+  auto para = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  para->type = chrome_pdf::PdfTagType::kP;
+  para->associated_text_runs_if_available.push_back(&text_runs_[0]);
+
+  page_structure->children.push_back(std::move(para));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->language = "en-US";
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+  EXPECT_EQ("en-US", pdf_root->GetStringAttribute(
+                         ax::mojom::StringAttribute::kLanguage));
+}
+
 TEST_F(PdfAccessibilityTreeTest, StructureTreeRootAttributes) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);

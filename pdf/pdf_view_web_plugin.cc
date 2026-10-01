@@ -3316,6 +3316,10 @@ PdfViewWebPlugin::GetAccessibilityDocInfo() const {
   doc_info->text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info->text_copyable = engine_->HasPermission(DocumentPermission::kCopy);
+  const auto& language_tag = engine_->GetDocumentMetadata().language_tag;
+  if (language_tag.has_value()) {
+    doc_info->language = std::string(language_tag->tag_string());
+  }
   return doc_info;
 }
 
