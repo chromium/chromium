@@ -3654,6 +3654,12 @@
       status: "stable",
     },
     {
+      // Kill switch for ignoring head start tags in the "in head noscript"
+      // insertion mode. https://crbug.com/40775952
+      name: "HTMLParserIgnoreHeadInNoscript",
+      status: "stable",
+    },
+    {
       // Killswitch for crbug.com/40727112: emit a bogus comment for an
       // incomplete markup declaration at end of input instead of dropping the
       // rest of the document.

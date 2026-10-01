@@ -1628,6 +1628,12 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           DCHECK(did_process);
           return;
         }
+        case HTMLTag::kHead:
+          if (!RuntimeEnabledFeatures::
+                  HTMLParserIgnoreHeadInNoscriptEnabled()) {
+            break;
+          }
+          [[fallthrough]];
         case HTMLTag::kNoscript:
           ParseError(token);
           return;
