@@ -7,8 +7,10 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -458,4 +460,52 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   ASSERT_TRUE(base::test::RunUntil([&] { return browser1_eligible; }));
   EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
   EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, DailyMetric) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  PrefService* const local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  ASSERT_TRUE(glass_frame_service);
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
+
+  base::HistogramTester histogram_tester;
+  const auto advance_day_and_report = [&]() {
+    const base::Time last_time = base::Time::Now() - base::Hours(25);
+    local_state->SetInt64(prefs::kGlassFrameDailySample,
+                          last_time.since_origin().InMicroseconds());
+    // `metrics::DailyEvent` caches the last fired timestamp in memory and only
+    // reads `prefs::kGlassFrameDailySample` on its first `CheckInterval()`
+    // call. Resetting the reporter creates a new `DailyEvent` that reads the
+    // updated pref and immediately runs `CheckInterval()`.
+    glass_frame_service->ResetMetricsReporterForTesting();
+  };
+
+  // Since the daily sample was already recorded on startup, resetting the
+  // reporter before a day has elapsed should not emit another sample.
+  glass_frame_service->ResetMetricsReporterForTesting();
+  histogram_tester.ExpectTotalCount("Browser.GlassFrame.Enabled.Daily", 0);
+  histogram_tester.ExpectTotalCount("Browser.GlassFrame.IsDefault.Daily", 0);
+
+  // Simulate a day elapsing while glass is enabled and in its default state.
+  advance_day_and_report();
+  histogram_tester.ExpectUniqueSample("Browser.GlassFrame.Enabled.Daily", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Browser.GlassFrame.IsDefault.Daily",
+                                      true, 1);
+
+  // Disable the glass frame pref and simulate another day elapsing.
+  local_state->SetBoolean(prefs::kGlassFrameEnabled, false);
+  advance_day_and_report();
+  histogram_tester.ExpectBucketCount("Browser.GlassFrame.Enabled.Daily", false,
+                                     1);
+  histogram_tester.ExpectTotalCount("Browser.GlassFrame.Enabled.Daily", 2);
+  histogram_tester.ExpectBucketCount("Browser.GlassFrame.IsDefault.Daily",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount("Browser.GlassFrame.IsDefault.Daily", 2);
 }

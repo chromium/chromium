@@ -504,6 +504,7 @@ source_set("glass_frame_service") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/common:constants",
+    "//components/metrics",
     "//components/prefs",
     "//ui/base/unowned_user_data",
   ]

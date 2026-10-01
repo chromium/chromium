@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
@@ -22,6 +23,7 @@
 
 class BrowserProcess;
 class BrowserWindowInterface;
+class GlassFrameMetricsReporter;
 class GlobalBrowserCollection;
 class PrefRegistrySimple;
 
@@ -71,6 +73,11 @@ class GlassFrameService : public BrowserCollectionObserver,
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
+  // Recreates the metrics reporter so that a fresh `metrics::DailyEvent` reads
+  // the latest `prefs::kGlassFrameDailySample` value from prefs and immediately
+  // runs `CheckInterval()`.
+  void ResetMetricsReporterForTesting();
+
  private:
   // Returns the set of BrowserWindowInterfaces for the most recently activated
   // browser window interfaces. The returned set has at most `kMaxGlassWindows`
@@ -108,6 +115,7 @@ class GlassFrameService : public BrowserCollectionObserver,
       theme_observations_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<GlassFrameMetricsReporter> metrics_reporter_;
   bool is_glass_frame_enabled_ = true;
   bool is_battery_saver_mode_active_ = false;
   ::ui::ScopedUnownedUserData<GlassFrameService> scoped_unowned_user_data_;

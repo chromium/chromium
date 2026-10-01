@@ -2278,6 +2278,12 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
 // Boolean determining whether the glass frame is enabled.
 inline constexpr char kGlassFrameEnabled[] = "glass_frame.enabled";
 
+// Int64 pref used by the metrics::DailyEvent owned by
+// GlassFrameMetricsReporter to record the last time daily glass frame
+// metrics were sampled.
+inline constexpr char kGlassFrameDailySample[] =
+    "glass_frame.last_daily_sample";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used

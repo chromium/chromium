@@ -706,6 +706,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.GlassFrame.Enabled.Daily" enum="BooleanEnabled"
+    expires_after="2027-07-15">
+  <owner>stluong@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs whether the glass frame pref is enabled. Logged once per day via
+    GlassFrameService.
+  </summary>
+</histogram>
+
+<histogram name="Browser.GlassFrame.IsDefault.Daily" enum="Boolean"
+    expires_after="2027-07-15">
+  <owner>stluong@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs whether the glass frame pref is in its default state. Logged once per
+    day via GlassFrameService.
+  </summary>
+</histogram>
+
 <histogram name="Browser.MainThreadsCongestion.1MinAfterResume" units="janks"
     expires_after="2027-03-21">
   <owner>kawasin@google.com</owner>
