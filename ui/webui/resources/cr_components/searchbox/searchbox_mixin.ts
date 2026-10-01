@@ -206,7 +206,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // When deleting a match, unfreeze `activeQueryId` so post-deletion
       // results are accepted.
       this.searchboxEventTracker_.add(this, 'match-remove', () => {
-        this.activeQueryId = this.nextQueryId_ - 1;
+        this.unfreezeActiveQueryId();
       });
       // Listen for 'keyup' on window to reliably catch Control key releases
       // even if the user clicks outside the searchbox while holding Control.
@@ -443,9 +443,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         }
 
       } else {
-        const index = this.matchIndex;
-        if (this.getInputElement().inputElement.value.trim() && hasMatches &&
-            index >= 0 && index < this.result.matches.length) {
+        const index = hasMatches && this.matchIndex >= 0 ?
+            Math.min(this.matchIndex, this.result.matches.length - 1) :
+            -1;
+        if (this.getInputElement().inputElement.value.trim() && index >= 0) {
           const match = this.result.matches[index]!;
           this.selectedMatch = match;
           if (this.virtualFocusEnabled) {
@@ -869,9 +870,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
           if (this.selectedMatch && this.selectedMatch.supportsDeletion) {
             // Unfreeze `activeQueryId` so post-deletion results are accepted.
-            this.activeQueryId = this.nextQueryId_ - 1;
+            this.unfreezeActiveQueryId();
             this.pageHandler().deleteAutocompleteMatch(
-                this.selectedMatchIndex, this.selectedMatch.destinationUrl);
+                this.matchIndex, this.selectedMatch.destinationUrl);
             e.preventDefault();
           }
         }
