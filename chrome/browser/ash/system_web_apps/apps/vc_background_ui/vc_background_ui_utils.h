@@ -14,12 +14,18 @@ namespace content {
 class WebUI;
 }
 
+namespace manta {
+class MantaService;
+}  // namespace manta
+
 namespace ash::vc_background_ui {
 
+// `manta_service` is the profile's MantaService, resolved by the caller and
+// injected into the SeaPen fetcher; it may be null.
 std::unique_ptr<content::WebUIController> CreateVcBackgroundUI(
     content::WebUI* web_ui,
-    const GURL& url);
-
+    const GURL& url,
+    manta::MantaService* manta_service);
 }
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_VC_BACKGROUND_UI_VC_BACKGROUND_UI_UTILS_H_

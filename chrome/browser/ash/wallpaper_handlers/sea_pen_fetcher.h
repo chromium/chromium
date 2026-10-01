@@ -64,13 +64,9 @@ class SeaPenFetcher {
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchWallpaperComplete callback) = 0;
 
- private:
-  // Allow delegate to view the constructor function.
-  friend class WallpaperFetcherDelegateImpl;
-  friend class SeaPenFetcherTest;
-
-  // Private forces creation via `WallpaperFetcherDelegate` to set up mocking
-  // in test code. `snapper_provider` may be null.
+  // Creates a SeaPenFetcher backed by `snapper_provider`, which may be null
+  // (e.g. when no MantaService is available); such a fetcher fails requests.
+  // Test code should inject a mock via the owning provider instead.
   static std::unique_ptr<SeaPenFetcher> MakeSeaPenFetcher(
       std::unique_ptr<manta::SnapperProvider> snapper_provider);
 };

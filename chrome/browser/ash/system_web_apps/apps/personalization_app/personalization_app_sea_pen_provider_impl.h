@@ -24,10 +24,19 @@ class PersonalizationAppSeaPenProviderImpl
     : public PersonalizationAppSeaPenProviderBase,
       public WallpaperControllerObserver {
  public:
-  explicit PersonalizationAppSeaPenProviderImpl(
+  PersonalizationAppSeaPenProviderImpl(
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-          wallpaper_fetcher_delegate);
+          wallpaper_fetcher_delegate,
+      manta::MantaService* manta_service);
+
+  // Testing constructor that injects `sea_pen_fetcher`. See the base class.
+  PersonalizationAppSeaPenProviderImpl(
+      content::WebUI* web_ui,
+      std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
+          wallpaper_fetcher_delegate,
+      manta::MantaService* manta_service,
+      std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher);
 
   PersonalizationAppSeaPenProviderImpl(
       const PersonalizationAppSeaPenProviderImpl&) = delete;

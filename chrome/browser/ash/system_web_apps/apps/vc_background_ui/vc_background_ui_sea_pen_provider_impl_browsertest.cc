@@ -80,7 +80,8 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
     web_ui_.set_web_contents(web_contents);
     sea_pen_provider_ = std::make_unique<VcBackgroundUISeaPenProviderImpl>(
         &web_ui_,
-        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>(),
+        /*manta_service=*/nullptr);
     sea_pen_provider_->BindInterface(
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
 

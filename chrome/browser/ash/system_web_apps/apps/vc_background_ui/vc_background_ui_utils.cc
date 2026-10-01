@@ -15,10 +15,12 @@ namespace ash::vc_background_ui {
 
 std::unique_ptr<content::WebUIController> CreateVcBackgroundUI(
     content::WebUI* web_ui,
-    const GURL& url) {
+    const GURL& url,
+    manta::MantaService* manta_service) {
   auto sea_pen_provider = std::make_unique<VcBackgroundUISeaPenProviderImpl>(
       web_ui,
-      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(),
+      manta_service);
   return std::make_unique<ash::vc_background_ui::VcBackgroundUI>(
       web_ui, std::move(sea_pen_provider));
 }

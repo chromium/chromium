@@ -290,7 +290,10 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 
     sea_pen_provider_ = std::make_unique<PersonalizationAppSeaPenProviderImpl>(
         &web_ui_,
-        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>(),
+        /*manta_service=*/nullptr,
+        std::make_unique<
+            testing::NiceMock<wallpaper_handlers::MockSeaPenFetcher>>());
     sea_pen_provider_remote_.reset();
     sea_pen_provider_->BindInterface(
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());

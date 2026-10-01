@@ -35,7 +35,9 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
+#include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
+#include "components/manta/snapper_provider.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -72,11 +74,28 @@ PersonalizationAppSeaPenProviderBase::PersonalizationAppSeaPenProviderBase(
     content::WebUI* web_ui,
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
         wallpaper_fetcher_delegate,
+    manta::MantaService* manta_service,
     manta::proto::FeatureName feature_name)
     : feature_name_(feature_name),
       profile_(Profile::FromWebUI(web_ui)),
       wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)),
+      manta_service_(manta_service),
       web_ui_(web_ui) {}
+
+PersonalizationAppSeaPenProviderBase::PersonalizationAppSeaPenProviderBase(
+    content::WebUI* web_ui,
+    std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
+        wallpaper_fetcher_delegate,
+    manta::MantaService* manta_service,
+    manta::proto::FeatureName feature_name,
+    std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher)
+    : PersonalizationAppSeaPenProviderBase(
+          web_ui,
+          std::move(wallpaper_fetcher_delegate),
+          manta_service,
+          feature_name) {
+  sea_pen_fetcher_ = std::move(sea_pen_fetcher);
+}
 
 PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
     default;
@@ -237,8 +256,12 @@ void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImageThumbnail(
 wallpaper_handlers::SeaPenFetcher*
 PersonalizationAppSeaPenProviderBase::GetOrCreateSeaPenFetcher() {
   if (!sea_pen_fetcher_) {
-    sea_pen_fetcher_ =
-        wallpaper_fetcher_delegate_->CreateSeaPenFetcher(profile_);
+    std::unique_ptr<manta::SnapperProvider> snapper_provider;
+    if (manta_service_) {
+      snapper_provider = manta_service_->CreateSnapperProvider();
+    }
+    sea_pen_fetcher_ = wallpaper_handlers::SeaPenFetcher::MakeSeaPenFetcher(
+        std::move(snapper_provider));
   }
   return sea_pen_fetcher_.get();
 }

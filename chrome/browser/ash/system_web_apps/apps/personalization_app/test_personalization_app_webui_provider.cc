@@ -14,8 +14,10 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
+#include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "content/public/browser/web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -37,7 +39,10 @@ TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
   auto sea_pen_provider =
       std::make_unique<PersonalizationAppSeaPenProviderImpl>(
           web_ui,
-          std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+          std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>(),
+          /*manta_service=*/nullptr,
+          std::make_unique<
+              testing::NiceMock<wallpaper_handlers::MockSeaPenFetcher>>());
   auto theme_provider =
       std::make_unique<PersonalizationAppThemeProviderImpl>(web_ui);
   auto wallpaper_provider =

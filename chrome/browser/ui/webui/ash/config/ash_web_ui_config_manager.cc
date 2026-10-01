@@ -84,6 +84,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -458,8 +459,14 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       browser_policy_connector_ash_.get()));
   AddWebUIConfig(
       std::make_unique<personalization_app::PersonalizationAppUIConfig>(
-          base::BindRepeating(
-              personalization_app::CreatePersonalizationAppUI)));
+          base::BindRepeating([](content::WebUI* web_ui, const GURL& url)
+                                  -> std::unique_ptr<content::WebUIController> {
+            Profile* profile = Profile::FromWebUI(web_ui);
+            manta::MantaService* manta_service =
+                manta::MantaServiceFactory::GetForProfile(profile);
+            return personalization_app::CreatePersonalizationAppUI(
+                web_ui, url, manta_service);
+          })));
   AddWebUIConfig(std::make_unique<PowerUIConfig>());
   AddWebUIConfig(
       std::make_unique<printing::printing_manager::PrintManagementUIConfig>(
@@ -489,7 +496,14 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                  policy::local_user_files::LocalFilesMigrationUIConfig>());
   AddWebUIConfig(std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
-      base::BindRepeating(vc_background_ui::CreateVcBackgroundUI)));
+      base::BindRepeating([](content::WebUI* web_ui, const GURL& url)
+                              -> std::unique_ptr<content::WebUIController> {
+        Profile* profile = Profile::FromWebUI(web_ui);
+        manta::MantaService* manta_service =
+            manta::MantaServiceFactory::GetForProfile(profile);
+        return vc_background_ui::CreateVcBackgroundUI(web_ui, url,
+                                                      manta_service);
+      })));
   AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
   AddWebUIConfig(
       std::make_unique<FloatingWorkspaceUIConfig>(&local_state_.get()));

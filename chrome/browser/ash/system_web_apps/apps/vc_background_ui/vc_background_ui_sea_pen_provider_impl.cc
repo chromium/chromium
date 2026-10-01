@@ -63,10 +63,12 @@ void OnGetBackgroundImageInfo(
 VcBackgroundUISeaPenProviderImpl::VcBackgroundUISeaPenProviderImpl(
     content::WebUI* web_ui,
     std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-        wallpaper_fetcher_delegate)
+        wallpaper_fetcher_delegate,
+    manta::MantaService* manta_service)
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
           std::move(wallpaper_fetcher_delegate),
+          manta_service,
           manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

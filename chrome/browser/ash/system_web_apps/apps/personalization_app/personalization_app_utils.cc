@@ -74,7 +74,8 @@ std::optional<std::string> GetCountryCode() {
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
     content::WebUI* web_ui,
-    const GURL& url) {
+    const GURL& url,
+    manta::MantaService* manta_service) {
   auto ambient_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppAmbientProviderImpl>(web_ui);
   auto keyboard_backlight_provider =
@@ -93,7 +94,8 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
   auto sea_pen_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppSeaPenProviderImpl>(
       web_ui,
-      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(),
+      manta_service);
   return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),
       std::move(keyboard_backlight_provider), std::move(sea_pen_provider),

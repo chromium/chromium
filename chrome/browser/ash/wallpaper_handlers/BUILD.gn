@@ -28,11 +28,10 @@ static_library("wallpaper_handlers") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/manta",
-    "//chrome/browser/manta:impl",
     "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/signin:identity_manager_provider",
+    "//components/manta",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
   ]

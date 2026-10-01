@@ -23,10 +23,11 @@ class VcBackgroundUISeaPenProviderImpl
     : public personalization_app::PersonalizationAppSeaPenProviderBase,
       public media::CameraEffectObserver {
  public:
-  explicit VcBackgroundUISeaPenProviderImpl(
+  VcBackgroundUISeaPenProviderImpl(
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
-          wallpaper_fetcher_delegate);
+          wallpaper_fetcher_delegate,
+      manta::MantaService* manta_service);
 
   VcBackgroundUISeaPenProviderImpl(const VcBackgroundUISeaPenProviderImpl&) =
       delete;

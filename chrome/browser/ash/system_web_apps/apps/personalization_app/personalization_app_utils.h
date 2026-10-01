@@ -18,6 +18,10 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace manta {
+class MantaService;
+}  // namespace manta
+
 namespace ash::personalization_app {
 
 // This enum is used to store the managed Sea Pen policy states for GenAI
@@ -32,10 +36,12 @@ enum class ManagedSeaPenSettings {
 };
 
 // Creates a PersonalizationAppUI. Used as a callback by
-// PersonalizationAppUIConfig.
+// PersonalizationAppUIConfig. `manta_service` is the profile's MantaService,
+// resolved by the caller and injected into the SeaPen fetcher; it may be null.
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
     content::WebUI* web_ui,
-    const GURL& url);
+    const GURL& url,
+    manta::MantaService* manta_service);
 
 // In general, by the time this function is called, it is already guaranteed
 // that there is a valid profile and user that has opened personalization app.
