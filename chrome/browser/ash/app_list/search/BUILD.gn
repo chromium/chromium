@@ -93,6 +93,8 @@ static_library("search") {
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/favicon:favicon_service_provider",
+    "//chromeos/ash/components/history:history_service_provider",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/components/sync:sync_service_provider",
     "//chromeos/ash/experiences/arc:arc_app_constants",

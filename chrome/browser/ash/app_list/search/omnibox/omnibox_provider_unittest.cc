@@ -16,8 +16,9 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -148,6 +149,10 @@ class OmniboxProviderTest : public testing::Test {
         profile_, list_controller_.get(),
         TemplateURLServiceFactory::GetForProfile(profile_),
         BookmarkModelFactory::GetForBrowserContext(profile_),
+        FaviconServiceFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS),
+        HistoryServiceFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS),
         /*provider_types=*/0);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
@@ -197,9 +202,6 @@ class OmniboxProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  // OmniboxProvider resolves the history service through
-  // ash::HistoryServiceProvider, so its process-wide singleton must exist.
-  ash::HistoryServiceProviderImpl history_service_provider_;
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;

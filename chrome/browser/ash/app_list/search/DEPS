@@ -25,7 +25,6 @@ include_rules = [
   "+chrome/browser/autocomplete",
   "+chrome/browser/bitmap_fetcher",
   "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/favicon",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
@@ -62,6 +61,12 @@ specific_include_rules = {
   ],
   "omnibox_(result|provider)_unittest\\.cc": [
     "+chrome/browser/bookmarks/bookmark_model_factory.h",
+  ],
+  # OmniboxProviderTest installs the favicon and history services that
+  # OmniboxProvider now takes by constructor.
+  "omnibox_provider_unittest\\.cc": [
+    "+chrome/browser/favicon/favicon_service_factory.h",
+    "+chrome/browser/history/history_service_factory.h",
   ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/web_applications/web_app_provider.h",

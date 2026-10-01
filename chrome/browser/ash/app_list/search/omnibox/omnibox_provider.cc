@@ -21,11 +21,7 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/history/history_service_provider.h"
-#include "components/account_id/account_id.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
@@ -47,14 +43,6 @@ bool IsCalculator(const AutocompleteMatch& match) {
   return match.type == omnibox::AutocompleteMatchType::kCalculator;
 }
 
-// Returns the history service for `profile`'s account. OmniboxProvider is only
-// created for a real user profile (via AppListClientImpl), which always has an
-// associated account.
-history::HistoryService* GetHistoryService(Profile* profile) {
-  return ::ash::HistoryServiceProvider::Get().Find(CHECK_DEREF(
-      ::ash::AnnotatedAccountId::Get(profile->GetOriginalProfile())));
-}
-
 }  //  namespace
 
 // Control category is kept default intentionally as we always need to get
@@ -63,16 +51,15 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller,
                                  TemplateURLService* template_url_service,
                                  bookmarks::BookmarkModel* bookmark_model,
+                                 favicon::FaviconService* favicon_service,
+                                 history::HistoryService* history_service,
                                  int provider_types)
     : SearchProvider(SearchCategory::kOmnibox),
       profile_(profile),
       list_controller_(list_controller),
       template_url_service_(CHECK_DEREF(template_url_service)),
       bookmark_model_(bookmark_model),
-      favicon_cache_(FaviconServiceFactory::GetForProfile(
-                         profile,
-                         ServiceAccessType::EXPLICIT_ACCESS),
-                     GetHistoryService(profile)) {
+      favicon_cache_(favicon_service, history_service) {
   controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
       AutocompleteControllerConfig{.provider_types = provider_types,

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -34,6 +35,10 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/favicon/favicon_service_provider.h"
+#include "chromeos/ash/components/history/history_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 
 namespace app_list {
@@ -62,9 +67,15 @@ std::unique_ptr<SearchController> CreateSearchController(
       controller->GetAppSearchDataSource()));
   controller->AddProvider(std::make_unique<AppZeroStateProvider>(
       controller->GetAppSearchDataSource()));
+  // The search controller is built for one signed-in user, so its providers
+  // are resolved once here rather than per query.
+  const AccountId& account_id =
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()));
   controller->AddProvider(std::make_unique<OmniboxProvider>(
       profile, list_controller, template_url_service,
       BookmarkModelFactory::GetForBrowserContext(profile),
+      ash::FaviconServiceProvider::Get().Find(account_id),
+      ash::HistoryServiceProvider::Get().Find(account_id),
       LauncherSearchProviderTypes()));
 
   // File search providers are added only when not in guest session and running

@@ -27,6 +27,14 @@ namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
 
+namespace favicon {
+class FaviconService;
+}  // namespace favicon
+
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace app_list {
 
 // OmniboxProvider wraps AutocompleteController to provide omnibox results.
@@ -39,10 +47,14 @@ class OmniboxProvider : public SearchProvider,
   // object.
   // `bookmark_model` may be null; results are then not annotated as
   // bookmarked.
+  // `favicon_service` and `history_service` back the favicon cache. Either may
+  // be null, in which case favicons are simply not served from it.
   OmniboxProvider(Profile* profile,
                   AppListControllerDelegate* list_controller,
                   TemplateURLService* template_url_service,
                   bookmarks::BookmarkModel* bookmark_model,
+                  favicon::FaviconService* favicon_service,
+                  history::HistoryService* history_service,
                   int provider_types);
 
   OmniboxProvider(const OmniboxProvider&) = delete;

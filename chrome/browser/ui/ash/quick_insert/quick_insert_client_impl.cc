@@ -561,12 +561,14 @@ std::unique_ptr<app_list::SearchProvider>
 QuickInsertClientImpl::CreateOmniboxProvider(bool bookmarks,
                                              bool history,
                                              bool open_tabs) {
+  const AccountId& account_id = CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()));
   return std::make_unique<app_list::OmniboxProvider>(
       profile_, GetEmptyAppListControllerDelegate(),
-      ash::TemplateURLServiceProvider::Get().Find(CHECK_DEREF(
-          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()))),
-      ash::BookmarkModelProvider::Get().Find(CHECK_DEREF(
-          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()))),
+      ash::TemplateURLServiceProvider::Get().Find(account_id),
+      ash::BookmarkModelProvider::Get().Find(account_id),
+      ash::FaviconServiceProvider::Get().Find(account_id),
+      ash::HistoryServiceProvider::Get().Find(account_id),
       LauncherSearchProviderTypes(bookmarks, history, open_tabs));
 }
 
