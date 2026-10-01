@@ -17,6 +17,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
@@ -150,6 +151,14 @@ class LensSearchController {
       bool is_zero_prefix_suggestion,
       bool suppress_contextualization,
       bool grant_session_permission = false);
+
+  // Starts a zero-state session in the side panel for this tab, creating or
+  // taking the contextual search session handle and updating invocation source.
+  // If `open_lens_overlay` is true, concurrently opens the Lens Overlay.
+  void StartZeroStateSessionInSidePanel(
+      omnibox::ChromeAimEntryPoint entry_point,
+      lens::LensOverlayInvocationSource invocation_source,
+      bool open_lens_overlay = false);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
