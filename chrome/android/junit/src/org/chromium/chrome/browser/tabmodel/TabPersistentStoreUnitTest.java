@@ -1814,4 +1814,49 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details201, null, /* setAsActive= */ false);
         verify(mNormalTabCreator, never()).createNewTab(any(), eq(201), any(), anyInt());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreTabs_afterLoadState_emptyPlaceholderTabs_doesNotAssert() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Collections.emptySet());
+        when(mBackgroundTabPool.claimTabIdsWithoutPlaceholders()).thenReturn(Set.of(201));
+        when(mBackgroundTabPool.getLiveTab(201)).thenReturn(null);
+
+        BackgroundPoolTab remainingTab = mock(BackgroundPoolTab.class);
+        Tab restoredTab = mock(Tab.class);
+        when(restoredTab.getId()).thenReturn(201);
+        when(mBackgroundTabPool.loadTabByOriginalId(201)).thenReturn(remainingTab);
+        when(mNormalTabModel.getCount()).thenReturn(0).thenReturn(1);
+        when(remainingTab.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab);
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+
+        // Ensure mPrefetchTabListTask completes.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Simulate startup: loadState is called first, which claims non-placeholder tabs.
+        mPersistentStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        // Prior to the fix, restoreTabs would see mBackgroundTabIds.isEmpty() == true,
+        // re-enter background tab initialization, and fail: assert
+        // mRemainingBackgroundTabIds.isEmpty().
+        mPersistentStore.restoreTabs(/* setActiveTab= */ false);
+
+        // Verify remaining tabs were claimed once during loadState and attached at end of restore.
+        verify(mBackgroundTabPool).claimTabIdsWithoutPlaceholders();
+        verify(mBackgroundTabPool).loadTabByOriginalId(201);
+        verify(remainingTab).attachTab(eq(mNormalTabModel), eq(1));
+        verify(mBackgroundTabPool).cleanupPostRestore();
+    }
 }

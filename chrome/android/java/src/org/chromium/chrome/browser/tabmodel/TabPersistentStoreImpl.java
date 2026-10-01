@@ -212,6 +212,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private @Nullable SparseIntArray mIncognitoTabsRestored;
     private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
     private Set<@TabId Integer> mRemainingBackgroundTabIds = Collections.emptySet();
+    private boolean mBackgroundTabsInitialized;
     private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
     private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
     // Tracks whether this TabPersistentStore's tabs are being loaded.
@@ -525,6 +526,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mCancelIncognitoTabLoads = ignoreIncognitoFiles;
         mNormalTabsRestored = new SparseIntArray();
         mIncognitoTabsRestored = new SparseIntArray();
+        mBackgroundTabIds = Collections.emptySet();
+        mRemainingBackgroundTabIds = Collections.emptySet();
+        mBackgroundTabsInitialized = false;
     }
 
     @Override
@@ -542,6 +546,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mRemainingBackgroundTabIds =
                 BackgroundTabRestorationHelper.claimRemainingBackgroundTabIds(
                         mOrchestratorType, mTabModelSelector, ignoreRegularFiles, mIsAuthoritative);
+        mBackgroundTabsInitialized = true;
 
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
@@ -646,7 +651,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mSeenTabUrlMap == null && !mTabsToRestore.isEmpty()) {
             mSeenTabUrlMap = new HashMap<>();
         }
-        if (mBackgroundTabIds.isEmpty()) {
+        if (!mBackgroundTabsInitialized) {
             mBackgroundTabIds =
                     BackgroundTabRestorationHelper.fetchBackgroundTabIds(
                             mOrchestratorType,
@@ -660,6 +665,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             mTabModelSelector,
                             mCancelNormalTabLoads,
                             mIsAuthoritative);
+            mBackgroundTabsInitialized = true;
         }
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
@@ -1137,6 +1143,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mDestroyed = true;
         mBackgroundTabIds = Collections.emptySet();
         mRemainingBackgroundTabIds = Collections.emptySet();
+        mBackgroundTabsInitialized = false;
         if (mTabModelObserver != null) {
             mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
