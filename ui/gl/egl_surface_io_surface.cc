@@ -52,12 +52,6 @@ InternalFormatType SharedImageFormatToInternalFormatType(
 
   if (format == viz::SinglePlaneFormat::kR_8) {
     return {GL_RED, GL_UNSIGNED_BYTE};
-  } else if (format == viz::SinglePlaneFormat::kR_16) {
-    return {GL_RED, GL_UNSIGNED_SHORT};
-  } else if (format == viz::SinglePlaneFormat::kRG_88) {
-    return {GL_RG, GL_UNSIGNED_BYTE};
-  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
-    return {GL_RG, GL_UNSIGNED_SHORT};
   } else if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
              format == viz::SinglePlaneFormat::kRGBX_8888) {
     return {GL_RGB, GL_UNSIGNED_BYTE};

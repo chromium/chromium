@@ -87,14 +87,8 @@ bool IsFormatSupported(viz::SharedImageFormat format,
     return flags.chromium_image_ab30;
   }
 
-  if (format == viz::SinglePlaneFormat::kR_8 ||
-      format == viz::SinglePlaneFormat::kRG_88) {
+  if (format == viz::SinglePlaneFormat::kR_8) {
     return flags.ext_texture_rg;
-  }
-
-  if (format == viz::SinglePlaneFormat::kR_16 ||
-      format == viz::SinglePlaneFormat::kRG_1616) {
-    return flags.ext_texture_norm16;
   }
 
   return false;
