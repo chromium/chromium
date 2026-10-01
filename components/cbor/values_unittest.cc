@@ -73,7 +73,7 @@ TEST(CBORValuesTest, ConstructBytestring) {
 }
 
 TEST(CBORValuesTest, ConstructBytestringFromString) {
-  Value value(Value("hello", Value::Type::BYTE_STRING));
+  Value value(base::byte_span_from_cstring("hello"));
   ASSERT_EQ(Value::Type::BYTE_STRING, value.type());
   EXPECT_EQ(Value::BinaryValue({'h', 'e', 'l', 'l', 'o'}),
             value.GetBytestring());
@@ -124,19 +124,11 @@ TEST(CBORValuesTest, ConstructMap) {
 }
 
 TEST(CBORValuesTest, ConstructSimpleValue) {
-  Value false_value(Value::SimpleValue::FALSE_VALUE);
-  ASSERT_EQ(Value::Type::SIMPLE_VALUE, false_value.type());
-  EXPECT_EQ(Value::SimpleValue::FALSE_VALUE, false_value.GetSimpleValue());
-
-  Value true_value(Value::SimpleValue::TRUE_VALUE);
-  ASSERT_EQ(Value::Type::SIMPLE_VALUE, true_value.type());
-  EXPECT_EQ(Value::SimpleValue::TRUE_VALUE, true_value.GetSimpleValue());
-
-  Value null_value(Value::SimpleValue::NULL_VALUE);
+  Value null_value(Value::null);
   ASSERT_EQ(Value::Type::SIMPLE_VALUE, null_value.type());
   EXPECT_EQ(Value::SimpleValue::NULL_VALUE, null_value.GetSimpleValue());
 
-  Value undefined_value(Value::SimpleValue::UNDEFINED);
+  Value undefined_value(Value::undefined);
   ASSERT_EQ(Value::Type::SIMPLE_VALUE, undefined_value.type());
   EXPECT_EQ(Value::SimpleValue::UNDEFINED, undefined_value.GetSimpleValue());
 }
@@ -158,7 +150,7 @@ TEST(CBORValuesTest, CopyUnsigned) {
   ASSERT_EQ(value.type(), copied_value.type());
   EXPECT_EQ(value.GetInteger(), copied_value.GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = value.Clone();
   ASSERT_EQ(value.type(), blank.type());
@@ -171,7 +163,7 @@ TEST(CBORValuesTest, CopyNegativeInt) {
   ASSERT_EQ(value.type(), copied_value.type());
   EXPECT_EQ(value.GetInteger(), copied_value.GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = value.Clone();
   ASSERT_EQ(value.type(), blank.type());
@@ -184,7 +176,7 @@ TEST(CBORValuesTest, CopyString) {
   ASSERT_EQ(value.type(), copied_value.type());
   EXPECT_EQ(value.GetString(), copied_value.GetString());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = value.Clone();
   ASSERT_EQ(value.type(), blank.type());
@@ -197,7 +189,7 @@ TEST(CBORValuesTest, CopyBytestring) {
   ASSERT_EQ(value.type(), copied_value.type());
   EXPECT_EQ(value.GetBytestring(), copied_value.GetBytestring());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = value.Clone();
   ASSERT_EQ(value.type(), blank.type());
@@ -215,7 +207,7 @@ TEST(CBORValuesTest, CopyArray) {
   EXPECT_EQ(value.GetArray()[0].GetInteger(),
             copied_value.GetArray()[0].GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
   blank = value.Clone();
   EXPECT_EQ(1u, blank.GetArray().size());
 }
@@ -234,7 +226,7 @@ TEST(CBORValuesTest, CopyMap) {
   EXPECT_EQ(value.GetMap().find(key_a)->second.GetInteger(),
             copied_value.GetMap().find(key_a)->second.GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
   blank = value.Clone();
   EXPECT_EQ(1u, blank.GetMap().size());
   ASSERT_EQ(blank.GetMap().count(key_a), 1u);
@@ -244,12 +236,12 @@ TEST(CBORValuesTest, CopyMap) {
 }
 
 TEST(CBORValuesTest, CopySimpleValue) {
-  Value value(Value::SimpleValue::TRUE_VALUE);
+  Value value(true);
   Value copied_value(value.Clone());
   EXPECT_EQ(value.type(), copied_value.type());
   EXPECT_EQ(value.GetSimpleValue(), copied_value.GetSimpleValue());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = value.Clone();
   EXPECT_EQ(value.type(), blank.type());
@@ -263,7 +255,7 @@ TEST(CBORValuesTest, MoveUnsigned) {
   EXPECT_EQ(Value::Type::UNSIGNED, moved_value.type());
   EXPECT_EQ(74u, moved_value.GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = Value(654);
   EXPECT_EQ(Value::Type::UNSIGNED, blank.type());
@@ -276,7 +268,7 @@ TEST(CBORValuesTest, MoveNegativeInteger) {
   EXPECT_EQ(Value::Type::NEGATIVE, moved_value.type());
   EXPECT_EQ(-74, moved_value.GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = Value(-654);
   EXPECT_EQ(Value::Type::NEGATIVE, blank.type());
@@ -289,7 +281,7 @@ TEST(CBORValuesTest, MoveString) {
   EXPECT_EQ(Value::Type::STRING, moved_value.type());
   EXPECT_EQ("foobar", moved_value.GetString());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = Value("foobar");
   EXPECT_EQ(Value::Type::STRING, blank.type());
@@ -303,7 +295,7 @@ TEST(CBORValuesTest, MoveBytestring) {
   EXPECT_EQ(Value::Type::BYTE_STRING, moved_value.type());
   EXPECT_EQ(bytes, moved_value.GetBytestring());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
 
   blank = Value(bytes);
   EXPECT_EQ(Value::Type::BYTE_STRING, blank.type());
@@ -328,7 +320,7 @@ TEST(CBORValuesTest, MoveAssignMap) {
   const Value key_a("a");
   map.emplace("a", 123);
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
   blank = Value(std::move(map));
   ASSERT_TRUE(blank.is_map());
   ASSERT_EQ(blank.GetMap().count(key_a), 1u);
@@ -344,21 +336,21 @@ TEST(CBORValuesTest, MoveArray) {
   EXPECT_EQ(Value::Type::ARRAY, moved_value.type());
   EXPECT_EQ(123u, moved_value.GetArray().back().GetInteger());
 
-  Value blank(Value::SimpleValue::UNDEFINED);
+  Value blank(Value::undefined);
   blank = Value(std::move(array));
   EXPECT_EQ(Value::Type::ARRAY, blank.type());
   EXPECT_EQ(123u, blank.GetArray().back().GetInteger());
 }
 
 TEST(CBORValuesTest, MoveSimpleValue) {
-  Value value(Value::SimpleValue::UNDEFINED);
+  Value value(Value::undefined);
   Value moved_value(std::move(value));
   EXPECT_EQ(Value::Type::SIMPLE_VALUE, moved_value.type());
   EXPECT_EQ(Value::SimpleValue::UNDEFINED, moved_value.GetSimpleValue());
 
   Value blank(0);
 
-  blank = Value(Value::SimpleValue::UNDEFINED);
+  blank = Value(Value::undefined);
   EXPECT_EQ(Value::Type::SIMPLE_VALUE, blank.type());
   EXPECT_EQ(Value::SimpleValue::UNDEFINED, blank.GetSimpleValue());
 }

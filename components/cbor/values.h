@@ -124,9 +124,15 @@ class CBOR_EXPORT Value {
     kMaxValue = UNDEFINED,
   };
 
-  struct Null final {};
+  struct Null final {
+    constexpr explicit Null() = default;
+  };
+  static constexpr Null null;
 
-  struct Undefined final {};
+  struct Undefined final {
+    constexpr explicit Undefined() = default;
+  };
+  static constexpr Undefined undefined;
 
   // Returns a Value with Type::INVALID_UTF8. This factory method lets tests
   // encode such a value as a CBOR string. It should never be used outside of
@@ -139,10 +145,6 @@ class CBOR_EXPORT Value {
   explicit Value(bool boolean_value) noexcept;
   explicit Value(Null) noexcept;
   explicit Value(Undefined) noexcept;
-
-  // Deprecated: Use one of the constructors accepting `bool`, `Null`, or
-  // `Undefined`.
-  explicit Value(SimpleValue in_simple);
 
   explicit Value(float float_value) = delete;
   explicit Value(double float_value) = delete;
@@ -159,13 +161,6 @@ class CBOR_EXPORT Value {
   explicit Value(const char* in_string);
   explicit Value(std::string&& in_string) noexcept;
   explicit Value(std::string_view in_string);
-
-  // Deprecated: Use one of the constructors for `Type::BYTE_STRING` or
-  // `Type::STRING` above; consider using the former with `base::as_byte_span`
-  // or `base::byte_span_from_cstring`.
-  explicit Value(const char* in_string, Type type);
-  explicit Value(std::string&& in_string, Type type) noexcept;
-  explicit Value(std::string_view in_string, Type type);
 
   explicit Value(const ArrayValue& in_array);
   explicit Value(ArrayValue&& in_array) noexcept;
@@ -227,9 +222,16 @@ class CBOR_EXPORT Value {
  private:
   friend class Reader;
 
-  // This constructor allows INVALID_UTF8 values to be created, which only
-  // |Reader| and InvalidUTF8StringValueForTesting() may do.
-  Value(base::span<const uint8_t> in_bytes, Type type);
+  struct invalid_utf8_t final {
+    constexpr explicit invalid_utf8_t() = default;
+  };
+  static constexpr invalid_utf8_t invalid_utf8;
+
+  explicit Value(SimpleValue in_simple);
+
+  // This constructor creates `INVALID_UTF8` values, which only
+  // `Reader` and `InvalidUTF8StringValueForTesting()` may do.
+  Value(invalid_utf8_t, base::span<const uint8_t> in_bytes);
 
   Type type_;
 

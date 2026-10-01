@@ -180,8 +180,7 @@ Value Reader::ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
     case cbor::rust::MapKeyKind::Tag::InvalidUtf8:
       // Unreachable when parsing (`allow_invalid_utf8` does not apply to map
       // keys); exists so `Writer` can encode test-only `INVALID_UTF8` keys.
-      return Value(rust_key.as_invalid_utf8()->to_span(),
-                   Value::Type::INVALID_UTF8);
+      return Value(Value::invalid_utf8, rust_key.as_invalid_utf8()->to_span());
   }
   NOTREACHED();
 }
@@ -194,16 +193,15 @@ Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
     case cbor::rust::ValueKind::Tag::Boolean:
       return Value(*rust_val.as_bool());
     case cbor::rust::ValueKind::Tag::Null:
-      return Value(Value::Null());
+      return Value(Value::null);
     case cbor::rust::ValueKind::Tag::Undefined:
-      return Value(Value::Undefined());
+      return Value(Value::undefined);
     case cbor::rust::ValueKind::Tag::Bytestring:
       return Value(rust_val.as_bytestring()->to_span());
     case cbor::rust::ValueKind::Tag::String:
       return Value(rust_val.as_string()->to_string_view());
     case cbor::rust::ValueKind::Tag::InvalidUtf8:
-      return Value(rust_val.as_invalid_utf8()->to_span(),
-                   Value::Type::INVALID_UTF8);
+      return Value(Value::invalid_utf8, rust_val.as_invalid_utf8()->to_span());
     case cbor::rust::ValueKind::Tag::Array: {
       return Value(base::ToVector(rust_val.as_array()->to_span(),
                                   ConvertRustValueToCpp));
@@ -442,9 +440,9 @@ std::optional<Value> Reader::DecodeToSimpleValue(const DataItemHeader& header) {
     case Value::SimpleValue::TRUE_VALUE:
       return Value(true);
     case Value::SimpleValue::NULL_VALUE:
-      return Value(Value::Null());
+      return Value(Value::null);
     case Value::SimpleValue::UNDEFINED:
-      return Value(Value::Undefined());
+      return Value(Value::undefined);
   }
 
   error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
@@ -466,7 +464,7 @@ std::optional<Value> Reader::ReadStringContent(
   }
 
   if (config.allow_invalid_utf8) {
-    return Value(*bytes, Value::Type::INVALID_UTF8);
+    return Value(Value::invalid_utf8, *bytes);
   }
 
   error_code_ = DecoderError::INVALID_UTF8;

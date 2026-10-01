@@ -393,16 +393,15 @@ TEST_P(CBORWriterTest, TestSignedExchangeExample) {
 
 TEST_P(CBORWriterTest, TestWriteSimpleValue) {
   static const struct {
-    Value::SimpleValue simple_value;
+    Value simple_value;
     const std::string_view cbor;
-  } kSimpleTestCase[] = {
-      {Value::SimpleValue::FALSE_VALUE, std::string_view("\xf4")},
-      {Value::SimpleValue::TRUE_VALUE, std::string_view("\xf5")},
-      {Value::SimpleValue::NULL_VALUE, std::string_view("\xf6")},
-      {Value::SimpleValue::UNDEFINED, std::string_view("\xf7")}};
+  } kSimpleTestCase[] = {{Value(false), std::string_view("\xf4")},
+                         {Value(true), std::string_view("\xf5")},
+                         {Value(Value::null), std::string_view("\xf6")},
+                         {Value(Value::undefined), std::string_view("\xf7")}};
 
   for (const auto& test_case : kSimpleTestCase) {
-    auto cbor = DoWrite(Value(test_case.simple_value));
+    auto cbor = DoWrite(test_case.simple_value);
     ASSERT_TRUE(cbor.has_value());
     EXPECT_THAT(cbor.value(), testing::ElementsAreArray(test_case.cbor));
   }

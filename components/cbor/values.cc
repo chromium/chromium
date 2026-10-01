@@ -21,7 +21,7 @@ namespace cbor {
 
 // static
 Value Value::InvalidUTF8StringValueForTesting(std::string_view in_string) {
-  return Value(base::as_byte_span(in_string), Type::INVALID_UTF8);
+  return Value(invalid_utf8, base::as_byte_span(in_string));
 }
 
 Value::Value(Value&& that) noexcept {
@@ -58,48 +58,12 @@ Value::Value(base::span<const uint8_t> in_bytes)
     : type_(Type::BYTE_STRING),
       bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
 
-Value::Value(base::span<const uint8_t> in_bytes, Type type)
-    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()) {
-  DCHECK(type_ == Type::BYTE_STRING || type_ == Type::INVALID_UTF8);
-}
+Value::Value(invalid_utf8_t, base::span<const uint8_t> in_bytes)
+    : type_(Type::INVALID_UTF8),
+      bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
 
 Value::Value(BinaryValue&& in_bytes) noexcept
     : type_(Type::BYTE_STRING), bytestring_value_(std::move(in_bytes)) {}
-
-Value::Value(const char* in_string, Type type)
-    : Value(std::string_view(in_string), type) {}
-
-Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
-  switch (type_) {
-    case Type::STRING:
-      new (&string_value_) std::string();
-      string_value_ = std::move(in_string);
-      DCHECK(base::IsStringUTF8AllowingNoncharacters(string_value_));
-      break;
-    case Type::BYTE_STRING:
-      new (&bytestring_value_) BinaryValue();
-      bytestring_value_ = BinaryValue(in_string.begin(), in_string.end());
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-Value::Value(std::string_view in_string, Type type) : type_(type) {
-  switch (type_) {
-    case Type::STRING:
-      new (&string_value_) std::string();
-      string_value_ = std::string(in_string);
-      DCHECK(base::IsStringUTF8AllowingNoncharacters(string_value_));
-      break;
-    case Type::BYTE_STRING:
-      new (&bytestring_value_) BinaryValue();
-      bytestring_value_ = BinaryValue(in_string.begin(), in_string.end());
-      break;
-    default:
-      NOTREACHED();
-  }
-}
 
 Value::Value(const char* in_string) : Value(std::string_view(in_string)) {}
 
@@ -149,7 +113,7 @@ Value::~Value() {
 Value Value::Clone() const {
   switch (type_) {
     case Type::INVALID_UTF8:
-      return Value(bytestring_value_, Type::INVALID_UTF8);
+      return Value(invalid_utf8, bytestring_value_);
     case Type::UNSIGNED:
     case Type::NEGATIVE:
       return Value(integer_value_);
