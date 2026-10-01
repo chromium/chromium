@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
@@ -772,6 +773,8 @@ namespace lookalikes {
 const char kInterstitialHistogramName[] = "NavigationSuggestion.Event2";
 const char kIncognitoInterstitialHistogramName[] =
     "NavigationSuggestion.Event2.Incognito";
+const char kIsolatedInterstitialHistogramName[] =
+    "NavigationSuggestion.Event2.Isolated";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
@@ -1080,12 +1083,17 @@ bool GetMatchingDomain(
 }
 
 void RecordUMAFromMatchType(LookalikeUrlMatchType match_type,
-                            bool is_incognito) {
+                            bool is_incognito,
+                            bool is_isolated) {
+  CHECK(!(is_incognito && is_isolated));
   std::optional<NavigationSuggestionEvent> event =
       ToNavigationSuggestionEvent(match_type);
   if (event) {
     if (is_incognito) {
       UMA_HISTOGRAM_ENUMERATION(lookalikes::kIncognitoInterstitialHistogramName,
+                                *event);
+    } else if (is_isolated) {
+      UMA_HISTOGRAM_ENUMERATION(lookalikes::kIsolatedInterstitialHistogramName,
                                 *event);
     } else {
       UMA_HISTOGRAM_ENUMERATION(lookalikes::kInterstitialHistogramName, *event);

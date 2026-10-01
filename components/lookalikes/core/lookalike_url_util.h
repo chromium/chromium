@@ -25,6 +25,7 @@ namespace lookalikes {
 // types.
 extern const char kInterstitialHistogramName[];
 extern const char kIncognitoInterstitialHistogramName[];
+extern const char kIsolatedInterstitialHistogramName[];
 
 // Register applicable preferences with the provided registry.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -222,7 +223,8 @@ std::string GetETLDPlusOne(const std::string& hostname);
 
 // Records an interstitial histogram entry for the given match type.
 void RecordUMAFromMatchType(LookalikeUrlMatchType match_type,
-                            bool is_incognito);
+                            bool is_incognito,
+                            bool is_isolated);
 
 using LookalikeTargetAllowlistChecker =
     base::RepeatingCallback<bool(const std::string&)>;

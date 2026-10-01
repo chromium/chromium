@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
@@ -843,4 +844,18 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
     EXPECT_EQ(std::string(test_case.expected_suggested_domain), matched_domain);
     EXPECT_EQ(test_case.expected_type, type);
   }
+}
+
+TEST_F(LookalikeUrlUtilTest, RecordUMAFromMatchTypeIsolated) {
+  base::HistogramTester histograms;
+  lookalikes::RecordUMAFromMatchType(
+      LookalikeUrlMatchType::kSkeletonMatchTop500,
+      /*is_incognito=*/false,
+      /*is_isolated=*/true);
+  histograms.ExpectUniqueSample(
+      lookalikes::kIsolatedInterstitialHistogramName,
+      lookalikes::NavigationSuggestionEvent::kMatchSkeletonTop500, 1);
+  histograms.ExpectTotalCount(lookalikes::kInterstitialHistogramName, 0);
+  histograms.ExpectTotalCount(lookalikes::kIncognitoInterstitialHistogramName,
+                              0);
 }

@@ -3723,6 +3723,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NavigationSuggestion.Event2.Isolated"
+    enum="NavigationSuggestionEvent" expires_after="2027-03-30">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@chromium.org</owner>
+  <summary>
+    Tracks events when the currently navigated domain name in an isolated tab is
+    a lookalike to one of the top 10K domains or a domain that the user
+    interacted with, resulting in a navigation suggestion interstitial.
+  </summary>
+</histogram>
+
 <histogram
     name="NavigationSuggestion.GetDomainInfoDelayBeforeAllowingNavigation"
     units="ms" expires_after="2026-11-03">

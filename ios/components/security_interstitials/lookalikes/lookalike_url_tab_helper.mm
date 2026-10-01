@@ -118,7 +118,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
             response_url.GetWithEmptyPath())) {
       match_type = lookalikes::LookalikeUrlMatchType::kFailedSpoofChecks;
       RecordUMAFromMatchType(match_type,
-                             web_state()->GetBrowserState()->IsOffTheRecord());
+                             web_state()->GetBrowserState()->IsOffTheRecord(),
+                             /*is_isolated=*/false);
       LookalikeUrlContainer* lookalike_container =
           LookalikeUrlContainer::FromWebState(web_state());
       lookalike_container->SetLookalikeUrlInfo(/*suggested_url=*/GURL(),
@@ -131,9 +132,9 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
   DCHECK(!matched_domain.empty());
-
   RecordUMAFromMatchType(match_type,
-                         web_state()->GetBrowserState()->IsOffTheRecord());
+                         web_state()->GetBrowserState()->IsOffTheRecord(),
+                         /*is_isolated=*/false);
 
   const std::string suggested_domain =
       lookalikes::GetETLDPlusOne(matched_domain);

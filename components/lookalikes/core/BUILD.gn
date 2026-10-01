@@ -68,6 +68,7 @@ source_set("unit_tests") {
     ":core",
     ":proto",
     ":safety_tips",
+    "//base/test:test_support",
     "//components/url_formatter",
     "//components/url_formatter/spoof_checks/common_words:common",
     "//components/url_formatter/spoof_checks/common_words:common_words_test_dafsa",
