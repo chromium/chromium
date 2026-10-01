@@ -62,6 +62,15 @@ class GinJavaBridgeObject
   // Returns the bound remote object, nullptr if mojo is disabled.
   mojom::GinJavaBridgeRemoteObject* GetRemote();
 
+  // Clears cached FunctionTemplates. FunctionTemplates created via gin
+  // embed a wrapper for gin::CallbackHolderBase that references the creation
+  // v8::Context. Because `template_cache_` holds strong v8::Global handles,
+  // this creates an uncollectable reference cycle:
+  //   v8::Global -> FunctionTemplate -> CallbackHolderBase -> Context ->
+  //   Window -> GinJavaBridgeObject wrapper -> GinJavaBridgeObject -> cache.
+  // Clearing this cache severs the roots to allow the context to be GC'ed.
+  void ClearTemplateCache();
+
   GinJavaBridgeObject(v8::Isolate* isolate,
                       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
                       GinJavaBridgeDispatcher::ObjectID object_id);

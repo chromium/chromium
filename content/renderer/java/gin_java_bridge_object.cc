@@ -81,6 +81,10 @@ const gin::WrapperInfo* GinJavaBridgeObject::wrapper_info() const {
   return &kWrapperInfo;
 }
 
+void GinJavaBridgeObject::ClearTemplateCache() {
+  template_cache_.Clear();
+}
+
 gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::WrappableWithNamedPropertyInterceptor<

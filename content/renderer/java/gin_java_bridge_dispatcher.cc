@@ -17,6 +17,9 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "url/origin.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
 
 namespace content {
 
@@ -36,6 +39,15 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // Ensure we have a `remote_` if we have named objects.
     CHECK(remote_);
   }
+
+  // Clear the template cache of any existing objects to break reference
+  // cycles holding the old V8 context and window alive.
+  for (const auto& [id, object] : objects_) {
+    if (object) {
+      object->ClearTemplateCache();
+    }
+  }
+
   for (NamedObjectMap::const_iterator iter = named_objects_.begin();
        iter != named_objects_.end(); ++iter) {
     // Always create a new GinJavaBridgeObject, so we don't pull any of the V8
@@ -60,6 +72,24 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
         objects_.emplace(iter->second.object_id, object);
       } else {
         GetRemoteObjectHost()->ObjectWrapperDeleted(iter->second.object_id);
+      }
+    }
+  }
+}
+
+void GinJavaBridgeDispatcher::WillReleaseScriptContext(
+    v8::Local<v8::Context> context,
+    int32_t world_id) {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  for (const auto& [id, object] : objects_) {
+    if (object) {
+      v8::Local<v8::Object> wrapper;
+      if (object->GetWrapper(isolate).ToLocal(&wrapper)) {
+        if (wrapper->GetCreationContextChecked() == context) {
+          object->ClearTemplateCache();
+        }
       }
     }
   }

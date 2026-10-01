@@ -57,6 +57,8 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
 
   // RenderFrameObserver override:
   void DidClearWindowObject() override;
+  void WillReleaseScriptContext(v8::Local<v8::Context> context,
+                                int32_t world_id) override;
 
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
