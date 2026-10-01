@@ -284,7 +284,7 @@ SearchPreloadPipelineManager::TriggerPreloads(TriggerPreloadsData data) {
           data.no_vary_search_hint,
           /*is_navigation_likely=*/false,
           /*should_ignore_saver_modes=*/false,
-          /*is_ahead_of_actual_navigation=*/false);
+          /*is_ahead_of_imminent_navigation=*/false);
 
   // Trigger prerender without waiting prefetch.
   //
@@ -466,8 +466,8 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     // Mouse down and touch down mean that the user is already pressing the
     // suggestion, i.e. the navigation is almost certain to happen soon. On the
     // other hand, up-or-down arrow key predictions have lower confidence.
-    const bool is_ahead_of_actual_navigation = [&] {
-      if (!features::IsDsePreload2AheadOfActualNavigationEnabled()) {
+    const bool is_ahead_of_imminent_navigation = [&] {
+      if (!features::IsDsePreload2AheadOfImminentNavigationEnabled()) {
         return false;
       }
 
@@ -490,7 +490,7 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
         GetWebContents(), search_preload_service, prefetch_url, predictor,
         no_vary_search_hint,
         /*is_navigation_likely=*/true, should_ignore_saver_modes,
-        is_ahead_of_actual_navigation);
+        is_ahead_of_imminent_navigation);
   }();
 
   if (signal_result_prefetch.has_value()) {

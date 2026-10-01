@@ -72,13 +72,13 @@ enum class PrefetchSchedulerPriority {
   // (`kBurstForPrefetchPriority`).
   kBurstAheadOfPrerender = 13,
 
-  // Burst priority for prefetch ahead of actual navigation.
+  // Burst priority for prefetch ahead of imminent navigation.
   //
   // This directly serves an imminent user-visible navigation (e.g. mouse/touch
   // down on a suggestion), so it takes the highest precedence over all
   // speculative prefetches (including prerender and explicit
   // `PrefetchPriority::kHighest`).
-  kBurstAheadOfActualNavigation = 14,
+  kBurstAheadOfImminentNavigation = 14,
 };
 
 // Priority queue for prefetches

@@ -73,13 +73,13 @@ BASE_DECLARE_FEATURE(kDsePreload2OnPressIncognito);
 // https://docs.google.com/document/d/1f4dcNYP3O_Ft4yMmC42ETxGC5lM7YF5FDbEgnxUua7M/edit?tab=t.38v8gca76tmi
 BASE_DECLARE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch);
 
-// Enables marking on-press prefetches as prefetches ahead of an actual
+// Enables marking on-press prefetches as prefetches ahead of an imminent
 // navigation, which makes them matched more aggressively.
 //
-// See `features::kPrefetchAheadOfActualNavigation` in
+// See `features::kPrefetchAheadOfImminentNavigation` in
 // `content/public/common/content_features.h`, which must also be
 // enabled to take effect.
-BASE_DECLARE_FEATURE(kDsePreload2AheadOfActualNavigation);
+BASE_DECLARE_FEATURE(kDsePreload2AheadOfImminentNavigation);
 
 // Returns true iff we should enter DsePreload2 code path.
 bool IsDsePreload2Enabled();
@@ -99,8 +99,8 @@ bool IsDsePreload2OnPressIncognitoEnabled();
 bool IsDsePreload2IgnoreSaverModesOnPressEnabled();
 
 // Returns true iff on-press prefetches should be marked as prefetches ahead of
-// an actual navigation.
-bool IsDsePreload2AheadOfActualNavigationEnabled();
+// an imminent navigation.
+bool IsDsePreload2AheadOfImminentNavigationEnabled();
 
 // Enables suppressing preloads for unsupported search modes (e.g. udm=50, AIM).
 BASE_DECLARE_FEATURE(kDsePreload2SuppressForUnsupportedSearchMode);

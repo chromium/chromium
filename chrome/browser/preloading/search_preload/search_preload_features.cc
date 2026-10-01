@@ -71,7 +71,7 @@ BASE_FEATURE(kDsePreload2OnSuggestNonDefaultMatch,
              "kDsePreload2OnSuggestNonDefaultMatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDsePreload2AheadOfActualNavigation,
+BASE_FEATURE(kDsePreload2AheadOfImminentNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDsePreload2Enabled() {
@@ -108,9 +108,9 @@ bool IsDsePreload2IgnoreSaverModesOnPressEnabled() {
          kDsePreload2OnPressIgnoreSaverModes.Get();
 }
 
-bool IsDsePreload2AheadOfActualNavigationEnabled() {
+bool IsDsePreload2AheadOfImminentNavigationEnabled() {
   return IsDsePreload2OnPressEnabled() &&
-         base::FeatureList::IsEnabled(kDsePreload2AheadOfActualNavigation);
+         base::FeatureList::IsEnabled(kDsePreload2AheadOfImminentNavigation);
 }
 
 BASE_FEATURE(kDsePreload2SuppressForUnsupportedSearchMode,

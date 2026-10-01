@@ -43,7 +43,7 @@ class SearchPreloadPipeline {
       const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint,
       bool is_navigation_likely,
       bool should_ignore_saver_modes,
-      bool is_ahead_of_actual_navigation);
+      bool is_ahead_of_imminent_navigation);
   // Starts prerender if not triggered yet and prefetch is alive.
   SearchPreloadSignalResult StartPrerender(
       content::WebContents& web_contents,

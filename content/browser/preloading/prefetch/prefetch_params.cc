@@ -195,16 +195,16 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
     return base::Seconds(0);
   }
 
-  // Don't set a timeout for a prefetch ahead of an actual navigation because
+  // Don't set a timeout for a prefetch ahead of an imminent navigation because
   //
   // - Such a prefetch is triggered when the navigation is (almost) certain to
   //   happen soon, so the prefetch is likely still in flight at matching time.
   // - Timing out falls back to the network, which discards the head start of
   //   the prefetch and thus is strictly worse than keeping waiting.
   if (base::FeatureList::IsEnabled(
-          features::kPrefetchAheadOfActualNavigation) &&
-      prefetch_request.is_ahead_of_actual_navigation() &&
-      !features::kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout
+          features::kPrefetchAheadOfImminentNavigation) &&
+      prefetch_request.is_ahead_of_imminent_navigation() &&
+      !features::kPrefetchAheadOfImminentNavigationUseBlockUntilHeadTimeout
            .Get()) {
     return base::Seconds(0);
   }

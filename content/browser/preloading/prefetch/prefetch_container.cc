@@ -1807,18 +1807,18 @@ bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
       const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
           request().no_vary_search_hint();
 
-      // For a prefetch ahead of an actual navigation, waiting for the
+      // For a prefetch ahead of an imminent navigation, waiting for the
       // No-Vary-Search header is preferable to falling back to the network,
       // even if no hint is available. Note that the caller has already
       // narrowed down candidates to the ones whose URLs are equivalent modulo
       // query and ref, so this doesn't make it wait for unrelated prefetches.
-      if (request().is_ahead_of_actual_navigation() &&
+      if (request().is_ahead_of_imminent_navigation() &&
           base::FeatureList::IsEnabled(
-              features::kPrefetchAheadOfActualNavigation)) {
+              features::kPrefetchAheadOfImminentNavigation)) {
         using Policy =
-            features::PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy;
+            features::PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy;
         switch (
-            features::kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy
+            features::kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy
                 .Get()) {
           case Policy::kNotUse:
             break;

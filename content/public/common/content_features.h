@@ -252,9 +252,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPeriodicBackgroundSync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreconnectManagerDirectFastPath);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchActivationBeacon);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAheadOfActualNavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAheadOfImminentNavigation);
 
-enum class PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy {
+enum class PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy {
   // Don't force waiting for the No-Vary-Search header.
   kNotUse,
   // Force waiting for the No-Vary-Search header only if no No-Vary-Search hint
@@ -266,10 +266,10 @@ enum class PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy {
 };
 
 CONTENT_EXPORT extern const base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy;
+    PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy>
+    kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout;
+    kPrefetchAheadOfImminentNavigationUseBlockUntilHeadTimeout;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThread);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

@@ -25,7 +25,7 @@ bool IsBurstLimitPerPriorityEnabled() {
   return base::FeatureList::IsEnabled(
              features::kPrefetchSchedulerBurstLimitPerPriority) ||
          base::FeatureList::IsEnabled(
-             features::kPrefetchAheadOfActualNavigation);
+             features::kPrefetchAheadOfImminentNavigation);
 }
 
 size_t GetActiveSetSizeLimitForBase() {
@@ -118,13 +118,13 @@ size_t GetActiveSetSizeLimit(PrefetchSchedulerPriority priority) {
 
       break;
 
-    case PrefetchSchedulerPriority::kBurstAheadOfActualNavigation:
-      // A prefetch ahead of an actual navigation is triggered by a signal that
-      // the navigation is (almost) certain to happen soon. Allow it to run
+    case PrefetchSchedulerPriority::kBurstAheadOfImminentNavigation:
+      // A prefetch ahead of an imminent navigation is triggered by a signal
+      // that the navigation is (almost) certain to happen soon. Allow it to run
       // independently of the ordinary prefetch queue so that it is not blocked
       // by queued prefetch requests.
       if (base::FeatureList::IsEnabled(
-              features::kPrefetchAheadOfActualNavigation)) {
+              features::kPrefetchAheadOfImminentNavigation)) {
         return GetActiveSetSizeLimitForBase() + 1;
       }
 
@@ -150,9 +150,9 @@ size_t GetActiveSetSizeLimit(PrefetchSchedulerPriority priority) {
 PrefetchSchedulerPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
   if (base::FeatureList::IsEnabled(
-          features::kPrefetchAheadOfActualNavigation)) {
-    if (prefetch_container.request().is_ahead_of_actual_navigation()) {
-      return PrefetchSchedulerPriority::kBurstAheadOfActualNavigation;
+          features::kPrefetchAheadOfImminentNavigation)) {
+    if (prefetch_container.request().is_ahead_of_imminent_navigation()) {
+      return PrefetchSchedulerPriority::kBurstAheadOfImminentNavigation;
     }
   }
 

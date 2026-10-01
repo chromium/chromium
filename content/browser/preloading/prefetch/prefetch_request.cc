@@ -93,7 +93,7 @@ PrefetchRequest::PrefetchRequest(
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache,
     bool should_ignore_saver_modes,
-    bool is_ahead_of_actual_navigation,
+    bool is_ahead_of_imminent_navigation,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
@@ -117,7 +117,7 @@ PrefetchRequest::PrefetchRequest(
           should_disable_block_until_head_timeout),
       should_bypass_http_cache_(should_bypass_http_cache),
       should_ignore_saver_modes_(should_ignore_saver_modes),
-      is_ahead_of_actual_navigation_(is_ahead_of_actual_navigation),
+      is_ahead_of_imminent_navigation_(is_ahead_of_imminent_navigation),
       initiator_info_(std::move(initiator_info)) {
   // This can be called from non-main thread, which means that this
   // should not touch any UI thread bound objects mentioned in the
@@ -132,7 +132,7 @@ PrefetchRequest::PrefetchRequest(
     CHECK(should_append_variations_header_);
     CHECK(!should_disable_block_until_head_timeout_);
     CHECK(!should_ignore_saver_modes_);
-    CHECK(!is_ahead_of_actual_navigation_);
+    CHECK(!is_ahead_of_imminent_navigation_);
   } else {
     CHECK(!GetRendererInitiatorInfo());
     CHECK(GetBrowserInitiatorInfo());
@@ -176,7 +176,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
       /*should_disable_block_until_head_timeout=*/false,
       /*should_bypass_http_cache=*/false,
       /*should_ignore_saver_modes=*/false,
-      /*is_ahead_of_actual_navigation=*/false,
+      /*is_ahead_of_imminent_navigation=*/false,
       PrefetchRendererInitiatorInfo(referring_render_frame_host,
                                     std::move(prefetch_document_manager)));
 }
@@ -196,7 +196,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
     PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl,
     bool should_ignore_saver_modes,
-    bool is_ahead_of_actual_navigation) {
+    bool is_ahead_of_imminent_navigation) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
@@ -215,7 +215,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
       /*should_append_variations_header=*/true,
       /*should_disable_block_until_head_timeout=*/false,
       /*should_bypass_http_cache=*/false, should_ignore_saver_modes,
-      is_ahead_of_actual_navigation,
+      is_ahead_of_imminent_navigation,
       PrefetchBrowserInitiatorInfo(histogram_suffix,
                                    /*request_status_listener=*/nullptr));
 }
@@ -253,7 +253,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       should_append_variations_header, should_disable_block_until_head_timeout,
       should_bypass_http_cache, /*should_ignore_saver_modes=*/false,
-      /*is_ahead_of_actual_navigation=*/false,
+      /*is_ahead_of_imminent_navigation=*/false,
       PrefetchBrowserInitiatorInfo(histogram_suffix,
                                    std::move(request_status_listener)));
 }
@@ -293,7 +293,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       should_append_variations_header, should_disable_block_until_head_timeout,
       should_bypass_http_cache, /*should_ignore_saver_modes=*/false,
-      /*is_ahead_of_actual_navigation=*/false,
+      /*is_ahead_of_imminent_navigation=*/false,
       PrefetchBrowserInitiatorInfo(histogram_suffix,
                                    std::move(request_status_listener)));
 }

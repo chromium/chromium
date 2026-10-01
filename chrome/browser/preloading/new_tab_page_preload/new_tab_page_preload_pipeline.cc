@@ -84,7 +84,7 @@ void NewTabPagePreloadPipeline::StartPrefetch(
       /*holdback_status_override=*/
       content::PreloadingHoldbackStatus::kUnspecified, /*ttl=*/std::nullopt,
       /*should_ignore_saver_modes=*/false,
-      /*is_ahead_of_actual_navigation=*/false);
+      /*is_ahead_of_imminent_navigation=*/false);
 }
 
 void NewTabPagePreloadPipeline::StartPrerender(

@@ -13243,7 +13243,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl,
     bool should_ignore_saver_modes,
-    bool is_ahead_of_actual_navigation) {
+    bool is_ahead_of_imminent_navigation) {
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(GetBrowserContext())->GetPrefetchService();
   if (!prefetch_service) {
@@ -13257,7 +13257,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
       referring_origin, std::move(no_vary_search_hint), std::move(priority),
       std::move(preload_pipeline_info), std::move(attempt),
       holdback_status_override, std::move(ttl), should_ignore_saver_modes,
-      is_ahead_of_actual_navigation);
+      is_ahead_of_imminent_navigation);
 
   return prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
 }

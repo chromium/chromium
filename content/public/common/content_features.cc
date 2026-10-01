@@ -799,38 +799,39 @@ BASE_FEATURE(kPreconnectManagerDirectFastPath,
 // to the server when a prefetched page is activated.
 BASE_FEATURE(kPrefetchActivationBeacon, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the behavior of a prefetch ahead of an actual navigation, i.e. a
+// Controls the behavior of a prefetch ahead of an imminent navigation, i.e. a
 // prefetch triggered by a signal that the navigation is (almost) certain to
-// happen soon. See `PrefetchRequest::is_ahead_of_actual_navigation()`.
-BASE_FEATURE(kPrefetchAheadOfActualNavigation,
+// happen soon. See `PrefetchRequest::is_ahead_of_imminent_navigation()`.
+BASE_FEATURE(kPrefetchAheadOfImminentNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>::Option
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions[] = {
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kNotUse,
+    PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy>::Option
+    kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicyOptions[] = {
+        {PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy::kNotUse,
          "NotUse"},
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
+        {PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy::
+             kUseIfNoHint,
          "UseIfNoHint"},
-        {PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kAlwaysUse,
+        {PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy::kAlwaysUse,
          "AlwaysUse"},
     };
 
 // Policy of forcing `PrefetchMatchResolver` to wait for the No-Vary-Search
-// header of a prefetch ahead of an actual navigation.
+// header of a prefetch ahead of an imminent navigation.
 const base::FeatureParam<
-    PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy>
-    kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy{
-        &kPrefetchAheadOfActualNavigation,
+    PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy>
+    kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy{
+        &kPrefetchAheadOfImminentNavigation,
         "force_wait_no_vary_search_header_policy",
-        PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
-        &kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicyOptions};
+        PrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy::kUseIfNoHint,
+        &kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicyOptions};
 
 // If true, `PrefetchMatchResolver` uses `BlockUntilHeadTimeout` also for a
-// prefetch ahead of an actual navigation.
+// prefetch ahead of an imminent navigation.
 const base::FeatureParam<bool>
-    kPrefetchAheadOfActualNavigationUseBlockUntilHeadTimeout{
-        &kPrefetchAheadOfActualNavigation, "use_block_until_head_timeout",
+    kPrefetchAheadOfImminentNavigationUseBlockUntilHeadTimeout{
+        &kPrefetchAheadOfImminentNavigation, "use_block_until_head_timeout",
         false};
 
 // Allow starting prefetch request from off the main thread. Please see

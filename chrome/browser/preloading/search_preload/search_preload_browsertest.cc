@@ -2388,8 +2388,8 @@ IN_PROC_BROWSER_TEST_F(
                        {SearchPreloadSignalResult::kPrerenderTriggered});
 }
 
-// Test suite for `kDsePreload2AheadOfActualNavigation`.
-class SearchPreloadBrowserTest_AheadOfActualNavigation
+// Test suite for `kDsePreload2AheadOfImminentNavigation`.
+class SearchPreloadBrowserTest_AheadOfImminentNavigation
     : public SearchPreloadBrowserTestBase {
  public:
   void InitFeatures(
@@ -2415,14 +2415,14 @@ class SearchPreloadBrowserTest_AheadOfActualNavigation
                 },
             },
             {
-                features::kDsePreload2AheadOfActualNavigation,
+                features::kDsePreload2AheadOfImminentNavigation,
                 {},
             },
             {
-                features::kPrefetchAheadOfActualNavigation,
+                features::kPrefetchAheadOfImminentNavigation,
                 {
                     {features::
-                         kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy
+                         kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy
                              .name,
                      "UseIfNoHint"},
                 },
@@ -2445,7 +2445,7 @@ class SearchPreloadBrowserTest_AheadOfActualNavigation
 // delayed longer than the default block-until-head timeout. A user presses a
 // suggestion by mouse and then navigates. The navigation keeps blocked until
 // the head arrives, and the prefetch is used.
-IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfImminentNavigation,
                        OnNavigationLikely_MouseDown_MatchedByHeader) {
   HistogramTesterWrapper uma_tester;
 
@@ -2491,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
 //
 // Scenario: Same as `OnNavigationLikely_MouseDown_MatchedByHeader`, but
 // triggered by touch down (`kTouchDown`).
-IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfImminentNavigation,
                        OnNavigationLikely_TouchDown_MatchedByHeader) {
   HistogramTesterWrapper uma_tester;
 
@@ -2530,9 +2530,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
 }
 
 // `OnNavigationLikely()` with `kUpOrDownArrowButton` is not marked as ahead of
-// actual navigation, so it is not matched by the No-Vary-Search header without
-// a hint even when `kDsePreload2AheadOfActualNavigation` is enabled.
-IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+// imminent navigation, so it is not matched by the No-Vary-Search header
+// without a hint even when `kDsePreload2AheadOfImminentNavigation` is enabled.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfImminentNavigation,
                        OnNavigationLikely_ArrowButton_NotMatchedByHeader) {
   HistogramTesterWrapper uma_tester;
 
@@ -2564,16 +2564,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
   NavigateAwayToRecordHistogram();
 
   // Prefetch is not used because arrow button predictions are not marked as
-  // ahead of actual navigation.
+  // ahead of imminent navigation.
   EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
 
   uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
                        {SearchPreloadSignalResult::kPrefetchTriggered});
 }
 
-// Test suite for the case that `kDsePreload2AheadOfActualNavigation` is
+// Test suite for the case that `kDsePreload2AheadOfImminentNavigation` is
 // disabled.
-class SearchPreloadBrowserTest_AheadOfActualNavigationDisabled
+class SearchPreloadBrowserTest_AheadOfImminentNavigationDisabled
     : public SearchPreloadBrowserTestBase {
  public:
   void InitFeatures(
@@ -2606,16 +2606,17 @@ class SearchPreloadBrowserTest_AheadOfActualNavigationDisabled
             },
         },
         /*disabled_features=*/{
-            features::kDsePreload2AheadOfActualNavigation,
-            features::kPrefetchAheadOfActualNavigation,
+            features::kDsePreload2AheadOfImminentNavigation,
+            features::kPrefetchAheadOfImminentNavigation,
         });
   }
 };
 
 // Counterpart of `OnNavigationLikely_MouseDown_MatchedByHeader`. The prefetch
 // is not matched without a No-Vary-Search hint.
-IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigationDisabled,
-                       OnNavigationLikely_MouseDown_NotMatchedByHeader) {
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_AheadOfImminentNavigationDisabled,
+    OnNavigationLikely_MouseDown_NotMatchedByHeader) {
   HistogramTesterWrapper uma_tester;
 
   SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
