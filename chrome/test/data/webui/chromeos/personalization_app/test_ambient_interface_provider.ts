@@ -90,7 +90,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientObserver',
       'setAmbientModeEnabled',
       'setAmbientTheme',
-      'setPageViewed',
       'setScreenSaverDuration',
       'setTopicSource',
       'setTemperatureUnit',
@@ -154,10 +153,6 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setAlbumSelected(id: string, topicSource: TopicSource, selected: boolean) {
     this.methodCalled('setAlbumSelected', id, topicSource, selected);
-  }
-
-  setPageViewed() {
-    this.methodCalled('setPageViewed');
   }
 
   startScreenSaverPreview() {

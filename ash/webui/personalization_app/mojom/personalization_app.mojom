@@ -722,9 +722,6 @@ interface AmbientProvider {
   // Sets one album as selected or not. See note above |SetTopicSource()|.
   SetAlbumSelected(string id, TopicSource topic_source, bool selected);
 
-  // Record that the user viewed the Ambient mode page.
-  SetPageViewed();
-
   // Request updated Ambient mode settings and albums.
   FetchSettingsAndAlbums();
 

@@ -61,7 +61,6 @@ class PersonalizationAppAmbientProviderImpl
   void SetAlbumSelected(const std::string& id,
                         mojom::TopicSource topic_source,
                         bool selected) override;
-  void SetPageViewed() override;
   void FetchSettingsAndAlbums() override;
   void StartScreenSaverPreview() override;
   void ShouldShowTimeOfDayBanner(

@@ -328,11 +328,6 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
   OnAlbumsChanged();
 }
 
-void PersonalizationAppAmbientProviderImpl::SetPageViewed() {
-  // TODO(crbug.com/562297873): Remove SetPageViewed() from mojom in a
-  // follow-up CL.
-}
-
 void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
   // If there is an ongoing update, do not fetch. If update succeeds, it will
   // update the UI with the new settings. If update fails, it will restore

@@ -51,7 +51,6 @@ class FakePersonalizationAppAmbientProvider
   void SetAlbumSelected(const std::string& id,
                         mojom::TopicSource topic_source,
                         bool selected) override {}
-  void SetPageViewed() override {}
   void StartScreenSaverPreview() override {}
   void FetchSettingsAndAlbums() override {}
   void ShouldShowTimeOfDayBanner(

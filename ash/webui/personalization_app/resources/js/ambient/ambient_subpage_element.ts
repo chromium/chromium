@@ -147,8 +147,6 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
         'duration_', state => state.ambient.duration);
     this.updateFromStore();
 
-    getAmbientProvider().setPageViewed();
-
     window.addEventListener('focus', this.onFocus_);
   }
 
