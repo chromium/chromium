@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -54,6 +56,7 @@ import java.util.List;
 public class TabUiUtilsUnitTest {
     private static final int TAB_ID = 123;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
+    private static final Token TAB_GROUP_ID_2 = new Token(3L, 4L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -61,6 +64,9 @@ public class TabUiUtilsUnitTest {
     @Mock private TabRemover mTabRemover;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tab mTab;
+    @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
+    @Mock private Tab mTab4;
     @Mock private CollaborationService mCollaborationService;
     @Mock private Callback<Boolean> mDidCloseTabsCallback;
     @Mock private Callback<Boolean> mContentSensitivitySetter;
@@ -311,5 +317,56 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("A");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
         verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
+    }
+
+    @Test
+    public void testReorderTabGroup() {
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab, mTab2));
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
+
+        assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ false));
+        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID, 2);
+
+        // Null model or unknown group returns false.
+        assertFalse(
+                TabUiUtils.reorderTabGroup(
+                        /* tabModel= */ null, TAB_GROUP_ID, /* toPrevious= */ false));
+        assertFalse(
+                TabUiUtils.reorderTabGroup(
+                        mTabModel, new Token(99L, 99L), /* toPrevious= */ false));
+    }
+
+    @Test
+    public void testReorderTabGroup_PastAnotherTabGroup() {
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID_2);
+        when(mTab4.getTabGroupId()).thenReturn(TAB_GROUP_ID_2);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab, mTab2));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID_2)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(mTab3)).thenReturn(2);
+        when(mTabModel.indexOf(mTab4)).thenReturn(3);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
+
+        assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ false));
+        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID, 3);
+
+        assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID_2, /* toPrevious= */ true));
+        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID_2, 0);
+    }
+
+    @Test
+    public void testReorderTabGroup_PrecededByPinnedTab_ReturnsFalse() {
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab2);
+        when(mTabModel.indexOf(mTab)).thenReturn(1);
+
+        assertFalse(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ true));
+        verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 }

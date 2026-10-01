@@ -141,7 +141,7 @@ public class TabKeyEventHandlerUnitTest {
         Tab tab1 = addTab();
 
         TabKeyEventHandler.reorderTab(
-                mTabModel, tab1.getId(), /* moveForward= */ true, /* moveSingleTab= */ true);
+                mTabModel, tab1.getId(), /* toPrevious= */ true, /* moveSingleTab= */ true);
 
         verify(mTabModel).moveTab(tab1.getId(), 0);
     }
@@ -152,7 +152,7 @@ public class TabKeyEventHandlerUnitTest {
         addTab();
 
         TabKeyEventHandler.reorderTab(
-                mTabModel, tab0.getId(), /* moveForward= */ false, /* moveSingleTab= */ true);
+                mTabModel, tab0.getId(), /* toPrevious= */ false, /* moveSingleTab= */ true);
 
         verify(mTabModel).moveTab(tab0.getId(), 1);
     }
@@ -210,7 +210,6 @@ public class TabKeyEventHandlerUnitTest {
         int index = mTabCount++;
         when(mTabModel.indexOf(tab)).thenReturn(index);
         when(mTabModel.getTabAt(index)).thenReturn(tab);
-        when(mTabModel.getRelatedTabList(tabId)).thenReturn(List.of(tab));
         return tab;
     }
 
@@ -223,8 +222,7 @@ public class TabKeyEventHandlerUnitTest {
         when(tab1.getTabGroupId()).thenReturn(tabGroupId);
 
         List<Tab> tabs = List.of(tab0, tab1);
-        when(mTabModel.getRelatedTabList(tab0.getId())).thenReturn(tabs);
-        when(mTabModel.getRelatedTabList(tab1.getId())).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
         return tabs;
     }
 }

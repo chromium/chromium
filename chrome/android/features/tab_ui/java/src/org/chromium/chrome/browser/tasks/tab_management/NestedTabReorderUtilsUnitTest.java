@@ -51,7 +51,6 @@ public class NestedTabReorderUtilsUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
-    @Mock private Tab mPinnedTab;
 
     private TabListModel mModelList;
 
@@ -96,7 +95,6 @@ public class NestedTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
         mModelList.add(new ListItem(TabProperties.UiType.TAB, standaloneModel));
 
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1));
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab2));
 
         assertTrue(
@@ -193,7 +191,6 @@ public class NestedTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel2));
 
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
                 NestedTabReorderUtils.reorderItem(
@@ -487,9 +484,8 @@ public class NestedTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, solitaryChildModel));
 
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB_ID_3)).thenReturn(List.of(mTab3));
+        when(mTabModel.getTabsInGroup(GROUP_ID)).thenReturn(List.of(mTab1));
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.indexOf(mTab3)).thenReturn(0);
         when(mTabModel.getTabAt(0)).thenReturn(mTab3);
 
         // Solitary child tab at pos 2 moving up should move the entire group above standalone tab
@@ -498,41 +494,6 @@ public class NestedTabReorderUtilsUnitTest {
                 NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 2, /* toPrevious= */ true));
         verify(mTabModel).moveGroupToIndex(GROUP_ID, 0);
-    }
-
-    @Test
-    public void testReorderTabGroupByToken_ForwardsToReorderTabGroup() {
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getRelatedTabList(TAB_ID_3)).thenReturn(List.of(mTab3));
-        when(mTabModel.indexOf(mTab1)).thenReturn(0);
-        when(mTabModel.indexOf(mTab2)).thenReturn(1);
-        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
-
-        assertTrue(
-                NestedTabReorderUtils.reorderTabGroup(
-                        mTabModel, GROUP_ID, /* toPrevious= */ false));
-        verify(mTabModel).moveGroupToIndex(GROUP_ID, 2);
-
-        // Null model or unknown group returns false
-        assertFalse(NestedTabReorderUtils.reorderTabGroup(null, GROUP_ID, /* toPrevious= */ false));
-        assertFalse(
-                NestedTabReorderUtils.reorderTabGroup(
-                        mTabModel, new Token(99L, 99L), /* toPrevious= */ false));
-    }
-
-    @Test
-    public void testReorderTabGroup_PrecededByPinnedTab_ReturnsFalse() {
-        when(mPinnedTab.getId()).thenReturn(200);
-        when(mPinnedTab.getIsPinned()).thenReturn(true);
-        when(mTabModel.getTabAt(0)).thenReturn(mPinnedTab);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab1);
-        when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
-
-        assertFalse(
-                NestedTabReorderUtils.reorderTabGroup(mTabModel, GROUP_ID, /* toPrevious= */ true));
-        verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
-        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
     @Test

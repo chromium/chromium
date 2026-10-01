@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -129,6 +130,60 @@ public class TabUiUtils {
 
         tabModel.getTabUngrouper()
                 .ungroupTabGroup(tabGroupId, /* trailing= */ false, /* allowDialog= */ true);
+    }
+
+    /**
+     * Reorders an entire tab group in the given direction (up/previous or down/next).
+     *
+     * @param tabModel The active {@link TabModel}.
+     * @param groupId The {@link Token} ID of the tab group.
+     * @param toPrevious Whether to move to previous (up) or next (down).
+     * @return Whether the group was successfully reordered.
+     */
+    public static boolean reorderTabGroup(
+            @Nullable TabModel tabModel, Token groupId, boolean toPrevious) {
+        if (tabModel == null) return false;
+        int newIndex =
+                getIndexPastAdjacentTabOrGroup(
+                        tabModel, tabModel.getTabsInGroup(groupId), toPrevious);
+        if (newIndex == TabModel.INVALID_TAB_INDEX) return false;
+        tabModel.moveGroupToIndex(groupId, newIndex);
+        return true;
+    }
+
+    /**
+     * Returns the {@link TabModel} index to move {@code tabsToMove} to so it jumps past the
+     * adjacent tab or tab group, or {@link TabModel#INVALID_TAB_INDEX} if there is no adjacent item
+     * on the same side of the pinned boundary.
+     *
+     * @param tabModel The {@link TabModel} containing the tabs.
+     * @param tabsToMove The contiguous tabs being moved, either a whole tab group or one tab.
+     * @param toPrevious Whether to move earlier (up / previous) or later (down / next).
+     * @return The target {@link TabModel} index, or {@link TabModel#INVALID_TAB_INDEX} if the move
+     *     is invalid.
+     */
+    static int getIndexPastAdjacentTabOrGroup(
+            TabModel tabModel, List<Tab> tabsToMove, boolean toPrevious) {
+        if (tabsToMove.isEmpty()) return TabModel.INVALID_TAB_INDEX;
+        int boundaryIndex =
+                toPrevious
+                        ? TabGroupUtils.getFirstTabModelIndexForList(tabModel, tabsToMove)
+                        : TabGroupUtils.getLastTabModelIndexForList(tabModel, tabsToMove);
+        if (boundaryIndex == TabModel.INVALID_TAB_INDEX) return TabModel.INVALID_TAB_INDEX;
+        int adjacentIndex = toPrevious ? boundaryIndex - 1 : boundaryIndex + 1;
+        Tab adjacentTab = tabModel.getTabAt(adjacentIndex);
+        // Never jump across the pinned / unpinned boundary. The model would clamp it to a no-op.
+        if (adjacentTab == null || adjacentTab.getIsPinned() != tabsToMove.get(0).getIsPinned()) {
+            return TabModel.INVALID_TAB_INDEX;
+        }
+        Token adjacentGroupId = adjacentTab.getTabGroupId();
+        if (adjacentGroupId == null) return adjacentIndex;
+
+        List<Tab> adjacentGroup = tabModel.getTabsInGroup(adjacentGroupId);
+        if (adjacentGroup.isEmpty()) return TabModel.INVALID_TAB_INDEX;
+        return toPrevious
+                ? TabGroupUtils.getFirstTabModelIndexForList(tabModel, adjacentGroup)
+                : TabGroupUtils.getLastTabModelIndexForList(tabModel, adjacentGroup);
     }
 
     /**

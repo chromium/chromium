@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabGridMediator;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
@@ -2180,7 +2181,7 @@ public class VerticalTabListCoordinator {
                             mWindowAndroid,
                             mDataSharingTabManager,
                             /* reorderFunction= */ (groupId, toPrevious) ->
-                                    NestedTabReorderUtils.reorderTabGroup(
+                                    TabUiUtils.reorderTabGroup(
                                             mTabModelSelector.getCurrentModel(),
                                             groupId,
                                             toPrevious),

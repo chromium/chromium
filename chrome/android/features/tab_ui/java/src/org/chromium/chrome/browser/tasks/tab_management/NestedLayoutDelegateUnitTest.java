@@ -1054,7 +1054,7 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testPerformAccessibilityAction_ReorderTabGroup() {
         setupTabsInModel(mTab1, mTab2);
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
         PropertyModel groupHeaderModel = addGroupHeaderToModelList(TAB1_ID);
         addTabToModelList(TAB2_ID, null);
 
@@ -1161,7 +1161,6 @@ public class NestedLayoutDelegateUnitTest {
             when(mTabModel.getTabAt(i)).thenReturn(tabs[i]);
             when(mTabModel.getTabById(tabs[i].getId())).thenReturn(tabs[i]);
             when(mTabModel.indexOf(tabs[i])).thenReturn(i);
-            when(mTabModel.getRelatedTabList(tabs[i].getId())).thenReturn(List.of(tabs[i]));
         }
     }
 
