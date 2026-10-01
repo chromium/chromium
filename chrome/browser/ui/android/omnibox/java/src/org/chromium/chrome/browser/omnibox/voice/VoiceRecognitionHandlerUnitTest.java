@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -236,6 +237,12 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     public void testIsVoiceSearchEnabled_DisabledByPolicy() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        assertFalse(mHandler.isVoiceSearchEnabled());
+    }
+
+    @Test
+    public void testIsVoiceSearchEnabled_DisabledWhenAndroidAutoProjected() {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
         assertFalse(mHandler.isVoiceSearchEnabled());
     }
 

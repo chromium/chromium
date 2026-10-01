@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -127,13 +128,16 @@ public class VoiceRecognitionIntentHandler {
     /** Checks if voice search is enabled for the given window. */
     public boolean isVoiceSearchEnabled() {
         if (mWindowAndroid == null) return false;
-        if (mWindowAndroid.getActivity().get() == null) return false;
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return false;
         if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ false)) {
             return false;
         }
 
         if (mIsVoiceSearchEnabledCached == null) {
-            mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid);
+            mIsVoiceSearchEnabledCached =
+                    !BrowserUiUtils.isAndroidAutoProjected(activity)
+                            && VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid);
 
             if (!mRegisteredActivityStateListener) {
                 ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);

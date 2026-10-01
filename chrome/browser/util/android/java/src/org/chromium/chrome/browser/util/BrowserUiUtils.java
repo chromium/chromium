@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.util;
 
+import android.app.UiModeManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.view.KeyEvent;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -66,6 +72,7 @@ public class BrowserUiUtils {
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String MODULE_CLICK_METRICS_PREFIX = "NewTabPage.Module.Click";
     private static final String MODULE_LONG_CLICK_METRICS_PREFIX = "NewTabPage.Module.LongClick";
+    private static @Nullable Boolean sIsAndroidAutoProjectedForTesting;
 
     /**
      * Records user clicking on different modules in New tab page.
@@ -153,5 +160,42 @@ public class BrowserUiUtils {
     public static boolean isPageInfoMovedToAppMenu(Context context) {
         return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    }
+
+    /**
+     * Returns true if the AndroidAutoProjected feature flag is enabled and the given {@link
+     * Context} is currently projected onto an Android Auto car display (AAP).
+     */
+    public static boolean isAndroidAutoProjected(@Nullable Context context) {
+        // TODO(crbug.com/475611332): Update to the dedicated AndroidX projection API once
+        // available (see comment #29).
+        if (sIsAndroidAutoProjectedForTesting != null) {
+            return sIsAndroidAutoProjectedForTesting;
+        }
+        if (context == null || !ChromeFeatureList.sAndroidAutoProjected.isEnabled()) {
+            return false;
+        }
+
+        // Exclude Android Automotive OS (AAOS), where Chrome runs natively on the car's built-in
+        // computer and DeviceInfo.isAutomotive() is true.
+        if (DeviceInfo.isAutomotive()) {
+            return false;
+        }
+
+        // AAP for Chrome is supported in Android 17+ (CINNAMON_BUN), where AAP sets
+        // UI_MODE_TYPE_CAR on the virtual display.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return false;
+        }
+
+        UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager != null
+                && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR;
+    }
+
+    public static void setIsAndroidAutoProjectedForTesting(@Nullable Boolean isProjected) {
+        sIsAndroidAutoProjectedForTesting = isProjected;
+        ResettersForTesting.register(() -> sIsAndroidAutoProjectedForTesting = null);
     }
 }
