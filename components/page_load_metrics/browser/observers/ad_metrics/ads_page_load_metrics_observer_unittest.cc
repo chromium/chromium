@@ -2446,6 +2446,125 @@ TEST_P(AdsPageLoadMetricsObserverTest,
             1);
 }
 
+// Verify that metrics/timing IPCs from a pending-commit (uncommitted /
+// non-active) RenderFrameHost on a FrameTreeNode that already has an ad frame
+// are ignored.
+TEST_P(AdsPageLoadMetricsObserverTest,
+       HeavyAdIntervention_PendingCommitSubframeResourceUpdateIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdIntervention},
+      {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* ad_subframe = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+
+  // Start a cross-site navigation in that ad subframe and advance to
+  // ReadyToCommit() so that a kPendingCommit RenderFrameHost exists on the same
+  // FrameTreeNode.
+  auto nav =
+      CreateNavigationSimulator("https://another-ad-site.com/ad", ad_subframe);
+  nav->Start();
+  nav->ReadyToCommit();
+
+  RenderFrameHost* pending_commit_rfh = nav->GetFinalRenderFrameHost();
+  ASSERT_NE(pending_commit_rfh, ad_subframe);
+  ASSERT_FALSE(pending_commit_rfh->IsActive());
+  ASSERT_TRUE(pending_commit_rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPendingCommit));
+
+  // Simulate a multi-resource update targeting the pending-commit RFH.
+  std::vector<mojom::ResourceDataUpdatePtr> resources;
+  mojom::ResourceDataUpdatePtr resource1 = mojom::ResourceDataUpdate::New();
+  resource1->received_data_length =
+      heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1);
+  resource1->delta_bytes = resource1->received_data_length;
+  resource1->encoded_body_length = resource1->received_data_length;
+  resource1->cache_type = mojom::CacheType::kNotCached;
+  resource1->is_complete = true;
+  resources.push_back(std::move(resource1));
+
+  mojom::ResourceDataUpdatePtr resource2 = mojom::ResourceDataUpdate::New();
+  resource2->received_data_length = base::KiB(10);
+  resource2->delta_bytes = resource2->received_data_length;
+  resource2->encoded_body_length = resource2->received_data_length;
+  resource2->cache_type = mojom::CacheType::kNotCached;
+  resource2->is_complete = true;
+  resources.push_back(std::move(resource2));
+
+  tester()->SimulateResourceDataUseUpdate(resources, pending_commit_rfh);
+
+  // Also simulate CPU timing update targeting pending_commit_rfh.
+  mojom::CpuTiming cpu_timing(
+      base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime + 1));
+  tester()->SimulateCpuTimingUpdate(cpu_timing, pending_commit_rfh);
+
+  // Verify that the pending-commit RFH IPCs were ignored: no intervention fired
+  // and no reports were sent.
+  EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_subframe));
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("HeavyAds.InterventionType2"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("HeavyAds.NetworkBytesAtFrameUnload"), 0);
+}
+
+// Updates from a speculative RenderFrameHost (a navigation that hasn't been
+// asked to commit yet) must be ignored.
+TEST_P(AdsPageLoadMetricsObserverTest,
+       HeavyAdIntervention_SpeculativeRfhUpdateIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdIntervention},
+      {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+
+  // Defer a cross-site navigation of the ad frame at WillProcessResponse, so
+  // that a speculative RenderFrameHost exists but hasn't been asked to commit.
+  content::TestNavigationThrottleInserter throttle_inserter(
+      web_contents(),
+      base::BindRepeating([](content::NavigationThrottleRegistry& registry) {
+        auto throttle = std::make_unique<TestNavigationThrottle>(registry);
+        throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                              TestNavigationThrottle::SYNCHRONOUS,
+                              content::NavigationThrottle::DEFER);
+        registry.AddThrottle(std::move(throttle));
+      }));
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(GURL(kOtherAdUrl), ad_frame);
+  navigation->Start();
+  navigation->SetAutoAdvance(false);
+  navigation->ReadyToCommit();
+  ASSERT_TRUE(navigation->IsDeferred());
+  RenderFrameHost* speculative_rfh =
+      navigation->GetNavigationHandle()->GetRenderFrameHost();
+  ASSERT_NE(speculative_rfh, ad_frame);
+  ASSERT_FALSE(speculative_rfh->IsActive());
+  ASSERT_FALSE(speculative_rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPendingCommit));
+  content::RenderFrameDeletedObserver deleted_observer(speculative_rfh);
+
+  // Two resources, each over the heavy ad network limit.
+  std::vector<mojom::ResourceDataUpdatePtr> resources;
+  for (int i = 0; i < 2; ++i) {
+    mojom::ResourceDataUpdatePtr resource = mojom::ResourceDataUpdate::New();
+    resource->request_id = 1000 + i;
+    resource->received_data_length =
+        heavy_ad_thresholds::kMaxNetworkBytes + base::KiB(1);
+    resource->delta_bytes = resource->received_data_length;
+    resource->encoded_body_length = resource->received_data_length;
+    resource->cache_type = mojom::CacheType::kNotCached;
+    resources.push_back(std::move(resource));
+  }
+  tester()->SimulateResourceDataUseUpdate(resources, speculative_rfh);
+
+  EXPECT_FALSE(deleted_observer.deleted());
+  EXPECT_TRUE(navigation->IsDeferred());
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("HeavyAds.InterventionType2"), 0);
+}
+
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
