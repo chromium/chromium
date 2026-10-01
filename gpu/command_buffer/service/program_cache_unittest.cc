@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
@@ -249,6 +250,12 @@ TEST_F(ProgramCacheTest, ShaderCompileStatus) {
 
   EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader1), true);
   EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader2), true);
+}
+
+TEST_F(ProgramCacheTest, ScopedCacheUseWithNullCache) {
+  {
+    ProgramCache::ScopedCacheUse scoped_cache_use(nullptr, base::DoNothing());
+  }
 }
 
 }  // namespace gles2

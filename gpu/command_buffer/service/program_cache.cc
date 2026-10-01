@@ -22,6 +22,9 @@ namespace gles2 {
 ProgramCache::ScopedCacheUse::ScopedCacheUse(ProgramCache* cache,
                                              CacheProgramCallback callback)
     : cache_(cache) {
+  if (!cache_) {
+    return;
+  }
   base::AutoLock auto_lock(cache_->lock_);
   // The existing callback should be null, otherwise we'll overwrite it.
   DCHECK(!cache_->cache_program_callback_);
@@ -29,6 +32,9 @@ ProgramCache::ScopedCacheUse::ScopedCacheUse(ProgramCache* cache,
 }
 
 ProgramCache::ScopedCacheUse::~ScopedCacheUse() {
+  if (!cache_) {
+    return;
+  }
   base::AutoLock auto_lock(cache_->lock_);
   // The callback should be the one installed by the constructor. The DCHECK
   // doesn't exactly check that, but checking for non-null is a cheap second.

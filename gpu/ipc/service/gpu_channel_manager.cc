@@ -451,6 +451,19 @@ gles2::Outputter* GpuChannelManager::outputter() {
 gles2::ProgramCache* GpuChannelManager::program_cache() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // When the workaround is active, never create the program cache. Creating a
+  // PassthroughProgramCache registers process-wide EGL blob cache callbacks on
+  // the display, which would be forwarded to the native driver even if no
+  // context group is attached to the cache.
+  //
+  // Note: GpuPreferences::disable_gpu_program_cache is intentionally not
+  // checked here. It is set whenever the shader *disk* cache is disabled
+  // (see service_utils.cc), and disabling the disk cache should not also
+  // disable the in-memory program cache in the GPU process.
+  if (gpu_driver_bug_workarounds_.disable_program_cache) {
+    return nullptr;
+  }
+
   if (!program_cache_.get()) {
     const GpuDriverBugWorkarounds& workarounds = gpu_driver_bug_workarounds_;
     bool disable_disk_cache =

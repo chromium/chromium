@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -293,6 +294,58 @@ TEST_F(GpuChannelManagerStatefulTest, OnUpdateMemoryLimitStateful) {
 
   EXPECT_EQ(channel_manager()->memory_limit(),
             base::MemoryLimit::FromPercent(50));
+}
+
+class GpuChannelManagerProgramCacheDisabledTest : public GpuChannelTestCommon {
+ public:
+  GpuChannelManagerProgramCacheDisabledTest()
+      : GpuChannelTestCommon({DISABLE_PROGRAM_CACHE},
+                             /*use_stub_bindings=*/true) {}
+};
+
+TEST_F(GpuChannelManagerProgramCacheDisabledTest,
+       ProgramCacheDisabledByWorkaround) {
+  EXPECT_EQ(nullptr, channel_manager()->program_cache());
+}
+
+TEST_F(GpuChannelManagerProgramCacheDisabledTest,
+       CreateCommandBufferWithProgramCacheDisabled) {
+  int32_t kClientId = 1;
+  GpuChannel* channel = CreateChannel(kClientId, true);
+  ASSERT_TRUE(channel);
+
+  int32_t kRouteId =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
+  auto init_params = mojom::CreateCommandBufferParams::New();
+  init_params->stream_id = 0;
+  init_params->stream_priority = SchedulingPriority::kNormal;
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
+  init_params->active_url = GURL();
+  gpu::ContextResult result = gpu::ContextResult::kSuccess;
+  gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
+  CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
+  EXPECT_EQ(result, gpu::ContextResult::kSuccess);
+
+  CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
+  ASSERT_TRUE(stub);
+
+  auto flush_params = mojom::AsyncFlushParams::New();
+  flush_params->put_offset = 0;
+  flush_params->flush_id = 1;
+  flush_params->sync_token_fences = std::vector<SyncToken>();
+  auto deferred_request =
+      mojom::DeferredCommandBufferRequestParams::NewAsyncFlush(
+          std::move(flush_params));
+
+  stub->ExecuteDeferredRequest(*deferred_request, nullptr);
+
+  channel_manager()->PopulateCache(gpu::GpuDiskCacheGlShaderHandle(),
+                                   "sample_key", "sample_data");
+  EXPECT_EQ(nullptr, channel_manager()->program_cache());
 }
 
 }  // namespace gpu

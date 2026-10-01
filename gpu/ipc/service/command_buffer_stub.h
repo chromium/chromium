@@ -203,7 +203,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
     // Making the context current on construction may fail, in which case the
     // caller may wish to avoid doing work. This indicates whether it succeeded
     // or failed.
-    bool is_context_current() const { return cache_use_.has_value(); }
+    bool is_context_current() const { return have_context_; }
 
    private:
     CommandBufferStub& stub_;

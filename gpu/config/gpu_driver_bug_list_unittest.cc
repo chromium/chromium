@@ -53,6 +53,43 @@ TEST_F(GpuDriverBugListTest, CurrentListForPowerVRRogue) {
       list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
   EXPECT_EQ(1u, bugs.count(ROUND_UP_3D_TEXTURE_SIZE_TO_POT_FOR_LIMIT));
 }
+
+TEST_F(GpuDriverBugListTest, DisableProgramCacheForImagination) {
+  std::unique_ptr<GpuDriverBugList> list = GpuDriverBugList::Create();
+  GPUInfo gpu_info;
+  gpu_info.gl_vendor = "Imagination Technologies";
+  // Empty GL strings match any pattern, so set extensions explicitly to keep
+  // other entries that disable the program cache (e.g. the Vivante
+  // GL_VIV_shader_binary entry) from matching.
+  gpu_info.gl_extensions = "GL_OES_get_program_binary GL_EXT_debug_marker";
+
+  // When ANGLE uses the native GLES driver on Android, the program cache should
+  // be disabled to avoid cache key collisions.
+  gpu_info.gl_renderer =
+      "ANGLE (Imagination Technologies, PowerVR SGX 540, OpenGL ES 2.0)";
+  gpu_info.gl_version = "OpenGL ES 2.0";
+  std::set<int> bugs =
+      list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
+  EXPECT_EQ(1u, bugs.count(DISABLE_PROGRAM_CACHE));
+
+  // ANGLE with OpenGL ES 3.2 backend should also match angle_gles rule.
+  gpu_info.gl_renderer =
+      "ANGLE (Imagination Technologies, PowerVR Rogue GE8300, OpenGL ES 3.2)";
+  gpu_info.gl_version = "OpenGL ES 3.2";
+  bugs = list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
+  EXPECT_EQ(1u, bugs.count(DISABLE_PROGRAM_CACHE));
+
+  // Native GLES without ANGLE wrapper should not match angle_gles rule.
+  gpu_info.gl_renderer = "PowerVR SGX 540";
+  bugs = list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
+  EXPECT_EQ(0u, bugs.count(DISABLE_PROGRAM_CACHE));
+
+  // ANGLE with Vulkan backend should not match angle_gles rule.
+  gpu_info.gl_renderer =
+      "ANGLE (Imagination Technologies, Vulkan 1.3, PowerVR Rogue)";
+  bugs = list->MakeDecision(GpuControlList::kOsAndroid, "14.0", gpu_info, {});
+  EXPECT_EQ(0u, bugs.count(DISABLE_PROGRAM_CACHE));
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {

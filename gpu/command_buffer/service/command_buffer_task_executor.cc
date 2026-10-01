@@ -41,9 +41,12 @@ gles2::Outputter* CommandBufferTaskExecutor::outputter() {
 }
 
 gles2::ProgramCache* CommandBufferTaskExecutor::program_cache() {
+  if (gpu_preferences().disable_gpu_program_cache ||
+      gpu_feature_info_.IsWorkaroundEnabled(gpu::DISABLE_PROGRAM_CACHE)) {
+    return nullptr;
+  }
   if (!program_cache_ &&
-      gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary &&
-      !gpu_preferences().disable_gpu_program_cache) {
+      gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary) {
     bool disable_disk_cache =
         gpu_preferences_.disable_gpu_shader_disk_cache ||
         gpu_feature_info_.IsWorkaroundEnabled(gpu::DISABLE_PROGRAM_DISK_CACHE);

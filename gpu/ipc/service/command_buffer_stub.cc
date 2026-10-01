@@ -292,10 +292,12 @@ bool CommandBufferStub::MakeCurrent() {
 
 void CommandBufferStub::CreateCacheUse(
     std::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use) {
-  cache_use.emplace(
-      channel_->gpu_channel_manager()->program_cache(),
-      base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
-                          gpu::GpuDiskCacheType::kGlShaders));
+  if (auto* cache = channel_->gpu_channel_manager()->program_cache()) {
+    cache_use.emplace(
+        cache,
+        base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
+                            gpu::GpuDiskCacheType::kGlShaders));
+  }
 }
 
 void CommandBufferStub::Destroy() {
