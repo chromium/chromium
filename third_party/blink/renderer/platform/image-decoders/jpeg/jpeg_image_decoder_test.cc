@@ -1333,8 +1333,7 @@ class JPEGSuiteEntry {
 class JPEGImageDecoderSuiteTest
     : public testing::TestWithParam<JPEGSuiteEntry> {};
 
-// TODO(crbug.com/422362214): Re-enable once flakiness is addressed.
-TEST_P(JPEGImageDecoderSuiteTest, DISABLED_VerifyJPEGSuiteImage) {
+TEST_P(JPEGImageDecoderSuiteTest, VerifyJPEGSuiteImage) {
   const JPEGSuiteEntry& entry = GetParam();
   std::string jpg_path = base::StringPrintf(
       "/images/jpeg-suite/%s/%s.jpg", entry.entry_dir(), entry.entry_jpg());
