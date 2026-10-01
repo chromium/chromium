@@ -9,7 +9,7 @@
     <settings-toggle-button id="optInToggle"
         disabled="[[optInToggleDisabled_(
             autofillSettingsEnterprisePolicyEnabled_,
-            prefs.autofill.profile_enabled.value, prefsInitialized_)]]"
+            profileEnabledPref_)]]"
         on-settings-boolean-control-change="onOptInToggleChange_"
         pref="[[shoppingOptedIn_]]"
         no-extension-indicator
@@ -24,16 +24,14 @@
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[extensionControlledIndicatorIsVisible_(
-            prefs.autofill.profile_enabled.extensionId, prefsInitialized_)]]">
+            profileEnabledPref_)]]">
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
             id="autofillExtensionIndicator"
-            extension-id=
-                "[[prefs.autofill.profile_enabled.extensionId]]"
-            extension-name=
-                "[[prefs.autofill.profile_enabled.controlledByName]]"
+            extension-id="[[profileEnabledPref_.extensionId]]"
+            extension-name="[[profileEnabledPref_.controlledByName]]"
             extension-can-be-disabled="[[
-                prefs.autofill.profile_enabled.extensionCanBeDisabled
+                profileEnabledPref_.extensionCanBeDisabled
                 ]]">
         </extension-controlled-indicator>
       </div>
@@ -47,8 +45,7 @@
         page-name="Shopping"
         allowed-entity-types="[[getAllowedEntityTypes_()]]"
         metric-entity-types="[[getMetricEntityTypes_()]]"
-        allow-new-entities-addition-pref="[[shoppingOptedIn_]]"
-        prefs="{{prefs}}">
+        allow-new-entities-addition-pref="[[shoppingOptedIn_]]">
     </settings-autofill-ai-entries-list>
   </div>
 </settings-subpage>

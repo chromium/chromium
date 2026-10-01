@@ -36,6 +36,16 @@ suite('AutofillPageIndex', function() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
+      {
+        key: 'autofill.autofill_ai.shopping_entities_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: 'autofill.autofill_ai.travel_entities_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
     ]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();

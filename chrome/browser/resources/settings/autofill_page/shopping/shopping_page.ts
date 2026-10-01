@@ -10,15 +10,15 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../autofill_ai_entries_list.js';
 import '../autofill_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName} from '../../ai_page/constants.js';
@@ -43,7 +43,7 @@ export interface SettingsShoppingPageElement {
 }
 
 const SettingsShoppingPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
 export class SettingsShoppingPageElement extends
     SettingsShoppingPageElementBase {
@@ -72,11 +72,11 @@ export class SettingsShoppingPageElement extends
        */
       shoppingOptedIn_: {
         type: Object,
-        computed: `computeShoppingOptedIn_(
-              prefs.autofill.autofill_ai.shopping_entities_enabled.*,
-              prefs.autofill.profile_enabled.value,
-              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.*,
-              prefsInitialized_, prefs.autofill.types_blocked.*)`,
+        value: () => ({
+          key: 'fake',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        }),
       },
 
       /**
@@ -91,14 +91,9 @@ export class SettingsShoppingPageElement extends
         },
       },
 
-      /**
-       * Set to true once CrSettingsPrefs is fully initialized.
-       * Guards against race conditions where prefs are accessed before the full
-       * preference tree is populated.
-       */
-      prefsInitialized_: {
-        type: Boolean,
-        value: false,
+      profileEnabledPref_: {
+        type: Object,
+        value: null,
       },
 
       showSuggestionsFromGeminiSettings_: {
@@ -110,10 +105,11 @@ export class SettingsShoppingPageElement extends
     };
   }
 
-  declare private shoppingOptedIn_: chrome.settingsPrivate.PrefObject;
+  declare private shoppingOptedIn_: chrome.settingsPrivate.PrefObject<boolean>;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
-  declare private prefsInitialized_: boolean;
+  declare private profileEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|null;
   declare private showSuggestionsFromGeminiSettings_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -122,53 +118,53 @@ export class SettingsShoppingPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    CrSettingsPrefs.initialized.then(() => {
-      this.prefsInitialized_ = true;
-    });
+    this.mirrorPref('autofill.profile_enabled', 'profileEnabledPref_');
+
+    const updateOptedIn = () => this.updateShoppingOptedIn_();
+    this.addPrefObserver(
+        'autofill.autofill_ai.shopping_entities_enabled', updateOptedIn);
+    this.addPrefObserver('autofill.profile_enabled', updateOptedIn);
+    this.addPrefObserver(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI, updateOptedIn);
+    this.addPrefObserver('autofill.types_blocked', updateOptedIn);
   }
 
   private optInToggleDisabled_(): boolean {
-    if (!this.prefsInitialized_) {
+    if (!this.profileEnabledPref_) {
       return true;
     }
 
-    const addressAutofillOptInStatus =
-        this.getPref<boolean>('autofill.profile_enabled').value;
+    const addressAutofillOptInStatus = this.profileEnabledPref_.value;
     const ignoreAddressAutofill = this.autofillSettingsEnterprisePolicyEnabled_;
     return !this.canEnableOrDisableAutofillAi_ ||
         (!ignoreAddressAutofill && !addressAutofillOptInStatus);
   }
 
-  private computeShoppingOptedIn_():
-      chrome.settingsPrivate.PrefObject<boolean> {
+  private updateShoppingOptedIn_() {
+    const prefService = PrefService.getInstance();
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: 'fake',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: false,
+      ...this.shoppingOptedIn_,
+      value: prefService
+                 .getPref<boolean>(
+                     'autofill.autofill_ai.shopping_entities_enabled')
+                 .value,
     };
-
-    if (!this.prefsInitialized_) {
-      return fakePref;
-    }
-
-    fakePref.value =
-        this.getPref<boolean>('autofill.autofill_ai.shopping_entities_enabled')
-            .value;
 
     if (this.optInToggleDisabled_()) {
       fakePref.value = false;
     }
 
-    const addressPolicy = this.getPref<boolean>('autofill.profile_enabled');
-    const autofillAiPolicy = this.getPref<ModelExecutionEnterprisePolicyValue>(
-        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
+    assert(this.profileEnabledPref_);
+    const autofillAiPolicy =
+        prefService.getPref<ModelExecutionEnterprisePolicyValue>(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI);
 
     checkAutofillPoliciesAndModifyPrefIfNecessary(
-        fakePref, addressPolicy, autofillAiPolicy,
-        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        fakePref, this.profileEnabledPref_, autofillAiPolicy,
+        prefService.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
         AutofillPolicyDataCategory.SHOPPING);
 
-    return fakePref;
+    this.shoppingOptedIn_ = fakePref;
   }
 
   private onOptInToggleChange_() {
@@ -178,7 +174,7 @@ export class SettingsShoppingPageElement extends
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       return;
     }
-    this.setPrefValue(
+    PrefService.getInstance().setPrefValue(
         'autofill.autofill_ai.shopping_entities_enabled',
         this.$.optInToggle.checked);
   }
@@ -198,15 +194,12 @@ export class SettingsShoppingPageElement extends
   }
 
   private extensionControlledIndicatorIsVisible_(): boolean {
-    if (!this.prefsInitialized_) {
+    if (!this.profileEnabledPref_) {
       return false;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
-
-    return !!addressAutofillEnabled.extensionId &&
-        !addressAutofillEnabled.value;
+    return !!this.profileEnabledPref_.extensionId &&
+        !this.profileEnabledPref_.value;
   }
 
   private onSuggestionsFromGeminiClick_() {
