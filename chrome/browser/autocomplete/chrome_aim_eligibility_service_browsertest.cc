@@ -53,8 +53,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/mock_network_change_notifier.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
@@ -175,14 +173,13 @@ class AimEligibilityServiceFriend {
       RequestSource request_source,
       GaiaId pending_request_account,
       int response_code,
-      int net_error,
       EligibilityRequestStatus request_status,
       int num_retries,
       AuthenticationMethod auth_method,
       std::optional<std::string> response_string) {
     service->ProcessServerEligibilityResponse(
-        request_source, pending_request_account, response_code, net_error,
-        request_status, num_retries, auth_method, std::move(response_string));
+        request_source, pending_request_account, response_code, request_status,
+        num_retries, auth_method, std::move(response_string));
   }
 };
 
@@ -1250,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
   AimEligibilityServiceFriend aim_eligibility_service_friend;
   aim_eligibility_service_friend.ProcessServerEligibilityResponse(
       service, AimEligibilityServiceFriend::RequestSource::kStartup, GaiaId(),
-      net::HTTP_OK, net::OK,
+      200,
       AimEligibilityServiceFriend::EligibilityRequestStatus::
           kSuccessBrowserCache,
       /*num_retries=*/0,
