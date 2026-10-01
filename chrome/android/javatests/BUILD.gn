@@ -595,7 +595,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
   resources_package = "org.chromium.chrome"
 
   sources = [
-    "src/org/chromium/chrome/browser/autofill/AtMemoryBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
     "src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogTest.java",
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetRenderTest.java",
