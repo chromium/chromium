@@ -82,7 +82,7 @@ struct TypeConverter : BaseTypeConverter<std::is_enum_v<T>> {
   static std::u16string ToString(ArgType<T> source_value) {
     return u"<unknown>";
   }
-  static std::optional<T> FromString(const std::u16string& source_value) {
+  static std::optional<T> FromString(std::u16string_view source_value) {
     NOTREACHED();
   }
   static ValidStrings GetValidStrings() { return {}; }
@@ -135,7 +135,7 @@ struct EnumStringsMap;
                                                                       \
   template <>                                                         \
   EXPORT std::optional<T> ui::metadata::TypeConverter<T>::FromString( \
-      const std::u16string& str);                                     \
+      std::u16string_view str);                                       \
                                                                       \
   template <>                                                         \
   EXPORT ui::metadata::ValidStrings                                   \
@@ -169,7 +169,7 @@ struct EnumStringsMap;
                                                                             \
   template <>                                                               \
   std::optional<T> ui::metadata::TypeConverter<T>::FromString(              \
-      const std::u16string& str) {                                          \
+      std::u16string_view str) {                                            \
     const auto& map = EnumStringsMap<T>::Get();                             \
     using Pair = std::ranges::range_value_t<decltype(map)>;                 \
     auto it = std::ranges::find(map, str, &Pair::second);                   \
@@ -195,7 +195,7 @@ template <>
 struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<bool>
     : BaseTypeConverter<true> {
   static std::u16string ToString(bool source_value);
-  static std::optional<bool> FromString(const std::u16string& source_value);
+  static std::optional<bool> FromString(std::u16string_view source_value);
   static ValidStrings GetValidStrings();
 };
 
@@ -222,15 +222,15 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA)
   static std::u16string ToString(std::u16string_view source_value);
 };
 
-#define DECLARE_CONVERSIONS(T)                                              \
-  template <>                                                               \
-  struct COMPONENT_EXPORT(UI_BASE_METADATA)                                 \
-      TypeConverter<T> : BaseTypeConverter<true> {                          \
-    static std::u16string ToString(ArgType<T> source_value);                \
-    static std::optional<T> FromString(const std::u16string& source_value); \
-    static ValidStrings GetValidStrings() {                                 \
-      return {};                                                            \
-    }                                                                       \
+#define DECLARE_CONVERSIONS(T)                                            \
+  template <>                                                             \
+  struct COMPONENT_EXPORT(UI_BASE_METADATA)                               \
+      TypeConverter<T> : BaseTypeConverter<true> {                        \
+    static std::u16string ToString(ArgType<T> source_value);              \
+    static std::optional<T> FromString(std::u16string_view source_value); \
+    static ValidStrings GetValidStrings() {                               \
+      return {};                                                          \
+    }                                                                     \
   };
 
 DECLARE_CONVERSIONS(int8_t)
@@ -266,7 +266,7 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA)
     TypeConverter<std::u16string> : BaseTypeConverter<true> {
   static std::u16string ToString(std::u16string_view source_value);
   static std::optional<std::u16string> FromString(
-      const std::u16string& source_value);
+      std::u16string_view source_value);
   static ValidStrings GetValidStrings() { return {}; }
 };
 
@@ -282,7 +282,7 @@ struct TypeConverter<std::optional<T>>
                         : std::u16string(kNullOptStr);
   }
   static std::optional<std::optional<T>> FromString(
-      const std::u16string& source_value) {
+      std::u16string_view source_value) {
     if (source_value == kNullOptStr) {
       return std::make_optional<std::optional<T>>(std::nullopt);
     }
@@ -304,7 +304,7 @@ struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false, true> {
     return PointerToString(source_value);
   }
   static std::optional<std::unique_ptr<T>> FromString(
-      const std::u16string& source_value) {
+      std::u16string_view source_value) {
     DCHECK(false) << "Type converter cannot convert from string.";
     return std::nullopt;
   }
@@ -316,7 +316,7 @@ struct TypeConverter<T*> : BaseTypeConverter<false, true> {
   static std::u16string ToString(T* source_value) {
     return PointerToString(source_value);
   }
-  static std::optional<T*> FromString(const std::u16string& source_value) {
+  static std::optional<T*> FromString(std::u16string_view source_value) {
     DCHECK(false) << "Type converter cannot convert from string.";
     return std::nullopt;
   }
@@ -330,19 +330,19 @@ struct TypeConverter<std::vector<T>>
     std::vector<std::u16string> serialized;
     std::ranges::transform(source_value, std::back_inserter(serialized),
                            &TypeConverter<T>::ToString);
-    return u"{" + base::JoinString(serialized, u",") + u"}";
+    return base::StrCat({u"{", base::JoinString(serialized, u","), u"}"});
   }
   static std::optional<std::vector<T>> FromString(
-      const std::u16string& source_value) {
+      std::u16string_view source_value) {
     if (source_value.empty() || source_value.front() != u'{' ||
         source_value.back() != u'}') {
       return std::nullopt;
     }
-    const auto values =
-        base::SplitString(source_value.substr(1, source_value.length() - 2),
-                          u",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string_view> values = base::SplitStringPiece(
+        source_value.substr(1, source_value.length() - 2), u",",
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     std::vector<T> output;
-    for (const auto& value : values) {
+    for (std::u16string_view value : values) {
       if (auto ret = TypeConverter<T>::FromString(value)) {
         output.push_back(*std::move(ret));
       } else {
@@ -362,7 +362,7 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA)
     TypeConverter<UNIQUE_TYPE_NAME(SkColor)>
     : BaseTypeConverter<true, false, kSkColorPrefix> {
   static std::u16string ToString(SkColor source_value);
-  static std::optional<SkColor> FromString(const std::u16string& source_value);
+  static std::optional<SkColor> FromString(std::u16string_view source_value);
   static ValidStrings GetValidStrings();
 
   // Parses a string within |start| and |end| for a color string in the forms
@@ -445,7 +445,7 @@ struct TypeConverter<T>
     return base::UTF8ToUTF16(source_value.ToString());
   }
 
-  static std::optional<T> FromString(const std::u16string& source_value) {
+  static std::optional<T> FromString(std::u16string_view source_value) {
     if constexpr (ClassHasFromString<T>) {
       return T::FromString(base::UTF16ToUTF8(source_value));
     }
