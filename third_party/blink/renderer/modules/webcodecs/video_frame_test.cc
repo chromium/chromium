@@ -257,6 +257,32 @@ TEST_F(VideoFrameTest, ConstructorOddSize) {
   }
 }
 
+TEST_F(VideoFrameTest, TransferBufferNotDetachedOnInvalidDisplaySize) {
+  V8TestingScope scope;
+  auto* array_buffer = DOMArrayBuffer::Create(32, 1);
+
+  auto* init = VideoFrameBufferInit::Create();
+  init->setTimestamp(0);
+  init->setCodedWidth(4);
+  init->setCodedHeight(4);
+  init->setFormat(V8VideoPixelFormat::Enum::kI420);
+  init->setDisplayWidth(0);
+  init->setDisplayHeight(4);
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(array_buffer));
+  init->setTransfer(std::move(transfer));
+
+  VideoFrame* blink_frame = VideoFrame::Create(
+      scope.GetScriptState(),
+      MakeGarbageCollected<V8AllowSharedBufferSource>(array_buffer), init,
+      scope.GetExceptionState());
+  EXPECT_EQ(nullptr, blink_frame);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
+            ESErrorType::kTypeError);
+  EXPECT_FALSE(array_buffer->IsDetached());
+}
+
 TEST_F(VideoFrameTest, CopyToRGB) {
   V8TestingScope scope;
   scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(

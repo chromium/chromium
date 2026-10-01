@@ -133,10 +133,18 @@ TEST_F(ImageDecoderTest, DecodeEmpty) {
   init->setType("image/png");
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(
       DOMArrayBuffer::Create(SharedBuffer::Create())));
+  std::string extra_data = "extra";
+  auto* transfer_buffer =
+      DOMArrayBuffer::Create(base::as_byte_span(extra_data));
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(transfer_buffer));
+  init->setTransfer(std::move(transfer));
+
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
   EXPECT_FALSE(decoder);
   EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
+  EXPECT_FALSE(transfer_buffer->IsDetached());
 }
 
 TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {

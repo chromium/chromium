@@ -117,6 +117,32 @@ TEST(EncodedVideoChunkTest, DecryptConfig) {
       *encoded->buffer()->decrypt_config()));
 }
 
+TEST(EncodedVideoChunkTest, TransferBufferNotDetachedOnInvalidDecryptConfig) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  std::string data = "test";
+  auto* init = EncodedVideoChunkInit::Create();
+  init->setTimestamp(1);
+  init->setType(V8EncodedVideoChunkType::Enum::kKey);
+  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
+  init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(buffer));
+  init->setTransfer(std::move(transfer));
+
+  auto* decrypt_config = MakeGarbageCollected<DecryptConfig>();
+  decrypt_config->setEncryptionScheme("unsupported");
+  decrypt_config->setKeyId(StringToBuffer("key"));
+  decrypt_config->setInitializationVector(StringToBuffer("iv"));
+  init->setDecryptConfig(decrypt_config);
+
+  auto* encoded = EncodedVideoChunk::Create(v8_scope.GetScriptState(), init,
+                                            v8_scope.GetExceptionState());
+  EXPECT_EQ(nullptr, encoded);
+  EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
+  EXPECT_FALSE(buffer->IsDetached());
+}
+
 }  // namespace
 
 }  // namespace blink

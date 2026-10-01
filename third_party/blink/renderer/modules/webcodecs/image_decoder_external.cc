@@ -222,15 +222,15 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   base::span<const uint8_t> array_span =
       AsSpan<SharedBufferPolicy::kAllow>(*init->data());
 
+  if (array_span.empty()) {
+    exception_state.ThrowTypeError("No image data provided");
+    return;
+  }
+
   auto buffer_contents =
       TransferArrayBufferForSpan(init->transfer(), array_span, exception_state,
                                  script_state_->GetIsolate());
   if (exception_state.HadException()) {
-    return;
-  }
-
-  if (array_span.empty()) {
-    exception_state.ThrowTypeError("No image data provided");
     return;
   }
 

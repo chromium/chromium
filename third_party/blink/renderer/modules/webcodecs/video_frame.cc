@@ -998,18 +998,18 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  auto frame_contents = TransferArrayBufferForSpan(init->transfer(), buffer,
-                                                   exception_state, isolate);
-  if (exception_state.HadException()) {
-    return nullptr;
-  }
-
   // Validate display (natural) size.
   gfx::Size display_size = src_visible_rect.size();
   if (init->hasDisplayWidth() || init->hasDisplayHeight()) {
     display_size = ParseAndValidateDisplaySize(init, exception_state);
     if (exception_state.HadException())
       return nullptr;
+  }
+
+  auto frame_contents = TransferArrayBufferForSpan(init->transfer(), buffer,
+                                                   exception_state, isolate);
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   // Destination frame.

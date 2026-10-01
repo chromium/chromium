@@ -364,6 +364,39 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   EXPECT_EQ(allocations_size, frames * sizeof(int32_t));
 }
 
+TEST_F(AudioDataTest, TransferBufferNotDetachedOnInvalidSampleRate) {
+  for (float bad_sample_rate : {0.0f, -1.0f, 1e9f}) {
+    V8TestingScope scope;
+    std::string data = "audio data";
+    auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
+    auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+
+    auto* audio_data_init = AudioDataInit::Create();
+    audio_data_init->setData(buffer_source);
+    audio_data_init->setTimestamp(0);
+    audio_data_init->setNumberOfChannels(1);
+    audio_data_init->setNumberOfFrames(static_cast<uint32_t>(data.size()));
+    audio_data_init->setSampleRate(bad_sample_rate);
+    audio_data_init->setFormat(V8AudioSampleFormat::Enum::kU8);
+    HeapVector<Member<DOMArrayBuffer>> transfer;
+    transfer.push_back(Member<DOMArrayBuffer>(buffer));
+    audio_data_init->setTransfer(std::move(transfer));
+
+    MakeGarbageCollected<AudioData>(scope.GetScriptState(), audio_data_init,
+                                    scope.GetExceptionState());
+
+    EXPECT_TRUE(scope.GetExceptionState().HadException());
+    if (bad_sample_rate <= 0) {
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
+                ESErrorType::kTypeError);
+    } else {
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kNotSupportedError);
+    }
+    EXPECT_FALSE(buffer->IsDetached());
+  }
+}
+
 TEST_F(AudioDataTest, CopyTo_UnalignedConversion) {
   V8TestingScope scope;
 

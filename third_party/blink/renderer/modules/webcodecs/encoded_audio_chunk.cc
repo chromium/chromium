@@ -17,6 +17,16 @@ namespace blink {
 EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
                                              const EncodedAudioChunkInit* init,
                                              ExceptionState& exception_state) {
+  std::unique_ptr<media::DecryptConfig> decrypt_config;
+  if (init->hasDecryptConfig()) {
+    decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
+    if (!decrypt_config) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "Unsupported decryptConfig");
+      return nullptr;
+    }
+  }
+
   base::span<const uint8_t> array_span =
       AsSpan<SharedBufferPolicy::kAllow>(*init->data());
   auto* isolate = script_state->GetIsolate();
@@ -63,13 +73,7 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
 
   buffer->set_is_key_frame(init->type() == V8EncodedAudioChunkType::Enum::kKey);
 
-  if (init->hasDecryptConfig()) {
-    auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
-    if (!decrypt_config) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        "Unsupported decryptConfig");
-      return nullptr;
-    }
+  if (decrypt_config) {
     buffer->set_decrypt_config(std::move(decrypt_config));
   }
 
