@@ -1255,7 +1255,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundActuationTabGroupSync =
-            newCachedFlag(GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC, /* defaultValue= */ false);
+            newCachedFlag(
+                    GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundTriggering =
             newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
     public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =

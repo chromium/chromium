@@ -8778,10 +8778,10 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ActorLiveNotification",
                         "ActorNotificationIntentRouting",
                         "ActorStepProgressNotification",
-                        "GlicBackgroundActuation"
+                        "GlicBackgroundActuation",
+                        "GlicBackgroundActuationTabGroupSync"
                     ]
                 }
             ]

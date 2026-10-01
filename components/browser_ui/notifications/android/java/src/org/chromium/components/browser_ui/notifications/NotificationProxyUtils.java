@@ -28,8 +28,7 @@ public class NotificationProxyUtils {
             return sAreNotificationsEnabledForTest;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                && NotificationFeatureMap.isEnabled(
-                        NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED)) {
+                && NotificationFeatureMap.sCacheNotificationsEnabled.isEnabled()) {
             if (sAreNotificationsEnabled == null) {
                 sAreNotificationsEnabled = getNotificationsEnabled();
             }
