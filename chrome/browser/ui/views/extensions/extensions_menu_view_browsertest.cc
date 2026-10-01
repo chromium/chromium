@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -56,7 +57,8 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
             ExtensionsMenuView::AllowInstancesForTesting()) {
     scoped_feature_list_.InitWithFeatures(
         {}, {extensions_features::kExtensionsMenuAccessControl,
-             features::kExtensionsPinnedByDefault});
+             features::kExtensionsPinnedByDefault,
+             features::kWebUIExtensionsContainer});
   }
 
   ExtensionsMenuViewBrowserTest(const ExtensionsMenuViewBrowserTest&) = delete;
