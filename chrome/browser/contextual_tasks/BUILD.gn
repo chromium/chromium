@@ -882,6 +882,7 @@ source_set("interactive_ui_tests") {
     deps += [
       ":interactive_ui_test_support",
       ":ui",
+      "//chrome/browser/extensions",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/views/frame:browser_view_header",
 
@@ -897,6 +898,7 @@ source_set("interactive_ui_tests") {
       "//components/contextual_search:test_support",
       "//components/lens:enterprise_policy",
       "//components/strings:components_strings",
+      "//extensions/common",
       "//third_party/lens_server_proto:lens_overlay_proto",
     ]
   }

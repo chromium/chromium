@@ -543,6 +543,10 @@ void ContextualTasksExtensionHandler::FocusChanged(bool focused) {}
 void ContextualTasksExtensionHandler::StartPlatformVoiceRecognition() {}
 void ContextualTasksExtensionHandler::HandleLensButtonClick() {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!IsEmbeddedInSidePanel()) {
+    return;
+  }
+
   base::RecordAction(base::UserMetricsAction(
       "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
 
@@ -913,6 +917,13 @@ ContextualTasksExtensionHandler::GetBrowserWindowInterface() const {
   auto* tab = tabs::TabInterface::MaybeGetFromContents(host_contents);
   return tab ? tab->GetBrowserWindowInterface()
              : webui::GetBrowserWindowInterface(host_contents);
+}
+
+bool ContextualTasksExtensionHandler::IsEmbeddedInSidePanel() const {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  return contextual_tasks::ContextualTasksPanelController::IsWebContentsInPanel(
+      web_contents);
 }
 
 bool ContextualTasksExtensionHandler::IsTokenSelected(

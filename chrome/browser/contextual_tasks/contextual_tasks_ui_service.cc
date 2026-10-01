@@ -1545,27 +1545,7 @@ GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
 
 bool ContextualTasksUiService::IsWebContentsInSidePanel(
     content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-
-  BrowserWindowInterface* browser_window =
-      webui::GetBrowserWindowInterface(web_contents);
-  if (!browser_window) {
-    return false;
-  }
-
-  auto* controller = ContextualTasksPanelController::From(browser_window);
-  if (!controller) {
-    return false;
-  }
-
-  for (auto* wc : controller->GetPanelWebContentsList()) {
-    if (wc == web_contents) {
-      return true;
-    }
-  }
-  return false;
+  return ContextualTasksPanelController::IsWebContentsInPanel(web_contents);
 }
 
 bool ContextualTasksUiService::IsAllowedSidePanelUrl(const GURL& url) {

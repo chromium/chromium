@@ -250,6 +250,7 @@ class ContextualTasksExtensionHandler
   DOCUMENT_USER_DATA_KEY_DECL();
 
   BrowserWindowInterface* GetBrowserWindowInterface() const;
+  bool IsEmbeddedInSidePanel() const;
   bool IsTokenSelected(const base::UnguessableToken& token) const;
 
   contextual_search::ContextualSearchSessionHandle*

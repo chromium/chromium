@@ -146,6 +146,9 @@ class ContextualTasksPanelController {
 
   // Static.
   static ContextualTasksPanelController* From(BrowserWindowInterface* browser);
+  // Returns whether the given WebContents is hosted within the Contextual Tasks
+  // side panel.
+  static bool IsWebContentsInPanel(content::WebContents* web_contents);
 };
 
 }  // namespace contextual_tasks
