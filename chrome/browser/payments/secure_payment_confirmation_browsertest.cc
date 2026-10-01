@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
 
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
-      SecurePaymentRequestOutcome::kAccept,
+      SecurePaymentRequestOutcome::kAnotherWay,
       /*expected_bucket_count=*/1);
 }
 
