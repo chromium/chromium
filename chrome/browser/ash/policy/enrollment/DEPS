@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/enterprise/util",
   "+chrome/browser/net",
   "+chrome/browser/policy",
-  "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
 ]

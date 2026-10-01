@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
