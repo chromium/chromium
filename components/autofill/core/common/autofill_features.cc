@@ -222,7 +222,7 @@ BASE_FEATURE_PARAM(std::string,
 // received through AUTOFILL_VALUABLE.
 // TODO(crbug.com/542468992): Clean up when launched.
 BASE_FEATURE(kAutofillAiImportConstraintsForSync,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Autofill AI suggestion width can be limited.
 BASE_FEATURE(kAutofillAiLimitSuggestionWidth,
