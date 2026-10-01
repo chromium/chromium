@@ -53,7 +53,9 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/command_storage_read_status.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_service_commands.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_manager/user.h"
@@ -603,7 +605,8 @@ void FullRestoreService::OnGotSessionAsh(
     base::OnceCallback<void(SessionWindows)> callback,
     SessionWindows session_windows,
     SessionID active_window_id,
-    bool read_error) {
+    sessions::CommandStorageReadStatus status,
+    sessions::SessionReplayResult replay_result) {
   std::move(callback).Run(std::move(session_windows));
 }
 

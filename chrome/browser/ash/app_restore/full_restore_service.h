@@ -26,6 +26,11 @@ namespace app_restore {
 class RestoreData;
 }  // namespace app_restore
 
+namespace sessions {
+enum class CommandStorageReadStatus;
+enum class SessionReplayResult;
+}  // namespace sessions
+
 namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
@@ -134,7 +139,8 @@ class FullRestoreService : public KeyedService,
   void OnGotSessionAsh(base::OnceCallback<void(SessionWindows)> callback,
                        SessionWindows session_windows,
                        SessionID active_window_id,
-                       bool read_error);
+                       sessions::CommandStorageReadStatus status,
+                       sessions::SessionReplayResult replay_result);
   void OnGotAllSessionsAsh(
       const std::vector<SessionWindows>& all_session_windows);
 

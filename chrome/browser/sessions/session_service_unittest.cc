@@ -1359,7 +1359,8 @@ namespace {
 void OnGotPreviousSession(
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
     SessionID ignored_active_window,
-    bool error_reading) {
+    sessions::CommandStorageReadStatus status,
+    sessions::SessionReplayResult replay_result) {
   FAIL() << "SessionService was destroyed, this shouldn't be reached.";
 }
 

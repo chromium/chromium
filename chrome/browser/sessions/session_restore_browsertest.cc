@@ -32,6 +32,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/session_restore_metrics.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -2635,6 +2637,41 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RecordNormalTabWindowDiff) {
                                       3, 1);
   histogram_tester.ExpectUniqueSample(
       "SessionRestore.WindowDiffAfterRestart.App", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RecordsSuccessOutcome) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
+  ASSERT_TRUE(new_browser);
+
+  histogram_tester.ExpectUniqueSample("SessionRestore.Outcome.Normal",
+                                      SessionRestoreOutcome::kSuccess, 1);
+  // A successful restore records no failure reason.
+  histogram_tester.ExpectTotalCount("SessionRestore.ErrorReason.Normal", 0);
+  histogram_tester.ExpectTotalCount("SessionRestore.Outcome.App", 0);
+  histogram_tester.ExpectTotalCount("SessionRestore.ErrorReason.App", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RecordsNoSessionFileOutcome) {
+  base::HistogramTester histogram_tester;
+  Profile* profile = browser()->GetProfile();
+
+  // Neither session service has written a file for this profile yet.
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  histogram_tester.ExpectUniqueSample("SessionRestore.Outcome.Normal",
+                                      SessionRestoreOutcome::kNoSessionFile, 1);
+  histogram_tester.ExpectUniqueSample("SessionRestore.Outcome.App",
+                                      SessionRestoreOutcome::kNoSessionFile, 1);
+  // A missing session file is not a failure, so no reason is recorded.
+  histogram_tester.ExpectTotalCount("SessionRestore.ErrorReason.Normal", 0);
+  histogram_tester.ExpectTotalCount("SessionRestore.ErrorReason.App", 0);
 }
 
 // Test is flaky on Linux and Windows: https://crbug.com/40170555

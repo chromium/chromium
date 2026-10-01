@@ -1375,6 +1375,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SessionRestore.ErrorReason.{Type}"
+    enum="SessionRestoreErrorReason" expires_after="2027-03-14">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Why a session restore of {Type} failed. Recorded once per restore attempt
+    that reached the session service callback, and only when
+    SessionRestore.Outcome.{Type} records Failed, so this histogram's total
+    count equals that bucket's count.
+
+    If multiple errors occur, read-stage errors take precedence over
+    replay-stage errors; refer to EvaluateSessionRestore() for details.
+    &quot;Corrupted or incomplete command&quot; covers partial replays where
+    earlier windows were restored but trailing commands were lost, as well as
+    command IDs unrecognized due to version skew after a downgrade. &quot;No
+    windows of the expected type&quot; should be rare because each service only
+    writes windows of its own type; a non-zero count points to an unusual file
+    (e.g., an old-format file or a window type that changed across versions).
+
+    See SessionRestore.Outcome.{Type} for general restore caveats (multiple
+    restores per process, cancelled restores, non-SessionRestore readers, and
+    App population skew) and
+    Session.CommandStorageBackend.ReadLastSessionCommands.Status for raw disk
+    read status.
+  </summary>
+  <token key="Type">
+    <variant name="App" summary="app windows"/>
+    <variant name="Normal" summary="normal windows"/>
+  </token>
+</histogram>
+
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
     enum="SessionRestoreFinishReason" expires_after="2027-03-07">
   <owner>joenotcharles@google.com</owner>
@@ -1434,6 +1465,37 @@ chromium-metrics-reviews@google.com.
     Records user interaction with the session restore infobar when it is shown
     to inform the user about turning on session restore.
   </summary>
+</histogram>
+
+<histogram name="SessionRestore.Outcome.{Type}" enum="SessionRestoreOutcome"
+    expires_after="2027-03-14">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Whether a session restore of {Type} completed successfully. Recorded once
+    per restore attempt that reached the session service callback, separately
+    for normal and app windows. Note that this is per restore attempt, not once
+    per browser startup: SessionService::RestoreIfNecessary() can trigger
+    another restore when a tabbed browser opens after all tabbed browsers were
+    closed.
+
+    Success requires a clean file read, a clean command replay, and at least one
+    restored window; partial replays count as Failed because trailing tabs were
+    lost. See SessionRestore.ErrorReason.{Type} for failure causes and
+    Session.CommandStorageBackend.ReadLastSessionCommands.Status for raw disk
+    read status.
+
+    Restores cancelled in flight and pre-reads that do not go through
+    SessionRestoreImpl (such as the informed restore dialog's pre-read on
+    ChromeOS) emit no sample, and windows dropped later by ChromeOS
+    PruneWindows() are not reflected here. For the app windows type, high
+    NoSessionFile counts are expected because most users have no installed PWAs;
+    compare variants rather than aggregating them.
+  </summary>
+  <token key="Type">
+    <variant name="App" summary="app windows"/>
+    <variant name="Normal" summary="normal windows"/>
+  </token>
 </histogram>
 
 <histogram name="SessionRestore.PageStateOldVersions" units="version"

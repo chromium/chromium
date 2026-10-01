@@ -140,10 +140,21 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                          SessionID tab_id,
                          base::Time last_active_time);
 
+  // Callback for GetLastSession(). Reports the restored windows, the active
+  // window's id, and how the read and replay stages went. This is intentionally
+  // not called GetLastSessionCallback: that name belongs to
+  // sessions::GetLastSessionCallback, and shadowing it made call sites
+  // impossible to read locally.
+  using LastSessionCallback = base::OnceCallback<void(
+      std::vector<std::unique_ptr<sessions::SessionWindow>>,
+      SessionID,
+      sessions::CommandStorageReadStatus,
+      sessions::SessionReplayResult)>;
+
   // Fetches the contents of the last session, notifying the callback when
   // done. If the callback is supplied an empty vector of SessionWindows
   // it means the session could not be restored.
-  void GetLastSession(sessions::GetLastSessionCallback callback);
+  void GetLastSession(LastSessionCallback callback);
 
   // Sets the application name of the specified window.
   void SetWindowAppName(SessionID window_id, const std::string& app_name);
@@ -238,7 +249,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   // Converts |commands| to SessionWindows and notifies the callback.
   void OnGotSessionCommands(
-      sessions::GetLastSessionCallback callback,
+      LastSessionCallback callback,
       std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
       sessions::CommandStorageReadStatus status);
 

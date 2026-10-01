@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_observer.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_util.h"
+#include "components/sessions/core/command_storage_read_status.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -128,8 +130,9 @@ void TabStripInternalsPageHandler::OnVisibilityChanged(
 void TabStripInternalsPageHandler::OnGotSavedSession(
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
     SessionID /*active_window_id*/,
-    bool read_error) {
-  if (!read_error) {
+    sessions::CommandStorageReadStatus status,
+    sessions::SessionReplayResult /*replay_result*/) {
+  if (!sessions::IsCommandStorageReadError(status)) {
     saved_session_windows_ = std::move(windows);
   }
 

@@ -52,6 +52,7 @@
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
+#include "chrome/browser/sessions/session_restore_metrics.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
@@ -611,18 +612,24 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       bool for_apps,
       std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
       SessionID active_window_id,
-      bool read_error) {
+      sessions::CommandStorageReadStatus status,
+      sessions::SessionReplayResult replay_result) {
 #if BUILDFLAG(IS_CHROMEOS)
     ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-GotSession", false);
 #endif
+
+    // Record before `windows` is merged into `windows_`, so that the sample
+    // describes this subsystem's restore alone.
+    RecordSessionRestoreMetrics(for_apps, status, replay_result,
+                                !windows.empty());
 
     // This function could be called twice from both SessionService and
     // AppSessionService. If one of them returns error, then |read_error_| is
     // true. So check whether |read_error_| has been set as true to prevent the
     // result is overwritten.
     if (!read_error_) {
-      read_error_ = read_error;
+      read_error_ = sessions::IsCommandStorageReadError(status);
     }
 
     // Copy windows into windows_ so that we can combine both app and browser

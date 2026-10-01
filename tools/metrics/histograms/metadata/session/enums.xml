@@ -129,6 +129,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/sessions/core/command_storage_manager.cc:SessionReadComparisonResult) -->
 
+<!-- LINT.IfChange(SessionRestoreErrorReason) -->
+
+<enum name="SessionRestoreErrorReason">
+  <int value="0" label="Decryption unavailable (OSCrypt key unavailable)"/>
+  <int value="1" label="Invalid header or signature mismatch"/>
+  <int value="2" label="Unsupported file version"/>
+  <int value="3" label="Corrupted or incomplete session file"/>
+  <int value="4" label="Corrupted or incomplete command"/>
+  <int value="5" label="All tabs dropped for having no navigations"/>
+  <int value="6" label="All windows dropped for having no valid tabs"/>
+  <int value="7" label="No windows of the expected type"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/sessions/session_restore_metrics.h:SessionRestoreErrorReason) -->
+
 <enum name="SessionRestoreFinishReason">
   <int value="0"
       label="SessionRestore.ForegroundTabFirstPaint4 successfully recorded."/>
@@ -152,6 +167,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h:SessionRestoreInfoBarAction) -->
+
+<!-- LINT.IfChange(SessionRestoreOutcome) -->
+
+<enum name="SessionRestoreOutcome">
+  <int value="0"
+      label="Success (clean read and replay, at least 1 window restored)"/>
+  <int value="1" label="No session file"/>
+  <int value="2" label="Nothing to restore (session held no windows)"/>
+  <int value="3" label="Failed (see SessionRestore.ErrorReason)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/sessions/session_restore_metrics.h:SessionRestoreOutcome) -->
 
 <enum name="SmartRestartability">
   <int value="0" label="None"/>

@@ -373,8 +373,7 @@ void SessionServiceBase::SetLastActiveTime(SessionID window_id,
       sessions::CreateLastActiveTimeCommand(tab_id, last_active_time));
 }
 
-void SessionServiceBase::GetLastSession(
-    sessions::GetLastSessionCallback callback) {
+void SessionServiceBase::GetLastSession(LastSessionCallback callback) {
   // OnGotSessionCommands maps the SessionCommands to browser state, then run
   // the callback.
   return command_storage_manager_->GetLastSessionCommands(
@@ -582,7 +581,7 @@ void SessionServiceBase::OnBrowserActivated(BrowserWindowInterface* browser) {
 }
 
 void SessionServiceBase::OnGotSessionCommands(
-    sessions::GetLastSessionCallback callback,
+    LastSessionCallback callback,
     std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
     sessions::CommandStorageReadStatus status) {
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
@@ -590,15 +589,16 @@ void SessionServiceBase::OnGotSessionCommands(
   std::string platform_session_id;
   std::set<SessionID> discarded_window_ids;
 
-  sessions::RestoreSessionFromCommands(commands, &valid_windows,
-                                       &active_window_id, &platform_session_id,
-                                       &discarded_window_ids);
+  const sessions::SessionReplayResult replay_result =
+      sessions::RestoreSessionFromCommands(
+          commands, &valid_windows, &active_window_id, &platform_session_id,
+          &discarded_window_ids);
   RemoveUnusedRestoreWindows(&valid_windows);
 
   InitializePlatformSessionIfNeeded(platform_session_id, discarded_window_ids);
 
-  std::move(callback).Run(std::move(valid_windows), active_window_id,
-                          sessions::IsCommandStorageReadError(status));
+  std::move(callback).Run(std::move(valid_windows), active_window_id, status,
+                          replay_result);
 }
 
 void SessionServiceBase::BuildCommandsForTab(

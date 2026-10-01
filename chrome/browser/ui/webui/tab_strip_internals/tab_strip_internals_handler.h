@@ -23,6 +23,8 @@ class WebContents;
 }  // namespace content
 
 namespace sessions {
+enum class CommandStorageReadStatus;
+enum class SessionReplayResult;
 struct SessionWindow;
 }  // namespace sessions
 
@@ -56,7 +58,8 @@ class TabStripInternalsPageHandler
   void OnGotSavedSession(
       std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
       SessionID active_window_id,
-      bool read_error);
+      sessions::CommandStorageReadStatus status,
+      sessions::SessionReplayResult replay_result);
 
   mojo::Receiver<tab_strip_internals::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip_internals::mojom::Page> page_;
