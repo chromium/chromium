@@ -26,7 +26,8 @@ class SigninUiDelegateImplDice : public SigninUiDelegate {
   void ShowCrossDeviceSigninQrBubble(
       BrowserWindowInterface* browser,
       GURL qr_code_url,
-      base::OnceClosure closing_callback) override;
+      base::OnceClosure closing_callback,
+      CrossDeviceSigninPromoEntryPoint entry_point) override;
 };
 
 }  // namespace signin_ui_util

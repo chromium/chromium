@@ -62,7 +62,8 @@ void SigninUiDelegateImplDice::ShowReauthUI(
 void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
     GURL qr_code_url,
-    base::OnceClosure closing_callback) {
+    base::OnceClosure closing_callback,
+    CrossDeviceSigninPromoEntryPoint entry_point) {
   if (!browser) {
     if (closing_callback) {
       std::move(closing_callback).Run();
@@ -70,7 +71,7 @@ void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
     return;
   }
   SigninViewController::From(browser)->ShowCrossDeviceSigninQrBubble(
-      std::move(qr_code_url), std::move(closing_callback));
+      std::move(qr_code_url), std::move(closing_callback), entry_point);
 }
 
 }  // namespace signin_ui_util

@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -25,10 +29,13 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/webui/webui_util.h"
 
@@ -125,32 +132,95 @@ class CrossDeviceSigninQrBubbleHandler
   GURL qr_code_url_;
 };
 
+constexpr char kEntryPointParamKey[] = "entry_point";
+
+CrossDeviceSigninPromoEntryPoint GetEntryPointFromUrl(const GURL& url) {
+  std::string entry_point_str;
+  int entry_point_int = 0;
+  if (net::GetValueForKeyInQuery(url, kEntryPointParamKey, &entry_point_str) &&
+      base::StringToInt(entry_point_str, &entry_point_int) &&
+      entry_point_int >= 0 &&
+      entry_point_int <=
+          static_cast<int>(CrossDeviceSigninPromoEntryPoint::kMaxValue)) {
+    return static_cast<CrossDeviceSigninPromoEntryPoint>(entry_point_int);
+  }
+  return CrossDeviceSigninPromoEntryPoint::kProfileMenu;
+}
+
+int GetBubbleTitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE;
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE;
+  }
+}
+
+std::u16string GetBubbleDescription(
+    Profile* profile,
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return l10n_util::GetStringUTF16(
+          IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE);
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf: {
+      // TODO(crbug.com/561921380): The SendTabToSelf strings are temporary;
+      // strongly consider removing the email placeholder from the subtitle
+      // since the account name and email are already displayed below the QR
+      // code.
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      std::string email =
+          identity_manager
+              ? identity_manager
+                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                    .email
+              : std::string();
+      return l10n_util::GetStringFUTF16(
+          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR,
+          base::UTF8ToUTF16(email));
+    }
+  }
+}
+
 }  // namespace
 
 CrossDeviceSigninQrBubbleUI::CrossDeviceSigninQrBubbleUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui),
-      chrome::kChromeUICrossDeviceSigninQrBubbleHost);
+      profile, chrome::kChromeUICrossDeviceSigninQrBubbleHost);
 
   webui::SetupWebUIDataSource(
       source, base::span(kSigninResources),
       IDR_SIGNIN_CROSS_DEVICE_SIGNIN_QR_BUBBLE_CROSS_DEVICE_SIGNIN_QR_BUBBLE_HTML);
 
-  source->UseStringsJs();
+  // `content::WebContents::GetVisibleURL()` is used here because a
+  // WebUIController is created before the navigation commits.
+  const CrossDeviceSigninPromoEntryPoint entry_point =
+      GetEntryPointFromUrl(web_ui->GetWebContents()->GetVisibleURL());
 
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"title", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE},
-      {"subtitle", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE},
-      {"qrCodeAltText", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_QR_CODE_ALT_TEXT},
-  };
-  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
+  source->AddLocalizedString("title", GetBubbleTitleResourceId(entry_point));
+  source->AddString("subtitle", GetBubbleDescription(profile, entry_point));
+  source->AddLocalizedString(
+      "qrCodeAltText", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_QR_CODE_ALT_TEXT);
   source->EnableReplaceI18nInJS();
 }
 
 CrossDeviceSigninQrBubbleUI::~CrossDeviceSigninQrBubbleUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrossDeviceSigninQrBubbleUI)
+
+// static
+GURL CrossDeviceSigninQrBubbleUI::GetURLWithEntryPoint(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  return net::AppendQueryParameter(
+      GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL), kEntryPointParamKey,
+      base::NumberToString(static_cast<int>(entry_point)));
+}
 
 void CrossDeviceSigninQrBubbleUI::Initialize(GURL qr_code_url) {
   qr_code_url_ = std::move(qr_code_url);

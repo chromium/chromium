@@ -567,10 +567,12 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SigninViewController::ShowCrossDeviceSigninQrBubble(
     GURL qr_code_url,
-    base::OnceClosure closing_callback) {
+    base::OnceClosure closing_callback,
+    CrossDeviceSigninPromoEntryPoint entry_point) {
   CloseBubbleSignin();
   auto delegate = ::CreateCrossDeviceSigninQrBubble(
-      &*browser_, std::move(qr_code_url), std::move(closing_callback));
+      &*browser_, std::move(qr_code_url), std::move(closing_callback),
+      entry_point);
   bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
       delegate.release(),
       base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));

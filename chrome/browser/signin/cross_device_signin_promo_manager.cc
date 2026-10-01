@@ -50,6 +50,8 @@ constexpr std::string_view kCrossDeviceProfileMenuCampaign =
     "XDeviceProfileMenu";
 constexpr std::string_view kCrossDeviceHistoryPageCampaign =
     "XDeviceHistoryPage";
+constexpr std::string_view kCrossDeviceSendTabToSelfCampaign =
+    "XDeviceSendTabToSelf";
 
 // Sub-dictionary serialization keys to be used per data type, defined in
 // `GetEntryPointPrefKey()` below.
@@ -78,6 +80,8 @@ std::string_view GetEntryPointHistogramSuffix(
       return "HistoryPage";
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
       return "ProfileMenu";
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      return "SendTabToSelf";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:CrossDeviceSigninPromoEntryPointVariant)
 }
@@ -97,6 +101,7 @@ std::string_view GetEntryPointPrefKey(
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
       return kHistoryDictionaryKey;
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       NOTREACHED() << "Entry point does not have any promo data";
   }
 }
@@ -161,6 +166,7 @@ std::optional<CrossDeviceSigninPromoData> GetPromoDataForDismissibleEntryPoint(
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
       return ReadDismissiblePromoData(profile, entry_point);
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       return std::nullopt;
   }
 }
@@ -240,6 +246,8 @@ std::string_view GetCrossDevicePromoCampaign(
       return kCrossDeviceProfileMenuCampaign;
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
       return kCrossDeviceHistoryPageCampaign;
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      return kCrossDeviceSendTabToSelfCampaign;
   }
 }
 
@@ -289,6 +297,7 @@ bool ShouldShowCrossDeviceSigninPromo(
       }
       break;
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       // Permanent entry point, no data-type constraints.
       break;
   }
@@ -372,5 +381,6 @@ void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
   GURL qr_code_url =
       GetCrossDeviceSigninQrCodeUrl(entry_point, primary_account_info.email);
   signin_ui_util::ShowCrossDeviceSigninQrBubble(
-      browser_window, std::move(qr_code_url), std::move(closing_callback));
+      browser_window, std::move(qr_code_url), std::move(closing_callback),
+      entry_point);
 }

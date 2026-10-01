@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
@@ -74,7 +75,8 @@ class SigninUiDelegate {
   virtual void ShowCrossDeviceSigninQrBubble(
       BrowserWindowInterface* browser,
       GURL qr_code_url,
-      base::OnceClosure closing_callback) = 0;
+      base::OnceClosure closing_callback,
+      CrossDeviceSigninPromoEntryPoint entry_point) = 0;
 
  protected:
   static BrowserWindowInterface* EnsureBrowser(Profile* profile);

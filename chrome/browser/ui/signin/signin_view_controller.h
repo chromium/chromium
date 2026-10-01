@@ -29,6 +29,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #endif
 
@@ -168,8 +169,10 @@ class SigninViewController {
   // Shows the cross-device sign-in QR code bubble. The bubble is anchored to
   // the profile menu button if available, or centered on the browser window
   // otherwise.
-  void ShowCrossDeviceSigninQrBubble(GURL qr_code_url,
-                                     base::OnceClosure closing_callback);
+  void ShowCrossDeviceSigninQrBubble(
+      GURL qr_code_url,
+      base::OnceClosure closing_callback,
+      CrossDeviceSigninPromoEntryPoint entry_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top

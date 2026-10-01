@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -110,7 +111,8 @@ class CrossDeviceSigninQrBubbleUIPixelTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, kBubbleWidgetName);
     SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-        GURL("https://www.google.com/chrome/go-mobile"), base::DoNothing());
+        GURL("https://www.google.com/chrome/go-mobile"), base::DoNothing(),
+        CrossDeviceSigninPromoEntryPoint::kProfileMenu);
     views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
     ASSERT_TRUE(widget);
 

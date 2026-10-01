@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +36,8 @@
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome_signout_confirmation_prompt.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -65,6 +68,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -74,6 +78,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/path_service.h"
@@ -1128,7 +1136,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
 
   views::Widget* bubble_widget = widget_future.Get();
   ASSERT_TRUE(bubble_widget);
@@ -1168,7 +1177,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   // Verify that the WebUI URL loaded successfully.
   EXPECT_EQ(web_contents->GetVisibleURL(),
-            GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
+            CrossDeviceSigninQrBubbleUI::GetURLWithEntryPoint(
+                CrossDeviceSigninPromoEntryPoint::kProfileMenu));
 
   // Verify that right-click context menu is disabled in this bubble.
   content::ContextMenuParams params;
@@ -1184,6 +1194,61 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   // After closing, wait until the explicit state is cleared (reverted).
   EXPECT_FALSE(avatar_button->HasExplicitButtonState());
 }
+
+// Verifies that showing the cross-device sign-in QR bubble from the
+// SendTabToSelf entry point displays the SendTabToSelf title and description.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ShowCrossDeviceSigninQrBubble_SendTabToSelfEntryPoint) {
+  AccountInfo account_info = SetPrimaryAccount();
+
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  base::test::TestFuture<views::Widget*> widget_future;
+  observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
+
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kSendTabToSelf);
+
+  views::Widget* bubble_widget = widget_future.Get();
+  ASSERT_TRUE(bubble_widget);
+
+  views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(
+      delegate->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE));
+
+  views::WebView* web_view = views::AsViewClass<views::WebView>(
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kCrossDeviceSigninQrBubbleWebViewElementId,
+          views::ElementTrackerViews::GetContextForWidget(bubble_widget)));
+  ASSERT_TRUE(web_view);
+
+  content::WebContents* web_contents = web_view->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  if (web_contents->IsLoading()) {
+    content::WaitForLoadStop(web_contents);
+  }
+
+  EXPECT_EQ(
+      content::EvalJs(web_contents, "document.title"),
+      l10n_util::GetStringUTF8(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE));
+  EXPECT_EQ(
+      content::EvalJs(
+          web_contents,
+          "document.querySelector('cross-device-signin-qr-bubble-app')"
+          ".shadowRoot.querySelector('#subtitle').textContent.trim()"),
+      l10n_util::GetStringFUTF8(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR,
+                                base::UTF8ToUTF16(account_info.GetEmail())));
+
+  views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+  SigninViewController::From(browser())->CloseBubbleSignin();
+  waiter.Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ClosesOnSignOut) {
   AccountInfo account_info = SetPrimaryAccount();
@@ -1194,7 +1259,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1215,7 +1281,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);
@@ -1236,7 +1303,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get());
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
   views::Widget* bubble_widget = widget_future.Get();
 
   ASSERT_TRUE(bubble_widget);

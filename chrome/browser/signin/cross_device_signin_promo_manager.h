@@ -16,7 +16,8 @@ class Profile;
 enum class CrossDeviceSigninPromoEntryPoint {
   kProfileMenu = 0,
   kHistoryPage = 1,
-  kMaxValue = kHistoryPage,
+  kSendTabToSelf = 2,
+  kMaxValue = kSendTabToSelf,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:CrossDeviceSigninPromoEntryPoint)
 

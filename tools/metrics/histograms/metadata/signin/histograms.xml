@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
 <variants name="CrossDeviceSigninPromoEntryPoint">
   <variant name="HistoryPage" summary="History Page entry point"/>
   <variant name="ProfileMenu" summary="Profile Menu entry point"/>
+  <variant name="SendTabToSelf" summary="Send Tab to Self entry point"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.cc:CrossDeviceSigninPromoEntryPointVariant) -->

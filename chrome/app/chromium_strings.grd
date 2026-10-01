@@ -3614,6 +3614,9 @@ If this page isn’t working as expected, try allowing optimization.
           Sign In to Chromium
         </message>
       </if>
+      <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR" desc="Body text shown when a user with no available target devices attempts to use send-tab-to-self, prompting to sign in on other devices or scan the QR code for a faster sign-in.">
+        To send links, make sure your other devices are signed into Chromium as <ph name="EMAIL">$1<ex>elisa@gmail.com</ex></ph>. Scan the QR code for a faster sign-in.
+      </message>
 
       <!-- Contextual Tasks -->
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">

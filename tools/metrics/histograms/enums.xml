@@ -2792,6 +2792,7 @@ shown properly on the user-facing crash UI.
 <enum name="CrossDeviceSigninPromoEntryPoint">
   <int value="0" label="ProfileMenu"/>
   <int value="1" label="HistoryPage"/>
+  <int value="2" label="SendTabToSelf"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoEntryPoint) -->

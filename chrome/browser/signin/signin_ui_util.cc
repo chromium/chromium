@@ -153,11 +153,14 @@ SigninUiDelegate* GetSigninUiDelegate() {
 }  // namespace
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void ShowCrossDeviceSigninQrBubble(BrowserWindowInterface* browser,
-                                   GURL qr_code_url,
-                                   base::OnceClosure closing_callback) {
+void ShowCrossDeviceSigninQrBubble(
+    BrowserWindowInterface* browser,
+    GURL qr_code_url,
+    base::OnceClosure closing_callback,
+    CrossDeviceSigninPromoEntryPoint entry_point) {
   GetSigninUiDelegate()->ShowCrossDeviceSigninQrBubble(
-      browser, std::move(qr_code_url), std::move(closing_callback));
+      browser, std::move(qr_code_url), std::move(closing_callback),
+      entry_point);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

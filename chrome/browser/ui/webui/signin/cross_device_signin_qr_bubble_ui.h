@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_CROSS_DEVICE_SIGNIN_QR_BUBBLE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_CROSS_DEVICE_SIGNIN_QR_BUBBLE_UI_H_
 
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble/cross_device_signin_qr_bubble.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -36,6 +37,8 @@ class CrossDeviceSigninQrBubbleUI
   CrossDeviceSigninQrBubbleUI(const CrossDeviceSigninQrBubbleUI&) = delete;
   CrossDeviceSigninQrBubbleUI& operator=(const CrossDeviceSigninQrBubbleUI&) =
       delete;
+
+  static GURL GetURLWithEntryPoint(CrossDeviceSigninPromoEntryPoint entry_point);
 
   void Initialize(GURL qr_code_url);
 

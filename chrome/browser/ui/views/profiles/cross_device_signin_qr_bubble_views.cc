@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -159,12 +160,25 @@ class CrossDeviceSigninQrWebView : public views::WebView,
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
+std::u16string GetBubbleTitle(CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return l10n_util::GetStringUTF16(
+          IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE);
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      return l10n_util::GetStringUTF16(
+          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE);
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
     GURL qr_code_url,
-    base::OnceClosure closing_callback) {
+    base::OnceClosure closing_callback,
+    CrossDeviceSigninPromoEntryPoint entry_point) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
   views::View* anchor_view = nullptr;
@@ -208,7 +222,8 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
 
   auto web_view =
       std::make_unique<CrossDeviceSigninQrWebView>(browser->GetProfile());
-  web_view->LoadInitialURL(GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
+  web_view->LoadInitialURL(
+      CrossDeviceSigninQrBubbleUI::GetURLWithEntryPoint(entry_point));
   CrossDeviceSigninQrBubbleUI* qr_bubble_ui =
       web_view->GetWebContents()
           ->GetWebUI()
@@ -226,8 +241,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetInternalName("CrossDeviceSigninQrBubbleViews")
-          .SetTitle(l10n_util::GetStringUTF16(
-              IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE))
+          .SetTitle(GetBubbleTitle(entry_point))
           .SetDialogDestroyingCallback(std::move(cleanup_closure))
           .OverrideShowCloseButton(true)
           .DisableCloseOnDeactivate()
