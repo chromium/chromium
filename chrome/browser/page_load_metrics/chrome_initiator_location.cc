@@ -128,20 +128,14 @@ void AttachBookmarkBarNavigationHandleUserData(
 
 void AttachContextMenuSearchNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch),
-      StringifyChromeInitiatorLocation(
-          ChromeInitiatorLocation::kContextMenuSearch));
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, chrome_navigation_initiator::kContextMenuSearch);
 }
 
 void AttachContextMenuOpenLinkNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink),
-      StringifyChromeInitiatorLocation(
-          ChromeInitiatorLocation::kContextMenuOpenLink));
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, chrome_navigation_initiator::kContextMenuOpenLink);
 }
 
 void MarkNavigationServedBySearchPrefetch(
