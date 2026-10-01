@@ -20,7 +20,9 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
@@ -138,7 +140,18 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
-    resource_provider->FlushRecording(recorder.ReleaseMainRecording());
+    auto* image_provider = resource_provider->GetOrCreateImageProvider();
+    gpu::SyncToken sync_token =
+        resource_provider->RasterInterface()->RasterSharedImage(
+            resource_provider->resource()->GetSharedImage(),
+            resource_provider->resource()->acquire_sync_token(),
+            recorder.ReleaseMainRecording(), image_provider,
+            /*needs_clear=*/true);
+    resource_provider->resource()->SetReleaseSyncToken(sync_token);
+    if (image_provider) {
+      image_provider->ReleaseLockedImages();
+      image_provider->UnbindTextureBackedImages();
+    }
   }
   return resource_provider->Snapshot(orientation);
 }

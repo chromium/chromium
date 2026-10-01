@@ -208,8 +208,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
-  void FlushRecording(cc::PaintRecord last_recording);
-
  private:
   CanvasNon2DResourceProvider(
       gfx::Size,
@@ -274,6 +272,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void OnGpuChannelLost() override;
 
   bool ShouldReplaceTargetBuffer(PaintImage::ContentId content_id);
+  void FlushRecording(cc::PaintRecord last_recording);
 
   void EnsureResourceReadyForDraw();
 
