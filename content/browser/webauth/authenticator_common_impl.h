@@ -344,6 +344,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
                              blink::mojom::WebAuthnDOMExceptionDetailsPtr
                                  dom_exception_details = nullptr);
 
+  // Returns true if the TLS state of the current frame is acceptable for
+  // WebAuthn requests from `caller_origin`.
+  bool IsSecurityLevelAcceptable(const url::Origin& caller_origin);
+
   // Returns the FidoDiscoveryFactory for the current request. This may be a
   // real instance, or one injected by the Virtual Authenticator environment, or
   // a unit testing fake. InitDiscoveryFactory() must be called before this

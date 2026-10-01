@@ -1486,6 +1486,37 @@ TEST_F(AuthenticatorContentBrowserClientTest,
             AuthenticatorStatus::SUCCESS);
 }
 
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetPasswordOnlyCredentialTLSError) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  test_client_.is_webauthn_security_level_acceptable = false;
+  auto options = GetCredentialOptions::New();
+  options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  options->password = true;
+  EXPECT_EQ(AuthenticatorGetCredential(std::move(options)).status,
+            AuthenticatorStatus::CERTIFICATE_ERROR);
+  VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kOtherFailure,
+                               AuthenticationRequestMode::kImmediate);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetPasswordOnlyCredentialSkipTLSCheckWithVirtualEnvironment) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  content::AuthenticatorEnvironment::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(main_rfh())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+  test_client_.is_webauthn_security_level_acceptable = false;
+  auto options = GetCredentialOptions::New();
+  options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  options->password = true;
+  // The TLS check is skipped, so the request proceeds until the immediate
+  // mediation timeout fires.
+  EXPECT_EQ(AuthenticatorGetCredential(std::move(options)).status,
+            AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
+}
+
 TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
   NavigateAndCommit(GURL(kTestOrigin1));
   test_client_.simulate_user_cancelled_ = true;
