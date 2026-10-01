@@ -98,5 +98,32 @@ TEST_F(WebGPUDecoderTest, IsolationKeyFromWorker) {
   ExecuteCmd(cmd);
 }
 
+// Regression test for https://crbug.com/566667039 where an invalid variant
+// index would cause a NOTREACHED() instead of a command buffer error.
+TEST_F(WebGPUDecoderTest, IsolationKeyInvalidVariantIndex) {
+  blink::DocumentToken document_token;
+  blink::WebGPUExecutionContextToken wgpu_context_token(document_token);
+  uint64_t high = document_token->GetHighForSerialization();
+  uint64_t low = document_token->GetLowForSerialization();
+  EXPECT_CALL(mock_isolation_key_provider_,
+              GetIsolationKey(wgpu_context_token, _))
+      .Times(1);
+
+  // Control case: the variant index is valid.
+  {
+    cmds::SetWebGPUExecutionContextToken cmd;
+    cmd.Init(std::to_underlying(wgpu_context_token.variant_index()), high >> 32,
+             high, low >> 32, low);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+
+  // Error case, the variant index is invalid.
+  {
+    cmds::SetWebGPUExecutionContextToken cmd;
+    cmd.Init(std::variant_size_v<blink::WebGPUExecutionContextToken::Storage>,
+             high >> 32, high, low >> 32, low);
+    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
+  }
+}
 }  // namespace webgpu
 }  // namespace gpu

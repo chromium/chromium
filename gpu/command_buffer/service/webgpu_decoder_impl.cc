@@ -2558,7 +2558,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
       break;
     }
     default:
-      NOTREACHED();
+      return error::kInvalidArguments;
   }
   isolation_key_provider_->GetIsolationKey(
       execution_context_token,
