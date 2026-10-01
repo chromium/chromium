@@ -189,17 +189,29 @@ toolchain is working.
 
 ### Prerequisites
 
-`build_crubit.py` builds Crubit's `cc_bindings_from_rs` with Cargo. Unlike
-Crubit's open-source build, Bazel is not a prerequisite.
+`build_crubit.py` builds Crubit with Cargo and CMake. Unlike Crubit's
+open-source build, Bazel is not a prerequisite.
 
 The script consumes the following
 outputs of an earlier `tools/rust/build_rust.py` run:
 
 - the Rust sysroot in `//third_party/rust-toolchain`,
+- the Clang libraries and headers in `RUST_HOST_LLVM_INSTALL_DIR`
+  (`//third_party/rust-toolchain-intermediate/llvm-host-install`),
+- the `//third_party/llvm` checkout that those libraries were built from,
+  whose `git-commit-info` file (written by `tools/clang/scripts/build.py`
+  during checkout) is where `CRUBIT_LLVM_DEV_DATE` comes from,
 - on Windows, `zlib.lib` and `libxml2s.lib`.
 
 So run `tools/rust/build_rust.py` first.  Alternatively, pass
 `--build-crubit` to it and it will run `build_crubit.py` for you.
+
+Abseil and Protobuf are not taken from `//third_party`: `build_crubit.py`
+downloads and builds the versions that Crubit pins in its `MODULE.bazel`,
+using the hermetic CMake and Ninja that the toolchain build already provides.
+They are needed only for `rs_bindings_from_cc`.  If they break the toolchain
+build, set `ENABLE_BUILDING_RS_BINDINGS_FROM_CC = False` in `build_crubit.py`;
+then only `cc_bindings_from_rs` is built.
 
 ### Building
 
@@ -209,8 +221,9 @@ $ tools/rust/build_crubit.py
 
 Useful flags:
 
-- `--out-dir=<dir>` caches the Cargo build artifacts in `<dir>` instead of a
-  temporary directory, which makes repeated local runs much faster.
+- `--out-dir=<dir>` caches the Abseil, Protobuf and Cargo build artifacts in
+  `<dir>` instead of a temporary directory, which makes repeated local runs
+  much faster.
 - `--skip-checkout` keeps the Crubit checkout in
   `//third_party/rust-toolchain-intermediate/crubit` as it is, so you can
   build local Crubit changes.
@@ -220,11 +233,17 @@ Useful flags:
 ### Deploying
 
 `build_crubit.py` always installs into `//third_party/rust-toolchain`:
-`cc_bindings_from_rs` goes into `bin/`, and Crubit's support library into
-`lib/third_party/crubit/`.
+`cc_bindings_from_rs` and `rs_bindings_from_cc` go into `bin/`, and Crubit's
+support library into `lib/third_party/crubit/`.
 
 ### Testing
 
 Crubit tests are under `//build/rust/tests/test_cpp_api_from_rust`.  They
 are part of `base_unittests` on every platform except ChromeOS and Fuchsia
 (see the `//build/rust/tests` dependency in `//base/BUILD.gn`).
+
+These tests cover `cc_bindings_from_rs` only.  The `rs_bindings_from_cc`
+targets in `//build/rust/tests/test_rs_bindings_from_cc` are still
+commented out behind `TODO(crbug.com/40226863)`.  Until they are enabled,
+the only check is the smoke test in `build_crubit.py`: it runs each
+installed binary once (e.g. `rs_bindings_from_cc --version`).
