@@ -40,7 +40,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -549,7 +548,6 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
-    @DisabledTest(message = "https://crbug.com/568383868")
     public void testSigninButtonDisabledOnInactiveWindow() {
         startActivityOnNtp();
 
@@ -575,7 +573,6 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
-    @DisabledTest(message = "https://crbug.com/568383868")
     public void testSigninButtonAvatarTintChangesOnInactiveWindow() {
         startActivityOnNtp();
 
