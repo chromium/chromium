@@ -1792,4 +1792,85 @@ IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest, SameOriginScriptStillRuns) {
   EXPECT_FALSE(status->cors_error_status);
 }
 
+class XMLHttpRequestLoadIgnoreLimitsTest
+    : public WorkerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  XMLHttpRequestLoadIgnoreLimitsTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kRequiresLoadIgnoreLimitsForDomWindowsOnly,
+        GetParam());
+  }
+
+  bool IsRequiresLoadIgnoreLimitsForDomWindowsOnlyEnabled() const {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         XMLHttpRequestLoadIgnoreLimitsTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(XMLHttpRequestLoadIgnoreLimitsTest, WorkerContext) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/workers/simple.html")));
+
+  GURL worker_async_url = embedded_test_server()->GetURL("/echo?async");
+  GURL worker_sync_url = embedded_test_server()->GetURL("/echo?sync");
+
+  URLLoaderMonitor monitor({worker_async_url, worker_sync_url});
+
+  // Async XHR in a Worker context should not set LOAD_IGNORE_LIMITS on the TCP
+  // request and bypass socket pool size limitations.
+  EXPECT_EQ("Echo", EvalJs(shell(), JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const blob = new Blob([`
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', $1);
+        xhr.onload = function () {
+          postMessage(xhr.responseText);
+        };
+        xhr.send();
+      `], {type: 'application/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      worker.onmessage = (e) => resolve(e.data);
+      worker.onerror = (e) => reject(e.message);
+    })
+  )",
+                                              worker_async_url)));
+  std::optional<network::ResourceRequest> worker_async_request =
+      monitor.GetRequestInfo(worker_async_url);
+  ASSERT_TRUE(worker_async_request.has_value());
+  EXPECT_FALSE(
+      (bool)(worker_async_request->load_flags & net::LOAD_IGNORE_LIMITS));
+
+  // Sync XHR in a Worker context should set LOAD_IGNORE_LIMITS,
+  // only if kRequiresLoadIgnoreLimitsForDomWindowsOnly is disabled.
+  EXPECT_EQ("Echo", EvalJs(shell(), JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const blob = new Blob([`
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', $1, false);
+        xhr.onload = function () {
+          postMessage(xhr.responseText);
+        };
+        xhr.send();
+      `], {type: 'application/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      worker.onmessage = (e) => resolve(e.data);
+      worker.onerror = (e) => reject(e.message);
+    })
+  )",
+                                              worker_sync_url)));
+  std::optional<network::ResourceRequest> worker_sync_request =
+      monitor.GetRequestInfo(worker_sync_url);
+  ASSERT_TRUE(worker_sync_request.has_value());
+  EXPECT_EQ(!IsRequiresLoadIgnoreLimitsForDomWindowsOnlyEnabled(),
+            (bool)(worker_sync_request->load_flags & net::LOAD_IGNORE_LIMITS));
+}
+
 }  // namespace content

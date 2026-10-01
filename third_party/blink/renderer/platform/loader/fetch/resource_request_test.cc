@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "net/base/load_flags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -59,6 +62,27 @@ TEST(ResourceRequestTest, UpgradeIfInsecureAcrossRedirects) {
           original.SiteForCookies(), original.ReferrerString(),
           original.GetReferrerPolicy(), original.GetSkipServiceWorker());
   EXPECT_TRUE(redirect_request->UpgradeIfInsecure());
+}
+
+TEST(ResourceRequestTest, RequiresLoadIgnoreLimits) {
+  ResourceRequest original;
+  EXPECT_FALSE(original.RequiresLoadIgnoreLimits());
+  EXPECT_FALSE(WrappedResourceRequest(original).GetLoadFlagsForWebUrlRequest() &
+               net::LOAD_IGNORE_LIMITS);
+
+  original.SetRequiresLoadIgnoreLimits(true);
+  EXPECT_TRUE(original.RequiresLoadIgnoreLimits());
+  EXPECT_TRUE(WrappedResourceRequest(original).GetLoadFlagsForWebUrlRequest() &
+              net::LOAD_IGNORE_LIMITS);
+
+  // Should be preserved across redirects.
+  std::unique_ptr<ResourceRequest> redirect = original.CreateRedirectRequest(
+      KURL("https://example.test/redirect"), original.HttpMethod(),
+      original.SiteForCookies(), original.ReferrerString(),
+      original.GetReferrerPolicy(), original.GetSkipServiceWorker());
+  EXPECT_TRUE(redirect->RequiresLoadIgnoreLimits());
+  EXPECT_TRUE(WrappedResourceRequest(*redirect).GetLoadFlagsForWebUrlRequest() &
+              net::LOAD_IGNORE_LIMITS);
 }
 
 }  // namespace blink

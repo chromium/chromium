@@ -138,7 +138,6 @@ void ResourceRequestSender::SendSync(
   CheckSchemeForReferrerPolicy(*request);
 
   DCHECK(loader_options & network::mojom::kURLLoadOptionSynchronous);
-  DCHECK(request->load_flags & net::LOAD_IGNORE_LIMITS);
 
   std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory =
       url_loader_factory->Clone();

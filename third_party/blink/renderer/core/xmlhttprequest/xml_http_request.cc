@@ -1060,6 +1060,12 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);
+  // Sync requests from workers are not allowed to bypass limits as this enables
+  // probing of the socket pool capacity. See https://crbug.com/563817431.
+  request.SetRequiresLoadIgnoreLimits(
+      !async_ && (!base::FeatureList::IsEnabled(
+                      features::kRequiresLoadIgnoreLimitsForDomWindowsOnly) ||
+                  GetExecutionContext()->IsWindow()));
 
   probe::WillLoadXHR(&execution_context, method_, url_, async_,
                      request_headers_, with_credentials_);

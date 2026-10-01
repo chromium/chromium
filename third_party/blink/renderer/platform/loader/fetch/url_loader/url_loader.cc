@@ -273,7 +273,6 @@ void URLLoader::Context::Start(
     CHECK(!code_cache_host);
 
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
-    request->load_flags |= net::LOAD_IGNORE_LIMITS;
 
     mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry;
     if (download_to_blob) {

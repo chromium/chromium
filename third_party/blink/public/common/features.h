@@ -1498,6 +1498,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoveCommitRedirectUrlsArray);
 
+// When enabled, this ensures only XHR sync requests from contexts attached to a
+// DOMWindow (as opposed to a worker) can bypass TCP Socket Pool limits.
+// When disabled, any XHR sync request can bypass TCP Socket Pool limits.
+// See crbug.com/563817431.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRequiresLoadIgnoreLimitsForDomWindowsOnly);
+
 // Allows same-document available-image reuse for no-store images.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReuseNoStoreImageOnSameSrcReassignment);

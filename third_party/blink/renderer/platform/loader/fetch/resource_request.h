@@ -640,6 +640,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
     allows_device_bound_sessions_ = allows_device_bound_sessions;
   }
 
+  bool RequiresLoadIgnoreLimits() const { return requires_load_ignore_limits_; }
+
+  void SetRequiresLoadIgnoreLimits(bool sync_load_requires_load_ignore_limits) {
+    requires_load_ignore_limits_ = sync_load_requires_load_ignore_limits;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -782,6 +788,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // includes registering a new session, accepting challenges, or deferring the
   // request until a session is refreshed.
   bool allows_device_bound_sessions_ = true;
+
+  // Indicates if this request requires the LOAD_IGNORE_LIMITS flag to be
+  // applied. Should only be used in DOMWindows for synchronous requests.
+  // See https://crbug.com/563817431.
+  bool requires_load_ignore_limits_ = false;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

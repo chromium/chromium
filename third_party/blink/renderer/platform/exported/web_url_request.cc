@@ -470,6 +470,10 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
     }
   }
 
+  if (resource_request_->RequiresLoadIgnoreLimits()) {
+    load_flags |= net::LOAD_IGNORE_LIMITS;
+  }
+
   return load_flags;
 }
 
