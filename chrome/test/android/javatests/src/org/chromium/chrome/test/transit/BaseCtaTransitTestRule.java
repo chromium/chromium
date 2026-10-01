@@ -7,11 +7,14 @@ package org.chromium.chrome.test.transit;
 import android.app.Activity;
 import android.os.Build;
 
+import androidx.test.runner.lifecycle.Stage;
+
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -231,7 +234,13 @@ public class BaseCtaTransitTestRule {
                     });
             // closeWindow() already called finishAndRemoveTask().
         } else {
-            activity.finishAndRemoveTask();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (!activity.isFinishing()) {
+                            activity.finishAndRemoveTask();
+                        }
+                    });
+            ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
         }
     }
 }
