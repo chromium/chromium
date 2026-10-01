@@ -307,6 +307,7 @@ source_set("impl") {
 
     deps += [
       "//chrome/browser:shell_integration",
+      "//net",
       "//third_party/libxml:xml_writer",
     ]
   }

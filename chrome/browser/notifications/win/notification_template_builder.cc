@@ -20,6 +20,7 @@
 #include "chrome/common/notifications/notification_image_retainer.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -86,12 +87,33 @@ const char kDefaultTemplate[] = "ToastGeneric";
 // The XML version header that has to be stripped from the output.
 const char kXmlVersionHeader[] = "<?xml version=\"1.0\"?>\n";
 
+// Maximum length of the origin string to be displayed in the notification.
+// 27 characters is the maximum number of characters that can fit in a single
+// line when there is an icon included in the toast notification.
+constexpr size_t kMaxAllowedOriginLength = 27;
+
 // Formats the |origin| for display in the notification template.
 std::string FormatOrigin(const GURL& origin) {
   std::u16string origin_string = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(origin),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  DCHECK(origin_string.size());
+  DCHECK(!origin_string.empty());
+
+  // If the origin exceeds the max allowed length, reduce it to the registrable
+  // domain (eTLD+1) to prevent tail truncation of the domain.
+  if (origin_string.size() > kMaxAllowedOriginLength) {
+    std::string domain_and_registry =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            origin,
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (!domain_and_registry.empty()) {
+      GURL::Replacements replacements;
+      replacements.SetHostStr(domain_and_registry);
+      origin_string = url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(origin.ReplaceComponents(replacements)),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    }
+  }
 
   return base::UTF16ToUTF8(origin_string);
 }

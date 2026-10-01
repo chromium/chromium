@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "url/gurl.h"
 
 using message_center::Notification;
 using message_center::NotifierId;
@@ -65,8 +66,8 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
 
  protected:
   // Builds a notification object and initializes it to default values.
-  message_center::Notification BuildNotification() {
-    GURL origin_url(kNotificationOrigin);
+  message_center::Notification BuildNotification(
+      const GURL& origin_url = GURL(kNotificationOrigin)) {
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         kNotificationTitle, kNotificationMessage, ui::ImageModel() /* icon */,
@@ -88,6 +89,25 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
     std::wstring xml_template =
         BuildNotificationTemplate(&image_retainer, launch_id, notification);
     EXPECT_EQ(xml_template, expected_xml_template);
+  }
+
+  std::wstring GetAttributionFromTemplate(const GURL& origin) {
+    FakeNotificationImageRetainer image_retainer;
+    NotificationLaunchId launch_id(kEncodedId);
+    std::wstring xml = BuildNotificationTemplate(&image_retainer, launch_id,
+                                                 BuildNotification(origin));
+    const std::wstring start_tag = L"<text placement=\"attribution\">";
+    const std::wstring end_tag = L"</text>";
+    size_t start = xml.find(start_tag);
+    if (start == std::wstring::npos) {
+      return L"";
+    }
+    start += start_tag.length();
+    size_t end = xml.find(end_tag, start);
+    if (end == std::wstring::npos) {
+      return L"";
+    }
+    return xml.substr(start, end - start);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -605,4 +625,103 @@ TEST_F(NotificationTemplateBuilderTest, IncomingCallFromNonInstalledOrigin) {
 )";
 
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, kExpectedXml));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionShortStandard) {
+  EXPECT_EQ(L"example.com",
+            GetAttributionFromTemplate(GURL("https://example.com")));
+  EXPECT_EQ(L"sub.example.com",
+            GetAttributionFromTemplate(GURL("https://sub.example.com")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionBoundary) {
+  // Exactly kMaxAllowedOriginLength characters: should retain full subdomain +
+  // domain.
+  // "123456789012345.example.com" has length 15 + 1 + 11 = 27.
+  EXPECT_EQ(
+      L"123456789012345.example.com",
+      GetAttributionFromTemplate(GURL("https://123456789012345.example.com")));
+
+  // Exceeds kMaxAllowedOriginLength: falls back to eTLD+1 ("example.com").
+  // "1234567890123456.example.com" has length 16 + 1 + 11 = 28.
+  EXPECT_EQ(L"example.com", GetAttributionFromTemplate(
+                                GURL("https://1234567890123456.example.com")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionTruncationAttack) {
+  // Long origin designed to push the true domain past OS truncation limits.
+  EXPECT_EQ(
+      L"evil-site.com",
+      GetAttributionFromTemplate(GURL(
+          "https://accounts.google.com.security-alert.new-sign-in-was-blocked."
+          "verify-your-identity-now.review-recent-activity.id-4821-9377."
+          "evil-site.com")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionWithCustomPort) {
+  // Short origin with non-default port retains port.
+  EXPECT_EQ(L"example.com:8443",
+            GetAttributionFromTemplate(GURL("https://example.com:8443")));
+
+  // Long origin exceeding kMaxAllowedOriginLength retains non-default port
+  // when reduced to eTLD+1.
+  EXPECT_EQ(
+      L"evil-site.com:8443",
+      GetAttributionFromTemplate(GURL(
+          "https://accounts.google.com.security-alert.evil-site.com:8443")));
+
+  // Standard/default port is omitted.
+  EXPECT_EQ(
+      L"evil-site.com",
+      GetAttributionFromTemplate(GURL(
+          "https://accounts.google.com.security-alert.evil-site.com:443")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionLocalhostAndIp) {
+  // Localhost has no public registry and retains full origin.
+  EXPECT_EQ(L"localhost:8080",
+            GetAttributionFromTemplate(GURL("http://localhost:8080")));
+
+  // Raw IP addresses retain full origin.
+  EXPECT_EQ(L"192.168.1.1:8080",
+            GetAttributionFromTemplate(GURL("http://192.168.1.1:8080")));
+  EXPECT_EQ(L"[::1]:8080",
+            GetAttributionFromTemplate(GURL("http://[::1]:8080")));
+
+  // Long IPv6 addresses (> kMaxAllowedOriginLength) also retain full origin
+  // without truncation.
+  EXPECT_EQ(L"[2001:db8:85a3::8a2e:370:7334]:8080",
+            GetAttributionFromTemplate(
+                GURL("http://[2001:db8:85a3::8a2e:370:7334]:8080")));
+}
+
+TEST_F(NotificationTemplateBuilderTest,
+       OriginAttributionLongRegistrableDomain) {
+  // When the registrable domain (eTLD+1) itself exceeds
+  // kMaxAllowedOriginLength, the full eTLD+1 is preserved.
+  EXPECT_EQ(
+      L"very-long-domain-name-that-is-longer-than-twenty-seven-chars.com",
+      GetAttributionFromTemplate(GURL(
+          "https://sub."
+          "very-long-domain-name-that-is-longer-than-twenty-seven-chars.com")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionPrivateRegistry) {
+  // Private registries are recognized as public suffixes.
+  EXPECT_EQ(L"myuser.github.io",
+            GetAttributionFromTemplate(
+                GURL("https://verylongsubdomain.myuser.github.io")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionMultipartTld) {
+  // Multi-part public suffixes (e.g. .co.uk) correctly resolve to eTLD+1.
+  EXPECT_EQ(L"example.co.uk", GetAttributionFromTemplate(GURL(
+                                  "https://verylongsubdomain.example.co.uk")));
+}
+
+TEST_F(NotificationTemplateBuilderTest, OriginAttributionIdn) {
+  // Long IDN origin falls back to eTLD+1 displayed in safe Unicode.
+  EXPECT_EQ(L"m\u00FCnchen.de",
+            GetAttributionFromTemplate(GURL(
+                "https://verylongsubdomain.security-alert.xn--mnchen-3ya.de")));
 }
