@@ -38,23 +38,46 @@ class PrefetchService;
 // See also `PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync()`
 // when you add a new one.
 enum class PrefetchSchedulerPriority {
-  // Default.
+  // Default priority for background speculative prefetches.
   kBase = 0,
+
   // For tests. Do not use outside tests.
   kHighTest = 1,
+
   // Priority for prefetch ahead of prerender.
+  //
+  // Scheduled ahead of `kBase` within the base active set size limit when
+  // prerender fallback policy is `kPrioritize`.
   kHighAheadOfPrerender = 2,
-  // It's a threshold for burst. Do not use it in
-  // `PrefetchQueue::CalculatePriority()`. For burst, see a comment of
-  // `PrefetchScheduler`.
+
+  // Threshold for burst.
+  //
+  // Do not use it in `PrefetchQueue::CalculatePriority()`. For burst, see a
+  // comment of `PrefetchScheduler`.
   kBurstThreshold = 10,
+
   // For tests. Do not use outside tests.
   kBurstTest = 11,
-  // Priority derived from `PrefetchPriority`.
+
+  // Priority derived from explicit caller priority.
+  //
+  // Derived from `PrefetchPriority::kHighest`, mainly used by embedder
+  // high-urgency prefetches. This is a general hint of urgency from the caller.
   kBurstForPrefetchPriority = 12,
+
   // Burst priority for prefetch ahead of prerender.
+  //
+  // Prerender already allocated significant resources and runs sequentially, so
+  // unblocking it takes precedence over generic high-priority prefetches
+  // (`kBurstForPrefetchPriority`).
   kBurstAheadOfPrerender = 13,
+
   // Burst priority for prefetch ahead of actual navigation.
+  //
+  // This directly serves an imminent user-visible navigation (e.g. mouse/touch
+  // down on a suggestion), so it takes the highest precedence over all
+  // speculative prefetches (including prerender and explicit
+  // `PrefetchPriority::kHighest`).
   kBurstAheadOfActualNavigation = 14,
 };
 
