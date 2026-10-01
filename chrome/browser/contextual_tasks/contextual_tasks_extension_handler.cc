@@ -123,15 +123,6 @@ void ContextualTasksExtensionHandler::OnLensOverlayStateChanged(
   if (contextual_tasks_page_) {
     contextual_tasks_page_->OnLensOverlayStateChanged(is_showing);
   }
-  if (!is_showing) {
-    auto model = GetOrCreateInputStateModel();
-    if (model) {
-      // RemoveLensCrop() notifies observers via OnInputStateChanged, which
-      // emits the reverse-sync unmount message (InjectChromeInput with
-      // is_active: false) to AIM to remove the chip.
-      model->RemoveLensCrop();
-    }
-  }
 }
 
 void ContextualTasksExtensionHandler::OnPermissionPromptChanged(

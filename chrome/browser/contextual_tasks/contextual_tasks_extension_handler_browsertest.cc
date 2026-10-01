@@ -1641,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    OnLensOverlayStateChanged_ReverseSyncClearsModelAndEmitsUnmount) {
+    OnLensOverlayStateChanged_PreservesLensCropWhenOverlayClosed) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
@@ -1661,24 +1661,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(model);
   EXPECT_TRUE(model->GetLensCrop().has_value());
 
-  base::RunLoop run_loop2;
-  EXPECT_CALL(mock_page_, PostSearchMessage(_))
-      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
-        auto message = wrapper.As<lens::ClientToSearchMessage>();
-        ASSERT_TRUE(message.has_value());
-        EXPECT_TRUE(message->has_inject_chrome_input());
-        const auto& inject_input = message->inject_chrome_input();
-        EXPECT_EQ(inject_input.input_type(),
-                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
-        EXPECT_FALSE(inject_input.is_active());
-        run_loop2.Quit();
-      });
+  EXPECT_CALL(mock_page_, PostSearchMessage(_)).Times(0);
+  EXPECT_CALL(mock_page_, OnLensOverlayStateChanged(false)).Times(1);
 
   handler_->OnLensOverlayStateChanged(false);
-  run_loop2.Run();
+  mock_page_.FlushForTesting();
 
-  EXPECT_FALSE(model->GetLensCrop().has_value());
-  EXPECT_FALSE(model->lens_crop().has_value());
+  EXPECT_TRUE(model->GetLensCrop().has_value());
+  EXPECT_TRUE(model->lens_crop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
