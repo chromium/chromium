@@ -307,7 +307,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mTrackerSupplier = ObservableSuppliers.createMonotonic();
         mNtpLoadingSupplier = ObservableSuppliers.createNonNull(false);
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
-        mToolbarLayout.setOnLongClickListener(onLongClickListener);
+        if (mToolbarLayout instanceof ToolbarPhone) {
+            mToolbarLayout.setOnLongClickListener(onLongClickListener);
+        }
         mLocationBarView = mToolbarLayout.findViewById(R.id.location_bar);
         mIndexOfLocationBarInToolbar = mToolbarLayout.indexOfChild(mLocationBarView);
         mBrowserControls = browserControlsVisibilityManager;

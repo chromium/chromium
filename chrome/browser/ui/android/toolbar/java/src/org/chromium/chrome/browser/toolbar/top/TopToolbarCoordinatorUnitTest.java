@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -505,5 +506,67 @@ public class TopToolbarCoordinatorUnitTest {
         assertEquals(
                 TopControlsStacker.TopControlVisibility.HIDDEN,
                 mCoordinator.getTopControlVisibility());
+    }
+
+    @Test
+    public void testOnLongClickListener() {
+        verify(mToolbarLayout, never()).setOnLongClickListener(any());
+
+        ToolbarPhone toolbarPhone = mock(ToolbarPhone.class);
+        Context context = ApplicationProvider.getApplicationContext();
+        when(toolbarPhone.getContext()).thenReturn(context);
+        when(toolbarPhone.getResources()).thenReturn(mResources);
+        when(toolbarPhone.findViewById(R.id.location_bar)).thenReturn(mLocationBarView);
+        when(toolbarPhone.indexOfChild(mLocationBarView)).thenReturn(0);
+        when(toolbarPhone.getToolbarDataProvider()).thenReturn(mToolbarDataProvider);
+
+        new TopToolbarCoordinator(
+                mControlContainer,
+                toolbarPhone,
+                mToolbarDataProvider,
+                mTabController,
+                mUserEducationHelper,
+                new ArrayList<>(),
+                mLayoutStateProviderSupplier,
+                mNormalThemeColorProvider,
+                mIncognitoStateProvider,
+                mBrowsingModeMenuButtonCoordinator,
+                mAppMenuButtonHelperSupplier,
+                mTabSwitcherButtonCoordinator,
+                mTabCountSupplier,
+                mHomepageEnabledSupplier,
+                mResourceManagerSupplier,
+                mHistoryDelegate,
+                /* initializeWithIncognitoColors= */ false,
+                mConstraintsSupplier,
+                mCompositorInMotionSupplier,
+                mBrowserStateBrowserControlsVisibilityDelegate,
+                mFullscreenManager,
+                mTabObscuringHandler,
+                mDesktopWindowStateManager,
+                mTabStripTransitionDelegateSupplier,
+                mTabStripTransitionHandler,
+                mOnLongClickListener,
+                mProgressBar,
+                mTabSupplier,
+                mToolbarNavControlsEnabledSupplier,
+                mBackButtonCoordinator,
+                mForwardButtonCoordinator,
+                mHomeButtonCoordinator,
+                mTopControlsStacker,
+                mBrowserControlsVisibilityManager,
+                /* incognitoWindowCountSupplier= */ () -> 0,
+                mProfileSupplier,
+                mOmniboxStubSupplier,
+                mSigninAndHistorySyncActivityLauncher,
+                mWindowAndroid,
+                mActivityResultTracker,
+                mDeviceLockActivityLauncher,
+                mBottomSheetController,
+                mModalDialogManager,
+                mSnackbarManager,
+                mOnSigninTapped,
+                /* suppressTabStripAtStart= */ false);
+        verify(toolbarPhone).setOnLongClickListener(mOnLongClickListener);
     }
 }
