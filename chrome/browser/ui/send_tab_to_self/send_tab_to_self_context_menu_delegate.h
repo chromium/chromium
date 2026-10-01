@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"

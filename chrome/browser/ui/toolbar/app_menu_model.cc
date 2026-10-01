@@ -803,8 +803,7 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
  private:
   // Builds Send Tab to Self target device submenu when enhanced desktop UI is
   // enabled.
-  void BuildSendTabToSelfSubmenu(BrowserWindowInterface* browser,
-                                 content::WebContents* web_contents);
+  void BuildSendTabToSelfSubmenu(BrowserWindowInterface* browser);
 
   // Fallback helper to add simple Send Tab to Self menu item.
   void BuildSendTabToSelfSimpleItem();
@@ -815,11 +814,11 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
 };
 
 void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
-    BrowserWindowInterface* browser,
-    content::WebContents* web_contents) {
+    BrowserWindowInterface* browser) {
   send_tab_to_self_submenu_delegate_ =
       send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-          web_contents, send_tab_to_self::ShareEntryPoint::kShareMenu);
+          browser->tab_strip_model()->GetActiveWebContents(),
+          send_tab_to_self::ShareEntryPoint::kShareMenu);
   if (!send_tab_to_self_submenu_delegate_) {
     BuildSendTabToSelfSimpleItem();
     return;
@@ -896,8 +895,7 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
 
       if (base::FeatureList::IsEnabled(
               send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) {
-        BuildSendTabToSelfSubmenu(
-            browser, browser->tab_strip_model()->GetActiveWebContents());
+        BuildSendTabToSelfSubmenu(browser);
       } else {
         BuildSendTabToSelfSimpleItem();
       }
