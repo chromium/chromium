@@ -9,11 +9,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/service/test/test_util.h"
+#include "components/on_device_translation/test/fake_installer.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -300,6 +303,44 @@ void TestTranslationAvailable(BrowserWindowInterface* browser,
                                       sourceLang, targetLang))
                 .ExtractString(),
             result);
+}
+
+void WriteMockLanguagePackFiles(
+    const FakeOnDeviceTranslationInstaller& fake_installer,
+    LanguagePackKey language_pack_key) {
+  base::ScopedAllowBlockingForTesting allow_io;
+  const base::FilePath dict_dir_path =
+      fake_installer.GetLanguagePackPath(language_pack_key);
+  const base::FilePath dict_path = dict_dir_path.AppendASCII("dict.dat");
+  CHECK(base::CreateDirectory(dict_dir_path));
+  CHECK(base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
+            .WriteAndCheck(0, base::as_byte_span(CreateFakeDictionaryData(
+                                  GetSourceLanguageCode(language_pack_key),
+                                  GetTargetLanguageCode(language_pack_key)))));
+}
+
+void SetupFakeInstaller(Profile* profile,
+                        FakeOnDeviceTranslationInstaller* fake_installer,
+                        LanguagePackKey language_pack_key) {
+  SetupFakeInstaller(profile, fake_installer, language_pack_key,
+                     GetMockLibraryPath());
+}
+
+void SetupFakeInstaller(Profile* profile,
+                        FakeOnDeviceTranslationInstaller* fake_installer,
+                        LanguagePackKey language_pack_key,
+                        const base::FilePath& library_path) {
+  CHECK(fake_installer);
+  fake_installer->InitNow(base::DoNothing());
+  fake_installer->InstallLanguagePackNow(language_pack_key);
+
+  WriteMockLanguagePackFiles(*fake_installer, language_pack_key);
+
+  base::ScopedAllowBlockingForTesting allow_io;
+  CHECK(base::CopyFile(library_path, fake_installer->GetLibraryPath()));
+
+  auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(profile);
+  manager->SetInstallerForTesting(fake_installer);
 }
 
 bool MockTranslationManagerImpl::CrashesAllowed() {
