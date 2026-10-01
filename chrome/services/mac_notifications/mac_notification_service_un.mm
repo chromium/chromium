@@ -14,9 +14,13 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -78,6 +82,26 @@ std::optional<std::u16string> GetReplyFromResponse(
     return std::nullopt;
   auto* textResponse = static_cast<UNTextInputNotificationResponse*>(response);
   return base::SysNSStringToUTF16(textResponse.userText);
+}
+
+// Writes `icon` as a PNG to a temporary file and returns it, or an empty
+// `ScopedTempFile` on failure.
+base::ScopedTempFile WriteNotificationIconToTempFile(const gfx::Image& icon) {
+  scoped_refptr<base::RefCountedMemory> data = icon.As1xPNGBytes();
+  if (!data || data->size() == 0) {
+    return base::ScopedTempFile();
+  }
+
+  base::ScopedTempFile temp_file;
+  if (!temp_file.Create()) {
+    return base::ScopedTempFile();
+  }
+
+  if (!base::WriteFile(temp_file.path(), *data)) {
+    return base::ScopedTempFile();
+  }
+
+  return temp_file;
 }
 
 }  // namespace
@@ -204,25 +228,35 @@ void MacNotificationServiceUN::DoDisplayNotification(
       notification_id, buttons, notification->show_settings_button);
   content.categoryIdentifier = category_id;
 
+  base::ScopedTempFile icon_file;
   if (!notification->icon.isNull()) {
-    gfx::Image icon(notification->icon);
-    base::FilePath path = image_retainer_.RegisterTemporaryImage(icon);
-    NSURL* url = base::apple::FilePathToNSURL(path);
-    // When the files are saved using NotificationImageRetainer, they're saved
-    // without the .png extension. So |options| here is used to tell the system
-    // that the file is of type PNG, as NotificationImageRetainer converts files
-    // to PNG before writing them.
-    NSDictionary* options =
-        @{UNNotificationAttachmentOptionsTypeHintKey : UTTypePNG.identifier};
+    icon_file = WriteNotificationIconToTempFile(gfx::Image(notification->icon));
+    if (icon_file) {
+      // Canonicalize the path (for example resolving `/var` -> `/private/var`)
+      // as `UNUserNotificationCenter` issues a sandbox extension for the
+      // attachment URL via `sandbox_extension_issue_file`, which requires a
+      // canonical realpath.
+      NSURL* url = base::apple::FilePathToNSURL(
+          base::MakeAbsoluteFilePath(icon_file.path()));
+      // Since the temporary file is saved without a .png extension, |options|
+      // is used to tell the system that the file is of type PNG.
+      NSDictionary* options =
+          @{UNNotificationAttachmentOptionsTypeHintKey : UTTypePNG.identifier};
 
-    UNNotificationAttachment* attachment =
-        [UNNotificationAttachment attachmentWithIdentifier:notification_id_ns
-                                                       URL:url
-                                                   options:options
-                                                     error:nil];
+      UNNotificationAttachment* attachment =
+          url ? [UNNotificationAttachment
+                    attachmentWithIdentifier:notification_id_ns
+                                         URL:url
+                                     options:options
+                                       error:nil]
+              : nil;
 
-    if (attachment != nil)
-      [content setAttachments:@[ attachment ]];
+      if (attachment != nil) {
+        [content setAttachments:@[ attachment ]];
+      } else {
+        icon_file.Reset();
+      }
+    }
   }
 
   // This uses a private API to prevent notifications from dismissing after
@@ -240,9 +274,12 @@ void MacNotificationServiceUN::DoDisplayNotification(
     [content setValue:@YES forKey:@"shouldBackgroundDefaultAction"];
   }
 
-  auto completion_handler = ^(NSError* _Nullable error) {
-    mac_notifications::LogUNNotificationAddRequestResult(error);
-  };
+  auto completion_handler =
+      base::CallbackToBlock(base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](base::ScopedTempFile icon_file, NSError* _Nullable error) {
+            mac_notifications::LogUNNotificationAddRequestResult(error);
+          },
+          std::move(icon_file))));
 
   // If the renotify is not set try to replace the notification silently.
   bool should_replace = !notification->renotify;

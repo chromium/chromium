@@ -11,6 +11,9 @@
 #include <vector>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -33,6 +36,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -407,6 +411,59 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
 
   // Expect a new notification category for this notification.
   EXPECT_EQ(1u, category_count_);
+}
+
+TEST_F(MacNotificationServiceUNTest, DisplayNotificationWithIcon) {
+  base::RunLoop run_loop;
+  __block base::FilePath icon_path;
+  __block void (^saved_completion_handler)(NSError* _Nullable) = nil;
+
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                             UNNotificationRequest* request) {
+            NSArray<UNNotificationAttachment*>* attachments =
+                request.content.attachments;
+            EXPECT_EQ(1u, attachments.count);
+            if (attachments.count == 1u) {
+              icon_path = base::apple::NSURLToFilePath(attachments[0].URL);
+            }
+            return YES;
+          }]
+           withCompletionHandler:[OCMArg checkWithBlock:^BOOL(void (
+                                     ^completion_handler)(NSError* _Nullable)) {
+             saved_completion_handler = [completion_handler copy];
+             return YES;
+           }]])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
+
+  auto notification = CreateMojoNotification("notificationId", "profileId",
+                                             /*incognito=*/true);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 64);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  service_remote_->DisplayNotification(std::move(notification));
+
+  run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  ASSERT_FALSE(icon_path.empty());
+  EXPECT_TRUE(base::PathExists(icon_path));
+  // The path must be canonicalized (no symlinks such as /var -> /private/var).
+  EXPECT_EQ(icon_path, base::MakeAbsoluteFilePath(icon_path));
+
+  // Even after 30 seconds, the file should still exist while the request is in
+  // flight.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_TRUE(base::PathExists(icon_path));
+
+  // Once the completion handler is invoked, the temporary file is deleted.
+  ASSERT_TRUE(saved_completion_handler);
+  saved_completion_handler(nil);
+  saved_completion_handler = nil;
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(icon_path));
 }
 
 TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {

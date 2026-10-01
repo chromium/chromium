@@ -15,7 +15,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/common/notifications/notification_image_retainer.h"
 #import "chrome/services/mac_notifications/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -116,8 +115,6 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   // Category manager for action buttons.
   NotificationCategoryManager category_manager_;
-  // Image retainer to pass image attachments to notifications.
-  NotificationImageRetainer image_retainer_;
 
   // Keeps track of delivered notifications to detect closed notifications.
   base::flat_map<std::string, mojom::NotificationMetadataPtr>
