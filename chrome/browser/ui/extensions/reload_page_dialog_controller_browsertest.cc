@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -19,6 +20,10 @@ class ReloadPageDialogControllerBrowserTest
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    if (features::IsWebUIExtensionsContainerEnabled()) {
+      set_should_verify_dialog_bounds(false);
+    }
+
     auto extension = InstallExtension("Extension");
 
     std::unique_ptr<extensions::ReloadPageDialogController> reload_page_dialog =

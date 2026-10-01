@@ -20,7 +20,9 @@ ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
       extensions::ExtensionBuilder(name).Build());
   extensions::ExtensionRegistrar::Get(browser()->GetProfile())
       ->AddExtension(extension);
-  views::test::WaitForAnimatingLayoutManager(extensions_container());
+  if (extensions_container()) {
+    views::test::WaitForAnimatingLayoutManager(extensions_container());
+  }
   return extension;
 }
 
