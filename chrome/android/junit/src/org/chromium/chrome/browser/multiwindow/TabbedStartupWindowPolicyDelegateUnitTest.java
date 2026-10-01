@@ -581,6 +581,22 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
+    public void testPreferenceChange_defaultPrefValue_storesPrefUnset() {
+        // Setup mock native preferences with default (unconfigured) RESTORE_ON_STARTUP value.
+        when(mPrefService.isDefaultValuePreference(Pref.RESTORE_ON_STARTUP)).thenReturn(true);
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+
+        // Act.
+        mDelegate.initializeWithNative(mProfile);
+
+        // Verify that persistent store returns UNSET when preference is at its default value.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+    }
+
+    @Test
     public void testSyncStateChanged_historySyncToggledOff_clearsCache() {
         // Setup initially active History sync with cached preferences.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
