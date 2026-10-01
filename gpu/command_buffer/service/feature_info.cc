@@ -1705,6 +1705,12 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     }
   }
 
+  if (gfx::HasExtension(extensions, "GL_ANGLE_trim_memory")) {
+    if (base::FeatureList::IsEnabled(features::kANGLETrimMemory)) {
+      feature_flags_.angle_trim_memory = true;
+    }
+  }
+
   if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_OES_required_internalformat")) {
     AddExtensionString("GL_OES_required_internalformat");

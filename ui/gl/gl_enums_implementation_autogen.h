@@ -372,6 +372,18 @@ static constexpr EnumToString kEnumToStringTable[] = {
         "GL_CCW",
     },
     {
+        0x0960,
+        "GL_MEMORY_TRIM_LOW_ANGLE",
+    },
+    {
+        0x0961,
+        "GL_MEMORY_TRIM_MEDIUM_ANGLE",
+    },
+    {
+        0x0962,
+        "GL_MEMORY_TRIM_HIGH_ANGLE",
+    },
+    {
         0x0A,
         "GL_QUADRATIC_CURVE_TO_NV",
     },

@@ -170,5 +170,20 @@ TEST_F(GLES2WebGLDecoderPassthroughTest, EnableDisableTextureRectangle) {
   }
 }
 
+TEST_F(GLES2WebGLDecoderPassthroughTest, ContextVisibilityHintCHROMIUM) {
+  {
+    cmds::ContextVisibilityHintCHROMIUM cmd;
+    cmd.Init(GL_FALSE);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+  {
+    cmds::ContextVisibilityHintCHROMIUM cmd;
+    cmd.Init(GL_TRUE);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+}
+
 }  // namespace gles2
 }  // namespace gpu

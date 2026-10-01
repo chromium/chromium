@@ -1389,6 +1389,7 @@ Mock_glTransformFeedbackVaryings(GLuint program,
                                  GLsizei count,
                                  const char* const* varyings,
                                  GLenum bufferMode);
+static void GL_BINDING_CALL Mock_glTrimMemoryANGLE(GLenum trimLevel);
 static void GL_BINDING_CALL Mock_glUniform1f(GLint location, GLfloat x);
 static void GL_BINDING_CALL Mock_glUniform1fv(GLint location,
                                               GLsizei count,

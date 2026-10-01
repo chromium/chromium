@@ -1568,6 +1568,10 @@ GL_FUNCTIONS = [
   'arguments': 'GLuint program, GLsizei count, const char* const* varyings, '
                'GLenum bufferMode', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glTrimMemoryANGLE',
+                'extensions': ['GL_ANGLE_trim_memory']}],
+  'arguments': 'GLenum trimLevel', },
+{ 'return_type': 'void',
   'names': ['glUniform1f'],
   'arguments': 'GLint location, GLfloat x', },
 { 'return_type': 'void',

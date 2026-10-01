@@ -1385,6 +1385,11 @@ TEST_P(FeatureInfoTest, InitializeMESAFramebufferFlipYExtensionTrue) {
   EXPECT_TRUE(info_->feature_flags().mesa_framebuffer_flip_y);
 }
 
+TEST_P(FeatureInfoTest, InitializeANGLETrimMemory) {
+  SetupInitExpectations("GL_ANGLE_trim_memory");
+  EXPECT_TRUE(info_->feature_flags().angle_trim_memory);
+}
+
 class WebGLDrawBuffersTest : public GpuServiceTest {
  public:
   WebGLDrawBuffersTest() = default;

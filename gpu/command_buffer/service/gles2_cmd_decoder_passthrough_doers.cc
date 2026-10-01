@@ -828,8 +828,13 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexSubImage3D(
 
 error::Error GLES2DecoderPassthroughImpl::DoContextVisibilityHintCHROMIUM(
     GLboolean visibility) {
-  if (feature_info_->IsWebGLContext())
+  if (feature_info_->IsWebGLContext()) {
     context_->SetVisibility(visibility == GL_TRUE);
+    if (visibility == GL_FALSE &&
+        feature_info_->feature_flags().angle_trim_memory) {
+      api()->glTrimMemoryANGLEFn(GL_MEMORY_TRIM_HIGH_ANGLE);
+    }
+  }
   return error::kNoError;
 }
 

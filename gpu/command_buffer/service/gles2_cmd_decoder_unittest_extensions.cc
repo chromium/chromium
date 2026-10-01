@@ -76,6 +76,39 @@ TEST_P(GLES3DecoderTestWithEXTWindowRectangles,
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+class GLES2DecoderTestWithANGLETrimMemory : public GLES2DecoderTest {
+ public:
+  GLES2DecoderTestWithANGLETrimMemory() = default;
+  void SetUp() override {
+    InitState init;
+    init.context_type = CONTEXT_TYPE_WEBGL1;
+    init.gl_version = "OpenGL ES 2.0";
+    init.has_alpha = true;
+    init.has_depth = true;
+    init.request_alpha = true;
+    init.request_depth = true;
+    init.extensions = "GL_ANGLE_trim_memory";
+    InitDecoder(init);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLES2DecoderTestWithANGLETrimMemory,
+                         ::testing::Bool());
+
+TEST_P(GLES2DecoderTestWithANGLETrimMemory, ContextVisibilityHintTrimsMemory) {
+  cmds::ContextVisibilityHintCHROMIUM cmd;
+
+  EXPECT_CALL(*gl_, TrimMemoryANGLE(_)).Times(0);
+  cmd.Init(GL_TRUE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  EXPECT_CALL(*gl_, TrimMemoryANGLE(GL_MEMORY_TRIM_HIGH_ANGLE)).Times(1);
+  cmd.Init(GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest_extensions_autogen.h"
 
 }  // namespace gles2

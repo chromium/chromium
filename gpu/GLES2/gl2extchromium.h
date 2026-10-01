@@ -517,6 +517,18 @@ typedef void(GL_APIENTRYP PFNGLPOLYGONMODEANGLEPROC)(GLenum face, GLenum mode);
 #endif
 #endif /* GL_ANGLE_stencil_texturing */
 
+/* GL_ANGLE_trim_memory */
+#ifndef GL_ANGLE_trim_memory
+#define GL_ANGLE_trim_memory 1
+#define GL_MEMORY_TRIM_LOW_ANGLE 0x0960
+#define GL_MEMORY_TRIM_MEDIUM_ANGLE 0x0961
+#define GL_MEMORY_TRIM_HIGH_ANGLE 0x0962
+typedef void(GL_APIENTRYP PFNGLTRIMMEMORYANGLEPROC)(GLenum trimLevel);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTrimMemoryANGLE(GLenum trimLevel);
+#endif
+#endif /* GL_ANGLE_trim_memory */
+
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
 #define GL_CHROMIUM_async_pixel_transfers 1

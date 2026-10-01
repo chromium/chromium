@@ -375,6 +375,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
       gfx::HasExtension(extensions, "GL_ANGLE_texture_external_update");
   ext.b_GL_ANGLE_translated_shader_source =
       gfx::HasExtension(extensions, "GL_ANGLE_translated_shader_source");
+  ext.b_GL_ANGLE_trim_memory =
+      gfx::HasExtension(extensions, "GL_ANGLE_trim_memory");
   ext.b_GL_ANGLE_vulkan_image =
       gfx::HasExtension(extensions, "GL_ANGLE_vulkan_image");
   ext.b_GL_ANGLE_webgl_compatibility =
@@ -1872,6 +1874,11 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glTransformFeedbackVaryingsFn =
         reinterpret_cast<glTransformFeedbackVaryingsProc>(
             get_proc_address("glTransformFeedbackVaryings"));
+  }
+
+  if (ext.b_GL_ANGLE_trim_memory) {
+    fn.glTrimMemoryANGLEFn = reinterpret_cast<glTrimMemoryANGLEProc>(
+        get_proc_address("glTrimMemoryANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -4307,6 +4314,10 @@ void GLApiBase::glTransformFeedbackVaryingsFn(GLuint program,
                                               GLenum bufferMode) {
   driver_->fn.glTransformFeedbackVaryingsFn(program, count, varyings,
                                             bufferMode);
+}
+
+void GLApiBase::glTrimMemoryANGLEFn(GLenum trimLevel) {
+  driver_->fn.glTrimMemoryANGLEFn(trimLevel);
 }
 
 void GLApiBase::glUniform1fFn(GLint location, GLfloat x) {
@@ -7347,6 +7358,11 @@ void TraceGLApi::glTransformFeedbackVaryingsFn(GLuint program,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceGLAPI::glTransformFeedbackVaryings");
   gl_api_->glTransformFeedbackVaryingsFn(program, count, varyings, bufferMode);
+}
+
+void TraceGLApi::glTrimMemoryANGLEFn(GLenum trimLevel) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTrimMemoryANGLE");
+  gl_api_->glTrimMemoryANGLEFn(trimLevel);
 }
 
 void TraceGLApi::glUniform1fFn(GLint location, GLfloat x) {
@@ -11163,6 +11179,12 @@ void LogGLApi::glTransformFeedbackVaryingsFn(GLuint program,
   gl_api_->glTransformFeedbackVaryingsFn(program, count, varyings, bufferMode);
 }
 
+void LogGLApi::glTrimMemoryANGLEFn(GLenum trimLevel) {
+  GL_SERVICE_LOG("glTrimMemoryANGLE" << "(" << GLEnums::GetStringEnum(trimLevel)
+                                     << ")");
+  gl_api_->glTrimMemoryANGLEFn(trimLevel);
+}
+
 void LogGLApi::glUniform1fFn(GLint location, GLfloat x) {
   GL_SERVICE_LOG("glUniform1f" << "(" << location << ", " << x << ")");
   gl_api_->glUniform1fFn(location, x);
@@ -13867,6 +13889,10 @@ void NoContextGLApi::glTransformFeedbackVaryingsFn(GLuint program,
                                                    const char* const* varyings,
                                                    GLenum bufferMode) {
   NoContextHelper("glTransformFeedbackVaryings");
+}
+
+void NoContextGLApi::glTrimMemoryANGLEFn(GLenum trimLevel) {
+  NoContextHelper("glTrimMemoryANGLE");
 }
 
 void NoContextGLApi::glUniform1fFn(GLint location, GLfloat x) {

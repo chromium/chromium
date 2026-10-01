@@ -1140,6 +1140,7 @@ void glTransformFeedbackVaryingsFn(GLuint program,
                                    GLsizei count,
                                    const char* const* varyings,
                                    GLenum bufferMode) override {}
+void glTrimMemoryANGLEFn(GLenum trimLevel) override {}
 void glUniform1fFn(GLint location, GLfloat x) override {}
 void glUniform1fvFn(GLint location, GLsizei count, const GLfloat* v) override {}
 void glUniform1iFn(GLint location, GLint x) override {}

@@ -872,6 +872,8 @@ bool IsSyncPointGraphValidationEnabled() {
 
 BASE_FEATURE(kANGLEPerContextBlobCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kANGLETrimMemory, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Support thread safety for graphite::context by sharing the same
 // graphite::context as well as its wrapper class GraphiteSharedContext between
 // GpuMain and CompositorGpuThread. Note: When this feature is disabled,

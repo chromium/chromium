@@ -245,6 +245,7 @@ constexpr const char* kRequiredFunctionalityExtensions[] = {
 #endif
     "GL_ANGLE_texture_storage_external",
     "GL_ANGLE_texture_usage",
+    "GL_ANGLE_trim_memory",
     "GL_CHROMIUM_bind_uniform_location",
     "GL_CHROMIUM_sync_query",
     "GL_EXT_debug_marker",

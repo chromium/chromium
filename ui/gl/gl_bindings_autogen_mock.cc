@@ -3196,6 +3196,11 @@ MockGLInterface::Mock_glTransformFeedbackVaryings(GLuint program,
   interface_->TransformFeedbackVaryings(program, count, varyings, bufferMode);
 }
 
+void GL_BINDING_CALL MockGLInterface::Mock_glTrimMemoryANGLE(GLenum trimLevel) {
+  MakeGlMockFunctionUnique("glTrimMemoryANGLE");
+  interface_->TrimMemoryANGLE(trimLevel);
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glUniform1f(GLint location,
                                                        GLfloat x) {
   MakeGlMockFunctionUnique("glUniform1f");
@@ -4547,6 +4552,9 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (name_view == "glTransformFeedbackVaryings")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glTransformFeedbackVaryings);
+  if (name_view == "glTrimMemoryANGLE") {
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glTrimMemoryANGLE);
+  }
   if (name_view == "glUniform1f")
     return reinterpret_cast<GLFunctionPointerType>(Mock_glUniform1f);
   if (name_view == "glUniform1fv")
