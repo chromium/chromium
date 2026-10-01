@@ -1165,6 +1165,15 @@ are visible via Certificate Revocation Lists (CRLs) published to the
 getting revocation information to Chrome clients, but most revocations should
 reach most users within a few days of appearing on a CA's CRL.
 
+In addition to certificates revoked by their issuing CA, Chrome also blocks
+the use of some certificates identified by Chrome Security as
+being misissued or compromised, and at risk of being used to attack Chrome
+users. This may include certificates proactively identified by Google as likely
+compromised based on issuance timeline, CA, domain name, or other certificate
+properties. While Chrome Security works hard to minimize collateral damage, if
+you believe that your certificate has been erroneously blocked in Chrome, you
+may contact Chrome Security at security@chromium.org and we will investigate.
+
 Chrome clients do not, by default, perform "online" certificate revocation
 status checks using CRLs directly or via OCSP URLs included in certificates.
 This is because online checks offer limited security value unless a client, like
