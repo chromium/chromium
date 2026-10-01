@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_with_test_window_test",
     "//testing/gmock",
     "//testing/gtest",
   ]

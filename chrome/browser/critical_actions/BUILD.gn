@@ -57,6 +57,7 @@ source_set("unit_tests") {
     sources += [ "glic_linkout_handler_unittest.cc" ]
     deps += [
       "//chrome/browser/glic/test_support",
+      "//chrome/test/base:browser_with_test_window_test",
       "//components/tabs:test_support",
     ]
   }

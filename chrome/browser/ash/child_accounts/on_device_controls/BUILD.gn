@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui/views/apps/app_dialog",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_with_test_window_test",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",

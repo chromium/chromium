@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/release_notes",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_with_test_window_test",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state",
     "//components/account_id",

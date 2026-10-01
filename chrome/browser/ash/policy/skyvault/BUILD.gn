@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/skyvault/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_with_test_window_test",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",

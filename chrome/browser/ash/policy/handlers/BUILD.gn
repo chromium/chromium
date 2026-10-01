@@ -175,6 +175,7 @@ source_set("unit_tests") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_with_test_window_test",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/anomaly_detector",

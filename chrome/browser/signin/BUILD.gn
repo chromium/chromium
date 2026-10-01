@@ -704,6 +704,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/webui/signin:signin_ui_error",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_with_test_window_test",
       "//components/metrics",
       "//components/signin/core/browser:test_support",
       "//components/signin/public/base",
