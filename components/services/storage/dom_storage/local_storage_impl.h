@@ -116,6 +116,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
  private:
   friend class DOMStorageBrowserTest;
+  friend class LocalStorageImplMigrationTest;
   friend class LocalStorageImplTest;
 
   class StorageAreaHolder;

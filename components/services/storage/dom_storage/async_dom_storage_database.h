@@ -72,11 +72,17 @@ class AsyncDomStorageDatabase {
   base::SequenceBound<std::unique_ptr<DomStorageDatabase>>& database() {
     return database_;
   }
+
   bool is_sqlite() const {
     CHECK(is_database_opened_);
     return is_sqlite_;
   }
+
   DatabaseMetricsType metrics_type() const { return metrics_type_; }
+
+  bool is_migrating() const {
+    return migration_state_ == MigrationState::kMigrating;
+  }
 
   // The functions below use `base::SequenceBound` to read and write
   // `database_` through the `DomStorageDatabase` interface. See function
@@ -117,6 +123,11 @@ class AsyncDomStorageDatabase {
   // `committers_` using `RunDatabaseTask()`. After the database task, runs the
   // completed callback for each `Committer` that provided a `Commit`.
   void InitiateCommit();
+
+  // Immediately starts migration after stopping the `migration_timer_`.
+  // Migration requires a successfully opened database with a `kAwaitingIdle`
+  // migration state.
+  void ForceMigrationForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AsyncDomStorageDatabaseMigrationTest,

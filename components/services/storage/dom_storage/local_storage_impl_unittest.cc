@@ -18,7 +18,9 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -43,6 +45,7 @@
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/dom_storage/test_support/fake_dom_storage_database.h"
 #include "components/services/storage/dom_storage/test_support/fake_dom_storage_database_factory.h"
+#include "components/services/storage/dom_storage/test_support/scoped_dom_storage_database_factory_for_testing.h"
 #include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -415,9 +418,14 @@ class LocalStorageImplTestBase : public testing::Test {
  protected:
   // Derived fixtures must initialize `feature_list_` and then call this from
   // their constructor.
-  void InitializeTaskEnvironment() {
-    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+  void InitializeTaskEnvironment(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT) {
+    task_environment_ =
+        std::make_unique<base::test::TaskEnvironment>(time_source);
   }
+
+  base::test::TaskEnvironment& task_environment() { return *task_environment_; }
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -1807,6 +1815,13 @@ class LocalStorageImplOnDiskSQLiteRolloutTestBase
            !base::IsDirectoryEmpty(LevelDbDir());
   }
 
+  // Returns the real migration implementation. Tests may wrap it to control
+  // when migration runs.
+  static DomStorageDatabaseFactory::MigrationCallback
+  GetDefaultMigrationCallback() {
+    return DomStorageDatabaseFactory::GetMigrationCallback();
+  }
+
   // Creates a real on-disk LevelDB database at `LevelDbDir()`. If `with_tag`
   // is true, also writes the experimental tag file next to the database.
   void CreateOnDiskLevelDb(bool with_tag) {
@@ -1961,6 +1976,348 @@ TEST_P(LocalStorageImplOnDiskSQLiteRolloutTest, PreExistingTaggedLevelDb) {
           ? "Storage.LocalStorage.OpenDatabase.OnDiskExperimental"
           : "Storage.LocalStorage.OpenDatabase.OnDisk",
       /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
+// Test fixture for migrating an existing on-disk LevelDB to SQLite. Uses mock
+// time to control when the migration inactivity timer fires.
+class LocalStorageImplMigrationTest
+    : public LocalStorageImplOnDiskSQLiteRolloutTestBase {
+ public:
+  // The inactivity timeout must elapse before an idle on-disk LevelDB
+  // migrates to SQLite.
+  static constexpr base::TimeDelta kExceedMigrationInactivityTimeout =
+      kDomStorageSqliteMigrationInactivityTimeout +
+      kDomStorageSqliteMigrationInactivityTimeout / 2;
+
+  LocalStorageImplMigrationTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kDomStorageSqliteMigration},
+        /*disabled_features=*/{kDomStorageSqlite,
+                               kDomStorageSqliteNewDatabases});
+    InitializeTaskEnvironment(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  }
+
+  bool IsSqlite() { return context()->GetDatabaseForTesting()->is_sqlite(); }
+
+  // Returns the number of storage areas that currently have no active bindings.
+  size_t GetUnusedAreaCount() {
+    size_t total_cache_size = 0;
+    size_t unused_area_count = 0;
+    context()->GetStatistics(&total_cache_size, &unused_area_count);
+    return unused_area_count;
+  }
+
+  // Uses `LocalStorageImpl` with migration disabled to write each of `entries`
+  // to an on-disk LevelDB, mimicking a profile from before the migration
+  // rollout. Shuts down storage afterwards.
+  void CreateLevelDbWithEntries(
+      const std::vector<std::tuple<blink::StorageKey,
+                                   std::vector<uint8_t>,
+                                   std::vector<uint8_t>>>& entries) {
+    {
+      base::test::ScopedFeatureList disabled_feature_list;
+      disabled_feature_list.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kDomStorageSqliteMigration, kDomStorageSqlite,
+                                 kDomStorageSqliteNewDatabases});
+      ResetStorage(storage_path());
+      for (const auto& [storage_key, key, value] : entries) {
+        BindStorageAreaAndPutKeyValue(storage_key, key, value);
+      }
+      ASSERT_FALSE(IsSqlite());
+      ShutDownStorage();
+    }
+    ASSERT_TRUE(LevelDbDirHasContents());
+    ASSERT_FALSE(base::PathExists(SqliteDbPath()));
+  }
+};
+
+TEST_F(LocalStorageImplMigrationTest, MigratesDatabaseAfterInactivity) {
+  const blink::StorageKey storage_key1 = StorageKeyForExampleHost(1);
+  const blink::StorageKey storage_key2 = StorageKeyForExampleHost(2);
+
+  const std::vector<uint8_t> key1 = StdStringToUint8Vector("key1");
+  const std::vector<uint8_t> value1 = StdStringToUint8Vector("value1");
+
+  const std::vector<uint8_t> key2 = StdStringToUint8Vector("key2");
+  const std::vector<uint8_t> value2 = StdStringToUint8Vector("value2");
+
+  const std::vector<uint8_t> key3 = StdStringToUint8Vector("key3");
+  const std::vector<uint8_t> value3 = StdStringToUint8Vector("value3");
+
+  ASSERT_NO_FATAL_FAILURE(CreateLevelDbWithEntries(
+      {{storage_key1, key1, value1}, {storage_key2, key2, value2}}));
+
+  // With migration enabled, `LocalStorageImpl` continues to use the existing
+  // LevelDB until the database becomes idle.
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  EXPECT_FALSE(IsSqlite());
+
+  // Keep a storage area bound across the migration to verify it keeps working
+  // after the database switches to SQLite.
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(test::GetSync(area.get(), key1), value1);
+
+  // Trigger the migration.
+  task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsSqlite(); }));
+
+  // The SQLite database replaces the LevelDB on disk.
+  EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+  EXPECT_FALSE(base::PathExists(
+      SqliteDbPath().AddExtensionASCII(kSqliteMigrationStagingExtension)));
+
+  // The migration copied all map entries and usage metadata.
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key1, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key2, /*expected_entries=*/{{key2, value2}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(2u));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key1));
+  ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key2));
+  EXPECT_EQ(GetStorageUsageSync().size(), 2u);
+
+  // The storage area bound before the migration must write to SQLite.
+  base::test::TestFuture<bool> put_future;
+  area->Put(key3, value3, /*client_old_value=*/std::nullopt,
+            test::MakeStorageAreaSource(), put_future.GetCallback());
+  EXPECT_TRUE(put_future.Take());
+  area.reset();
+  ASSERT_NO_FATAL_FAILURE(WaitForMapEntries(
+      storage_key1, /*expected_entries=*/{{key1, value1}, {key3, value3}}));
+
+  // Re-opening must use the migrated SQLite database.
+  ShutDownStorage();
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  EXPECT_TRUE(IsSqlite());
+  EXPECT_FALSE(base::PathExists(LevelDbDir()));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      storage_key1, /*expected_entries=*/{{key1, value1}, {key3, value3}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(storage_key2, /*expected_entries=*/{{key2, value2}}));
+}
+
+// Unloads a storage area with uncommitted changes while migration is in
+// progress. The area's changes must persist to the migrated SQLite database.
+TEST_F(LocalStorageImplMigrationTest,
+       UnloadStorageAreaWithPendingCommitDuringMigration) {
+  const blink::StorageKey storage_key = StorageKeyForExampleHost(1);
+
+  const std::vector<uint8_t> key1 = StdStringToUint8Vector("key1");
+  const std::vector<uint8_t> value1 = StdStringToUint8Vector("value1");
+
+  const std::vector<uint8_t> key2 = StdStringToUint8Vector("key2");
+  const std::vector<uint8_t> value2 = StdStringToUint8Vector("value2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      CreateLevelDbWithEntries({{storage_key, key1, value1}}));
+
+  // Pause migration after it starts. The override runs on the database
+  // sequence and gives the test a closure that resumes the real migration.
+  DomStorageDatabaseFactory::MigrationCallback default_migration_callback =
+      GetDefaultMigrationCallback();
+
+  base::test::TestFuture<base::OnceClosure> migration_started_future;
+  base::OnceCallback<void(base::OnceClosure)> migration_started_callback =
+      migration_started_future.GetSequenceBoundCallback();
+
+  ScopedDomStorageDatabaseFactoryForTesting scoped_database_factory(
+      /*migration_callback=*/base::BindLambdaForTesting(
+          [&](StorageType storage_type, const base::FilePath& dir_to_open,
+              const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                  memory_dump_id,
+              DomStorageDatabaseFactory::OpenResultCallback callback,
+              DomStorageDatabase* source) {
+            std::move(migration_started_callback)
+                .Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+                    default_migration_callback, storage_type, dir_to_open,
+                    memory_dump_id, std::move(callback),
+                    base::Unretained(source))));
+          }));
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  EXPECT_FALSE(IsSqlite());
+
+  // Load the storage area before migration starts.
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(test::GetSync(area.get(), key1), value1);
+
+  // Start the migration and wait for it to pause.
+  task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+  base::OnceClosure resume_migration = migration_started_future.Take();
+  EXPECT_FALSE(IsSqlite());
+
+  // Change the storage area during migration, which creates a pending commit.
+  base::test::TestFuture<bool> put_future;
+  area->Put(key2, value2, /*client_old_value=*/std::nullopt,
+            test::MakeStorageAreaSource(), put_future.GetCallback());
+  EXPECT_TRUE(put_future.Take());
+
+  // Unbind the storage area while its commit is pending.
+  area.reset();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return GetUnusedAreaCount() == 1u; }));
+  ASSERT_TRUE(
+      context()->GetStorageAreaForTesting(storage_key)->HasPendingCommit());
+
+  // Purging must not unload the storage area during migration.
+  context()->PurgeMemory();
+  EXPECT_NE(context()->GetStorageAreaForTesting(storage_key), nullptr);
+
+  {
+    // `PurgeUnusedAreasIfNeeded()` only purges on low-end devices or when
+    // cache limits are exceeded.
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    ASSERT_TRUE(base::SysInfo::IsLowEndDevice());
+
+    context()->PurgeUnusedAreasIfNeeded();
+    EXPECT_NE(context()->GetStorageAreaForTesting(storage_key), nullptr);
+  }
+
+  // Finish the migration.
+  std::move(resume_migration).Run();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsSqlite(); }));
+
+  // The unloaded storage area's change must persist after migration.
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      storage_key, /*expected_entries=*/{{key1, value1}, {key2, value2}}));
+
+  // The change must also persist after re-opening the migrated database.
+  ShutDownStorage();
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  EXPECT_TRUE(IsSqlite());
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      storage_key, /*expected_entries=*/{{key1, value1}, {key2, value2}}));
+}
+
+// Commit errors during migration must not delete and recreate the database,
+// which would destroy the LevelDB being migrated.
+TEST_F(LocalStorageImplMigrationTest,
+       CommitErrorsDuringMigrationDoNotRecreateDatabase) {
+  const blink::StorageKey migrated_storage_key = StorageKeyForExampleHost(0);
+  const std::vector<uint8_t> key = StdStringToUint8Vector("key");
+  const std::vector<uint8_t> value = StdStringToUint8Vector("value");
+  const std::vector<uint8_t> new_value = StdStringToUint8Vector("new_value");
+
+  ASSERT_NO_FATAL_FAILURE(
+      CreateLevelDbWithEntries({{migrated_storage_key, key, value}}));
+
+  // Pause migration after it starts. The override runs on the database
+  // sequence and gives the test a closure that resumes the real migration.
+  DomStorageDatabaseFactory::MigrationCallback default_migration_callback =
+      GetDefaultMigrationCallback();
+
+  base::test::TestFuture<base::OnceClosure> migration_started_future;
+  base::OnceCallback<void(base::OnceClosure)> migration_started_callback =
+      migration_started_future.GetSequenceBoundCallback();
+
+  ScopedDomStorageDatabaseFactoryForTesting scoped_database_factory(
+      /*migration_callback=*/base::BindLambdaForTesting(
+          [&](StorageType storage_type, const base::FilePath& dir_to_open,
+              const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                  memory_dump_id,
+              DomStorageDatabaseFactory::OpenResultCallback callback,
+              DomStorageDatabase* source) {
+            std::move(migration_started_callback)
+                .Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+                    default_migration_callback, storage_type, dir_to_open,
+                    memory_dump_id, std::move(callback),
+                    base::Unretained(source))));
+          }));
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  EXPECT_FALSE(IsSqlite());
+
+  // Make all commits to the LevelDB fail.
+  context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
+      base::BindOnce([](DomStorageDatabase* database) {
+        database->MakeAllCommitsFailForTesting();
+      }));
+
+  // Change enough storage areas that a single failed commit exceeds the commit
+  // error threshold.
+  constexpr size_t kAreaCount = kCommitErrorThreshold + 1;
+  std::vector<mojo::Remote<blink::mojom::StorageArea>> areas(kAreaCount);
+
+  for (size_t i = 0; i < kAreaCount; ++i) {
+    context()->BindStorageArea(StorageKeyForExampleHost(i + 1),
+                               areas[i].BindNewPipeAndPassReceiver());
+    base::test::TestFuture<bool> success_future;
+    areas[i]->Put(key, value, /*client_old_value=*/std::nullopt,
+                  test::MakeStorageAreaSource(), success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
+  }
+
+  // Block the database sequence, which prevents the commit from completing
+  // until after migration starts.
+  base::WaitableEvent unblock_database;
+  base::ScopedClosureRunner scoped_unblock_database(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&unblock_database)));
+  context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
+      base::BindLambdaForTesting([&](DomStorageDatabase*) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        unblock_database.Wait();
+      }));
+
+  // Commit all of the storage areas' changes in a single database operation.
+  base::HistogramTester histograms;
+  context()->GetDatabaseForTesting()->InitiateCommit();
+
+  // Start the migration while the commit is pending.
+  context()->GetDatabaseForTesting()->ForceMigrationForTesting();
+  EXPECT_TRUE(context()->GetDatabaseForTesting()->is_migrating());
+
+  // Unblock the database. The failed commit completes before the paused
+  // migration notifies the test.
+  scoped_unblock_database.RunAndReset();
+  base::OnceClosure resume_migration = migration_started_future.Take();
+
+  // The commit failed for all storage areas.
+  histograms.ExpectTotalCount("Storage.LocalStorage.UpdateMaps.OnDisk", 1);
+  EXPECT_EQ(
+      histograms.GetBucketCount("Storage.LocalStorage.UpdateMaps.OnDisk", 0),
+      0);
+
+  // The commit errors did not recreate the database.
+  histograms.ExpectTotalCount("Storage.LocalStorage.CommitErrorCountAtReset",
+                              0);
+  EXPECT_NE(context()->GetDatabaseForTesting(), nullptr);
+  EXPECT_TRUE(context()->GetDatabaseForTesting()->is_migrating());
+  EXPECT_NE(context()->GetStorageAreaForTesting(StorageKeyForExampleHost(1)),
+            nullptr);
+
+  // Finish the migration.
+  std::move(resume_migration).Run();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return IsSqlite(); }));
+
+  // The migration preserved the LevelDB's data.
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(migrated_storage_key,
+                                          /*expected_entries=*/{{key, value}}));
+
+  // Commits succeed after migration.
+  base::test::TestFuture<bool> put_future;
+  areas[0]->Put(key, new_value, /*client_old_value=*/std::nullopt,
+                test::MakeStorageAreaSource(), put_future.GetCallback());
+  EXPECT_TRUE(put_future.Take());
+  context()->FlushStorageKeyForTesting(StorageKeyForExampleHost(1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      StorageKeyForExampleHost(1), /*expected_entries=*/{{key, new_value}}));
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded", 0);
 }
 
 // Test fixture for tests that use fake database implementations. These tests

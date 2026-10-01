@@ -313,9 +313,18 @@ void LocalStorageImpl::ShutDown() {
 }
 
 void LocalStorageImpl::PurgeMemory() {
+  const bool database_migration_in_progress =
+      database_ && database_->is_migrating();
+
   for (auto it = areas_.begin(); it != areas_.end();) {
-    if (it->second->has_bindings()) {
+    StorageAreaHolder& storage_area_holder = *it->second;
+    if (storage_area_holder.has_bindings()) {
       it->second->storage_area()->PurgeMemory();
+      ++it;
+    } else if (storage_area_holder.storage_area()->HasPendingCommit() &&
+               database_migration_in_progress) {
+      // To avoid losing the pending commit, don't purge the storage area during
+      // migration.
       ++it;
     } else {
       it = areas_.erase(it);
@@ -349,11 +358,21 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
     return;
   }
 
+  const bool database_migration_in_progress =
+      database_ && database_->is_migrating();
+
   for (auto it = areas_.begin(); it != areas_.end();) {
-    if (it->second->has_bindings())
+    StorageAreaHolder& storage_area_holder = *it->second;
+    if (storage_area_holder.has_bindings()) {
       ++it;
-    else
+    } else if (storage_area_holder.storage_area()->HasPendingCommit() &&
+               database_migration_in_progress) {
+      // To avoid losing the pending commit, don't purge the storage area during
+      // migration.
+      ++it;
+    } else {
       it = areas_.erase(it);
+    }
   }
 }
 
@@ -675,6 +694,11 @@ void LocalStorageImpl::OnCommitResult(DbStatus status) {
     RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_,
                                   metrics_type);
     commit_error_count_ = 0;
+    return;
+  }
+
+  if (database_ && database_->is_migrating()) {
+    // Don't delete the source database while a migration is in progress.
     return;
   }
 

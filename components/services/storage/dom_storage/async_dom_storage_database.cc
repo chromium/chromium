@@ -296,8 +296,11 @@ void AsyncDomStorageDatabase::InitiateCommit() {
   }
 
   std::vector<DomStorageDatabase::MapBatchUpdate> commits;
+  commits.reserve(committers_.size());
+
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
   commit_dones.reserve(committers_.size());
+
   for (Committer* committer : committers_) {
     std::optional<DomStorageDatabase::MapBatchUpdate> commit =
         committer->CollectCommit();
@@ -305,6 +308,10 @@ void AsyncDomStorageDatabase::InitiateCommit() {
       commits.push_back(*std::move(commit));
       commit_dones.emplace_back(committer->GetCommitCompleteCallback());
     }
+  }
+
+  if (commits.empty()) {
+    return;
   }
 
   auto run_all = base::BindOnce(
@@ -325,6 +332,11 @@ void AsyncDomStorageDatabase::InitiateCommit() {
           },
           std::move(commits)),
       std::move(run_all));
+}
+
+void AsyncDomStorageDatabase::ForceMigrationForTesting() {
+  migration_timer_.Stop();
+  StartMigration();
 }
 
 void AsyncDomStorageDatabase::OnDatabaseOpened(
