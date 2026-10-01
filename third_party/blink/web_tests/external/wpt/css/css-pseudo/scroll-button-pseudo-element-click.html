@@ -41,5 +41,6 @@
     assert_true(pseudoTarget instanceof CSSPseudoElement,
                 "pseudoTarget is a CSSPseudoElement");
     assert_equals(pseudoTarget, scroller.pseudo("::scroll-button(inline-end)"));
+    assert_equals(pseudoTarget.selectorText, "::scroll-button(inline-end)");
   }, "Clicking a ::scroll-button() sets pseudoTarget to its CSSPseudoElement");
 </script>

@@ -84,6 +84,14 @@ class CSSPseudoElement final : public ScriptWrappable {
   // sub-pseudo-elements, parent will return a CSSPseudoElement while element
   // returns an Element.
   V8UnionCSSPseudoElementOrElement* parent() const { return parent_; }
+  // The selectorText attribute is the normalized selector text used to select
+  // this pseudo-element, including any argument. For example, "::after" or
+  // "::view-transition-group(name)". For sub-pseudo-elements this is only the
+  // last compound, e.g. "::marker" for `::before::marker`. For scroll buttons,
+  // the argument is the logical direction the button is identified by, since
+  // e.g. `::scroll-button(up)` and `::scroll-button(block-start)` return the
+  // same object in horizontal writing modes.
+  String selectorText() const;
   // The pseudo(type) method returns the CSSPseudoElement interface representing
   // the sub-pseudo-element referenced in its argument, if such a
   // sub-pseudo-element could exist and would be valid, and null otherwise.

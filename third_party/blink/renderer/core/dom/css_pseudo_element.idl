@@ -12,6 +12,7 @@ interface CSSPseudoElement {
     readonly attribute CSSOMString type;
     readonly attribute Element element;
     readonly attribute (Element or CSSPseudoElement) parent;
+    [RuntimeEnabled=CSSPseudoElementSelectorText] readonly attribute CSSOMString selectorText;
     CSSPseudoElement? pseudo(CSSOMString type);
     [RuntimeEnabled=SequentialFocusPrimitives] undefined focus(optional FocusOptions options = {});
     [RuntimeEnabled=SequentialFocusPrimitives] Focusable? nextFocusable();

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_document_element_text.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -134,6 +135,24 @@ CSSPseudoElement::CSSPseudoElement(CSSPseudoElement& originating_pseudo_element,
 
 String CSSPseudoElement::type() const {
   return PseudoElementTagName(pseudo_id_).ToString();
+}
+
+String CSSPseudoElement::selectorText() const {
+  StringBuilder builder;
+  builder.Append(PseudoElementTagName(pseudo_id_).LocalName());
+  if (!pseudo_argument_.empty()) {
+    builder.Append('(');
+    if (pseudo_id_ == kPseudoIdScrollButton) {
+      // Scroll button arguments are fixed keywords that don't need escaping.
+      // This matches CSSSelector::SelectorText().
+      builder.Append(pseudo_argument_);
+    } else {
+      // E.g. view transition names are <custom-ident>s which may need escaping.
+      SerializeIdentifier(pseudo_argument_, builder);
+    }
+    builder.Append(')');
+  }
+  return builder.ReleaseString();
 }
 
 std::pair<PseudoId, AtomicString>

@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "TypeError: window.getPseudoElements is not a function"
-[FAIL] CSSPseudoElement interface: attribute selectorText
-  assert_true: The prototype object must have a property "selectorText" expected true got false
 [FAIL] CSSPseudoElement must be primary interface of beforeElements.item(0)
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
 [FAIL] Stringification of beforeElements.item(0)

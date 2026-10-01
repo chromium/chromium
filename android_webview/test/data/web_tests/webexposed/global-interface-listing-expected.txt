@@ -972,6 +972,7 @@ interface CSSPseudoElement
     attribute @@toStringTag
     getter element
     getter parent
+    getter selectorText
     getter type
     method constructor
     method convertPointFromNode

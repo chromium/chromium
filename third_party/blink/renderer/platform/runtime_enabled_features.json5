@@ -1957,6 +1957,13 @@
       status: "experimental",
     },
     {
+      // CSSPseudoElement.selectorText.
+      // https://drafts.csswg.org/css-pseudo-4/#dom-csspseudoelement-selectortext
+      name: "CSSPseudoElementSelectorText",
+      depends_on: ["CSSPseudoElementInterface"],
+      status: "experimental",
+    },
+    {
       name: "CSSPseudoElementViewTransitions",
       depends_on: ["CSSPseudoElementInterface"],
       status: "stable",
