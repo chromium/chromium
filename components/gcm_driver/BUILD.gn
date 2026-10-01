@@ -85,8 +85,6 @@ static_library("gcm_driver") {
     sources += [
       "account_tracker.cc",
       "account_tracker.h",
-      "gcm_account_mapper.cc",
-      "gcm_account_mapper.h",
       "gcm_account_tracker.cc",
       "gcm_account_tracker.h",
       "gcm_client_factory.cc",
@@ -194,7 +192,6 @@ source_set("unit_tests") {
   if (!use_gcm_from_platform) {
     sources += [
       "account_tracker_unittest.cc",
-      "gcm_account_mapper_unittest.cc",
       "gcm_account_tracker_unittest.cc",
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_unittest.cc",

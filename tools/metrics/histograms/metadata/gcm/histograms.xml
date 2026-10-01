@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="GCM.AccountMappingMessageReceived" enum="BooleanReceived"
-    expires_after="2022-01-02">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Records that a message has been received from a delivery channel powered by
-    the GCM account mappings.
-  </summary>
-</histogram>
-
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
     expires_after="2024-11-12">
   <owner>peter@chromium.org</owner>

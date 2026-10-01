@@ -26,7 +26,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/fcm/base/fcm_backoff_policy.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
-#include "components/gcm_driver/gcm_account_mapper.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -1386,12 +1385,7 @@ void GCMClientImpl::HandleIncomingSendError(
 }
 
 bool GCMClientImpl::HasStandaloneRegisteredApp() const {
-  if (registrations_.empty())
-    return false;
-  // Note that account mapper is not counted as a standalone app since it is
-  // automatically started when other app uses GCM.
-  return registrations_.size() > 1 ||
-         !ExistsGCMRegistrationInMap(registrations_, kGCMAccountMapperAppId);
+  return !registrations_.empty();
 }
 
 }  // namespace gcm

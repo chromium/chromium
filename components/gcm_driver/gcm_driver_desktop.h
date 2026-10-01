@@ -47,7 +47,6 @@ class OSCryptAsync;
 
 namespace gcm {
 
-class GCMAccountMapper;
 class GCMAppHandler;
 class GCMClientFactory;
 class GCMDelayedTaskController;
@@ -219,9 +218,6 @@ class GCMDriverDesktop : public GCMDriver,
   // List of observers to notify when connection state changes.
   base::ObserverList<GCMConnectionObserver, false>::Unchecked
       connection_observer_list_;
-
-  // Account mapper. Only works when user is signed in.
-  std::unique_ptr<GCMAccountMapper> account_mapper_;
 
   // Time of last token fetching.
   base::Time last_token_fetch_time_;

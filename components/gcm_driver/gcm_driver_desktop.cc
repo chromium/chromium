@@ -22,7 +22,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/fcm/engine/system_encryptor.h"
-#include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_delayed_task_controller.h"
@@ -535,7 +534,6 @@ GCMDriverDesktop::GCMDriverDesktop(
     : GCMDriver(store_path, blocking_task_runner),
       gcm_started_(false),
       connected_(false),
-      account_mapper_(new GCMAccountMapper(this)),
       // Setting to max, to make sure it does not prompt for token reporting
       // Before reading a reasonable value from the DB, which might be never,
       // in which case the fetching will be triggered.
@@ -639,9 +637,8 @@ void GCMDriverDesktop::RemoveAppHandler(const std::string& app_id) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   GCMDriver::RemoveAppHandler(app_id);
 
-  // Stops the GCM service when no app intends to consume it. Stop function will
-  // remove the last app handler - account mapper.
-  if (app_handlers().size() == 1) {
+  // Stops the GCM service when no app intends to consume it.
+  if (app_handlers().empty()) {
     DVLOG(1) << "Removed last app handler, calling GCMDriverDesktop::Stop now.";
     Stop();
   }
@@ -662,9 +659,6 @@ void GCMDriverDesktop::Stop() {
   // No need to stop GCM service if not started yet.
   if (!gcm_started_)
     return;
-
-  account_mapper_->ShutdownHandler();
-  GCMDriver::RemoveAppHandler(kGCMAccountMapperAppId);
 
   RemoveCachedData();
 
@@ -1179,8 +1173,6 @@ void GCMDriverDesktop::SetAccountTokens(
     const std::vector<GCMClient::AccountTokenInfo>& account_tokens) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
-  account_mapper_->SetAccountTokens(account_tokens);
-
   io_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(&GCMDriverDesktop::IOWorker::SetAccountTokens,
@@ -1281,11 +1273,6 @@ void GCMDriverDesktop::GCMClientReady(
   gcm_started_ = true;
 
   last_token_fetch_time_ = last_token_fetch_time;
-
-  GCMDriver::AddAppHandler(kGCMAccountMapperAppId, account_mapper_.get());
-  account_mapper_->Initialize(
-      account_mappings, base::BindRepeating(&GCMDriverDesktop::MessageReceived,
-                                            weak_ptr_factory_.GetWeakPtr()));
 
   delayed_task_controller_->SetReady();
 }
