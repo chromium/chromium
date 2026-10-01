@@ -297,8 +297,9 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       int64_t cache_size,
       int64_t cache_padding) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(cache_name_to_cache_dir_.contains(cache_name),
-          base::NotFatalUntil::M158);
+    // TODO(crbug.com/567709524): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(cache_name_to_cache_dir_.contains(cache_name));
 
     std::string cache_dir = cache_name_to_cache_dir_[cache_name];
     base::FilePath cache_path = directory_path_.AppendASCII(cache_dir);
