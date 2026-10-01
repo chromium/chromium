@@ -407,8 +407,6 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, IsCommandIdEnabled) {
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES));
   EXPECT_TRUE(delegate->IsCommandIdEnabled(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN));
-  EXPECT_TRUE(delegate->IsCommandIdEnabled(
-      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE));
 
   // Examples of command IDs not handled by this delegate.
   EXPECT_FALSE(delegate->IsCommandIdEnabled(IDC_COPY));
@@ -623,7 +621,7 @@ TEST_F(SendTabToSelfContextMenuDelegateSigninPromosTest,
             l10n_util::GetStringUTF16(
                 IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE));
   EXPECT_EQ(content_menu.GetCommandIdAt(1),
-            IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE);
+            IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
   EXPECT_EQ(
       content_menu.GetLabelAt(1),
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_ON_PHONE_BUTTON_LABEL));
@@ -642,7 +640,7 @@ TEST_F(SendTabToSelfContextMenuDelegateSigninPromosTest,
 #endif
 
 // Tests that ExecuteCommand does not crash when called for the "Manage Devices"
-// or sign-in promo commands with a null or destroyed web contents.
+// or sign-in promo command with a null or destroyed web contents.
 TEST_F(SendTabToSelfContextMenuDelegateTest,
        ExecuteCommandManageDevicesWithDestroyedWebContentsDoesNotCrash) {
   auto web_contents2 =
@@ -657,8 +655,6 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
                            0);
   delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN, 0);
-  delegate->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE, 0);
 }
 
 }  // namespace

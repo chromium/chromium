@@ -371,8 +371,6 @@
   E(kActionContentContextSharingSubmenu, IDC_CONTENT_CONTEXT_SHARING_SUBMENU) \
   E(kActionContentContextSendTabToSelfSignIn, \
     IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN) \
-  E(kActionContentContextSendTabToSelfSignInOnPhone, \
-    IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE) \
   /* Context menu item to show the clipboard history menu */ \
   E(kActionContentPasteFromClipboard, IDC_CONTENT_PASTE_FROM_CLIPBOARD) \
   /* Context menu items in the status tray */ \

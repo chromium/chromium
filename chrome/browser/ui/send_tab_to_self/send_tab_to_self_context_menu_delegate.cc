@@ -264,7 +264,7 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
               ? IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE
               : IDS_PROFILE_MENU_SIGNIN_ON_PHONE_BUTTON_LABEL;
       model->AddItemWithStringIdAndIcon(
-          IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE,
+          IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN,
           sign_in_on_phone_string_id,
           ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kMobileIcon
@@ -296,8 +296,7 @@ bool SendTabToSelfContextMenuDelegate::IsCommandIdEnabled(
   return (command_id >= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 &&
           command_id <= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST) ||
          command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES ||
-         command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN ||
-         command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE;
+         command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN;
 }
 
 void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
@@ -306,8 +305,7 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
     return;
   }
 
-  if (command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN ||
-      command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE) {
+  if (command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN) {
     ShowBubble(primary_web_contents_.get(), entry_point_);
     return;
   }
