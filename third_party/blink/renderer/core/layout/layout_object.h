@@ -1802,19 +1802,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            IsValidColumnSpannerInTree();
   }
 
-  // We include LayoutButton in this check, because buttons are
-  // implemented using flex box but should still support things like
-  // first-line, first-letter and text-overflow.
-  // The flex box and grid specs require that flex box and grid do not
-  // support first-line|first-letter, though.
-  // When LayoutObject and display do not agree, allow first-line|first-letter
-  // only when both indicate it's a block container.
-  // TODO(cbiesinger): Remove when buttons are implemented with align-items
-  // instead of flex box. crbug.com/226252.
-  bool BehavesLikeBlockContainer() const {
+  // text-overflow only applies to block containers.
+  bool CanApplyTextOverflow() const {
     NOT_DESTROYED();
     return IsLayoutBlockFlow() && StyleRef().IsDisplayBlockContainer();
   }
+
+  // Returns true if this is a block container that can have ::first-line
+  // and ::first-letter. <input> and <textarea> are excluded.
+  bool CanHaveFirstLineOrLetter() const;
 
   // May be optionally passed to container() and various other similar methods
   // that search the ancestry for some sort of containing block. Used to

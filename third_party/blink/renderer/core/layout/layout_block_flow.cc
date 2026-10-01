@@ -546,7 +546,7 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
   const LayoutObject* style_object = this;
   if (IsAnonymousBlockFlow()) {
     const LayoutObject* parent = Parent();
-    if (!parent || !parent->BehavesLikeBlockContainer()) {
+    if (!parent || !parent->CanApplyTextOverflow()) {
       return false;
     }
     style_object = parent;

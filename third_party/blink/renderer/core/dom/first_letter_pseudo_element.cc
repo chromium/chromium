@@ -261,9 +261,9 @@ LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
     if (first_inline->IsInline()) {
       return first_inline;
     }
-    if (!first_inline->BehavesLikeBlockContainer()) {
+    if (!first_inline->CanHaveFirstLineOrLetter()) {
       // Block level in-flow displays like flex, grid, and table do not have a
-      // first formatted line.
+      // first formatted line. Neither do input and textarea.
       return nullptr;
     }
     if (first_inline->IsButtonOrInputButton()) {
@@ -300,7 +300,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       !parent_layout_object->StyleRef().HasPseudoElementStyle(
           kPseudoIdFirstLetter) ||
       !CanHaveGeneratedChildren(*parent_layout_object) ||
-      !parent_layout_object->BehavesLikeBlockContainer()) {
+      !parent_layout_object->CanHaveFirstLineOrLetter()) {
     // This element can not have a styleable ::first-letter.
     return nullptr;
   }

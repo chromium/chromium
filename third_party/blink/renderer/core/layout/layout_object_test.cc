@@ -2174,7 +2174,7 @@ TEST_F(LayoutObjectTest, NoEllipsisForAnonymousBlockWithNonBlockParent) {
   // block flow inside the flex container.
   const LayoutObject* flex_layout = GetLayoutObjectByElementId("flex");
   ASSERT_TRUE(flex_layout);
-  EXPECT_FALSE(flex_layout->BehavesLikeBlockContainer());
+  EXPECT_FALSE(flex_layout->CanApplyTextOverflow());
 
   const LayoutObject* child = flex_layout->SlowFirstChild();
   while (child && !child->IsAnonymousBlockFlow()) {

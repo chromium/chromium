@@ -452,8 +452,9 @@ const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
     return nullptr;
 
   LayoutObject* parent_block = first_line_block->Parent();
-  if (!parent_block || !parent_block->BehavesLikeBlockContainer())
+  if (!parent_block || !parent_block->CanHaveFirstLineOrLetter()) {
     return nullptr;
+  }
 
   const LayoutBlock* parent_layout_block = To<LayoutBlock>(parent_block);
 
