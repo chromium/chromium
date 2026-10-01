@@ -195,13 +195,6 @@ class FakeStaticSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 
  private:
   raw_ptr<tabs::TabInterface> tab_;
@@ -231,13 +224,6 @@ class FakeSelectionSuggestionTool
                                   /*complete=*/true));
   }
 
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 
  private:
   raw_ptr<tabs::TabInterface> tab_;
@@ -515,13 +501,6 @@ class CountingSelectionSuggestionTool
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 
   int request_count() const { return request_count_; }
   const gfx::Rect& last_rect() const { return last_rect_; }
@@ -671,13 +650,6 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 
  private:
   raw_ptr<tabs::TabInterface> tab_;
@@ -736,13 +708,6 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 
   InlineSuggestion* last_suggestion() { return last_suggestion_; }
 

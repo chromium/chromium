@@ -120,14 +120,6 @@ class AsyncCustomTestTool : public SuggestionTool {
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
                                   /*complete=*/true));
   }
-
-  bool SupportsServerSuggestions() const override { return false; }
-
-  std::unique_ptr<Suggestion> CreateSuggestion(
-      const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) override {
-    return nullptr;
-  }
 };
 
 class SuggestionServiceUnitTest : public testing::Test {

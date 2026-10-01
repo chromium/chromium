@@ -52,14 +52,4 @@ void QuickAnswersTool::RequestSuggestions(
   std::move(callback).Run(std::move(suggestions), /*complete=*/true);
 }
 
-bool QuickAnswersTool::SupportsServerSuggestions() const {
-  return false;
-}
-
-std::unique_ptr<::selection::Suggestion> QuickAnswersTool::CreateSuggestion(
-    const optimization_guide::proto::SmartSelectionSuggestion&
-        server_suggestion) {
-  return nullptr;
-}
-
 }  // namespace glic

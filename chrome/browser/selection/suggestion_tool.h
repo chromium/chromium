@@ -39,13 +39,13 @@ class SuggestionTool {
   // Returns whether the server may generate suggestions for this tool. If
   // `true`, this tool's `ToolId` is included in the supported tools server
   // request for suggestion generation.
-  virtual bool SupportsServerSuggestions() const = 0;
+  virtual bool SupportsServerSuggestions() const;
 
   // Turns the `server_suggestion` into a `Suggestion`. That is, it acts as a
   // factory function for suggestions that used this tool.
   virtual std::unique_ptr<Suggestion> CreateSuggestion(
       const optimization_guide::proto::SmartSelectionSuggestion&
-          server_suggestion) = 0;
+          server_suggestion);
 };
 
 }  // namespace selection
