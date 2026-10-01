@@ -7705,6 +7705,25 @@
             ]
         }
     ],
+    "EnablePixAccountLinkingNative": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_VariationA_Delay3s",
+                    "params": {
+                        "prompt_variant": "VariationA",
+                        "trigger_delay_seconds": "3"
+                    },
+                    "enable_features": [
+                        "EnablePixAccountLinkingNative"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableQuicReadMultipleAndUdpGRO": [
         {
             "platforms": [
