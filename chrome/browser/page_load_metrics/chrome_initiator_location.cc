@@ -97,10 +97,8 @@ std::optional<ChromeInitiatorLocation> GetAttachedChromeInitiatorLocation(
 
 void AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage),
-      StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kNewTabPage));
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, chrome_navigation_initiator::kNewTabPage);
 }
 
 void AttachOmniboxDirectUrlInputNavigationHandleUserData(
