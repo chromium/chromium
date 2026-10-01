@@ -28,6 +28,9 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -38,11 +41,13 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 /**
  * Lightweight Activity used to host {@link SettingsHostFragment} in tests when {@link
@@ -120,7 +125,7 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
                         assumeNonNull(mSnackbarManagerSupplier.get()),
                         assumeNonNull(mBottomSheetControllerSupplier.get()),
                         assumeNonNull(getModalDialogManager()),
-                        new MockTab(TAB_ID, mProfile));
+                        new SettingsTestTab());
         mFragmentDelegate.initSettingsForTesting(contentView, "");
 
         // Delegate back presses to the settings fragment delegate so detail fragments or
@@ -222,6 +227,37 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
         assumeNonNull(mSnackbarManagerSupplier.get()).destroy();
         assumeNonNull(mWindowAndroidSupplier.get()).destroy();
         super.onDestroy();
+    }
+
+    /**
+     * {@link MockTab} that stands in for the tab hosting settings, which has no {@link
+     * org.chromium.content_public.browser.WebContents} in this activity.
+     *
+     * <p>Under SettingsInTabUrlNav, settings navigates by calling {@link Tab#loadUrl} on its tab.
+     * In production that reaches {@link SettingsPage#updateForUrl} through the native page factory,
+     * but {@link MockTab} would instead fail trying to show a native page without a WebContents.
+     * Forward the URL straight to the fragment delegate, which is what the settings native page
+     * does with it, so tests see the page they navigated to.
+     */
+    private class SettingsTestTab extends MockTab {
+        SettingsTestTab() {
+            super(TAB_ID, mProfile);
+            // Lets SettingsInTabNavigationDelegate redirect URLs that do not resolve to a page.
+            setIsInitialized(true);
+        }
+
+        @Override
+        public LoadUrlResult loadUrl(LoadUrlParams params) {
+            setUrl(new GURL(params.getUrl()));
+            mFragmentDelegate.updateForUrl(params.getUrl());
+            return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, /* navigationHandle= */ null);
+        }
+
+        @Override
+        public @Nullable WindowAndroid getWindowAndroid() {
+            // Lets SettingsInTabNavigationDelegate find the SettingsHostFragment in this activity.
+            return mWindowAndroidSupplier.get();
+        }
     }
 
     /**

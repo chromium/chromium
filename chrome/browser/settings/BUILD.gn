@@ -152,6 +152,7 @@ android_library("test_support_java") {
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
@@ -161,6 +162,7 @@ android_library("test_support_java") {
     "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 
