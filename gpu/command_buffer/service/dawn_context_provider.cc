@@ -147,16 +147,24 @@ void EmitErrorReport(wgpu::ErrorType error_type, std::string_view message) {
   AppendDawnErrorCrashKey(message);
   std::optional<GraphiteDawnError> uma_error;
 #if BUILDFLAG(IS_WIN)
+  // Errors reported after a DXGI error are generally fallout from device
+  // removal and should not generate additional crash reports.
+  static std::atomic_flag dxgi_error_received = ATOMIC_FLAG_INIT;
   if (message.find("DXGI_ERROR") != std::string_view::npos) {
     uma_error = GraphiteDawnError::kDXGIError;
-    DumpWithoutCrashingOnDXGIError(error_type, message);
-  } else if (message.find("The D3D11 debug layer") != std::string_view::npos) {
-    DumpWithoutCrashingOnD3D11DebugLayerError(error_type, message);
-  } else
-#endif
-  {
-    DumpWithoutCrashingOnGenericError(error_type, message);
+    if (!dxgi_error_received.test_and_set()) {
+      DumpWithoutCrashingOnDXGIError(error_type, message);
+    }
+  } else if (!dxgi_error_received.test()) {
+    if (message.find("The D3D11 debug layer") != std::string_view::npos) {
+      DumpWithoutCrashingOnD3D11DebugLayerError(error_type, message);
+    } else {
+      DumpWithoutCrashingOnGenericError(error_type, message);
+    }
   }
+#else
+  DumpWithoutCrashingOnGenericError(error_type, message);
+#endif
 
   // Emit only the 1st error to UMA.
   static std::atomic_flag uma_error_emitted = ATOMIC_FLAG_INIT;
