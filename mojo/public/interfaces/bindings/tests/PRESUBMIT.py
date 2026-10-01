@@ -12,15 +12,18 @@ import sys
 
 PRESUBMIT_VERSION = '2.0.0'
 
+
 def CheckChange(input_api, output_api):
-    old_sys_path = sys.path[:]
-    results = []
-    try:
-        sys.path.append(input_api.change.RepositoryRoot())
-        # pylint: disable=no-name-in-module,import-outside-toplevel
-        from build.ios import presubmit_support
-        results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'validation_unittest_bundle_data')
-    finally:
-        sys.path = old_sys_path
-    return results
+  old_sys_path = sys.path[:]
+  results = []
+  try:
+    sys.path.append(input_api.change.RepositoryRoot())
+    # pylint: disable=no-name-in-module,import-outside-toplevel
+    from build.ios import presubmit_support
+
+    results += presubmit_support.CheckBundleData(
+      input_api, output_api, 'validation_unittest_bundle_data'
+    )
+  finally:
+    sys.path = old_sys_path
+  return results
