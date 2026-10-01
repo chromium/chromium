@@ -337,6 +337,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Setup.Install.WofLocalePakCompressionDecision"
+    enum="WofLocalePakCompressionDecision" expires_after="2027-09-30">
+  <owner>grt@chromium.org</owner>
+  <owner>chrdavis@microsoft.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether setup.exe scheduled Windows Overlay Filter (WOF) compression of the
+    locale packs it installs and, if it did not, why. Recorded once per install,
+    update or repair on a machine where WOF is available, while setup builds its
+    list of work items. Scheduled means only that compression was scheduled, not
+    that it succeeded: the work item that compresses the packs is best effort
+    and runs later.
+  </summary>
+</histogram>
+
+<histogram name="Setup.Install.WofLocalePakImageStateError"
+    enum="WinGetLastError" expires_after="2027-09-30">
+  <owner>grt@chromium.org</owner>
+  <owner>chrdavis@microsoft.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The Windows error that stopped setup.exe reading the machine's ImageState
+    while deciding whether to WOF compress the locale packs it installs.
+    Recorded along with the ImageStateUnreadable bucket of
+    Setup.Install.WofLocalePakCompressionDecision. A missing key or value is not
+    an error, and is recorded there as ImageStateMissing instead.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
