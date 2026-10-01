@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
   "+chrome/browser/lifetime",
-  "+chrome/browser/policy/networking",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/assistant",
@@ -29,3 +28,10 @@ include_rules = [
   "+chrome/browser/ui/managed_ui.h",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/policy/networking",
+  ],
+}

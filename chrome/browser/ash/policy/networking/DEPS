@@ -19,13 +19,14 @@ include_rules = [
   "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/net",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
 ]
 
 specific_include_rules = {
+  # Only the browser test needs these //chrome dependencies.
   "policy_certs_browsertest\\.cc": [
+    "+chrome/browser/net",
     "+chrome/browser/profiles",
   ],
   ".*(unittest|browsertest)\\.cc": [
