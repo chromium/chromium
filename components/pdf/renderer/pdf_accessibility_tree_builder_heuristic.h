@@ -137,6 +137,10 @@ struct HeuristicPageProperties {
   // bottom margin.
   float bottom_non_page_number_margin = 0.0f;
 
+  // X-coordinate thresholds for the left and right side margins.
+  float left_margin = 0.0f;
+  float right_margin = 0.0f;
+
   // The dominant body text color on the page (in ARGB format), if multiple
   // colors exist.
   std::optional<uint32_t> body_text_color;

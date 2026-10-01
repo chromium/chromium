@@ -4162,6 +4162,137 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ(ax::mojom::Role::kParagraph, footnote_block->GetRole());
 }
 
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicLeftAndRightSideMarginsClassifiedAsFooter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  // With width 800, left_margin = 68 (8.5%) and right_margin = 732 (91.5%).
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Runs 0-1: Consecutive line numbers ("1", "2") in the left side margin
+  // (right = 35 <= 68) at normal 15pt line spacing. They should stay grouped in
+  // a single kSectionFooter block without being demoted to kParagraph.
+  // Runs 2-4: Body text at x = 100..400 (establishing median font size = 10 and
+  // normal line spacing = 15pt).
+  // Run 5: Side-margin artifact ("DRAFT") in the right side margin
+  // (x = 740 >= 732) at normal 15pt vertical spacing below Run 4. It should
+  // break away from the body paragraph into its own kSectionFooter block.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"1", "2", "body1", "body2", "body3", "DRAFT"}),
+      {gfx::RectF(20.0f, 200.0f, 15.0f, 15.0f),
+       gfx::RectF(20.0f, 215.0f, 15.0f, 15.0f),
+       gfx::RectF(100.0f, 200.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 215.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 230.0f, 300.0f, 15.0f),
+       gfx::RectF(740.0f, 245.0f, 40.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  const ui::AXNode* left_margin_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, left_margin_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter, left_margin_block->GetRole());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+
+  const ui::AXNode* right_margin_block = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, right_margin_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter, right_margin_block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicLeftSideMarginRunWithSameLineBodyTextDemotedToParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  // With width 800, left_margin = 68 (8.5%) and max_page_number_width = 240.
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Runs 0-2: Body text at x = 100..400.
+  // Run 3: A bullet/marker "[1]" in the left side margin (x = 40, right = 55 <=
+  // 68) at y = 300. Starts a block with role kSectionFooter.
+  // Run 4: Short body text ("Short item") on the same visual line (y = 300) at
+  // x = 80 (outside the left side margin), with width = 100 (still <=
+  // max_page_number_width 240). Because Run 4 is outside the side margin on the
+  // same line, the block must be demoted from kSectionFooter to kParagraph.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"body1", "body2", "body3", "[1]", "Short item"}),
+      {gfx::RectF(100.0f, 150.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 165.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 180.0f, 300.0f, 15.0f),
+       gfx::RectF(40.0f, 300.0f, 15.0f, 15.0f),
+       gfx::RectF(80.0f, 300.0f, 100.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+
+  const ui::AXNode* list_item_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, list_item_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, list_item_block->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicNarrowMarginPageClampsSideMarginsToBodyRuns) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  // Default 8.5% left_margin is 68.0f on an 800px-wide page.
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Runs 0-1: Wide body lines at x = 100.
+  // Run 2: A narrow column run starting at x = 30 with width = 45 (right = 75 >
+  // initial_left_margin 68), which straddles the initial left margin and clamps
+  // left_margin down from 68 to 30 even though its width (45) is less than 68.
+  // Run 3: A short wrapped line ("AI") in that same column starting at x = 30
+  // with width = 25 (right = 55). With left_margin clamped to 30, right = 55 >
+  // 30 is outside the side margin and remains a paragraph.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"Body line 1", "Body line 2", "Column", "AI"}),
+      {gfx::RectF(100.0f, 150.0f, 500.0f, 15.0f),
+       gfx::RectF(100.0f, 165.0f, 500.0f, 15.0f),
+       gfx::RectF(30.0f, 180.0f, 45.0f, 15.0f),
+       gfx::RectF(30.0f, 195.0f, 25.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+}
+
 class PdfAccessibilityTreeHeaderFooterRepetitionTest
     : public PdfAccessibilityTreeTest {
  protected:
