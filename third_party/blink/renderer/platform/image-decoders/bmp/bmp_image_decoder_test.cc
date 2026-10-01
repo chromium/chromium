@@ -320,13 +320,8 @@ std::string BMPSuiteTestName(const BMPSuiteEntry& entry) {
 class BMPImageDecoderSuiteTest : public testing::TestWithParam<BMPSuiteEntry> {
 };
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_VerifyBMPSuiteImage DISABLED_VerifyBMPSuiteImage
-#else
-#define MAYBE_VerifyBMPSuiteImage VerifyBMPSuiteImage
-#endif
-// TODO crbug.com/422362214): Re-enable once flakiness is addressed.
-TEST_P(BMPImageDecoderSuiteTest, MAYBE_VerifyBMPSuiteImage) {
+// TODO(crbug.com/422362214): Re-enable once flakiness is addressed.
+TEST_P(BMPImageDecoderSuiteTest, DISABLED_VerifyBMPSuiteImage) {
   // Load the BMP file under test.
   const BMPSuiteEntry& entry = GetParam();
   std::string bmp_path =
