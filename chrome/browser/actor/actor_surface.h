@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/types/id_type.h"
+#include "components/actor/core/actor_surface_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace content {
@@ -15,8 +15,6 @@ class WebContents;
 }  // namespace content
 
 namespace actor {
-
-using ActorSurfaceId = base::IdType32<class ActorSurfaceIdTag>;
 
 // An actuation surface for the actor, backed by either a visible browser tab
 // or an unparented headless WebContents.
