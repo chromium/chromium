@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -65,13 +66,17 @@ class ExtensionsToolbarDesktopBrowserTest
       const std::vector<base::test::FeatureRef>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features)
       : ExtensionsToolbarBrowserTest(
-            [enabled_features] {
+            [&enabled_features] {
               std::vector<base::test::FeatureRef> actual = enabled_features;
               actual.push_back(
                   extensions_features::kExtensionsMenuAccessControl);
               return actual;
             }(),
-            disabled_features) {}
+            [&disabled_features] {
+              std::vector<base::test::FeatureRef> actual = disabled_features;
+              actual.push_back(features::kWebUIExtensionsContainer);
+              return actual;
+            }()) {}
   ~ExtensionsToolbarDesktopBrowserTest() override = default;
   ExtensionsToolbarDesktopBrowserTest(
       const ExtensionsToolbarDesktopBrowserTest&) = delete;
@@ -1316,8 +1321,10 @@ class ExtensionsToolbarDesktopAccessControlDisabledBrowserTest
  public:
   ExtensionsToolbarDesktopAccessControlDisabledBrowserTest()
       : ExtensionsToolbarBrowserTest(
-            {},
-            {extensions_features::kExtensionsMenuAccessControl}) {}
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                extensions_features::kExtensionsMenuAccessControl,
+                features::kWebUIExtensionsContainer}) {}
   ExtensionsToolbarDesktopAccessControlDisabledBrowserTest(
       const ExtensionsToolbarDesktopAccessControlDisabledBrowserTest&) = delete;
   ExtensionsToolbarDesktopAccessControlDisabledBrowserTest& operator=(
