@@ -36,7 +36,7 @@ if _GIT_CL_PATH:
     if str(_DEPOT_TOOLS_DIR) not in sys.path:
         sys.path.insert(0, str(_DEPOT_TOOLS_DIR))
 
-import gerrit_util  # pylint: disable=import-error
+import gerrit_util  # noqa: E402
 
 GERRIT_HOST = 'chromium-review.googlesource.com'
 CACHE_DIR = Path(__file__).resolve().parent / '.patch_cache'

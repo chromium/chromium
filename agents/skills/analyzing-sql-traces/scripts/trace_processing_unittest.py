@@ -659,8 +659,7 @@ class TestTraceAnalyzerLib(unittest.TestCase):
         self.assertEqual(root['children'][0]['dur'], 3.0)
 
 
-import trace_analyzer
-import trace_comparator
+import trace_analyzer  # noqa: E402
 
 
 class TestCliParsing(unittest.TestCase):

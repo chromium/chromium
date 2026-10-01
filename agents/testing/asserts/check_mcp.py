@@ -10,7 +10,7 @@ import subprocess
 
 class McpClient:
     def __init__(self, server_path):
-        self.process = subprocess.Popen(  # pylint: disable=R1732
+        self.process = subprocess.Popen(
             [server_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,

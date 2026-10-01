@@ -12,9 +12,9 @@ CHROMIUM_SRC_DIR = AGENTS_DIR.parent
 
 sys.path.append(str(CHROMIUM_SRC_DIR))
 
-from testing.pytype_common import pytype_runner
+from testing.pytype_common import pytype_runner  # noqa: E402
 
-from agents import presubmit_support
+from agents import presubmit_support  # noqa: E402
 
 
 def main() -> int:

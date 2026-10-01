@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Plugin to find Java anonymous class candidates to replace with lambdas."""
-# pylint: disable=line-too-long
 
 import os
 import re

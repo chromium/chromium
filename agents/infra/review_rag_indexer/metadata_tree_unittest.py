@@ -10,8 +10,6 @@ from unittest import mock
 
 import metadata_tree
 
-# pylint: disable=protected-access
-
 
 class MetadataTreeTest(unittest.TestCase):
     def test_insert_and_get(self):

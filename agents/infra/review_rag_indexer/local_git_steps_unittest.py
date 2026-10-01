@@ -14,8 +14,6 @@ from common_types import ClInfo, CommonArgs, PreviousRunInfo
 from metadata_tree import MetadataTree
 import local_git_steps
 
-# pylint: disable=protected-access
-
 
 class ParseGitLogOutputTest(unittest.TestCase):
     def test_parse(self):

@@ -16,8 +16,6 @@ from pyfakefs import fake_filesystem_unittest
 
 import gemini_provider
 
-# pylint: disable=protected-access
-
 
 class GetContainerPathUnittest(unittest.TestCase):
     """Unit tests for the `_get_container_path` function."""

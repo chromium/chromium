@@ -15,8 +15,6 @@ import eval_config
 import results
 import skia_perf
 
-# pylint: disable=protected-access
-
 
 class QueueResultForUploadUnittest(unittest.TestCase):
     def setUp(self):

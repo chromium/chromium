@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Plugin to find enums missing LINT sync guards."""
-# pylint: disable=line-too-long
 
 import collections
 import json

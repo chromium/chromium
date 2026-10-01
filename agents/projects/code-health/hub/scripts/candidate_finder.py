@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unified CLI runner for Chromium Code Health Hub cleanups."""
-# pylint: disable=line-too-long
 
 import argparse
 import collections

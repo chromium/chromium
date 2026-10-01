@@ -31,7 +31,7 @@ SKILL_DIRS = [
     _PROJECT_ROOT / 'third_party' / 'depot_tools' / 'agents' / 'skills',
 ]
 sys.path.append(str(_PROJECT_ROOT))
-from agents.common import gemini_helpers
+from agents.common import gemini_helpers  # noqa: E402
 
 
 @dataclass

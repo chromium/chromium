@@ -14,8 +14,6 @@ from pyfakefs import fake_filesystem_unittest
 
 import promptfoo_installation
 
-# pylint: disable=protected-access
-
 
 class FromCipdPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for FromCipdPromptfooInstallation."""

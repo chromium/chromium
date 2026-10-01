@@ -17,9 +17,6 @@ import results
 _POLLING_INTERVAL = 100
 
 
-# pylint: disable=protected-access
-
-
 class TestResultTest(unittest.TestCase):
     def test_lt_less_than(self):
         result1 = results.TestResult(

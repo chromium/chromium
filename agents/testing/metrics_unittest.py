@@ -10,8 +10,6 @@ from unittest import mock
 import eval_config
 import metrics
 
-# pylint: disable=protected-access
-
 
 class MergeMetricsUnittest(unittest.TestCase):
     def test_empty_list(self):

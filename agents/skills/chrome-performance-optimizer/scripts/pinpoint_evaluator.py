@@ -25,7 +25,7 @@ _DEPOT_TOOLS = _SRC_ROOT / "third_party" / "depot_tools"
 if _DEPOT_TOOLS.is_dir() and str(_DEPOT_TOOLS) not in sys.path:
     sys.path.insert(0, str(_DEPOT_TOOLS))
 
-import gerrit_util  # pylint: disable=import-error
+import gerrit_util  # noqa: E402
 
 
 def run_command(cmd: list[str]) -> Tuple[int, str, str]:

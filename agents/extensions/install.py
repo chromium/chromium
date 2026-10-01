@@ -18,7 +18,7 @@ from pathlib import Path
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(_PROJECT_ROOT))
-from agents.common import gemini_helpers
+from agents.common import gemini_helpers  # noqa: E402
 
 
 class Error(Exception):

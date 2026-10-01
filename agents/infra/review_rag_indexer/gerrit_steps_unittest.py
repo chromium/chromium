@@ -15,8 +15,6 @@ import requests
 from common_types import ClInfo, CommentThread, CommonArgs
 import gerrit_steps
 
-# pylint: disable=protected-access
-
 
 class FetchHashtagsForClTest(unittest.TestCase):
     def setUp(self):

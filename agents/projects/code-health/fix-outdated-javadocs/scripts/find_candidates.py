@@ -8,13 +8,11 @@ import re
 import sys
 
 # Add general hub utilities to path
-# pylint: disable=wrong-import-position,import-error
 sys.path.append(
     os.path.join(
         os.path.dirname(os.path.abspath(__file__)), '../../hub/scripts'
     )
 )
-# pylint: enable=wrong-import-position,import-error
 
 # Configuration for main runner
 MODE = 'grouped'
@@ -165,7 +163,7 @@ def check_file(file_path, search_root):
                     'fix-outdated-javadocs-candidates: ' + ', '.join(issues)
                 )
             }
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         pass
     return None
 

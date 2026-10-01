@@ -70,10 +70,8 @@ def _CommonChecks(input_api, output_api):
         sys.path.insert(0, repo_root)
         sys_path_added = True
     try:
-        # pylint: disable=import-outside-toplevel
         from agents.presubmit_support import CheckSkillPresubmit
 
-        # pylint: enable=import-outside-toplevel
         results = []
         results.extend(CheckSkillPresubmit(input_api, output_api))
         results.extend(CheckTemplateSyntax(input_api, output_api))

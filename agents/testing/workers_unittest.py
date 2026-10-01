@@ -20,7 +20,6 @@ import results
 import workers
 import eval_config
 
-# pylint: disable=protected-access
 
 _POLLING_INTERVAL = 0.001
 
@@ -1113,7 +1112,6 @@ class WorkerPoolUnittest(unittest.TestCase):
         def create_thread_join_side_effect(mock_thread):
 
             def thread_join_side_effect(*args, **kwargs):
-                # pylint: disable=unused-argument
                 mock_thread.is_alive.return_value = False
 
             return thread_join_side_effect

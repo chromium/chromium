@@ -31,9 +31,9 @@ else:
         _DEPOT_TOOLS_DIR,
     )
 
-import gerrit_util  # pylint: disable=import-error
+import gerrit_util  # noqa: E402
 
-from common_types import ClInfo, CommentThread, CommonArgs
+from common_types import ClInfo, CommentThread, CommonArgs  # noqa: E402
 
 GERRIT_MAGIC_PREFIX = ")]}'"
 REQUEST_TIMEOUT_SECONDS = 30
@@ -115,9 +115,7 @@ class _SessionManager:
         )
 
         try:
-            # pylint: disable=protected-access
             authenticator = gerrit_util._Authenticator.get()
-            # pylint: enable=protected-access
             authenticator.authenticate(gerrit_adapter)
         except Exception as e:
             raise RuntimeError(

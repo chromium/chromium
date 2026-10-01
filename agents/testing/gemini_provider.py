@@ -530,7 +530,7 @@ def _run_gemini_cli_with_output_streaming(
                 )
                 env['GEMINI_SYSTEM_MD'] = str(system_prompt_path)
 
-            process = subprocess.Popen(  # pylint: disable=consider-using-with
+            process = subprocess.Popen(
                 arguments.command,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,

@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Basic tests for chromium_docs.py"""
-# pylint: disable=protected-access
 
 import unittest
 from pathlib import Path

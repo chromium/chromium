@@ -21,8 +21,6 @@ import setup
 class TestSkillsSetup(fake_filesystem_unittest.TestCase):
     """Unit tests for skills setup functions."""
 
-    # pylint: disable=protected-access
-
     def setUp(self):
         self.setUpPyfakefs()
         self.mock_run = unittest.mock.patch('subprocess.run').start()

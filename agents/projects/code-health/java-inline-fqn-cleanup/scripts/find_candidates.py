@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Plugin to find Java inline FQN violations."""
-# pylint: disable=line-too-long
 
 import re
 import subprocess

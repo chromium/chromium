@@ -18,8 +18,6 @@ import eval_config
 import eval_prompts
 import results
 
-# pylint: disable=protected-access
-
 
 class CheckUncommittedChangesUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for the `_check_uncommitted_changes` function."""

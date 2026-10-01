@@ -17,8 +17,6 @@ from pyfakefs import fake_filesystem_unittest
 
 import create_index
 
-# pylint: disable=protected-access
-
 
 class CreateIndexTest(fake_filesystem_unittest.TestCase):
     def setUp(self):

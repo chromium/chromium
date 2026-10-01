@@ -13,8 +13,6 @@ import unittest.mock
 import install
 from pyfakefs import fake_filesystem_unittest
 
-# pylint: disable=protected-access
-
 
 class InstallTest(fake_filesystem_unittest.TestCase):
     """Tests for the extension installation script."""

@@ -16,8 +16,8 @@ import results
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(CHROMIUM_SRC / 'build' / 'util'))
-from lib.results import result_sink
-from lib.results import result_types
+from lib.results import result_sink  # noqa: E402
+from lib.results import result_types  # noqa: E402
 
 
 class ResultDBReporterTest(unittest.TestCase):
