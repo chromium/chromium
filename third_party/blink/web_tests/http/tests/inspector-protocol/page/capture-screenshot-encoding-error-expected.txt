@@ -1,0 +1,32 @@
+Tests that screenshot encoding failures return an error
+webp 16383x100
+Image size: 16383x100
+png 16383x100
+Image size: 16383x100
+jpeg 16383x100
+Image size: 16383x100
+webp 16384x100
+{
+    code : -32000
+    message : Unable to encode screenshot
+}
+png 16384x100
+Image size: 16384x100
+jpeg 16384x100
+Image size: 16384x100
+webp 100x16383
+Image size: 100x16383
+png 100x16383
+Image size: 100x16383
+jpeg 100x16383
+Image size: 100x16383
+webp 100x16384
+{
+    code : -32000
+    message : Unable to encode screenshot
+}
+png 100x16384
+Image size: 100x16384
+jpeg 100x16384
+Image size: 100x16384
+

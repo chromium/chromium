@@ -2033,8 +2033,8 @@ void PageHandler::ScreenshotCaptured(
         Binary::fromVector(std::move(encoded_bitmap).value()));
     return;
   }
-  // TODO(caseq): send failure if we fail to encode?
-  request->callback->sendSuccess(Binary());
+  request->callback->sendFailure(
+      Response::ServerError("Unable to encode screenshot"));
 }
 
 Response PageHandler::StopLoading() {

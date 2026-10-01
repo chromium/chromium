@@ -497,9 +497,11 @@
       "Fuchsia"
     ],
     "bases": [
+      "http/tests/inspector-protocol/page/capture-screenshot-encoding-error.js",
       "wpt_internal/html/canvas/context-lost"
     ],
     "exclusive_tests": [
+      "http/tests/inspector-protocol/page/capture-screenshot-encoding-error.js",
       "wpt_internal/html/canvas/context-lost"
     ],
     "args": [
