@@ -119,13 +119,18 @@ std::optional<net::OriginRelation> GetInitiatorRelation(
 
   // Privileged requests initiated from a "non-webby" context will send
   // `Sec-Fetch-Site: None` while unprivileged ones will send
-  // `Sec-Fetch-Site: cross-site`.
+  // `Sec-Fetch-Site: cross-site`. A request is only considered privileged if
+  // the initiator has access to every URL in the redirect chain, including any
+  // pending redirect target.
   if (factory_params.unsafe_non_webby_initiator) {
-    cors::OriginAccessList::AccessState access_state =
-        origin_access_list.CheckAccessState(initiator, request.url());
-    bool is_privileged =
-        (access_state == cors::OriginAccessList::AccessState::kAllowed);
-
+    auto is_url_privileged = [&](const GURL& target_url) {
+      return origin_access_list.CheckAccessState(initiator, target_url) ==
+             cors::OriginAccessList::AccessState::kAllowed;
+    };
+    const bool is_privileged =
+        std::ranges::all_of(request.url_chain(), is_url_privileged) &&
+        (!pending_redirect_url.has_value() ||
+         is_url_privileged(pending_redirect_url.value()));
     if (is_privileged) {
       return std::nullopt;
     }
