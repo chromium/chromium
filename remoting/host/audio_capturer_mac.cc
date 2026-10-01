@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -58,7 +59,7 @@ class AudioCapturerInstanceSet {
   ~AudioCapturerInstanceSet();
   static AudioCapturerInstanceSet* Get();
 
-  base::flat_set<AudioCapturerMac*> instance_set_;
+  base::flat_set<raw_ptr<AudioCapturerMac>> instance_set_;
   base::Lock lock_;
 };
 
