@@ -870,14 +870,37 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void testOnTabChange_AlreadyImported_NoSnackbar() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, true);
+        SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
+        sharedPrefManager.writeBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, true);
+        assertTrue(CrossDeviceSettingImporter.shouldCreateImporter());
 
-        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        sharedPrefManager.writeBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, false);
+        sharedPrefManager.writeBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, true);
+        assertFalse(CrossDeviceSettingImporter.shouldCreateImporter());
 
-        initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
+        CrossDeviceSettingImporter.setPendingSnackbarForTesting(
+                new PendingSnackbar(
+                        /* isRedo= */ false,
+                        /* previousSettings= */ null,
+                        new SyncedSetupSettings(Map.of()),
+                        /* hadThemeChange= */ false,
+                        /* nonNtp= */ false,
+                        INVALID_TASK_ID));
+        assertTrue(CrossDeviceSettingImporter.shouldCreateImporter());
+        CrossDeviceSettingImporter.setPendingSnackbarForTesting(null);
 
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        importer.onTabChangeOrGainFocus(mTab);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        importer.onTabChangeOrGainFocus(mTab);
+
+        verify(mCrossDevicePrefTracker, never()).getServiceStatus();
         verify(mNtpCustomizationConfigManager, never()).ensureInitialized(any());
         verify(mSnackbarManager, never()).showSnackbar(any());
     }

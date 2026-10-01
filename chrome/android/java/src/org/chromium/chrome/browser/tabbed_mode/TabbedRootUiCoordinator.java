@@ -863,7 +863,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         maybeShowPromosOnForeground();
 
         mCrossDeviceSettingImporter =
-                DeviceInfo.isDesktop()
+                DeviceInfo.isDesktop() || !CrossDeviceSettingImporter.shouldCreateImporter()
                         ? null
                         : new CrossDeviceSettingImporter(
                                 activityLifecycleDispatcher,

@@ -318,6 +318,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             };
 
     /**
+     * Returns whether {@link CrossDeviceSettingImporter} has any pending import or snackbar work
+     * and should be instantiated.
+     */
+    public static boolean shouldCreateImporter() {
+        return sPendingSnackbar != null
+                || !hasImportedAllSettings(ChromeSharedPreferences.getInstance());
+    }
+
+    /**
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the current
      *     activity.
      * @param activityTabSupplier The supplier for the current activity's {@link Tab}.
@@ -463,6 +472,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         @Nullable Profile profile = currentTab.getProfile();
         if (profile == null || profile.isOffTheRecord()) return;
 
+        SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
+        boolean isCurrentTabNtp = UrlUtilities.isNtpUrl(currentTab.getUrl());
+
         if (sPendingSnackbar != null && matchesCurrentTask(sPendingSnackbar.taskId)) {
             boolean wasNonNtp = sPendingSnackbar.nonNtp;
             // Show the pending snackbar if the task ID matches.
@@ -474,30 +486,21 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             if (!maybeShowPendingSnackbar(profile)) {
                 return;
             }
-            boolean isCurrentTabNtp = UrlUtilities.isNtpUrl(currentTab.getUrl());
             boolean needsNtpImport =
-                    isCurrentTabNtp
-                            && wasNonNtp
-                            && !ChromeSharedPreferences.getInstance()
-                                    .readBoolean(
-                                            ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
-                                            /* defaultValue= */ true);
+                    isCurrentTabNtp && wasNonNtp && !hasImportedAllSettings(sharedPrefManager);
             if (!needsNtpImport) {
                 return;
             }
         }
 
-        SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
-        boolean nonNtp = !UrlUtilities.isNtpUrl(currentTab.getUrl());
-        boolean alreadyImported =
-                nonNtp
-                        ? hasImportedNonNtpSettings(sharedPrefManager)
-                        : sharedPrefManager.readBoolean(
-                                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
-                                /* defaultValue= */ true);
-        if (!alreadyImported) {
-            ensureNtpCustomizationConfigManagerInitialized();
+        boolean nonNtp = !isCurrentTabNtp;
+        if (nonNtp
+                ? hasImportedNonNtpSettings(sharedPrefManager)
+                : hasImportedAllSettings(sharedPrefManager)) {
+            return;
         }
+
+        ensureNtpCustomizationConfigManagerInitialized();
 
         boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
 
@@ -669,13 +672,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         boolean nonNtp = !UrlUtilities.isNtpUrl(tab.getUrl());
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
-        if (nonNtp) {
-            if (hasImportedNonNtpSettings(sharedPrefManager)) {
-                return;
-            }
-        } else if (sharedPrefManager.readBoolean(
-                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
-                /* defaultValue= */ true)) {
+        if (nonNtp
+                ? hasImportedNonNtpSettings(sharedPrefManager)
+                : hasImportedAllSettings(sharedPrefManager)) {
             return;
         }
 
@@ -728,7 +727,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
+    private static boolean hasImportedAllSettings(SharedPreferencesManager sharedPrefManager) {
+        return sharedPrefManager.readBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, /* defaultValue= */ true);
+    }
+
     private static boolean hasImportedNonNtpSettings(SharedPreferencesManager sharedPrefManager) {
+        if (hasImportedAllSettings(sharedPrefManager)) {
+            return true;
+        }
         if (sharedPrefManager.contains(
                 ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS)) {
             return sharedPrefManager.readBoolean(
