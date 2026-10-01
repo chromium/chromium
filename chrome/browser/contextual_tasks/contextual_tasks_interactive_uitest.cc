@@ -1396,8 +1396,18 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       WaitForInputCleared(kSidePanelId));
 }
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
-                       AddAndSubmitMultipleContextsWithTextFromComposebox) {
+// TODO(https://crbug.com/568329503): This is flaky/fails on at least some Linux
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
+  DISABLED_AddAndSubmitMultipleContextsWithTextFromComposebox
+#else
+#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
+  AddAndSubmitMultipleContextsWithTextFromComposebox
+#endif
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksInteractiveUiTest,
+    MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox) {
   SkipIfIncognito("Tab sharing is not supported in Incognito mode.");
 
   const GURL kGenericPageUrl1 = embedded_test_server()->GetURL("/title1.html");
