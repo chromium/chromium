@@ -141,6 +141,11 @@ void GlicView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   }
 }
 
+void GlicView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  views::WebView::OnBoundsChanged(previous_bounds);
+  UpdateWebContentsSize();
+}
+
 void GlicView::UpdateWebContentsSize() {
   const gfx::Size contents_size = GetContentsBounds().size();
   if (!web_contents() || contents_size.IsEmpty()) {

@@ -17,7 +17,6 @@
 #include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
-#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -82,7 +81,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
   auto glic_view = std::make_unique<GlicView>(
-      profile, GlicWidget::GetInitialSize(),
+      profile, gfx::Size(),
       panel_focus_dependent_hotkey_manager_->GetAcceleratorTargetWeakPtr());
 
   glic_view->SetZoomChangedCallback(base::BindRepeating(

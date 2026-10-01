@@ -77,6 +77,7 @@ class GlicView : public views::WebView,
                               content::RenderFrameHost* new_host) override;
 
   // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
 
   bool IsPointWithinDraggableRegion(const gfx::Point& point);

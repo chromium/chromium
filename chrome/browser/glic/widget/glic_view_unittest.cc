@@ -518,4 +518,48 @@ TEST_F(GlicViewNoWebviewTest, RenderFrameHostChanged_InformsSize) {
             view->GetContentsBounds().size());
 }
 
+TEST_F(GlicViewNoWebviewTest, OnBoundsChanged_InformsSize) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 200, 300));
+  auto* view = widget->SetContentsView(
+      std::make_unique<GlicView>(profile(), gfx::Size(200, 300), nullptr));
+  widget->LayoutRootViewIfNecessary();
+
+  auto fresh_pwc = CreatePwc();
+  content::WebContents* wc = fresh_pwc->web_contents();
+  ASSERT_TRUE(wc);
+  ASSERT_TRUE(wc->GetRenderWidgetHostView());
+
+  view->SetWebContents(wc);
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view->GetContentsBounds().size());
+  EXPECT_EQ(view->GetContentsBounds().size(), gfx::Size(200, 300));
+
+  widget->SetBounds(gfx::Rect(0, 0, 300, 400));
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view->GetContentsBounds().size());
+  EXPECT_EQ(view->GetContentsBounds().size(), gfx::Size(300, 400));
+}
+
+TEST_F(GlicViewNoWebviewTest, EmptyInitialSize_InformsSizeAfterLayout) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 200, 300));
+
+  auto view = std::make_unique<GlicView>(profile(), gfx::Size(), nullptr);
+
+  auto fresh_pwc = CreatePwc();
+  content::WebContents* wc = fresh_pwc->web_contents();
+  ASSERT_TRUE(wc);
+  ASSERT_TRUE(wc->GetRenderWidgetHostView());
+
+  view->SetWebContents(wc);
+
+  auto* view_ptr = widget->SetContentsView(std::move(view));
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view_ptr->GetContentsBounds().size());
+  EXPECT_EQ(view_ptr->GetContentsBounds().size(), gfx::Size(200, 300));
+}
+
 }  // namespace glic
