@@ -598,6 +598,9 @@ crbug.com/544795245 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_View
 # Periodically exhibits flaky timeouts
 crbug.com/559557324 [ android android-Pixel-6 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
+# 32-bit GPU process virtual address space exhaustion (E_OUTOFMEMORY)
+crbug.com/417782068 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
