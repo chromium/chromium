@@ -819,9 +819,32 @@ export class OmniboxPopupSearchboxElement extends
     this.selectAllOnMouseRelease_ = false;
 
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
+    const key = e.key.toLowerCase();
+
+    const isCmdCtrlL = modifier && !e.shiftKey && !e.altKey && key === 'l';
+    const isAltD = !isMac && e.altKey && !e.ctrlKey && !e.metaKey &&
+        !e.shiftKey && (key === 'd' || e.code === 'KeyD');
+    const isFocusLocationShortcut = isCmdCtrlL || isAltD;
+    if (isFocusLocationShortcut) {
+      // Cmd/Ctrl + L or Alt + D (non-Mac) -> Clear keyword mode if active,
+      // select omnibox text, & query ZPS if no user input in progress.
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.keywordModeManager.isInKeywordMode) {
+        this.keywordModeManager.clearKeyword(
+            this.getInputElement().inputElement.value);
+      }
+      this.getInputElement().select();
+      if (!this.userInputInProgress_ && !this.dropdownIsVisible) {
+        this.queryAutocomplete(
+            this.getInputElement().inputElement.value,
+            /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ true);
+      }
+      return;
+    }
 
     if (modifier) {
-      const key = e.key.toLowerCase();
       if (key === 'z') {
         e.preventDefault();
         e.stopPropagation();
@@ -839,24 +862,6 @@ export class OmniboxPopupSearchboxElement extends
         e.preventDefault();
         e.stopPropagation();
         this.redo_();
-        return;
-      }
-      if (key === 'l' && !e.shiftKey && !e.altKey) {
-        // Cmd/Ctrl + L -> Clear keyword mode if active, select omnibox text, &
-        // query ZPS if no user input in progress.
-        e.preventDefault();
-        e.stopPropagation();
-        if (this.keywordModeManager.isInKeywordMode) {
-          this.keywordModeManager.clearKeyword(
-              this.getInputElement().inputElement.value);
-        }
-        this.getInputElement().select();
-        if (!this.userInputInProgress_ && !this.dropdownIsVisible) {
-          this.queryAutocomplete(
-              this.getInputElement().inputElement.value,
-              /*preventInlineAutocomplete=*/ false,
-              /*isOnFocus=*/ true);
-        }
         return;
       }
       const isFocusSearchShortcut = isMac ?
