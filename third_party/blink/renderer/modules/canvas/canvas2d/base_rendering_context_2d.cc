@@ -849,11 +849,11 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     ScopedRasterTimer timer(shared_image_provider_->IsAccelerated()
                                 ? shared_image_provider_->RasterInterface()
                                 : nullptr,
-                            *shared_image_provider_);
+                            shared_image_provider_.get());
     shared_image_provider_->RasterRecord(recording);
     shared_image_provider_->ReleaseImageProviderImages();
   } else if (bitmap_provider_) {
-    ScopedRasterTimer timer(nullptr, *bitmap_provider_);
+    ScopedRasterTimer timer(nullptr, nullptr);
     bitmap_provider_->RasterRecord(recording);
     bitmap_provider_->ReleaseImageProviderImages();
   }

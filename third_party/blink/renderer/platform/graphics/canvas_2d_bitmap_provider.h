@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -51,7 +50,6 @@ class CanvasImageProvider;
 // Canvas2DResourceProvider.
 class PLATFORM_EXPORT Canvas2DBitmapProvider final
     : public CanvasMemoryDumpClient,
-      public ScopedRasterTimer::Host,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   // The returned instance will have been cleared at creation.

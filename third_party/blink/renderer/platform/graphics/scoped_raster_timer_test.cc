@@ -43,11 +43,10 @@ class ScopedRasterTimerTest : public Test {};
 TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::ScopedMockElapsedTimersForTest mock_timer;
-  ScopedRasterTimer::Host host;
   base::HistogramTester histograms;
 
   {
-    ScopedRasterTimer timer(nullptr, host);
+    ScopedRasterTimer timer(nullptr, nullptr);
   }
 
   histograms.ExpectUniqueSample(
@@ -70,7 +69,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   FakeRasterCommandsCompleted fake_raster;
 
   {
-    ScopedRasterTimer timer(&fake_raster, host);
+    ScopedRasterTimer timer(&fake_raster, &host);
   }
 
   host.CheckGpuTimers(&fake_raster);
