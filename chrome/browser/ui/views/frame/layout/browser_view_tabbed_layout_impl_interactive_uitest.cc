@@ -141,6 +141,26 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
         Do([this] { RunScheduledLayouts(); }));
   }
 
+  auto ToggleVerticalTabStripCollapsed(bool should_be_collapsed) {
+    auto steps = Steps(
+        PressButton(kVerticalTabStripCollapseButtonElementId),
+        WaitForEvent(kTabStripRegionElementId,
+                     VerticalTabStripRegionView::kAnimationCompletedEvent),
+        Do([this]() { RunScheduledLayouts(); }),
+        CheckView(
+            kTabStripRegionElementId,
+            [](VerticalTabStripRegionView* region) {
+              return region->GetTabStripCollectionController()
+                  ->GetStateController()
+                  ->IsCollapsed();
+            },
+            should_be_collapsed));
+    AddDescriptionPrefix(
+        steps, base::StringPrintf("ToggleVerticalTabStripCollapsed(%s)",
+                                  should_be_collapsed ? "true" : "false"));
+    return steps;
+  }
+
   auto SaveBounds(ElementSpecifier spec,
                   TemporaryIdentifier<gfx::Rect> temp_id) {
     return WithElement(spec, [this, temp_id](ui::TrackedElement* el) {
@@ -466,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(
-      PressButton(kVerticalTabStripCollapseButtonElementId),
+      ToggleVerticalTabStripCollapsed(true),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
       ScreenshotTop(kTabStripRegionElementId, "tabstrip_top", 3),
@@ -760,26 +780,6 @@ class BrowserViewTabbedLayoutImplContentLayoutUiTest
                testing::ElementsAre(
                    testing::Matcher<size_t>(std::forward<Args>(args))...))
         .SetDescription("CheckResizeCounts()");
-  }
-
-  auto ToggleVerticalTabStripCollapsed(bool should_be_collapsed) {
-    auto steps = Steps(
-        PressButton(kVerticalTabStripCollapseButtonElementId),
-        WaitForEvent(kTabStripRegionElementId,
-                     VerticalTabStripRegionView::kAnimationCompletedEvent),
-        Do([this]() { RunScheduledLayouts(); }),
-        CheckView(
-            kTabStripRegionElementId,
-            [](VerticalTabStripRegionView* region) {
-              return region->GetTabStripCollectionController()
-                  ->GetStateController()
-                  ->IsCollapsed();
-            },
-            should_be_collapsed));
-    AddDescriptionPrefix(
-        steps, base::StringPrintf("ToggleVerticalTabStripCollapsed(%s)",
-                                  should_be_collapsed ? "true" : "false"));
-    return steps;
   }
 
   auto EnterSplitView() {
