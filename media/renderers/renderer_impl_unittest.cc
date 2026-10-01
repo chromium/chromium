@@ -1099,6 +1099,11 @@ TEST_F(RendererImplTest, VideoResumedFromUnderflowDuringAudioTrackChange) {
   InitializeWithAudioAndVideo();
   Play();
 
+  // Set a zero threshold such that the deferred video underflow will be
+  // executed on the next run of the message loop, instead of after the default
+  // multi-second delay.
+  renderer_impl_->set_video_underflow_threshold_for_testing(base::TimeDelta());
+
   // Underflow the renderer.
   base::RunLoop underflow_wait;
   EXPECT_CALL(callbacks_,

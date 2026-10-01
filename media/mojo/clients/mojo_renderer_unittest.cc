@@ -13,10 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/test_message_loop.h"
-#include "base/threading/platform_thread.h"
+#include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_context.h"
@@ -57,13 +55,6 @@ const int64_t kStartPlayingTimeInMs = 100;
 ACTION_P2(GetMediaTime, start_time, elapsed_timer) {
   return start_time + elapsed_timer->Elapsed();
 }
-
-void WaitFor(base::TimeDelta duration) {
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), duration);
-  run_loop.Run();
-}
 }  // namespace
 
 class MojoRendererTest : public ::testing::Test {
@@ -79,7 +70,7 @@ class MojoRendererTest : public ::testing::Test {
         remote_renderer_remote.InitWithNewPipeAndPassReceiver());
 
     mojo_renderer_ = std::make_unique<MojoRenderer>(
-        message_loop_.task_runner(),
+        task_environment_.GetMainThreadTaskRunner(),
         std::unique_ptr<VideoOverlayFactory>(nullptr), nullptr,
         std::move(remote_renderer_remote));
 
@@ -94,7 +85,11 @@ class MojoRendererTest : public ::testing::Test {
   MojoRendererTest(const MojoRendererTest&) = delete;
   MojoRendererTest& operator=(const MojoRendererTest&) = delete;
 
-  ~MojoRendererTest() override = default;
+  ~MojoRendererTest() override {
+    // Flush pending tasks so that the self-owned `MojoRendererService` is torn
+    // down while the fixture members it references are still alive.
+    Destroy();
+  }
 
   void Destroy() {
     mojo_renderer_.reset();
@@ -202,7 +197,8 @@ class MojoRendererTest : public ::testing::Test {
   void Play() { StartPlayingFrom(base::Milliseconds(kStartPlayingTimeInMs)); }
 
   // Fixture members.
-  base::TestMessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // The MojoRenderer that we are testing.
   std::unique_ptr<MojoRenderer> mojo_renderer_;
@@ -412,7 +408,7 @@ TEST_F(MojoRendererTest, GetMediaTime) {
   Initialize();
   EXPECT_EQ(base::TimeDelta(), mojo_renderer_->GetMediaTime());
 
-  const base::TimeDelta kSleepTime = base::Milliseconds(500);
+  constexpr base::TimeDelta kAdvanceTime = base::Milliseconds(500);
   const base::TimeDelta kStartTime = base::Milliseconds(kStartPlayingTimeInMs);
 
   // Media time should not advance since playback rate is 0.
@@ -422,7 +418,7 @@ TEST_F(MojoRendererTest, GetMediaTime) {
       .WillRepeatedly(Return(kStartTime));
   mojo_renderer_->SetPlaybackRate(0);
   mojo_renderer_->StartPlayingFrom(kStartTime);
-  WaitFor(kSleepTime);
+  task_environment_.FastForwardBy(kAdvanceTime);
   EXPECT_EQ(kStartTime, mojo_renderer_->GetMediaTime());
 
   // Media time should now advance since playback rate is > 0.
@@ -431,7 +427,7 @@ TEST_F(MojoRendererTest, GetMediaTime) {
   EXPECT_CALL(*mock_renderer_, GetMediaTime())
       .WillRepeatedly(GetMediaTime(kStartTime, elapsed_timer.get()));
   mojo_renderer_->SetPlaybackRate(1.0);
-  WaitFor(kSleepTime);
+  task_environment_.FastForwardBy(kAdvanceTime);
   EXPECT_GT(mojo_renderer_->GetMediaTime(), kStartTime);
 
   // Flushing should pause media-time updates.
@@ -439,7 +435,7 @@ TEST_F(MojoRendererTest, GetMediaTime) {
   Flush();
   base::TimeDelta pause_time = mojo_renderer_->GetMediaTime();
   EXPECT_GT(pause_time, kStartTime);
-  WaitFor(kSleepTime);
+  task_environment_.FastForwardBy(kAdvanceTime);
   EXPECT_EQ(pause_time, mojo_renderer_->GetMediaTime());
   Destroy();
 }
