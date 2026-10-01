@@ -36,6 +36,9 @@ class EnterpriseSignalsDisclaimerProperties {
             new WritableObjectPropertyKey<>("on_accept_clicked");
     public static final WritableObjectPropertyKey<OnClickListener> ON_CANCEL_CLICKED =
             new WritableObjectPropertyKey<>("on_cancel_clicked");
+    // Optional footer shown below the buttons. The footer is hidden when null.
+    public static final WritableObjectPropertyKey<CharSequence> FOOTER =
+            new WritableObjectPropertyKey<>("footer");
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -50,6 +53,7 @@ class EnterpriseSignalsDisclaimerProperties {
                 CANCEL_BUTTON_TEXT,
                 ON_ACCEPT_CLICKED,
                 ON_CANCEL_CLICKED,
+                FOOTER,
             };
 
     private EnterpriseSignalsDisclaimerProperties() {}

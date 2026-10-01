@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import android.content.Context;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,15 +61,18 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
      * @param identityManager The {@link IdentityManager} used to back the {@link ProfileDataCache}.
      * @param account The account the disclaimer is shown for. This account is not required to be
      *     signed in yet.
+     * @param presentationMode How the embedder is going to present the disclaimer.
      * @param delegate The {@link Delegate} handling the user's decision.
      */
     EnterpriseSignalsDisclaimerMediator(
             Context context,
             IdentityManager identityManager,
             CoreAccountInfo account,
+            @PresentationMode int presentationMode,
             EnterpriseSignalsDisclaimerMediator.Delegate delegate) {
         mDelegate = delegate;
         mAccount = account;
+        boolean isFre = presentationMode == PresentationMode.FIRST_RUN_EXPERIENCE;
 
         // Puts the badge in the bottom right corner of the profile picture.
         BadgeConfig badgeConfig =
@@ -83,17 +89,38 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                         R.dimen.enterprise_signals_disclaimer_profile_picture_size);
         mProfileDataCache.setBadge(badgeConfig);
 
-        mModel =
+        // The FRE uses dedicated strings, and moves the "Learn more" link from the description
+        // into a footer below the buttons.
+        @StringRes
+        int titleId =
+                isFre
+                        ? R.string.enterprise_signals_disclaimer_fre_title
+                        : R.string.enterprise_signals_disclaimer_title;
+        CharSequence description =
+                isFre
+                        ? context.getString(R.string.enterprise_signals_disclaimer_fre_description)
+                        : getTextWithLearnMoreLink(
+                                context, R.string.enterprise_signals_disclaimer_description);
+        @StringRes
+        int acceptButtonTextId =
+                isFre
+                        ? R.string.enterprise_signals_disclaimer_fre_accept_button_text
+                        : R.string.enterprise_signals_disclaimer_accept_button_text;
+        @StringRes
+        int cancelButtonTextId =
+                isFre
+                        ? R.string.enterprise_signals_disclaimer_fre_cancel_button_text
+                        : R.string.enterprise_signals_disclaimer_cancel_button_text;
+
+        PropertyModel.Builder builder =
                 new PropertyModel.Builder(EnterpriseSignalsDisclaimerProperties.ALL_KEYS)
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE,
                                 mProfileDataCache.getById(mAccount.getId()).getImage())
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.TITLE,
-                                context.getString(R.string.enterprise_signals_disclaimer_title))
-                        .with(
-                                EnterpriseSignalsDisclaimerProperties.DESCRIPTION,
-                                getDescriptionWithLink(context))
+                                context.getString(titleId))
+                        .with(EnterpriseSignalsDisclaimerProperties.DESCRIPTION, description)
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.PROFILE_INFORMATION_TITLE,
                                 context.getString(
@@ -116,19 +143,23 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                                                 .enterprise_signals_disclaimer_device_information_details))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ACCEPT_BUTTON_TEXT,
-                                context.getString(
-                                        R.string.enterprise_signals_disclaimer_accept_button_text))
+                                context.getString(acceptButtonTextId))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.CANCEL_BUTTON_TEXT,
-                                context.getString(
-                                        R.string.enterprise_signals_disclaimer_cancel_button_text))
+                                context.getString(cancelButtonTextId))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED,
                                 v -> onAcceptButtonClicked())
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED,
-                                v -> onCancelButtonClicked())
-                        .build();
+                                v -> onCancelButtonClicked());
+        if (isFre) {
+            builder.with(
+                    EnterpriseSignalsDisclaimerProperties.FOOTER,
+                    getTextWithLearnMoreLink(
+                            context, R.string.enterprise_signals_disclaimer_fre_footer));
+        }
+        mModel = builder.build();
 
         mProfileDataCache.addObserver(this);
     }
@@ -169,11 +200,10 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
         mProfileDataCache.removeObserver(this);
     }
 
-    private CharSequence getDescriptionWithLink(Context context) {
+    private CharSequence getTextWithLearnMoreLink(Context context, @StringRes int stringId) {
         final ChromeClickableSpan learnMoreSpan =
                 new ChromeClickableSpan(context, v -> mDelegate.showInfoPage(LEARN_MORE_LINK));
         return SpanApplier.applySpans(
-                context.getString(R.string.enterprise_signals_disclaimer_description),
-                new SpanInfo("<LINK>", "</LINK>", learnMoreSpan));
+                context.getString(stringId), new SpanInfo("<LINK>", "</LINK>", learnMoreSpan));
     }
 }

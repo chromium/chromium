@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,7 @@ import org.robolectric.annotation.GraphicsMode;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -59,11 +61,17 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
     }
 
     private EnterpriseSignalsDisclaimerMediator createMediatorForAccount(AccountInfo accountInfo) {
+        return createMediatorForAccount(accountInfo, PresentationMode.BOTTOM_SHEET);
+    }
+
+    private EnterpriseSignalsDisclaimerMediator createMediatorForAccount(
+            AccountInfo accountInfo, @PresentationMode int presentationMode) {
         mAccountManagerTestRule.addAccount(accountInfo);
         return new EnterpriseSignalsDisclaimerMediator(
                 ContextUtils.getApplicationContext(),
                 mAccountManagerTestRule.getIdentityManager(),
                 accountInfo,
+                presentationMode,
                 mDelegate);
     }
 
@@ -108,6 +116,65 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         Spanned spanned = (Spanned) description;
         ChromeClickableSpan[] spans =
                 spanned.getSpans(0, spanned.length(), ChromeClickableSpan.class);
+        Assert.assertEquals(1, spans.length);
+        spans[0].onClick(null);
+        verify(mDelegate).showInfoPage(eq(EnterpriseSignalsDisclaimerMediator.LEARN_MORE_LINK));
+    }
+
+    @Test
+    public void defaultMode_usesDefaultStringsAndNoFooter() {
+        Context context = ContextUtils.getApplicationContext();
+        PropertyModel model = createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT).getModel();
+
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_title),
+                model.get(EnterpriseSignalsDisclaimerProperties.TITLE));
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_accept_button_text),
+                model.get(EnterpriseSignalsDisclaimerProperties.ACCEPT_BUTTON_TEXT));
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_cancel_button_text),
+                model.get(EnterpriseSignalsDisclaimerProperties.CANCEL_BUTTON_TEXT));
+        Assert.assertNull(model.get(EnterpriseSignalsDisclaimerProperties.FOOTER));
+    }
+
+    @Test
+    public void freMode_usesFreStrings() {
+        Context context = ContextUtils.getApplicationContext();
+        PropertyModel model =
+                createMediatorForAccount(
+                                TestAccounts.MANAGED_ACCOUNT, PresentationMode.FIRST_RUN_EXPERIENCE)
+                        .getModel();
+
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_fre_title),
+                model.get(EnterpriseSignalsDisclaimerProperties.TITLE));
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_fre_description),
+                model.get(EnterpriseSignalsDisclaimerProperties.DESCRIPTION).toString());
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_fre_accept_button_text),
+                model.get(EnterpriseSignalsDisclaimerProperties.ACCEPT_BUTTON_TEXT));
+        Assert.assertEquals(
+                context.getString(R.string.enterprise_signals_disclaimer_fre_cancel_button_text),
+                model.get(EnterpriseSignalsDisclaimerProperties.CANCEL_BUTTON_TEXT));
+    }
+
+    @Test
+    public void freMode_learnMoreLinkIsInFooter() {
+        PropertyModel model =
+                createMediatorForAccount(
+                                TestAccounts.MANAGED_ACCOUNT, PresentationMode.FIRST_RUN_EXPERIENCE)
+                        .getModel();
+
+        // The description has no link in the FRE, the link is moved to the footer instead.
+        Assert.assertFalse(
+                model.get(EnterpriseSignalsDisclaimerProperties.DESCRIPTION) instanceof Spanned);
+
+        Spanned footer = (Spanned) model.get(EnterpriseSignalsDisclaimerProperties.FOOTER);
+        Assert.assertNotNull(footer);
+        ChromeClickableSpan[] spans =
+                footer.getSpans(0, footer.length(), ChromeClickableSpan.class);
         Assert.assertEquals(1, spans.length);
         spans[0].onClick(null);
         verify(mDelegate).showInfoPage(eq(EnterpriseSignalsDisclaimerMediator.LEARN_MORE_LINK));

@@ -153,4 +153,16 @@ found in the LICENSE file.
         android:paddingStart="24dp"
         android:paddingEnd="24dp"/>
 
+    <!-- Optional footer, shown only when the FOOTER property is set. -->
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/disclaimer_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:visibility="gone" />
+
 </LinearLayout>

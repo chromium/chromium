@@ -436,14 +436,13 @@ public class SigninFirstRunFragment extends Fragment
         // TODO(b/553341908): Handle back press while the notice is displayed. Currently it's
         // handled by FirstRunActivity, which aborts the FRE (closing Chrome) instead of treating it
         // as a decline. Register an OnBackPressedCallback that calls onDecline().
-        //
-        // TODO(b/553341908): Introduce a dedicated presentation mode for FRE.
         mManagementNoticeCoordinator =
                 new EnterpriseSignalsDisclaimerCoordinator(
                         requireContext(),
                         assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         account,
-                        EnterpriseSignalsDisclaimerCoordinator.PresentationMode.BOTTOM_SHEET,
+                        EnterpriseSignalsDisclaimerCoordinator.PresentationMode
+                                .FIRST_RUN_EXPERIENCE,
                         this);
         setView(mManagementNoticeCoordinator.getView());
     }

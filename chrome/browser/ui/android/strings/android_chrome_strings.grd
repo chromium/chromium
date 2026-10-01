@@ -8045,6 +8045,21 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_TEXT" desc="Cancel button text of the enterprise signals disclaimer dialog.">
         Sign out
       </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_FRE_TITLE" desc="Title of the enterprise signals disclaimer shown during the First Run Experience, before the user signs in with a managed account.">
+        About this profile
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_FRE_DESCRIPTION" desc="Description of the enterprise signals disclaimer shown during the First Run Experience, before the user signs in with a managed account.">
+        To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_FRE_ACCEPT_BUTTON_TEXT" desc="Text of the button that accepts the enterprise signals disclaimer and continues signing in during the First Run Experience.">
+        Continue
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_FRE_CANCEL_BUTTON_TEXT" desc="Text of the button that declines the enterprise signals disclaimer and cancels signing in during the First Run Experience.">
+        Cancel
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_FRE_FOOTER" desc="Footer shown below the buttons of the enterprise signals disclaimer during the First Run Experience. The link opens a help center article.">
+        Learn more about <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>information your organization can view or manage<ph name="END_LINK">&lt;/LINK&gt;</ph>
+      </message>
       <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_SHEET_FULL_HEIGHT" desc="Accessibility string read when the Enterprise Signals Disclaimer bottom sheet is opened at full height.">
         Enterprise signals disclaimer bottom sheet opened at full height
       </message>

@@ -30,12 +30,19 @@ import java.lang.annotation.Target;
 @NullMarked
 public class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChangeListener {
     /** How the embedder is going to present the disclaimer. Affects the rendered layout. */
-    @IntDef({PresentationMode.MODAL_DIALOG, PresentationMode.BOTTOM_SHEET})
+    @IntDef({
+        PresentationMode.MODAL_DIALOG,
+        PresentationMode.BOTTOM_SHEET,
+        PresentationMode.FIRST_RUN_EXPERIENCE
+    })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface PresentationMode {
         int MODAL_DIALOG = 0;
         int BOTTOM_SHEET = 1;
+
+        /** Shown as a page of the First Run Experience. Uses FRE-specific strings and footer. */
+        int FIRST_RUN_EXPERIENCE = 2;
     }
 
     /** Delegate for the enterprise signals disclaimer. */
@@ -68,15 +75,13 @@ public class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStat
             @PresentationMode int presentationMode,
             Delegate delegate) {
         mDelegate = delegate;
-        mView =
-                new EnterpriseSignalsDisclaimerView(
-                        context, /* isDialog= */ presentationMode == PresentationMode.MODAL_DIALOG);
+        mView = new EnterpriseSignalsDisclaimerView(context, presentationMode);
 
         mView.addOnAttachStateChangeListener(this);
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context, identityManager, account, delegate);
+                        context, identityManager, account, presentationMode, delegate);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);

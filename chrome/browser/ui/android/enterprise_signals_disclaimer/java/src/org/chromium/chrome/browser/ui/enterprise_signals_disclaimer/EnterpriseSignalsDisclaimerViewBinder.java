@@ -53,6 +53,8 @@ class EnterpriseSignalsDisclaimerViewBinder {
         } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED) {
             view.setOnCancelClicked(
                     model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED));
+        } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.FOOTER) {
+            view.setFooter(model.get(EnterpriseSignalsDisclaimerProperties.FOOTER));
         }
     }
 

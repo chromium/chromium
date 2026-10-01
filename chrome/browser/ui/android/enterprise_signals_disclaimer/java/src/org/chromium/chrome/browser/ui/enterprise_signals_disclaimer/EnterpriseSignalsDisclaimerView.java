@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.view.FocusFinder;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,10 +20,12 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 import org.chromium.ui.widget.TextViewWithLeading;
@@ -43,14 +46,15 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
     private final TextViewWithLeading mDeviceInformationDetails;
     private final ButtonCompat mAcceptButton;
     private final ButtonCompat mCancelButton;
+    private final TextViewWithClickableSpans mFooterView;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerView}.
      *
      * @param context The Android {@link Context}.
-     * @param isDialog Whether this view is shown inside a dialog.
+     * @param presentationMode How the embedder is going to present the disclaimer.
      */
-    EnterpriseSignalsDisclaimerView(Context context, boolean isDialog) {
+    EnterpriseSignalsDisclaimerView(Context context, @PresentationMode int presentationMode) {
         super(context);
         LayoutInflater.from(context)
                 .inflate(R.layout.enterprise_signals_disclaimer_layout, this, true);
@@ -63,11 +67,12 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
         mProfileInformationDetails = findViewById(R.id.profile_information_details);
         mDeviceInformationTitle = findViewById(R.id.device_information_title);
         mDeviceInformationDetails = findViewById(R.id.device_information_details);
+        mFooterView = findViewById(R.id.disclaimer_footer);
 
         ViewGroup buttonsContainer = findViewById(R.id.disclaimer_buttons_container);
         LayoutInflater.from(context)
                 .inflate(
-                        isDialog
+                        presentationMode == PresentationMode.MODAL_DIALOG
                                 ? R.layout.enterprise_signals_disclaimer_buttons_horizontal
                                 : R.layout.enterprise_signals_disclaimer_buttons_vertical,
                         buttonsContainer,
@@ -83,6 +88,26 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
                 controller, R.id.device_info_card, /* isTop= */ false, /* isBottom= */ true);
 
         mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+        mFooterView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        if (presentationMode == PresentationMode.FIRST_RUN_EXPERIENCE) {
+            applyFreLayout();
+        }
+    }
+
+    /**
+     * Adjusts the layout for the FRE. On phones the view fills the screen, so the content is
+     * anchored to the bottom. On large screens the FRE is shown as a fixed-size card, so the
+     * content is vertically centered.
+     */
+    private void applyFreLayout() {
+        View container = findViewById(R.id.disclaimer_container);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) container.getLayoutParams();
+        params.gravity =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                        ? Gravity.CENTER_VERTICAL
+                        : Gravity.BOTTOM;
+        container.setLayoutParams(params);
     }
 
     /** Returns the scroll Y offset. */
@@ -189,6 +214,16 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
      */
     public void setOnCancelClicked(OnClickListener listener) {
         mCancelButton.setOnClickListener(listener);
+    }
+
+    /**
+     * Sets the footer text displayed below the buttons. Hides the footer if null.
+     *
+     * @param footer The footer text, or null to hide the footer.
+     */
+    public void setFooter(@Nullable CharSequence footer) {
+        mFooterView.setText(footer);
+        mFooterView.setVisibility(footer == null ? View.GONE : View.VISIBLE);
     }
 
     /**
