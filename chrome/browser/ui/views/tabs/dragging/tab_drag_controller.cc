@@ -1124,7 +1124,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   TRACE_EVENT1("views", "TabDragController::DragBrowserToNewTabStrip",
                "point_in_screen", point_in_screen.ToString());
 
-  base::WeakPtr<TabDragController> weak_this = weak_factory_.GetWeakPtr();
+  base::WeakPtr<TabDragController> ref = weak_factory_.GetWeakPtr();
 
   dragging_tabs_session_ = nullptr;
 
@@ -1140,7 +1140,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
       attached_native_view, target_context->GetWidget()->GetNativeView(),
       ui::TransferTouchesBehavior::kDontCancel);
 
-  CHECK(weak_this);
+  CHECK(ref);
 #endif
 
   if (current_state_ == DragState::kDraggingWindow) {
@@ -1176,7 +1176,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     // control returns to RunMoveLoop().
     VLOG(1) << "EndMoveLoop in DragBrowserToNewTabStrip";
     browser_widget->EndMoveLoop();
-    CHECK(weak_this);
+    CHECK(ref);
 
     // Ideally we would always swap the tabs now, but on non-ash Windows, it
     // seems that running the move loop implicitly activates the window when
@@ -1192,7 +1192,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
       // capture.
       DetachAndAttachToNewContext(ReleaseCapture::kDontReleaseCapture,
                                   target_context);
-      CHECK(weak_this);
+      CHECK(ref);
 
       // Enter kWaitingToExitRunLoop until we actually have exited the nested
       // run loop. Otherwise, we might attempt to start another nested run loop,
@@ -1201,7 +1201,12 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
 
       // Move the tabs into position.
       StartDraggingTabsSession(false, point_in_screen);
+      // Activate() may trigger a focus loss or window event that ends the drag
+      // and destroys `this`.
       attached_context_->GetWidget()->Activate();
+      if (!ref) {
+        return Liveness::kDeleted;
+      }
     }
 
     return Liveness::kAlive;
@@ -1222,10 +1227,15 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   // behaviour.
   DetachAndAttachToNewContext(ReleaseCapture::kDontReleaseCapture,
                               target_context);
-  CHECK(weak_this);
+  CHECK(ref);
 
   StartDraggingTabsSession(false, point_in_screen);
+  // Activate() may trigger a focus loss or window event that ends the drag and
+  // destroys `this`.
   attached_context_->GetWidget()->Activate();
+  if (!ref) {
+    return Liveness::kDeleted;
+  }
   return Liveness::kAlive;
 }
 
@@ -1848,6 +1858,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   }
 
   const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
+
 #if (!BUILDFLAG(IS_MAC))
   // Set the window origin before making it visible, to avoid flicker on
   // Windows. See https://crbug.com/394529650
@@ -1857,8 +1868,14 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   const gfx::Size widget_size = dragged_widget->GetSize();
 #endif
 
+  base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
+  // Show() may trigger platform event handlers that close the detached browser
+  // window or end the drag session, synchronously destroying `this`.
   browser->GetWindow()->Show();
+  if (!ref) {
+    return Liveness::kDeleted;
+  }
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
 
   // When InitialWebUI is enabled, the asynchronous loading of WebUI might cause
@@ -1878,7 +1895,8 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       auto suppress_data_drag =
           views::DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
 #endif
-      base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+      // Wait() runs a nested message loop that may process events closing the
+      // window or ending the drag, destroying `this`.
       waiter.Wait();
       if (!ref) {
         return Liveness::kDeleted;
@@ -1896,13 +1914,11 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       display::Screen::Get()->GetDisplayNearestPoint(point_in_screen).id();
 #endif
 
-  // Activate may trigger a focus loss, destroying us.
-  {
-    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-    browser->GetWindow()->Activate();
-    if (!ref) {
-      return Liveness::kDeleted;
-    }
+  // Activate() may trigger a focus loss or window event that ends the drag,
+  // destroying `this`.
+  browser->GetWindow()->Activate();
+  if (!ref) {
+    return Liveness::kDeleted;
   }
   return RunMoveLoop(point_in_screen, drag_offset);
 }
@@ -2037,6 +2053,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
   VLOG(1) << __func__ << " type=" << static_cast<int>(type)
           << " state=" << static_cast<int>(current_state_);
 
+  base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   DragState previous_state = current_state_;
   current_state_ = DragState::kStopped;
   attached_context_tabs_closed_tracker_.reset();
@@ -2080,8 +2097,13 @@ void TabDragController::EndDragImpl(EndDragType type) {
           }
 #endif  // defined(USE_AURA)
 
-          // Make the hidden window containing the dragged tabs visible.
+          // Make the hidden window containing the dragged tabs visible. Show()
+          // may trigger platform event handlers that synchronously close the
+          // window and destroy `this`.
           GetAttachedBrowserWidget()->Show();
+          if (!ref) {
+            return;
+          }
         }
         CompleteDrag();
       }
@@ -2092,6 +2114,12 @@ void TabDragController::EndDragImpl(EndDragType type) {
       RevertDrag();
     }
   }  // else case the only tab we were dragging was deleted. Nothing to do.
+
+  // RevertDrag() or CompleteDrag() may have triggered window activation or
+  // closure events that synchronously destroyed the owning window and `this`.
+  if (!ref) {
+    return;
+  }
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.tab_drag_data_.clear();
@@ -2120,8 +2148,13 @@ void TabDragController::RevertDrag() {
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
 
-  base::AutoReset<bool> is_mutating_setter(&is_mutating_, true);
-  base::AutoReset<bool> is_removing_last_tab_setter(&is_moving_last_tab_, true);
+  // Activate() at the end of RevertDrag() may synchronously destroy `this`; use
+  // WeakAutoReset so unwinding stack frames do not write to a freed object.
+  base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+  base::WeakAutoReset<TabDragController, bool> is_mutating_setter(
+      ref, &TabDragController::is_mutating_, true);
+  base::WeakAutoReset<TabDragController, bool> is_removing_last_tab_setter(
+      ref, &TabDragController::is_moving_last_tab_, true);
 
   // If we support a mixture of dragging between VT and HT, then update this
   // metric accordingly.
@@ -2195,6 +2228,9 @@ void TabDragController::RevertDrag() {
                          initial_selection_model_);
   }
 
+  // Clear tab drag data before Activate(), which may synchronously close the
+  // window and destroy its WebContents.
+  drag_data_.tab_drag_data_.clear();
   source_context_->GetWidget()->Activate();
 }
 
