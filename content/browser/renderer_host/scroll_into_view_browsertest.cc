@@ -681,7 +681,14 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, MAYBE_EditableInLocalRoot) {
   RunTest();
 }
 
-IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
+// Test times out on Linux in all its variants: https://crbug.com/567559501
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EditableInDoublyNestedFrame DISABLED_EditableInDoublyNestedFrame
+#else
+#define MAYBE_EditableInDoublyNestedFrame EditableInDoublyNestedFrame
+#endif
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest,
+                       MAYBE_EditableInDoublyNestedFrame) {
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
   RunTest();
 }
