@@ -7,6 +7,6 @@
 [
     ImplementedAs=RTC
 ] partial interface Navigator {
-    [SameObject, SecureContext, RuntimeEnabled=RTCDiagnosticLogging] readonly attribute RTC rtc;
+    [SameObject, SecureContext, RuntimeEnabled=RTCLegacyDiagnosticLogging] readonly attribute RTC rtc;
 
 };
