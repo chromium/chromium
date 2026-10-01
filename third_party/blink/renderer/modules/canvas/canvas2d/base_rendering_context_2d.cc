@@ -177,6 +177,11 @@ bool BaseRenderingContext2D::IsResourceProviderValid() const {
   return bitmap_provider_ != nullptr;
 }
 
+void BaseRenderingContext2D::ResetResourceProvider() {
+  shared_image_provider_.reset();
+  bitmap_provider_.reset();
+}
+
 bool BaseRenderingContext2D::IsPaintable() const {
   return HasResourceProvider();
 }

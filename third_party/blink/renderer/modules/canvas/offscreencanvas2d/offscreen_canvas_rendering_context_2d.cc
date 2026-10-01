@@ -436,11 +436,6 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 
-void OffscreenCanvasRenderingContext2D::ResetResourceProvider() {
-  shared_image_provider_.reset();
-  bitmap_provider_.reset();
-}
-
 void OffscreenCanvasRenderingContext2D::Dispose() {
   FlushForImageListener::Get()->RemoveObserver(this);
   ResetResourceProvider();

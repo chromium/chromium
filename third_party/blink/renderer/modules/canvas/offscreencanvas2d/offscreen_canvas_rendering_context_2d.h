@@ -139,7 +139,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   bool InitializeResourceProvider() override;
-  void ResetResourceProvider();
 };
 
 }  // namespace blink

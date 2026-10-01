@@ -160,6 +160,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual bool InitializeResourceProvider() = 0;
   bool HasResourceProvider() const;
   virtual bool IsResourceProviderValid() const;
+  virtual void ResetResourceProvider();
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
 
