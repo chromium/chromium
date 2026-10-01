@@ -45,6 +45,8 @@ tools = [
     "rustfmt",
     "rust-analyzer",
     "rust-analyzer-proc-macro-srv",
+    "rust-src",
+    # TODO(https://crbug.com/568298322): Remove "src" after next rust roll
     "src",
 ]
 
