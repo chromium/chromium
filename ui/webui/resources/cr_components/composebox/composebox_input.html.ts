@@ -31,7 +31,10 @@ export function getHtml(this: ComposeboxInputElement) {
               @input="${this.onInputInput_}"
               @focusin="${this.onInputFocusin_}"
               @focus="${this.onInputFocus_}"
-              @blur="${this.onInputBlur_}"></div>
+              @blur="${this.onInputBlur_}"
+              @copy="${this.onInputCopy_}"
+              @cut="${this.onInputCut_}"
+              @paste="${this.onInputPaste_}"></div>
           ` : html`
             <textarea
               aria-expanded="${this.showDropdown}" aria-controls="matches"
