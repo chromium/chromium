@@ -878,7 +878,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
       BookmarkParentFolder::FromFolderNode(f1_node), 0);
   // In practice, additional menus created by `SetActiveMenu` are registered as
   // siblings of the menu runner, which handles deletion.
-  const std::unique_ptr<views::MenuItemView> f1_menu(menu());
+  const std::unique_ptr<views::MenuItemView> f1_menu(
+      bookmark_menu_delegate_->menu());
   ASSERT_NE(f1_menu, nullptr);
   EXPECT_EQ(f1_menu->GetParentMenuItem(), nullptr);
 
