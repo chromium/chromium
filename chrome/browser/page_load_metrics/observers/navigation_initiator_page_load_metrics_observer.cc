@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/google/core/common/google_util.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
@@ -64,11 +65,14 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
     return ChromeInitiatorLocation::kOther;
   }();
 
-  base::UmaHistogramEnumeration("Navigation.InitiatorType.All",
-                                initiator_location);
+  base::UmaHistogramExactLinear(
+      "Navigation.InitiatorType.All", static_cast<int>(initiator_location),
+      page_load_metrics::NavigationInitiator::kIdExclusiveMax);
+
   if (is_srp) {
-    base::UmaHistogramEnumeration("Navigation.InitiatorType.SRP",
-                                  initiator_location);
+    base::UmaHistogramExactLinear(
+        "Navigation.InitiatorType.SRP", static_cast<int>(initiator_location),
+        page_load_metrics::NavigationInitiator::kIdExclusiveMax);
   }
 
   if (initiator_location == ChromeInitiatorLocation::kOther) {
