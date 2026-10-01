@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -34,6 +35,14 @@ void InterestButtonPseudoElement::HandleButtonActivation() {
       GetDocument().GetExecutionContext()));
   Element& invoker = UltimateOriginatingElement();
   invoker.ShowInterestNow();
+  // If the target popover is now open and implicitly anchored to the
+  // originating element, anchor it to this ::interest-button instead.
+  if (auto* popover = DynamicTo<HTMLElement>(invoker.InterestForElement());
+      popover && popover->popoverOpen() &&
+      popover->implicitAnchor() == &invoker &&
+      invoker.GetPseudoElement(kPseudoIdInterestButton) == this) {
+    popover->SetImplicitAnchor(this);
+  }
 }
 
 void InterestButtonPseudoElement::DefaultEventHandler(Event& event) {
