@@ -5,11 +5,11 @@
 import {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ComposeboxFile, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DriveDisclaimerStatus} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -143,7 +143,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
       title: 'Tab 1',
       url: 'https://example.com',
       delayUpload: false,
-      origin: TabUploadOrigin.CONTEXT_MENU,
+      origin: TabAttachmentSource.kContextMenu,
     });
     await microtasksFinished();
 

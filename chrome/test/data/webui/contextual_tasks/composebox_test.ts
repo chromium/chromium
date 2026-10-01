@@ -6,12 +6,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-/* clang-format off */
 import {ComposeboxFile, GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
-// <if expr="not is_android">
-import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
-// </if>
-/* clang-format on */
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -24,7 +19,12 @@ import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_compon
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+/* clang-format off */
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+// <if expr="not is_android">
+import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+// </if>
+/* clang-format on */
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -2279,7 +2279,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
       // `new URL()`.
       url: 'https://example.com/',
       delayUpload: false,
-      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+      origin: TabAttachmentSource.kCurrentTabChip,
     });
     await mockSearchboxPageHandler.whenCalled('addTabContext');
     await microtasksFinished();

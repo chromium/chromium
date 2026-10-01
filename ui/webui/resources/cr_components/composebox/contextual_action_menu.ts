@@ -19,12 +19,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {getLoadTimeBoolean, mapMetricsSourceToTabPickerSurface, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordTabPickerTabSelected, SmartTabSharingSurface, TabUploadOrigin} from './common.js';
+import {getLoadTimeBoolean, mapMetricsSourceToTabPickerSurface, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordTabPickerTabSelected, SmartTabSharingSurface} from './common.js';
 import {getCss} from './contextual_action_menu.css.js';
 import {getHtml} from './contextual_action_menu.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -961,7 +962,7 @@ export class ContextualActionMenuElement extends
       title: tabInfo.title,
       url: tabInfo.url,
       delayUpload: false,
-      origin: TabUploadOrigin.CONTEXT_MENU,
+      origin: TabAttachmentSource.kContextMenu,
     });
     this.maybeCloseMenuBasedOnEntrypoint_();
   }

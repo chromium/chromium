@@ -16,12 +16,12 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {InputSource, QueryActionOverride, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, InputMethod, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, InputMethod, SuggestStyle, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState} from './common.js';
 import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -1422,7 +1422,7 @@ export const ComposeboxEmbedderMixin =
           title: string,
           url: Url,
           delayUpload: boolean,
-          origin: TabUploadOrigin,
+          origin: TabAttachmentSource,
         }>) {
           if (!this.browserTabContextAdded) {
             recordContextualElementClickedMetric(
@@ -1438,7 +1438,7 @@ export const ComposeboxEmbedderMixin =
           });
           await this.updateComplete;
           // Only keep menu open if it was from menu and not recent tab.
-          if (e.detail.origin === TabUploadOrigin.CONTEXT_MENU) {
+          if (e.detail.origin === TabAttachmentSource.kContextMenu) {
             this.keepMenuOpenForMultiSelection();
           }
         }
@@ -1469,13 +1469,13 @@ export const ComposeboxEmbedderMixin =
             tabUpload: TabUpload, _replaceAutoActiveTabToken: boolean = false,
             onBeforeUpdateFiles?: (attachment: ComposeboxFile) =>
                 void): Promise<ComposeboxFile|null> {
-          if (tabUpload.origin !== TabUploadOrigin.AUTO_ACTIVE) {
+          if (tabUpload.origin !== TabAttachmentSource.kAutoActive) {
             this.clearAutocompleteMatches();
           }
           try {
             const token = await this.getSearchboxHandler().addTabContext(
                 tabUpload.tabId, tabUpload.delayUpload,
-                mapOriginToMojoSource(tabUpload.origin));
+                tabUpload.origin ?? TabAttachmentSource.kOther);
             if (!token) {
               return null;
             }
@@ -1687,7 +1687,7 @@ export const ComposeboxEmbedderMixin =
             const driveUploads: DriveUpload[] = [];
             for (const file of files) {
               if ('tabId' in file) {
-                if (file.origin === TabUploadOrigin.CONTEXT_MENU) {
+                if (file.origin === TabAttachmentSource.kContextMenu) {
                   this.keepMenuOpenForMultiSelection();
                 }
                 this.addTabContextHandleCallback(
@@ -3274,7 +3274,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
     title: string,
     url: Url,
     delayUpload: boolean,
-    origin: TabUploadOrigin,
+    origin: TabAttachmentSource,
   }>): void;
   onContextMenuClosed(): Promise<void>;
   keepMenuOpenForMultiSelection(): Promise<void>;

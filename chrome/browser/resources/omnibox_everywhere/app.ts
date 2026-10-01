@@ -11,7 +11,6 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
 import '//resources/cr_components/search/animated_glow.js';
 
-import {TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
 import type {MostVisitedElement} from '//resources/cr_components/most_visited/most_visited.js';
@@ -23,7 +22,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {FreStage} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {FreStage, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FreState, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
@@ -217,7 +216,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
           state.files = [{
             ...initialState.tab,
             delayUpload: false,
-            origin: TabUploadOrigin.CONTEXT_MENU,
+            origin: TabAttachmentSource.kContextMenu,
           }];
         }
         if (initialState.fileToken && initialState.fileInfo) {

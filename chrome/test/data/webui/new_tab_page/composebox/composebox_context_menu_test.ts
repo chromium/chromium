@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -606,7 +606,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               tabId: 1,
               url: 'https://example.com/1',
               title: 'Tab 1',
-              origin: TabUploadOrigin.CONTEXT_MENU,
+              origin: TabAttachmentSource.kContextMenu,
               delayUpload: false,
             }],
             mode: ToolMode.kUnspecified,

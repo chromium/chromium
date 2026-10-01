@@ -9,7 +9,7 @@ import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from '//resources/cr_components/composebox/common.js';
 import {ContextType, getLoadTimeBoolean, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -31,7 +31,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FuseboxAction} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {InputSource} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabAttachmentSource, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -584,7 +584,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     title: string,
     url: Url,
     delayUpload: boolean,
-    origin: TabUploadOrigin,
+    origin: TabAttachmentSource,
   }>) {
     const attachment: TabUpload = {
       tabId: e.detail.id,
