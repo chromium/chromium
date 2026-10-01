@@ -390,6 +390,10 @@ _CONFIG = [
             'third_party/blink/public/common/web_preferences/',
         ],
         'allowed': [
+            # Used for ScriptFontFamilyMap because it is the most efficient map
+            # to copy (for this use case, we don't care so much about the cost
+            # to add elements, we care about the cost to copy).
+            'base::flat_map',
             'GURL',
         ],
     },

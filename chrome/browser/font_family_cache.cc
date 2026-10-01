@@ -7,11 +7,16 @@
 
 #include <stddef.h>
 
-#include <map>
+#include <array>
+#include <string_view>
+#include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,75 +54,71 @@ void FontFamilyCache::FillFontFamilyMap(
 void FontFamilyCache::FillFontFamilyMap(
     const char* map_name,
     blink::web_pref::ScriptFontFamilyMap* map) {
-  // TODO(falken): Get rid of the brute-force scan over possible
-  // (font family / script) combinations - see http://crbug.com/40337107.
-  for (size_t i = 0; i < prefs::kWebKitScriptsForFontFamilyMapsLength; ++i) {
-    const char* script = prefs::kWebKitScriptsForFontFamilyMaps[i];
-    std::u16string result = FetchAndCacheFont(script, map_name);
-    if (!result.empty())
-      (*map)[script] = result;
+  auto it = font_family_map_.find(map_name);
+  if (it == font_family_map_.end()) {
+    std::vector<std::pair<std::string, std::u16string>> entries;
+    for (const char* script : prefs::kWebKitScriptsForFontFamilyMaps) {
+      std::u16string result = FetchFont(script, map_name);
+      if (!result.empty()) {
+        entries.emplace_back(script, std::move(result));
+      }
+    }
+    // `ScriptFontFamilyMap` (`base::flat_map`) sorts and deduplicates `entries`
+    // in-place (note that `kWebKitScriptsForFontFamilyMaps` is not strictly
+    // sorted, e.g. "Geor" precedes "Geok", so `base::sorted_unique` is not
+    // used).
+    it = font_family_map_
+             .emplace(map_name,
+                      blink::web_pref::ScriptFontFamilyMap(std::move(entries)))
+             .first;
   }
+  *map = it->second;
 }
 
 std::u16string FontFamilyCache::FetchFont(const char* script,
                                           const char* map_name) {
-  std::string pref_name = base::StringPrintf("%s.%s", map_name, script);
-  std::string font = prefs_->GetString(pref_name.c_str());
-  std::u16string font16 = base::UTF8ToUTF16(font);
+  std::string_view map_name_view(map_name);
+  std::string_view script_view(script);
+  const size_t pref_name_len = map_name_view.size() + 1 + script_view.size();
+  std::array<char, 64> buf;
+  CHECK_LE(pref_name_len, buf.size());
 
-  // Lazily constructs the map if it doesn't already exist.
-  ScriptFontMap& map = font_family_map_[map_name];
-  map[script] = font16;
-  return font16;
+  // `take_first()` returns the prefix subspan and advances `span` past it.
+  base::span<char> span(buf);
+  span.take_first(map_name_view.size()).copy_from(map_name_view);
+  span.take_first<1u>()[0] = '.';
+  span.take_first(script_view.size()).copy_from(script_view);
+  std::string_view pref_name =
+      base::as_string_view(base::span(buf).first(pref_name_len));
+
+  std::string font = prefs_->GetString(pref_name);
+  return base::UTF8ToUTF16(font);
 }
 
-std::u16string FontFamilyCache::FetchAndCacheFont(const char* script,
-                                                  const char* map_name) {
-  FontFamilyMap::const_iterator it = font_family_map_.find(map_name);
-  if (it != font_family_map_.end()) {
-    auto it2 = it->second.find(script);
-    if (it2 != it->second.end())
-      return it2->second;
+void FontFamilyCache::OnPrefsChanged(const std::string& pref_name) {
+  size_t delimiter_pos = pref_name.rfind('.');
+  if (delimiter_pos == std::string::npos) {
+    return;
   }
 
-  return FetchFont(script, map_name);
-}
+  std::string_view map_name =
+      std::string_view(pref_name).substr(0, delimiter_pos);
+  auto it = font_family_map_.find(map_name);
+  if (it == font_family_map_.end()) {
+    return;
+  }
 
-// There are ~1000 entries in the cache. Avoid unnecessary object construction,
-// including std::string.
-void FontFamilyCache::OnPrefsChanged(const std::string& pref_name) {
-  const size_t delimiter_length = 1;
-  const char delimiter = '.';
-  for (auto& it : font_family_map_) {
-    const char* map_name = it.first;
-    size_t map_name_length = strlen(map_name);
-
-    // If the map name doesn't match, move on.
-    if (pref_name.compare(0, map_name_length, map_name) != 0)
-      continue;
-
-    ScriptFontMap& map = it.second;
-    for (auto it2 = map.begin(); it2 != map.end(); ++it2) {
-      const char* script = it2->first;
-      size_t script_length = strlen(script);
-
-      // If the length doesn't match, move on.
-      if (pref_name.size() !=
-          map_name_length + script_length + delimiter_length)
-        continue;
-
-      // If the script doesn't match, move on.
-      if (pref_name.compare(
-              map_name_length + delimiter_length, script_length, script) != 0)
-        continue;
-
-      // If the delimiter doesn't match, move on.
-      if (pref_name[map_name_length] != delimiter)
-        continue;
-
-      // Clear the cache.
-      map.erase(it2);
-      break;
+  std::string_view script =
+      std::string_view(pref_name).substr(delimiter_pos + 1);
+  for (const char* candidate_script : prefs::kWebKitScriptsForFontFamilyMaps) {
+    if (script == candidate_script) {
+      std::u16string result = FetchFont(candidate_script, it->first.c_str());
+      if (result.empty()) {
+        it->second.erase(script);
+      } else {
+        it->second[std::string(script)] = std::move(result);
+      }
+      return;
     }
   }
 }

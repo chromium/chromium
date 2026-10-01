@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/map_traits_flat_map.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -20,37 +21,37 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
                                         blink::web_pref::WebPreferences> {
-  static const std::map<std::string, std::u16string>& standard_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& standard_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.standard_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>& fixed_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& fixed_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fixed_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>& serif_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& serif_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.serif_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>&
-  sans_serif_font_family_map(const blink::web_pref::WebPreferences& r) {
+  static const blink::web_pref::ScriptFontFamilyMap& sans_serif_font_family_map(
+      const blink::web_pref::WebPreferences& r) {
     return r.sans_serif_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>& cursive_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& cursive_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.cursive_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>& fantasy_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& fantasy_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fantasy_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>& math_font_family_map(
+  static const blink::web_pref::ScriptFontFamilyMap& math_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.math_font_family_map;
   }
