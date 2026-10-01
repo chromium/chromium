@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
@@ -314,6 +315,12 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertThat(spans.length, is(1));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillAiSaveUpdateEntityPrompt.WALLET_NOTICE_SAVE_FUNNEL_HISTOGRAM,
+                        AutofillAiWalletNoticeFunnelEvents.LINK_CLICKED);
+        spans[0].onClick(publicPassesNoticeView);
+        histogramWatcher.assertExpected();
     }
 
     @Test

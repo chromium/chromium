@@ -493,6 +493,8 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
         client_->GetWalletPassAccessManager();
     if (wallet_pass_access_manager &&
         IsEligibleForWalletPassDisclosure(is_save_prompt, candidate_entity)) {
+      LogWalletNoticeFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails);
       const EntityType entity_type = candidate_entity.type();
       wallet_pass_access_manager->GetDetailsForUpsertPass(
           entity_type,
@@ -553,6 +555,8 @@ void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
                                 (response->legal_message_lines.empty() ||
                                  response->context_token.empty()));
   if (fallback_to_local) {
+    LogWalletNoticeFunnelEvent(
+        AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError);
     // If fetching details for the upsert pass failed, or if the user should
     // see the legal message notice (`kEligible`) but `legal_message_lines` or
     // `context_token` is empty, fall back to saving locally.
@@ -560,9 +564,13 @@ void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
         new_entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal);
     is_save_synchronous =
         !IsSaveAsynchronous(new_entity.type(), new_entity.record_type());
-  } else if (should_see_legal_message_notice) {
-    public_passes_notice = std::move(response->legal_message_lines);
-    context_token = std::move(response->context_token);
+  } else {
+    LogWalletNoticeFunnelEvent(
+        AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess);
+    if (should_see_legal_message_notice) {
+      public_passes_notice = std::move(response->legal_message_lines);
+      context_token = std::move(response->context_token);
+    }
   }
   ShowEntityImportBubble(form, ukm_source_id, prompt_type,
                          std::move(new_entity), std::move(old_entity),
@@ -622,6 +630,10 @@ void AutofillAiManager::HandlePromptResult(
   AddOrClearImportPromptStrikes(prompt_type, result, form.url(), entity);
 
   if (!DidUserExplicitlyAcceptedImportPrompt(result)) {
+    if (context_token.has_value()) {
+      LogWalletNoticeFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved);
+    }
     return;
   }
 
@@ -632,11 +644,19 @@ void AutofillAiManager::HandlePromptResult(
   if (entity.record_type() == EntityInstance::RecordType::kServerWallet &&
       !MayPerformAutofillAiAction(*client_, AutofillAiAction::kImportToWallet,
                                   entity.type())) {
+    if (context_token.has_value()) {
+      LogWalletNoticeFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved);
+    }
     HandleIneligibleWalletFallback(prompt_type, std::move(entity));
     return;
   }
 
   if (!IsSaveAsynchronous(entity.type(), entity.record_type())) {
+    if (context_token.has_value()) {
+      LogWalletNoticeFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents::kEntitySaved);
+    }
     entity_manager.AddOrUpdateEntityInstance(std::move(entity),
                                              std::move(context_token));
     return;

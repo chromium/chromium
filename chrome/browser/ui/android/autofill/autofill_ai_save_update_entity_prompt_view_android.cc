@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -99,6 +100,8 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
 
   if (controller->IsEligibleForWalletPassDisclosure() &&
       !controller->GetPublicPassesNotice().empty()) {
+    LogWalletNoticeFunnelEvent(
+        AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown);
     Java_AutofillAiSaveUpdateEntityPrompt_setPublicPassesNotice(
         env, java_object_, controller->GetPublicPassesNotice());
   }

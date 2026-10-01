@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -345,6 +346,7 @@ AutofillAiImportDataControllerImpl::GetLegalMessageLines() const {
 
 void AutofillAiImportDataControllerImpl::OnLegalMessageLinkClicked(
     const GURL& url) {
+  LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents::kLinkClicked);
   OpenUrlAndReopenBubbleOnReturn(url);
 }
 

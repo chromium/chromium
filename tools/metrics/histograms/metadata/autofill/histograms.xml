@@ -2349,6 +2349,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.WalletNotice.Save.Funnel"
+    enum="AutofillAiWalletNoticeFunnelEvents" expires_after="2027-03-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the funnel of events related to fetching and displaying the Google
+    Wallet public pass legal disclosure notice in the Autofill AI save prompt
+    during form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
     enum="AutofillAiBubbleResult" expires_after="2027-03-14">
   <owner>brunobraga@google.com</owner>

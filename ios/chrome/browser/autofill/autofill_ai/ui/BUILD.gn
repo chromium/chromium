@@ -54,6 +54,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base:i18n",
+    "//base/test:test_support",
     "//components/autofill/core/browser:legal_message_line",
     "//components/autofill/core/browser:test_support",
     "//ios/chrome/app/strings",

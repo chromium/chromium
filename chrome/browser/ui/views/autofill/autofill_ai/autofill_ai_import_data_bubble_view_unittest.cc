@@ -7,12 +7,14 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -259,6 +261,7 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
        WalletPassDisclosureShownWhenLegalMessageLinesNotEmpty) {
+  base::HistogramTester histogram_tester;
   LegalMessageLines legal_message_lines = {
       TestLegalMessageLine("Test legal message")};
   EXPECT_CALL(mock_controller(), GetLegalMessageLines())
@@ -266,16 +269,21 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   CreateViewAndShow();
 
   EXPECT_NE(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.WalletNotice.Save.Funnel",
+      AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown, 1);
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
        WalletPassDisclosureNotShownWhenLegalMessageLinesEmpty) {
+  base::HistogramTester histogram_tester;
   LegalMessageLines legal_message_lines;
   EXPECT_CALL(mock_controller(), GetLegalMessageLines())
       .WillRepeatedly(testing::ReturnRef(legal_message_lines));
   CreateViewAndShow();
 
   EXPECT_EQ(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
+  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Save.Funnel", 0);
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,

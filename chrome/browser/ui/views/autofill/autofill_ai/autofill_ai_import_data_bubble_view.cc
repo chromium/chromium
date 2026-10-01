@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -110,6 +111,8 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
   }
 
   if (!controller_->GetLegalMessageLines().empty()) {
+    LogWalletNoticeFunnelEvent(
+        AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown);
     main_content_wrapper->AddChildView(GetWalletableEntityDisclosure());
   }
 

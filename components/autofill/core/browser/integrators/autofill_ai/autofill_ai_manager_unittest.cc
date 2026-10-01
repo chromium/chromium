@@ -1937,6 +1937,7 @@ TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_RetrievesDetailsAndShowsBubble) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
 
   std::unique_ptr<FormStructure> form = CreateVehicleForm();
 
@@ -1971,6 +1972,57 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kServerWallet);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess,
+              1),
+          base::Bucket(AutofillAiWalletNoticeFunnelEvents::kEntitySaved, 1)));
+}
+
+// Tests that declining the save bubble after retrieving legal disclosure
+// details logs `kEntityNotSaved`.
+TEST_F(AutofillAiManagerImportFormTest,
+       EligibleWalletPass_Declined_LogsEntityNotSaved) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+
+  LegalMessageLines expected_notice;
+  expected_notice.emplace_back();
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_details{
+      .legal_message_lines = expected_notice,
+      .context_token = "test_context_token",
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle), _))
+      .WillOnce(RunOnceCallback<1>(expected_details));
+
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(
+                  HasRecordType(EntityInstance::RecordType::kServerWallet),
+                  Eq(std::nullopt), /*save_is_synchronous=*/true, _, _))
+      .WillOnce(
+          RunOnceCallback<4>(kDeclineBubble, std::nullopt, kDeclineUIContext));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess,
+              1),
+          base::Bucket(AutofillAiWalletNoticeFunnelEvents::kEntityNotSaved,
+                       1)));
 }
 
 // Tests that when `GetDetailsForUpsertPass` returns an empty legal message for
@@ -1980,6 +2032,7 @@ TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_EligibleUserWithEmptyLegalMessage_FallsBackToLocal) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
 
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
       .legal_message_lines = {},
@@ -2011,6 +2064,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
+              1)));
 }
 
 // Tests that when `GetDetailsForUpsertPass` returns an empty context token for
@@ -2020,6 +2081,7 @@ TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_EligibleUserWithEmptyContextToken_FallsBackToLocal) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
 
   LegalMessageLines notice;
   notice.emplace_back();
@@ -2053,6 +2115,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
+              1)));
 }
 
 // Tests that when `GetDetailsForUpsertPass` returns an empty legal message for
@@ -2062,6 +2132,7 @@ TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_IneligibleUserWithEmptyLegalMessage_SavesToWallet) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
 
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
       .legal_message_lines = {},
@@ -2094,6 +2165,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kServerWallet);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchSuccess,
+              1)));
 }
 
 // Tests that when `GetDetailsForUpsertPass` fails, the entity falls back to a
@@ -2103,6 +2182,7 @@ TEST_F(AutofillAiManagerImportFormTest,
        EligibleWalletPass_RetrievalFails_FallsBackToLocal) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDisclosureNoticePublicPass};
+  base::HistogramTester histogram_tester;
 
   std::unique_ptr<FormStructure> form = CreateVehicleForm();
 
@@ -2131,6 +2211,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kLocal);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.WalletNotice.Save.Funnel"),
+      BucketsAre(
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kFetchingUpsertDetails, 1),
+          base::Bucket(
+              AutofillAiWalletNoticeFunnelEvents::kUpsertDetailsFetchError,
+              1)));
 }
 
 // Tests that when an entity is not eligible for public pass disclosure (e.g.

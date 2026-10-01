@@ -31,6 +31,23 @@ enum class AutofillAiOptInFunnelEvents {
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
 
+// Funnel events for fetching and displaying the Google Wallet public pass
+// legal disclosure notice during the save prompt.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
+// LINT.IfChange(AutofillAiWalletNoticeFunnelEvents)
+enum class AutofillAiWalletNoticeFunnelEvents {
+  kFetchingUpsertDetails = 0,
+  kUpsertDetailsFetchSuccess = 1,
+  kUpsertDetailsFetchError = 2,
+  kLegalMessageShown = 3,
+  kLinkClicked = 4,
+  kEntitySaved = 5,
+  kEntityNotSaved = 6,
+  kMaxValue = kEntityNotSaved,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiWalletNoticeFunnelEvents)
+
+void LogWalletNoticeFunnelEvent(AutofillAiWalletNoticeFunnelEvents event);
 
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&

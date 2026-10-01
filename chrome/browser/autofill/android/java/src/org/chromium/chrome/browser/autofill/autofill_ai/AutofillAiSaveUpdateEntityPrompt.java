@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.autofill_ai.AutofillAiWalletNoticeFunnelEvents;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.styles.NewLabelUtils;
@@ -52,6 +53,10 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
     @VisibleForTesting
     public static final String ENTITY_EDITOR_OPENED_HISTOGRAM =
             "Autofill.Ai.EntityEditor.OpenedFromSaveUpdatePrompt";
+
+    @VisibleForTesting
+    public static final String WALLET_NOTICE_SAVE_FUNNEL_HISTOGRAM =
+            "Autofill.Ai.WalletNotice.Save.Funnel";
 
     private final AutofillAiSaveUpdateEntityPromptController mController;
     private final ModalDialogManager mModalDialogManager;
@@ -347,7 +352,13 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                         mContext,
                         legalMessageLines,
                         /* underlineLinks= */ true,
-                        url -> AutofillUiUtils.openLink(mContext, url));
+                        url -> {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    WALLET_NOTICE_SAVE_FUNNEL_HISTOGRAM,
+                                    AutofillAiWalletNoticeFunnelEvents.LINK_CLICKED,
+                                    AutofillAiWalletNoticeFunnelEvents.MAX_VALUE + 1);
+                            AutofillUiUtils.openLink(mContext, url);
+                        });
         legalMessageView.setText(stringBuilder);
         legalMessageView.setVisibility(View.VISIBLE);
         legalMessageView.setMovementMethod(LinkMovementMethod.getInstance());

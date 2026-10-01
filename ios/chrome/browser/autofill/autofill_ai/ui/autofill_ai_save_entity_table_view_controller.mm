@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/filling/field_filling_util.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -135,6 +136,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   // Cached footer text and URLs computed when the model updates.
   NSString* _cachedFooterText;
   NSArray<CrURL*>* _cachedFooterURLs;
+  NSArray<CrURL*>* _cachedLegalMessageURLs;
 
   // Diffable data source for the table view.
   UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* _dataSource;
@@ -212,6 +214,10 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
   _legalMessages = legalMessages;
+  if (_legalMessages.count > 0) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown);
+  }
   [self updateCachedFooter];
   if (self.viewLoaded && _dataSource) {
     NSDiffableDataSourceSnapshot<NSNumber*, TableViewItem*>* snapshot =
@@ -350,13 +356,15 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   NSMutableArray<CrURL*>* urls = [NSMutableArray array];
   NSString* storageNoticeText = [self textForStorageNoticeAppendingURLsTo:urls];
 
+  NSMutableArray<CrURL*>* legalMessageURLs = [NSMutableArray array];
   NSMutableArray<NSString*>* disclosureLegalMessageTexts =
       [NSMutableArray array];
   for (AutofillLegalMessageLine* disclosureLegalMessage in _legalMessages) {
     [disclosureLegalMessageTexts
         addObject:autofill::TextForDisclosureLegalMessageAppendingURLsTo(
-                      disclosureLegalMessage, urls)];
+                      disclosureLegalMessage, legalMessageURLs)];
   }
+  [urls addObjectsFromArray:legalMessageURLs];
 
   // The disclosure legal messages form a single block, separated from the
   // storage notice by a blank line.
@@ -371,6 +379,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
   _cachedFooterText = text;
   _cachedFooterURLs = urls;
+  _cachedLegalMessageURLs = legalMessageURLs;
 }
 
 // Configures the footer view with the cached storage notice, disclosure legal
@@ -387,6 +396,10 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if ([_cachedLegalMessageURLs containsObject:URL]) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked);
+  }
   [self.delegate didTapLinkWithURL:URL];
 }
 
