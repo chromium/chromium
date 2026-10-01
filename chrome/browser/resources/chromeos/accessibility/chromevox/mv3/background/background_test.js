@@ -4069,8 +4069,9 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// TODO(crbug.com/566485779): Re-enable flaky test.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'CrossWindowNextPreviousFocus',
+    'ChromeVoxBackgroundTest', 'DISABLED_CrossWindowNextPreviousFocus',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
