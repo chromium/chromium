@@ -68,6 +68,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
 #include "components/actor/core/actor_switches.h"
+#include "components/tabs/public/tab_interface.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #endif
 
@@ -261,11 +262,16 @@ void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
           infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)) {
     auto* manager = infobars::BrowserInfoBarManager::From(g_browser_process);
     CHECK(manager);
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (!tab) {
+      return;
+    }
     infobars::InfoBarShowParams params;
     params.message_text =
         l10n_util::GetStringFUTF16(message_id, base::UTF8ToUTF16(flag));
-    manager->ShowGlobally(infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-                          std::move(params));
+    manager->Show(tab, infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
+                  std::move(params));
     return;
   }
 #endif

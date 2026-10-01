@@ -3837,10 +3837,21 @@ INSTANTIATE_TEST_SUITE_P(
 // `switches::kNoStartupWindow` command line switch.
 class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<StartupBrowserCreatorFlagTypeValue> {
+      public ::testing::WithParamInterface<
+          std::tuple<StartupBrowserCreatorFlagTypeValue, bool>> {
  public:
   StartupBrowserCreatorInfobarsWithoutStartupWindowTest()
-      : flag_type_(GetParam()) {}
+      : flag_type_(std::get<0>(GetParam())),
+        use_migration_(std::get<1>(GetParam())) {
+    if (use_migration_) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedBadFlags", "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3871,6 +3882,10 @@ class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
   }
 
   const StartupBrowserCreatorFlagTypeValue flag_type_;
+  const bool use_migration_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
@@ -3906,19 +3921,23 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
-    ::testing::Values(
-        StartupBrowserCreatorFlagTypeValue{
-            switches::kEnableAutomation,
-            infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE, true},
-        // Test one of the flags from |bad_flags_prompt.cc|. Any of the
-        // flags should have the same behavior.
-        StartupBrowserCreatorFlagTypeValue{
-            switches::kDisableWebSecurity,
-            infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, false}),
+    ::testing::Combine(
+        ::testing::Values(
+            StartupBrowserCreatorFlagTypeValue{
+                switches::kEnableAutomation,
+                infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE, true},
+            // Test one of the flags from |bad_flags_prompt.cc|. Any of the
+            // flags should have the same behavior.
+            StartupBrowserCreatorFlagTypeValue{
+                switches::kDisableWebSecurity,
+                infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, false}),
+        ::testing::Bool()),
     [](const testing::TestParamInfo<
         StartupBrowserCreatorInfobarsWithoutStartupWindowTest::ParamType>&
            info) {
-      std::string name = info.param.flag;
+      std::string migrationState =
+          std::get<1>(info.param) ? "migrated" : "legacy";
+      std::string name = std::get<0>(info.param).flag + "_" + migrationState;
       std::replace_if(
           name.begin(), name.end(),
           [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');

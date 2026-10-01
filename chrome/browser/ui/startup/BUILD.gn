@@ -168,6 +168,7 @@ source_set("impl") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/startup_metric_utils",
+    "//components/tabs:public",
     "//components/translate/core/common",
     "//components/vector_icons",
     "//content/public/browser",

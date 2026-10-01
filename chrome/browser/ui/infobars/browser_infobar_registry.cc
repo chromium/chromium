@@ -499,7 +499,7 @@ void RegisterPreProfileInitInfoBars() {
   if (IsInfoBarMigrated(InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)) {
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)
-            .SetScope(InfoBarScope::kGlobal)
+            .SetScope(InfoBarScope::kTab)
             .SetExpireOnNavigation(false)
             .SetShouldAnimate(false)
             .Build();
