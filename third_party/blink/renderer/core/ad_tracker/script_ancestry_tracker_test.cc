@@ -551,6 +551,61 @@ TEST_F(ScriptAncestryTrackerTest, SetTimeoutWithStringScript) {
   EXPECT_EQ(initial_id, timeout_info->marked_script_id);
 }
 
+TEST_F(ScriptAncestryTrackerTest, SetTimeoutWithNativeFunction) {
+  SimSubresourceRequest initial_script(
+      "https://example.com/initial_marked_script.js", "text/javascript");
+  main_resource_->Complete(
+      "<body><script src=\"initial_marked_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  // The initial script calls setTimeout with a bound native function
+  // (document.body.appendChild) to dynamically append an inline script.
+  initial_script.Complete(
+      "var s = document.createElement('script');"
+      "s.text = 'console.log(\"timeout_native_inline\");';"
+      "setTimeout(document.body.appendChild.bind(document.body), 0, s);");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_marked_script.js");
+  V8ScriptId inline_id = test_observer_->WaitAndFindScriptIdByUrl("{ id ");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), inline_id);
+
+  const auto* info = test_observer_->GetRegisteredScript(inline_id);
+  ASSERT_TRUE(info);
+  EXPECT_EQ(initial_id, info->marked_script_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(inline_id));
+}
+
+TEST_F(ScriptAncestryTrackerTest, SetTimeoutWithNativeFunction_NotMarked) {
+  SimSubresourceRequest initial_script("https://example.com/initial_script.js",
+                                       "text/javascript");
+  main_resource_->Complete(
+      "<body><script src=\"initial_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  initial_script.Complete(
+      "var s = document.createElement('script');"
+      "s.text = 'console.log(\"timeout_native_inline\");';"
+      "setTimeout(document.body.appendChild.bind(document.body), 0, s);");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_script.js");
+  V8ScriptId inline_id = test_observer_->WaitAndFindScriptIdByUrl("{ id ");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), inline_id);
+  EXPECT_FALSE(test_observer_->IsMarkedScript(initial_id));
+
+  const auto* info = test_observer_->GetRegisteredScript(inline_id);
+  ASSERT_TRUE(info);
+  EXPECT_EQ(V8ScriptId(), info->marked_script_id);
+  EXPECT_FALSE(test_observer_->IsMarkedScript(inline_id));
+}
+
 TEST_F(ScriptAncestryTrackerTest, DuplicateExternalScriptSameMarkedScript) {
   SimSubresourceRequest initial_script(
       "https://example.com/initial_marked_script.js", "text/javascript");

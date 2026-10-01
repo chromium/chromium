@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -173,6 +174,23 @@ bool IsAllowed(ScriptState* script_state,
   return true;
 }
 
+// Only instruct ScriptAncestryTracker to scan the stack now if the callback
+// doesn't have a script id (e.g., is native) so that we use the top of the
+// async stack's id instead. This saves us from scanning the stack for the
+// majority of the cases where the callback is to a js function.
+probe::AsyncTaskContext::StackOptions GetStackOptionsForHandler(
+    V8Function* handler) {
+  v8::Local<v8::Value> current = handler->CallbackObject();
+  while (!current.IsEmpty() && current->IsFunction()) {
+    v8::Local<v8::Function> function = current.As<v8::Function>();
+    if (function->ScriptId() != v8::UnboundScript::kNoScriptId) {
+      return probe::AsyncTaskContext::StackOptions::kDoNotScan;
+    }
+    current = function->GetBoundFunction();
+  }
+  return probe::AsyncTaskContext::StackOptions::kScan;
+}
+
 }  // namespace
 
 int DOMTimer::setTimeout(ScriptState* script_state,
@@ -185,9 +203,9 @@ int DOMTimer::setTimeout(ScriptState* script_state,
   }
   auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
                                                        handler, arguments);
-  return MakeGarbageCollected<DOMTimer>(
-             context, action, base::Milliseconds(timeout), true,
-             probe::AsyncTaskContext::StackOptions::kDoNotScan)
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), true,
+                                        GetStackOptionsForHandler(handler))
       ->timeout_id_;
 }
 
@@ -239,9 +257,9 @@ int DOMTimer::setInterval(ScriptState* script_state,
   }
   auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
                                                        handler, arguments);
-  return MakeGarbageCollected<DOMTimer>(
-             context, action, base::Milliseconds(timeout), false,
-             probe::AsyncTaskContext::StackOptions::kDoNotScan)
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), false,
+                                        GetStackOptionsForHandler(handler))
       ->timeout_id_;
 }
 
