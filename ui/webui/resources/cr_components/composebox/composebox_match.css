@@ -139,7 +139,7 @@
 }
 
 :host([suggest-style='default']) .container:hover #remove:not([hidden]),
-:host([suggest-style='default']):-webkit-any(:focus-within, [selected])
+:host([suggest-style='default']:is(:focus-within, [selected]))
     #remove:not([hidden]) {
   display: inline-flex;
 }
