@@ -2012,6 +2012,11 @@ void ExtensionPrefs::OnDisableReasonsChanged(
         extension_id, CollapseUnknownDisableReasons(new_reasons));
   }
 
+  if (blocklist_prefs::IsExtensionBlocklisted(extension_id, this)) {
+    // If the extension is blocklisted, return early since we should not change
+    // the enabled state based on the disable reasons.
+    return;
+  }
   const bool new_enabled = new_reasons.empty();
   const bool old_enabled = old_reasons.empty();
 
@@ -2424,7 +2429,9 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
     const ExtensionId& extension_id = info.extension_id;
 
     base::Time install_time = GetLastUpdateTime(this, extension_id);
-    bool is_enabled = !IsExtensionDisabled(extension_id);
+    bool is_enabled =
+        !IsExtensionDisabled(extension_id) &&
+        !blocklist_prefs::IsExtensionBlocklisted(extension_id, this);
     bool is_incognito_enabled = IsIncognitoEnabled(extension_id);
     extension_pref_value_map_->RegisterExtension(
         extension_id, install_time, is_enabled, is_incognito_enabled);
@@ -2522,12 +2529,13 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
     app_sorting()->EnsureValidOrdinals(extension_id, suggested_page_ordinal);
   }
 
-  bool is_enabled = true;
+  bool is_enabled =
+      !blocklist_prefs::IsExtensionBlocklisted(extension_id, this);
   base::ListValue* disable_reasons = nullptr;
   extension_dict->GetListWithoutPathExpansion(kPrefDisableReasons,
                                               &disable_reasons);
   if (disable_reasons) {
-    is_enabled = disable_reasons->empty();
+    is_enabled = is_enabled && disable_reasons->empty();
   }
 
   bool is_incognito_enabled = IsIncognitoEnabled(extension_id);

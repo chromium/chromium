@@ -12,7 +12,10 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension_id.h"
 
@@ -60,7 +63,8 @@ class Value;
 // .reg_only = regular-only value
 // .inc = incognito value
 // Extension B has higher precedence than A.
-class ExtensionPrefValueMap : public KeyedService {
+class ExtensionPrefValueMap : public KeyedService,
+                              public extensions::ExtensionRegistryObserver {
  public:
   using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
 
@@ -81,6 +85,7 @@ class ExtensionPrefValueMap : public KeyedService {
     ~Observer() override = default;
   };
 
+  explicit ExtensionPrefValueMap(extensions::ExtensionRegistry* registry);
   ExtensionPrefValueMap();
 
   ExtensionPrefValueMap(const ExtensionPrefValueMap&) = delete;
@@ -90,6 +95,15 @@ class ExtensionPrefValueMap : public KeyedService {
 
   // KeyedService implementation.
   void Shutdown() override;
+
+  // extensions::ExtensionRegistryObserver implementation.
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(
+      content::BrowserContext* browser_context,
+      const extensions::Extension* extension,
+      extensions::UnloadedExtensionReason reason) override;
+  void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // Set an extension preference `value` for `key` of extension `ext_id`.
   // Note that regular extension pref values need to be reported to
@@ -224,6 +238,10 @@ class ExtensionPrefValueMap : public KeyedService {
   bool destroyed_;
 
   base::ObserverList<Observer, true> observers_;
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_VALUE_MAP_H_

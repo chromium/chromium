@@ -44,6 +44,7 @@ class BlocklistCheckTest : public testing::Test {
     blocklist_.reset();
     BrowserContextDependencyManager::GetInstance()
         ->DestroyBrowserContextServices(test_prefs_.browser_context());
+    ExtensionsBrowserClient::Set(nullptr);
 
     testing::Test::TearDown();
   }

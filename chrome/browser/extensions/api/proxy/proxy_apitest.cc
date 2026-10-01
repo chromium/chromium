@@ -12,6 +12,7 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/buildflags/buildflags.h"
@@ -201,6 +202,26 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnPolicyBlocklist) {
   PrefService* pref_service = profile()->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_DIRECT, kNoServer, kNoBypass, kNoPac,
                    pref_service);
+}
+
+// Tests that proxy settings controlled by an extension are removed when
+// the extension is blocklisted.
+IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnBlocklist) {
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
+      << message_;
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  PrefService* pref_service = profile()->GetPrefs();
+  ValidateSettings(ProxyPrefs::MODE_DIRECT, kNoServer, kNoBypass, kNoPac,
+                   pref_service);
+
+  // Blocklist the extension.
+  extension_registrar()->BlocklistExtensionForTest(extension->id());
+
+  // Proxy settings should be removed while the extension is blocklisted.
+  ExpectNoSettings(pref_service);
 }
 
 // Tests auto-detect settings.

@@ -6,12 +6,15 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_pref_value_map.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 ExtensionPrefValueMapFactory::ExtensionPrefValueMapFactory()
     : BrowserContextKeyedServiceFactory(
         "ExtensionPrefValueMap",
         BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
 }
 
 ExtensionPrefValueMapFactory::~ExtensionPrefValueMapFactory() = default;
@@ -32,7 +35,8 @@ ExtensionPrefValueMapFactory* ExtensionPrefValueMapFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 ExtensionPrefValueMapFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ExtensionPrefValueMap>();
+  return std::make_unique<ExtensionPrefValueMap>(
+      extensions::ExtensionRegistry::Get(context));
 }
 
 content::BrowserContext* ExtensionPrefValueMapFactory::GetBrowserContextToUse(

@@ -16,8 +16,12 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_helper.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension.h"
@@ -64,6 +68,8 @@ class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
       base::Value value);
   void InstallExtension(Extension* extension);
   void UninstallExtension(const ExtensionId& extension_id);
+  void BlocklistExtension(Extension* extension);
+  void UnblocklistExtension(Extension* extension);
 
   scoped_refptr<ContentSettingsStore> content_settings_store() {
     return content_settings_->content_settings_store();
@@ -130,6 +136,22 @@ void ExtensionControlledPrefsTest::InstallExtension(Extension* extension) {
 void ExtensionControlledPrefsTest::UninstallExtension(
     const ExtensionId& extension_id) {
   EnsureExtensionUninstalled(extension_id);
+}
+
+void ExtensionControlledPrefsTest::BlocklistExtension(Extension* extension) {
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
+  auto* registry = ExtensionRegistry::Get(prefs_.browser_context());
+  registry->RemoveEnabled(extension->id());
+  registry->TriggerOnUnloaded(extension, UnloadedExtensionReason::BLOCKLIST);
+}
+
+void ExtensionControlledPrefsTest::UnblocklistExtension(Extension* extension) {
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
+  auto* registry = ExtensionRegistry::Get(prefs_.browser_context());
+  registry->AddEnabled(extension);
+  registry->TriggerOnLoaded(extension);
 }
 
 void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
@@ -398,7 +420,7 @@ class ControlledPrefsSetExtensionControlledPref
   void Verify() override {}
 };
 TEST_F(ControlledPrefsSetExtensionControlledPref,
-       ControlledPrefsSetExtensionControlledPref) { }
+       ControlledPrefsSetExtensionControlledPref) {}
 
 // Tests that the switches::kDisableExtensions command-line flag prevents
 // extension controlled preferences from being enacted.
@@ -439,6 +461,67 @@ class ControlledPrefsDisableExtensions : public ExtensionControlledPrefsTest {
  private:
   int iteration_ = 0;
 };
-TEST_F(ControlledPrefsDisableExtensions, ControlledPrefsDisableExtensions) { }
+TEST_F(ControlledPrefsDisableExtensions, ControlledPrefsDisableExtensions) {}
+
+// Tests that blocklisting an extension removes its controlled preferences.
+class ControlledPrefsBlocklistExtension : public ExtensionControlledPrefsTest {
+  void Initialize() override {
+    InstallExtensionControlledPref(extension1(), kPref1, base::Value("val1"));
+    EXPECT_EQ("val1", prefs()->pref_service()->GetString(kPref1));
+    BlocklistExtension(extension1());
+    // Verify that the preference is removed at runtime.
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+  }
+  void Verify() override {
+    // Verify that the preference is still removed after a reload.
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+  }
+};
+TEST_F(ControlledPrefsBlocklistExtension, ControlledPrefsBlocklistExtension) {}
+
+// Tests blocklisting and unblocklisting an extension restores its controlled
+// preference.
+class ControlledPrefsUnblocklistExtension
+    : public ExtensionControlledPrefsTest {
+  void Initialize() override {
+    InstallExtensionControlledPref(extension1(), kPref1, base::Value("val1"));
+    // Blocklist the extension, verify pref is removed, then unblock it.
+    BlocklistExtension(extension1());
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+
+    UnblocklistExtension(extension1());
+    // Verify that the preference is restored at runtime.
+    EXPECT_EQ("val1", prefs()->pref_service()->GetString(kPref1));
+  }
+  void Verify() override {
+    // Verify that the preference is restored after a reload.
+    EXPECT_EQ("val1", prefs()->pref_service()->GetString(kPref1));
+  }
+};
+TEST_F(ControlledPrefsUnblocklistExtension,
+       ControlledPrefsUnblocklistExtension) {}
+
+// Tests that clearing disable reasons does not re-apply controlled prefs from
+// a blocklisted extension.
+class ControlledPrefsClearDisableReasonOnBlocklistedExtension
+    : public ExtensionControlledPrefsTest {
+  void Initialize() override {
+    InstallExtensionControlledPref(extension1(), kPref1, base::Value("val1"));
+    prefs()->AddDisableReason(extension1()->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+    BlocklistExtension(extension1());
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+
+    prefs()->ClearDisableReasons(extension1()->id());
+    // Verify that the preference is not reapplied at runtime.
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+  }
+  void Verify() override {
+    // Verify that the preference is not reapplied after a reload.
+    EXPECT_EQ(kDefaultPref1, prefs()->pref_service()->GetString(kPref1));
+  }
+};
+TEST_F(ControlledPrefsClearDisableReasonOnBlocklistedExtension,
+       ControlledPrefsClearDisableReasonOnBlocklistedExtension) {}
 
 }  // namespace extensions

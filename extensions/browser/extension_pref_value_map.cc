@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 struct ExtensionPrefValueMap::ExtensionEntry {
@@ -38,8 +39,17 @@ struct ExtensionPrefValueMap::ExtensionEntry {
   PrefValueMap incognito_profile_preferences_session_only;
 };
 
-ExtensionPrefValueMap::ExtensionPrefValueMap() : destroyed_(false) {
+ExtensionPrefValueMap::ExtensionPrefValueMap(
+    extensions::ExtensionRegistry* registry)
+    : destroyed_(false) {
+  // The registry can be null in unit tests.
+  if (registry) {
+    registry_observation_.Observe(registry);
+  }
 }
+
+ExtensionPrefValueMap::ExtensionPrefValueMap()
+    : ExtensionPrefValueMap(nullptr) {}
 
 ExtensionPrefValueMap::~ExtensionPrefValueMap() {
   if (!destroyed_) {
@@ -49,8 +59,27 @@ ExtensionPrefValueMap::~ExtensionPrefValueMap() {
 }
 
 void ExtensionPrefValueMap::Shutdown() {
+  registry_observation_.Reset();
   NotifyOfDestruction();
   destroyed_ = true;
+}
+
+void ExtensionPrefValueMap::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  SetExtensionState(extension->id(), true);
+}
+
+void ExtensionPrefValueMap::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  SetExtensionState(extension->id(), false);
+}
+
+void ExtensionPrefValueMap::OnShutdown(
+    extensions::ExtensionRegistry* registry) {
+  registry_observation_.Reset();
 }
 
 void ExtensionPrefValueMap::SetExtensionPref(const std::string& ext_id,

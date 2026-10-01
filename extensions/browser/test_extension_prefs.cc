@@ -31,7 +31,9 @@
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -126,7 +128,9 @@ void TestExtensionPrefs::RecreateExtensionPrefs() {
     run_loop.Run();
   }
 
-  extension_pref_value_map_ = std::make_unique<ExtensionPrefValueMap>();
+  extension_pref_value_map_ = std::make_unique<ExtensionPrefValueMap>(
+      ExtensionsBrowserClient::Get() ? ExtensionRegistry::Get(browser_context())
+                                     : nullptr);
   sync_preferences::PrefServiceMockFactory factory;
   factory.SetUserPrefsFile(preferences_file_, task_runner_.get());
   factory.set_extension_prefs(
