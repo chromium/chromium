@@ -10,6 +10,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /** Presenter that displays the account picker inside a bottom sheet. */
@@ -38,6 +39,19 @@ class BottomSheetAccountPickerPresenter implements AccountPickerPresenter {
                     public void onSheetStateChanged(
                             @SheetState int newState, @StateChangeReason int reason) {
                         if (newState != BottomSheetController.SheetState.HIDDEN) {
+                            return;
+                        }
+                        if (mSheetContent == null) {
+                            return;
+                        }
+                        // The HIDDEN signal can also be received by this observer when a different
+                        // sheet content is dismissed (e.g. a sheet that was still hiding when the
+                        // account picker was queued behind it). Observers are notified of HIDDEN
+                        // before the next content is shown, so the current content is still the
+                        // sheet being dismissed.
+                        if (BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled()
+                                && mBottomSheetController.getCurrentSheetContent()
+                                        != mSheetContent) {
                             return;
                         }
                         mDismissalLogger.logBottomSheetDismissal(reason);

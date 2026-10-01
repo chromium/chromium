@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -501,7 +500,6 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "crbug.com/567089662")
     public void testSigninBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.SIGNIN;
 
