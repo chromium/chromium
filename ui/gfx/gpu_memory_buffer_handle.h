@@ -158,20 +158,8 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // the contents into the shmem region so it can be accessed from other
   // processes.
   const base::UnsafeSharedMemoryRegion& region() const& {
-    // For now, allow this to transparently forward as appropriate for DXGI or
-    // shmem handles in production. However, this will be a hard CHECK() in the
-    // future.
-    CHECK_EQ(type, SHARED_MEMORY_BUFFER, base::NotFatalUntil::M138);
-    switch (type) {
-      case SHARED_MEMORY_BUFFER:
-        return region_;
-#if BUILDFLAG(IS_WIN)
-      case DXGI_SHARED_HANDLE:
-        return dxgi_handle_.region();
-#endif  // BUILDFLAG(IS_WIN)
-      default:
-        NOTREACHED();
-    }
+    CHECK_EQ(type, SHARED_MEMORY_BUFFER);
+    return region_;
   }
   base::UnsafeSharedMemoryRegion region() && {
     CHECK_EQ(type, SHARED_MEMORY_BUFFER);
