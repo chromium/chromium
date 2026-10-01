@@ -841,15 +841,13 @@ suite('ComposeboxMixinTest', () => {
       assertDeepEquals(['open'], effects);
       assertEquals(originalInput, element.input);
       assertEquals(
-          initialQueryCount + 1,
+          initialQueryCount,
           searchboxHandler.getCallCount('queryAutocomplete'));
       assertFalse(element.submitting);
       assertEquals(-1, element.activeQueryId);
 
-      // Verify that subsequent async autocomplete responses for the reissued
-      // query do not overwrite the restored user input.
-      const actionQueryId =
-          searchboxHandler.getArgs('queryAutocomplete').at(-1)![0] as number;
+      // Verify that late async autocomplete responses do not overwrite the
+      // restored user input since activeQueryId is -1.
       searchboxCallbackRouterRemote.autocompleteResultChanged(
           createAutocompleteResultForTesting({
             input: originalInput,
@@ -857,13 +855,27 @@ suite('ComposeboxMixinTest', () => {
               allowedToBeDefaultMatch: true,
               fillIntoEdit: 'async replacement',
             })],
-            queryId: actionQueryId,
+            queryId: 1,
           }));
       await searchboxCallbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
 
       assertEquals(originalInput, element.input);
       assertEquals(null, element.result);
+
+      // Autocomplete is queried once when tool mode update takes effect from
+      // the browser.
+      searchboxCallbackRouterRemote.onInputStateChanged(
+          new MockInputState({activeTool: ToolMode.kDeepSearch}));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      assertEquals(
+          initialQueryCount + 1,
+          searchboxHandler.getCallCount('queryAutocomplete'));
+      assertEquals(
+          originalInput,
+          searchboxHandler.getArgs('queryAutocomplete').at(-1)![2]);
 
       // 5. Actions with kDefault queryActionOverride are submitted normally
       // rather than intercepted by handleFuseboxAction.

@@ -1032,12 +1032,6 @@ export const ComposeboxEmbedderMixin =
                 this.showDropdown = false;
               }
             }
-
-            // Query autocomplete to get contextual suggestions for tabs.
-            if (status === ContextUploadStatus.kProcessing &&
-                file.type.includes('tab')) {
-              this.queryAutocomplete(/* clearMatches= */ true);
-            }
           }
         }
 
@@ -1299,7 +1293,6 @@ export const ComposeboxEmbedderMixin =
           // Server is not notified of these changes; side effects are local.
           this.getSearchboxHandler().setActiveToolMode(newTool, isSetByAim);
 
-          this.queryAutocomplete(/* clearMatches= */ true);
           this.updateInputPlaceholder();
         }
 
@@ -1476,6 +1469,9 @@ export const ComposeboxEmbedderMixin =
             tabUpload: TabUpload, _replaceAutoActiveTabToken: boolean = false,
             onBeforeUpdateFiles?: (attachment: ComposeboxFile) =>
                 void): Promise<ComposeboxFile|null> {
+          if (tabUpload.origin !== TabUploadOrigin.AUTO_ACTIVE) {
+            this.clearAutocompleteMatches();
+          }
           try {
             const token = await this.getSearchboxHandler().addTabContext(
                 tabUpload.tabId, tabUpload.delayUpload,
@@ -1656,7 +1652,7 @@ export const ComposeboxEmbedderMixin =
               ?.click();
         }
 
-        async updateState(state: ComposeboxState) {
+        async updateState(state: Partial<ComposeboxState>) {
           if (!this.inputState) {
             const inputStateResponse =
                 await this.getSearchboxHandler().getInputState();
@@ -1681,7 +1677,9 @@ export const ComposeboxEmbedderMixin =
             this.input = text;
             this.lastQueriedInput = text;
           }
-          if (this.showZps && files.length === 0) {
+          const isToolChanging = mode !== ToolMode.kUnspecified &&
+              mode !== this.inputState?.activeTool;
+          if (this.showZps && files.length === 0 && !isToolChanging) {
             this.queryAutocomplete(/* clearMatches= */ false);
           }
           if (files.length > 0 || state.error !== undefined) {
@@ -1868,12 +1866,15 @@ export const ComposeboxEmbedderMixin =
 
         onCancelClick() {
           if (this.hasContent()) {
-            this.resetModes();
+            const hadActiveTool = !!this.inputState &&
+                this.inputState.activeTool !== ToolMode.kUnspecified;
             this.clearAllInputs(
                 /* querySubmitted= */ false,
                 /* shouldBlockAutoSuggestedTabs= */ true);
             this.focusInput();
-            this.queryAutocomplete(/* clearMatches= */ true);
+            if (!hadActiveTool) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
 
             if (!this.disableCaretColorAnimation) {
               this.getInputElement().resetCaret();
@@ -2208,12 +2209,15 @@ export const ComposeboxEmbedderMixin =
 
         handleEscapeKeyLogic() {
           if (!this.closeOnEscape && this.hasContent()) {
-            this.resetModes();
+            const hadActiveTool = !!this.inputState &&
+                this.inputState.activeTool !== ToolMode.kUnspecified;
             this.clearAllInputs(
                 /* querySubmitted= */ false,
                 /* shouldBlockAutoSuggestedTabs= */ false);
             this.focusInput();
-            this.queryAutocomplete(/* clearMatches= */ true);
+            if (!hadActiveTool) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
           } else {
             this.closeComposebox();
           }
@@ -2443,7 +2447,6 @@ export const ComposeboxEmbedderMixin =
               /* querySubmitted= */ false,
               /* shouldBlockAutoSuggestedTabs= */ false);
           this.clearAutocompleteMatches();
-          this.resetModes();
           this.resetToolsAndModels();
         }
 
@@ -3386,4 +3389,5 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   shouldDisableFileInputs(): boolean;
   computeCancelButtonTitle(): string;
   computeVoiceSearchCoherenceEnabled(): boolean;
+  updateState(state: Partial<ComposeboxState>): Promise<void>;
 }

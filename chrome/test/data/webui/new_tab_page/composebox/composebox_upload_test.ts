@@ -5,8 +5,7 @@
 import {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -64,6 +63,186 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 2);
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
+  });
+
+  test(
+      'uploading tab queries autocomplete only once across processing states',
+      async () => {
+        loadTimeData.overrideValues({composeboxShowZps: true});
+        testSupport.createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        // Autocomplete queried once when composebox is opened.
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        const token = testSupport.generateZeroId();
+        const tab = ComposeboxFile.createFromTab(
+            token, 1, 'Tab 1', 'https://example.com');
+        testProxy.element.attachedContext = new Map([[tab.uuid, tab]]);
+
+        // Status changes to kProcessing. Non-delayed tab does not query
+        // until suggest signals are ready.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            token, ContextUploadStatus.kProcessing, null);
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        // Status changes to kProcessingSuggestSignalsReady. Tab queries
+        // autocomplete once.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            token, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+        // Upload completes. Tab does not query again.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            token, ContextUploadStatus.kUploadSuccessful, null);
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+      });
+
+  test('adding tab clears autocomplete matches immediately', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+    // Simulate existing autocomplete matches showing in the dropdown.
+    const matches = [createSearchMatchForTesting({
+      allowedToBeDefaultMatch: false,
+    })];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
+          input: '',
+          matches,
+        }));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(testProxy.element.showDropdown);
+    assertTrue(!!testProxy.element.result);
+
+    const token = testSupport.generateZeroId();
+    testProxy.searchboxHandler.setPromiseResolveFor('addTabContext', token);
+
+    // Adding a tab should immediately clear existing autocomplete matches
+    // and hide the dropdown before upload/processing finishes.
+    await testProxy.element.addTabContextHandleCallback({
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://example.com',
+      delayUpload: false,
+      origin: TabUploadOrigin.CONTEXT_MENU,
+    });
+    await microtasksFinished();
+
+    assertFalse(testProxy.element.showDropdown);
+    assertEquals(null, testProxy.element.result);
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 1);
+
+    // Once the tab reaches kProcessingSuggestSignalsReady, contextual
+    // autocomplete is queried.
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        token, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
+    await microtasksFinished();
+
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+  });
+
+  test(
+      'uploading and deleting file queries autocomplete only once for each action',
+      async () => {
+        loadTimeData.overrideValues({composeboxShowZps: true});
+        testSupport.createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        // Autocomplete queried once when composebox is opened.
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        // Uploading a file: queryAutocomplete should only be called once across
+        // processing states (on kProcessingSuggestSignalsReady).
+        testProxy.searchboxHandler.resetResolver('queryAutocomplete');
+        const id = testSupport.generateZeroId();
+        await testSupport.uploadFileAndVerify(
+            testProxy, id,
+            new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
+
+        // Non-tab file does not query autocomplete on kProcessing.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            id, ContextUploadStatus.kProcessing, null);
+        await microtasksFinished();
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
+
+        // Autocomplete is queried on kProcessingSuggestSignalsReady.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
+        await microtasksFinished();
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        // Upload completion does not query autocomplete again.
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            id, ContextUploadStatus.kUploadSuccessful, null);
+        await microtasksFinished();
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        // Deleting the file: queryAutocomplete should only be called once.
+        testProxy.searchboxHandler.resetResolver('queryAutocomplete');
+        const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
+        testProxy.element.$.carousel.fire('delete-file', {
+          uuid: deletedId,
+        });
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+      });
+
+  test('selecting a tool queries autocomplete only once', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+    testProxy.searchboxHandler.resetResolver('queryAutocomplete');
+    testProxy.element.handleToolClick(ToolMode.kDeepSearch);
+    await microtasksFinished();
+
+    // handleToolClick should not call queryAutocomplete synchronously.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
+
+    const testInputState = {
+      ...new testSupport.MockInputState(),
+      activeTool: ToolMode.kDeepSearch,
+    };
+    testProxy.searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+
+    // Autocomplete is queried once when tool mode update takes effect.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
   });
 
   test('uploading image file without flag does nothing', async () => {
