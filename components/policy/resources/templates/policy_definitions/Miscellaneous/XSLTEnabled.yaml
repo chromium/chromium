@@ -5,7 +5,7 @@ desc: |-
   If this policy is set to Enabled, XSLT will be available, regardless of the default state of the feature in the browser.
   If this policy is set to Disabled, XSLT will be unavailable, regardless of the default state of the feature in the browser.
   If this policy is left unset, XSLT availability will be determined by the browser's default settings and field trials.
-  This policy is a temporary measure, and will be removed in M164.
+  This policy is a temporary measure, and will be removed in M176.
 example_value: true
 features:
   dynamic_refresh: true
