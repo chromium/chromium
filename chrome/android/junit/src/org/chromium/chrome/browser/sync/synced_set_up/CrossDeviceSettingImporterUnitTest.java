@@ -1984,6 +1984,25 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testOnTabChange_IosThemeCollection_SameImageNullColor_NoSnackbar() {
+        // iOS never sends a primary color. The null color is "unknown", so the same image is not a
+        // theme change.
+        doTestOnTabChange_ThemeCollectionSameImage(
+                PlatformType.IOS, /* remotePrimaryColor= */ null, /* expectSnackbar= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testOnTabChange_DesktopThemeCollection_SameImageDifferentColor_ShowsSnackbar() {
+        // Both colors are known and differ, so this is a theme change.
+        doTestOnTabChange_ThemeCollectionSameImage(
+                PlatformType.DESKTOP,
+                /* remotePrimaryColor= */ 0xFF445566,
+                /* expectSnackbar= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void testPendingSnackbar_asyncActivityRecreateFromInFlightImageDownload() {
         CustomBackgroundInfo bgInfo =
                 new CustomBackgroundInfo(
@@ -2251,5 +2270,51 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
         verify(mNtpCustomizationConfigManager)
                 .maybeApplyBackgroundUpdateFromDeviceSync(eq(mActivity));
+    }
+
+    /**
+     * Imports a remote theme collection with the same image as the local theme collection and
+     * verifies whether the snackbar is shown.
+     *
+     * @param remotePlatformType The platform type of the remote theme.
+     * @param remotePrimaryColor The primary color of the remote theme, or null if unknown. The
+     *     local theme's primary color is always 0xFF112233.
+     * @param expectSnackbar Whether the snackbar is expected to be shown.
+     */
+    private void doTestOnTabChange_ThemeCollectionSameImage(
+            @PlatformType int remotePlatformType,
+            @Nullable Integer remotePrimaryColor,
+            boolean expectSnackbar) {
+        CustomBackgroundInfo bgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/theme.png"),
+                        "collection_1",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection remoteTheme =
+                new NtpBackgroundDataThemeCollection(
+                        remotePlatformType,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        remotePrimaryColor,
+                        /* fileIdHash= */ null);
+        NtpBackgroundDataThemeCollection localTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        mock(Bitmap.class),
+                        /* primaryColor= */ 0xFF112233,
+                        /* fileIdHash= */ "hash_1");
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localTheme);
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any())).thenReturn(remoteTheme);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+
+        initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
+
+        verify(mSnackbarManager, times(expectSnackbar ? 1 : 0)).showSnackbar(any());
     }
 }

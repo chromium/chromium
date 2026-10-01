@@ -37,6 +37,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpBackgroundDataThemeCollectionUnitTest {
     private static final String TEST_COLLECTION_ID = "id";
+    private static final String TEST_OTHER_COLLECTION_ID = "other_id";
     private static final String TEST_ATTRIBUTION = "attribution";
     private static final String TEST_FILE_ID_HASH = "file_id_hash";
 
@@ -98,7 +99,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         CustomBackgroundInfo infoOtherCollection =
                 new CustomBackgroundInfo(
                         GURL.emptyGURL(),
-                        TEST_COLLECTION_ID + "_other",
+                        TEST_OTHER_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection dataOtherCollection =
@@ -157,6 +158,48 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         data1.setIsBitmapSaved(/* isBitmapSaved= */ true);
         assertEquals(data1, data2);
         assertEquals(data1.hashCode(), data2.hashCode());
+    }
+
+    @Test
+    public void testHasSameThemeAndCompatibleColor() {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        CustomBackgroundInfo infoOtherCollection =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        TEST_OTHER_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection red = createThemeCollection(info, Color.RED);
+        NtpBackgroundDataThemeCollection red2 = createThemeCollection(info, Color.RED);
+        NtpBackgroundDataThemeCollection blue = createThemeCollection(info, Color.BLUE);
+        NtpBackgroundDataThemeCollection noColor = createThemeCollection(info, null);
+        NtpBackgroundDataThemeCollection noColor2 = createThemeCollection(info, null);
+        NtpBackgroundDataThemeCollection otherCollectionNoColor =
+                createThemeCollection(infoOtherCollection, null);
+
+        // Two known colors must match.
+        assertTrue(red.hasSameThemeAndCompatibleColor(red2));
+        assertFalse(red.hasSameThemeAndCompatibleColor(blue));
+
+        // A null color is "unknown" and is compatible with any color, in both directions.
+        assertTrue(red.hasSameThemeAndCompatibleColor(noColor));
+        assertTrue(noColor.hasSameThemeAndCompatibleColor(red));
+        assertTrue(noColor.hasSameThemeAndCompatibleColor(noColor2));
+
+        // The theme identity must still match.
+        assertFalse(noColor.hasSameThemeAndCompatibleColor(otherCollectionNoColor));
+        assertFalse(noColor.hasSameThemeAndCompatibleColor(null));
+        assertFalse(
+                noColor.hasSameThemeAndCompatibleColor(
+                        new NtpBackgroundDataBase(PlatformType.ANDROID, "default")));
+
+        // Unlike hasSameThemeAndCompatibleColor(), hasSameThemeAndColor() is strict about null.
+        assertFalse(red.hasSameThemeAndColor(noColor));
     }
 
     @Test
@@ -438,7 +481,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         CustomBackgroundInfo infoDifferentCollectionId =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
-                        TEST_COLLECTION_ID + "_other",
+                        TEST_OTHER_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION);
@@ -461,5 +504,16 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertNotEquals(info1, infoDifferentUrl);
         assertNotEquals(info1, infoDifferentCollectionId);
         assertNotEquals(info1, infoDailyRefreshEnabled);
+    }
+
+    private static NtpBackgroundDataThemeCollection createThemeCollection(
+            CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
+        return new NtpBackgroundDataThemeCollection(
+                PlatformType.ANDROID,
+                info,
+                /* backgroundImageInfo= */ null,
+                /* bitmap= */ null,
+                primaryColor,
+                /* fileIdHash= */ null);
     }
 }

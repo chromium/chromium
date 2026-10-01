@@ -129,6 +129,21 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     }
 
     @Override
+    public boolean hasSameThemeAndCompatibleColor(@Nullable Object obj) {
+        if (!(obj instanceof NtpBackgroundDataThemeCollection other) || !equals(obj)) {
+            return false;
+        }
+
+        @Nullable
+        @ColorInt
+        Integer color = getPrimaryColor();
+        @Nullable
+        @ColorInt
+        Integer otherColor = other.getPrimaryColor();
+        return color == null || otherColor == null || color.equals(otherColor);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), mCustomBackgroundInfo);
     }

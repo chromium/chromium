@@ -1031,32 +1031,19 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return null;
         }
 
-        // Match by CustomBackgroundInfo (URL, collection ID, upload/daily-refresh flags) rather
-        // than NtpBackgroundDataThemeCollection#equals().
-        if (!Objects.equals(
-                targetCollection.getCustomBackgroundInfo(),
-                downloadedCollection.getCustomBackgroundInfo())) {
-            return null;
-        }
-
-        // NtpBackgroundDataThemeCollection#equals() requires identical mPrimaryColor, which is null
-        // on an in-flight Android targetCollection before bitmap download and non-null on
-        // downloadedCollection after NtpSyncedThemeManager extracts the seed color from the bitmap.
-        // Only reject when both have a non-null primaryColor and they differ.
-        if (targetCollection.getPrimaryColor() != null
-                && downloadedCollection.getPrimaryColor() != null
-                && !Objects.equals(
-                        targetCollection.getPrimaryColor(),
-                        downloadedCollection.getPrimaryColor())) {
+        // Match the same wallpaper with a compatible primary color. targetCollection's color is
+        // null on an in-flight Android download, while downloadedCollection's color is non-null
+        // once NtpSyncedThemeManager extracts the seed color from the bitmap. Only reject when
+        // both have a non-null primary color and they differ.
+        if (!targetCollection.hasSameThemeAndCompatibleColor(downloadedCollection)) {
             return null;
         }
 
         // Construct a new NtpBackgroundDataThemeCollection rather than mutating targetCollection in
         // place:
         // 1. Preserves targetCollection's mPlatformType and mCustomBackgroundInfo.
-        // 2. mPrimaryColor participates in NtpBackgroundDataImageBase#equals() and #hashCode().
-        //    Mutating targetCollection in place would alter the equals()/hashCode() identity of
-        //    the instance still held by the original SyncedSetupSettings or any cached reference.
+        // 2. Avoids changing the bitmap and primary color of the instance still held by the
+        //    original SyncedSetupSettings or any cached reference.
         return new NtpBackgroundDataThemeCollection(
                 targetCollection.getPlatformType(),
                 targetCollection.getCustomBackgroundInfo(),
@@ -1390,7 +1377,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (!isThemeFeatureEnabled() || candidateTheme == null) {
             return false;
         }
-        return !candidateTheme.hasSameThemeAndColor(currentTheme);
+        // A null primary color means "unknown" (e.g. iOS never sends one), so the same image with a
+        // null color on either side is not a theme change.
+        return !candidateTheme.hasSameThemeAndCompatibleColor(currentTheme);
     }
 
     /**

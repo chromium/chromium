@@ -120,6 +120,22 @@ public class NtpBackgroundDataBase {
         return equals(obj);
     }
 
+    /**
+     * Returns whether this background data has the same theme identity as {@code obj} and a
+     * compatible primary color.
+     *
+     * <p>For theme collection images, this is like {@link #hasSameThemeAndColor}, but a null
+     * primary color on either side is treated as "unknown" and matches any color. For example, iOS
+     * never sends a primary color, so an iOS theme collection with the same image as a Desktop or
+     * Android theme collection with a known primary color is considered the same theme. Two
+     * non-null colors must still match.
+     *
+     * <p>For all other background types, this is the same as {@link #hasSameThemeAndColor}.
+     */
+    public boolean hasSameThemeAndCompatibleColor(@Nullable Object obj) {
+        return equals(obj);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getBackgroundType());
