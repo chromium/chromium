@@ -490,4 +490,23 @@ TEST_F(ResourceMultiBufferDataProviderTest, AllowGzip) {
   StopWhenLoad();
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest,
+       PruneEmptiesUrlDataDuringDidReceiveData) {
+  Initialize(kHttpUrl, 0);
+  url_data_->Use();
+  Start();
+  PartialResponse(0, 100, 1024);
+
+  // Drop the test's reference so `url_index_` holds the sole reference to
+  // `UrlData`. Since there is no active `MultiBufferReader`, `GlobalLRU` max
+  // size is 0 and blocks are unpinned. Receiving a full block will cause
+  // `OnDataProviderEvent` to prune all blocks and invoke `UrlData::OnEmpty()`,
+  // which must not destroy `UrlData` / `MultiBuffer` while still on the stack.
+  ResourceMultiBufferDataProvider* loader = loader_.ExtractAsDangling();
+  url_data_ = nullptr;
+
+  std::string data_str(1, 'a');
+  loader->DidReceiveData(data_str);
+}
+
 }  // namespace blink
