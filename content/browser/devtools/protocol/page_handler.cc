@@ -1994,8 +1994,11 @@ void PageHandler::ScreenshotCaptured(
     std::unique_ptr<PendingScreenshotRequest> request,
     const gfx::Image& image) {
   if (request->original_view_size.width()) {
-    RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
-    widget_host->GetView()->SetSize(request->original_view_size);
+    // The view is gone if the renderer exited before the capture completed.
+    if (RenderWidgetHostViewBase* view =
+            host_->GetRenderWidgetHost()->GetView()) {
+      view->SetSize(request->original_view_size);
+    }
     emulation_handler_->SetDeviceEmulationParams(
         request->original_emulation_params);
   }

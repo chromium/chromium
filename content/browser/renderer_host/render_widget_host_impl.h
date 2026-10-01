@@ -1288,6 +1288,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void OnSnapshotReceived(int snapshot_id, gfx::Image image);
 
+  // Completes all pending snapshots with an empty image. Used when the view
+  // they would be taken from goes away with the renderer.
+  void FailPendingSnapshots();
+
   // This is called after the renderer attempts to focus content eligible for
   // handwriting via mojom::blink::FrameWidget::OnStartStylusWriting. If content
   // eligible for stylus handwriting has focus, then `focus_result` will be set,

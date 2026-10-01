@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -80,6 +81,7 @@ class MockWidget : public blink::mojom::Widget,
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;
   std::vector<UpdateScreenRectsCallback> screen_rects_callbacks_;
+  std::vector<ForceRedrawCallback> force_redraw_callbacks_;
   mojo::Receiver<blink::mojom::RenderInputRouterClient> input_receiver_{this};
   mojo::Remote<blink::mojom::WidgetInputHandlerHost> input_handler_host_;
   mojo::AssociatedReceiver<blink::mojom::Widget> blink_widget_{this};

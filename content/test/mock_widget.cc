@@ -49,7 +49,10 @@ void MockWidget::GetWidgetInputHandler(
     input_handler_host_.Bind(std::move(host));
 }
 
-void MockWidget::ForceRedraw(ForceRedrawCallback callback) {}
+void MockWidget::ForceRedraw(ForceRedrawCallback callback) {
+  // Never answered, like a renderer that has not produced a frame yet.
+  force_redraw_callbacks_.push_back(std::move(callback));
+}
 
 void MockWidget::SetTouchActionFromMain(cc::TouchAction touch_action) {
   input_handler_host_->SetTouchActionFromMain(touch_action);
