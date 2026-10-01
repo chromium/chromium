@@ -282,6 +282,23 @@ void DisplayLockContext::Lock() {
     MarkForStyleRecalcIfNeeded();
   }
 
+  // We need to notify the AX cache (if it exists) to update |element_|'s
+  // children in the AX cache.
+  if (AXObjectCache* cache = element_->GetDocument().ExistingAXObjectCache()) {
+    cache->ChildrenChanged(element_);
+  }
+
+  // If we have top layer elements in our subtree, we have to detach their
+  // layout objects, since otherwise they would be hoisted out of our subtree.
+  DetachDescendantTopLayerElements();
+
+  // Schedule ContentVisibilityAutoStateChange event if needed.
+  ScheduleStateChangeEventIfNeeded();
+
+  if (!element_->GetLayoutObject()) {
+    return;
+  }
+
   // TODO(vmpstr): Note when an 'auto' context gets locked, we should clear
   // the ancestor scroll anchors. This is a workaround for a behavior that
   // happens when the user quickly scrolls (e.g. scrollbar scrolls) into an
@@ -299,21 +316,6 @@ void DisplayLockContext::Lock() {
   // is a better way to solve this. In either case, we have to select a new
   // scroll anchor to get out of this behavior.
   element_->NotifyPriorityScrollAnchorStatusChanged();
-
-  // We need to notify the AX cache (if it exists) to update |element_|'s
-  // children in the AX cache.
-  if (AXObjectCache* cache = element_->GetDocument().ExistingAXObjectCache())
-    cache->ChildrenChanged(element_);
-
-  // If we have top layer elements in our subtree, we have to detach their
-  // layout objects, since otherwise they would be hoisted out of our subtree.
-  DetachDescendantTopLayerElements();
-
-  // Schedule ContentVisibilityAutoStateChange event if needed.
-  ScheduleStateChangeEventIfNeeded();
-
-  if (!element_->GetLayoutObject())
-    return;
 
   // If this element is a scroller, then stash its current scroll offset, so
   // that we can restore it when needed.

@@ -1168,8 +1168,10 @@ void ViewTransitionStyleTracker::CaptureResolved() {
 
 VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
   // In stable states, we don't have transitioning elements.
-  if (state_ == State::kIdle || state_ == State::kCaptured)
+  if (state_ == State::kIdle || state_ == State::kCaptured ||
+      state_ == State::kFinished) {
     return {};
+  }
 
   VectorOf<Element> result;
   for (auto& entry : element_data_map_) {
