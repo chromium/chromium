@@ -1652,12 +1652,18 @@ public class StripLayoutTrailingButtonsCoordinator {
     public boolean onLongPress(float x, float y) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return false;
+        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
+            return mGlicButton.handleLongClick();
+        }
+        // Consume long-presses on other trailing buttons to prevent triggering the empty space
+        // context menu.
         if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, 0)) {
             return true;
         }
-        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
-            return mGlicButton.handleLongClick();
-        } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
+        if (mGlicDismissNudgeButton != null && mGlicDismissNudgeButton.click(x, y, 0)) {
+            return true;
+        }
+        if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
             return true;
         }
         return false;
@@ -1781,38 +1787,32 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @return Whether the event was handled.
      */
     public boolean click(long time, float x, float y, int buttons, int modifiers) {
-        if (mModelSelectorButton != null && mModelSelectorButton.checkClickedOrHovered(x, y)) {
-            if (mModelSelectorButton.click(x, y, buttons)) {
-                mModelSelectorButton.handleClick(time, buttons, modifiers);
-                return true;
-            }
-        }
-        if (mGlicDismissNudgeButton != null
-                && mGlicDismissNudgeButton.checkClickedOrHovered(x, y)) {
-            if (mGlicDismissNudgeButton.click(x, y, buttons)) {
-                mGlicDismissNudgeButton.handleClick(time, buttons, modifiers);
-                return true;
-            }
-        }
-        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
-            if (MotionEventUtils.isSecondaryClick(buttons)) {
+        if (MotionEventUtils.isSecondaryClick(buttons)) {
+            if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
                 Activity activity = mWindowAndroid.getActivity().get();
                 if (activity != null) {
                     showMenu(activity);
                     return true;
                 }
-            } else if (mGlicButton.click(x, y, buttons)) {
-                mGlicButton.handleClick(time, buttons, modifiers);
-                return true;
             }
-        } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
-            if (MotionEventUtils.isSecondaryClick(buttons)) {
-                // Consume secondary click to prevent triggering empty space context menu.
-                return true;
-            } else if (mGlicActorButton.click(x, y, buttons)) {
-                mGlicActorButton.handleClick(time, buttons, modifiers);
-                return true;
-            }
+            // Consume secondary clicks on other trailing buttons to prevent triggering the empty
+            // space context menu.
+            return checkClickedOrHovered(x, y);
+        }
+        if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, buttons)) {
+            mModelSelectorButton.handleClick(time, buttons, modifiers);
+            return true;
+        }
+        if (mGlicDismissNudgeButton != null && mGlicDismissNudgeButton.click(x, y, buttons)) {
+            mGlicDismissNudgeButton.handleClick(time, buttons, modifiers);
+            return true;
+        }
+        if (mGlicButton != null && mGlicButton.click(x, y, buttons)) {
+            mGlicButton.handleClick(time, buttons, modifiers);
+            return true;
+        } else if (mGlicActorButton != null && mGlicActorButton.click(x, y, buttons)) {
+            mGlicActorButton.handleClick(time, buttons, modifiers);
+            return true;
         }
         return false;
     }
