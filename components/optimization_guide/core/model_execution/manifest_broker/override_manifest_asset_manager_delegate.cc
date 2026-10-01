@@ -100,4 +100,9 @@ void OverrideManifestAssetManagerDelegate::RequestUpdate(
   // Do nothing
 }
 
+void OverrideManifestAssetManagerDelegate::GetInstalledAssets(
+    base::OnceCallback<void(std::vector<InstalledAsset>)> callback) const {
+  std::move(callback).Run({});
+}
+
 }  // namespace optimization_guide

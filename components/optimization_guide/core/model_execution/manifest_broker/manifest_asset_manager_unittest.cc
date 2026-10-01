@@ -1073,6 +1073,183 @@ TEST_F(ManifestAssetManagerTest,
   EXPECT_EQ(future.Get<UnavailableReason>(), std::nullopt);
 }
 
+TEST_F(ManifestAssetManagerTest, OrphanedAssetNotInManifestIsUninstalled) {
+  DummyAsset active_asset = DummyAsset::For("compose");
+  DummyAsset orphan_asset = DummyAsset::For("test");
+  MakeAssetInstallable(orphan_asset);
+  component_state_.SetInstalled(orphan_asset.ToInstallTarget());
+
+  UpdateManifest(DummyManifest().Add(active_asset));
+  Startup();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(component_state_.WasUninstallRequested(orphan_asset.public_key));
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  EXPECT_TRUE(component_state_.WaitForUninstall(orphan_asset.public_key));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsUninstalled(orphan_asset.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kObsolete, 1);
+}
+
+TEST_F(ManifestAssetManagerTest,
+       OrphanedAssetInManifestEvictedWhenEvictionEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
+
+  DummyAsset asset = DummyAsset::For("compose");
+  local_state_.local_state().ClearPref(
+      model_execution::prefs::localstate::kLastUsageByFeature);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  component_state_.SetInstalled(asset.ToInstallTarget());
+
+  Startup();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsUninstalled(asset.public_key));
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kEvicted, 1);
+}
+
+TEST_F(ManifestAssetManagerTest, OrphanedAssetInManifestRetainedAndUsed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
+
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  // Advance 40 days so priority drops to kRetain (not eligible for new
+  // download, but eligible to be retained if already on disk).
+  task_environment_.FastForwardBy(base::Days(40));
+
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  component_state_.SetInstalled(asset.ToInstallTarget());
+
+  Startup();
+  task_environment_.RunUntilIdle();
+  // Before the orphan scan runs, the ledger thinks the asset is not installed,
+  // so it is not registered at kRetain priority.
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+
+  // After the delayed scan runs, the orphaned asset is added to the ledger,
+  // retained, registered, and made available for use.
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+
+  auto& subscriber =
+      model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kCompose);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  EXPECT_TRUE(client_future.Get());
+}
+
+TEST_F(ManifestAssetManagerTest, OrphanedScanDoesNotOverwriteTrackedAsset) {
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
+  usage_tracker_.RaisePriority(asset_v2.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetInstallable(asset_v1);
+  component_state_.SetInstalled(asset_v1.ToInstallTarget());
+  UpdateManifest(DummyManifest().Add(asset_v2));
+
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
+  EXPECT_EQ(component_state_.GetRegistrationCount(asset_v2.public_key), 1);
+
+  // When the scan runs, the asset is already tracked in the ledger, so its
+  // ledger entry should not be overwritten as orphaned.
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsRegistered(asset_v2.ToInstallTarget()));
+  EXPECT_EQ(component_state_.GetRegistrationCount(asset_v2.public_key), 1);
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset_v2.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest,
+       OrphanedAssetWithMismatchedVersionIsUninstalled) {
+  DummyAsset orphan_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  DummyAsset target_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
+  usage_tracker_.RaisePriority(target_v2.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  // Advance 40 days so priority drops to kRetain (eligible to be retained if
+  // the target version were already installed, but not eligible for a new
+  // download).
+  task_environment_.FastForwardBy(base::Days(40));
+
+  MakeAssetInstallable(orphan_v1);
+  component_state_.SetInstalled(orphan_v1.ToInstallTarget());
+  MakeAssetsInstallable(DummyManifest().Add(target_v2));
+
+  Startup();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(component_state_.IsRegistered(target_v2.public_key));
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  EXPECT_TRUE(component_state_.WaitForUninstall(orphan_v1.public_key));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsUninstalled(orphan_v1.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kObsolete, 1);
+}
+
+TEST_F(ManifestAssetManagerTest,
+       OrphanedAssetWithNoUsableVersionIsUninstalled) {
+  DummyAsset target = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  usage_tracker_.RaisePriority(target.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  // Advance 40 days so priority drops to kRetain.
+  task_environment_.FastForwardBy(base::Days(40));
+
+  component_state_.SetInstalled({target.public_key, std::nullopt});
+  MakeAssetsInstallable(DummyManifest().Add(target));
+
+  Startup();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(component_state_.IsRegistered(target.public_key));
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  EXPECT_TRUE(component_state_.WaitForUninstall(target.public_key));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsUninstalled(target.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kObsolete, 1);
+}
+
+TEST_F(ManifestAssetManagerTest, OrphanedAssetScanDisabledByFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kScanForOrphanedManifestAssets);
+
+  DummyAsset active_asset = DummyAsset::For("compose");
+  DummyAsset orphan_asset = DummyAsset::For("test");
+  MakeAssetInstallable(orphan_asset);
+  component_state_.SetInstalled(orphan_asset.ToInstallTarget());
+
+  UpdateManifest(DummyManifest().Add(active_asset));
+  Startup();
+  task_environment_.FastForwardBy(kOrphanedManifestAssetScanDelay.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(component_state_.WasUninstallRequested(orphan_asset.public_key));
+  EXPECT_FALSE(component_state_.IsUninstalled(orphan_asset.public_key));
+}
+
 // TODO(crbug.com/504749700): Verify these scenarios from these
 // OnDeviceModelServiceControllerTest tests are covered by
 // ManifestAssetManagerTests BaseModelToBeInstalled BaseModelAvailableAfterInit

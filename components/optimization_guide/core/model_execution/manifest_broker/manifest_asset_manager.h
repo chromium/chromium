@@ -43,6 +43,12 @@ namespace optimization_guide {
 // uninstalled.
 BASE_DECLARE_FEATURE(kOnDeviceModelEviction);
 
+// Controls whether to scan for orphaned assets on disk after initialization.
+BASE_DECLARE_FEATURE(kScanForOrphanedManifestAssets);
+
+// Delay after initialization before scanning for orphaned assets on disk.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kOrphanedManifestAssetScanDelay);
+
 class UsageTracker;
 
 // Priorities for assets in the manifest.
@@ -100,6 +106,20 @@ class ManifestAssetManager : public UsageTracker::Observer {
     // Triggers an immediate update check for a component.
     virtual void RequestUpdate(const std::string& public_key_hex,
                                bool is_background) = 0;
+
+    struct InstalledAsset {
+      std::string public_key_hex;
+      // The inferred version of the asset, or `std::nullopt` if the asset
+      // directory exists on disk but has no usable version.
+      std::optional<base::Version> version;
+
+      bool operator==(const InstalledAsset&) const = default;
+    };
+
+    // Lists all manifest-controlled assets currently installed on disk.
+    virtual void GetInstalledAssets(
+        base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
+        const = 0;
   };
 
   // Constructs a ManifestAssetManager, and begins provide assets to the given
@@ -233,6 +253,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
     void SetReady(const base::FilePath& install_dir,
                   const base::Version& version);
     void SetUninstalling();
+    void SetOrphaned(const std::optional<base::Version>& version);
 
    private:
     // Persistent state (saved to prefs)
@@ -284,6 +305,11 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // UsageTracker::Observer:
   void OnPriorityIncrease(const std::string& use_case_name,
                           UsageTracker::Priority previous_priority) override;
+
+  // Scans disk for installed assets not tracked in the ledger.
+  void ScanForOrphanedAssets();
+  void OnOrphanedAssetsFound(
+      std::vector<Delegate::InstalledAsset> installed_assets);
 
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);

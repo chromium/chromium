@@ -47,6 +47,14 @@ namespace optimization_guide {
 
 BASE_FEATURE(kOnDeviceModelEviction, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kScanForOrphanedManifestAssets, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kOrphanedManifestAssetScanDelay,
+                   &kScanForOrphanedManifestAssets,
+                   "scan_delay",
+                   base::Seconds(5));
+
 namespace {
 // TTL for disk space evaluation result.
 constexpr base::TimeDelta kDiskSpaceFreshnessThreshold = base::Seconds(10);
@@ -198,6 +206,15 @@ void ManifestAssetManager::ComponentContext::SetUninstalling() {
   requested_version_ = kUninstallingVersion;
   install_dir_ = std::nullopt;
   version_ = std::nullopt;
+}
+
+void ManifestAssetManager::ComponentContext::SetOrphaned(
+    const std::optional<base::Version>& version) {
+  CHECK_EQ(state_, ComponentState::kNotRegistered);
+  CHECK(requested_version_.empty());
+  CHECK(!version || version->IsValid());
+  requested_version_ =
+      version ? version->GetString() : std::string(kUninstallingVersion);
 }
 
 ManifestAssetManager::ComponentContext
@@ -378,6 +395,15 @@ ManifestAssetManager::ManifestAssetManager(
 
   // Register observers for when we might need to update the registrations.
   usage_tracker_observation_.Observe(&usage_tracker);
+
+  // Schedule a one-time scan for orphaned assets on disk after initialization.
+  if (base::FeatureList::IsEnabled(kScanForOrphanedManifestAssets)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ManifestAssetManager::ScanForOrphanedAssets,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kOrphanedManifestAssetScanDelay.Get());
+  }
 }
 
 ManifestAssetManager::~ManifestAssetManager() {
@@ -535,6 +561,31 @@ bool ManifestAssetManager::IsEvictionEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_eviction_enabled_ ||
          base::FeatureList::IsEnabled(kOnDeviceModelEviction);
+}
+
+void ManifestAssetManager::ScanForOrphanedAssets() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetInstalledAssets(
+      base::BindOnce(&ManifestAssetManager::OnOrphanedAssetsFound,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ManifestAssetManager::OnOrphanedAssetsFound(
+    std::vector<Delegate::InstalledAsset> installed_assets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> keys_to_save;
+  for (const auto& asset : installed_assets) {
+    ComponentContext& context =
+        *ledger_.GetOrCreateContext(asset.public_key_hex);
+    if (!context.NeedsCleanup()) {
+      context.SetOrphaned(asset.version);
+      keys_to_save.push_back(asset.public_key_hex);
+    }
+  }
+  if (!keys_to_save.empty()) {
+    ledger_.SaveContexts(keys_to_save);
+    UpdateRegistrations();
+  }
 }
 
 void ManifestAssetManager::OnDiskSpaceEvaluated(

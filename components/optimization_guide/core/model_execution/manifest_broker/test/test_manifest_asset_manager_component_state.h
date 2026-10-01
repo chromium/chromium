@@ -34,7 +34,7 @@ class TestManifestAssetManagerComponentState final {
   struct InstallTarget {
     InstallTarget();
     InstallTarget(const std::string& public_key_hex,
-                  const base::Version& version);
+                  std::optional<base::Version> version);
     ~InstallTarget();
     InstallTarget(const InstallTarget&);
     InstallTarget& operator=(const InstallTarget&);
@@ -49,7 +49,8 @@ class TestManifestAssetManagerComponentState final {
     template <typename H>
     friend H AbslHashValue(H h, const InstallTarget& target) {
       return H::combine(std::move(h), target.public_key_hex,
-                        target.version->components());
+                        target.version ? target.version->components()
+                                       : std::vector<uint32_t>());
     }
   };
 
@@ -145,6 +146,7 @@ class TestManifestAssetManagerComponentState final {
 
   // Clears all installed components.
   void ClearInstalledComponents();
+  void SetInstalled(const InstallTarget& target);
   void Uninstall(const std::string& public_key);
   // Simulates the component being uninstalled by something other than the
   // manager (e.g. the component updater unregistering it): removes the

@@ -47,8 +47,8 @@ TestManifestAssetManagerComponentState::InstallTarget::InstallTarget() =
 
 TestManifestAssetManagerComponentState::InstallTarget::InstallTarget(
     const std::string& public_key_hex,
-    const base::Version& version)
-    : public_key_hex(public_key_hex), version(version) {}
+    std::optional<base::Version> version)
+    : public_key_hex(public_key_hex), version(std::move(version)) {}
 
 TestManifestAssetManagerComponentState::InstallTarget::~InstallTarget() =
     default;
@@ -143,6 +143,23 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        state_ ? state_->free_disk_space_ : base::ByteSize(0)));
+  }
+
+  void GetInstalledAssets(
+      base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
+      const override {
+    std::vector<InstalledAsset> assets;
+    if (state_) {
+      for (const auto& [public_key, component] :
+           state_->installed_components_) {
+        assets.push_back({
+            .public_key_hex = public_key,
+            .version = component.target.version,
+        });
+      }
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(assets)));
   }
 
  private:
@@ -352,6 +369,16 @@ void TestManifestAssetManagerComponentState::SimulateRestart() {
 
 void TestManifestAssetManagerComponentState::ClearInstalledComponents() {
   installed_components_.clear();
+}
+
+void TestManifestAssetManagerComponentState::SetInstalled(
+    const InstallTarget& target) {
+  auto it = installable_components_.find(target);
+  if (it != installable_components_.end()) {
+    installed_components_[target.public_key_hex] = it->second;
+  } else {
+    installed_components_[target.public_key_hex] = {target, base::FilePath()};
+  }
 }
 
 void TestManifestAssetManagerComponentState::Uninstall(

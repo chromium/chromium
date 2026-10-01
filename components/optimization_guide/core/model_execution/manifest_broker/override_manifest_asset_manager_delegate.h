@@ -50,6 +50,10 @@ class OverrideManifestAssetManagerDelegate final
   void RequestUpdate(const std::string& public_key_hex,
                      bool is_background) override;
 
+  void GetInstalledAssets(
+      base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
+      const override;
+
  private:
   base::FilePath manifest_path_;
   base::flat_map<std::string, base::FilePath> component_overrides_;

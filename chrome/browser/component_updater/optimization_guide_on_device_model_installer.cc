@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -80,6 +81,9 @@ constexpr uint8_t kLegacyBaseModelPublicKeySHA256[32] = {
 static_assert(std::size(kLegacyBaseModelPublicKeySHA256) ==
               crypto::kSHA256Length);
 
+constexpr base::FilePath::CharType kManifestModelDirName[] =
+    FILE_PATH_LITERAL("OptGuideManifestModel");
+
 // Extension id is ceofaddefefcbblgcgnibnonglccbfja.
 constexpr char kOptimizationGuideModelsManifestName[] =
     "Optimization Guide On DeviceModels Manifest";
@@ -139,6 +143,72 @@ base::FilePath GetComponentInstallDirectory() {
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &local_install_path);
   return local_install_path;
+}
+
+// Heuristic to infer the installed version of a component from its directory
+// structure on disk. If this matches the version that `ManifestAssetManager`
+// wants to keep installed, it will register it with component updater (this may
+// cause component updater to finish an install / reinstall if it's not actually
+// installed, but this should be unlikely). If this does not match the target
+// version, `ManifestAssetManager` will take an action to clean it up (either
+// uninstalling it, or registering the component if we want to download a
+// different version).
+std::optional<base::Version> InferInstalledComponentVersion(
+    const base::FilePath& component_base_dir) {
+  base::FileEnumerator enumerator(component_base_dir, /*recursive=*/false,
+                                  base::FileEnumerator::DIRECTORIES);
+  std::optional<base::Version> inferred_version;
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    base::Version version(path.BaseName().MaybeAsASCII());
+    if (!version.IsValid()) {
+      continue;
+    }
+    if (inferred_version) {
+      // Multiple version directories are present; return nullopt so it is
+      // guaranteed not to match any target version and `ManifestAssetManager`
+      // cleans it up.
+      return std::nullopt;
+    }
+    inferred_version = std::move(version);
+  }
+  return inferred_version;
+}
+
+std::vector<optimization_guide::ManifestAssetManager::Delegate::InstalledAsset>
+FindInstalledAssetsOnDisk(const base::FilePath& component_install_dir) {
+  std::vector<
+      optimization_guide::ManifestAssetManager::Delegate::InstalledAsset>
+      installed_assets;
+  if (component_install_dir.empty()) {
+    return installed_assets;
+  }
+
+  base::FilePath legacy_dir =
+      component_install_dir.Append(kLegacyBaseModelPath);
+  if (base::DirectoryExists(legacy_dir)) {
+    installed_assets.push_back({
+        .public_key_hex = base::HexEncodeLower(kLegacyBaseModelPublicKeySHA256),
+        .version = InferInstalledComponentVersion(legacy_dir),
+    });
+  }
+
+  base::FileEnumerator enumerator(
+      component_install_dir.Append(kManifestModelDirName),
+      /*recursive=*/false, base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    std::string filename = path.BaseName().MaybeAsASCII();
+    std::vector<uint8_t> hash;
+    if (!GetPublicKeyHashFromHex(filename, &hash)) {
+      continue;
+    }
+    installed_assets.push_back({
+        .public_key_hex = std::move(filename),
+        .version = InferInstalledComponentVersion(path),
+    });
+  }
+  return installed_assets;
 }
 
 void GetComponentFreeDiskSpace(
@@ -250,7 +320,7 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
     return std::ranges::equal(public_key_hash_,
                               base::span(kLegacyBaseModelPublicKeySHA256))
                ? base::FilePath(kLegacyBaseModelPath)
-               : base::FilePath(FILE_PATH_LITERAL("OptGuideManifestModel"))
+               : base::FilePath(kManifestModelDirName)
                      .AppendASCII(public_key_hex_);
   }
 
@@ -376,6 +446,17 @@ class ManifestAssetManagerDelegateImpl final
                             callback) const override {
     GetComponentFreeDiskSpace(GetComponentInstallDirectory(),
                               std::move(callback));
+  }
+
+  void GetInstalledAssets(
+      base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
+      const override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&FindInstalledAssetsOnDisk,
+                       GetComponentInstallDirectory()),
+        std::move(callback));
   }
 
   void RegisterOnDemandComponent(
