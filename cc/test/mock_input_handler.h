@@ -119,6 +119,10 @@ class MockInputHandler : public InputHandler {
   }
   void set_is_scrolling_root(bool is) { is_scrolling_root_ = is; }
 
+  void set_prevent_scroll_axis_locking(bool prevent) {
+    prevent_scroll_axis_locking_ = prevent;
+  }
+
   MOCK_METHOD4(GetSnapFlingInfoAndSetAnimatingSnapTarget,
                bool(const gfx::Vector2dF& current_delta,
                     const gfx::Vector2dF& natural_displacement,

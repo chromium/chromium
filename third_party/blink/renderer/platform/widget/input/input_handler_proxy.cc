@@ -59,7 +59,8 @@ using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 using ::perfetto::protos::pbzero::TrackEvent;
 
 cc::ScrollStateData CreateScrollStateDataForGesture(
-    const WebGestureEvent& event) {
+    const WebGestureEvent& event,
+    bool prevent_scroll_update_axis_locking = false) {
   cc::ScrollStateData scroll_state_data;
   if (event.SourceDevice() == WebGestureDevice::kScrollbar) {
     scroll_state_data.is_scrollbar_interaction = true;
@@ -68,8 +69,23 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
     case WebInputEvent::Type::kGestureScrollBegin:
       scroll_state_data.position_x = event.PositionInWidget().x();
       scroll_state_data.position_y = event.PositionInWidget().y();
-      scroll_state_data.delta_x_hint = -event.data.scroll_begin.delta_x_hint;
-      scroll_state_data.delta_y_hint = -event.data.scroll_begin.delta_y_hint;
+
+      // For GestureScrollBegin, we always honor rails_mode on delta hints.
+      // InputHandler determines the scroller to latch to during
+      // GestureScrollBegin. Using unlocked values can make it difficult for the
+      // user to latch onto a parent scroller if we don't ignore tiny deltas in
+      // the axis perpendicular to the user's movement.
+      scroll_state_data.delta_x_hint =
+          event.data.scroll_begin.rails_mode ==
+                  ui::GestureScrollRailsMode::kVertical
+              ? 0
+              : -event.data.scroll_begin.delta_x_hint;
+      scroll_state_data.delta_y_hint =
+          event.data.scroll_begin.rails_mode ==
+                  ui::GestureScrollRailsMode::kHorizontal
+              ? 0
+              : -event.data.scroll_begin.delta_y_hint;
+
       scroll_state_data.is_beginning = true;
       // On Mac, a GestureScrollBegin in the inertial phase indicates a fling
       // start.
@@ -95,9 +111,21 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
       }
 
       break;
-    case WebInputEvent::Type::kGestureScrollUpdate:
-      scroll_state_data.delta_x = -event.data.scroll_update.delta_x;
-      scroll_state_data.delta_y = -event.data.scroll_update.delta_y;
+    case WebInputEvent::Type::kGestureScrollUpdate: {
+      // For GestureScrollUpdate, locking is only applied if the latched
+      // scroll node does not prevent axis locking (e.g. scroll-axis-lock !=
+      // none).
+      scroll_state_data.delta_x = (!prevent_scroll_update_axis_locking &&
+                                   event.data.scroll_update.rails_mode ==
+                                       ui::GestureScrollRailsMode::kVertical)
+                                      ? 0
+                                      : -event.data.scroll_update.delta_x;
+      scroll_state_data.delta_y = (!prevent_scroll_update_axis_locking &&
+                                   event.data.scroll_update.rails_mode ==
+                                       ui::GestureScrollRailsMode::kHorizontal)
+                                      ? 0
+                                      : -event.data.scroll_update.delta_y;
+
       scroll_state_data.delta_x_unconstrained =
           -event.data.scroll_update.delta_x_unconstrained;
       scroll_state_data.delta_y_unconstrained =
@@ -108,6 +136,7 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
       scroll_state_data.delta_granularity =
           event.data.scroll_update.delta_units;
       break;
+    }
     case WebInputEvent::Type::kGestureScrollEnd:
       scroll_state_data.is_ending = true;
       break;
@@ -1274,7 +1303,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
     return DROP_EVENT;
   }
 
-  const auto scroll_state_data = CreateScrollStateDataForGesture(gesture_event);
+  const auto scroll_state_data = CreateScrollStateDataForGesture(
+      gesture_event, input_handler_->prevent_scroll_axis_locking());
   in_inertial_scrolling_ = scroll_state_data.is_in_inertial_phase;
 
   TRACE_EVENT_INSTANT(

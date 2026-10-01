@@ -46,6 +46,7 @@ namespace cc {
 class CompositorDelegateForInput;
 class LatencyInfoSwapPromiseMonitor;
 class LayerImpl;
+class MockInputHandler;
 class ScrollbarController;
 class ScrollElasticityHelper;
 class Viewport;
@@ -387,6 +388,13 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // Returns true if there is an active scroll on the viewport.
   virtual bool IsCurrentlyScrollingViewport() const;
 
+  // Returns whether the latched scroll node prevents scroll axis locking (i.e.
+  // because it has scroll-axis-lock: none). Defaults to false if no scroll node
+  // is currently latched.
+  bool prevent_scroll_axis_locking() const {
+    return prevent_scroll_axis_locking_;
+  }
+
   virtual EventListenerProperties GetEventListenerProperties(
       EventListenerClass event_class) const;
 
@@ -587,6 +595,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                            ThumbDragAfterJumpClickOrThumbClick);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ScrollOnLargeThumb);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollTaskAbort);
+
+  friend class MockInputHandler;
 
   // This method gets the scroll offset for a regular scroller, or the combined
   // visual and layout offsets of the viewport.
@@ -810,7 +820,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // at the end when we unlatch. True if the latched scroller has
   // scroll-axis-lock: none. When true, unconstrained deltas are used to avoid
   // axis locking.
-  std::optional<bool> prevent_scroll_axis_locking_;
+  bool prevent_scroll_axis_locking_ = false;
 
   // Tracks the last scroll update/begin state received. Used to infer the most
   // recent scroll type and direction.

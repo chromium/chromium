@@ -1209,14 +1209,10 @@ TEST_F(GestureProviderTest, ScrollUpdateValues) {
   EXPECT_EQ(kFakeCoordY - delta_y + raw_offset_y, gesture.raw_y);
   EXPECT_EQ(1, gesture.details.touch_points());
 
-  // Horizontal delta is preserved when railing in renderer is enabled;
-  // otherwise it is zeroed by browser-side snapping.
-  if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
-    EXPECT_EQ(-delta_x / 2, gesture.details.scroll_x());
-  } else {
-    EXPECT_EQ(0, gesture.details.scroll_x());
-  }
+  EXPECT_EQ(0, gesture.details.scroll_x());
   EXPECT_EQ(-delta_y / 2, gesture.details.scroll_y());
+  EXPECT_EQ(-delta_x / 2, gesture.details.scroll_x_unconstrained());
+  EXPECT_EQ(-delta_y / 2, gesture.details.scroll_y_unconstrained());
   EXPECT_EQ(GestureScrollRailsMode::kVertical,
             gesture.details.scroll_update_rails_mode());
   EXPECT_EQ(primary_unique_touch_event_id,
@@ -1279,13 +1275,7 @@ TEST_F(GestureProviderTest, FractionalScroll) {
     EXPECT_GE(gesture.details.scroll_y(), (int)delta_y);
     EXPECT_LE(gesture.details.scroll_y(), ((int)delta_y) + 1);
 
-    // Horizontal motion is preserved when railing in renderer is enabled;
-    // otherwise there is no horizontal motion due to browser snapping.
-    if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
-      EXPECT_NEAR(delta_x, gesture.details.scroll_x(), 0.001f);
-    } else {
-      EXPECT_EQ(0, gesture.details.scroll_x());
-    }
+    EXPECT_EQ(0, gesture.details.scroll_x());
 
     // Verify unconstrained deltas are NOT zeroed.
     EXPECT_NEAR(delta_x, gesture.details.scroll_x_unconstrained(), 0.001f);
@@ -1300,12 +1290,8 @@ TEST_F(GestureProviderTest, FractionalScroll) {
 TEST_F(GestureProviderTest, ScrollBeginValues) {
   const float delta_x = 14;
   const float delta_y = 48;
-  // These are the deltas after subtracting the slop region (and applying
-  // browser railing if ApplyScrollRailingInRenderer is disabled).
-  const float delta_x_hint =
-      base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)
-          ? 11.76f
-          : 0;
+  // These are the deltas after subtracting the slop region.
+  const float delta_x_hint = 11.76f;
   const float delta_y_hint = 40.32f;
 
   const base::TimeTicks event_time = TimeTicks::Now();
@@ -1336,13 +1322,13 @@ TEST_F(GestureProviderTest, ScrollBeginValues) {
 
   const GestureEventData* scroll_begin_gesture = GetActiveScrollBeginEvent();
   ASSERT_TRUE(scroll_begin_gesture);
-  if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
-    EXPECT_NEAR(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint(),
-                0.001f);
-  } else {
-    EXPECT_EQ(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint());
-  }
+  EXPECT_EQ(0, scroll_begin_gesture->details.scroll_x_hint());
   EXPECT_EQ(delta_y_hint, scroll_begin_gesture->details.scroll_y_hint());
+  EXPECT_NEAR(delta_x_hint,
+              scroll_begin_gesture->details.scroll_x_hint_unconstrained(),
+              0.001f);
+  EXPECT_EQ(delta_y_hint,
+            scroll_begin_gesture->details.scroll_y_hint_unconstrained());
   EXPECT_EQ(GestureScrollRailsMode::kVertical,
             scroll_begin_gesture->details.scroll_begin_rails_mode());
   EXPECT_EQ(primary_unique_touch_event_id,

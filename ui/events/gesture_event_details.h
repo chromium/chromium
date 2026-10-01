@@ -81,10 +81,24 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   float scroll_x_hint() const {
     DCHECK_EQ(EventType::kGestureScrollBegin, type_);
-    return data_.scroll_begin.x_hint;
+    return scroll_begin_rails_mode() == GestureScrollRailsMode::kVertical
+               ? 0.0f
+               : data_.scroll_begin.x_hint;
   }
 
   float scroll_y_hint() const {
+    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    return scroll_begin_rails_mode() == GestureScrollRailsMode::kHorizontal
+               ? 0.0f
+               : data_.scroll_begin.y_hint;
+  }
+
+  float scroll_x_hint_unconstrained() const {
+    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    return data_.scroll_begin.x_hint;
+  }
+
+  float scroll_y_hint_unconstrained() const {
     DCHECK_EQ(EventType::kGestureScrollBegin, type_);
     return data_.scroll_begin.y_hint;
   }
@@ -106,12 +120,16 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   float scroll_x() const {
     DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
-    return data_.scroll_update.x;
+    return scroll_update_rails_mode() == GestureScrollRailsMode::kVertical
+               ? 0.0f
+               : data_.scroll_update.x;
   }
 
   float scroll_y() const {
     DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
-    return data_.scroll_update.y;
+    return scroll_update_rails_mode() == GestureScrollRailsMode::kHorizontal
+               ? 0.0f
+               : data_.scroll_update.y;
   }
 
   void set_scroll_x(float x) {
@@ -178,10 +196,24 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   float velocity_x() const {
     DCHECK_EQ(EventType::kScrollFlingStart, type_);
-    return data_.fling_velocity.x;
+    return fling_rails_mode() == GestureScrollRailsMode::kVertical
+               ? 0.0f
+               : data_.fling_velocity.x;
   }
 
   float velocity_y() const {
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    return fling_rails_mode() == GestureScrollRailsMode::kHorizontal
+               ? 0.0f
+               : data_.fling_velocity.y;
+  }
+
+  float velocity_x_unconstrained() const {
+    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    return data_.fling_velocity.x;
+  }
+
+  float velocity_y_unconstrained() const {
     DCHECK_EQ(EventType::kScrollFlingStart, type_);
     return data_.fling_velocity.y;
   }

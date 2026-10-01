@@ -3963,6 +3963,133 @@ TEST_P(InputHandlerProxyTouchScrollbarTest,
                 mock_input_handler_, input_handler_.get(), touch_end_));
 }
 
+TEST_P(InputHandlerProxyTest, GestureScrollBeginRailsMode) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kApplyScrollRailingInRenderer);
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce([](cc::ScrollState* scroll_state, ui::ScrollInputType type) {
+        EXPECT_EQ(scroll_state->delta_x_hint(), -20);
+        EXPECT_EQ(scroll_state->delta_y_hint(), 0);  // Locked to 0
+        return kImplThreadScrollState;
+      });
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(ui::ScrollInputType::kTouchscreen,
+                        cc::ScrollBeginThreadState::kScrollingOnCompositor));
+
+  gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
+  gesture_.SetSourceDevice(WebGestureDevice::kTouchscreen);
+  gesture_.data.scroll_begin.rails_mode =
+      ui::GestureScrollRailsMode::kHorizontal;
+  gesture_.data.scroll_begin.delta_x_hint = 20;
+  gesture_.data.scroll_begin.delta_y_hint = 5;
+
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(mock_input_handler_,
+                                               input_handler_.get(), gesture_));
+  // Verify that WebGestureEvent is untouched (railing applied to
+  // ScrollStateData only).
+  EXPECT_EQ(gesture_.data.scroll_begin.delta_x_hint, 20);
+  EXPECT_EQ(gesture_.data.scroll_begin.delta_y_hint, 5);
+
+  EXPECT_CALL(mock_input_handler_,
+              RecordScrollEnd(ui::ScrollInputType::kTouchscreen));
+  EXPECT_CALL(mock_input_handler_, ScrollEnd(_, _))
+      .WillOnce(testing::Return(cc::InputHandlerScrollEndResult()));
+  WebGestureEvent end_event(WebInputEvent::Type::kGestureScrollEnd,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests(),
+                            WebGestureDevice::kTouchscreen);
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(
+                mock_input_handler_, input_handler_.get(), end_event));
+}
+
+TEST_P(InputHandlerProxyTest, GestureScrollUpdateRailsMode) {
+  VERIFY_AND_RESET_MOCKS();
+
+  base::test::ScopedFeatureList feature_list(
+      ::features::kApplyScrollRailingInRenderer);
+
+  WebGestureEvent begin_event(WebInputEvent::Type::kGestureScrollBegin,
+                              WebInputEvent::kNoModifiers,
+                              WebInputEvent::GetStaticTimeStampForTests(),
+                              WebGestureDevice::kTouchscreen);
+  begin_event.data.scroll_begin.delta_x_hint = 10;
+  begin_event.data.scroll_begin.delta_y_hint = 20;
+  begin_event.data.scroll_begin.target_viewport = false;
+  begin_event.data.scroll_begin.rails_mode =
+      ui::GestureScrollRailsMode::kVertical;
+
+  // Start scroll.
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(ui::ScrollInputType::kTouchscreen,
+                        cc::ScrollBeginThreadState::kScrollingOnCompositor));
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(
+                mock_input_handler_, input_handler_.get(), begin_event));
+
+  // 1. When axis locking is allowed, vertical rails mode zeroes delta_x.
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillOnce([](cc::ScrollState scroll_state, base::TimeDelta delayed_by) {
+        EXPECT_EQ(scroll_state.delta_x(), 0);    // Locked to 0
+        EXPECT_EQ(scroll_state.delta_y(), -20);  // Negated
+        cc::InputHandlerScrollResult result;
+        result.did_scroll = true;
+        return result;
+      });
+
+  WebGestureEvent update_event(WebInputEvent::Type::kGestureScrollUpdate,
+                               WebInputEvent::kNoModifiers,
+                               WebInputEvent::GetStaticTimeStampForTests(),
+                               WebGestureDevice::kTouchscreen);
+  update_event.data.scroll_update.rails_mode =
+      ui::GestureScrollRailsMode::kVertical;
+  update_event.data.scroll_update.delta_x = 10;
+  update_event.data.scroll_update.delta_y = 20;
+
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(
+                mock_input_handler_, input_handler_.get(), update_event));
+
+  // 2. When scroll node prevents axis locking, delta_x is NOT zeroed.
+  mock_input_handler_.set_prevent_scroll_axis_locking(true);
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillOnce([](cc::ScrollState scroll_state, base::TimeDelta delayed_by) {
+        EXPECT_EQ(scroll_state.delta_x(), -10);  // NOT locked
+        EXPECT_EQ(scroll_state.delta_y(), -20);
+        cc::InputHandlerScrollResult result;
+        result.did_scroll = true;
+        return result;
+      });
+
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(
+                mock_input_handler_, input_handler_.get(), update_event));
+  // Verify that WebGestureEvent is untouched (railing applied to
+  // ScrollStateData only).
+  EXPECT_EQ(update_event.data.scroll_update.delta_x, 10);
+  EXPECT_EQ(update_event.data.scroll_update.delta_y, 20);
+
+  // End scroll.
+  EXPECT_CALL(mock_input_handler_,
+              RecordScrollEnd(ui::ScrollInputType::kTouchscreen));
+  EXPECT_CALL(mock_input_handler_, ScrollEnd(_, _))
+      .WillOnce(testing::Return(cc::InputHandlerScrollEndResult()));
+  WebGestureEvent end_event(WebInputEvent::Type::kGestureScrollEnd,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests(),
+                            WebGestureDevice::kTouchscreen);
+  EXPECT_EQ(InputHandlerProxy::DID_HANDLE,
+            HandleInputEventAndFlushEventQueue(
+                mock_input_handler_, input_handler_.get(), end_event));
+
+  mock_input_handler_.set_prevent_scroll_axis_locking(false);
+}
 const auto kTestCombinations = testing::Combine(
     testing::Values(ScrollerType::kRoot, ScrollerType::kChild),
     testing::Values(HandlerType::kNormal, HandlerType::kSynchronous));

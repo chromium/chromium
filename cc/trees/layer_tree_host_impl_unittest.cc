@@ -110,6 +110,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -575,7 +576,13 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
             gfx::Vector2dF(0, 0));
 }
 
-TEST_P(LayerTreeHostImplTest, ScrollAxisLockBypass) {
+// Verifies that when kApplyScrollRailingInRenderer is disabled, InputHandler
+// uses unconstrained values when axis locking is prevented on the scroll node.
+TEST_P(LayerTreeHostImplTest, PreventScrollAxisLockingUsesUnconstrainedDeltas) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kApplyScrollRailingInRenderer);
+
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
   LayerImpl* scroll_layer = OuterViewportScrollLayer();
   ScrollNode* scroll_node = GetScrollNode(scroll_layer);

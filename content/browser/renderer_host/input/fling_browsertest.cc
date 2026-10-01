@@ -103,6 +103,37 @@ const std::string kScrollAxisLockNoneSnapFlingDataURL = R"HTML(
     document.title = 'ready';
   </script>
 )HTML";
+
+const std::string kScrollAxisLockNoneFlingDataURL = R"HTML(
+  <!DOCTYPE html>
+  <meta name='viewport' content='width=device-width'/>
+  <style>
+    body {
+      margin: 0;
+    }
+    .scroller {
+      scroll-axis-lock: none;
+      width: 200px;
+      height: 200px;
+      overflow: scroll;
+      border: 1px solid black;
+    }
+    .content {
+      width: 2000px;
+      height: 2000px;
+    }
+  </style>
+  <div class="scroller" id="scroller">
+    <div class="content" id="content"></div>
+  </div>
+  <script>
+    const scroller = document.getElementById('scroller');
+    scroller.addEventListener('scrollend', () => {
+      document.title = 'scrollend';
+    });
+    document.title = 'ready';
+  </script>
+)HTML";
 }  // namespace
 
 namespace content {
@@ -651,6 +682,65 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 
   EXPECT_NEAR(scroll_x, 400.0, 1.0);
   EXPECT_NEAR(scroll_y, 400.0, 1.0);
+}
+
+// Tests that when scroll-axis-lock: none is active, a touchscreen fling
+// initiated with a small horizontal and large vertical delta (which normally
+// triggers vertical scroll railing in the browser) is not railed out, allowing
+// flinging in both axes.
+IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
+                       TouchscreenFlingAxisLockNone) {
+  LoadURL(kScrollAxisLockNoneFlingDataURL);
+
+  const int drag_x = 10;
+  const int drag_y = 100;
+
+  // Watch for the 'scrollend' title change indicating the fling animation
+  // finished.
+  std::u16string scrollend_title(u"scrollend");
+  TitleWatcher watcher(shell()->web_contents(), scrollend_title);
+
+  InputMsgWatcher fling_watcher(GetWidgetHost(),
+                                blink::WebInputEvent::Type::kGestureFlingStart);
+
+  SyntheticSmoothScrollGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor = gfx::PointF(100, 100);  // inside scroller
+  params.distances.push_back(gfx::Vector2d(-drag_x, -drag_y));
+  params.prevent_fling = false;
+  params.speed_in_pixels_s = 4000.f;
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+
+  GetWidgetHost()->QueueSyntheticGesture(
+      std::make_unique<SyntheticSmoothScrollGesture>(params),
+      base::BindOnce(&BrowserSideFlingBrowserTest::OnSyntheticGestureCompleted,
+                     base::Unretained(this)));
+
+  // Run until the gesture completes.
+  run_loop_->Run();
+  run_loop_.reset();
+
+  // Verify that a fling was actually generated.
+  fling_watcher.GetAckStateWaitIfNecessary();
+
+  // Wait for the fling to finish and the scrollend event to fire.
+  std::ignore = watcher.WaitAndGetTitle();
+
+  double actual_scroll_left =
+      EvalJs(shell()->web_contents(),
+             "document.getElementById('scroller').scrollLeft")
+          .ExtractDouble();
+  double actual_scroll_top =
+      EvalJs(shell()->web_contents(),
+             "document.getElementById('scroller').scrollTop")
+          .ExtractDouble();
+
+  // When scroll-axis-lock is none, horizontal fling deltas should not be
+  // locked out by vertical railing. Both axes should have scrolled beyond
+  // the initial drag distance.
+  EXPECT_GT(actual_scroll_left, drag_x);
+  EXPECT_GT(actual_scroll_top, drag_y);
 }
 #endif  // !BUILDFLAG(IS_MAC)
 

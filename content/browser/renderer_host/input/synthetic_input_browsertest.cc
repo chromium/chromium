@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace content {
@@ -231,11 +233,21 @@ IN_PROC_BROWSER_TEST_F(SyntheticInputTest, DISABLED_SlowSmoothScrollWheel) {
 
 class ScrollAxisLockSyntheticInputTest : public SyntheticInputTest {
  public:
+  ScrollAxisLockSyntheticInputTest() {
+    // Disable scroll event resampling to prevent interpolation/prediction from
+    // altering the exact coalesced scroll deltas tested by this suite.
+    feature_list_.InitAndDisableFeature(
+        blink::features::kResamplingScrollEvents);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SyntheticInputTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "ScrollAxisLock");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // This test ensures that scroll deltas from coalesced input events are not lost
