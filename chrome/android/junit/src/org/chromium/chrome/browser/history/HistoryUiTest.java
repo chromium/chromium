@@ -127,6 +127,7 @@ import java.util.function.Supplier;
 @DisableFeatures({
     ChromeFeatureList.APP_SPECIFIC_HISTORY,
     ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT,
+    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
 })
 public class HistoryUiTest {
@@ -718,7 +719,6 @@ public class HistoryUiTest {
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
-    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
     public void testSearch_HostFilterSheet() {
         mContentManager.setHostFilterSheetForTesting(mAppFilterSheet);
@@ -739,7 +739,6 @@ public class HistoryUiTest {
     }
 
     @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
-    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
     public void testSearch_HostFilterDisabled() {
         Assert.assertFalse(mContentManager.showHostFilter());
@@ -852,6 +851,80 @@ public class HistoryUiTest {
 
         Assert.assertFalse(mContentManager.hasHostFilterList());
         Assert.assertFalse(mAdapter.hasListHeader());
+    }
+
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
+    @Test
+    public void testSearch_ClientFilterSheet() {
+        mContentManager.setClientFilterSheetForTesting(mAppFilterSheet);
+
+        performMenuAction(R.id.search_menu_id);
+
+        var clients = new ArrayList<HistoryProvider.ClientInfo>();
+        clients.add(new HistoryProvider.ClientInfo(List.of("client_1", "client_1b"), "Pixel 8"));
+        clients.add(new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook"));
+        mAdapter.onQueryClientsComplete(clients);
+
+        mContentManager.onClientFilterClicked();
+        verify(mAppFilterSheet).openSheet(eq(null));
+
+        // Selecting a client filters by all of its client IDs.
+        FilterItem selectedClient =
+                new FilterItem(List.of("client_1", "client_1b"), null, "Pixel 8");
+        mContentManager.onClientUpdated(selectedClient);
+        Assert.assertEquals(selectedClient, mContentManager.getClientInfoForTesting());
+        Assert.assertEquals(List.of("client_1", "client_1b"), mAdapter.getClientIdsForTest());
+
+        mContentManager.onClientUpdated(null);
+        Assert.assertNull(mContentManager.getClientInfoForTesting());
+        Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
+    }
+
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
+    @Test
+    public void testSearch_ClientFilterHiddenWithSingleClient() {
+        performMenuAction(R.id.search_menu_id);
+
+        mAdapter.onQueryClientsComplete(
+                List.of(new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8")));
+        Assert.assertFalse(mContentManager.hasClientFilterList());
+        Assert.assertEquals(View.GONE, mAdapter.getClientFilterButtonForTest().getVisibility());
+
+        mAdapter.onQueryClientsComplete(
+                List.of(
+                        new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8"),
+                        new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook")));
+        Assert.assertTrue(mContentManager.hasClientFilterList());
+        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+    }
+
+    @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
+    @Test
+    public void testSearch_ClientFilterVisibleWithEmptySearchResult() {
+        mContentManager.setClientFilterSheetForTesting(mAppFilterSheet);
+        performMenuAction(R.id.search_menu_id);
+        mAdapter.onQueryClientsComplete(
+                List.of(
+                        new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8"),
+                        new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook")));
+
+        // The client list comes from the synced devices, not from the history results, so a
+        // search with zero results doesn't affect the client filter with or without a selection.
+        mAdapter.onQueryHistoryComplete(new ArrayList<>(), false);
+        Assert.assertTrue(mContentManager.hasClientFilterList());
+        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+
+        mContentManager.onClientUpdated(new FilterItem(List.of("client_1"), null, "Pixel 8"));
+        mAdapter.onQueryHistoryComplete(new ArrayList<>(), false);
+        Assert.assertTrue(mContentManager.hasClientFilterList());
+        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+        Assert.assertEquals(List.of("client_1"), mAdapter.getClientIdsForTest());
+    }
+
+    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
+    @Test
+    public void testSearch_ClientFilterDisabled() {
+        Assert.assertFalse(mContentManager.showClientFilter());
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)

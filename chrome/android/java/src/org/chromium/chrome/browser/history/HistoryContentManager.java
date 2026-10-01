@@ -143,8 +143,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
     private final boolean mShowHostFilter;
+    private final boolean mShowClientFilter;
     private final List<FilterItem> mAppInfoList = new ArrayList<>();
     private final List<FilterItem> mHostInfoList = new ArrayList<>();
+    private final List<FilterItem> mClientInfoList = new ArrayList<>();
     private final @Nullable Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
@@ -163,6 +165,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private @Nullable FilterItem mCurrentApp;
     private @Nullable FilterSheetCoordinator mHostFilterSheet;
     private @Nullable FilterItem mCurrentHost;
+    private @Nullable FilterSheetCoordinator mClientFilterSheet;
+    private @Nullable FilterItem mCurrentClient;
+
     private long mAppQueryStartMs;
     private final AsyncTabLauncher mRegularAsyncTabLauncher;
     private final AsyncTabLauncher mIncognitoAsyncTabLauncher;
@@ -224,6 +229,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 /* launchedForApp= */ false,
                 /* showAppFilter= */ false,
                 /* showHostFilter= */ false,
+                /* showClientFilter= */ false,
                 /* shouldClusterByDomain= */ false,
                 /* openHistoryItemCallback= */ null,
                 regularAsyncTabLauncher,
@@ -317,6 +323,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 launchedForApp,
                 showAppFilter,
                 /* showHostFilter= */ true,
+                /* showClientFilter= */ true,
                 shouldClusterByDomain,
                 openHistoryItemCallback,
                 regularAsyncTabLauncher,
@@ -346,6 +353,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean launchedForApp,
             boolean showAppFilter,
             boolean showHostFilter,
+            boolean showClientFilter,
             boolean shouldClusterByDomain,
             @Nullable Runnable openHistoryItemCallback,
             AsyncTabLauncher regularAsyncTabLauncher,
@@ -359,6 +367,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHideSoftKeyboard = hideSoftKeyboard;
         mShowAppFilter = showAppFilter;
         mShowHostFilter = showHostFilter;
+        mShowClientFilter = showClientFilter;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
@@ -501,9 +510,20 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.queryApps();
     }
 
+    /** Query all synced clients if required. */
+    void maybeQueryClients() {
+        if (!showClientFilter()) return;
+
+        mHistoryAdapter.queryClients();
+    }
+
     void onQueryAppsComplete(List<String> items) {
         mUmaRecorder.recordQueryAppDuration(SystemClock.elapsedRealtime() - mAppQueryStartMs);
         buildAppInfoList(items);
+    }
+
+    void onQueryClientsComplete(List<HistoryProvider.ClientInfo> items) {
+        buildClientInfoList(items);
     }
 
     /**
@@ -544,6 +564,25 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
     }
 
+    private void buildClientInfoList(List<HistoryProvider.ClientInfo> clients) {
+        mClientInfoList.clear();
+        Drawable icon = AppCompatResources.getDrawable(mActivity, R.drawable.devices_black_24dp);
+        for (HistoryProvider.ClientInfo client : clients) {
+            if (client.clientIds != null && !client.clientIds.isEmpty()) {
+                // A client can be associated with multiple IDs. All of them are used when
+                // querying history for the selected client.
+                String label =
+                        (client.name != null && !client.name.isEmpty())
+                                ? client.name
+                                : client.clientIds.get(0);
+                mClientInfoList.add(new FilterItem(client.clientIds, icon, label));
+            }
+        }
+        if (mClientFilterSheet != null) {
+            mClientFilterSheet.updateItems(mClientInfoList);
+        }
+    }
+
     List<FilterItem> getHostInfoListForTests() {
         return mHostInfoList;
     }
@@ -553,7 +592,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     not completed or the result indeed is empty.
      */
     boolean hasFilterList() {
-        return (showAppFilter() && hasAppFilterList()) || (showHostFilter() && hasHostFilterList());
+        return (showAppFilter() && hasAppFilterList())
+                || (showHostFilter() && hasHostFilterList())
+                || (showClientFilter() && hasClientFilterList());
     }
 
     boolean hasAppFilterList() {
@@ -562,6 +603,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     boolean hasHostFilterList() {
         return mHostInfoList.size() >= 2;
+    }
+
+    /**
+     * @return Whether the client filter should be offered. Filtering by device is only useful if
+     *     there are at least two known devices.
+     */
+    boolean hasClientFilterList() {
+        return mClientInfoList.size() >= 2;
     }
 
     /**
@@ -702,10 +751,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     /**
+     * @return True if history page needs to show client filter UI.
+     */
+    boolean showClientFilter() {
+        return ChromeFeatureList.sBrowsingHistoryFilterByDevice.isEnabled() && mShowClientFilter;
+    }
+
+    /**
      * @return True if history page needs to show filter chips UI.
      */
     boolean showFilterChips() {
-        return showAppFilter() || showHostFilter();
+        return showAppFilter() || showHostFilter() || showClientFilter();
     }
 
     /** returns whether the info header will be available for user upon request. */
@@ -852,6 +908,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     void maybeResetFilterChips() {
         mHistoryAdapter.resetAppFilterChip();
         mHistoryAdapter.resetHostFilterChip();
+        mHistoryAdapter.resetClientFilterChip();
     }
 
     /**
@@ -867,6 +924,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     public void onEndSearch() {
         mCurrentApp = null;
         mCurrentHost = null;
+        mCurrentClient = null;
         mHistoryAdapter.onEndSearch();
     }
 
@@ -957,6 +1015,31 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         if (Objects.equals(mCurrentHost, hostInfo)) return;
         mCurrentHost = hostInfo;
         getAdapter().updateHostFilter(mCurrentHost);
+    }
+
+    /** Called after a user clicks the filter by client button. */
+    void onClientFilterClicked() {
+        assumeNonNull(mHideSoftKeyboard).run();
+        if (mClientFilterSheet == null) {
+            assert mBottomSheetControllerSupplier != null;
+            mClientFilterSheet =
+                    new FilterSheetCoordinator(
+                            mActivity,
+                            mActivity.getWindow().getDecorView(),
+                            mBottomSheetControllerSupplier.get(),
+                            this::onClientUpdated,
+                            mClientInfoList,
+                            R.string.history_filter_by_client);
+        }
+        mClientFilterSheet.openSheet(mCurrentClient);
+    }
+
+    /** Callback from client filter sheet, with the newly chosen client to filter. */
+    @VisibleForTesting
+    void onClientUpdated(@Nullable FilterItem clientInfo) {
+        if (Objects.equals(mCurrentClient, clientInfo)) return;
+        mCurrentClient = clientInfo;
+        getAdapter().updateClientFilter(mCurrentClient);
     }
 
     /** Removes the list header. */
@@ -1084,5 +1167,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     @Nullable FilterItem getHostInfoForTesting() {
         return mCurrentHost;
+    }
+
+    void setClientFilterSheetForTesting(FilterSheetCoordinator clientFilterSheet) {
+        mClientFilterSheet = clientFilterSheet;
+    }
+
+    @Nullable FilterItem getClientInfoForTesting() {
+        return mCurrentClient;
     }
 }

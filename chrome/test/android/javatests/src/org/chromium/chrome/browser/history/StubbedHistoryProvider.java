@@ -31,9 +31,9 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     private String mLastQuery;
     private int mPaging = 5;
-    private boolean mHostOnly;
 
     private boolean mQueryAppsTriggered;
+    private QueryOptions mLastQueryOptions;
 
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
@@ -42,10 +42,15 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     @Override
     public void queryHistory(String query, QueryOptions options) {
-        mHostOnly = options.hostName != null;
+        mLastQueryOptions = options;
         mLastQueryEndPosition = 0;
-        mLastQuery = mHostOnly ? options.hostName : query;
+        mLastQuery = options.hostName != null ? options.hostName : query;
         queryHistoryContinuation();
+    }
+
+    /** Returns the options passed to the last {@link #queryHistory} call. */
+    public QueryOptions getLastQueryOptions() {
+        return mLastQueryOptions;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
             // Start a new search; simulate basic search.
             mLastQuery = mLastQuery.toLowerCase(Locale.getDefault());
             for (HistoryItem item : mItems) {
-                if (mHostOnly) {
+                if (mLastQueryOptions.hostName != null) {
                     if (item.getUrl()
                             .getHost()
                             .toLowerCase(Locale.getDefault())

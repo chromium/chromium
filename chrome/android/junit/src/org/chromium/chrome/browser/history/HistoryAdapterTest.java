@@ -40,7 +40,9 @@ import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for the {@link HistoryAdapter}. */
@@ -161,6 +163,46 @@ public class HistoryAdapterTest {
         mAdapter.onEndSearch();
         Assert.assertTrue("Should show source app when search is exited", showSourceApp());
         Assert.assertEquals("App id should reverted to null", null, getAppId());
+    }
+
+    @Test
+    public void testSearch_HostAndClientFilter() {
+        doReturn(true).when(mContentManager).showAppFilter();
+        doReturn(true).when(mContentManager).showHostFilter();
+        doReturn(true).when(mContentManager).showClientFilter();
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
+        mAdapter.generateHeaderItemsForTest();
+        mAdapter.generateFooterItemsForTest(mMockButton);
+        mAdapter.setHostFilterButtonForTest(mAppFilterChip);
+        mAdapter.setClientFilterButtonForTest(mAppFilterChip);
+
+        mAdapter.onSearchStart();
+        Assert.assertNull(mAdapter.getHostNameForTest());
+        Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
+
+        mAdapter.updateHostFilter(new FilterItem("www.google.com", null, "www.google.com"));
+        Assert.assertEquals("www.google.com", mAdapter.getHostNameForTest());
+        Assert.assertEquals(
+                new QueryOptions(null, "www.google.com", Collections.emptyList()),
+                mHistoryProvider.getLastQueryOptions());
+
+        mAdapter.updateClientFilter(
+                new FilterItem(List.of("client_123", "client_456"), null, "Pixel 8"));
+        Assert.assertEquals(List.of("client_123", "client_456"), mAdapter.getClientIdsForTest());
+        Assert.assertEquals(
+                new QueryOptions(null, "www.google.com", List.of("client_123", "client_456")),
+                mHistoryProvider.getLastQueryOptions());
+
+        mAdapter.onEndSearch();
+        Assert.assertNull(mAdapter.getHostNameForTest());
+        Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
     }
 
     @Test
@@ -874,5 +916,28 @@ public class HistoryAdapterTest {
 
         watcher.assertExpected();
         verify(mViewTreeObserver, never()).addOnPreDrawListener(any(OnPreDrawListener.class));
+    }
+
+    @Test
+    public void testCombinedFilters() {
+        HistoryProvider mockProvider = Mockito.mock(HistoryProvider.class);
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager,
+                        mockProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
+
+        mAdapter.setAppId("com.example.app");
+        mAdapter.setHostName("example.com");
+        mAdapter.setClientIds(List.of("client_123"));
+        mAdapter.search("test_query");
+
+        Mockito.verify(mockProvider)
+                .queryHistory(
+                        "test_query",
+                        new QueryOptions("com.example.app", "example.com", List.of("client_123")));
     }
 }

@@ -1827,6 +1827,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_FILTER_BY_HOST" desc="Text used in the host filter button and in the header of host filter sheet." translateable="false">
         Filter by host
       </message>
+      <message name="IDS_HISTORY_FILTER_BY_CLIENT" desc="Text used in the client filter button and in the header of client filter sheet." translateable="false">
+        Filter by device
+      </message>
       <message name="IDS_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate users about the app history filter.">
         Search by app, date, and more.
       </message>
