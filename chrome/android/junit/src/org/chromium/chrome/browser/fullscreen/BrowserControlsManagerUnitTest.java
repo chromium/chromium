@@ -1101,7 +1101,6 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT)
     public void testOnConstraintsChangedShownSynchronizesWhenRendererAlreadyAtZeroOffset() {
         remakeWithoutSpy();
         notifyAddTab(mTab);
@@ -1125,6 +1124,30 @@ public class BrowserControlsManagerUnitTest {
                 (float) TOOLBAR_HEIGHT,
                 mBrowserControlsManager.getTopVisibleContentOffset(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testOnConstraintsChangedShownDefersToRendererWhenOffsetsNonZero() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        mActivityTabProvider.setForTesting(mTab);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mControlsDelegate.set(BrowserControlsState.BOTH);
+
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(mTab, -TOOLBAR_HEIGHT, 0, 0, 0, 0);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
+
+        when(mTabBrowserControlsOffsetHelper.offsetInitialized()).thenReturn(true);
+        when(mTabBrowserControlsOffsetHelper.topControlsOffset()).thenReturn(-TOOLBAR_HEIGHT);
+        when(mTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
+
+        mControlsDelegate.set(BrowserControlsState.SHOWN);
+
+        // The renderer drives the show animation, so the offset is left untouched.
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsManager.getTopControlOffset());
     }
 
     @Test

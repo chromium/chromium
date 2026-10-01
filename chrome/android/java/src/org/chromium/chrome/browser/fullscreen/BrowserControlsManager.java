@@ -20,7 +20,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
@@ -1017,24 +1016,16 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private void onConstraintsChanged(@BrowserControlsState int constraints) {
         if (constraints == BrowserControlsState.SHOWN) {
-            // When compositor can drive the animation to show controls, do not call
-            // setPositionsForTabToNonFullscreen to avoid control offset being forced
-            // set to 0 before the render-driven animation kicks in.
-            boolean allowRenderDrivenShowConstraint =
-                    ChromeFeatureList.sBrowserControlsRenderDrivenShowConstraint.isEnabled();
+            // When the renderer can drive the show animation, do not call
+            // setPositionsForTabToNonFullscreen, or the control offset is forced to 0 before the
+            // render-driven animation kicks in. Otherwise the browser resets the offsets itself.
+            // Field data for crbug.com/449011189 showed about a third of SHOWN constraint changes
+            // take this fallback (e.g. the tab is a native page or not user-interactable, or the
+            // renderer offsets are already zero), so it must stay.
             boolean renderDrivenShowConstraint =
-                    allowRenderDrivenShowConstraint
-                            && canAnimateNativeBrowserControls()
-                            && hasNonZeroRendererOffsets();
+                    canAnimateNativeBrowserControls() && hasNonZeroRendererOffsets();
             if (!renderDrivenShowConstraint) {
                 setPositionsForTabToNonFullscreen();
-            }
-
-            // TODO(https://crbug.com/449011189): Maybe cleanup
-            if (allowRenderDrivenShowConstraint) {
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.BrowserControls.RenderDrivenShowConstraint",
-                        renderDrivenShowConstraint);
             }
 
             // If controls become locked, it's possible we've previously delayed
