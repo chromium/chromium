@@ -77,14 +77,9 @@ void RealtimeReportingClientBase::InitRealtimeReportingClient(
 
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
-      InitBrowserReportingClient(dm_token);
-#else
   std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
       per_profile ? InitProfileReportingClient(dm_token)
                   : InitBrowserReportingClient(dm_token);
-#endif
   if (!desc_and_client.second) {
     return;
   }

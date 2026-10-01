@@ -90,7 +90,7 @@ INSTANTIATE_TEST_SUITE_P(
             .is_profile_report_uploader = true,
             .create_reporting_client = true,
             .expected_dm_token = "user_dm_token_test_profile",
-            .expected_per_profile = false,
+            .expected_per_profile = true,
             .expect_report_upload = true},
         SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadProfileReport_Affiliated",
@@ -100,7 +100,7 @@ INSTANTIATE_TEST_SUITE_P(
             .is_profile_report_uploader = true,
             .create_reporting_client = true,
             .expected_dm_token = "user_dm_token_test_profile",
-            .expected_per_profile = false,
+            .expected_per_profile = true,
             .expect_report_upload = true},
         SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadProfileReport_Unmanaged",
@@ -247,8 +247,7 @@ TEST_F(SaasUsageReportUploaderImplTest, UploadProfileReport_MultiProfile) {
 
   // Verify that the profile uploader for profile1 strictly uses profile1's
   // client and passes profile1's user DM token, completely ignoring profile2.
-  bool per_profile_expected = !BUILDFLAG(IS_CHROMEOS);
-  EXPECT_CALL(*mock_client1, ReportSaasUsageEvent(_, per_profile_expected,
+  EXPECT_CALL(*mock_client1, ReportSaasUsageEvent(_, /*per_profile=*/true,
                                                   "user_dm_token_profile1", _));
 
   EXPECT_CALL(*mock_client2, ReportSaasUsageEvent(_, _, _, _)).Times(0);

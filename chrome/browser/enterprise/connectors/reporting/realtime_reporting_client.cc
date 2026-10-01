@@ -108,7 +108,6 @@ void RealtimeReportingClient::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {
@@ -125,13 +124,20 @@ RealtimeReportingClient::InitProfileReportingClient(
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   policy::CloudPolicyClient* client = profile_private_client_.get();
 
-  client->SetupRegistration(dm_token,
-                            policy_manager->core()->client()->client_id(),
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the browser client id is already the user (or managed guest
+  // session) client id, see GetBrowserClientId(). Use it here so that the
+  // client id sent to DMServer is identical to when all ChromeOS reporting went
+  // through the browser client.
+  std::string client_id = GetBrowserClientId();
+#else
+  std::string client_id = policy_manager->core()->client()->client_id();
+#endif
+  client->SetupRegistration(dm_token, client_id,
                             /*user_affiliation_ids*/ {});
 
   return {GetProfilePolicyClientDescription(), client};
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 std::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {

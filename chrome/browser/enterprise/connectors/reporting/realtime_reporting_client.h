@@ -90,10 +90,8 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
       base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) override;
 
-#if !BUILDFLAG(IS_CHROMEOS)
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
       const std::string& dm_token) override;
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void MaybeCollectDeviceSignalsAndReportEvent(

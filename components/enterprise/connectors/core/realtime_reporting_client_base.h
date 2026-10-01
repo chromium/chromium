@@ -104,10 +104,8 @@ class RealtimeReportingClientBase : public KeyedService,
   // verifications and initialize the profile reporting client. Returns a policy
   // client description and a client, which can be nullptr if it can't be
   // initialized.
-#if !BUILDFLAG(IS_CHROMEOS)
   virtual std::pair<std::string, policy::CloudPolicyClient*>
   InitProfileReportingClient(const std::string& dm_token) = 0;
-#endif
 
   // Returns the browser client id required for initializing browser reporting
   // client.
@@ -180,9 +178,28 @@ class RealtimeReportingClientBase : public KeyedService,
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;
 
-  // The cloud policy clients used to upload browser events and profile events
-  // to the cloud. These clients are never used to fetch policies. These
-  // pointers are not owned by the class.
+  // The cloud policy clients currently used to upload browser events and
+  // profile events to the cloud. These clients are never used to fetch
+  // policies. Each is either owned by
+  // `browser_private_client_`/`profile_private_client_` below, or injected by
+  // a test.
+  //
+  // There is at most one client per scope, which is only correct because each
+  // scope maps to exactly one DM token:
+  //
+  //                    browser scope              profile scope
+  //   ChromeOS         device DM token            user DM token
+  //                    (connectors, affiliated)   (connectors unaffiliated,
+  //                                                SaaS usage)
+  //   Other platforms  CBCM DM token              user DM token
+  //
+  // Reporting features do not all use the same DM token, so this mapping is
+  // what keeps them from fighting over a scope. If a feature ever uploads with
+  // a DM token that does not match its scope, IsClientValid() will see a
+  // mismatch and the scope's client will be torn down and rebuilt under the
+  // feature that was already using it. Events in flight on the old client are
+  // dropped. Put a new feature's (DM token, scope) pair in the table above
+  // rather than reusing a scope that already carries a different token.
   raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> browser_client_ =
       nullptr;
   raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> profile_client_ =
