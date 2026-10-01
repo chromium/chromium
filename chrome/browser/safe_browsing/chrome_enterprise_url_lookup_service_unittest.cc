@@ -232,6 +232,11 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     return enterprise_rt_service_->GetRealTimeLookupUrl();
   }
 
+  bool CanPerformFullURLLookupWithToken(
+      ChromeEnterpriseRealTimeUrlLookupService* service) {
+    return service->CanPerformFullURLLookupWithToken();
+  }
+
   void FulfillAccessTokenRequest(std::string token) {
     raw_token_fetcher_->RunAccessTokenCallback(token);
   }
@@ -533,6 +538,29 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestStartLookup_OffTheRecordDisabled) {
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  auto off_the_record_rt_service =
+      CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/true);
+  ASSERT_FALSE(off_the_record_rt_service->CanPerformFullURLLookup());
+
+  GURL url("http://example.test/");
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  off_the_record_rt_service->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
   test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
@@ -555,6 +583,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanPerformFullURLLookup) {
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   EXPECT_TRUE(enterprise_rt_service()->CanPerformFullURLLookup());
+  EXPECT_TRUE(CanPerformFullURLLookupWithToken(enterprise_rt_service()));
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -563,6 +592,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   auto guest_rt_service = CreateServiceAndEnablePolicy(
       test_profile_, /*is_off_the_record=*/false, /*is_guest_session=*/true);
   EXPECT_TRUE(guest_rt_service->CanPerformFullURLLookup());
+  EXPECT_TRUE(CanPerformFullURLLookupWithToken(guest_rt_service.get()));
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -572,6 +602,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
       test_profile_, /*is_off_the_record=*/false, /*is_guest_session=*/false,
       /*is_isolated_profile=*/true);
   EXPECT_TRUE(guest_rt_service->CanPerformFullURLLookup());
+  EXPECT_TRUE(CanPerformFullURLLookupWithToken(guest_rt_service.get()));
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -580,6 +611,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   auto off_the_record_rt_service =
       CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/true);
   EXPECT_FALSE(off_the_record_rt_service->CanPerformFullURLLookup());
+  EXPECT_FALSE(
+      CanPerformFullURLLookupWithToken(off_the_record_rt_service.get()));
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl_IPAddresses) {

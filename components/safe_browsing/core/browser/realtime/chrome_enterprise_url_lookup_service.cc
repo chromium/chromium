@@ -130,7 +130,9 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
     CanPerformFullURLLookupWithToken() const {
-  DCHECK(CanPerformFullURLLookup());
+  if (!CanPerformFullURLLookup()) {
+    return false;
+  }
 
   // Don't allow using the access token if the managed profile doesn't match the
   // managed device and the URL check is set at device level.

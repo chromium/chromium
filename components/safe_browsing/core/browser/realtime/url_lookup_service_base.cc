@@ -451,7 +451,7 @@ void RealTimeUrlLookupServiceBase::StartMaybeCachedLookup(
     }
   }
 
-  if (IsInBackoffMode()) {
+  if (IsInBackoffMode() || !CanPerformFullURLLookup()) {
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(response_callback),
                                   /* is_rt_lookup_successful */ false,
