@@ -1066,6 +1066,9 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chrome
+* [vuln-scan-dispatcher](https://ci.chromium.org/p/chrome/builders/try.security/vuln-scan-dispatcher) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""vuln-scan-dispatcher""))
+  * Experiment percentage: 10.0
+
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0
 

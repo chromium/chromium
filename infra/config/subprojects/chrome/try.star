@@ -14,6 +14,7 @@ load("//project.star", "settings")
 def chrome_internal_verifier(
         *,
         builder,
+        bucket = "try",
         cq_settings = None,
         **kwargs):
     """Registers an internal Chrome trybot in Chromium's CQ config
@@ -23,13 +24,18 @@ def chrome_internal_verifier(
       cq_settings - A struct containing the details of the tryjob verifier for the
         builder, obtained by calling the `try.cq_settings()` function.
     """
+    builder_full_path = "{}:{}/{}".format(
+        settings.chrome_project,
+        bucket,
+        builder,
+    )
     if cq_settings != None:
         location_filters = cq_settings.location_filters
         if cq_settings.add_default_filters:
             location_filters = (location_filters or []) + default_location_filters()
 
         branches.cq_tryjob_verifier(
-            builder = "{}:try/{}".format(settings.chrome_project, builder),
+            builder = builder_full_path,
             cancel_stale = cq_settings.cancel_stale,
             cq_group = "cq",
             disable_reuse = cq_settings.disable_reuse,
@@ -45,7 +51,7 @@ def chrome_internal_verifier(
         )
     else:
         branches.cq_tryjob_verifier(
-            builder = "{}:try/{}".format(settings.chrome_project, builder),
+            builder = builder_full_path,
             cq_group = "cq",
             includable_only = True,
             owner_whitelist = default_owner_whitelist_group_for_cq_bots(settings.chrome_project),
@@ -492,6 +498,16 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "test-tablet",
+)
+
+chrome_internal_verifier(
+    bucket = "try.security",
+    builder = "vuln-scan-dispatcher",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 10,
+        on_default_cq = True,
+    ),
+    owner_whitelist = ["googlers"],
 )
 
 chrome_internal_verifier(
