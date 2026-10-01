@@ -44,15 +44,15 @@ views::BubbleAnchor WebUIPermissionDashboard::GetAnchor() {
 
 toolbar_ui_api::mojom::PermissionDashboardStatePtr
 WebUIPermissionDashboard::GetState() const {
-  if (!is_visible_) {
-    return nullptr;
-  }
-
   auto state = toolbar_ui_api::mojom::PermissionDashboardState::New();
   state->request_chip = request_chip_.GetState();
   state->indicator_chip = indicator_chip_.GetState();
+  if (!is_visible_) {
+    state->request_chip->is_visible = false;
+    state->indicator_chip->is_visible = false;
+  }
   state->is_divider_visible =
-      request_chip_.GetVisible() && indicator_chip_.GetVisible();
+      state->request_chip->is_visible && state->indicator_chip->is_visible;
   return state;
 }
 

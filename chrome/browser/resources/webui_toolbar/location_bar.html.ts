@@ -21,7 +21,7 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
 <permission-dashboard
     .delegate="${BrowserProxyImpl.getInstance()}"
     .dashboardState="${this.locationBarState.lhsChipsState.permissionDashboard}"
-    ?visible="${!!this.locationBarState.lhsChipsState.permissionDashboard}"
+    ?visible="${this.isPermissionDashboardVisible_()}"
     @pointerenter="${this.onChipPointerenter_}"
     @pointerleave="${this.onChipPointerleave_}"
     @pointercancel="${this.onChipPointercancel_}">

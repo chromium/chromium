@@ -77,7 +77,7 @@ import {GlicButtonElement} from './glic_button.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {ExtensionsElement} from './extensions.js';
-import {LocationBarElement} from './location_bar.js';
+import {createDefaultLocationBarState, LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
 import {PageActionIconElement} from './page_action_icon.js';
 import {PageActionIconsElement} from './page_action_icons.js';
@@ -116,6 +116,7 @@ export {
   ContentSettingIconElement,
   ContentSettingImageType,
   ContentSettingsIconsElement,
+  createDefaultLocationBarState,
   CrLazyIconset,
   EventDispositionFlag,
   FocusRequestTarget,
@@ -455,49 +456,7 @@ export class ToolbarAppElement extends AppElementBase {
           getTypedBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
       preventOverflow: false,
     },
-    locationBarState: {
-      omniboxViewState: {
-        browserVersion: 0,
-        uiVersion: 0,
-        formattedFullUrl: '',
-        textPieces: [],
-        placeholder: null,
-        inlineAutocompletion: '',
-        additionalText: '',
-        a11yFriendlySuggestionText: '',
-        selection: null,
-        textIsUrl: false,
-        userInputInProgress: false,
-      },
-      locationBarFlags: {
-        userInputInProgress: false,
-        popupOpen: false,
-        forceAimButtonFocusRing: false,
-        isVirtualKeyboardVisible: false,
-      },
-      selectedKeyword: null,
-      contentSettingImageStates: [],
-      lhsChipsState: {
-        securityChip: {
-          icon: {handleId: 0n},
-          securityLevel: 0,
-          text: '',
-          tooltip: '',
-          accessibilityState: {
-            role: SecurityChipRole.kButton,
-            label: '',
-            description: '',
-          },
-          isClickable: false,
-          isTextDangerous: false,
-          isVisible: true,
-          isContextMenuVisible: false,
-        },
-        activityIndicators: [],
-        permissionDashboard: null,
-      },
-      pageActionStates: [],
-    },
+    locationBarState: createDefaultLocationBarState(),
     avatarControlState: {
       state: AvatarToolbarButtonState.kNormal,
       icon: {handleId: 0n},

@@ -15,9 +15,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {PressHandler} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import type {LocationBarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import {PageActionId} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {PageActionId, PermissionAction, PermissionChipTheme, PermissionPromptStyle, SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {LocationBarState, PermissionChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import type {ToolbarAppElement} from './app.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -27,6 +26,75 @@ import {getHtml} from './location_bar.html.js';
 import type {PageActionIconsElement} from './page_action_icons.js';
 import type {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import type {ResponsiveControl} from './responsive_control.js';
+
+function createDefaultPermissionChipState(): PermissionChipState {
+  return {
+    isVisible: false,
+    iconName: '',
+    message: '',
+    tooltip: '',
+    theme: PermissionChipTheme.kUnspecified,
+    userDecision: PermissionAction.kUnspecified,
+    shouldShowBlockedIcon: false,
+    promptStyle: PermissionPromptStyle.kUnspecified,
+    isFullyCollapsed: false,
+    accessibilityName: '',
+    stateToken: 0,
+  };
+}
+
+// Returns a new default LocationBarState, used before the first state is
+// received from the browser. Returns a fresh object on every call so callers
+// never share nested objects/arrays.
+export function createDefaultLocationBarState(): LocationBarState {
+  return {
+    omniboxViewState: {
+      browserVersion: 0,
+      uiVersion: 0,
+      formattedFullUrl: '',
+      textPieces: [],
+      placeholder: null,
+      inlineAutocompletion: '',
+      additionalText: '',
+      a11yFriendlySuggestionText: '',
+      selection: null,
+      textIsUrl: false,
+      userInputInProgress: false,
+    },
+    locationBarFlags: {
+      userInputInProgress: false,
+      popupOpen: false,
+      forceAimButtonFocusRing: false,
+      isVirtualKeyboardVisible: false,
+    },
+    selectedKeyword: null,
+    lhsChipsState: {
+      securityChip: {
+        icon: {handleId: 0n},
+        securityLevel: 0,
+        text: '',
+        tooltip: '',
+        accessibilityState: {
+          role: SecurityChipRole.kButton,
+          label: '',
+          description: '',
+        },
+        isClickable: false,
+        isTextDangerous: false,
+        isVisible: true,
+        isContextMenuVisible: false,
+      },
+      activityIndicators: [],
+      permissionDashboard: {
+        indicatorChip: createDefaultPermissionChipState(),
+        requestChip: createDefaultPermissionChipState(),
+        isDividerVisible: false,
+      },
+    },
+    contentSettingImageStates: [],
+    pageActionStates: [],
+  };
+}
 
 export interface LocationBarElement {
   $: {
@@ -71,49 +139,7 @@ export class LocationBarElement extends CrLitElement implements
     };
   }
 
-  accessor locationBarState: LocationBarState = {
-    omniboxViewState: {
-      browserVersion: 0,
-      uiVersion: 0,
-      formattedFullUrl: '',
-      textPieces: [],
-      placeholder: null,
-      inlineAutocompletion: '',
-      additionalText: '',
-      a11yFriendlySuggestionText: '',
-      selection: null,
-      textIsUrl: false,
-      userInputInProgress: false,
-    },
-    locationBarFlags: {
-      userInputInProgress: false,
-      popupOpen: false,
-      forceAimButtonFocusRing: false,
-      isVirtualKeyboardVisible: false,
-    },
-    selectedKeyword: null,
-    lhsChipsState: {
-      securityChip: {
-        icon: {handleId: 0n},
-        securityLevel: 0,
-        text: '',
-        tooltip: '',
-        accessibilityState: {
-          role: SecurityChipRole.kButton,
-          label: '',
-          description: '',
-        },
-        isClickable: false,
-        isTextDangerous: false,
-        isVisible: true,
-        isContextMenuVisible: false,
-      },
-      activityIndicators: [],
-      permissionDashboard: null,
-    },
-    contentSettingImageStates: [],
-    pageActionStates: [],
-  };
+  accessor locationBarState: LocationBarState = createDefaultLocationBarState();
 
   accessor isPopupOpen: boolean = false;
   accessor touchUi: boolean = false;
@@ -301,6 +327,11 @@ export class LocationBarElement extends CrLitElement implements
     if (e.detail === 0) {
       this.clearInput_();
     }
+  }
+
+  protected isPermissionDashboardVisible_(): boolean {
+    const dashboard = this.locationBarState.lhsChipsState.permissionDashboard;
+    return dashboard.indicatorChip.isVisible || dashboard.requestChip.isVisible;
   }
 }
 

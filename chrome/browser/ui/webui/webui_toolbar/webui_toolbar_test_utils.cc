@@ -74,7 +74,11 @@ CreateValidNavigationControlsState() {
                   /*is_visible=*/true,
                   /*is_context_menu_visible=*/false),
               std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
-              /*permission_dashboard=*/nullptr),
+              /*permission_dashboard=*/
+              toolbar_ui_api::mojom::PermissionDashboardState::New(
+                  toolbar_ui_api::mojom::PermissionChipState::New(),
+                  toolbar_ui_api::mojom::PermissionChipState::New(),
+                  /*is_divider_visible=*/false)),
           toolbar_ui_api::mojom::SelectedKeywordStatePtr()),
       std::vector<extensions_bar::mojom::ExtensionActionInfoPtr>(),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),

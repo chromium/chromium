@@ -386,7 +386,11 @@ WebUIToolbarWebView::WebUIToolbarWebView(
               /*is_visible=*/true, /*is_context_menu_visible=*/false),
           /*activity_indicators=*/
           std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
-          /*permission_dashboard=*/nullptr);
+          /*permission_dashboard=*/
+          toolbar_ui_api::mojom::PermissionDashboardState::New(
+              toolbar_ui_api::mojom::PermissionChipState::New(),
+              toolbar_ui_api::mojom::PermissionChipState::New(),
+              /*is_divider_visible=*/false));
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.touch_ui = ui::TouchUiController::Get()->touch_ui();
   last_queued_state_.back_forward_control_state = GetBackForwardState();

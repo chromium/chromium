@@ -881,7 +881,7 @@ struct LhsChipsState {
   // Multiple indicators can be active (e.g., Camera + Mic).
   array<ContentSettingImageState> activity_indicators;
 
-  PermissionDashboardState? permission_dashboard;
+  PermissionDashboardState permission_dashboard;
 };
 
 struct NavigationControlsState {

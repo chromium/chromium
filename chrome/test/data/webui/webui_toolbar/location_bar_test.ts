@@ -50,7 +50,7 @@ suite('LocationBar', function() {
           isContextMenuVisible: false,
         },
         activityIndicators: [],
-        permissionDashboard: null,
+        permissionDashboard: initialState.lhsChipsState.permissionDashboard,
       },
     };
     await microtasksFinished();
@@ -100,7 +100,7 @@ suite('LocationBar', function() {
           isContextMenuVisible: false,
         },
         activityIndicators: [],
-        permissionDashboard: null,
+        permissionDashboard: initialState.lhsChipsState.permissionDashboard,
       },
     };
     await microtasksFinished();
@@ -279,5 +279,71 @@ suite('LocationBar', function() {
     assertEquals('', input.value);
     assertEquals('', omnibox.$.textContainer.textContent);
     assertEquals(searchbox, omnibox.shadowRoot.activeElement);
+  });
+
+  test('PermissionDashboard visibility', async () => {
+    const permissionDashboard =
+        locationBar.shadowRoot.querySelector('permission-dashboard');
+    assertTrue(!!permissionDashboard);
+    assertFalse(permissionDashboard.hasAttribute('visible'));
+
+    // Showing indicator chip should make dashboard visible.
+    locationBar.locationBarState = {
+      ...initialState,
+      lhsChipsState: {
+        ...initialState.lhsChipsState,
+        permissionDashboard: {
+          ...initialState.lhsChipsState.permissionDashboard,
+          indicatorChip: {
+            ...initialState.lhsChipsState.permissionDashboard.indicatorChip,
+            isVisible: true,
+          },
+        },
+      },
+    };
+    await microtasksFinished();
+    assertTrue(permissionDashboard.hasAttribute('visible'));
+
+    // Showing request chip should make dashboard visible.
+    locationBar.locationBarState = {
+      ...initialState,
+      lhsChipsState: {
+        ...initialState.lhsChipsState,
+        permissionDashboard: {
+          ...initialState.lhsChipsState.permissionDashboard,
+          indicatorChip: {
+            ...initialState.lhsChipsState.permissionDashboard.indicatorChip,
+            isVisible: false,
+          },
+          requestChip: {
+            ...initialState.lhsChipsState.permissionDashboard.requestChip,
+            isVisible: true,
+          },
+        },
+      },
+    };
+    await microtasksFinished();
+    assertTrue(permissionDashboard.hasAttribute('visible'));
+
+    // Hiding both chips should hide dashboard.
+    locationBar.locationBarState = {
+      ...initialState,
+      lhsChipsState: {
+        ...initialState.lhsChipsState,
+        permissionDashboard: {
+          ...initialState.lhsChipsState.permissionDashboard,
+          indicatorChip: {
+            ...initialState.lhsChipsState.permissionDashboard.indicatorChip,
+            isVisible: false,
+          },
+          requestChip: {
+            ...initialState.lhsChipsState.permissionDashboard.requestChip,
+            isVisible: false,
+          },
+        },
+      },
+    };
+    await microtasksFinished();
+    assertFalse(permissionDashboard.hasAttribute('visible'));
   });
 });

@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, SecurityChipRole, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, LhsChipIdentifier, NavigationControlsStateListener, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
@@ -137,39 +137,7 @@ function createMockNavigationState() {
       shouldBeShown: false,
       isContextMenuVisible: false,
     },
-    locationBarState: {
-      omniboxViewState: {
-        textPieces: [],
-        inlineAutocompletion: '',
-        a11yFriendlySuggestionText: '',
-        selection: null,
-        textIsUrl: false,
-      },
-      locationBarFlags: {
-        userInputInProgress: false,
-        popupOpen: false,
-      },
-      contentSettingImageStates: [],
-      pageActionStates: [],
-      lhsChipsState: {
-        securityChip: {
-          icon: {handleId: 0n},
-          securityLevel: 0,
-          text: '',
-          tooltip: '',
-          isClickable: false,
-          isTextDangerous: false,
-          isVisible: true,
-          accessibilityState: {
-            role: SecurityChipRole.kButton,
-            label: '',
-            description: '',
-          },
-        },
-        activityIndicators: [],
-        permissionDashboard: null,
-      },
-    },
+    locationBarState: createDefaultLocationBarState(),
     avatarControlState: {
       state: AvatarToolbarButtonState.kNormal,
       icon: {handleId: 0n},
