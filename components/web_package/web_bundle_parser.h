@@ -57,6 +57,7 @@ class WebBundleParser : public mojom::WebBundleParser {
   void ActivateParser(std::unique_ptr<WebBundleSectionParser> parser);
   void OnParsingComplete(WebBundleSectionParser* parser,
                          base::OnceClosure result_callback);
+  void DestroyActiveParsers();
   void OnDisconnect();
   bool CheckIfClosed();
 

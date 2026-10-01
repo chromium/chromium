@@ -1214,26 +1214,26 @@ TEST_F(WebBundleParserTest, SignedBundleWrongPublicKeyLength) {
 }
 
 TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
+  WebBundleBuilder builder;
+  builder.AddPrimaryURL(kPrimaryUrl);
+  builder.AddExchange("https://test.example.com/",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  auto data_source = std::make_unique<TestDataSource>(builder.CreateBundle());
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+  WebBundleParser parser_impl(std::move(source_remote), GURL());
+  mojom::WebBundleParser& parser = parser_impl;
+
   base::test::TestFuture<mojom::BundleMetadataPtr,
                          mojom::BundleMetadataParseErrorPtr>
       future;
-  {
-    WebBundleBuilder builder;
-    builder.AddPrimaryURL(kPrimaryUrl);
-    builder.AddExchange("https://test.example.com/",
-                        {{":status", "200"}, {"content-type", "text/plain"}},
-                        "payload");
-    TestDataSource data_source(builder.CreateBundle());
-
-    mojo::PendingRemote<mojom::BundleDataSource> source_remote;
-    data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
-
-    WebBundleParser parser_impl(std::move(source_remote), GURL());
-    mojom::WebBundleParser& parser = parser_impl;
-
-    parser.ParseMetadata(/*offset=*/std::nullopt, future.GetCallback());
-    // |data_source| and |parser_impl| are deleted here.
-  }
+  parser.ParseMetadata(/*offset=*/std::nullopt, future.GetCallback());
+  // Disconnect the data source before it receives the request, while
+  // `parser_impl` is still alive.
+  data_source.reset();
 
   auto error = std::get<1>(future.Take());
   ASSERT_TRUE(error);
@@ -1242,32 +1242,33 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
 }
 
 TEST_F(WebBundleParserTest, DisconnectWhileParsingResponse) {
+  WebBundleBuilder builder;
+  builder.AddPrimaryURL(kPrimaryUrl);
+  builder.AddExchange("https://test.example.com/",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  auto data_source = std::make_unique<TestDataSource>(builder.CreateBundle());
+
+  mojom::BundleMetadataPtr metadata =
+      ParseUnsignedBundle(data_source.get()).first;
+  ASSERT_TRUE(metadata);
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+  WebBundleParser parser_impl(std::move(source_remote), GURL());
+  mojom::WebBundleParser& parser = parser_impl;
+
   base::test::TestFuture<mojom::BundleResponsePtr,
                          mojom::BundleResponseParseErrorPtr>
       future;
-  {
-    WebBundleBuilder builder;
-    builder.AddPrimaryURL(kPrimaryUrl);
-    builder.AddExchange("https://test.example.com/",
-                        {{":status", "200"}, {"content-type", "text/plain"}},
-                        "payload");
-    TestDataSource data_source(builder.CreateBundle());
-
-    mojom::BundleMetadataPtr metadata = ParseUnsignedBundle(&data_source).first;
-    ASSERT_TRUE(metadata);
-    auto location = FindResponse(metadata, GURL("https://test.example.com/"));
-    ASSERT_TRUE(location);
-
-    mojo::PendingRemote<mojom::BundleDataSource> source_remote;
-    data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
-
-    WebBundleParser parser_impl(std::move(source_remote), GURL());
-    mojom::WebBundleParser& parser = parser_impl;
-
-    parser.ParseResponse(location->offset, location->length,
-                         future.GetCallback());
-    // |data_source| and |parser_impl| are deleted here.
-  }
+  parser.ParseResponse(location->offset, location->length,
+                       future.GetCallback());
+  // Disconnect the data source before it receives the request, while
+  // `parser_impl` is still alive.
+  data_source.reset();
 
   auto error = std::get<1>(future.Take());
   ASSERT_TRUE(error);
@@ -1351,6 +1352,67 @@ TEST_F(WebBundleParserTest, Close) {
   parser.Close(future.GetCallback());
   future.Get();
   EXPECT_TRUE(data_source.IsClosed());
+}
+
+TEST_F(WebBundleParserTest, CloseWhileParsing) {
+  auto unsigned_bundle = CreateSmallBundle();
+  TestDataSource data_source(unsigned_bundle);
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+  WebBundleParser parser_impl(std::move(source_remote), GURL());
+  mojom::WebBundleParser& parser = parser_impl;
+
+  base::test::TestFuture<mojom::BundleResponsePtr,
+                         mojom::BundleResponseParseErrorPtr>
+      response_future;
+  base::test::TestFuture<mojom::BundleMetadataPtr,
+                         mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  base::test::TestFuture<mojom::BundleIntegrityBlockPtr,
+                         mojom::BundleIntegrityBlockParseErrorPtr>
+      integrity_block_future;
+  // Each of these sends a request that `data_source` only receives after
+  // `Close()`, so its replies arrive after the section parsers are gone.
+  parser.ParseResponse(/*response_offset=*/0, /*response_length=*/1,
+                       response_future.GetCallback());
+  parser.ParseMetadata(/*offset=*/std::nullopt, metadata_future.GetCallback());
+  parser.ParseIntegrityBlock(integrity_block_future.GetCallback());
+
+  base::test::TestFuture<void> close_future;
+  parser.Close(close_future.GetCallback());
+  ASSERT_TRUE(close_future.Wait());
+  EXPECT_TRUE(data_source.IsClosed());
+
+  // Every request is answered by the time the parser is closed.
+  ASSERT_TRUE(response_future.IsReady());
+  ASSERT_TRUE(metadata_future.IsReady());
+  ASSERT_TRUE(integrity_block_future.IsReady());
+
+  {
+    auto error_response = std::get<1>(response_future.Take());
+    ASSERT_TRUE(error_response);
+    EXPECT_EQ(error_response->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_response->message, "Data source disconnected.");
+  }
+
+  {
+    auto error_metadata = std::get<1>(metadata_future.Take());
+    ASSERT_TRUE(error_metadata);
+    EXPECT_EQ(error_metadata->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_metadata->message, "Data source disconnected.");
+  }
+
+  {
+    auto error_integrity_block = std::get<1>(integrity_block_future.Take());
+    ASSERT_TRUE(error_integrity_block);
+    EXPECT_EQ(error_integrity_block->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_integrity_block->message, "Data source disconnected.");
+  }
 }
 
 }  // namespace web_package
