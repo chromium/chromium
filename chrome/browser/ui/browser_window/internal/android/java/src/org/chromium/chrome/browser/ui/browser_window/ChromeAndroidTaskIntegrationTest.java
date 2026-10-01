@@ -87,8 +87,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DisableFeatures({
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
 })
 @DoNotBatch(
         reason =

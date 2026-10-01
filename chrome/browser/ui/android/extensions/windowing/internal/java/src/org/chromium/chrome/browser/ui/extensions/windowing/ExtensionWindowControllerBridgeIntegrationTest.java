@@ -70,8 +70,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(value = Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@Features.DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @RequiresApi(Build.VERSION_CODES.R)
 @NullMarked

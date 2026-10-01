@@ -61,8 +61,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID,
 })
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288348
