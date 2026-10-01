@@ -2016,6 +2016,8 @@ inline constexpr char kAuthSchemes[] = "auth.schemes";
 // from "auth.schemes".
 inline constexpr char kAllHttpAuthSchemesAllowedForOrigins[] =
     "auth.http_auth_allowed_for_origins";
+inline constexpr char kAllHttpAuthSchemesAllowedForProxies[] =
+    "auth.http_auth_allowed_for_proxies";
 
 // Boolean that specifies whether to disable CNAME lookups when generating
 // Kerberos SPN.

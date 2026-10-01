@@ -185,7 +185,13 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
     auth_dynamic_params->patterns_allowed_to_use_all_schemes.push_back(
         item.GetString());
   }
-  if (CHROME_VERSION_MAJOR < 161) {
+  if (local_state->HasPrefPath(prefs::kAllHttpAuthSchemesAllowedForProxies)) {
+    for (const base::Value& item :
+         local_state->GetList(prefs::kAllHttpAuthSchemesAllowedForProxies)) {
+      auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies
+          .push_back(item.GetString());
+    }
+  } else if (CHROME_VERSION_MAJOR < 161) {
     auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
         auth_dynamic_params->patterns_allowed_to_use_all_schemes;
   }
@@ -654,6 +660,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
                              auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAllHttpAuthSchemesAllowedForOrigins,
                              auth_pref_callback);
+  pref_change_registrar_.Add(prefs::kAllHttpAuthSchemesAllowedForProxies,
+                             auth_pref_callback);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateByKdcPolicy,
@@ -734,6 +742,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   // Dynamic auth params.
   registry->RegisterListPref(prefs::kAllHttpAuthSchemesAllowedForOrigins);
+  registry->RegisterListPref(prefs::kAllHttpAuthSchemesAllowedForProxies);
   registry->RegisterBooleanPref(prefs::kDisableAuthNegotiateCnameLookup, false);
   registry->RegisterBooleanPref(prefs::kEnableAuthNegotiatePort, false);
   registry->RegisterBooleanPref(prefs::kBasicAuthOverHttpEnabled, true);

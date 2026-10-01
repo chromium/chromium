@@ -2590,6 +2590,7 @@ chromium-metrics-reviews@google.com.
   <int value="1488" label="AutoLaunchAndroidApps"/>
   <int value="1489" label="LaunchOnStartupEnabled"/>
   <int value="1490" label="DynamicPatchingEnabled"/>
+  <int value="1491" label="AllHttpAuthSchemesAllowedForProxies"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

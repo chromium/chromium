@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.http_auth_allowed_for_proxies",
+      "pref_location": "local_state",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "*.example.com",
+          "proxy.example.com:8080"
+        ]
+      ]
+    }
+  }
+]

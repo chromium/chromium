@@ -1,0 +1,30 @@
+caption: List of proxy servers allowing all HTTP authentication schemes
+desc: |-
+  Setting the policy specifies for which proxy servers to allow all the HTTP authentication schemes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports, regardless of the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy.
+
+  Format the proxy server pattern according to the URL blocklist filter format (<ph name="URL_SCHEME_FORMAT_LINK">https://support.google.com/chrome/a?p=url_blocklist_filter_format</ph>). Up to 1,000 exceptions can be defined.
+  Wildcards are allowed for the host component (e.g., '*:8080' matches all proxies on port 8080). A hostname (e.g., 'proxy.example.com') also matches its subdomains. To match a host exactly and exclude its subdomains, prepend it with a dot (e.g., '.proxy.example.com').
+
+  If this policy is not set, only the HTTP authentication schemes specified in <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> (or the default schemes if unset) are supported for proxy authentication.
+example_value:
+- 'https://proxy.example.com:8443'
+- 'proxy.example.com:8080'
+- '*.corp.example.com:8080'
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- file://components/policy/OWNERS
+- ydago@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:156-
+- android:156-
+- chrome_os:156-
+tags: []
+type: list
