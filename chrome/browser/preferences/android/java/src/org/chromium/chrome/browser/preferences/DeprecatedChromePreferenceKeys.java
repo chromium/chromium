@@ -91,6 +91,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.RequestDesktopSiteGlobalSetting.DefaultOnCohortDisplaySpec",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageCohort",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
+                "Chrome.SafetyCheck.RunCounter",
                 "Chrome.SearchResumptionModule.Collapse",
                 "Chrome.Segmentation.ShowQueryTiles",
                 "Chrome.SigninPromo.NTPImpressions",

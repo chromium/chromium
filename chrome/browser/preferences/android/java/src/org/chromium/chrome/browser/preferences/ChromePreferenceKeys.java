@@ -930,9 +930,6 @@ public final class ChromePreferenceKeys {
     public static final String SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP =
             "Chrome.SafetyCheck.LastRunTimestamp";
 
-    /** Stores the number of times the user has performed Safety check. */
-    public static final String SETTINGS_SAFETY_CHECK_RUN_COUNTER = "Chrome.SafetyCheck.RunCounter";
-
     public static final String SETTINGS_WEBSITE_FAILED_BUILD_VERSION =
             "ManagedSpace.FailedBuildVersion";
 
@@ -1329,7 +1326,6 @@ public final class ChromePreferenceKeys {
                 SETUP_LIST_COMPLETED_KEY_PREFIX.pattern(),
                 SETTINGS_RECENT_SEARCH_ENTRIES,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
-                SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SHARING_TABS_WITH_OS,
                 SHOW_HOME_BUTTON_POLICY_STATE,
