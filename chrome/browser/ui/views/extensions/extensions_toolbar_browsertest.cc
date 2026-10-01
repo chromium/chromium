@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/run_loop.h"
@@ -70,7 +71,9 @@ void ExtensionsToolbarBrowserTest::SetUpOnMainThread() {
   permissions_helper_ = std::make_unique<SitePermissionsHelper>(profile());
 
   // Shorten delay on animations so tests run faster.
-  views::test::ReduceAnimationDuration(extensions_container());
+  if (extensions_container()) {
+    views::test::ReduceAnimationDuration(extensions_container());
+  }
 }
 
 void ExtensionsToolbarBrowserTest::TearDownOnMainThread() {
@@ -242,6 +245,9 @@ ExtensionsToolbarBrowserTest::GetSiteInteraction(
 
 std::vector<ToolbarActionView*>
 ExtensionsToolbarBrowserTest::GetPinnedExtensionViews() {
+  CHECK(extensions_container())
+      << "ExtensionsToolbarDesktop is null (WebUIExtensionsContainer may be "
+         "enabled).";
   std::vector<ToolbarActionView*> result;
   for (views::View* child : extensions_container()->children()) {
     if (views::IsViewClass<ToolbarActionView>(child)) {
@@ -274,7 +280,9 @@ void ExtensionsToolbarBrowserTest::WaitForAnimation() {
 #if BUILDFLAG(IS_MAC)
   // No-op on Mac.
 #else
-  views::test::WaitForAnimatingLayoutManager(extensions_container());
+  if (extensions_container()) {
+    views::test::WaitForAnimatingLayoutManager(extensions_container());
+  }
 #endif
 }
 
@@ -292,5 +300,7 @@ void ExtensionsToolbarBrowserTest::NavigateAndCommit(const GURL& url) {
 }
 
 void ExtensionsToolbarBrowserTest::LayoutContainerIfNecessary() {
-  extensions_container()->GetWidget()->LayoutRootViewIfNecessary();
+  if (extensions_container()) {
+    extensions_container()->GetWidget()->LayoutRootViewIfNecessary();
+  }
 }

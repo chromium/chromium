@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -60,19 +61,31 @@ class ExtensionsToolbarBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
+  // Returns the Views extensions container, or null if the toolbar doesn't
+  // create one (e.g. when features::IsWebUIExtensionsContainerEnabled()).
+  // Accessors below that return container children require it to be non-null.
   ExtensionsToolbarDesktop* extensions_container() {
     return browser_view()->toolbar()->extensions_container();
   }
 
   ExtensionsToolbarButton* extensions_button() {
+    CHECK(extensions_container())
+        << "ExtensionsToolbarDesktop is null (WebUIExtensionsContainer may be "
+           "enabled).";
     return extensions_container()->GetExtensionsButton();
   }
 
   ExtensionsRequestAccessButton* request_access_button() {
+    CHECK(extensions_container())
+        << "ExtensionsToolbarDesktop is null (WebUIExtensionsContainer may be "
+           "enabled).";
     return extensions_container()->GetRequestAccessButton();
   }
 
   ExtensionsMenuCoordinator* menu_coordinator() {
+    CHECK(extensions_container())
+        << "ExtensionsToolbarDesktop is null (WebUIExtensionsContainer may be "
+           "enabled).";
     return extensions_container()->GetExtensionsMenuCoordinatorForTesting();
   }
 
