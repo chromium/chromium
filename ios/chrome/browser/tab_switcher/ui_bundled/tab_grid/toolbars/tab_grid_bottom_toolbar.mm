@@ -24,7 +24,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -70,6 +69,10 @@ CGFloat CompactButtonHorizontalPadding() {
   TabGridToolbarBackground* _backgroundView;
   TabGridToolbarScrollingBackground* _scrollBackgroundView;
   NSLayoutConstraint* _viewTopConstraint;
+  // Required constraints keeping a minimum inset between the
+  // `_largeNewTabButton` and the bottom/trailing edges.
+  NSLayoutConstraint* _largeButtonBottomInsetConstraint;
+  NSLayoutConstraint* _largeButtonTrailingInsetConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -324,14 +327,11 @@ CGFloat CompactButtonHorizontalPadding() {
 
 // Constraints for the floating mode.
 - (NSArray<NSLayoutConstraint*>*)constraintsForFloatingMode {
-  CGFloat largeButtonHorizontalInset =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-          ? kTabGridFloatingButtonInsetIPad
-          : kTabGridFloatingButtonInset;
-  CGFloat largeButtonVerticalInset =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-          ? kTabGridFloatingButtonInsetIPad
-          : kTabGridFloatingButtonInset;
+  _largeButtonBottomInsetConstraint = [_largeNewTabButton.bottomAnchor
+      constraintLessThanOrEqualToAnchor:self.bottomAnchor];
+  _largeButtonTrailingInsetConstraint = [_largeNewTabButton.trailingAnchor
+      constraintLessThanOrEqualToAnchor:self.trailingAnchor];
+  [self updateFloatingButtonInsets];
 
   NSLayoutConstraint* largeButtonTrailingSafeAreaConstraint =
       [_largeNewTabButton.trailingAnchor
@@ -339,23 +339,30 @@ CGFloat CompactButtonHorizontalPadding() {
   largeButtonTrailingSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
   NSLayoutConstraint* largeButtonBottomSafeAreaConstraint =
       [_largeNewTabButton.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor];
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
   largeButtonBottomSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
 
-  NSMutableArray<NSLayoutConstraint*>* constraints =
-      [NSMutableArray arrayWithArray:@[
-        // Vertical layout:
-        [_largeNewTabButton.bottomAnchor
-            constraintLessThanOrEqualToAnchor:self.bottomAnchor
-                                     constant:-largeButtonVerticalInset],
-        largeButtonBottomSafeAreaConstraint,
-        // Horizontal layout:
-        [_largeNewTabButton.trailingAnchor
-            constraintLessThanOrEqualToAnchor:self.trailingAnchor
-                                     constant:-largeButtonHorizontalInset],
-        largeButtonTrailingSafeAreaConstraint,
-      ]];
-  return constraints;
+  return @[
+    // Vertical layout:
+    _largeButtonBottomInsetConstraint,
+    largeButtonBottomSafeAreaConstraint,
+    // Horizontal layout:
+    _largeButtonTrailingInsetConstraint,
+    largeButtonTrailingSafeAreaConstraint,
+  ];
+}
+
+// Updates the minimum insets of the `_largeNewTabButton` based on the size
+// class.
+- (void)updateFloatingButtonInsets {
+  BOOL isRegularRegular =
+      self.traitCollection.horizontalSizeClass ==
+          UIUserInterfaceSizeClassRegular &&
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular;
+  CGFloat inset = isRegularRegular ? kTabGridFloatingButtonInsetIPad
+                                   : kTabGridFloatingButtonInset;
+  _largeButtonBottomInsetConstraint.constant = -inset;
+  _largeButtonTrailingInsetConstraint.constant = -inset;
 }
 
 // Setup container toolbar, buttons and constraints.
@@ -456,6 +463,7 @@ CGFloat CompactButtonHorizontalPadding() {
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
   [self hideAllButtons];
+  [self updateFloatingButtonInsets];
 
   BOOL useCompactLayout = [self shouldUseCompactLayout];
   BOOL hideToolbar;
