@@ -19460,6 +19460,14 @@ be describing additional metrics about the same event.
       Set to true when a 3D-Secure challenge request is detected in the form
       data of an HTTP POST navigation.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -19474,6 +19482,14 @@ be describing additional metrics about the same event.
     <summary>
       The outcome of the 3D-Secure challenge response.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
