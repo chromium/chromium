@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
@@ -63,6 +64,10 @@ public class AwVariationsSeedFetcher extends JobService {
 
     @VisibleForTesting
     public static final String SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME = "Variations.SeedDateClockSkew";
+
+    @VisibleForTesting
+    public static final String SEED_REQUEST_HAS_RESTRICT_PARAM_HISTOGRAM_NAME =
+            "Variations.SeedRequestHasRestrictParam";
 
     private static final String TAG = "AwVariationsSeedFet-";
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
@@ -380,9 +385,15 @@ public class AwVariationsSeedFetcher extends JobService {
                     sMockDownloader != null ? sMockDownloader : VariationsSeedFetcher.get();
             String milestone = String.valueOf(VersionConstants.PRODUCT_MAJOR_VERSION);
 
+            // This runs on a background thread, so it's OK for this call to block.
+            String restrictMode = PlatformServiceBridge.getInstance().getVariationsRestrictMode();
+            RecordHistogram.recordBooleanHistogram(
+                    SEED_REQUEST_HAS_RESTRICT_PARAM_HISTOGRAM_NAME, !restrictMode.isEmpty());
+
             final VariationsSeedFetcher.SeedFetchParameters params =
                     VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
                             .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW)
+                            .setRestrictMode(restrictMode)
                             .setMilestone(milestone)
                             .setChannel(getChannelStr())
                             .setIsFastFetchMode(fastMode)

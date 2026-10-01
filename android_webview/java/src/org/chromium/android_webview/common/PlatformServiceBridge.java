@@ -117,6 +117,15 @@ public abstract class PlatformServiceBridge {
      */
     public void checkForAppRecovery() {}
 
+    /**
+     * Returns the value of the "restrict" URL param to send with variations seed requests. Returns
+     * an empty string if no param should be sent. This may block, so it must not be called on the
+     * UI thread.
+     */
+    public String getVariationsRestrictMode() {
+        return "";
+    }
+
     public @Nullable AwSupervisedUserUrlClassifierDelegate getUrlClassifierDelegate() {
         return null;
     }

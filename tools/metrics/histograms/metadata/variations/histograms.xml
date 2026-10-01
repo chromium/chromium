@@ -835,6 +835,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.SeedRequestHasRestrictParam" enum="BooleanPresent"
+    expires_after="2027-09-26">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records whether a WebView variations seed request included a non-empty
+    &quot;restrict&quot; URL param. Recorded once per WebView variations seed
+    fetch attempt, including fast mode fetches.
+  </summary>
+</histogram>
+
 <histogram name="Variations.SeedSource.{SeedFile}" enum="SeedSource"
     expires_after="2027-03-07">
   <owner>rcanoaparicio@google.com</owner>

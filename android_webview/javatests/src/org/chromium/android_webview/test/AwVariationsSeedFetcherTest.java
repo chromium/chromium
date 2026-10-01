@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
@@ -130,10 +131,12 @@ public class AwVariationsSeedFetcherTest {
         private static final String SAVED_VARIATIONS_SEED_SERIAL_NUMBER = "savedSerialNumber";
 
         public int fetchResult;
+        public VariationsSeedFetcher.SeedFetchParameters lastParams;
 
         @Override
         public SeedFetchInfo downloadContent(
                 VariationsSeedFetcher.SeedFetchParameters params, SeedInfo currInfo) {
+            lastParams = params;
             Assert.assertEquals(
                     VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, params.getPlatform());
             Assert.assertTrue(Integer.parseInt(params.getMilestone()) > 0);
@@ -200,9 +203,22 @@ public class AwVariationsSeedFetcherTest {
         }
     }
 
+    // A test PlatformServiceBridge that returns a configurable variations restrict mode.
+    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
+        public volatile String restrictMode = "";
+
+        @Override
+        public String getVariationsRestrictMode() {
+            return restrictMode;
+        }
+    }
+
     private final TestJobScheduler mScheduler = new TestJobScheduler();
     private final TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
     private final TestClock mClock = new TestClock();
+    private final TestPlatformServiceBridge mPlatformServiceBridge =
+            new TestPlatformServiceBridge();
+    private PlatformServiceBridge mOriginalPlatformServiceBridge;
     private Context mContext;
 
     @Mock private JobParameters mMockJobParameters;
@@ -210,6 +226,8 @@ public class AwVariationsSeedFetcherTest {
     @Before
     public void setUp() throws IOException {
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        mOriginalPlatformServiceBridge = PlatformServiceBridge.getInstance();
+        PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         VariationsTestUtils.deleteSeeds();
         mContext = ContextUtils.getApplicationContext();
     }
@@ -218,6 +236,7 @@ public class AwVariationsSeedFetcherTest {
     public void tearDown() throws IOException {
         AwVariationsSeedFetcher.setMocks(null, null);
         AwVariationsSeedFetcher.setTestClock(null);
+        PlatformServiceBridge.injectInstance(mOriginalPlatformServiceBridge);
         VariationsTestUtils.deleteSeeds();
     }
 
@@ -431,6 +450,79 @@ public class AwVariationsSeedFetcherTest {
                     "AwVariationsSeedFetcher should have updated stamp file " + stamp,
                     stamp.exists());
         } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testFetchUsesRestrictModeFromPlatformServiceBridge()
+            throws IOException, TimeoutException {
+        try {
+            mPlatformServiceBridge.restrictMode = "test-restrict-value";
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
+
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+
+            Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
+            Assert.assertEquals("test-restrict-value", mDownloader.lastParams.getRestrictMode());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testFetchWithoutRestrictModeFromPlatformServiceBridge()
+            throws IOException, TimeoutException {
+        try {
+            mPlatformServiceBridge.restrictMode = "";
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
+
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+
+            Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
+            Assert.assertEquals(
+                    "variations restrict mode was unexpectedly populated",
+                    "",
+                    mDownloader.lastParams.getRestrictMode());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testFastModeFetchUsesRestrictModeFromPlatformServiceBridge()
+            throws IOException, TimeoutException {
+        try {
+            mPlatformServiceBridge.restrictMode = "test-restrict-value";
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
+            PersistableBundle bundle = new PersistableBundle();
+            bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
+
+            when(mMockJobParameters.getExtras()).thenReturn(bundle);
+            fetcher.onStartJob(mMockJobParameters);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+
+            Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
+            Assert.assertTrue(mDownloader.lastParams.getIsFastFetchMode());
+            Assert.assertEquals("test-restrict-value", mDownloader.lastParams.getRestrictMode());
+        } finally {
+            mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
         }
     }
