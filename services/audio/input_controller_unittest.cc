@@ -10,9 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/compiler_specific.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -50,6 +48,7 @@
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "media/webrtc/ml_model_handle.h"  // nogncheck
 #include "media/webrtc/voice_isolation/voice_isolation.h"
+#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"  // nogncheck
 #include "services/audio/ml_model_manager.h"
 #endif
 
@@ -96,16 +95,7 @@ std::unique_ptr<LoopbackMixin> DoNotCreateLoopbackMixin(
 
 class FakeMlModelHandle : public media::MlModelHandle {
  public:
-  FakeMlModelHandle() {
-    base::FilePath source_root;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
-    source_root = source_root.AppendASCII("media")
-                      .AppendASCII("webrtc")
-                      .AppendASCII("voice_isolation")
-                      .AppendASCII("test_model_1_2_160_2.tflite");
-
-    model_ = tflite::FlatBufferModel::BuildFromFile(
-        source_root.AsUTF8Unsafe().c_str());
+  FakeMlModelHandle() : model_(media::LoadVoiceIsolationTestModel()) {
     CHECK(model_);
   }
 

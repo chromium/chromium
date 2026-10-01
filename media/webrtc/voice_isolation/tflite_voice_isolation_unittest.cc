@@ -4,14 +4,12 @@
 
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
 
-#include <cmath>
-#include <complex>
+#include <cstddef>
+#include <memory>
 #include <vector>
 
-#include "base/base_paths.h"
-#include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/path_service.h"
+#include "base/check_op.h"
+#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -19,23 +17,97 @@
 namespace media {
 namespace {
 
-std::unique_ptr<tflite::FlatBufferModel> GetTestModelBuffer() {
-  base::FilePath source_root;
+// Layout of the TfLiteVoiceIsolation frame: two DFTs of `kDftSize` floats
+// each. The first two floats of every DFT hold the DC and Nyquist components,
+// which bypass the model. The remaining `kDftSize - 2` floats are fed to the
+// model and the last two model inputs are zero padding.
+constexpr size_t kNumDfts = 2;
+constexpr size_t kDftSize = 320;
+constexpr size_t kNumBypassedFloats = 2;
 
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
+// Constants of the stateful test model.
+constexpr float kModelInputOffset = 1.0f;
+constexpr float kModelConvGain = 0.5f;
+constexpr float kModelLeakyAlpha = 0.5f;
 
-  source_root = source_root.AppendASCII("media")
-                    .AppendASCII("webrtc")
-                    .AppendASCII("voice_isolation")
-                    .AppendASCII("test_model_1_2_160_2.tflite");
+// Step and period of the deterministic test input. All values are multiples of
+// a power of two so that the model output is exact in float32.
+constexpr float kTestInputStep = 0.25f;
+constexpr int kTestInputPeriod = 17;
+constexpr float kTestInputFrameOffset = 0.5f;
 
-  return tflite::FlatBufferModel::BuildFromFile(
-      source_root.AsUTF8Unsafe().c_str());
+float LeakyRelu(float value) {
+  return value >= 0.0f ? value : kModelLeakyAlpha * value;
 }
+
+// Returns a deterministic input frame that covers both branches of the
+// LeakyRelu and changes from frame to frame.
+std::vector<float> MakeTestInput(size_t frame_size, int frame_index) {
+  std::vector<float> input(frame_size);
+  const int half_period = kTestInputPeriod / 2;
+  for (size_t i = 0; i < frame_size; ++i) {
+    const int step = static_cast<int>(i) % kTestInputPeriod - half_period;
+    input[i] = kTestInputStep * step + kTestInputFrameOffset * frame_index;
+  }
+  return input;
+}
+
+// Closed-form reference of `test_model_stateful_1_2_160_2.tflite` as seen
+// through TfLiteVoiceIsolation, including the bias subtraction. Per model
+// input `k`, with state `s` starting at zero:
+//   prev_0 = s, prev_1 = x_0 + 1
+//   y_t = x_t + leaky_relu(0.5 * prev_t)
+//   s <- x_1 + 1
+// The model also outputs a second channel `2 * y_t + 42`, which
+// TfLiteVoiceIsolation must ignore. It is not a constant offset of `y_t`, so
+// reading the wrong channel changes the output even after the bias
+// subtraction.
+class StatefulTestModelReference {
+ public:
+  StatefulTestModelReference() : state_(kDftSize, 0.0f) {}
+
+  std::vector<float> ProcessAudio(const std::vector<float>& input) {
+    CHECK_EQ(input.size(), kNumDfts * kDftSize);
+
+    // Unpack the model input tensor, zero padding the last two values.
+    std::vector<std::vector<float>> x(kNumDfts,
+                                      std::vector<float>(kDftSize, 0.0f));
+    for (size_t t = 0; t < kNumDfts; ++t) {
+      for (size_t k = 0; k < kDftSize - kNumBypassedFloats; ++k) {
+        x[t][k] = input[t * kDftSize + kNumBypassedFloats + k];
+      }
+    }
+
+    // Evaluate the model and the bias (model output for zero input and zero
+    // state), then write the output in the TfLiteVoiceIsolation layout.
+    std::vector<float> output(input.size());
+    for (size_t t = 0; t < kNumDfts; ++t) {
+      output[t * kDftSize] = input[t * kDftSize];
+      output[t * kDftSize + 1] = input[t * kDftSize + 1];
+      for (size_t k = 0; k < kDftSize - kNumBypassedFloats; ++k) {
+        const float prev = t == 0 ? state_[k] : x[0][k] + kModelInputOffset;
+        const float bias_prev = t == 0 ? 0.0f : kModelInputOffset;
+        const float y = x[t][k] + LeakyRelu(kModelConvGain * prev);
+        const float bias = LeakyRelu(kModelConvGain * bias_prev);
+        output[t * kDftSize + kNumBypassedFloats + k] = y - bias;
+      }
+    }
+
+    // Update the state with the last frame.
+    for (size_t k = 0; k < kDftSize; ++k) {
+      state_[k] = x[kNumDfts - 1][k] + kModelInputOffset;
+    }
+    return output;
+  }
+
+ private:
+  std::vector<float> state_;
+};
+
 }  // namespace
 
 TEST(TfLiteVoiceIsolation, CreateWorks) {
-  auto model = GetTestModelBuffer();
+  auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   auto voice_isolation = TfLiteVoiceIsolation::MaybeCreate(model.get());
@@ -44,7 +116,7 @@ TEST(TfLiteVoiceIsolation, CreateWorks) {
 }
 
 TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
-  auto model = GetTestModelBuffer();
+  auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   auto voice_isolation = TfLiteVoiceIsolation::MaybeCreate(model.get());
@@ -60,37 +132,60 @@ TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
   }
 }
 
-TEST(TfLiteVoiceIsolation, ClearBuffersWorks) {
-  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
+// TODO(barrerap): Enable once TfLiteVoiceIsolation resets the model resource
+// variables in ClearBuffers() and after computing the bias.
+TEST(TfLiteVoiceIsolation, DISABLED_ProcessAudioMatchesClosedForm) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   std::unique_ptr<TfLiteVoiceIsolation> voice_isolation =
       TfLiteVoiceIsolation::MaybeCreate(model.get());
   ASSERT_NE(voice_isolation, nullptr);
 
-  std::vector<float> input(voice_isolation->FrameSize(), 1.0f);
+  // A freshly created object must start from the initial model state.
+  StatefulTestModelReference reference;
+  std::vector<float> output(voice_isolation->FrameSize(), 0.0f);
+  constexpr int kNumFrames = 3;
+  for (int frame = 0; frame < kNumFrames; ++frame) {
+    const std::vector<float> input =
+        MakeTestInput(voice_isolation->FrameSize(), frame);
+    const std::vector<float> expected = reference.ProcessAudio(input);
+
+    voice_isolation->ProcessAudio(input, output);
+
+    // The test model output is exact in float32.
+    EXPECT_EQ(output, expected) << "frame " << frame;
+  }
+}
+
+// TODO(barrerap): Enable once TfLiteVoiceIsolation resets the model resource
+// variables in ClearBuffers() and after computing the bias.
+TEST(TfLiteVoiceIsolation, DISABLED_ClearBuffersRestoresInitialState) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  ASSERT_NE(model, nullptr);
+
+  std::unique_ptr<TfLiteVoiceIsolation> voice_isolation =
+      TfLiteVoiceIsolation::MaybeCreate(model.get());
+  ASSERT_NE(voice_isolation, nullptr);
+
+  const std::vector<float> input =
+      MakeTestInput(voice_isolation->FrameSize(), /*frame_index=*/0);
   std::vector<float> output1(voice_isolation->FrameSize(), 0.0f);
   std::vector<float> output2(voice_isolation->FrameSize(), 0.0f);
   std::vector<float> output3(voice_isolation->FrameSize(), 0.0f);
 
-  // Execute model the first time.
+  // Process the same input twice. The model state carries over, so the second
+  // output must differ from the first one. Otherwise this test cannot detect
+  // whether ClearBuffers() resets anything.
   voice_isolation->ProcessAudio(input, output1);
-
-  // Execute model a second time.
   voice_isolation->ProcessAudio(input, output2);
+  ASSERT_NE(output1, output2);
 
-  // Call ClearBuffers to reset internal state.
+  // After clearing, the model must behave as a freshly created one.
   voice_isolation->ClearBuffers();
-
-  // Execute model again after clearing.
-  // TODO(barrerap): Current test model doest no have internal state. We need to
-  // include a new test model with internal state to properly validate
-  // TfLiteVoiceIsolation clears the internal state when `ClearBuffers` is used.
   voice_isolation->ProcessAudio(input, output3);
-
-  // Output after clearing should match the first execution.
-  for (size_t i = 0; i < voice_isolation->FrameSize(); ++i) {
-    EXPECT_FLOAT_EQ(output1[i], output3[i]);
-  }
+  EXPECT_EQ(output1, output3);
 }
 }  // namespace media

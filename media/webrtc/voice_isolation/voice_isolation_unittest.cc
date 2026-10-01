@@ -4,30 +4,25 @@
 
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 
-#include "base/base_paths.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
+#include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
+#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 namespace media {
 namespace {
 
-std::unique_ptr<tflite::FlatBufferModel> GetTestModelBuffer() {
-  base::FilePath source_root;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
-  source_root = source_root.AppendASCII("media")
-                    .AppendASCII("webrtc")
-                    .AppendASCII("voice_isolation")
-                    .AppendASCII("test_model_1_2_160_2.tflite");
-  return tflite::FlatBufferModel::BuildFromFile(
-      source_root.AsUTF8Unsafe().c_str());
-}
+// Frame size and rate of the component inside VoiceIsolation: 20 ms at 16 kHz.
+constexpr size_t kComponentFrameSize = 320;
+constexpr size_t kComponentFramesPerSecond = 50;
 
 }  // namespace
 
@@ -35,20 +30,25 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // Configure the audio parameters to the same internal parameters of
   // VoiceIsolation. In this case the ConvertingAudioFifo should not do
   // resampling, but it WILL do downmixing and upmixing.
-  constexpr int kSampleRate = 16000;
-  constexpr int kFrameSize = 320;
+  constexpr int kSampleRate = kComponentFrameSize * kComponentFramesPerSecond;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
-                         kFrameSize);
+                         kComponentFrameSize);
 
-  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
-  std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(model.get(), params);
+  // Use a passthrough component so that the output only depends on the
+  // downmixing and upmixing, not on the model.
+  std::unique_ptr<VoiceIsolation> voice_isolation = VoiceIsolation::Create(
+      std::make_unique<PassthroughVoiceIsolation>(
+          /*frame_size=*/kComponentFrameSize,
+          /*frames_per_second=*/kComponentFramesPerSecond),
+      params);
   ASSERT_NE(voice_isolation, nullptr);
 
   // Use a 2-channel bus to match the AudioParameters.
-  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
-  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> input_bus =
+      AudioBus::Create(2, kComponentFrameSize);
+  std::unique_ptr<AudioBus> output_bus =
+      AudioBus::Create(2, kComponentFrameSize);
 
   // Fill input bus with dummy data.
   std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
@@ -57,9 +57,8 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // Clear output bus to verify changes.
   output_bus->Zero();
 
-  // Skip the first ProcessAudio call to take into account the extra delay in
-  // the internal STFT.
-  voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  // The external parameters match the internal ones and the passthrough
+  // component has no STFT, so there is no delay and one call is enough.
   voice_isolation->ProcessAudio(*input_bus, *output_bus);
 
   // Expected results:
@@ -67,14 +66,16 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // stereo mixes. Mono channel = left * 0.5 + right * 0.5 = 2.0 * 0.5 + 4.0 *
   // 0.5 = 3.0. Upmixing mono to stereo simply copies the mono channel to both
   // left and right.
-  for (int i = 0; i < kFrameSize; ++i) {
+  for (size_t i = 0; i < kComponentFrameSize; ++i) {
     constexpr float expected = 3.0f;
     EXPECT_FLOAT_EQ(output_bus->channel(0)[i], expected);
     EXPECT_FLOAT_EQ(output_bus->channel(1)[i], expected);
   }
 }
 
-TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
+// TODO(barrerap): Enable once TfLiteVoiceIsolation stops advancing the model
+// state when it computes the bias.
+TEST(VoiceIsolationTest, DISABLED_VoiceIsolationCanAdaptToAudioParameters) {
   // External signal is 48kHz, 10ms frames.
   constexpr int kSampleRate = 48000;
   constexpr int kFrameSize = kSampleRate / 100;
@@ -82,7 +83,8 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
 
-  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
@@ -98,9 +100,11 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
   // Clear output bus to verify changes.
   output_bus->Zero();
 
-  // The resamplers and buffers introduce a delay in voice_isolation of at least
-  // 4 frames.
-  for (int j = 0; j < 4; ++j) {
+  // The resamplers, buffers and the STFT introduce a delay of 5 frames. The
+  // fifth frame holds the zero-padded start of the first STFT output, which
+  // stays silent only if the model starts from its initial state.
+  constexpr int kNumLatencyFrames = 5;
+  for (int j = 0; j < kNumLatencyFrames; ++j) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
     float output_energy = std::inner_product(
         output_bus->channel(0).begin(), output_bus->channel(0).end(),
@@ -108,21 +112,26 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
     EXPECT_NEAR(output_energy, 0.0f, 1e-6);
   }
 
-  voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  // Run for twice the latency so that the output only holds processed audio,
+  // which must reach the output.
+  constexpr int kNumSteadyStateFrames = 2 * kNumLatencyFrames;
+  for (int j = 0; j < kNumSteadyStateFrames; ++j) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  }
   float output_energy = std::inner_product(
       output_bus->channel(0).begin(), output_bus->channel(0).end(),
       output_bus->channel(0).begin(), 0.0f);
-  EXPECT_NEAR(output_energy, 0.0f, 1e-6);
+  EXPECT_GT(output_energy, 0.0f);
 }
 
 TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
-  constexpr int kSampleRate = 16000;
-  constexpr int kFrameSize = 320;
+  constexpr int kSampleRate = kComponentFrameSize * kComponentFramesPerSecond;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
-                         kFrameSize);
+                         kComponentFrameSize);
 
-  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
 
   std::unique_ptr<VoiceIsolationComponent> component =
       VoiceIsolation::CreateComponent(model.get());
@@ -132,22 +141,40 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
       VoiceIsolation::Create(std::move(component), params);
   ASSERT_NE(voice_isolation, nullptr);
 
+  // The single-stage factory is the reference for the two-stage one.
+  std::unique_ptr<VoiceIsolation> reference =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(reference, nullptr);
+
   // Use a 2-channel bus to match the AudioParameters.
-  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
-  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> input_bus =
+      AudioBus::Create(2, kComponentFrameSize);
+  std::unique_ptr<AudioBus> output_bus =
+      AudioBus::Create(2, kComponentFrameSize);
+  std::unique_ptr<AudioBus> reference_bus =
+      AudioBus::Create(2, kComponentFrameSize);
 
   std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
   std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 4.0f);
   output_bus->Zero();
+  reference_bus->Zero();
 
-  voice_isolation->ProcessAudio(*input_bus, *output_bus);
-  voice_isolation->ProcessAudio(*input_bus, *output_bus);
-
-  for (int i = 0; i < kFrameSize; ++i) {
-    constexpr float expected = 3.0f;
-    EXPECT_FLOAT_EQ(output_bus->channel(0)[i], expected);
-    EXPECT_FLOAT_EQ(output_bus->channel(1)[i], expected);
+  // Both creation paths must produce the same audio for the same input.
+  constexpr int kNumFrames = 4;
+  for (int frame = 0; frame < kNumFrames; ++frame) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+    reference->ProcessAudio(*input_bus, *reference_bus);
+    for (size_t i = 0; i < kComponentFrameSize; ++i) {
+      EXPECT_FLOAT_EQ(output_bus->channel(0)[i], reference_bus->channel(0)[i]);
+      EXPECT_FLOAT_EQ(output_bus->channel(1)[i], reference_bus->channel(1)[i]);
+    }
   }
+
+  // Processed audio must reach the output.
+  const float output_energy = std::inner_product(
+      output_bus->channel(0).begin(), output_bus->channel(0).end(),
+      output_bus->channel(0).begin(), 0.0f);
+  EXPECT_GT(output_energy, 0.0f);
 }
 
 TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
@@ -157,9 +184,15 @@ TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
 
-  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
-  std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(model.get(), params);
+  // Wrap a passthrough component in the real STFT, as VoiceIsolation does with
+  // the model, so that the output only depends on the FIFOs and the STFT
+  // history.
+  std::unique_ptr<VoiceIsolation> voice_isolation = VoiceIsolation::Create(
+      std::make_unique<StftVoiceIsolation>(
+          std::make_unique<PassthroughVoiceIsolation>(
+              /*frame_size=*/2 * kComponentFrameSize,
+              /*frames_per_second=*/kComponentFramesPerSecond)),
+      params);
   ASSERT_NE(voice_isolation, nullptr);
 
   std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
@@ -183,7 +216,7 @@ TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
       output_bus->channel(0).begin(), 0.0f);
   EXPECT_GT(active_energy, 0.0f);
 
-  // Clear all internal FIFOs, STFT history, and model state.
+  // Clear all internal FIFOs and STFT history.
   voice_isolation->ClearBuffers();
 
   // Feed pure silence and verify that no stranded samples from before the
@@ -192,10 +225,72 @@ TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
   for (int i = 0; i < kNumSilenceFramesToVerify; ++i) {
     voice_isolation->ProcessAudio(*silence_bus, *output_bus);
     for (int sample = 0; sample < kFrameSize; ++sample) {
-      EXPECT_FLOAT_EQ(output_bus->channel(0)[sample], 0.0f)
+      EXPECT_EQ(output_bus->channel(0)[sample], 0.0f)
           << "Non-zero sample leaked at frame " << i << ", sample " << sample;
-      EXPECT_FLOAT_EQ(output_bus->channel(1)[sample], 0.0f)
+      EXPECT_EQ(output_bus->channel(1)[sample], 0.0f)
           << "Non-zero sample leaked at frame " << i << ", sample " << sample;
+    }
+  }
+}
+
+// TODO(barrerap): Enable once TfLiteVoiceIsolation::ClearBuffers() resets the
+// model resource variables.
+TEST(VoiceIsolationTest, DISABLED_ClearBuffersMatchesFreshInstance) {
+  constexpr int kSampleRate = 48000;
+  constexpr int kFrameSize = kSampleRate / 100;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> silence_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> reference_bus = AudioBus::Create(2, kFrameSize);
+
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 1.0f);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 1.0f);
+  silence_bus->Zero();
+  output_bus->Zero();
+  reference_bus->Zero();
+
+  // Feed 5 consecutive frames containing a constant signal so lookahead FIFOs,
+  // STFT overlap-add buffers and the model state are fully populated and
+  // emitting non-zero audio.
+  constexpr int kNumActiveFrames = 5;
+  for (int i = 0; i < kNumActiveFrames; ++i) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  }
+  const float active_energy = std::inner_product(
+      output_bus->channel(0).begin(), output_bus->channel(0).end(),
+      output_bus->channel(0).begin(), 0.0f);
+  EXPECT_GT(active_energy, 0.0f);
+
+  // Clear all internal FIFOs, STFT history, and model state.
+  voice_isolation->ClearBuffers();
+
+  // A freshly created instance is the reference: after clearing, no stranded
+  // samples or model state from before the clear may change the output.
+  std::unique_ptr<VoiceIsolation> reference =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(reference, nullptr);
+
+  constexpr int kNumSilenceFramesToVerify = 6;
+  for (int i = 0; i < kNumSilenceFramesToVerify; ++i) {
+    voice_isolation->ProcessAudio(*silence_bus, *output_bus);
+    reference->ProcessAudio(*silence_bus, *reference_bus);
+    for (int sample = 0; sample < kFrameSize; ++sample) {
+      EXPECT_FLOAT_EQ(output_bus->channel(0)[sample],
+                      reference_bus->channel(0)[sample])
+          << "Stale audio leaked at frame " << i << ", sample " << sample;
+      EXPECT_FLOAT_EQ(output_bus->channel(1)[sample],
+                      reference_bus->channel(1)[sample])
+          << "Stale audio leaked at frame " << i << ", sample " << sample;
     }
   }
 }

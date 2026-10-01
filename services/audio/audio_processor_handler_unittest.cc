@@ -8,11 +8,9 @@
 #include <optional>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -30,6 +28,7 @@
 #include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/mock_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
+#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -131,18 +130,8 @@ class FakeMlModelHandle : public media::MlModelHandle {
   explicit FakeMlModelHandle(
       base::OnceClosure on_destroy = base::NullCallback())
       : on_destroy_(std::move(on_destroy)),
-        reply_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-    base::FilePath source_root;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
-
-    source_root = source_root.AppendASCII("media")
-                      .AppendASCII("webrtc")
-                      .AppendASCII("voice_isolation")
-                      .AppendASCII("test_model_1_2_160_2.tflite");
-
-    model_ = tflite::FlatBufferModel::BuildFromFile(
-        source_root.AsUTF8Unsafe().c_str());
-  }
+        reply_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        model_(media::LoadVoiceIsolationTestModel()) {}
 
   const tflite::FlatBufferModel& Get() override { return *model_; }
 

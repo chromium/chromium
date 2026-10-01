@@ -49,16 +49,27 @@ source_set("mock_voice_isolation") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "voice_isolation_test_utils.cc",
+    "voice_isolation_test_utils.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [ "//third_party/tflite" ]
+  data = [ "test_model_stateful_1_2_160_2.tflite" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":mock_voice_isolation",
+    ":test_support",
     "//media/webrtc",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/tflite",
   ]
-  data = [ "test_model_1_2_160_2.tflite" ]
   sources = [
     "passthrough_voice_isolation_unittest.cc",
     "stft_voice_isolation_unittest.cc",
