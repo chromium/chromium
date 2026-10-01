@@ -748,6 +748,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         /* defaultValue= */ false);
         sharedPrefManager.writeBoolean(
                 ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, oldValue);
+        sharedPrefManager.removeKey(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX);
         return oldValue;
     }
 

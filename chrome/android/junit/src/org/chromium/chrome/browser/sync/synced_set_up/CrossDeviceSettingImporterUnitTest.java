@@ -1006,7 +1006,7 @@ public class CrossDeviceSettingImporterUnitTest {
                 .onDependenciesReady(
                         mCrossDevicePrefTracker, ServiceStatus.AVAILABLE, mProfile, mTab, true);
 
-        // Should return early and migrate the key to true.
+        // Should return early, migrate the key to true, and remove the old key.
         verify(mSnackbarManager, never()).showSnackbar(any());
         assertTrue(
                 "Old key value should migrate into CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS.",
@@ -1014,6 +1014,10 @@ public class CrossDeviceSettingImporterUnitTest {
                         .readBoolean(
                                 ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS,
                                 false));
+        assertFalse(
+                "Deprecated CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX key should be removed.",
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX));
     }
 
     @Test
