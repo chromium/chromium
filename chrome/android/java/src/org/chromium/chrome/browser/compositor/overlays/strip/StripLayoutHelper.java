@@ -812,7 +812,9 @@ public class StripLayoutHelper
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
                         R.drawable.bg_circle_tab_strip_button,
-                        getButtonClickSlopDp(context));
+                        getButtonClickSlopDp(context),
+                        /* hasLongClickAction= */ true);
+        mNewTabButton.setOnLongClickHandler(this);
 
         @ColorRes
         int iconTintRes = incognito ? R.color.modern_white : R.color.default_icon_color_tint_list;
@@ -3384,9 +3386,9 @@ public class StripLayoutHelper
     }
 
     /**
-     * Show the context menu originating at {@param clickedView}, and returns true if a context menu
-     * was shown. (Note: this will return false if there is no context menu to be shown at {@param
-     * clickedView}.
+     * Shows the context menu originating at {@code clickedView}, and returns {@code true} if a
+     * context menu was shown. (Note: this will return {@code false} if there is no context menu to
+     * be shown at {@code clickedView}.)
      *
      * @param clickedView The view for which to show a context menu.
      * @return Whether a context menu was shown.
@@ -3423,6 +3425,10 @@ public class StripLayoutHelper
                 mModel.clearMultiSelection(/* notifyObservers= */ true);
             }
             showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
+            return true;
+        } else if (clickedView instanceof CompositorButton button
+                && button.getType() == ButtonType.NEW_TAB) {
+            showTabStripContextMenu(button.getDrawX(), button.getDrawY() + mTopPadding);
             return true;
         }
         return false;

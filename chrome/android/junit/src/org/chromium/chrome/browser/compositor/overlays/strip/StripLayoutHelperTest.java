@@ -3506,6 +3506,35 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testNewTabButtonLongClick_ShowsStripContextMenu() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        float topPadding = 10f;
+        mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, 0, 0, 0, topPadding);
+        mStripLayoutHelper.updateLayout(0);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
+
+        TintedCompositorButton ntb = mStripLayoutHelper.getNewTabButton();
+        assertTrue(
+                "New tab button should support long click action for accessibility.",
+                ntb.hasLongClickAction());
+        assertTrue("Handling long click on new tab button should succeed.", ntb.handleLongClick());
+
+        var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
+        Rect rect = rectProviderCaptor.getValue().getRect();
+        int x = Math.round(ntb.getDrawX());
+        int y = Math.round(ntb.getDrawY() + topPadding);
+        int tabWidthPx =
+                Math.round(
+                        mStripLayoutHelper.getUnpinnedTabWidth()
+                                * mContext.getResources().getDisplayMetrics().density);
+        assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
+    }
+
+    @Test
     public void testTabOutline_SelectedTabInGroup_Show() {
         // Initialize 5 tabs and make 2 tab groups each containing 2 tabs.
         initializeTest(false, false, 0, 5);
@@ -6711,6 +6740,19 @@ public class StripLayoutHelperTest {
                 "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
         verify(mTabGroupContextMenuCoordinator, times(1)).showMenu(any(), any());
+    }
+
+    @Test
+    public void testOpenContextMenu_newTabButton() {
+        initializeTest(false, false, 0);
+        mStripLayoutHelper.setTabStripContextMenuCoordinatorForTesting(
+                mTabStripContextMenuCoordinator);
+        mStripLayoutHelper.getNewTabButton().setKeyboardFocused(true);
+        assertTrue(
+                "Expected openKeyboardFocusedContextMenu to return true if strip context menu"
+                        + " opened",
+                mStripLayoutHelper.openKeyboardFocusedContextMenu());
+        verify(mTabStripContextMenuCoordinator, times(1)).showMenu(any(), eq(false), any());
     }
 
     @Test
