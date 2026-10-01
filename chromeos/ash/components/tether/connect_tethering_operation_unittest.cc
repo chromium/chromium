@@ -87,8 +87,8 @@ class ConnectTetheringOperationTest : public testing::Test {
 };
 
 TEST_F(ConnectTetheringOperationTest, SuccessWithValidResponse) {
-  static const std::string kTestSsid = "testSsid";
-  static const std::string kTestPassword = "testPassword";
+  static constexpr char kTestSsid[] = "testSsid";
+  static constexpr char kTestPassword[] = "testPassword";
 
   // Verify that the Observer is called with success and the correct parameters.
   EXPECT_CALL(mock_observer_,

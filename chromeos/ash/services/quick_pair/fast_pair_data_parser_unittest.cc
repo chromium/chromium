@@ -12,7 +12,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -38,41 +37,35 @@ constexpr int kSaltHeader3Bytes = 0b00110001;
 constexpr int kBatteryHeader = 0b00110011;
 constexpr int kBatterHeaderNoNotification = 0b00110100;
 
-const std::string kModelId = "112233";
-const std::string kAccountKeyFilter = "112233445566";
-const std::string kSalt = "01";
-const std::string kLargeSalt = "C7C8";
-const std::string kInvalidSalt = "C7C8C9";
-const std::string kBattery = "01048F";
-const std::string kDeviceAddress = "11:12:13:14:15:16";
+constexpr char kModelId[] = "112233";
+constexpr char kAccountKeyFilter[] = "112233445566";
+constexpr char kSalt[] = "01";
+constexpr char kLargeSalt[] = "C7C8";
+constexpr char kInvalidSalt[] = "C7C8C9";
+constexpr char kBattery[] = "01048F";
+constexpr char kDeviceAddress[] = "11:12:13:14:15:16";
 
-const std::vector<uint8_t>& GetSaltBytes() {
-  static const base::NoDestructor<std::vector<uint8_t>> bytes({0x01});
-  return *bytes;
+std::vector<uint8_t> GetSaltBytes() {
+  return {0x01};
 }
 
-const std::vector<uint8_t>& GetLargeSaltBytes() {
-  static const base::NoDestructor<std::vector<uint8_t>> bytes({0xC7, 0xC8});
-  return *bytes;
+std::vector<uint8_t> GetLargeSaltBytes() {
+  return {0xC7, 0xC8};
 }
 
-const std::vector<uint8_t>& GetDeviceAddressBytes() {
-  static const base::NoDestructor<std::vector<uint8_t>> bytes(
-      std::vector<uint8_t>{17, 18, 19, 20, 21, 22});
-  return *bytes;
+std::vector<uint8_t> GetDeviceAddressBytes() {
+  return {17, 18, 19, 20, 21, 22};
 }
 
-const std::vector<uint8_t>& GetAesKeyBytes() {
-  static const base::NoDestructor<std::vector<uint8_t>> bytes(
-      std::vector<uint8_t>{0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F, 0xF7, 0xB6, 0xCF,
-                           0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D});
-  return *bytes;
+std::vector<uint8_t> GetAesKeyBytes() {
+  return {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F, 0xF7, 0xB6,
+          0xCF, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D};
 }
 
 std::vector<uint8_t> EncryptBytes(const std::vector<uint8_t>& bytes) {
   AES_KEY aes_key;
-  AES_set_encrypt_key(GetAesKeyBytes().data(), GetAesKeyBytes().size() * 8,
-                      &aes_key);
+  const std::vector<uint8_t> aes_key_bytes = GetAesKeyBytes();
+  AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
   uint8_t encrypted_bytes[16];
   AES_encrypt(bytes.data(), encrypted_bytes, &aes_key);
   return std::vector<uint8_t>(std::begin(encrypted_bytes),
