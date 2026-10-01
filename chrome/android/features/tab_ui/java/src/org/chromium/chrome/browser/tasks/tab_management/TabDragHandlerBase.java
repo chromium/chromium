@@ -11,6 +11,7 @@ import android.content.ClipDescription;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
+import android.view.Window;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -116,10 +117,70 @@ public abstract class TabDragHandlerBase
 
     @Override
     public void destroy() {
+        // A non-null source view means this handler started the active drag, so it owns the
+        // teardown. Without this, the OS drag outlives the handler: ACTION_DRAG_ENDED is delivered
+        // to a listener that no longer exists, DragDropGlobalState is never cleared, and every
+        // Chrome window in the process wedges (CoordinatorLayoutForPointer intercepts all touches
+        // while DragDropGlobalState.hasValue()).
+        if (mDragSourceView != null) {
+            cancelActiveDragOnAttachedView();
+            releaseActiveDragState();
+        }
+
         if (mTabModelSelectorTabModelObserver != null) {
             mTabModelSelectorTabModelObserver.destroy();
             mTabModelSelectorTabModelObserver = null;
         }
+    }
+
+    /**
+     * Cancels the active OS drag through a view that is still attached to this window.
+     *
+     * <p>{@link View#cancelDragAndDrop()} reads {@code mAttachInfo.mDragToken}, so it logs and
+     * no-ops on a detached view. {@link #mDragSourceView} may already be detached -- the vertical
+     * tabs rail removes its subtree when it hides mid-drag -- so fall back to the decor view, which
+     * outlives it. {@link Window#peekDecorView()} rather than {@code getDecorView()} to avoid
+     * inflating one during teardown.
+     *
+     * @return Whether an attached view was found to cancel through.
+     */
+    private boolean cancelActiveDragOnAttachedView() {
+        View dragSourceView = mDragSourceView;
+        if (dragSourceView != null && dragSourceView.isAttachedToWindow()) {
+            dragSourceView.cancelDragAndDrop();
+            return true;
+        }
+
+        @Nullable Activity activity = mActivitySupplier.get();
+        if (activity == null) return false;
+        Window window = activity.getWindow();
+        if (window == null) return false;
+        View decorView = window.peekDecorView();
+        if (decorView == null || !decorView.isAttachedToWindow()) return false;
+
+        decorView.cancelDragAndDrop();
+        return true;
+    }
+
+    /**
+     * Releases the state held for the active drag.
+     *
+     * <p>This is the shared release step. {@link #finishDrag(boolean)} calls it and then adds
+     * window closing and result metrics; {@link #destroy()} calls it alone, since an unresolved
+     * drag has no outcome to report and the views being restored are going away with the handler.
+     *
+     * <p>{@link View#cancelDragAndDrop()} is asynchronous, so the ACTION_DRAG_ENDED that would
+     * normally clear this state may never reach us. Release it unconditionally.
+     */
+    private void releaseActiveDragState() {
+        @Nullable DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        if (globalState != null
+                && globalState.getData() instanceof ChromeDropDataAndroid chromeDropData) {
+            setTabDraggingState(chromeDropData, /* isDragging= */ false);
+        }
+        clearDragDropGlobalState();
+        mDragInProgressSupplier.set(false);
+        mDragSourceView = null;
     }
 
     protected Activity getActivity() {
@@ -383,12 +444,9 @@ public abstract class TabDragHandlerBase
      * @param dropHandled true if the dragEvent was already handled, false otherwise.
      */
     protected void finishDrag(boolean dropHandled) {
-        // Get the drag source Chrome instance id before it is cleared as it may be closed.
+        // Read everything needed from the global state before it is released below. The source
+        // instance id is needed because that window may be closed.
         @Nullable DragDropGlobalState dragDropGlobalState = getDragDropGlobalState(null);
-        if (dragDropGlobalState != null
-                && dragDropGlobalState.getData() instanceof ChromeDropDataAndroid chromeDropData) {
-            setTabDraggingState(chromeDropData, false);
-        }
         int sourceInstanceId =
                 dragDropGlobalState != null
                         ? dragDropGlobalState.getDragSourceInstance()
@@ -396,9 +454,7 @@ public abstract class TabDragHandlerBase
         boolean isTabGroupDrop = isTabGroupDrop();
         boolean isMultiTabDrop = isMultiTabDrop();
 
-        clearDragDropGlobalState();
-        mDragInProgressSupplier.set(false);
-        mDragSourceView = null;
+        releaseActiveDragState();
 
         // Close the source instance window if it has no tabs.
         boolean didCloseWindow = mMultiInstanceManager.closeChromeWindowIfEmpty(sourceInstanceId);
@@ -477,11 +533,13 @@ public abstract class TabDragHandlerBase
     }
 
     protected @BackPressResult int cancelDrag() {
-        if (mDragSourceView != null) {
-            mDragSourceView.cancelDragAndDrop();
-            return BackPressResult.SUCCESS;
-        }
-        return BackPressResult.FAILURE;
+        // Not our drag to cancel.
+        if (mDragSourceView == null) return BackPressResult.FAILURE;
+
+        // Previously this called mDragSourceView.cancelDragAndDrop() unconditionally and reported
+        // SUCCESS. On a detached source view that call is a no-op, so the drag survived a back
+        // press that claimed to have cancelled it.
+        return cancelActiveDragOnAttachedView() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     public static void setDragTokenForTesting(Token token) {

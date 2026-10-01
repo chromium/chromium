@@ -15,7 +15,9 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.Window;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,6 +87,14 @@ public class TabDragHandlerBaseTest {
                         return false;
                     }
                 };
+    }
+
+    @After
+    public void tearDown() {
+        // startDrag() populates the static sDragToken and DragDropGlobalState without a
+        // ResettersForTesting callback. destroy() releases both if this handler owns the drag, so
+        // tests that never reach finishDrag() or destroy() don't leak state into later tests.
+        mTabDragHandler.destroy();
     }
 
     private Tab createMockTab(int id) {
@@ -166,6 +177,7 @@ public class TabDragHandlerBaseTest {
 
         Tab tab = createMockTab(1);
         View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
         var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
         when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
 
@@ -184,6 +196,9 @@ public class TabDragHandlerBaseTest {
         Tab tab1 = createMockTab(1);
         Tab tab2 = createMockTab(2);
         View dragSourceView = mock(View.class);
+        // Attached, so that never() below verifies the tab identity check rather than just an
+        // unattached view being unable to cancel.
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
         var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab1).build();
         when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
 
@@ -202,6 +217,7 @@ public class TabDragHandlerBaseTest {
         Tab tab1 = createMockTab(1);
         Tab tab2 = createMockTab(2);
         View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
         var dropData =
                 new ChromeMultiTabDropDataAndroid.Builder()
                         .withTabs(Arrays.asList(tab1, tab2))
@@ -224,6 +240,7 @@ public class TabDragHandlerBaseTest {
         Tab tab1 = createMockTab(1);
         Tab tab2 = createMockTab(2);
         View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
         TabGroupMetadata tabGroupMetadata = mock(TabGroupMetadata.class);
         var dropData =
                 new ChromeTabGroupDropDataAndroid.Builder()
@@ -246,5 +263,124 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler.destroy();
         verify(mTabModel).removeObserver(observer);
+    }
+
+    @Test
+    public void testDestroy_WithActiveDrag_CancelsAndReleasesState() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+        assertTrue(DragDropGlobalState.hasValue());
+        assertTrue(TabDragStateData.getForTab(tab).getIsDraggingSupplier().get());
+
+        mTabDragHandler.destroy();
+
+        verify(dragSourceView).cancelDragAndDrop();
+        assertFalse(
+                "Process-wide drag state must not outlive the handler that owns it.",
+                DragDropGlobalState.hasValue());
+        assertFalse(mTabDragHandler.isViewDraggingInProgress());
+        assertFalse(TabDragStateData.getForTab(tab).getIsDraggingSupplier().get());
+    }
+
+    @Test
+    public void testDestroy_WithDetachedSourceView_CancelsViaDecorView() {
+        // Models the vertical tabs rail hiding mid-drag: the source view's subtree is detached
+        // while the OS drag is still live, so the cancel has to go through a view that is still
+        // attached to this window.
+        View decorView = mock(View.class);
+        when(decorView.isAttachedToWindow()).thenReturn(true);
+        Window window = mock(Window.class);
+        when(window.peekDecorView()).thenReturn(decorView);
+        when(mActivity.getWindow()).thenReturn(window);
+
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(false);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+        mTabDragHandler.destroy();
+
+        verify(dragSourceView, never()).cancelDragAndDrop();
+        verify(decorView).cancelDragAndDrop();
+        assertFalse(DragDropGlobalState.hasValue());
+    }
+
+    @Test
+    public void testDestroy_WithoutActiveDrag_DoesNotClearPeerDragState() {
+        // This handler never started a drag, so it must leave state owned by another window alone.
+        DragDropGlobalState.setInstanceForTesting(mock(DragDropGlobalState.class));
+
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        mTabDragHandler.destroy();
+
+        assertTrue(
+                "A handler that did not start the drag must not clear the process-wide state.",
+                DragDropGlobalState.hasValue());
+    }
+
+    @Test
+    public void testCancelDrag_DetachedSourceViewWithNoFallback_ReportsFailure() {
+        // No decor view is reachable, so nothing can carry the cancel. Reporting SUCCESS here
+        // would tell the back press manager the drag was cancelled when it is still running.
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(false);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        assertFalse(mTabDragHandler.handleEscPress());
+        verify(dragSourceView, never()).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testCancelDrag_AttachedSourceView_ReportsSuccess() {
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        assertTrue(mTabDragHandler.handleEscPress());
+        verify(dragSourceView).cancelDragAndDrop();
+    }
+
+    @Test
+    public void testCancelDrag_DetachedSourceView_CancelsViaDecorView() {
+        // Same detached-source scenario as testDestroy_WithDetachedSourceView_CancelsViaDecorView,
+        // but through the back press path: the cancel must go through the still-attached decor
+        // view and report SUCCESS.
+        View decorView = mock(View.class);
+        when(decorView.isAttachedToWindow()).thenReturn(true);
+        Window window = mock(Window.class);
+        when(window.peekDecorView()).thenReturn(decorView);
+        when(mActivity.getWindow()).thenReturn(window);
+
+        mTabDragHandler.setTabModelSelector(mTabModelSelector);
+        Tab tab = createMockTab(1);
+        View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(false);
+        var dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        when(mDragAndDropDelegate.startDragAndDrop(any(), any(), any())).thenReturn(true);
+
+        mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
+
+        assertTrue(mTabDragHandler.handleEscPress());
+        verify(dragSourceView, never()).cancelDragAndDrop();
+        verify(decorView).cancelDragAndDrop();
     }
 }

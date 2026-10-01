@@ -653,6 +653,7 @@ public class TabSwitcherDragHandlerUnitTest {
         TabDragHandlerBase.setDragTokenForTesting(token);
 
         View dragSourceView = mock(View.class);
+        when(dragSourceView.isAttachedToWindow()).thenReturn(true);
         mDragHandler.mDragSourceView = dragSourceView;
         when(mDragHandlerDelegate.isDragInProcess()).thenReturn(true);
 
