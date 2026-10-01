@@ -39,9 +39,16 @@ class AppMenuBlockButton : public views::Button {
       const views::SizeBounds& available_size) const override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
+ protected:
+  // views::Button:
+  void OnEnabledChanged() override;
+
  private:
+  void UpdateColors();
+
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
+  int corner_radius_ = 0;
 };
 
 using AppMenuBlockStyleButton = AppMenuBlockButton;

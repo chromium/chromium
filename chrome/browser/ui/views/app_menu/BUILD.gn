@@ -195,6 +195,7 @@ if (toolkit_views) {
       "action_app_menu_test_base.cc",
       "action_app_menu_test_base.h",
       "action_app_menu_unittest.cc",
+      "app_menu_block_button_unittest.cc",
       "app_menu_chip_view_unittest.cc",
       "app_menu_minor_text_view_unittest.cc",
       "app_menu_search_bar_view_unittest.cc",

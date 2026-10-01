@@ -55,8 +55,6 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
 
   SetBackground(views::CreateRoundedRectBackground(
       kColorAppMenuBlockButtonBackground, corner_radius));
-  SetBorder(views::CreateRoundedRectBorder(1, corner_radius,
-                                           kColorAppMenuBlockButtonBorder));
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -76,9 +74,9 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->GetViewAccessibility().SetIsIgnored(true);
   icon_view_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  icon_view_->SetCanProcessEventsWithinSubtree(false);
 
   label_ = AddChildView(std::make_unique<views::Label>());
-  label_->SetEnabledColor(kColorAppMenuBlockButtonForeground);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetTextStyle(views::style::STYLE_BODY_5);
   label_->SetMultiLine(true);
@@ -86,6 +84,10 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
   label_->GetViewAccessibility().SetIsIgnored(true);
   label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  label_->SetCanProcessEventsWithinSubtree(false);
+
+  corner_radius_ = corner_radius;
+  UpdateColors();
 }
 
 AppMenuBlockButton::~AppMenuBlockButton() = default;
@@ -103,6 +105,20 @@ gfx::Size AppMenuBlockButton::CalculatePreferredSize(
   return gfx::Size(width, std::max(min_height, preferred_height));
 }
 
+void AppMenuBlockButton::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
+
+  auto* const ink_drop_host = views::InkDrop::Get(this);
+  if (GetState() == STATE_DISABLED) {
+    ink_drop_host->SetMode(views::InkDropHost::InkDropMode::OFF);
+  } else {
+    ink_drop_host->SetMode(views::InkDropHost::InkDropMode::ON);
+    ink_drop_host->GetInkDrop()->SetHovered(IsMouseHovered());
+  }
+
+  UpdateColors();
+}
+
 void AppMenuBlockButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
   if (!text.empty()) {
@@ -115,11 +131,28 @@ void AppMenuBlockButton::SetImageModel(const ui::ImageModel& image_model) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   if (image_model.IsVectorIcon()) {
+    const ui::ColorId icon_color =
+        GetState() == STATE_DISABLED
+            ? ui::ColorId{ui::kColorButtonForegroundDisabled}
+            : ui::ColorId{kColorAppMenuBlockButtonForeground};
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        *image_model.GetVectorIcon().vector_icon(),
-        kColorAppMenuBlockButtonForeground, icon_size));
+        *image_model.GetVectorIcon().vector_icon(), icon_color, icon_size));
   } else {
     icon_view_->SetImage(image_model);
+  }
+}
+
+void AppMenuBlockButton::UpdateColors() {
+  const bool is_disabled = GetState() == STATE_DISABLED;
+  SetBorder(views::CreateRoundedRectBorder(
+      /*thickness=*/1, corner_radius_,
+      is_disabled ? ui::ColorId{ui::kColorButtonBorderDisabled}
+                  : ui::ColorId{kColorAppMenuBlockButtonBorder}));
+  label_->SetEnabledColor(
+      is_disabled ? ui::ColorId{ui::kColorButtonForegroundDisabled}
+                  : ui::ColorId{kColorAppMenuBlockButtonForeground});
+  if (!icon_view_->GetImageModel().IsEmpty()) {
+    SetImageModel(icon_view_->GetImageModel());
   }
 }
 
