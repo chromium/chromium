@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -88,12 +89,16 @@ int DataPipeElementReader::Read(net::IOBuffer* buf,
   return result;
 }
 
-void DataPipeElementReader::ReadCallback(int32_t status, uint64_t size) {
-  if (status == net::OK) {
-    size_ = size;
-  } else if (status > 0 || status == net::ERR_IO_PENDING) {
+void DataPipeElementReader::ReadCallback(
+    mojom::DataPipeGetter::ReadResult size) {
+  int32_t status = net::OK;
+  if (size.has_value()) {
+    size_ = size->InBytes();
+  } else if (size.error() > 0 || size.error() == net::ERR_IO_PENDING) {
     mojo::ReportBadMessage("Only net::Errors allowed.");
     status = net::ERR_INVALID_ARGUMENT;
+  } else {
+    status = size.error();
   }
   if (init_callback_)
     std::move(init_callback_).Run(status);

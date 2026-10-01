@@ -263,11 +263,9 @@ class FakeControllerServiceWorker
       mojo::Remote<network::mojom::DataPipeGetter> remote(
           element.As<network::DataElementDataPipe>().ReleaseDataPipeGetter());
       base::RunLoop run_loop;
-      remote->Read(
-          std::move(producer_handle),
-          base::BindOnce([](base::OnceClosure quit_closure, int32_t status,
-                            uint64_t size) { std::move(quit_closure).Run(); },
-                         run_loop.QuitClosure()));
+      remote->Read(std::move(producer_handle),
+                   base::IgnoreArgs<network::mojom::DataPipeGetter::ReadResult>(
+                       run_loop.QuitClosure()));
       run_loop.Run();
       // Copy the content to |out_string|.
       mojo::BlockingCopyToString(std::move(consumer_handle), out_string);

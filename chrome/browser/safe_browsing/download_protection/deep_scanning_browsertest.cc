@@ -469,10 +469,11 @@ class DownloadDeepScanningBrowserTestBase
                                                    data_pipe_consumer));
     data_pipe_getter_->Read(
         std::move(data_pipe_producer),
-        base::BindLambdaForTesting([&run_loop](int32_t status, uint64_t size) {
-          EXPECT_EQ(net::OK, status);
-          run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop](network::mojom::DataPipeGetter::ReadResult size) {
+              EXPECT_TRUE(size.has_value());
+              run_loop.Quit();
+            }));
     data_pipe_getter_.FlushForTesting();
     run_loop.Run();
 

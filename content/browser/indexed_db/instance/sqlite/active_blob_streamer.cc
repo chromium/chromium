@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -250,7 +251,7 @@ void ActiveBlobStreamer::Clone(
 void ActiveBlobStreamer::Read(
     mojo::ScopedDataPipeProducerHandle pipe,
     network::mojom::DataPipeGetter::ReadCallback on_size_known) {
-  std::move(on_size_known).Run(net::OK, blob_length_);
+  std::move(on_size_known).Run(base::ByteSize(blob_length_));
   Read(0, std::numeric_limits<uint64_t>::max(), std::move(pipe),
        base::DoNothing());
 }

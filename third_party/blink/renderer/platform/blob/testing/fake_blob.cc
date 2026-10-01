@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 
+#include "base/byte_size.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -22,7 +23,7 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
   // network::mojom::DataPipeGetter implementation:
   void Read(mojo::ScopedDataPipeProducerHandle handle,
             ReadCallback callback) override {
-    std::move(callback).Run(0 /* OK */, bytes_.size());
+    std::move(callback).Run(base::ByteSize(bytes_.size()));
     std::string byte_string(bytes_.begin(), bytes_.end());
     bool result = mojo::BlockingCopyFromString(byte_string, handle);
     DCHECK(result);

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -18,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -109,8 +111,9 @@ class NetworkRequestAnalysisRequest::DataPipeSizeGetter {
   }
 
  private:
-  void OnRead(int32_t status, uint64_t size) {
- Finish(status == net::OK ? std::optional(size) : std::nullopt);
+  void OnRead(network::mojom::DataPipeGetter::ReadResult size) {
+    Finish(base::OptionalFromExpected(size).transform(
+        [](base::ByteSize size) { return size.InBytes(); }));
   }
 
   void OnDisconnect() { Finish(std::nullopt); }

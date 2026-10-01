@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "mojo/public/c/system/types.h"
 
 namespace network {
@@ -36,9 +38,11 @@ void TestDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
   uint64_t advertised_length = string_to_write_.length();
   if (pipe_closed_early_)
     advertised_length += 1;
-  std::move(callback).Run(start_error_, advertised_length);
-  if (start_error_ != 0 /* net::OK */)
+  if (start_error_ != 0 /* net::OK */) {
+    std::move(callback).Run(base::unexpected(start_error_));
     return;
+  }
+  std::move(callback).Run(base::ByteSize(advertised_length));
 
   write_position_ = 0;
   pipe_ = std::move(pipe);

@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/request_body_collector.h"
 
+#include "base/byte_size.h"
 #include "base/containers/extend.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
@@ -55,13 +56,13 @@ class RequestBodyCollector::BodyReader : public mojo::DataPipeDrainer::Client {
     // `this` is invalid at this point.
   }
 
-  void OnReadStarted(int32_t status, uint64_t size) {
-    if (status != net::OK) {
+  void OnReadStarted(network::mojom::DataPipeGetter::ReadResult size) {
+    if (!size.has_value()) {
       OnFailure();
       // `this` is invalid at this point.
       return;
     }
-    expected_size_ = base::checked_cast<size_t>(size);
+    expected_size_ = base::checked_cast<size_t>(size->InBytes());
     bytes_.reserve(expected_size_);
     pipe_drainer_.emplace(this, std::move(pipe_consumer_));
   }

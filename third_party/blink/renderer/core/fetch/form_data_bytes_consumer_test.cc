@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -83,9 +84,9 @@ class DataPipeGetterImpl : public network::mojom::blink::DataPipeGetter {
     ASSERT_TRUE(result);
   }
 
-  void Done(int status, uint64_t size) {
+  void Done(network::mojom::blink::DataPipeGetter::ReadResult size) {
     handle_.reset();
-    std::move(callback_).Run(status, size);
+    std::move(callback_).Run(std::move(size));
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::blink::DataPipeGetter>
@@ -121,7 +122,7 @@ class SimpleDataPipeGetter : public DataPipeGetterImpl {
             ReadCallback callback) override {
     bool result = mojo::BlockingCopyFromString(str_.Utf8(), handle);
     ASSERT_TRUE(result);
-    std::move(callback).Run(0 /* OK */, str_.length());
+    std::move(callback).Run(base::ByteSize(str_.length()));
   }
 
  private:
@@ -706,7 +707,7 @@ TEST_F(FormDataBytesConsumerTest, DataAndDataPipeAsync) {
         FROM_HERE, base::BindLambdaForTesting([&]() {
           data_pipe->Write(" hello");
           data_pipe->Write(" world");
-          data_pipe->Done(0 /* OK */, 12u);
+          data_pipe->Done(base::ByteSize(12u));
         }));
   }));
 

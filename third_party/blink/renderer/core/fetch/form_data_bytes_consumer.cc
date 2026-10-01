@@ -267,8 +267,8 @@ class DataPipeGetterConsumer : public BytesConsumer {
 
     data_pipe_getter->Read(
         std::move(pipe_producer_handle),
-        BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
-                 WrapWeakPersistent(consumer)));
+        ::blink::BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
+                          WrapWeakPersistent(consumer)));
     return consumer;
   }
 
@@ -306,10 +306,10 @@ class DataPipeGetterConsumer : public BytesConsumer {
   }
 
  private:
-  void DataPipeGetterCallback(int32_t status, uint64_t size) {
+  void DataPipeGetterCallback(
+      network::mojom::blink::DataPipeGetter::ReadResult size) {
     CHECK(completion_notifier_);
-    if (status == 0) {
-      // 0 is net::OK.
+    if (size.has_value()) {
       completion_notifier_->SignalComplete();
     } else {
       completion_notifier_->SignalError(Error("error"));

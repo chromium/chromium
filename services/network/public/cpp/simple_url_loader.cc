@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -134,7 +135,7 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
     // consumer wants to restart reading from the file.
     ResetBodyPipe();
 
-    std::move(callback).Run(net::OK, upload_string_.length());
+    std::move(callback).Run(base::ByteSize(upload_string_.length()));
     upload_body_pipe_ = std::move(pipe);
     handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
         FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

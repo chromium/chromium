@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -107,7 +108,7 @@ void BlobReader::Clone(
 
 void BlobReader::Read(mojo::ScopedDataPipeProducerHandle pipe,
                       network::mojom::DataPipeGetter::ReadCallback callback) {
-  std::move(callback).Run(net::OK, blob_length_);
+  std::move(callback).Run(base::ByteSize(blob_length_));
   Read(0, std::numeric_limits<uint64_t>::max(), std::move(pipe),
        base::DoNothing());
 }

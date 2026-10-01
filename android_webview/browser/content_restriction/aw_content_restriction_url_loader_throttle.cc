@@ -357,8 +357,8 @@ class AwContentRestrictionURLLoaderThrottle::NonChunkedDataPipeStreamer
     WriteDataToPipe(std::vector<uint8_t>(data.begin(), data.end()));
   }
 
-  void OnReadComplete(int32_t status, uint64_t size) {
-    if (status != net::OK) {
+  void OnReadComplete(network::mojom::DataPipeGetter::ReadResult size) {
+    if (!size.has_value()) {
       CleanUp();
     }
   }

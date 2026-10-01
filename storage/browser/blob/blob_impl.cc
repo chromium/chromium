@@ -9,12 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/safety_checks.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -67,7 +69,7 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
     // Check if null since it's conceivable OnComplete() was already called
     // with error.
     if (!callback_.is_null())
-      std::move(callback_).Run(net::OK, content_size);
+      std::move(callback_).Run(base::ByteSize(content_size));
     return MojoBlobReader::Delegate::DONT_REQUEST_SIDE_DATA;
   }
 
@@ -78,7 +80,7 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
       // On error, signal failure immediately. On success, OnCalculatedSize()
       // is guaranteed to be called, and the result will be signaled from
       // there.
-      std::move(callback_).Run(result, 0);
+      std::move(callback_).Run(base::unexpected(result));
     }
   }
 

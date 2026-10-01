@@ -2449,10 +2449,10 @@ class MockURLLoader : public network::mojom::URLLoader {
     return base::ByteSize(total_bytes);
   }
 
-  void OnReadComplete(int32_t status, uint64_t size) {
-    EXPECT_EQ(net::OK, status);
-    EXPECT_EQ(GetLongUploadBody().size(), size);
+  void OnReadComplete(mojom::DataPipeGetter::ReadResult size) {
     read_run_loop_->Quit();
+    ASSERT_TRUE(size.has_value());
+    EXPECT_EQ(GetLongUploadBody().size(), size->InBytes());
   }
 
   raw_ptr<base::test::TaskEnvironment> task_environment_;

@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
 
  private:
   // Callback invoked by DataPipeGetter::Read.
-  void ReadCallback(int32_t status, uint64_t size);
+  void ReadCallback(mojom::DataPipeGetter::ReadResult size);
 
   // Called by |handle_watcher_| when data is available or the pipe was closed,
   // and there's a pending Read() call.

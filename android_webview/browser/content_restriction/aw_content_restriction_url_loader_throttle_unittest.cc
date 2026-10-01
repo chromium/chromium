@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
@@ -217,8 +218,7 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
         mojo::ScopedDataPipeConsumerHandle consumer;
         CHECK_EQ(mojo::CreateDataPipe(nullptr, producer, consumer),
                  MOJO_RESULT_OK);
-        pipe_getter->Read(std::move(producer),
-                          base::BindOnce([](int32_t status, uint64_t size) {}));
+        pipe_getter->Read(std::move(producer), base::DoNothing());
 
         // Wait for the data to be written to the pipe.
         task_environment_.RunUntilIdle();

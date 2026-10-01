@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -340,13 +341,15 @@ void ConnectorDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
     auto overhead =
         deobfuscator_->CalculateDeobfuscationOverhead(file_->bytes());
     if (!overhead.has_value()) {
-      std::move(callback).Run(net::ERR_FAILED, 0);
+      std::move(callback).Run(base::unexpected(net::ERR_FAILED));
       return;
     }
     // Pass the size of the deobfuscated data to the data pipe producer.
-    std::move(callback).Run(net::OK, FullSize() - overhead.value());
+    std::move(callback).Run(base::ByteSize(
+        base::checked_cast<uint64_t>(FullSize() - overhead.value())));
   } else {
-    std::move(callback).Run(net::OK, FullSize());
+    std::move(callback).Run(
+        base::ByteSize(base::checked_cast<uint64_t>(FullSize())));
   }
 
   pipe_ = std::move(pipe);

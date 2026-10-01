@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/instance/test_blob_consumer.h"
 
+#include "base/byte_size.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
@@ -89,11 +90,12 @@ void TestBlobConsumer::ReadIntoDataPipe(
   mojo::ScopedDataPipeConsumerHandle consumer;
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer, consumer), MOJO_RESULT_OK);
 
-  base::test::TestFuture<int32_t, uint64_t> read_future;
+  base::test::TestFuture<network::mojom::DataPipeGetter::ReadResult>
+      read_future;
   data_pipe_getter->Read(std::move(producer), read_future.GetCallback());
 
-  auto [status, declared_size] = read_future.Take();
-  ASSERT_EQ(status, net::OK);
+  network::mojom::DataPipeGetter::ReadResult size = read_future.Take();
+  ASSERT_TRUE(size.has_value());
 
   std::string data;
   base::RunLoop drain_loop;
@@ -101,7 +103,7 @@ void TestBlobConsumer::ReadIntoDataPipe(
   mojo::DataPipeDrainer drainer(&drainer_client, std::move(consumer));
   drain_loop.Run();
 
-  std::move(on_complete).Run(declared_size, std::move(data));
+  std::move(on_complete).Run(size->InBytes(), std::move(data));
 }
 
 }  // namespace content::indexed_db
