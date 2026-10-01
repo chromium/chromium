@@ -50,4 +50,13 @@ bool IsolatedModeReplacesIncognito(const Profile* profile) {
   return service && service->ReplacesIncognito();
 }
 
+bool IsolatedModeMilestone2Enabled(const Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  auto* service = IsolatedModeSettingsServiceFactory::GetForProfile(
+      const_cast<Profile*>(profile));
+  return service && service->Milestone2Enabled();
+}
+
 }  // namespace enterprise_isolated_mode

@@ -30,6 +30,7 @@ TEST_F(IsolatedModeSettingsServiceTest, DoesNotReplaceIncognitoByDefault) {
   IsolatedModeSettingsService service(&pref_service_,
                                       version_info::Channel::DEV);
   EXPECT_FALSE(service.ReplacesIncognito());
+  EXPECT_FALSE(service.Milestone2Enabled());
 }
 
 TEST_F(IsolatedModeSettingsServiceTest,
@@ -99,6 +100,12 @@ TEST_F(IsolatedModeSettingsServiceTest,
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
   IsolatedModeSettingsService service(nullptr, version_info::Channel::DEV);
   EXPECT_FALSE(service.ReplacesIncognito());
+}
+
+TEST_F(IsolatedModeSettingsServiceTest, Milestone2EnabledIgnoresPrefService) {
+  feature_list_.InitAndEnableFeature(kEnterpriseIsolatedModeMilestone2);
+  IsolatedModeSettingsService service(nullptr, version_info::Channel::DEV);
+  EXPECT_TRUE(service.Milestone2Enabled());
 }
 
 }  // namespace enterprise_isolated_mode

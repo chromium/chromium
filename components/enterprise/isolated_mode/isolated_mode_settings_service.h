@@ -25,8 +25,15 @@ class IsolatedModeSettingsService : public KeyedService {
   // Incognito.
   bool ReplacesIncognito() const { return replaces_incognito_; }
 
+  // Returns the cached evaluation of whether Milestone 2 of Isolated Mode is
+  // enabled.
+  // Does not check whether Isolated Mode itself is enabled; pair with
+  // ReplacesIncognito().
+  bool Milestone2Enabled() const { return milestone2_enabled_; }
+
  private:
   const bool replaces_incognito_;
+  const bool milestone2_enabled_;
 };
 
 }  // namespace enterprise_isolated_mode

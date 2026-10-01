@@ -34,6 +34,13 @@ class IsolatedModeSettingsServiceFactory : public ProfileKeyedServiceFactory {
 // Null-safe convenience helper.
 bool IsolatedModeReplacesIncognito(const Profile* profile);
 
+// Returns whether Milestone 2 of Isolated Mode is enabled for the given
+// profile.
+// Null-safe convenience helper.
+// Does not check whether Isolated Mode itself is enabled; pair with
+// IsolatedModeReplacesIncognito().
+bool IsolatedModeMilestone2Enabled(const Profile* profile);
+
 }  // namespace enterprise_isolated_mode
 
 #endif  // CHROME_BROWSER_ENTERPRISE_ISOLATED_MODE_ISOLATED_MODE_SETTINGS_SERVICE_FACTORY_H_

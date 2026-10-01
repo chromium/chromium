@@ -7,5 +7,7 @@
 namespace enterprise_isolated_mode {
 
 BASE_FEATURE(kEnableEnterpriseIsolatedMode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseIsolatedModeMilestone2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise_isolated_mode

@@ -37,6 +37,10 @@ bool ComputeReplacesIncognito(const PrefService* prefs,
   return setting == IsolatedModeSetting::kEnabled;
 }
 
+bool ComputeMilestone2Enabled() {
+  return base::FeatureList::IsEnabled(kEnterpriseIsolatedModeMilestone2);
+}
+
 }  // namespace
 
 IsolatedModeSettingsService::IsolatedModeSettingsService(
@@ -44,6 +48,7 @@ IsolatedModeSettingsService::IsolatedModeSettingsService(
     version_info::Channel channel)
     // Evaluated exactly once at service creation, natively tying the cached
     // evaluation to the Profile lifecycle and locking in the channel state.
-    : replaces_incognito_(ComputeReplacesIncognito(prefs, channel)) {}
+    : replaces_incognito_(ComputeReplacesIncognito(prefs, channel)),
+      milestone2_enabled_(ComputeMilestone2Enabled()) {}
 
 }  // namespace enterprise_isolated_mode
