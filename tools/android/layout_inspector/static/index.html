@@ -24,6 +24,10 @@ found in the LICENSE file.
   <div id="div-controls">
     <button id="btn-load" class="action-button"
          data-hint="CTRL_LOAD">Load</button>
+    <label data-hint="CTRL_ZOOM">
+      <span>Zoom:</span>
+      <select id="sel-zoom"></select>
+    </label>
   </div>
   <div id="div-main" class="main-layout">
     <div id="div-pane-screenshot">
@@ -35,6 +39,8 @@ found in the LICENSE file.
       <div id="div-screenshot-info" data-show="none">
         <div class="div-size-info">
           <span class="sp-size-device"></span>
+          <span class="sp-separator">|</span>
+          <span class="sp-size-scaled"></span>
         </div>
       </div>
     </div>

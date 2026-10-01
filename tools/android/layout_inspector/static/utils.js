@@ -85,3 +85,26 @@ async function convertImageBlobToImage(blob) {
     img.src = blobUrl;
   });
 }
+
+/**
+ * Accurately measures the browser's scrollbar thickness.
+ * Evaluates lazily and caches the result (returns 0 for overlay scrollbars).
+ */
+const getScrollbarThickness = (() => {
+  let thickness = null;
+  return () => {
+    if (thickness === null) {
+      const outer = document.createElement('div');
+      outer.style.visibility = 'hidden';
+      outer.style.overflow = 'scroll';
+      outer.style.width = '50px';
+      document.body.appendChild(outer);
+      const inner = document.createElement('div');
+      inner.style.width = '100%';
+      outer.appendChild(inner);
+      thickness = outer.offsetWidth - inner.offsetWidth;
+      outer.remove();
+    }
+    return thickness;
+  };
+})();

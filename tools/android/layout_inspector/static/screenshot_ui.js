@@ -13,13 +13,15 @@ const SS_INFO_SHOW = {
 
 /******** ScreenshotInfoVis ********/
 /**
- * A floating info panel presenting global device size.
+ * A floating info panel presenting global device size and current screenshot
+ * screen size.
  */
 class ScreenshotInfoVis {
   constructor(divScreenshotInfo, visOpts) {
     this.el = {
       root: divScreenshotInfo,
       spSizeDevice: divScreenshotInfo.querySelector('.sp-size-device'),
+      spSizeScaled: divScreenshotInfo.querySelector('.sp-size-scaled'),
     };
     this.visOpts = visOpts;
   }
@@ -34,14 +36,19 @@ class ScreenshotInfoVis {
 
   _showSize() {
     const [ww, wh] = this.visOpts.wDims;
+    const [sw, sh] = this.visOpts.sDims.map(Math.round);
+    const sZoom = capFixed(this.visOpts.scale * 100, 2);
 
     const rootW = this.el.root.offsetWidth;
-    const showHeading = rootW >= 400;
-    const showAux = rootW >= 250;
+    const showHeading = rootW >= 600;
+    const showAux = rootW >= 450;
 
+    this.el.root.classList.toggle('too-narrow', rootW < 300);
     this.el.spSizeDevice.textContent = (showHeading ? 'Device: ' : '') +
         `${ww}x${wh}px` +
         (showAux ? ` (${this._formatDp(ww)}x${this._formatDp(wh)}dp)` : '');
+    this.el.spSizeScaled.textContent = (showHeading ? 'Scaled: ' : '') +
+        `${sw}x${sh}px` + (showAux ? ` (${sZoom}% Zoom)` : '');
     this.el.root.dataset.show = SS_INFO_SHOW.SIZE;
   }
 
@@ -78,10 +85,27 @@ class ScreenshotVis {
     this.screenshotInfoVis.clear();
   }
 
-  updateScaleAndRefresh() {
+  _refreshScreenshotDimensions() {
+    const rect = this.el.root.getBoundingClientRect();
+    const vpDims = new Dims2D(rect.width, rect.height);
+
+    this.visOpts.updateGeometry(vpDims);
+    const [sw, sh] = this.visOpts.sDims;
+    const st = this.el.inner.style;
+    st.setProperty('--screenshot-width', `${Math.round(sw)}px`);
+    st.setProperty('--screenshot-height', `${Math.round(sh)}px`);
+  }
+
+  updateScaleAndRefresh(needToRescale) {
+    if (needToRescale) {
+      this._refreshScreenshotDimensions();
+    }
     this.screenshotInfoVis.update();
   }
 
+  updateZoom() {
+    this.updateScaleAndRefresh(true);
+  }
   /**
    * @param {!Image} imgScreenshot
    */
@@ -92,7 +116,7 @@ class ScreenshotVis {
     el.canvBase.height = height;
     this.ctx.drawImage(imgScreenshot, 0, 0);
 
-    this.updateScaleAndRefresh();
+    this.updateZoom();
   }
 }
 
@@ -111,6 +135,10 @@ class ScreenshotController {
     this.vis.clear();
   }
 
+  updateZoom() {
+    this.vis.updateZoom();
+  }
+
   initScreenshot() {
     this.vis.setScreenshot(this.model.imgScreenshot);
   }
@@ -118,7 +146,7 @@ class ScreenshotController {
   _bindViewportResize() {
     const observer = new ResizeObserver(() => {
       if (this.model.isLoaded) {
-        this.vis.updateScaleAndRefresh();
+        this.vis.updateScaleAndRefresh(false);
       }
     });
     observer.observe(this.el.root);

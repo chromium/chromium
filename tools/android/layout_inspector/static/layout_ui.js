@@ -10,43 +10,51 @@ const MIN_PANE_DIMS = new Dims2D(50, 150);
 
 /******** LayoutController ********/
 class LayoutController {
-  constructor(model, divMain, divPaneScreenshot, divMainSplitter, hintCtrl) {
+  constructor(model, divMain, divPaneScreenshot, divMainSplitter, divScreenshot,
+              divScreenshotInfo, hintCtrl) {
+    this.model = model;
     this.visOpts = model.visOpts;
 
-    this.divMain = divMain;
-    this.divPaneScreenshot = divPaneScreenshot;
-    this.divMainSplitter = divMainSplitter;
+    this.el = {
+      divMain,
+      divPaneScreenshot,
+      divScreenshotInfo,
+      divMainSplitter,
+      divScreenshot,
+    };
     this.hintCtrl = hintCtrl;
 
     this.activeDragState = null;
 
-    this.divMainSplitterDragHandler = new DragHandler(divMainSplitter, {
+    this.mainSplitterDragHandler = new DragHandler(this.el.divMainSplitter, {
       pointerStyle: this.visOpts.layoutMode.cursor,
-      onDragStart: (e) => this.handleDragStart(e),
-      onDrag: (e, dx, dy) => this.handleDrag(e, dx, dy),
-      onDragEnd: (e) => this.handleDragEnd(e, false),
-      onDragCancel: (e) => this.handleDragEnd(e, true),
+      onDragStart: (e) => this._handleDragStart(e),
+      onDrag: (e, dx, dy) => this._handleDrag(e, dx, dy),
+      onDragEnd: (e) => this._handleDragEnd(e, false),
+      onDragCancel: (e) => this._handleDragEnd(e, true),
+      onDoubleClick: (e) => this._autoResize(),
     });
 
-    this.divMainSplitter.addEventListener('pointerenter', () => {
+    this.el.divMainSplitter.addEventListener('pointerenter', () => {
       this.hintCtrl.setHint(HINT.LAYOUT_SPLITTER);
     });
-    this.divMainSplitter.addEventListener('pointerleave', () => {
+    this.el.divMainSplitter.addEventListener('pointerleave', () => {
       this.hintCtrl.clear();
     });
 
     this.setLayoutMode(LayoutMode.LEFT);
   }
 
-  _readPaneScreenshotRatio() {
-    // If flex-basis is not explicitly set, assume default 50% from CSS.
-    const basis = this.divPaneScreenshot.style.flexBasis;
-    return (basis && basis.endsWith('%')) ? parseFloat(basis) / 100 : 0.5;
+  /** @param {!LayoutMode} mode */
+  setLayoutMode(mode) {
+    this.visOpts.layoutMode = mode;
+    this.el.divMain.dataset.layout = mode.name;
+    this.mainSplitterDragHandler.setPointerStyle(mode.cursor);
   }
 
   /** @param {!LayoutMode} mode */
   _getParentSizeAlongMode(mode) {
-    const {width, height} = this.divMain.getBoundingClientRect();
+    const {width, height} = this.el.divMain.getBoundingClientRect();
     return new Dims2D(width, height).sizeAlong(mode.dir);
   }
 
@@ -65,16 +73,22 @@ class LayoutController {
   _setPaneScreenshotRatio(ratio) {
     const safeRatio =
         this._computePaneScreenshotRatio(this.visOpts.layoutMode, ratio);
-    this.divPaneScreenshot.style.flexBasis = `${safeRatio * 100}%`;
+    this.el.divPaneScreenshot.style.flexBasis = `${safeRatio * 100}%`;
   }
 
-  handleDragStart(e) {
+  _readPaneScreenshotRatio() {
+    // If flex-basis is not explicitly set, assume default 50% from CSS.
+    const basis = this.el.divPaneScreenshot.style.flexBasis;
+    return (basis && basis.endsWith('%')) ? parseFloat(basis) / 100 : 0.5;
+  }
+
+  _handleDragStart(e) {
     this.activeDragState = {
       startRatio: this._readPaneScreenshotRatio(),
     };
   }
 
-  handleDrag(e, dx, dy) {
+  _handleDrag(e, dx, dy) {
     const state = this.activeDragState;
     if (!state) return;
 
@@ -86,7 +100,7 @@ class LayoutController {
     }
   }
 
-  handleDragEnd(e, isCancel) {
+  _handleDragEnd(e, isCancel) {
     const state = this.activeDragState;
     if (!state) return;
 
@@ -94,9 +108,40 @@ class LayoutController {
     this.activeDragState = null;
   }
 
-  setLayoutMode(mode) {
-    this.visOpts.layoutMode = mode;
-    this.divMain.dataset.layout = mode.name;
-    this.divMainSplitterDragHandler.setPointerStyle(mode.cursor);
+  _autoResize() {
+    if (!this.model.isLoaded) return;
+
+    const {wDims, layoutMode} = this.visOpts;
+    const parentSizePx = this._getParentSizeAlongMode(layoutMode);
+    if (parentSizePx <= 0) return;
+
+    const isVert = (layoutMode.orientation === ORIENTATION.VERT);
+    const imgDims = wDims.clone().mulBy(this.visOpts.scale);
+    const rect = this.el.divScreenshot.getBoundingClientRect();
+    const thickness = getScrollbarThickness();
+
+    // 1. Primary Scrollbar Detection based on stable container dims.
+    let hScrollNeeded = imgDims.w > rect.width;
+    let vScrollNeeded = imgDims.h > rect.height;
+
+    // 2. Ripple Effect Detection.
+    // If one scrollbar appears, it might trigger the other by eating space.
+    if (hScrollNeeded && !vScrollNeeded) {
+      if (imgDims.h > rect.height - thickness) vScrollNeeded = true;
+    } else if (vScrollNeeded && !hScrollNeeded) {
+      if (imgDims.w > rect.width - thickness) hScrollNeeded = true;
+    }
+
+    // 3. Calculate total overhead based on layout axis.
+    let overhead = 0;
+    if (isVert) {
+      overhead += this.el.divScreenshotInfo.offsetHeight;
+      if (hScrollNeeded) overhead += thickness;
+    } else {
+      if (vScrollNeeded) overhead += thickness;
+    }
+
+    const targetSizePx = imgDims.sizeAlong(layoutMode.dir) + overhead;
+    this._setPaneScreenshotRatio(targetSizePx / parentSizePx);
   }
 }

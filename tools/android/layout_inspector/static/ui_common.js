@@ -27,12 +27,14 @@ const HINT = checkEnum({
   UNINITIALIZED: -1,
   IDLE: 0,
   CTRL_LOAD: 1,
-  LAYOUT_SPLITTER: 2,
+  CTRL_ZOOM: 2,
+  LAYOUT_SPLITTER: 3,
 });
 
 const HINT_STRINGS = {
   [HINT.IDLE]: '',
   [HINT.CTRL_LOAD]: 'Fetch UI hierarchy and screenshot from device.',
+  [HINT.CTRL_ZOOM]: 'Change display scale of the screenshot.',
   [HINT.LAYOUT_SPLITTER]: 'Drag: Resize',
 };
 
@@ -67,6 +69,7 @@ class DragHandler {
     onDrag,
     onDragEnd,
     onDragCancel,
+    onDoubleClick,
     pointerStyle = 'default',
   }) {
     this.dragEl = dragEl;
@@ -74,6 +77,7 @@ class DragHandler {
     this.onDrag = onDrag;
     this.onDragEnd = onDragEnd;
     this.onDragCancel = onDragCancel ?? onDragEnd;  // Fallback to onDragEnd.
+    this.onDoubleClick = onDoubleClick;
     this.pointerStyle = pointerStyle;
     this.isDragging = false;
     this.bindAll();
@@ -154,6 +158,9 @@ class DragHandler {
 
   bindAll() {
     this.dragEl.addEventListener('pointerdown', (e) => this.handleDragStart(e));
+    if (this.onDoubleClick) {
+      this.dragEl.addEventListener('dblclick', (e) => this.onDoubleClick(e));
+    }
   }
 }
 

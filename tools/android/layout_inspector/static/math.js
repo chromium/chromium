@@ -4,6 +4,14 @@
 
 'use strict';
 
+/******** Constants ********/
+
+/** Geometric orientation axes. */
+const ORIENTATION = checkEnum({
+  HORIZ: 0,
+  VERT: 1,
+});
+
 /******** Math Utilities ********/
 
 /** Constrains a value between a lower and upper bound. */
@@ -32,6 +40,11 @@ class Point2D extends Array {
     super(v0, v1);
   }
 
+  /** @return {!this} A copy of this point, preserving the subclass type. */
+  clone() {
+    return new this.constructor(this[0], this[1]);
+  }
+
   /**
    * Updates both components in-place.
    * @return {!Point2D} This point for chaining.
@@ -39,6 +52,13 @@ class Point2D extends Array {
   assign(v0, v1) {
     this[0] = v0;
     this[1] = v1;
+    return this;
+  }
+
+  /** Multiplies this point by a scalar in-place, chainable. */
+  mulBy(s) {
+    this[0] *= s;
+    this[1] *= s;
     return this;
   }
 
@@ -53,7 +73,7 @@ class Point2D extends Array {
 
 /******** PointXY ********/
 /**
- * Spatial coordinates X / Y, typically for global World or Screen domains.
+ * Spatial coordinates X / Y, typically for global World or Scaled domains.
  */
 class PointXY extends Point2D {
   // clang-format off

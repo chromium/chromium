@@ -42,6 +42,20 @@ button {
   }
 }
 
+label {
+  align-items: center;
+  display: inline-flex;
+  flex-direction: row;
+  gap: 5px;
+  height: 1.4em;
+  justify-content: flex-start;
+}
+
+label,
+select {
+  cursor: pointer;
+}
+
 .hidden {
   display: none !important;
 }
@@ -63,6 +77,14 @@ button {
   & > * {
     flex-shrink: 0;
   }
+}
+
+label:has(#sel-zoom) {
+  margin-left: 263px;
+}
+
+#sel-zoom {
+  width: 90px;
 }
 
 #div-main {
@@ -118,6 +140,8 @@ button {
   }
 
   .screenshot-inner {
+    --screenshot-width: 0px;
+    --screenshot-height: 0px;
     cursor: crosshair;
     flex-shrink: 0;
     position: relative;
@@ -125,8 +149,10 @@ button {
 
   .canv-base {
     display: block;
+    height: var(--screenshot-height);
     image-rendering: pixelated;
     transition: opacity 0.15s;
+    width: var(--screenshot-width);
   }
 }
 
@@ -151,6 +177,28 @@ button {
 
   &[data-show="size"] .div-size-info {
     display: flex;
+  }
+
+  .div-size-info {
+    .sp-size-device {
+      text-align: right;
+      width: 40ch;
+    }
+
+    .sp-size-scaled {
+      width: 40ch;
+    }
+  }
+
+  &.too-narrow {
+    .sp-size-device,
+    .sp-separator {
+      display: none;
+    }
+
+    .sp-size-scaled {
+      width: auto;
+    }
   }
 }
 

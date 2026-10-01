@@ -4,6 +4,23 @@
 
 'use strict';
 
+/******** Constants ********/
+
+const ZOOM_LEVELS = [
+  {title: '10%', scale: 1 / 10},
+  {title: '25%', scale: 1 / 4},
+  {title: '33.3%', scale: 1 / 3},
+  {title: '50%', scale: 1 / 2},
+  {title: '66.7%', scale: 2 / 3},
+  {title: '75%', scale: 3 / 4},
+  {title: '100%', scale: 1},
+  {title: '150%', scale: 1.5},
+  {title: '200%', scale: 2},
+  {title: '300%', scale: 3},
+  {title: '400%', scale: 4},
+];
+const ZOOM_LEVEL_DEFAULT_INDEX = 6;  // For 100%.
+
 /******** LayoutMode ********/
 /**
  * Defines the direction and interaction properties for a layout configuration
@@ -38,6 +55,10 @@ class LayoutMode {
     return (vy < 0) ? LayoutMode.TOP : LayoutMode.BOTTOM;
   }
 
+  get orientation() {
+    return (this.dir.y === 0) ? ORIENTATION.HORIZ : ORIENTATION.VERT;
+  }
+
   get cursor() {
     return (this.dir.y === 0) ? 'col-resize' : 'row-resize';
   }
@@ -59,8 +80,20 @@ class VisOptions {
     this.densityFactor = 1.0;
     this.layoutMode = LayoutMode.LEFT;
 
+    // The usage of scaling leads two to sets of dimensions / coordinates:
+    // * "World": Prefixed by "w-", these represent actual pixels on the device,
+    //   and is unaffected by zoom value `scale`.
+    // * "Scaled": Prefixed by "s-", these represent UI pixels in the
+    //   Screenshot, and is proportional to `scale` (from Zoom feature).
+
+    /** @type {number} Index into `ZOOM_LEVELS`. */
+    this.zoomIndex = ZOOM_LEVEL_DEFAULT_INDEX;
+    /** @type {number} Current ratio from World to Scaled. */
+    this.scale = 1.0;
     /** @type {!Dims2D} World device dimensions. */
     this.wDims = new Dims2D(0, 0);
+    /** @type {!Dims2D} Scaled device dimensions. */
+    this.sDims = new Dims2D(0, 0);
   }
 
   setWorldSize(ww, wh) {
@@ -69,6 +102,25 @@ class VisOptions {
 
   setDensityFactor(factor) {
     this.densityFactor = factor > 0 ? factor : 1.0;
+  }
+
+  setZoomIndex(index) {
+    this.zoomIndex = index;
+  }
+
+  /**
+   * Recalculates the visual scale based on viewport constraints.
+   * @param {!Dims2D} vpDims The current available browser viewport.
+   */
+  updateGeometry(vpDims) {
+    if (this.wDims.w <= 0 || this.wDims.h <= 0) {
+      this.scale = 1.0;
+      this.sDims.assign(0, 0);
+      return;
+    }
+
+    this.scale = ZOOM_LEVELS[this.zoomIndex].scale;
+    this.sDims.assign(this.wDims.w * this.scale, this.wDims.h * this.scale);
   }
 
   pxToDp(px) {
