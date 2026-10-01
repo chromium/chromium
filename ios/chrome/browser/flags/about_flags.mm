@@ -1370,6 +1370,40 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          kEnhancedSafeBrowsingTipShowArm, nullptr},
 };
 
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "403"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced500[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "500"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced502[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "502"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced503[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "503"}};
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced504[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "504"}};
+
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedUnsupported429[] = {
+    {enterprise_net::kForcedDisguisedErrorCodeParamName, "429"}};
+
+const FeatureEntry::FeatureParam kEnterpriseProxyErrorForcedSignInRequired[] = {
+    {enterprise_net::kForceSignInRequiredParamName, "true"}};
+
+const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
+    {
+        {"Force 403 (Authorization / Block)", kEnterpriseProxyErrorForced403,
+         nullptr},
+        {"Force 500 (Internal Server Error)", kEnterpriseProxyErrorForced500,
+         nullptr},
+        {"Force 502 (Bad Gateway)", kEnterpriseProxyErrorForced502, nullptr},
+        {"Force 503 (Service Unavailable)", kEnterpriseProxyErrorForced503,
+         nullptr},
+        {"Force 504 (Gateway Timeout)", kEnterpriseProxyErrorForced504,
+         nullptr},
+        {"Force Unsupported HTTP Code (429)",
+         kEnterpriseProxyErrorForcedUnsupported429, nullptr},
+        {"Force Sign-in Required (Authentication)",
+         kEnterpriseProxyErrorForcedSignInRequired, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2872,6 +2906,15 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSDeviceTrustConnectorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::features::kEnableIOSDeviceTrustConnector)},
+    {"enterprise-proxy-error-handling",
+     enterprise_net::flag_descriptions::kEnterpriseProxyErrorHandlingName,
+     enterprise_net::flag_descriptions::
+         kEnterpriseProxyErrorHandlingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         enterprise_net::kEnterpriseProxyErrorHandling,
+         kEnterpriseProxyErrorHandlingVariations,
+         "EnterpriseProxyErrorHandling")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
