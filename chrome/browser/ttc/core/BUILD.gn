@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
+
 source_set("features") {
   public = [ "features.h" ]
   sources = [ "features.cc" ]
@@ -18,6 +20,7 @@ source_set("core") {
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
     "ttc_page_context_monitor.h",
+    "voice_focused_contents_tracker.h",
   ]
   public_deps = [
     ":features",
@@ -50,6 +53,7 @@ source_set("impl") {
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",
     "ttc_page_context_monitor.cc",
+    "voice_focused_contents_tracker.cc",
   ]
   public_deps = [
     ":core",
@@ -77,6 +81,8 @@ source_set("impl") {
     sources += [
       "session_view_impl.cc",
       "session_view_impl.h",
+      "voice_focused_contents_tracker_desktop.cc",
+      "voice_focused_contents_tracker_desktop.h",
       "voice_plate_controller.cc",
       "voice_plate_controller.h",
     ]
@@ -165,6 +171,7 @@ if (!is_android) {
       "page_context_monitor_browsertest.cc",
       "tool_controller_browsertest.cc",
       "ttc_keyed_service_browsertest.cc",
+      "voice_focused_contents_tracker_browsertest.cc",
     ]
     deps = [
       ":browser_test_support",
@@ -200,6 +207,9 @@ if (!is_android) {
       "//ui/base",
       "//url",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   source_set("interactive_ui_tests") {
