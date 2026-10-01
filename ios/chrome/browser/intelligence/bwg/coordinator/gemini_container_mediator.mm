@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_live_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
@@ -300,6 +301,7 @@ class GeminiContainerMediatorTabHelperObserver
   [self cancelPageContextGeneration];
   [_stateManager reset];
   [self detachObservers];
+  gemini::UpdateGeminiLiveIconVisibility(_profile, /*in_live_mode=*/false);
   ios::provider::ResetGemini();
 }
 
@@ -453,11 +455,23 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 - (void)didSwitchToMode:(GeminiViewMode)mode {
-  if (_eventHandler) {
+  if (_stateManager.viewMode == mode) {
+    return;
+  }
+
+  // In the legacy flow, the initial invocation transitions from `kUnknown` to
+  // `kFloaty`, which isn't an actual mode switch, so don't notify the event
+  // handler.
+  BOOL isInitialInvocation =
+      (_stateManager.viewMode == GeminiViewMode::kUnknown &&
+       mode == GeminiViewMode::kFloaty);
+  if (_eventHandler && !isInitialInvocation) {
     _eventHandler->OnModeChanged(mode);
   }
 
   [_stateManager transitionToMode:mode];
+  gemini::UpdateGeminiLiveIconVisibility(_profile,
+                                         [_stateManager isInGeminiLiveMode]);
 }
 
 - (void)geminiUIDidAppear {
@@ -781,7 +795,7 @@ class GeminiContainerMediatorTabHelperObserver
   // as when they start wording their query, the page context should be locked
   // in. Since we don't get a signal for user speaking, `kTranscribing` is used
   // as a proxy.
-  if ([self isInGeminiLiveMode] &&
+  if ([_stateManager isInGeminiLiveMode] &&
       _stateManager.processingStatus == GeminiClientMode::kTranscribing) {
     return;
   }
@@ -830,15 +844,10 @@ class GeminiContainerMediatorTabHelperObserver
 
 #pragma mark - Gemini Live
 
-- (BOOL)isInGeminiLiveMode {
-  return _stateManager.viewMode == GeminiViewMode::kLive &&
-         gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile);
-}
-
 // Updates page context for Gemini Live based on `processingStatus` changes.
 - (void)updatePageContextForLiveProcessingStatus:
     (GeminiClientMode)processingStatus {
-  if (![self isInGeminiLiveMode]) {
+  if (![_stateManager isInGeminiLiveMode]) {
     return;
   }
 

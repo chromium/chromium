@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_live_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
@@ -85,11 +86,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/custom_leading_view_type.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
@@ -987,23 +985,11 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
 }
 
 void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility(bool animated) {
-  if (!IsGeminiLiveEnabled()) {
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
-
-  CustomLeadingViewType type = IsInGeminiLiveMode()
-                                   ? CustomLeadingViewType::kGeminiLive
-                                   : CustomLeadingViewType::kNone;
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  if (IsChromeNextIaEnabled()) {
-    id<LocationBarBadgeCommands> location_bar_badge_handler =
-        HandlerForProtocol(dispatcher, LocationBarBadgeCommands);
-    [location_bar_badge_handler setBadgeCustomLeadingViewType:type];
-  } else {
-    id<OmniboxCommands> omnibox_handler =
-        HandlerForProtocol(dispatcher, OmniboxCommands);
-    [omnibox_handler setCustomLeadingViewType:type];
-  }
+  gemini::UpdateGeminiLiveIconVisibility(browser_->GetProfile(),
+                                         IsInGeminiLiveMode());
 }
 
 CGFloat GeminiBrowserAgent::GetFloatyOffset() {
@@ -1407,7 +1393,6 @@ void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
   } else {
     LogLiveSessionMetrics();
   }
-  UpdateGeminiLiveIconVisibility();
 }
 
 void GeminiBrowserAgent::OnGeminiUIDidAppear() {
@@ -1497,7 +1482,6 @@ void GeminiBrowserAgent::DismissFloaty() {
   processing_status_ = ios::provider::GeminiClientMode::kUnknown;
   elapsed_minimized_floaty_time_ = base::TimeTicks();
   entry_point_ = gemini::EntryPoint::Unknown;
-  UpdateGeminiLiveIconVisibility();
   ResetFullscreenDisabler();
 }
 
