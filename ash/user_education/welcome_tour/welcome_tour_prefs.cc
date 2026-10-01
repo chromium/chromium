@@ -4,7 +4,6 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
@@ -82,8 +81,6 @@ bool TourWasPreventedAsHoldback(PrefService* prefs) {
 
 std::optional<welcome_tour_metrics::ExperimentalArm> GetFirstExperimentalArm(
     PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   auto* pref = prefs->FindPreference(kFirstExperimentalArm);
   if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
     return std::nullopt;
@@ -108,7 +105,6 @@ std::optional<base::Time> GetTimeOfFirstInteraction(
 }
 
 std::optional<base::Time> GetTimeOfFirstTourAborted(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourAborted);
 }
 
@@ -130,20 +126,16 @@ std::optional<base::Time> GetTimeOfFirstTourAttempt(PrefService* prefs) {
 }
 
 std::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourCompletion);
 }
 
 std::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourPrevention);
 }
 
 std::optional<welcome_tour_metrics::PreventedReason>
 GetReasonForFirstTourPrevention(PrefService* prefs) {
   using welcome_tour_metrics::PreventedReason;
-
-  CHECK(features::IsWelcomeTourEnabled());
 
   auto* pref = prefs->FindPreference(kReasonForFirstTourPrevention);
   if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
@@ -160,8 +152,6 @@ GetReasonForFirstTourPrevention(PrefService* prefs) {
 
 bool MarkFirstExperimentalArm(PrefService* prefs,
                               welcome_tour_metrics::ExperimentalArm arm) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   if (prefs->FindPreference(kFirstExperimentalArm)->IsDefaultValue()) {
     prefs->SetInteger(kFirstExperimentalArm, static_cast<int>(arm));
     return true;
@@ -172,8 +162,6 @@ bool MarkFirstExperimentalArm(PrefService* prefs,
 
 bool MarkFirstTourPrevention(PrefService* prefs,
                              welcome_tour_metrics::PreventedReason reason) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   if (prefs->FindPreference(kTimeOfFirstTourPrevention)->IsDefaultValue()) {
     prefs->SetTime(kTimeOfFirstTourPrevention, base::Time::Now());
     prefs->SetInteger(kReasonForFirstTourPrevention, static_cast<int>(reason));
@@ -185,8 +173,6 @@ bool MarkFirstTourPrevention(PrefService* prefs,
 
 bool MarkTimeOfFirstInteraction(PrefService* prefs,
                                 welcome_tour_metrics::Interaction interaction) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   const auto now = base::Time::Now();
   const auto time_to_measure_from = GetTimeOfFirstTourAttempt(prefs);
 
@@ -205,7 +191,6 @@ bool MarkTimeOfFirstInteraction(PrefService* prefs,
 }
 
 bool MarkTimeOfFirstTourAborted(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
   if (prefs->FindPreference(kTimeOfFirstTourAborted)->IsDefaultValue()) {
     prefs->SetTime(kTimeOfFirstTourAborted, base::Time::Now());
     return true;
@@ -214,7 +199,6 @@ bool MarkTimeOfFirstTourAborted(PrefService* prefs) {
 }
 
 bool MarkTimeOfFirstTourCompletion(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
   if (prefs->FindPreference(kTimeOfFirstTourCompletion)->IsDefaultValue()) {
     prefs->SetTime(kTimeOfFirstTourCompletion, base::Time::Now());
     return true;

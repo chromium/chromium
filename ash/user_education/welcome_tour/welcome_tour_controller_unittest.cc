@@ -338,14 +338,6 @@ void ExpectNotificationCounts(size_t total_notifications,
 
 // Base class for tests of the `WelcomeTourController`.
 class WelcomeTourControllerTest : public UserEducationAshTestBase {
- public:
-  WelcomeTourControllerTest() {
-    // NOTE: The `WelcomeTourController` exists only when the Welcome Tour
-    // feature is enabled. Controller existence is verified in test coverage
-    // for the controller's owner.
-    scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
-  }
-
  protected:
   // UserEducationAshTestBase:
   void SetUp() override {
@@ -358,9 +350,6 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
     ON_CALL(*user_education_delegate(), IsNewUser)
         .WillByDefault(ReturnRefOfCopy(std::make_optional(true)));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------

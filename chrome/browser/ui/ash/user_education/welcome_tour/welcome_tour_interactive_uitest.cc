@@ -93,8 +93,7 @@ class WelcomeTourInteractiveUiTest
     // Only one of `kWelcomeTourHoldbackArm`, `kWelcomeTourCounterfactualArm`
     // and `kWelcomeTourV3` can be enabled at a time.
     scoped_feature_list_.InitWithFeatureStates(
-        {{ash::features::kWelcomeTour, true},
-         {ash::features::kWelcomeTourForceUserEligibility, true},
+        {{ash::features::kWelcomeTourForceUserEligibility, true},
          {ash::features::kWelcomeTourV3,
           IsWelcomeTourV3Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
          {ash::features::kWelcomeTourCounterfactualArm,

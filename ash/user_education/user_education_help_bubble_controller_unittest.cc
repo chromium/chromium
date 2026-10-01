@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
@@ -17,7 +16,6 @@
 #include "base/callback_list.h"
 #include "base/test/mock_callback.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_views.h"
@@ -110,13 +108,6 @@ MATCHER_P(Key, matcher, "") {
 // Base class for tests of the `UserEducationHelpBubbleController`.
 class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
  public:
-  UserEducationHelpBubbleControllerTest() {
-    // NOTE: The `UserEducationHelpBubbleController` exists only when a user
-    // education feature is enabled. Controller existence is verified in test
-    // coverage for the controller's owner.
-    scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
-  }
-
   // Creates and returns a help bubble for the specified `help_bubble_params`,
   // anchored to the `help_bubble_anchor_widget()`.
   std::unique_ptr<HelpBubble> CreateHelpBubble(
@@ -179,10 +170,6 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
     help_bubble_anchor_widget_->CenterWindow(gfx::Size(50, 50));
     help_bubble_anchor_widget_->ShowInactive();
   }
-
-  // Used to enable user education features which are required for existence of
-  // the `controller()` under test.
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The widget to use for help bubble anchors.
   views::UniqueWidgetPtr help_bubble_anchor_widget_;

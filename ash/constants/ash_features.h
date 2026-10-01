@@ -825,8 +825,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementVideoConference);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWallpaperFastRefresh);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kWelcomeTour);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTourChromeVoxSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTourCounterfactualArm);
@@ -1228,7 +1226,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInSessionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthPanelUsingAuthHub();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalAuthenticationWithPinEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebAuthNAuthDialogMergeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUserEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLiveCaptionUserMicrophoneEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVideoConferenceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcBackgroundReplaceEnabled();
@@ -1243,7 +1240,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcWebApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFastRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourChromeVoxSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourCounterfactuallyEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourForceUserEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourHoldbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourV3Enabled();

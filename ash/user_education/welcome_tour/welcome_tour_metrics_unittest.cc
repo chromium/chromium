@@ -448,9 +448,6 @@ class WelcomeTourMetricsTest : public UserEducationAshTestBase {
       histogram_tester.ExpectTotalCount(metric_name, 1);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kWelcomeTour};
 };
 
 // Tests -----------------------------------------------------------------------

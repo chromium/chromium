@@ -26,10 +26,8 @@ class WelcomeTourDialogPixelTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWelcomeTour,
-                              features::kWelcomeTourForceUserEligibility},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWelcomeTourForceUserEligibility);
     UserEducationAshTestBase::SetUp();
     SimulateUserLogin({"primary@test"});
   }

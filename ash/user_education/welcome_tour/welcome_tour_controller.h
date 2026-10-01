@@ -43,8 +43,7 @@ class WelcomeTourScrim;
 class WelcomeTourWindowMinimizer;
 
 // Controller responsible for the Welcome Tour feature tutorial. Note that the
-// `WelcomeTourController` is owned by the `UserEducationController` and exists
-// if and only if the Welcome Tour feature is enabled.
+// `WelcomeTourController` is owned by the `UserEducationController`.
 class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
                                          public AccessibilityObserver,
                                          public SessionObserver,
@@ -57,7 +56,6 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   ~WelcomeTourController() override;
 
   // Returns the singleton instance owned by the `UserEducationController`.
-  // NOTE: Exists if and only if the Welcome Tour feature is enabled.
   static WelcomeTourController* Get();
 
   // Adds/removes the specified `observer` from being notified of events.

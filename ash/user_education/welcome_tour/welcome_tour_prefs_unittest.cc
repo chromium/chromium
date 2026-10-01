@@ -6,13 +6,11 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +49,6 @@ static constexpr char kReasonForFirstTourPrevention[] =
 class WelcomeTourPrefsTest : public testing::Test {
  public:
   WelcomeTourPrefsTest() {
-    feature_list_.InitAndEnableFeature(features::kWelcomeTour);
     RegisterUserProfilePrefs(pref_service_.registry(), /*country=*/"",
                              /*for_test=*/true);
   }
@@ -60,7 +57,6 @@ class WelcomeTourPrefsTest : public testing::Test {
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
 };
 

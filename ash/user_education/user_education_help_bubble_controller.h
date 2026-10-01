@@ -38,7 +38,6 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   ~UserEducationHelpBubbleController();
 
   // Returns the singleton instance owned by the `UserEducationController`.
-  // NOTE: Exists if and only if user education features are enabled.
   static UserEducationHelpBubbleController* Get();
 
   // Adds a `callback` to be invoked whenever a help bubble's anchor bounds

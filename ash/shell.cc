@@ -1849,10 +1849,8 @@ void Shell::Init(
   multitask_menu_nudge_delegate_ =
       std::make_unique<MultitaskMenuNudgeDelegateAsh>();
 
-  if (features::IsUserEducationEnabled()) {
-    user_education_controller_ = std::make_unique<UserEducationController>(
-        shell_delegate_->CreateUserEducationDelegate());
-  }
+  user_education_controller_ = std::make_unique<UserEducationController>(
+      shell_delegate_->CreateUserEducationDelegate());
 
   quick_insert_controller_ = std::make_unique<QuickInsertController>();
 

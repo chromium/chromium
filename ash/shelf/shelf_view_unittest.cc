@@ -889,10 +889,6 @@ class LtrRtlShelfViewTest : public ShelfViewTest,
 INSTANTIATE_TEST_SUITE_P(All, LtrRtlShelfViewTest, testing::Bool());
 
 TEST_P(LtrRtlShelfViewTest, GetAnchorBoundsInScreen) {
-  // Help bubble anchor bounds changed events are only propagated when user
-  // education features are enabled.
-  base::test::ScopedFeatureList scoped_feature_list(features::kWelcomeTour);
-
   {
     SCOPED_TRACE("Initial anchor bounds.");
     VerifyAnchorBoundsInScreenAreValid();

@@ -28,8 +28,6 @@ static constexpr char kWelcomeTourHistogramNamePrefix[] = "Ash.WelcomeTour.";
 }  // namespace
 
 void MaybeActivateExperimentalArm(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   const auto first_experimental_arm =
       welcome_tour_prefs::GetFirstExperimentalArm(prefs);
 
@@ -72,8 +70,6 @@ void MaybeActivateExperimentalArm(PrefService* prefs) {
 }
 
 void MaybeRecordExperimentalArm(PrefService* prefs) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   // NOTE: Checking feature flag state activates experimental arms.
   std::optional<ExperimentalArm> experimental_arm;
   if (features::IsWelcomeTourCounterfactuallyEnabled()) {
@@ -103,16 +99,12 @@ void MaybeRecordExperimentalArm(PrefService* prefs) {
 }
 
 void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "ChromeVoxEnabled.When"}),
       when);
 }
 
 void RecordInteraction(PrefService* prefs, Interaction interaction) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   // Some interactions, like `kQuickSettings`, can occur before user activation.
   if (!prefs) {
     return;
@@ -151,15 +143,11 @@ void RecordInteraction(PrefService* prefs, Interaction interaction) {
 }
 
 void RecordStepAborted(Step step) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "Step.Aborted"}), step);
 }
 
 void RecordStepDuration(Step step, base::TimeDelta duration) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramCustomTimes(
       base::StrCat(
           {kWelcomeTourHistogramNamePrefix, "Step.Duration.", ToString(step)}),
@@ -168,15 +156,11 @@ void RecordStepDuration(Step step, base::TimeDelta duration) {
 }
 
 void RecordStepShown(Step step) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "Step.Shown"}), step);
 }
 
 void RecordTourAborted(AbortedReason reason) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "Aborted.Reason"}),
       reason);
@@ -185,8 +169,6 @@ void RecordTourAborted(AbortedReason reason) {
 void RecordTourDuration(PrefService* prefs,
                         base::TimeDelta duration,
                         bool completed) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   if (completed) {
     welcome_tour_prefs::MarkTimeOfFirstTourCompletion(prefs);
   } else {
@@ -202,8 +184,6 @@ void RecordTourDuration(PrefService* prefs,
 }
 
 void RecordTourPrevented(PrefService* prefs, PreventedReason reason) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
 
   base::UmaHistogramEnumeration(
@@ -212,8 +192,6 @@ void RecordTourPrevented(PrefService* prefs, PreventedReason reason) {
 }
 
 void RecordTourResult(TourResult result) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   base::UmaHistogramEnumeration(
       base::StrCat({kWelcomeTourHistogramNamePrefix, "Result"}), result);
 }

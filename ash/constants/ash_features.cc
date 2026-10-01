@@ -1839,9 +1839,6 @@ BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable "daily" refresh wallpaper to refresh every ten seconds for testing.
 BASE_FEATURE(kWallpaperFastRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Welcome Tour that walks new users through ChromeOS System UI.
-BASE_FEATURE(kWelcomeTour, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether ChromeVox is supported in the Welcome Tour that walks new users
 // through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTourChromeVoxSupported, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1851,8 +1848,7 @@ BASE_FEATURE(kWelcomeTourChromeVoxSupported, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWelcomeTourCounterfactualArm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Forces user eligibility for the Welcome Tour that walks new users through
-// ChromeOS System UI. Enabling this flag has no effect unless `kWelcomeTour` is
-// also enabled.
+// ChromeOS System UI.
 BASE_FEATURE(kWelcomeTourForceUserEligibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1861,7 +1857,6 @@ BASE_FEATURE(kWelcomeTourForceUserEligibility,
 BASE_FEATURE(kWelcomeTourHoldbackArm, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Welcome Tour V3 that has different strings and steps than V1.
-// Enabling this flag has no effect unless `kWelcomeTour` is also enabled.
 BASE_FEATURE(kWelcomeTourV3, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable MAC Address Randomization on WiFi connection.
@@ -3033,10 +3028,6 @@ bool ShouldUseStorkSmds() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
 
-bool IsUserEducationEnabled() {
-  return IsWelcomeTourEnabled();
-}
-
 bool IsLiveCaptionUserMicrophoneEnabled() {
   return base::FeatureList::IsEnabled(kLiveCaptionUserMicrophone);
 }
@@ -3092,31 +3083,23 @@ bool IsWallpaperFastRefreshEnabled() {
 }
 
 bool IsWelcomeTourChromeVoxSupported() {
-  return IsWelcomeTourEnabled() &&
-         base::FeatureList::IsEnabled(kWelcomeTourChromeVoxSupported);
+  return base::FeatureList::IsEnabled(kWelcomeTourChromeVoxSupported);
 }
 
 bool IsWelcomeTourCounterfactuallyEnabled() {
-  return IsWelcomeTourEnabled() &&
-         base::FeatureList::IsEnabled(kWelcomeTourCounterfactualArm);
-}
-
-bool IsWelcomeTourEnabled() {
-  return base::FeatureList::IsEnabled(kWelcomeTour);
+  return base::FeatureList::IsEnabled(kWelcomeTourCounterfactualArm);
 }
 
 bool IsWelcomeTourForceUserEligibilityEnabled() {
-  return IsWelcomeTourEnabled() &&
-         base::FeatureList::IsEnabled(kWelcomeTourForceUserEligibility);
+  return base::FeatureList::IsEnabled(kWelcomeTourForceUserEligibility);
 }
 
 bool IsWelcomeTourHoldbackEnabled() {
-  return IsWelcomeTourEnabled() &&
-         base::FeatureList::IsEnabled(kWelcomeTourHoldbackArm);
+  return base::FeatureList::IsEnabled(kWelcomeTourHoldbackArm);
 }
 
 bool IsWelcomeTourV3Enabled() {
-  return IsWelcomeTourEnabled() && base::FeatureList::IsEnabled(kWelcomeTourV3);
+  return base::FeatureList::IsEnabled(kWelcomeTourV3);
 }
 
 bool IsWifiConcurrencyEnabled() {

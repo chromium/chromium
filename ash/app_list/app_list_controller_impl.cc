@@ -35,7 +35,6 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -269,8 +268,7 @@ bool IsKioskSession() {
 }
 
 void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
-  if (features::IsWelcomeTourEnabled() &&
-      IsAppListShowSourceUserTriggered(show_source)) {
+  if (IsAppListShowSourceUserTriggered(show_source)) {
     welcome_tour_metrics::RecordInteraction(
         GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kLauncher);

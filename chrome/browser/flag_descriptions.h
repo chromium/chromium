@@ -8275,16 +8275,11 @@ inline constexpr char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
-inline constexpr char kWelcomeTourName[] = "Welcome Tour";
-inline constexpr char kWelcomeTourDescription[] =
-    "Enables the Welcome Tour that walks new users through ChromeOS System UI.";
-
 inline constexpr char kWelcomeTourForceUserEligibilityName[] =
     "Force Welcome Tour user eligibility";
 inline constexpr char kWelcomeTourForceUserEligibilityDescription[] =
     "Forces user eligibility for the Welcome Tour that walks new users through "
-    "ChromeOS System UI. Enabling this flag has no effect unless the Welcome "
-    "Tour is also enabled.";
+    "ChromeOS System UI.";
 
 inline constexpr char kWifiConnectMacAddressRandomizationName[] =
     "MAC address randomization";

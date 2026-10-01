@@ -338,11 +338,9 @@ ShelfView::ShelfView(ShelfModel* model,
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
 
-  if (features::IsUserEducationEnabled()) {
-    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
-    // in case registration causes a help bubble to be created synchronously.
-    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-  }
+  // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+  // in case registration causes a help bubble to be created synchronously.
+  SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
   SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
 
   announcement_view_ = new views::View();
@@ -1444,10 +1442,8 @@ void ShelfView::LayoutToIdealBounds() {
   UpdateVisibleShelfItemBoundsUnion();
 
   // Notify user education features that anchor bounds have changed.
-  if (features::IsUserEducationEnabled()) {
-    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
-  }
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
 }
 
 bool ShelfView::IsItemPinned(const ShelfItem& item) const {
@@ -2622,10 +2618,8 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
   shelf_->NotifyShelfIconPositionsChanged();
 
   // Notify user education features that anchor bounds have changed.
-  if (features::IsUserEducationEnabled()) {
-    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
-  }
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      views::ViewSubregionAnchor::kAnchorBoundsChangedEvent, this);
 
   // Do not call PreferredSizeChanged() so that container does not re-layout
   // during the bounds animation.

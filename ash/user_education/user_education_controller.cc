@@ -4,7 +4,6 @@
 
 #include "ash/user_education/user_education_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_delegate.h"
@@ -32,9 +31,7 @@ UserEducationController::UserEducationController(
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  if (features::IsWelcomeTourEnabled()) {
-    feature_controllers_.emplace(std::make_unique<WelcomeTourController>());
-  }
+  feature_controllers_.emplace(std::make_unique<WelcomeTourController>());
 }
 
 UserEducationController::~UserEducationController() {

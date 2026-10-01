@@ -37,7 +37,6 @@ class ASH_EXPORT UserEducationTutorialController {
   ~UserEducationTutorialController();
 
   // Returns the singleton instance owned by the `UserEducationController`.
-  // NOTE: Exists if and only if user education features are enabled.
   static UserEducationTutorialController* Get();
 
   // Returns whether a tutorial is registered for the specified `tutorial_id`.

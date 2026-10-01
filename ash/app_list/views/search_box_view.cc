@@ -24,7 +24,6 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -502,11 +501,9 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
 
-  if (features::IsUserEducationEnabled()) {
-    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
-    // in case registration causes a help bubble to be created synchronously.
-    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-  }
+  // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+  // in case registration causes a help bubble to be created synchronously.
+  SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
   SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
 
   auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
@@ -644,11 +641,9 @@ void SearchBoxView::HandleQueryChange(std::u16string_view query,
   if (initiated_by_user) {
     if (current_query_.empty() && !query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
-      if (features::IsWelcomeTourEnabled()) {
-        welcome_tour_metrics::RecordInteraction(
-            user_education_util::GetLastActiveUserPrefService(),
-            welcome_tour_metrics::Interaction::kSearch);
-      }
+      welcome_tour_metrics::RecordInteraction(
+          user_education_util::GetLastActiveUserPrefService(),
+          welcome_tour_metrics::Interaction::kSearch);
     } else if (!current_query_.empty() && query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
     }

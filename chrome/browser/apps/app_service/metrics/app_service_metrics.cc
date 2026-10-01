@@ -16,7 +16,6 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
@@ -302,9 +301,7 @@ void RecordAppLaunch(const std::string& app_id,
   if (const std::optional<DefaultAppName> app_name = AppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
 #if BUILDFLAG(IS_CHROMEOS)
-    if (ash::features::IsWelcomeTourEnabled()) {
-      RecordWelcomeTourInteraction(app_name.value(), launch_source);
-    }
+    RecordWelcomeTourInteraction(app_name.value(), launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }

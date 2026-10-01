@@ -4,11 +4,9 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -18,15 +16,7 @@ namespace ash {
 
 // The test suite to check the dialog's features that are independent of the
 // Welcome Tour.
-class WelcomeTourDialogTest : public UserEducationAshTestBase {
- public:
-  WelcomeTourDialogTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using WelcomeTourDialogTest = UserEducationAshTestBase;
 
 TEST_F(WelcomeTourDialogTest, OnAcceptButtonClicked) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);

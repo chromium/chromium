@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -66,8 +65,6 @@ WelcomeTourDialog* WelcomeTourDialog::Get() {
 WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
                                      base::OnceClosure cancel_callback,
                                      base::OnceClosure close_callback) {
-  CHECK(features::IsWelcomeTourEnabled());
-
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 

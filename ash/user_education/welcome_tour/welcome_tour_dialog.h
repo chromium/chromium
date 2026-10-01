@@ -12,8 +12,7 @@
 namespace ash {
 
 // A singleton dialog view which serves as a part of the Welcome Tour. From this
-// dialog, a user can choose to accept or cancel the Welcome Tour tutorial. Used
-// if and only if the Welcome Tour feature is enabled.
+// dialog, a user can choose to accept or cancel the Welcome Tour tutorial.
 class ASH_EXPORT WelcomeTourDialog : public SystemDialogDelegateView {
   METADATA_HEADER(WelcomeTourDialog, SystemDialogDelegateView)
 

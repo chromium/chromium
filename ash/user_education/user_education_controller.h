@@ -41,7 +41,6 @@ class ASH_EXPORT UserEducationController {
   ~UserEducationController();
 
   // Returns the singleton instance owned by `Shell`.
-  // NOTE: Exists if and only if user education features are enabled.
   static UserEducationController* Get();
 
   // Registers user education prefs to the provided `registry`.
