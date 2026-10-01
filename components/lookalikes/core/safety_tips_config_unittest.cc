@@ -4,11 +4,27 @@
 
 #include "components/lookalikes/core/safety_tips_config.h"
 
+#include <string>
+
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace lookalikes {
+
+namespace {
+
+bool IsTargetAllowlisted(const std::string& hostname) {
+  return IsTargetHostAllowlistedBySafetyTipsComponent(
+      GetSafetyTipsRemoteConfigProto(), hostname);
+}
+
+bool IsUrlAllowlisted(const std::string& url) {
+  return IsUrlAllowlistedBySafetyTipsComponent(GetSafetyTipsRemoteConfigProto(),
+                                               GURL(url), GURL(url));
+}
+
+}  // namespace
 
 // Build an allowlist with testable scoped allowlist entries.
 void ConfigureAllowlistWithScopes() {
@@ -150,6 +166,78 @@ TEST(SafetyTipsConfigTest, TestTargetUrlAllowlist) {
       IsTargetHostAllowlistedBySafetyTipsComponent(config, "example.com"));
   EXPECT_FALSE(
       IsTargetHostAllowlistedBySafetyTipsComponent(config, "example.org"));
+}
+
+// Target allowlist regexes must match the whole hostname.
+TEST(SafetyTipsConfigTest, TargetAllowlistRequiresFullMatch) {
+  SetSafetyTipAllowlistPatterns({}, {"example\\.com", "foo\\.test"}, {});
+  EXPECT_TRUE(IsTargetAllowlisted("example.com"));
+  EXPECT_TRUE(IsTargetAllowlisted("foo.test"));
+  EXPECT_FALSE(IsTargetAllowlisted("www.example.com"));
+  EXPECT_FALSE(IsTargetAllowlisted("example.com.evil.test"));
+  EXPECT_FALSE(IsTargetAllowlisted("examplexcom"));
+}
+
+// A regex that fails to compile never matches, and doesn't prevent the other
+// regexes from matching. An empty regex never matches a hostname.
+TEST(SafetyTipsConfigTest, TargetAllowlistIgnoresMalformedRegex) {
+  // The unbalanced parenthesis makes "exa(mple\\.com" invalid. It sorts before
+  // "foo\\.test", so it is compiled first.
+  SetSafetyTipAllowlistPatterns({}, {"exa(mple\\.com", "foo\\.test"}, {});
+  EXPECT_TRUE(IsTargetAllowlisted("foo.test"));
+  EXPECT_FALSE(IsTargetAllowlisted("example.com"));
+
+  SetSafetyTipAllowlistPatterns({}, {"exa(mple\\.com"}, {});
+  EXPECT_FALSE(IsTargetAllowlisted("example.com"));
+
+  SetSafetyTipAllowlistPatterns({}, {""}, {});
+  EXPECT_FALSE(IsTargetAllowlisted("example.com"));
+}
+
+// Installing a new config replaces the compiled target regexes.
+TEST(SafetyTipsConfigTest, TargetAllowlistFollowsInstalledConfig) {
+  SetSafetyTipAllowlistPatterns({}, {"first\\.test"}, {});
+  EXPECT_TRUE(IsTargetAllowlisted("first.test"));
+
+  SetSafetyTipAllowlistPatterns({}, {"second\\.test"}, {});
+  EXPECT_FALSE(IsTargetAllowlisted("first.test"));
+  EXPECT_TRUE(IsTargetAllowlisted("second.test"));
+
+  SetSafetyTipAllowlistPatterns({}, {}, {});
+  EXPECT_FALSE(IsTargetAllowlisted("second.test"));
+}
+
+// A config other than the installed one is matched against its own regexes.
+TEST(SafetyTipsConfigTest, TargetAllowlistUsesGivenConfig) {
+  SetSafetyTipAllowlistPatterns({}, {"installed\\.test"}, {});
+
+  reputation::SafetyTipsConfig other;
+  // Entries without a regex are skipped.
+  other.add_allowed_target_pattern();
+  other.add_allowed_target_pattern()->set_regex("other\\.test");
+
+  EXPECT_TRUE(
+      IsTargetHostAllowlistedBySafetyTipsComponent(&other, "other.test"));
+  EXPECT_FALSE(
+      IsTargetHostAllowlistedBySafetyTipsComponent(&other, "installed.test"));
+  EXPECT_TRUE(IsTargetAllowlisted("installed.test"));
+  EXPECT_FALSE(IsTargetAllowlisted("other.test"));
+}
+
+// The URL allowlist only matches exact patterns, including at both ends of the
+// sorted list.
+TEST(SafetyTipsConfigTest, UrlAllowlistRequiresExactPattern) {
+  SetSafetyTipAllowlistPatterns({"example.com/", "sitez.test/"}, {}, {});
+  EXPECT_TRUE(IsUrlAllowlisted("http://example.com"));
+  EXPECT_TRUE(IsUrlAllowlisted("http://example.com/path/page.html"));
+  EXPECT_TRUE(IsUrlAllowlisted("http://sitez.test"));
+
+  // "example.co/" sorts immediately before "example.com/".
+  EXPECT_FALSE(IsUrlAllowlisted("http://example.co"));
+  // Sorts before the first entry.
+  EXPECT_FALSE(IsUrlAllowlisted("http://a.test"));
+  // Sorts after the last entry.
+  EXPECT_FALSE(IsUrlAllowlisted("http://zzz.test"));
 }
 
 TEST(SafetyTipsConfigTest, TestCommonWords) {

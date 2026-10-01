@@ -5,6 +5,9 @@
 #include "components/lookalikes/core/safety_tips_config.h"
 
 #include <algorithm>
+#include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/no_destructor.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
@@ -17,13 +20,53 @@ namespace lookalikes {
 
 namespace {
 
+using AllowedTargetRegexes = std::vector<std::unique_ptr<re2::RE2>>;
+
+// Compiles the allowed target regexes of |proto|. Regexes that fail to compile
+// are dropped, since they can't match anything.
+AllowedTargetRegexes CompileAllowedTargetRegexes(
+    const reputation::SafetyTipsConfig& proto) {
+  AllowedTargetRegexes regexes;
+  regexes.reserve(proto.allowed_target_pattern_size());
+  for (const auto& host_pattern : proto.allowed_target_pattern()) {
+    if (!host_pattern.has_regex()) {
+      continue;
+    }
+    auto regex = std::make_unique<re2::RE2>(host_pattern.regex());
+    if (regex->ok()) {
+      regexes.push_back(std::move(regex));
+    }
+  }
+  return regexes;
+}
+
+// Returns whether |hostname| fully matches any of |regexes|.
+bool MatchesAnyRegex(const AllowedTargetRegexes& regexes,
+                     const std::string& hostname) {
+  return std::ranges::any_of(
+      regexes, [&hostname](const std::unique_ptr<re2::RE2>& regex) {
+        return re2::RE2::FullMatch(hostname, *regex);
+      });
+}
+
 class SafetyTipsConfigSingleton {
  public:
   void SetProto(std::unique_ptr<reputation::SafetyTipsConfig> proto) {
+    allowed_target_regexes_.reset();
     proto_ = std::move(proto);
   }
 
   reputation::SafetyTipsConfig* GetProto() const { return proto_.get(); }
+
+  // Returns the allowed target regexes of the installed config, compiling them
+  // on first use. Must only be called while a config is installed.
+  const AllowedTargetRegexes& GetAllowedTargetRegexes() {
+    DCHECK(proto_);
+    if (!allowed_target_regexes_) {
+      allowed_target_regexes_ = CompileAllowedTargetRegexes(*proto_);
+    }
+    return *allowed_target_regexes_;
+  }
 
   static SafetyTipsConfigSingleton& GetInstance() {
     static base::NoDestructor<SafetyTipsConfigSingleton> instance;
@@ -32,6 +75,8 @@ class SafetyTipsConfigSingleton {
 
  private:
   std::unique_ptr<reputation::SafetyTipsConfig> proto_;
+  // Compiled from |proto_| once, rather than on every lookup.
+  std::optional<AllowedTargetRegexes> allowed_target_regexes_;
 };
 
 // Given a URL, generates all possible variant URLs to check the blocklist for.
@@ -132,15 +177,13 @@ bool IsUrlAllowlistedBySafetyTipsComponent(
   DCHECK(visited_url.is_valid());
   std::vector<std::string> patterns;
   UrlToSafetyTipPatterns(visited_url, &patterns);
-  auto allowed_patterns = proto->allowed_pattern();
+  const auto& allowed_patterns = proto->allowed_pattern();
   for (const auto& pattern : patterns) {
-    reputation::UrlPattern search_target;
-    search_target.set_pattern(pattern);
-
     auto maybe_before = std::lower_bound(
-        allowed_patterns.begin(), allowed_patterns.end(), search_target,
-        [](const reputation::UrlPattern& a, const reputation::UrlPattern& b)
-            -> bool { return a.pattern() < b.pattern(); });
+        allowed_patterns.begin(), allowed_patterns.end(), pattern,
+        [](const reputation::UrlPattern& a, const std::string& b) -> bool {
+          return a.pattern() < b;
+        });
 
     if (maybe_before != allowed_patterns.end() &&
         pattern == maybe_before->pattern()) {
@@ -166,18 +209,14 @@ bool IsTargetHostAllowlistedBySafetyTipsComponent(
   if (proto == nullptr) {
     return false;
   }
-  for (const auto& host_pattern : proto->allowed_target_pattern()) {
-    if (!host_pattern.has_regex()) {
-      continue;
-    }
-    DCHECK(!host_pattern.regex().empty());
-    const re2::RE2 regex(host_pattern.regex());
-    DCHECK(regex.ok());
-    if (re2::RE2::FullMatch(hostname, regex)) {
-      return true;
-    }
+  SafetyTipsConfigSingleton& singleton =
+      SafetyTipsConfigSingleton::GetInstance();
+  if (proto == singleton.GetProto()) {
+    return MatchesAnyRegex(singleton.GetAllowedTargetRegexes(), hostname);
   }
-  return false;
+  // Configs other than the installed one (e.g. in tests) are compiled for this
+  // call only.
+  return MatchesAnyRegex(CompileAllowedTargetRegexes(*proto), hostname);
 }
 
 bool IsCommonWordInConfigProto(const reputation::SafetyTipsConfig* proto,
@@ -187,7 +226,7 @@ bool IsCommonWordInConfigProto(const reputation::SafetyTipsConfig* proto,
     return false;
   }
 
-  auto common_words = proto->common_word();
+  const auto& common_words = proto->common_word();
   DCHECK(std::ranges::is_sorted(common_words.begin(), common_words.end()));
   auto lower = std::lower_bound(
       common_words.begin(), common_words.end(), word,
