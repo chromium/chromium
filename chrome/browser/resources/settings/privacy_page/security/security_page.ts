@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -18,8 +17,8 @@ import '../../settings_shared.css.js';
 import '../../simple_confirmation_dialog.js';
 import './secure_dns.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -87,8 +86,8 @@ function toSecurityPageInteraction(setting: SafeBrowsingSetting):
 }
 
 const SettingsSecurityPageElementBase =
-    HelpBubbleMixin(RouteObserverMixin(SettingsViewMixin(
-        WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))))));
+    HelpBubbleMixin(RouteObserverMixin(SettingsViewMixin(WebUiListenerMixin(
+        I18nMixin(PrefServiceObserverMixin(PolymerElement))))));
 
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
@@ -215,6 +214,11 @@ export class SettingsSecurityPageElement extends
         type: Boolean,
         value: true,
       },
+
+      safeBrowsingPref_: Object,
+      httpsFirstModePref_: Object,
+      passwordLeakDetectionPref_: Object,
+      passwordManagerLeakDetectionPref_: Object,
     };
   }
   declare private showSecureDnsSetting_: boolean;
@@ -236,20 +240,42 @@ export class SettingsSecurityPageElement extends
   declare private isRouteSecurity_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   declare private hideExtendedReportingRadioButton_: boolean;
+  declare private safeBrowsingPref_:
+      chrome.settingsPrivate.PrefObject<SafeBrowsingSetting>|undefined;
+  declare private httpsFirstModePref_:
+      chrome.settingsPrivate.PrefObject<HttpsFirstModeSetting>|undefined;
+  declare private passwordLeakDetectionPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  declare private passwordManagerLeakDetectionPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private siteBrowserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.mirrorPrefs({
+      'generated.safe_browsing': 'safeBrowsingPref_',
+      'generated.https_first_mode_enabled': 'httpsFirstModePref_',
+      'generated.password_leak_detection': 'passwordLeakDetectionPref_',
+      'profile.password_manager_leak_detection':
+          'passwordManagerLeakDetectionPref_',
+    });
+  }
+
   override ready() {
     super.ready();
 
-    CrSettingsPrefs.initialized.then(() => {
+    PrefService.getInstance().whenInitialized().then(() => {
       // Expand initial pref value manually because automatic
       // expanding is disabled.
       const prefValue =
-          this.getPref<SafeBrowsingSetting>('generated.safe_browsing').value;
+          PrefService.getInstance()
+              .getPref<SafeBrowsingSetting>('generated.safe_browsing')
+              .value;
       if (prefValue === SafeBrowsingSetting.ENHANCED) {
         this.$.safeBrowsingEnhanced.expanded = true;
       } else if (prefValue === SafeBrowsingSetting.STANDARD) {
@@ -262,8 +288,9 @@ export class SettingsSecurityPageElement extends
       // ENABLED_BALANCED if the feature flag is not enabled.
       if (!loadTimeData.getBoolean('enableHttpsFirstModeNewSettings')) {
         assert(
-            this.getPref('generated.https_first_mode_enabled').value !==
-            HttpsFirstModeSetting.ENABLED_BALANCED);
+            PrefService.getInstance()
+                .getPref('generated.https_first_mode_enabled')
+                .value !== HttpsFirstModeSetting.ENABLED_BALANCED);
       }
     });
 
@@ -390,7 +417,8 @@ export class SettingsSecurityPageElement extends
   private onSafeBrowsingRadioChange_() {
     const selected =
         Number.parseInt(this.$.safeBrowsingRadioGroup.selected || '', 10);
-    const prefValue = this.getPref('generated.safe_browsing').value;
+    const prefValue =
+        PrefService.getInstance().getPref('generated.safe_browsing').value;
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(selected);
       this.recordActionOnRadioChange_(selected);
@@ -410,8 +438,7 @@ export class SettingsSecurityPageElement extends
   }
 
   private getDisabledExtendedSafeBrowsing_(): boolean {
-    return this.getPref('generated.safe_browsing').value !==
-        SafeBrowsingSetting.STANDARD;
+    return this.safeBrowsingPref_?.value !== SafeBrowsingSetting.STANDARD;
   }
 
   private getSafeBrowsingStandardSubLabel_(): string {
@@ -427,9 +454,10 @@ export class SettingsSecurityPageElement extends
     // generated preference is off and user control is disabled, then additional
     // text explaining that the feature will be enabled if the user signs in is
     // added.
-    if (this.prefs !== undefined) {
-      const generatedPref = this.getPref('generated.password_leak_detection');
-      if (this.getPref('profile.password_manager_leak_detection').value &&
+    if (this.passwordLeakDetectionPref_ &&
+        this.passwordManagerLeakDetectionPref_) {
+      const generatedPref = this.passwordLeakDetectionPref_;
+      if (this.passwordManagerLeakDetectionPref_.value &&
           !generatedPref.value && generatedPref.userControlDisabled) {
         subLabel +=
             ' ' +  // Whitespace is a valid sentence separator w.r.t. i18n.
@@ -451,7 +479,10 @@ export class SettingsSecurityPageElement extends
     // generated preference has its user control disabled, then additional
     // text explaining that the feature is locked down for Advanced Protection
     // users is added.
-    const generatedPref = this.getPref('generated.https_first_mode_enabled');
+    const generatedPref = this.httpsFirstModePref_;
+    if (!generatedPref) {
+      return '';
+    }
     if (this.enableHttpsFirstModeNewSettings_) {
       return this.i18n(
           generatedPref.userControlDisabled ?
@@ -465,16 +496,16 @@ export class SettingsSecurityPageElement extends
     }
   }
 
-  private isHttpsFirstModeExpanded_(value: number): boolean {
+  private isHttpsFirstModeExpanded_(): boolean {
     // If the pref is not user-modifiable, we should only show the main toggle.
     // (Note: this is not the case when the setting is policy-managed -- the
     // radio group should be expanded and labeled with the enterprise
     // indicator.)
-    const generatedPref = this.getPref('generated.https_first_mode_enabled');
-    if (generatedPref.userControlDisabled) {
+    const generatedPref = this.httpsFirstModePref_;
+    if (!generatedPref || generatedPref.userControlDisabled) {
       return false;
     }
-    return value !== HttpsFirstModeSetting.DISABLED;
+    return generatedPref.value !== HttpsFirstModeSetting.DISABLED;
   }
 
   private onManageCertificatesClick_() {

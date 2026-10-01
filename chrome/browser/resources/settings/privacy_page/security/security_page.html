@@ -82,12 +82,12 @@
     <div id="safeBrowsingSection">
       <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
       <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
-          pref="{{prefs.generated.safe_browsing}}"
+          pref-key="generated.safe_browsing"
           selectable-elements="cr-radio-button, settings-collapse-radio-button"
           on-change="onSafeBrowsingRadioChange_">
         <settings-collapse-radio-button id="safeBrowsingEnhanced"
             name="[[safeBrowsingSettingEnum_.ENHANCED]]"
-            pref="[[prefs.generated.safe_browsing]]"
+            pref-key="generated.safe_browsing"
             label="$i18n{safeBrowsingEnhanced}"
             sub-label="$i18n{safeBrowsingEnhancedDescUpdated}"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
@@ -168,7 +168,7 @@
         <settings-collapse-radio-button id="safeBrowsingStandard"
             no-collapse="[[hideExtendedReportingRadioButton_]]"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"
-            pref="[[prefs.generated.safe_browsing]]"
+            pref-key="generated.safe_browsing"
             label="$i18n{safeBrowsingStandard}"
             sub-label="[[getSafeBrowsingStandardSubLabel_(
                         enableHashPrefixRealTimeLookups_)]]"
@@ -180,19 +180,19 @@
           <div slot="noSelectionCollapse">
             <template is="dom-if" if="[[!hideExtendedReportingRadioButton_]]">
               <settings-toggle-button id="safeBrowsingReportingToggle"
-                pref="{{prefs.safebrowsing.scout_reporting_enabled}}"
+                pref-key="safebrowsing.scout_reporting_enabled"
                 label="$i18n{safeBrowsingStandardReportingLabel}"
                 sub-label="$i18n{safeBrowsingEnableExtendedReportingDesc}"
                 on-change="onSafeBrowsingExtendedReportingChange_"
                 disabled="[[getDisabledExtendedSafeBrowsing_(
-                              prefs.generated.safe_browsing.*)]]">
+                              safeBrowsingPref_)]]">
               </settings-toggle-button>
             </template>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingDisabled" no-collapse
             name="[[safeBrowsingSettingEnum_.DISABLED]]"
-            pref="[[prefs.generated.safe_browsing]]"
+            pref-key="generated.safe_browsing"
             label="$i18n{safeBrowsingNone}"
             sub-label="$i18n{safeBrowsingNoneDesc}"
             indicator-aria-label="$i18n{controlledSettingPolicy}">
@@ -203,30 +203,30 @@
       <div id="secureConnectionsSection">
         <h2 class="cr-title-text">$i18n{secureConnectionsSectionTitle}</h2>
         <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
-            pref="{{prefs.generated.https_first_mode_enabled}}"
+            pref-key="generated.https_first_mode_enabled"
             label="$i18n{httpsOnlyModeTitle}"
             sub-label="[[getHttpsFirstModeSubLabel_(
-                prefs.generated.https_first_mode_enabled.*)]]"
+                httpsFirstModePref_)]]"
             numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
             numeric-checked-value=
                 "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]">
         </settings-toggle-button>
         <cr-collapse id="httpsFirstModeRadioGroupCollapse"
             opened="[[isHttpsFirstModeExpanded_(
-                        prefs.generated.https_first_mode_enabled.value)]]">
+                        httpsFirstModePref_)]]">
           <div class="cr-row continuation https-first-mode-radio-group">
             <settings-radio-group id="httpsFirstModeRadioGroup"
-                pref="{{prefs.generated.https_first_mode_enabled}}">
+                pref-key="generated.https_first_mode_enabled">
               <controlled-radio-button id="httpsFirstModeEnabledBalanced"
                 name="[[getName_(
                           httpsFirstModeSettingEnum_.ENABLED_BALANCED)]]"
-                pref="[[prefs.generated.https_first_mode_enabled]]"
+                pref-key="generated.https_first_mode_enabled"
                 label="$i18n{httpsFirstModeEnabledBalancedLabel}"
                 class="list-item">
             </controlled-radio-button>
               <controlled-radio-button id="httpsFirstModeEnabledStrict"
                   name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
-                  pref="[[prefs.generated.https_first_mode_enabled]]"
+                  pref-key="generated.https_first_mode_enabled"
                   label="$i18n{httpsFirstModeEnabledStrictLabel}"
                   class="list-item">
                 <div class="cr-secondary-text">
@@ -243,17 +243,17 @@
     </div>
     <settings-toggle-button id="passwordsLeakToggle"
           label="$i18n{passwordsLeakDetectionLabel}"
-          pref="{{prefs.generated.password_leak_detection}}"
+          pref-key="generated.password_leak_detection"
           sub-label="[[getPasswordsLeakToggleSubLabel_(
-                        prefs.profile.password_manager_leak_detection.*,
-                        prefs.generated.password_leak_detection.*)]]">
+                        passwordManagerLeakDetectionPref_,
+                        passwordLeakDetectionPref_)]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
       <settings-toggle-button id="httpsOnlyModeToggle"
-          pref="{{prefs.generated.https_first_mode_enabled}}"
+          pref-key="generated.https_first_mode_enabled"
           label="$i18n{httpsOnlyModeTitle}"
           sub-label="[[getHttpsFirstModeSubLabel_(
-                         prefs.generated.https_first_mode_enabled.*)]]"
+                         httpsFirstModePref_)]]"
           numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
