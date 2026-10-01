@@ -34,7 +34,9 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
         font_(font) {}
 
  protected:
-  ShapeResult* Shape(unsigned start, unsigned end, ShapeOptions options) final {
+  ShapeResult* Shape(wtf_size_t start,
+                     wtf_size_t end,
+                     ShapeOptions options) final {
     return shaper_->Shape(font_, GetShapeResult().Direction(), start, end);
   }
 
@@ -43,9 +45,9 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
 };
 
 const ShapeResultView* ShapeLine(ShapingLineBreaker* breaker,
-                                 unsigned start_offset,
+                                 wtf_size_t start_offset,
                                  LayoutUnit available_space,
-                                 unsigned* break_offset) {
+                                 wtf_size_t* break_offset) {
   ShapingLineBreaker::Result result;
   const ShapeResultView* shape_result =
       breaker->ShapeLine(start_offset, available_space, &result);
@@ -69,11 +71,11 @@ class ShapingLineBreakerTest : public FontTestBase {
   void TearDown() override {}
 
   // Compute all break positions by |NextBreakOpportunity|.
-  Vector<unsigned> BreakPositionsByNext(const ShapingLineBreaker& breaker,
-                                        const String& string) {
-    Vector<unsigned> break_positions;
-    for (unsigned i = 0; i <= string.length(); i++) {
-      unsigned next =
+  Vector<wtf_size_t> BreakPositionsByNext(const ShapingLineBreaker& breaker,
+                                          const String& string) {
+    Vector<wtf_size_t> break_positions;
+    for (wtf_size_t i = 0; i <= string.length(); ++i) {
+      wtf_size_t next =
           breaker.NextBreakOpportunity(i, 0, string.length()).offset;
       if (break_positions.empty() || break_positions.back() != next)
         break_positions.push_back(next);
@@ -82,11 +84,11 @@ class ShapingLineBreakerTest : public FontTestBase {
   }
 
   // Compute all break positions by |PreviousBreakOpportunity|.
-  Vector<unsigned> BreakPositionsByPrevious(const ShapingLineBreaker& breaker,
-                                            const String& string) {
-    Vector<unsigned> break_positions;
-    for (unsigned i = string.length(); i; i--) {
-      unsigned previous = breaker.PreviousBreakOpportunity(i, 0).offset;
+  Vector<wtf_size_t> BreakPositionsByPrevious(const ShapingLineBreaker& breaker,
+                                              const String& string) {
+    Vector<wtf_size_t> break_positions;
+    for (wtf_size_t i = string.length(); i; --i) {
+      wtf_size_t previous = breaker.PreviousBreakOpportunity(i, 0).offset;
       if (previous &&
           (break_positions.empty() || break_positions.back() != previous))
         break_positions.push_back(previous);
@@ -130,7 +132,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
   const ShapeResultView* line = nullptr;
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
 
   // Test the case where the entire string fits.
   line = ShapeLine(&breaker, 0, result->SnappedWidth(), &break_offset);
@@ -191,7 +193,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
 
   ShapeLine(&breaker, 0, result->SnappedWidth() - 1, &break_offset);
   EXPECT_EQ(18u, break_offset);
@@ -221,7 +223,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
   const ShapeResultView* line;
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
 
   line = ShapeLine(&breaker, 0, midpoint->SnappedWidth(), &break_offset);
   EXPECT_EQ(16u, break_offset);
@@ -245,7 +247,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
   LayoutUnit zero(0);
 
   ShapeLine(&breaker, 0, zero, &break_offset);
@@ -275,7 +277,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
   const ShapeResultView* line;
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
 
   line = ShapeLine(&breaker, 0, LayoutUnit::Max(), &break_offset);
   EXPECT_EQ(2u, break_offset);
@@ -305,7 +307,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
   HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                      nullptr);
   const ShapeResultView* line;
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
 
   line = ShapeLine(&breaker, 13, segment1->SnappedWidth(), &break_offset);
   EXPECT_EQ(31u, break_offset);
@@ -326,10 +328,10 @@ TEST_F(ShapingLineBreakerTest, HanKerningCloseUnsafe) {
   HarfBuzzShaper shaper(string);
   ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   // 4. `ShapeResult::StartIndex` isn't 0.
-  const unsigned start_offset = 1;
+  const wtf_size_t start_offset = 1;
   ShapeResult* sub_result = result->SubRange(start_offset, result->EndIndex());
   // 5. The candidate break isn't safe to break.
-  const unsigned unsafe_offsets[]{1};
+  const wtf_size_t unsafe_offsets[]{1};
   sub_result->AddUnsafeToBreak(unsafe_offsets);
   const LayoutUnit available_width =
       LayoutUnit::FromFloatFloor(sub_result->PositionForOffset(1)) - 1;
@@ -337,15 +339,15 @@ TEST_F(ShapingLineBreakerTest, HanKerningCloseUnsafe) {
   LazyLineBreakIterator break_iterator(string);
   HarfBuzzShapingLineBreaker breaker(&shaper, font, sub_result, &break_iterator,
                                      nullptr);
-  unsigned break_offset = 0;
+  wtf_size_t break_offset = 0;
   ShapeLine(&breaker, start_offset, available_width, &break_offset);
   EXPECT_EQ(break_offset, 2u);
 }
 
 struct BreakOpportunityTestData {
   const char16_t* string;
-  Vector<unsigned> break_positions;
-  Vector<unsigned> break_positions_with_soft_hyphen_disabled;
+  Vector<wtf_size_t> break_positions;
+  Vector<wtf_size_t> break_positions_with_soft_hyphen_disabled;
 };
 
 class BreakOpportunityTest

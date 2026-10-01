@@ -1650,8 +1650,8 @@ LineBreaker::BreakResult LineBreaker::BreakText(
           item_(item) {}
 
    protected:
-    const ShapeResult* Shape(unsigned start,
-                             unsigned end,
+    const ShapeResult* Shape(wtf_size_t start,
+                             wtf_size_t end,
                              ShapeOptions options) final {
       return line_breaker_->ShapeText(*item_, start, end, options);
     }

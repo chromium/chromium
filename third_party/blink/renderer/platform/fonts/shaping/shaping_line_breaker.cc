@@ -40,15 +40,15 @@ inline bool IsBreakableSpace(UChar ch) {
          Character::IsOtherSpaceSeparator(ch);
 }
 
-bool IsAllSpaces(const String& text, unsigned start, unsigned end) {
+bool IsAllSpaces(const String& text, wtf_size_t start, wtf_size_t end) {
   return StringView(text, start, end - start)
       .IsAllSpecialCharacters<IsBreakableSpace>();
 }
 
 bool ShouldHyphenate(const String& text,
-                     unsigned word_start,
-                     unsigned word_end,
-                     unsigned line_start) {
+                     wtf_size_t word_start,
+                     wtf_size_t word_end,
+                     wtf_size_t line_start) {
   // If this is the first word in this line, allow to hyphenate. Otherwise the
   // word will overflow.
   if (word_start <= line_start)
@@ -60,7 +60,9 @@ bool ShouldHyphenate(const String& text,
   return true;
 }
 
-inline void CheckBreakOffset(unsigned offset, unsigned start, unsigned end) {
+inline void CheckBreakOffset(wtf_size_t offset,
+                             wtf_size_t start,
+                             wtf_size_t end) {
   // It is critical to move the offset forward, or LineBreaker may keep adding
   // InlineItemResult until all the memory is consumed.
   CHECK_GT(offset, start);
@@ -69,12 +71,12 @@ inline void CheckBreakOffset(unsigned offset, unsigned start, unsigned end) {
   CHECK_LE(offset, end);
 }
 
-unsigned FindNonHangableEnd(const String& text, unsigned candidate) {
+wtf_size_t FindNonHangableEnd(const String& text, wtf_size_t candidate) {
   DCHECK_LT(candidate, text.length());
   DCHECK(IsBreakableSpace(text[candidate]));
 
   // Looking for the non-hangable run end
-  unsigned non_hangable_end = candidate;
+  wtf_size_t non_hangable_end = candidate;
   while (non_hangable_end > 0) {
     if (!IsBreakableSpace(text[--non_hangable_end]))
       return non_hangable_end + 1;
@@ -89,7 +91,7 @@ inline const String& ShapingLineBreaker::GetText() const {
 }
 
 inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
-    unsigned start) const {
+    wtf_size_t start) const {
   if (!IsStartOfWrappedLine(start)) {
     // When it's not at the start of a wrapped line, disable reshaping.
     return {start};
@@ -108,32 +110,32 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
   return {result_->CachedNextSafeToBreakOffset(start)};
 }
 
-unsigned ShapingLineBreaker::Hyphenate(unsigned offset,
-                                       unsigned word_start,
-                                       unsigned word_end,
-                                       bool backwards) const {
+wtf_size_t ShapingLineBreaker::Hyphenate(wtf_size_t offset,
+                                         wtf_size_t word_start,
+                                         wtf_size_t word_end,
+                                         bool backwards) const {
   DCHECK(hyphenation_);
   DCHECK_GT(word_end, word_start);
   DCHECK_GE(offset, word_start);
   DCHECK_LE(offset, word_end);
-  unsigned word_len = word_end - word_start;
+  wtf_size_t word_len = word_end - word_start;
   if (word_len < hyphenation_->MinWordLength())
     return 0;
 
   const String& text = GetText();
   const StringView word(text, word_start, word_len);
-  const unsigned word_offset = offset - word_start;
+  const wtf_size_t word_offset = offset - word_start;
   if (backwards) {
     if (word_offset < hyphenation_->MinPrefixLength())
       return 0;
-    unsigned prefix_length =
+    wtf_size_t prefix_length =
         hyphenation_->LastHyphenLocation(word, word_offset + 1);
     DCHECK(!prefix_length || prefix_length <= word_offset);
     return prefix_length;
   } else {
     if (word_len - word_offset < hyphenation_->MinSuffixLength())
       return 0;
-    unsigned prefix_length = hyphenation_->FirstHyphenLocation(
+    wtf_size_t prefix_length = hyphenation_->FirstHyphenLocation(
         word, word_offset ? word_offset - 1 : 0);
     DCHECK(!prefix_length || prefix_length >= word_offset);
     return prefix_length;
@@ -141,11 +143,11 @@ unsigned ShapingLineBreaker::Hyphenate(unsigned offset,
 }
 
 ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
-    unsigned offset,
-    unsigned start,
+    wtf_size_t offset,
+    wtf_size_t start,
     bool backwards) const {
   const String& text = GetText();
-  unsigned word_end = break_iterator_->NextBreakOpportunity(offset);
+  wtf_size_t word_end = break_iterator_->NextBreakOpportunity(offset);
   if (word_end != offset && IsBreakableSpace(text[word_end - 1]))
     word_end = std::max(offset, FindNonHangableEnd(text, word_end - 1));
   if (word_end == offset) {
@@ -153,9 +155,9 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
            offset == break_iterator_->PreviousBreakOpportunity(offset, start));
     return {word_end, false};
   }
-  unsigned previous_break_opportunity =
+  wtf_size_t previous_break_opportunity =
       break_iterator_->PreviousBreakOpportunity(offset, start);
-  unsigned word_start = previous_break_opportunity;
+  wtf_size_t word_start = previous_break_opportunity;
   // Skip the leading spaces of this word because the break iterator breaks
   // before spaces.
   // TODO (jfernandez): This is no longer true, so we should remove this code.
@@ -164,7 +166,8 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
     word_start++;
   if (offset >= word_start &&
       ShouldHyphenate(text, previous_break_opportunity, word_end, start)) {
-    unsigned prefix_length = Hyphenate(offset, word_start, word_end, backwards);
+    wtf_size_t prefix_length =
+        Hyphenate(offset, word_start, word_end, backwards);
     if (prefix_length)
       return {word_start + prefix_length, true};
   }
@@ -172,8 +175,8 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
 }
 
 ShapingLineBreaker::BreakOpportunity
-ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
-                                             unsigned start) const {
+ShapingLineBreaker::PreviousBreakOpportunity(wtf_size_t offset,
+                                             wtf_size_t start) const {
   if (hyphenation_) [[unlikely]] {
     return Hyphenate(offset, start, true);
   }
@@ -181,7 +184,7 @@ ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
   // If the break opportunity is preceded by trailing spaces, find the
   // end of non-hangable character (i.e., start of the space run).
   const String& text = GetText();
-  unsigned break_offset =
+  wtf_size_t break_offset =
       break_iterator_->PreviousBreakOpportunity(offset, start);
   if (IsBreakableSpace(text[break_offset - 1]))
     return {break_offset, FindNonHangableEnd(text, break_offset - 1), false};
@@ -190,9 +193,9 @@ ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
 }
 
 ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
-    unsigned offset,
-    unsigned start,
-    unsigned len) const {
+    wtf_size_t offset,
+    wtf_size_t start,
+    wtf_size_t len) const {
   if (hyphenation_) [[unlikely]] {
     return Hyphenate(offset, start, false);
   }
@@ -201,14 +204,14 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
   // end of non-hangable character (i.e., start of the space run),
   // which may be useful to avoid reshaping.
   const String& text = GetText();
-  unsigned break_offset = break_iterator_->NextBreakOpportunity(offset, len);
+  wtf_size_t break_offset = break_iterator_->NextBreakOpportunity(offset, len);
   if (IsBreakableSpace(text[break_offset - 1]))
     return {break_offset, FindNonHangableEnd(text, break_offset - 1), false};
 
   return {break_offset, false};
 }
 
-inline void ShapingLineBreaker::SetBreakOffset(unsigned break_offset,
+inline void ShapingLineBreaker::SetBreakOffset(wtf_size_t break_offset,
                                                const String& text,
                                                Result* result) {
   result->break_offset = break_offset;
@@ -254,7 +257,7 @@ inline void ShapingLineBreaker::SetBreakOffset(
 //   valid break opportunity reshaping is required as the combined width of the
 //   two segments "Line " and "breaking" may be different from "Line breaking".
 const ShapeResultView* ShapingLineBreaker::ShapeLine(
-    unsigned start,
+    wtf_size_t start,
     LayoutUnit available_space,
     ShapingLineBreaker::Result* result_out) {
   if (IsLtr(result_->Direction())) {
@@ -265,12 +268,12 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
 
 template <TextDirection kDirection>
 const ShapeResultView* ShapingLineBreaker::ShapeLine(
-    unsigned start,
+    wtf_size_t start,
     LayoutUnit available_space,
     ShapingLineBreaker::Result* result_out) {
   DCHECK_GE(available_space, LayoutUnit(0));
-  const unsigned range_start = result_->StartIndex();
-  const unsigned range_end = result_->EndIndex();
+  const wtf_size_t range_start = result_->StartIndex();
+  const wtf_size_t range_end = result_->EndIndex();
   DCHECK_GE(start, range_start);
   DCHECK_LT(start, range_end);
   result_out->is_overflow = false;
@@ -329,7 +332,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   const LayoutUnit end_position =
       start_position + FlipRtl<kDirection>(available_space);
   DCHECK_GE(FlipRtl<kDirection>(end_position - start_position), LayoutUnit(0));
-  unsigned candidate_break =
+  wtf_size_t candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
   if (candidate_break < range_end &&
       result_->HasAutoSpacingAfter(candidate_break)) [[unlikely]] {
@@ -341,11 +344,11 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
 
   // Extend the `candidate_break` if the next character can fit by applying the
   // `HanKerning` at the line end.
-  unsigned last_safe;
+  wtf_size_t last_safe;
   const ShapeResult* line_end_result = nullptr;
   if (candidate_break < range_end && ShouldTrimEnd(text_spacing_trim_) &&
       Character::MaybeHanKerningClose(text[candidate_break])) [[unlikely]] {
-    const unsigned adjusted_candidate_break = candidate_break + 1;
+    const wtf_size_t adjusted_candidate_break = candidate_break + 1;
     if (break_iterator_->IsBreakable(adjusted_candidate_break)) {
       last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);
       line_end_result =
@@ -611,15 +614,15 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
                             last_safe, line_start_result, line_end_result);
 }
 const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
-    unsigned start,
-    unsigned end,
-    unsigned first_safe,
-    unsigned last_safe,
+    wtf_size_t start,
+    wtf_size_t end,
+    wtf_size_t first_safe,
+    wtf_size_t last_safe,
     const ShapeResult* line_start_result,
     const ShapeResult* line_end_result) {
   std::array<ShapeResultView::Segment, 3> segments;
-  constexpr unsigned max_length = std::numeric_limits<unsigned>::max();
-  unsigned count = 0;
+  constexpr wtf_size_t max_length = std::numeric_limits<wtf_size_t>::max();
+  wtf_size_t count = 0;
   if (line_start_result) {
     segments[count++] = {line_start_result, 0, max_length};
   }
@@ -638,11 +641,11 @@ const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
 // Shape from the specified offset to the end of the ShapeResult.
 // If |start| is safe-to-break, this copies the subset of the result.
 const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
-    unsigned start,
+    wtf_size_t start,
     const ShapeResult* line_start_result,
-    unsigned first_safe,
-    unsigned range_start,
-    unsigned range_end) {
+    wtf_size_t first_safe,
+    wtf_size_t range_start,
+    wtf_size_t range_end) {
   DCHECK(result_);
   DCHECK_EQ(range_start, result_->StartIndex());
   DCHECK_EQ(range_end, result_->EndIndex());
@@ -669,13 +672,13 @@ const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
 
   // Otherwise reshape to |first_safe|, then copy the rest.
   ShapeResultView::Segment segments[2] = {
-      {line_start_result, 0, std::numeric_limits<unsigned>::max()},
+      {line_start_result, 0, std::numeric_limits<wtf_size_t>::max()},
       {result_, first_safe, range_end}};
   return ShapeResultView::Create(segments);
 }
 
-const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
-                                                       unsigned end) {
+const ShapeResultView* ShapingLineBreaker::ShapeLineAt(wtf_size_t start,
+                                                       wtf_size_t end) {
   DCHECK_GT(end, start);
 
   result_->EnsurePositionData();
@@ -692,7 +695,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
     line_start_result = Shape(start, first_safe.offset, options);
   }
 
-  unsigned last_safe;
+  wtf_size_t last_safe;
   const ShapeResult* line_end_result = nullptr;
   if (dont_reshape_end_if_at_space_ && IsBreakableSpace(GetText()[end - 1])) {
     last_safe = end;

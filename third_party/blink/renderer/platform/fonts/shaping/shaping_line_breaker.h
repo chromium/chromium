@@ -49,7 +49,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
    public:
     // Indicates the resulting break offset.
-    unsigned break_offset = 0;
+    wtf_size_t break_offset = 0;
 
     // Indicates that the shape result contains trailing spaces
     bool has_trailing_spaces = false;
@@ -67,7 +67,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   };
 
   // Set the start of the current line.
-  void SetLineStart(unsigned offset) { line_start_ = offset; }
+  void SetLineStart(wtf_size_t offset) { line_start_ = offset; }
   // Disable reshaping the end edge if it is at a breakable space, even if it
   // is not safe-to-break. Good for performance if accurate width is not
   // critical.
@@ -80,32 +80,32 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   void SetIsAfterForcedBreak(bool value) { is_after_forced_break_ = value; }
   void SetTextSpacingTrim(TextSpacingTrim value) { text_spacing_trim_ = value; }
 
-  const ShapeResultView* ShapeLine(unsigned start_offset,
+  const ShapeResultView* ShapeLine(wtf_size_t start_offset,
                                    LayoutUnit available_space,
                                    Result* result_out);
 
-  const ShapeResultView* ShapeLineAt(unsigned start, unsigned end);
+  const ShapeResultView* ShapeLineAt(wtf_size_t start, wtf_size_t end);
 
  protected:
   const ShapeResult& GetShapeResult() const { return *result_; }
 
-  virtual const ShapeResult* Shape(unsigned start,
-                                   unsigned end,
+  virtual const ShapeResult* Shape(wtf_size_t start,
+                                   wtf_size_t end,
                                    ShapeOptions = ShapeOptions()) = 0;
 
  private:
   struct EdgeOffset {
-    unsigned offset = 0;
+    wtf_size_t offset = 0;
     bool han_kerning = false;
   };
 
   const String& GetText() const;
 
   // True if the `offset` is start of a line, except the first line.
-  bool IsStartOfWrappedLine(unsigned offset) const {
+  bool IsStartOfWrappedLine(wtf_size_t offset) const {
     return offset && offset == line_start_ && !is_after_forced_break_;
   }
-  EdgeOffset FirstSafeOffset(unsigned start) const;
+  EdgeOffset FirstSafeOffset(wtf_size_t start) const;
 
   // Represents a break opportunity offset and its properties.
   struct BreakOpportunity {
@@ -113,49 +113,48 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
    public:
     BreakOpportunity() = default;
-    BreakOpportunity(unsigned new_offset, bool hyphenated)
-        : offset(new_offset),
-          is_hyphenated(hyphenated) {}
-    BreakOpportunity(unsigned new_offset, unsigned run_end, bool hyphenated)
+    BreakOpportunity(wtf_size_t new_offset, bool hyphenated)
+        : offset(new_offset), is_hyphenated(hyphenated) {}
+    BreakOpportunity(wtf_size_t new_offset, wtf_size_t run_end, bool hyphenated)
         : offset(new_offset),
           non_hangable_run_end(run_end),
           is_hyphenated(hyphenated) {}
 
-    unsigned offset = 0;
-    std::optional<unsigned> non_hangable_run_end;
+    wtf_size_t offset = 0;
+    std::optional<wtf_size_t> non_hangable_run_end;
     bool is_hyphenated = false;
   };
-  BreakOpportunity PreviousBreakOpportunity(unsigned offset,
-                                            unsigned start) const;
-  BreakOpportunity NextBreakOpportunity(unsigned offset,
-                                        unsigned start,
-                                        unsigned len) const;
-  BreakOpportunity Hyphenate(unsigned offset,
-                             unsigned start,
+  BreakOpportunity PreviousBreakOpportunity(wtf_size_t offset,
+                                            wtf_size_t start) const;
+  BreakOpportunity NextBreakOpportunity(wtf_size_t offset,
+                                        wtf_size_t start,
+                                        wtf_size_t len) const;
+  BreakOpportunity Hyphenate(wtf_size_t offset,
+                             wtf_size_t start,
                              bool backwards) const;
-  unsigned Hyphenate(unsigned offset,
-                     unsigned word_start,
-                     unsigned word_end,
-                     bool backwards) const;
+  wtf_size_t Hyphenate(wtf_size_t offset,
+                       wtf_size_t word_start,
+                       wtf_size_t word_end,
+                       bool backwards) const;
 
-  const ShapeResultView* ShapeToEnd(unsigned start,
+  const ShapeResultView* ShapeToEnd(wtf_size_t start,
                                     const ShapeResult* line_start_result,
-                                    unsigned first_safe,
-                                    unsigned range_start,
-                                    unsigned range_end);
+                                    wtf_size_t first_safe,
+                                    wtf_size_t range_start,
+                                    wtf_size_t range_end);
   const ShapeResultView* ConcatShapeResults(
-      unsigned start,
-      unsigned end,
-      unsigned first_safe,
-      unsigned last_safe,
+      wtf_size_t start,
+      wtf_size_t end,
+      wtf_size_t first_safe,
+      wtf_size_t last_safe,
       const ShapeResult* line_start_result,
       const ShapeResult* line_end_result);
 
-  void SetBreakOffset(unsigned break_offset, const String&, Result*);
+  void SetBreakOffset(wtf_size_t break_offset, const String&, Result*);
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
 
   template <TextDirection>
-  const ShapeResultView* ShapeLine(unsigned start_offset,
+  const ShapeResultView* ShapeLine(wtf_size_t start_offset,
                                    LayoutUnit available_space,
                                    Result* result_out);
 
@@ -163,7 +162,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;
   const Font* font_;
-  unsigned line_start_ = 0;
+  wtf_size_t line_start_ = 0;
   bool dont_reshape_end_if_at_space_ = false;
   bool no_result_if_overflow_ = false;
   bool is_after_forced_break_ = false;
