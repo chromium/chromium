@@ -6,15 +6,11 @@
 
 #include <glib.h>
 
-#include <string>
-
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_compat.h"
 
 namespace gtk {
@@ -112,46 +108,6 @@ TEST(GtkUtilTest, GtkLogWriterFatalDisconnectIntercepted) {
 
   // Clean up.
   SetGtkShutdownCb(base::NullCallback());
-}
-
-class GtkUtilInterceptorTest : public testing::Test {
- protected:
-  void SetUp() override { InstallGtkSettingsInterceptor(); }
-  void TearDown() override { UninstallGtkSettingsInterceptor(); }
-
-  struct PropertyObserver {
-    std::string value;
-    void OnNotify(const char* prop, GtkSettings* settings, GParamSpec* pspec) {
-      gchar* str = nullptr;
-      g_object_get(settings, prop, &str, nullptr);
-      if (str) {
-        value = str;
-        g_free(str);
-      }
-    }
-    base::WeakPtrFactory<PropertyObserver> weak_factory{this};
-  };
-};
-
-TEST_F(GtkUtilInterceptorTest, GtkModulesSanitizedAtWriteTime) {
-  if (GtkCheckVersion(4)) {
-    GTEST_SKIP();
-  }
-  GtkSettings* settings = GetDefaultGtkSettings();
-  ASSERT_TRUE(settings);
-
-  PropertyObserver observer;
-  ScopedGSignal signal(
-      settings, "notify::gtk-modules",
-      base::BindRepeating(&PropertyObserver::OnNotify,
-                          observer.weak_factory.GetWeakPtr(), "gtk-modules"));
-
-  // Set to a module name
-  g_object_set(settings, "gtk-modules", "canberra-gtk-module:pk-gtk-module",
-               nullptr);
-
-  // The interceptor should have triggered and sanitized the modules to ""
-  EXPECT_EQ(observer.value, "");
 }
 
 }  // namespace gtk

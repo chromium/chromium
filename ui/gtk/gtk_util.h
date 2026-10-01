@@ -211,22 +211,16 @@ COMPONENT_EXPORT(GTK) int GetXftDpi();
 // 1/64th.  Returns 1.0 if the DPI is unknown.
 COMPONENT_EXPORT(GTK) double GetFontScale();
 
-// This should only be called on Gtk4.
-GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
-
-double GetOpacityFromContext(GtkStyleContext* context);
-
-// Hook the `GtkSettings` `set_property` method to sanitize settings.
-COMPONENT_EXPORT(GTK) void InstallGtkSettingsInterceptor();
-
-// Unhook the `GtkSettings` `set_property` method.
-COMPONENT_EXPORT(GTK) void UninstallGtkSettingsInterceptor();
-
 // Returns the default `GtkSettings` instance. This wrapper is required because
 // in component builds, raw GTK symbols loaded via stubs (including
 // `gtk_settings_get_default`) are not exported, preventing direct usage in
 // non-component targets like tests.
 COMPONENT_EXPORT(GTK) GtkSettings* GetDefaultGtkSettings();
+
+// This should only be called on Gtk4.
+GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
+
+double GetOpacityFromContext(GtkStyleContext* context);
 
 // Installs a GLib log writer that intercepts fatal disconnect messages from
 // GDK and triggers the shutdown callback before GDK calls _exit(1).

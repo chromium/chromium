@@ -300,11 +300,6 @@ bool GtkUi::Initialize() {
     return false;
   }
 
-  // The GtkSettings interceptor must be installed early (before GTK
-  // initialization like gtk_init_check()) to intercept and sanitize
-  // settings such as gtk-modules when initial XSETTINGS are read.
-  InstallGtkSettingsInterceptor();
-
   // Gtk initialization through pango may call FcInit() before we get to that.
   // Retrieve global FontConfig config here to call FcInit() with configuration
   // we control.
@@ -316,9 +311,6 @@ bool GtkUi::Initialize() {
   // do it once it is ready.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar("NO_AT_BRIDGE", "1");
-  // GTK's module loading mechanism can be bypassed with the GTK_MODULES
-  // environment variable, so unset it here.
-  env->UnSetVar("GTK_MODULES");
 
   // When GDK opens the display during gtk_init() it probes it for OpenGL
   // support (GLX/EGL version and extension queries), which loads the GL
@@ -371,12 +363,6 @@ bool GtkUi::Initialize() {
   };
 
   GtkSettings* settings = gtk_settings_get_default();
-  if (!GtkCheckVersion(4)) {
-    // Pin `gtk-modules` to an empty string with APPLICATION source priority
-    // to prevent XSETTINGS updates from loading GTK modules.  GTK4 does not
-    // have this property.
-    g_object_set(settings, "gtk-modules", "", nullptr);
-  }
   connect(settings, "notify::gtk-theme-name", &GtkUi::OnThemeChanged);
   connect(settings, "notify::gtk-icon-theme-name", &GtkUi::OnThemeChanged);
   connect(settings, "notify::gtk-application-prefer-dark-theme",

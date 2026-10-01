@@ -234,7 +234,6 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
-  InstallGtkSettingsInterceptor();
   InstallGtkLogWriter();
   return GtkInitCheck(argc, argv);
 }
@@ -799,6 +798,10 @@ int GetXftDpi() {
   return dpi < 0 ? 0 : dpi;
 }
 
+GtkSettings* GetDefaultGtkSettings() {
+  return gtk_settings_get_default();
+}
+
 double GetFontScale() {
   double resolution = 0;
   if (const int dpi = GetXftDpi()) {
@@ -862,58 +865,6 @@ double GetOpacityFromContext(GtkStyleContext* context) {
     gsk_render_node_unref(node);
   }
   return opacity;
-}
-
-namespace {
-
-void (*g_orig_set_property)(GObject* object,
-                            guint property_id,
-                            const GValue* value,
-                            GParamSpec* pspec) = nullptr;
-
-DISABLE_CFI_ICALL
-void GtkSettingsSetProperty(GObject* object,
-                            guint property_id,
-                            const GValue* value,
-                            GParamSpec* pspec) {
-  if (pspec && pspec->name) {
-    std::string_view prop_name(pspec->name);
-    if (prop_name == "gtk-modules") {
-      GValue sanitized_value = G_VALUE_INIT;
-      g_value_init(&sanitized_value, G_TYPE_STRING);
-      g_value_set_string(&sanitized_value, "");
-      g_orig_set_property(object, property_id, &sanitized_value, pspec);
-      g_value_unset(&sanitized_value);
-      return;
-    }
-  }
-  g_orig_set_property(object, property_id, value, pspec);
-}
-
-}  // namespace
-
-void InstallGtkSettingsInterceptor() {
-  if (!g_orig_set_property) {
-    GObjectClass* gobject_class =
-        G_OBJECT_CLASS(g_type_class_ref(GTK_TYPE_SETTINGS));
-    g_orig_set_property = gobject_class->set_property;
-    gobject_class->set_property = GtkSettingsSetProperty;
-    g_type_class_unref(gobject_class);
-  }
-}
-
-void UninstallGtkSettingsInterceptor() {
-  if (g_orig_set_property) {
-    GObjectClass* gobject_class =
-        G_OBJECT_CLASS(g_type_class_ref(GTK_TYPE_SETTINGS));
-    gobject_class->set_property = g_orig_set_property;
-    g_orig_set_property = nullptr;
-    g_type_class_unref(gobject_class);
-  }
-}
-
-GtkSettings* GetDefaultGtkSettings() {
-  return gtk_settings_get_default();
 }
 
 namespace {
