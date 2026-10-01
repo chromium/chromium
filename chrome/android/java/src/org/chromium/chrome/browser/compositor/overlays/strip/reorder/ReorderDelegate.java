@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
@@ -105,10 +104,7 @@ public class ReorderDelegate {
         void setCompositorButtonsVisible(boolean visible);
 
         /**
-         * Returns the next index to select when the provided list of tabs is closed. This is
-         * different from the default {@link TabModel} behavior, as tab strip closures prefer
-         * expanded tabs, and also tabs after (as opposed to before) the closed tab if the feature
-         * flag {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE} is enabled.
+         * Returns the next index to select when the provided list of tabs is closed.
          *
          * @param closingTabs The closing {@link StripLayoutTab}s.
          * @return The next index to select. {@link TabModel#INVALID_TAB_INDEX} if no valid index

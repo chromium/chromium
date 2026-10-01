@@ -848,8 +848,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_SEARCH_FOR_DESKTOP = "TabSearchForDesktop";
     public static final String TAB_SHARING_TOOLBAR_ANDROID = "TabSharingToolbarAndroid";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
-    public static final String TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE =
-            "TabStripAutoSelectOnCloseChange";
     public static final String TAB_STRIP_HEIGHT_TRANSITION_GLITCH_FIX =
             "TabStripHeightTransitionGlitchFix";
     public static final String TAB_STRIP_LAYOUT_TRANSITION_DEBOUNCE_FIX =
