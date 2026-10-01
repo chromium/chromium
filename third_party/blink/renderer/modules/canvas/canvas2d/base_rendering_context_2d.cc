@@ -204,7 +204,9 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
     return shared_image_provider_->EstimatedSizeInBytes();
   }
   if (bitmap_provider_) {
-    return bitmap_provider_->EstimatedSizeInBytes();
+    return base::ByteSize(
+        color_params_.GetSharedImageFormat().EstimatedSizeInBytes(
+            Host()->Size()));
   }
   return base::ByteSize();
 }

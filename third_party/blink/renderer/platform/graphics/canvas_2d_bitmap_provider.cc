@@ -38,13 +38,11 @@ namespace blink {
 
 Canvas2DBitmapProvider::Canvas2DBitmapProvider(
     sk_sp<SkSurface> surface,
-    gfx::Size size,
     viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProviderDelegate* delegate)
-    : size_(size),
-      format_(format),
+    : format_(format),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
@@ -213,7 +211,7 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
       alpha_type == kOpaque_SkAlphaType ? SkColors::kBlack
                                         : SkColors::kTransparent);
   return base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-      std::move(surface), size, format, color_space, hdr_metadata, delegate));
+      std::move(surface), format, color_space, hdr_metadata, delegate));
 }
 
 std::unique_ptr<Canvas2DBitmapProvider>

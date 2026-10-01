@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/byte_size.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -78,13 +77,8 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
                    int x,
                    int y);
 
-  base::ByteSize EstimatedSizeInBytes() const {
-    return base::ByteSize(format_.EstimatedSizeInBytes(size_));
-  }
-
  private:
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
-                         gfx::Size size,
                          viz::SharedImageFormat format,
                          const gfx::ColorSpace& color_space,
                          const gfx::HDRMetadata& hdr_metadata,
@@ -102,7 +96,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  gfx::Size size_;
   viz::SharedImageFormat format_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
