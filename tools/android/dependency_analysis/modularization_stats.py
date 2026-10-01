@@ -10,6 +10,7 @@ from typing import Dict, List
 
 import class_dependency
 import count_cycles
+import graph
 import os
 import package_dependency
 import print_dependencies_helper
@@ -24,7 +25,7 @@ sys.path.append(
     os.path.join(_SRC_PATH, 'tools', 'android', 'modularization', 'loc')
 )
 
-import modularization_loc_stat as loc_stat  # noqa: E402
+import modularization_loc_stat as loc_stat
 
 CLASSES_TO_COUNT_INBOUND = ['ChromeActivity', 'ChromeTabbedActivity']
 

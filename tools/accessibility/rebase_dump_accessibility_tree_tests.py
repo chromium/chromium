@@ -23,7 +23,7 @@ import json
 import os
 import re
 import sys
-from typing import List, Tuple, Optional, Generator
+from typing import List, Tuple, Optional, Generator, Iterable
 import subprocess
 import requests
 
@@ -130,7 +130,7 @@ def get_trybot_log(patch_set: Optional[int]) -> List:
     '''Ensure we are logged into LUCI, as `git cl try-results` will log a
     warning otherwise.'''
     process = subprocess.run(
-      'luci-auth token -scopes https://www.googleapis.com/auth/userinfo.email',
+      f'luci-auth token -scopes https://www.googleapis.com/auth/userinfo.email',
       shell=True,
       capture_output=True,
     )

@@ -142,7 +142,7 @@ def diff_binary(first_filepath, second_filepath, file_len):
     100.0 * num_diffs / file_len,
   )
   if streams:
-    encode = lambda text: ''.join(chr(i) if 31 < i < 127 else '.' for i in text)  # noqa: E731
+    encode = lambda text: ''.join(chr(i) if 31 < i < 127 else '.' for i in text)
 
     for offset, lhs_data, rhs_data in streams:
       lhs_line = '%s \'%s\'' % (lhs_data.hex(), encode(lhs_data))
@@ -282,7 +282,7 @@ def get_deps(ninja_path, build_dir, target):
     matched = NODE_PATTERN.search(line)
     if matched:
       path = matched.group(1)
-      if os.path.splitext(path)[1] not in CHECK_EXTS:
+      if not os.path.splitext(path)[1] in CHECK_EXTS:
         continue
       if os.path.isabs(path):
         print(

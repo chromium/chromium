@@ -6,6 +6,7 @@
 import datetime
 import subprocess
 import json
+import re
 from typing import Optional, Tuple
 
 import errors

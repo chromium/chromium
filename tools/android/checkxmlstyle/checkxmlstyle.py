@@ -49,7 +49,7 @@ def CheckStyleOnCommit(input_api, output_api):
 
 def IncludedFiles(input_api, allow_list=helpers.INCLUDED_PATHS):
   # Filter out XML files outside included paths and files that were deleted.
-  files = lambda f: input_api.FilterSourceFile(f, allow_list)  # noqa: E731
+  files = lambda f: input_api.FilterSourceFile(f, allow_list)
   return input_api.AffectedFiles(include_deletes=False, file_filter=files)
 
 
@@ -64,7 +64,7 @@ class LazyColorStateListSet:
   _color_set_or_none = None
 
   def get(self):
-    if self._color_set_or_none != None:  # noqa: E711
+    if self._color_set_or_none != None:
       return self._color_set_or_none
 
     self._color_set_or_none = set()
@@ -769,7 +769,7 @@ def _checkStringResourcePunctuations(regex, warning, input_api, output_api):
     for child in messages:
       if child.tag == 'message':
         lines = child.text.split('\n')
-        quotes.update(l for l in lines if regex.search(l))  # noqa: E741
+        quotes.update(l for l in lines if regex.search(l))
 
     # Only report the lines in the changed contents of the current workspace
     for line_number, line in f.ChangedContents():
@@ -895,7 +895,7 @@ def _CheckSettingsXml(input_api, output_api):
     if f.Action() != 'A':
       continue
 
-    if not f.LocalPath().endswith('.xml') or '/java/' not in f.LocalPath():
+    if not f.LocalPath().endswith('.xml') or not '/java/' in f.LocalPath():
       continue
 
     content = input_api.ReadFile(f)

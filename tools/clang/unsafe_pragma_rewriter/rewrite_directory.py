@@ -97,7 +97,7 @@ def main():
   try:
     grep_cmd = ["git", "grep", "-l", "^#pragma allow_unsafe_", directory]
     grep = subprocess.check_output(grep_cmd, text=True).strip()
-  except Exception:
+  except Exception as e:
     print("No candidates found")
     sys.exit(1)
 
@@ -120,7 +120,7 @@ def main():
       if verbose:
         print("Skipping conditionally-compiled files:")
         print("\n".join(iffy_files), "\n")
-      source_files = [x for x in source_files if x not in set(iffy_files)]
+      source_files = [x for x in source_files if not x in set(iffy_files)]
 
     if not source_files:
       print("No remaining files")
@@ -140,7 +140,7 @@ def main():
     source_files = [
       x
       for x in source_files
-      if 'unknown target "../../' + x not in ninja.stderr
+      if not 'unknown target "../../' + x in ninja.stderr
     ]
 
   if verbose:
@@ -219,7 +219,7 @@ def main():
         needs_header_cmd, text=True
       ).strip()
       needs_header_files = needs_header.splitlines() if needs_header else []
-    except Exception:
+    except Exception as e:
       needs_header_files = []
 
     if needs_header_files:

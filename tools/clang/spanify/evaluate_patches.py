@@ -40,16 +40,16 @@ def strip_ansi(text):
     return ansi_escape.sub('', text)
 
 
-from google.auth.transport.requests import Request  # noqa: E402
-from google.oauth2.credentials import Credentials  # noqa: E402
-from google_auth_oauthlib.flow import InstalledAppFlow  # noqa: E402
-from googleapiclient.discovery import build  # noqa: E402
-from googleapiclient.errors import HttpError  # noqa: E402
-from googleapiclient.http import MediaFileUpload  # noqa: E402
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
 
 # common gn args for spanify project scripts.
-from gnconfigs import GnConfigs  # noqa: E402
-from project import PROJECTS  # noqa: E402
+from gnconfigs import GnConfigs, GenerateGnTarget
+from project import PROJECTS
 
 GOOGLE_DRIVE_FOLDER_ID = '18lLW_YPCXRGUYiPghDXTA6h2TC4WpGeJ'
 
@@ -64,7 +64,7 @@ def run(command, error_message=None, exit_on_error=True, cwd=None):
     else:
         print(command)
     try:
-        output = subprocess.run(  # noqa: F841
+        output = subprocess.run(
             command, shell=True, check=True, text=True, cwd=cwd
         )
 
@@ -236,6 +236,7 @@ def upload_zip_to_drive_folder(creds, zip_file):
         name = os.path.basename(zip_file)
         file_metadata = {"name": name, "parents": [GOOGLE_DRIVE_FOLDER_ID]}
         media = MediaFileUpload(zip_file, mimetype="application/zip")
+        # pylint: disable=maybe-no-member
         file = (
             service.files()
             .create(body=file_metadata, media_body=media, fields="id")

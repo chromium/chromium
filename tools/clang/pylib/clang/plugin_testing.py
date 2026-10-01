@@ -96,7 +96,7 @@ class ClangPluginTest(object):
         print(f'command: {shlex.join(cmd)}\n')
         failing.append(test_name)
       else:
-        print('passed!')
+        print(f'passed!')
         passing.append(test_name)
 
     print(

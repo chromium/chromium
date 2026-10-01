@@ -10,6 +10,7 @@ import argparse
 import multiprocessing.dummy
 import subprocess
 import sys
+import time
 
 
 def load_options():
@@ -49,7 +50,7 @@ def run_test(job):
 def main():
   options = load_options()
   num_passed = num_failed = 0
-  running = []  # noqa: F841
+  running = []
 
   pool = multiprocessing.dummy.Pool(processes=options.jobs)
   args = [

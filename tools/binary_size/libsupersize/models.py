@@ -1229,7 +1229,7 @@ class SymbolGroup(BaseSymbol):
     if cmp_func is None and key is None:
       is_default_sorted = not reverse
       # Sort by PSS, but ensure ties are broken in a consistent manner.
-      key = lambda s: (-abs(s.pss), s.full_name, s.object_path, s.section_name)  # noqa: E731
+      key = lambda s: (-abs(s.pss), s.full_name, s.object_path, s.section_name)
     elif cmp_func is not None:
       key = functools.cmp_to_key(cmp_func)
 
@@ -1452,7 +1452,7 @@ class SymbolGroup(BaseSymbol):
       SymbolGroup of SymbolGroups
     """
     if group_factory is None:
-      group_factory = lambda token, symbols: self._CreateTransformed(  # noqa: E731
+      group_factory = lambda token, symbols: self._CreateTransformed(
         symbols, full_name=token, template_name=token, name=token
       )
 
@@ -1469,7 +1469,7 @@ class SymbolGroup(BaseSymbol):
         # Saves 200-300ms for _Clustered().
         prev = symbols_by_token.setdefault(token, symbol)
         if prev is not symbol:
-          if prev.__class__ == list:  # noqa: E721
+          if prev.__class__ == list:
             prev.append(symbol)
           else:
             symbols_by_token[token] = [prev, symbol]
@@ -1478,7 +1478,7 @@ class SymbolGroup(BaseSymbol):
     min_count = abs(min_count)
     for token, symbol_or_list in symbols_by_token.items():
       count = 1
-      if symbol_or_list.__class__ == list:  # noqa: E721
+      if symbol_or_list.__class__ == list:
         count = len(symbol_or_list)
 
       if count >= min_count:
@@ -1636,12 +1636,12 @@ class SymbolGroup(BaseSymbol):
                  include them outside of a group.
     """
     if depth >= 0:
-      extract_namespace = lambda s: _ExtractPrefixBeforeSeparator(  # noqa: E731
+      extract_namespace = lambda s: _ExtractPrefixBeforeSeparator(
         s.name, '::', depth
       )
     else:
       depth = -depth
-      extract_namespace = lambda s: _ExtractSuffixAfterSeparator(  # noqa: E731
+      extract_namespace = lambda s: _ExtractSuffixAfterSeparator(
         s.name, '::', depth
       )
     return self.GroupedBy(extract_namespace, min_count=min_count)

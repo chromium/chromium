@@ -87,12 +87,12 @@ def _print_stats(marked_all, nomark_all, unmarked_all):
         return f'{c}/{t} ({pct_string}%)'
 
     print()
-    print('Overall:')
-    print('  @NullMarked:', stat(count_marked, total))
-    print('  Neither:', stat(count_nomark, total))
-    print('  @NullUnmarked:', stat(count_unmarked, total))
+    print(f'Overall:')
+    print(f'  @NullMarked:', stat(count_marked, total))
+    print(f'  Neither:', stat(count_nomark, total))
+    print(f'  @NullUnmarked:', stat(count_unmarked, total))
     print()
-    print('By Directory (@NullMarked / Neither / @NullUnmarked):')
+    print(f'By Directory (@NullMarked / Neither / @NullUnmarked):')
     for subdir in _SUBDIRS_FOR_STATS:
         subdir_marked_count = marked_by_subdirs[subdir]
         subdir_nomark_count = nomark_by_subdirs[subdir]

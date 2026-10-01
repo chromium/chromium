@@ -120,7 +120,7 @@ def main():
 
   logging.info(f'Writing data out to {arguments.output}')
   owners_exporter.to_json_file(data, arguments.output)
-  logging.info('Completed.')
+  logging.info(f'Completed.')
 
 
 def _process_requested_path(
@@ -268,7 +268,7 @@ def _build_owners_info(
         continue
       elif '@' in line:
         # Remove comments after the email
-        owner_email = line.split(' ', 1)[0]  # noqa: F841
+        owner_email = line.split(' ', 1)[0]
         owners.owners.append(line)
 
     owners_map[owners.owners_file] = owners

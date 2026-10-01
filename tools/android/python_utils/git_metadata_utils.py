@@ -14,7 +14,7 @@ from typing import Optional, Union
 _PYTHON_UTILS_PATH = pathlib.Path(__file__).resolve().parents[0]
 if str(_PYTHON_UTILS_PATH) not in sys.path:
     sys.path.append(str(_PYTHON_UTILS_PATH))
-import subprocess_utils  # noqa: E402
+import subprocess_utils
 
 PathStr = Union[pathlib.Path, str]
 

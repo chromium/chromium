@@ -4,12 +4,16 @@
 # found in the LICENSE file.
 """Unit tests for inspect_coverage_build.py."""
 
+# pylint: disable=line-too-long
+
 import contextlib
 import io
 import os
+from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
+import sys
 
 import inspect_coverage_build
 
@@ -704,7 +708,7 @@ class InspectCoverageBuildTest(unittest.TestCase):
       'output': {'properties': {'gsutil_urls': {}}},
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    overall = result['pipelines_checked']['cpp_overall']  # noqa: F841
+    overall = result['pipelines_checked']['cpp_overall']
 
   @mock.patch.dict(os.environ, {'INSPECT_COVERAGE_NO_NETWORK': ''})
   @mock.patch('subprocess.run')

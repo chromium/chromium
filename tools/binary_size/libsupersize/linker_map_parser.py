@@ -25,6 +25,7 @@ import logging
 import os
 import re
 import readline
+import sys
 
 import archive_util
 import demangle
@@ -135,7 +136,7 @@ class MapFileParserGold:
     return self._section_ranges, self._symbols, {}
 
   def _SkipToLineWithPrefix(self, prefix, prefix2=None):
-    for l in self._lines:  # noqa: E741
+    for l in self._lines:
       if l.startswith(prefix) or (prefix2 and l.startswith(prefix2)):
         return l
     return None
@@ -161,7 +162,7 @@ class MapFileParserGold:
     next(self._lines)  # Skip past blank line
 
     name, size_str, path = None, None, None
-    for l in self._lines:  # noqa: E741
+    for l in self._lines:
       parts = self._ParsePossiblyWrappedParts(l, 3)
       if not parts:
         break
@@ -230,10 +231,7 @@ class MapFileParserGold:
           logging.info('Merged %s into %s', section_name, prev_section_name)
           section_name = prev_section_name
           archive_util.ExtendSectionRangeAdjacent(
-            section_ranges,  # noqa: F821
-            section_name,
-            section_address,
-            section_size,
+            section_ranges, section_name, section_address, section_size
           )
         else:
           prev_section_name = section_name

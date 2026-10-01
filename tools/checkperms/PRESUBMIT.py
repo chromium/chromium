@@ -13,6 +13,18 @@ def CommonChecks(input_api, output_api):
   if not input_api.HasAffectedFiles(extensions='.py'):
     return []
   output = []
+  disabled_warnings = [
+    'bad-indentation',
+    'consider-using-with',
+    'deprecated-module',
+    'logging-not-lazy',
+    'unspecified-encoding',
+  ]
+  output.extend(
+    input_api.canned_checks.RunPylint(
+      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+    )
+  )
   # Run it like if it were a unit test.
   output.extend(
     input_api.canned_checks.RunUnitTests(

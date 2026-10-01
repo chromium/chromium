@@ -43,7 +43,7 @@ def try_build(total_fuzzer_target):
   logging.info("Build command: %s" % subprocess_cmd)
   try:
     subprocess.check_call(subprocess_cmd)
-  except:  # noqa: E722
+  except:
     logging.error("An error occured while building the fuzzers.")
     exit
 

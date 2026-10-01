@@ -37,7 +37,7 @@ def _CodeSearchFiles(query_args: list[str]) -> list[str]:
     ]
     + query_args
   ).splitlines()
-  return [l.strip() for l in lines if l.strip()]  # noqa: E741
+  return [l.strip() for l in lines if l.strip()]
 
 
 def _FindRemoteCandidates(target: str) -> tuple[list[str], list[str]]:

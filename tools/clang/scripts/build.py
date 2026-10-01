@@ -25,6 +25,7 @@ import datetime
 import glob
 import io
 import json
+import multiprocessing
 import os
 import shlex
 import platform
@@ -32,6 +33,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib
 import urllib.error
@@ -126,7 +128,7 @@ def GetWinSDKDir():
   import vs_toolchain
 
   win_sdk_dir = vs_toolchain.SetEnvironmentAndGetSDKDir()
-  msvs_version = vs_toolchain.GetVisualStudioVersion()  # noqa: F841
+  msvs_version = vs_toolchain.GetVisualStudioVersion()
 
   if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1'))):
     dia_path = os.path.join(win_sdk_dir, '..', 'DIA SDK', 'bin', 'amd64')
@@ -135,7 +137,7 @@ def GetWinSDKDir():
       vs_path = vs_toolchain.DetectVisualStudioPath()
     else:
       vs_path = os.environ['GYP_MSVS_OVERRIDE_PATH']
-    dia_path = os.path.join(vs_path, 'DIA SDK', 'bin', 'amd64')  # noqa: F841
+    dia_path = os.path.join(vs_path, 'DIA SDK', 'bin', 'amd64')
 
   os.environ.clear()
   os.environ.update(environ_bak)

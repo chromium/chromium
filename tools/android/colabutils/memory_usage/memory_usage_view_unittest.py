@@ -4,6 +4,7 @@
 """Tests for memory_usage_view.py"""
 
 import json
+import os
 import pandas as pd
 import pathlib
 import sys
@@ -11,7 +12,7 @@ import unittest
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
 sys.path.append(str(_SRC_PATH / 'tools/android'))
-from colabutils.memory_usage.memory_usage_view import (  # noqa: E402
+from colabutils.memory_usage.memory_usage_view import (
     MemoryUsageView,
     TreeNode,
     _aggregate_nodes,
@@ -354,7 +355,7 @@ class MemoryUsageViewTest(unittest.TestCase):
             (2000000000000, 2000000000000),
         ]
 
-        test_lines = []  # noqa: F841
+        test_lines = []
         for inp, expected in tests:
             self.assertEqual(expected, _prettify_size(inp))
 

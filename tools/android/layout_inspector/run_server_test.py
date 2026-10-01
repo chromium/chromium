@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 
 # Prevent Python from creating a __pycache__ directory in the source tree.
 sys.dont_write_bytecode = True
-import run_server  # noqa: E402
+import run_server
 
 
 class RunServerTest(unittest.TestCase):

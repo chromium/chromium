@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import logging
 import optparse
 import os
@@ -11,14 +12,14 @@ import sys
 _SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_errors  # noqa: E402
-from devil.android import device_utils  # noqa: E402
-from devil.android import flag_changer  # noqa: E402
-from devil.android.sdk import intent  # noqa: E402
+from devil.android import device_errors
+from devil.android import device_utils
+from devil.android import flag_changer
+from devil.android.sdk import intent
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium  # noqa: E402
-from pylib import constants  # noqa: E402
+import devil_chromium
+from pylib import constants
 
 # Browser Constants
 DEFAULT_BROWSER = 'chrome'
@@ -86,7 +87,7 @@ def main(argv):
     option_parser.print_help()
     sys.exit(1)
 
-  if options.browser not in constants.PACKAGE_INFO.keys():
+  if not options.browser in constants.PACKAGE_INFO.keys():
     option_parser.error('Unknown browser option ' + options.browser)
 
   devil_chromium.Initialize()

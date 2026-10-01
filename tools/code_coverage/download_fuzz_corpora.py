@@ -26,15 +26,15 @@ CORPORA_BUCKET_BASE_URL_BY_TYPE = {
   FUZZILLI_CORPORA_TYPE: 'gs://autozilli/',
 }
 
-import argparse  # noqa: E402
-import logging  # noqa: E402
-from multiprocessing import cpu_count, Pool  # noqa: E402
-import os  # noqa: E402
-import re  # noqa: E402
-import shutil  # noqa: E402
-import subprocess  # noqa: E402
-import sys  # noqa: E402
-import zipfile  # noqa: E402
+import argparse
+import logging
+from multiprocessing import cpu_count, Pool
+import os
+import re
+import shutil
+import subprocess
+import sys
+import zipfile
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, '..', '..'))
@@ -188,7 +188,7 @@ def Main():
     else _unzip_corpus
   )
   with Pool(cpu_count()) as p:
-    results = p.map(  # noqa: F841
+    results = p.map(
       unzip_func,
       [(corpus, args.download_dir) for corpus in corpora_to_download],
     )

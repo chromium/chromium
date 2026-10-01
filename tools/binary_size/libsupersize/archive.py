@@ -4,6 +4,7 @@
 """Main Python API for analyzing binary size."""
 
 import argparse
+import collections
 import dataclasses
 import functools
 import logging
@@ -13,6 +14,7 @@ import re
 import shlex
 import subprocess
 import time
+import zipfile
 
 import apk
 import apkanalyzer
@@ -27,7 +29,9 @@ import json_config_parser
 import models
 import native
 import pakfile
+import parallel
 import path_util
+import readelf
 import zip_util
 
 
@@ -262,7 +266,7 @@ def _CreateMetadata(container_spec, elf_info):
 
   # Ensure all paths are relative to output directory to make them hermetic.
   if output_directory:
-    shorten_path = lambda path: os.path.relpath(path, output_directory)  # noqa: E731
+    shorten_path = lambda path: os.path.relpath(path, output_directory)
   else:
     # If output directory is unavailable, just store basenames.
     shorten_path = os.path.basename
@@ -488,7 +492,7 @@ def _ParseGnArgs(args_path):
   """Returns a list of normalized "key=value" strings."""
   args = {}
   with open(args_path) as f:
-    for l in f:  # noqa: E741
+    for l in f:
       # Strips #s even if within string literal. Not a problem in practice.
       parts = l.split('#')[0].split('=')
       if len(parts) != 2:
@@ -803,7 +807,7 @@ def _CreateNativeSpecs(
   ]
 
   # Sort so elf_path/map_path applies largest non-filtered library.
-  matches_abi = lambda n: not abi_filters or any(f in n for f in abi_filters)  # noqa: E731
+  matches_abi = lambda n: not abi_filters or any(f in n for f in abi_filters)
   lib_infos.sort(key=lambda x: (not matches_abi(x.filename), -x.file_size))
 
   for lib_info in lib_infos:
@@ -1045,7 +1049,7 @@ def _CreateContainerSpecs(
       pak_info_path = sub_args.pak_info_file
     if pak_info_path and not os.path.exists(pak_info_path):
       on_config_error(
-        f'File not found: {pak_info_file}. '  # noqa: F821
+        f'File not found: {pak_info_file}. '
         'Ensure is_official_build=true, or use --native-only'
       )
 
@@ -1200,7 +1204,7 @@ def _CreateAllContainerSpecs(
     else:
       container_name = os.path.basename(main_file)
     if set(container_name) & set('<>?'):
-      parser.error('Container name cannot have characters in "<>?"')  # noqa: F821
+      parser.error('Container name cannot have characters in "<>?"')
 
     if sub_args.minimal_apks_file:
       split_names = apk_file_manager.ExtractSplits(sub_args.minimal_apks_file)

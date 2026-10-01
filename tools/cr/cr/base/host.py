@@ -20,7 +20,7 @@ _TRAIL_VERBOSITY = 2
 def PrintTrail(trail):
   print('Command expanded the following variables:')
   for key, value in trail:
-    if value == None:  # noqa: E711
+    if value == None:
       value = ''
     print('   ', key, '=', value)
 
@@ -168,7 +168,7 @@ class Host(cr.Plugin, cr.Plugin.Type):
       True if the response was yes.
     """
     options = 'Y/n' if default else 'y/N'
-    result = raw_input(question + ' [' + options + '] ').lower()  # noqa: F821
+    result = raw_input(question + ' [' + options + '] ').lower()
     if result == '':
       return default
     return result in ['y', 'yes']

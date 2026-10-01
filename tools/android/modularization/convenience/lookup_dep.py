@@ -23,10 +23,10 @@ import sys
 _SRC_DIR = pathlib.Path(__file__).resolve().parents[4]
 
 sys.path.append(str(_SRC_DIR / 'build/android'))
-from pylib import constants  # noqa: E402
+from pylib import constants
 
 sys.path.append(str(_SRC_DIR / 'build/android/gyp'))
-from util import dep_utils  # noqa: E402
+from util import dep_utils
 
 
 def main():

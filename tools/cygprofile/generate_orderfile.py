@@ -25,7 +25,7 @@ import orderfile_shared
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
-from devil.android import device_utils  # noqa: E402
+from devil.android import device_utils
 
 
 def _GetOrderfilesDir(options) -> pathlib.Path:

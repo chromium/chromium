@@ -6,8 +6,10 @@
 """Tests for cluster.py."""
 
 import unittest
+import json
 
 import cluster
+import process_profiles
 from test_utils import (
   ProfileFile,
   SimpleTestSymbol,

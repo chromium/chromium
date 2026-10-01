@@ -98,9 +98,9 @@ class InitCommand(cr.Command):
         CR_PLATFORM=platform,
         CR_GENERATOR=generator,
       )
-    if 'CR_OUT_BASE' not in cr.context:
+    if not 'CR_OUT_BASE' in cr.context:
       cr.context.derived['CR_OUT_BASE'] = 'out_{CR_PLATFORM}'
-    if 'CR_OUT_FULL' not in cr.context:
+    if not 'CR_OUT_FULL' in cr.context:
       cr.context.derived['CR_OUT_FULL'] = os.path.join(
         '{CR_OUT_BASE}', '{CR_BUILDTYPE}'
       )

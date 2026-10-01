@@ -9,7 +9,7 @@ Commonly accessed elements, including all plugins, are promoted into this
 module.
 """
 
-import cr.loader  # noqa: F401
+import cr.loader
 from cr.loader import Import
 
 Import(__name__, 'auto.user')

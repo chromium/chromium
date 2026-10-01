@@ -5,6 +5,7 @@
 """This script syncs the Clang and Rust revisions defined in update.py
 and update_rust.py with the deps entries in DEPS."""
 
+import argparse
 import hashlib
 import re
 import os

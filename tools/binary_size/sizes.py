@@ -16,6 +16,7 @@ import argparse
 import errno
 import glob
 import json
+import platform
 import os
 import re
 import stat
@@ -29,11 +30,11 @@ SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 # Add Catapult to the path so we can import the chartjson-histogramset
 # conversion.
 sys.path.append(os.path.join(SRC_DIR, 'third_party', 'catapult', 'tracing'))
-from tracing.value import convert_chart_json  # noqa: E402
+from tracing.value import convert_chart_json
 
 sys.path.insert(0, os.path.join(SRC_DIR, 'build', 'util'))
-from lib.results import result_sink  # noqa: E402
-from lib.results import result_types  # noqa: E402
+from lib.results import result_sink
+from lib.results import result_types
 
 
 class ResultsCollector:

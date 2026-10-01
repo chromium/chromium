@@ -299,7 +299,7 @@ class GnConfigsImpl:
             ]
         }
 
-        clang_base_path = os.path.join(  # noqa: F841
+        clang_base_path = os.path.join(
             root_dir, 'third_party/llvm-build/Release+Asserts'
         )
         self.dawn_configs = {

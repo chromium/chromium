@@ -91,7 +91,7 @@ def ParseTag(line):
   tag_type, pos = (CLOSING_TAG, 2) if line[1] == '/' else (OPENING_TAG, 1)
   for i in range(pos, len(line)):
     if not line[i].isalnum() and line[i] != '_':
-      if i == pos or line[i] not in ' >/':
+      if i == pos or not line[i] in ' >/':
         break
       end = line.find('>', i)
       if end < 0:

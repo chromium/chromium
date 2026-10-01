@@ -34,7 +34,7 @@ def _NamesToOffsetGroups(
   name_to_group = {}
   offset_to_group = {}
   for si in symbol_infos:
-    if si.offset not in offset_to_group:
+    if not si.offset in offset_to_group:
       group = _OffsetGroup(si.offset)
       offset_to_group[si.offset] = group
     group = offset_to_group[si.offset]

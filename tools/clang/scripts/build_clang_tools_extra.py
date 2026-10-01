@@ -11,6 +11,7 @@ Example: build clangd and clangd-indexer
 """
 
 import argparse
+import errno
 import os
 import subprocess
 import sys

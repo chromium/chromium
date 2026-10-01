@@ -96,7 +96,7 @@ def CollectRelocationAddresses(elf_path):
   cmd = [path_util.GetReadElfPath(), '--relocs', elf_path]
   ret = subprocess.check_output(cmd, encoding='ascii').splitlines()
   # Grab first column from (sample output) '02de6d5c  00000017 R_ARM_RELATIVE'
-  return [int(l.split(maxsplit=1)[0], 16) for l in ret if 'R_ARM_RELATIVE' in l]  # noqa: E741
+  return [int(l.split(maxsplit=1)[0], 16) for l in ret if 'R_ARM_RELATIVE' in l]
 
 
 def main():

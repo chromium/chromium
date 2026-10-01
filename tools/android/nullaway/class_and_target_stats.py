@@ -24,8 +24,8 @@ _DEP_ANALYSIS_DIR = _SRC / 'tools/android/dependency_analysis'
 if str(_DEP_ANALYSIS_DIR) not in sys.path:
     sys.path.insert(0, str(_DEP_ANALYSIS_DIR))
 
-from print_class_dependencies import serialization  # noqa: E402
-import target_dependency  # noqa: E402
+from print_class_dependencies import serialization
+import target_dependency
 
 _DEPENDENCY_JSON_PATH = '/tmp/class_and_target_stats_deps.json'
 _NOMARK_LIST_PATH = pathlib.Path('/tmp/java_file_stats_file_nomark')

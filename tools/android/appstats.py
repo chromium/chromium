@@ -18,11 +18,11 @@ from operator import sub
 _SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_errors  # noqa: E402
-from devil.android import device_utils  # noqa: E402
+from devil.android import device_errors
+from devil.android import device_utils
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium  # noqa: E402
+import devil_chromium
 
 
 class Utils(object):

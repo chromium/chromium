@@ -15,7 +15,7 @@ _TOOLS_ANDROID_PATH = (
 )
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils  # noqa: E402
+from python_utils import git_metadata_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 

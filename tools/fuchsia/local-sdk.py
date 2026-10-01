@@ -11,6 +11,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 
 SELF_FILE = os.path.normpath(os.path.abspath(__file__))
 REPOSITORY_ROOT = os.path.abspath(

@@ -15,6 +15,22 @@ def _CommonChecks(input_api, output_api):
   ):
     return []
   results = []
+  disabled_warnings = [
+    'anomalous-backslash-in-string',
+    'bad-indentation',
+    'consider-using-with',
+    'missing-module-docstring',
+    'possibly-used-before-assignment',
+    'superfluous-parens',
+    'unspecified-encoding',
+    'unused-import',
+    'use-dict-literal',
+  ]
+  results.extend(
+    input_api.canned_checks.RunPylint(
+      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+    )
+  )
 
   commands = []
   commands.extend(

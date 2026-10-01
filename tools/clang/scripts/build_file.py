@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import argparse
+import json
 import os
 import re
 import shlex
@@ -15,7 +16,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 tool_dir = os.path.abspath(os.path.join(script_dir, '../pylib'))
 sys.path.insert(0, tool_dir)
 
-from clang import compile_db  # noqa: E402
+from clang import compile_db
 
 _PROBABLY_CLANG_RE = re.compile(r'clang(?:\+\+)?$')
 

@@ -11,8 +11,8 @@ _HERE_DIR = pathlib.Path(os.path.dirname(__file__)).resolve()
 _SRC_DIR = _HERE_DIR.parents[3]
 
 sys.path.append(str(_SRC_DIR / 'third_party' / 'node'))
-import node  # noqa: E402
-import node_modules  # noqa: E402
+import node
+import node_modules
 
 
 def main():

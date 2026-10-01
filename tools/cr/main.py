@@ -34,7 +34,7 @@ def Main():
   with cr.base.context.Create(
     description='The chrome dev build tool.',
     epilog='Contact ' + _CONTACT + ' if you have issues with this tool.',
-  ) as context:  # noqa: F841
+  ) as context:
     # Try to detect the current client information
     cr.base.client.DetectClient()
 

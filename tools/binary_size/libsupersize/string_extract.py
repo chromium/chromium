@@ -39,8 +39,10 @@ GetNameOfStringLiteralBytes():
 
 import ast
 import collections
+import itertools
 import logging
 import os
+import string
 import subprocess
 
 import ar

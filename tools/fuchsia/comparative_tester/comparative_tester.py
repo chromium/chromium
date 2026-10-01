@@ -12,11 +12,13 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import re
 import subprocess
 import sys
 import time
 
-from typing import List
+from collections import defaultdict
+from typing import Tuple, Dict, List
 
 import target_spec
 import test_results

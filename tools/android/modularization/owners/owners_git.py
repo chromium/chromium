@@ -45,7 +45,7 @@ def _run_ls_files_command(
   command = _build_ls_files_command(subdirectory)
   filepath_str = run_command(command, cwd=git_src)
   result = []
-  for l in filepath_str.split('\n'):  # noqa: E741
+  for l in filepath_str.split('\n'):
     # git ls-files -s produces output in the format:
     #
     # [mode bits] [hash]            [merge stage] [file path]

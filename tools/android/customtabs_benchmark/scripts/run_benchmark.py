@@ -19,15 +19,15 @@ _SRC_PATH = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_utils  # noqa: E402
+from devil.android import device_utils
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium  # noqa: E402
+import devil_chromium
 
 sys.path.append(
   os.path.join(_SRC_PATH, 'tools', 'android', 'customtabs_benchmark', 'scripts')
 )
-import customtabs_benchmark  # noqa: E402
+import customtabs_benchmark
 
 _KEYS = [
   'url',

@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import unittest
 import coverage_utils
 

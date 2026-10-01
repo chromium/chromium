@@ -7,6 +7,7 @@ import argparse
 import logging
 import os
 import pathlib
+import re
 import shlex
 import shutil
 import subprocess
@@ -15,8 +16,8 @@ import sys
 _SRC_ROOT = pathlib.Path(__file__).parents[3]
 sys.path.insert(1, str(_SRC_ROOT / 'build/android/gyp'))
 
-from util import build_utils  # noqa: E402
-import action_helpers  # noqa: E402
+from util import build_utils
+import action_helpers
 
 _ANNOTATOR_JAR = (
     '../NullAwayAnnotator/annotator-core/build/libs/'
@@ -187,8 +188,8 @@ def main():
     if os.path.exists(outdir):
         shutil.rmtree(outdir)
 
-    compile_script = 'nullaway-annotator-compile.sh'
-    compile_logs = 'nullaway-annotator-compile.log'
+    compile_script = f'nullaway-annotator-compile.sh'
+    compile_logs = f'nullaway-annotator-compile.log'
     if os.path.exists(compile_logs):
         os.unlink(compile_logs)
 

@@ -32,7 +32,7 @@ def format_size(bytesize: float) -> str:
       break
     bytesize /= 1024
 
-  return f'{bytesize:.1f}{suffix}iB'
+  return f'{bytesize:.1f}{suffix}iB'  # pylint: disable=undefined-loop-variable
 
 
 class FilesystemNode:

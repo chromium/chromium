@@ -94,7 +94,7 @@ def NormalizePaths(raw_symbols, gen_dir_regex=None, toolchain_subdirs=None):
   gen_dir_pattern = re.compile(gen_dir_regex) if gen_dir_regex else None
   obj_prefixes = ['obj/']
   gen_prefixes = ['gen/']
-  if toolchain_subdirs != None:  # noqa: E711
+  if toolchain_subdirs != None:
     obj_prefixes.extend(f'{t}/obj/' for t in toolchain_subdirs)
     gen_prefixes.extend(f'{t}/gen/' for t in toolchain_subdirs)
   for symbol in raw_symbols:

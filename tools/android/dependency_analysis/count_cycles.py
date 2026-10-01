@@ -130,7 +130,7 @@ def find_cycles(
     for generated_node_id, node in enumerate(sorted_base_graph_nodes):
         node_to_id[node] = generated_node_id
 
-    num_nodes = base_graph.num_nodes  # noqa: F841
+    num_nodes = base_graph.num_nodes
     cycles = [[] for _ in range(max_cycle_length + 1)]
 
     for start_node in sorted_base_graph_nodes:

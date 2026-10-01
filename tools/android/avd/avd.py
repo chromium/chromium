@@ -17,17 +17,17 @@ _SRC_ROOT = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
-from devil.android.tools import script_common  # noqa: E402
-from devil.android.sdk import adb_wrapper  # noqa: E402
-from devil.utils import logging_common  # noqa: E402
+from devil.android.tools import script_common
+from devil.android.sdk import adb_wrapper
+from devil.utils import logging_common
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
-import devil_chromium  # noqa: E402
-from pylib.local.emulator import avd  # noqa: E402
+import devil_chromium
+from pylib.local.emulator import avd
 
 # From .vpython
-import psutil  # noqa: E402
-import tabulate  # noqa: E402
+import psutil
+import tabulate
 
 
 @dataclasses.dataclass(frozen=True)

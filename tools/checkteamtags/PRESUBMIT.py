@@ -23,6 +23,7 @@ def _CommonChecks(input_api, output_api):
     return []
   results = []
   results.extend(_RunUnitTests(input_api, output_api))
+  results.extend(_RunPyLint(input_api, output_api))
   return results
 
 
@@ -40,3 +41,19 @@ def _RunUnitTests(input_api, output_api):
     message = 'Checkteamtags unit tests did not all pass.'
     return [output_api.PresubmitError(message)]
   return []
+
+
+def _RunPyLint(input_api, output_api):
+  """Runs unit tests for checkteamtags."""
+  disabled_warnings = [
+    'anomalous-backslash-in-string',
+    'bad-indentation',
+    'consider-using-from-import',
+    'consider-using-with',
+    'missing-module-docstring',
+    'unspecified-encoding',
+  ]
+  tests = input_api.canned_checks.GetPylint(
+    input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+  )
+  return input_api.RunTests(tests)

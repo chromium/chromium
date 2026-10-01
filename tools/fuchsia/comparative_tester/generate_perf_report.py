@@ -13,7 +13,7 @@ import logging
 import math
 import os
 import sys
-from typing import List, Dict, Tuple, Any, TypeVar, Callable
+from typing import List, Dict, Set, Tuple, Optional, Any, TypeVar, Callable
 
 import target_spec
 from test_results import (
@@ -152,7 +152,7 @@ def TestFromList(tests: List[TestResult]) -> TestStats:
   for test in tests:
     assert test.name == name
     for line in test.lines:
-      if line.desc not in lines:
+      if not line.desc in lines:
         lines[line.desc] = [line]
       else:
         lines[line.desc].append(line)
@@ -219,7 +219,7 @@ def TargetFromList(results: List[TargetResult]) -> TargetStats:
     # so that in the event tests flake out, their average times can
     # still be accurately calculated
     for test in result.tests:
-      if test.name not in tests.keys():
+      if not test.name in tests.keys():
         tests[test.name] = [test]
       tests[test.name].append(test)
   test_stats = [TestFromList(test_list) for _, test_list in tests.items()]
@@ -262,7 +262,7 @@ def DirectoryStats(directory: str) -> List[TargetStats]:
   resultMap = {}  # type: Dict[str, List[TargetResult]]
   for file in os.listdir(directory):
     results = ReadTargetFromJson("{}/{}".format(directory, file))
-    if results.name not in resultMap.keys():
+    if not results.name in resultMap.keys():
       resultMap[results.name] = [results]
     else:
       resultMap[results.name].append(results)
@@ -326,7 +326,7 @@ def CompareTests(linux: TestStats, fuchsia: TestStats) -> Dict[str, Any]:
     result["linux_dev"] = linux.time_dev
     result["linux_cv"] = linux.cv
 
-  if fuchsia == None:  # noqa: E711
+  if fuchsia == None:
     logging.warning("Fuchsia is missing test case {}".format(linux.name))
   else:
     result["name"] = fuchsia.name
@@ -342,17 +342,17 @@ def CompareLines(linux: LineStats, fuchsia: LineStats) -> Dict[str, Any]:
   If both lines passed are None, or their units or descriptions are not the same
   (which should never happen) this function fails.
   """
-  if linux != None and fuchsia != None:  # noqa: E711
+  if linux != None and fuchsia != None:
     assert linux.desc == fuchsia.desc
     assert linux.unit == fuchsia.unit
-  assert linux != None or fuchsia != None  # noqa: E711
+  assert linux != None or fuchsia != None
 
   # ref_test is because we don't actually care which test we get the values
   # from, as long as we get values for the name and description
   ref_test = linux if linux else fuchsia
   result = {"desc": ref_test.desc, "unit": ref_test.unit}
 
-  if fuchsia == None:  # noqa: E711
+  if fuchsia == None:
     logging.warning("Fuchsia is missing test line {}".format(linux.desc))
   else:
     result["fuchsia_avg"] = fuchsia.time_avg

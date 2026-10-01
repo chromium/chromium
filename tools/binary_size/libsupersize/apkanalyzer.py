@@ -18,6 +18,7 @@ import subprocess
 import zipfile
 
 import archive_util
+import dalvik_bytecode
 import dex_parser
 import models
 import path_util
@@ -100,7 +101,8 @@ def _ParseApkAnalyzerOutput(stdout, stderr):
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
-      node_type, state, defined_methods, referenced_methods, size, name = (  # noqa: F841
+      # pylint: disable=unused-variable
+      node_type, state, defined_methods, referenced_methods, size, name = (
         vals[0],
         vals[1],
         vals[2],
@@ -294,7 +296,7 @@ def CreateDexSymbol(name, size, source_map):
         # Non-workaround case:
         outer_class, name = NormalizeLine(old_package, name)
 
-  is_outlined = outer_class == None  # noqa: E711
+  is_outlined = outer_class == None
   object_path = _MakeDexObjectPath(old_package, is_outlined)
   if name.endswith(')'):
     section_name = models.SECTION_DEX_METHOD

@@ -14,8 +14,8 @@ import sys
 
 def _ensure_depot_tools():
   try:
-    import gerrit_util  # noqa: F401
-    import git_cl  # noqa: F401
+    import gerrit_util
+    import git_cl
 
     return
   except ImportError:
@@ -37,14 +37,14 @@ def _ensure_depot_tools():
 _ensure_depot_tools()
 
 try:
-  import base64  # noqa: F401
+  import base64
 
   import gerrit_util
   import git_cl
   import optparse
   import os.path
   import sys
-  import tarfile  # noqa: F401
+  import tarfile
 
   from third_party import colorama
 except ImportError as e:

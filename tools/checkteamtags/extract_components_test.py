@@ -48,7 +48,9 @@ class ExtractComponentsTest(unittest.TestCase):
           'component-to-team': {
             'Components>Component2': 'other-dummy-team@chromium.org',
             'Dummy>Component': 'dummy-team@chromium.org',
+            # pylint: disable=line-too-long
             'Dummy>Component>Subcomponent': 'dummy-specialist-team@chromium.org',
+            # pylint: enable=line-too-long
           },
           'dir-to-component': {
             'dummydir1': 'Dummy>Component',
@@ -103,7 +105,9 @@ class ExtractComponentsTest(unittest.TestCase):
           'component-to-team': {
             'Dummy>Component': 'dummy-team@chromium.org',
             'Dummy>Component(Mac)': 'mac-dummy-team@chromium.org',
+            # pylint: disable=line-too-long
             'Dummy>Component>Subcomponent': 'dummy-specialist-team@chromium.org',
+            # pylint: enable=line-too-long
           },
           'dir-to-component': {
             'dummydir1': 'Dummy>Component',

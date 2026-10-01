@@ -18,8 +18,8 @@ import sys
 
 def _ensure_depot_tools():
   try:
-    import gerrit_util  # noqa: F401
-    import git_cl  # noqa: F401
+    import gerrit_util
+    import git_cl
 
     return
   except ImportError:
@@ -40,11 +40,12 @@ def _ensure_depot_tools():
 
 _ensure_depot_tools()
 
-import codereview_parser  # noqa: E402
+import codereview_parser
 
 try:
   import gerrit_util
-except:  # noqa: E722
+  import git_cl
+except:
   print(
     'depot_tools not found; try appending the module path to your'
     + ' python path'
@@ -111,7 +112,7 @@ class GerritParser(codereview_parser.Parser):
     self._overall_comment = comment
 
   def OnFileComment(self, path, line, text, comment):
-    if path not in self._comments:
+    if not path in self._comments:
       self._comments[path] = []
 
     self._comments[path].append(

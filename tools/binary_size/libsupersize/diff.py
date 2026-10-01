@@ -4,6 +4,7 @@
 """Logic for diffing two SizeInfo objects. See: ./docs/diffs.md"""
 
 import collections
+import itertools
 import logging
 import re
 

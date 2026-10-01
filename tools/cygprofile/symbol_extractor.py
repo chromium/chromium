@@ -94,7 +94,7 @@ def _SymbolInfosFromStream(input_file):
       assert scope != 'Local', name
       continue
     # Skip non-function symbols (global variables, file references).
-    if symbol_type not in ['Function', 'GNU_IFunc']:
+    if not symbol_type in ['Function', 'GNU_IFunc']:
       continue
     # Executable code can be in a section with any name, not only in '.text'.
     # Unfortunately, code reordering needs adjustments for each custom section

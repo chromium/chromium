@@ -163,7 +163,7 @@ def run(command, error_message=None, exit_on_error=True, cwd=None):
     Helper function to run a shell command.
     """
     try:
-        output = subprocess.run(  # noqa: F841
+        output = subprocess.run(
             command, shell=True, check=True, text=True, cwd=cwd
         )
 
@@ -308,7 +308,7 @@ def ApplyEdits(patches: tuple, label, project: str) -> bool:
     cmd = [sys.executable, apply_edits_path, '-p', f'./{out_dir}/']
     try:
         with open(edits, 'rb') as f:
-            result = subprocess.run(  # noqa: F841
+            result = subprocess.run(
                 cmd,
                 stdin=f,
                 check=True,
@@ -412,7 +412,7 @@ def CompileCurrentBranch(out_dir, project: str):
 # the result is already know.
 def CheckPatchesForTarget(target, args, patches, label, project: str) -> bool:
     global CACHE
-    working = lambda x: x == CacheResult.COMPILED  # noqa: E731
+    working = lambda x: x == CacheResult.COMPILED
     # If we've already compiled this set of patches for this target we can skip
     # we know the result.
     result = CACHE.Result(target, patches)
@@ -614,7 +614,7 @@ def main():
         cwd=GetCWD(project),
     )
 
-    CreateNewBranch('spanification_apply_patches_base', project)
+    CreateNewBranch(f'spanification_apply_patches_base', project)
 
     # Look in the scratch directory and find all our patches.
     patches = FindSuccessfulPatchNumbers(filter_type)
@@ -672,10 +672,10 @@ def main():
         print('finished', flush=True)
         run(f'gn clean out/{target}', cwd=GetCWD(project))
 
-    print('working patches for all targets:', flush=True)
+    print(f'working patches for all targets:', flush=True)
     print(curr_result, flush=True)
     # Now we create the final branch to store the applied edits.
-    branch_name = 'spanification_apply_all_targets_final_patches'
+    branch_name = f'spanification_apply_all_targets_final_patches'
     CreateNewBranch(branch_name, project)
     applied = ApplyEdits(curr_result, branch_name, project)
     assert applied, "reached end but couldn't apply edits"

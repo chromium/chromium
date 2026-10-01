@@ -4,6 +4,7 @@
 
 """An interactive console for looking analyzing .size files."""
 
+import argparse
 import bisect
 import code
 import collections
@@ -39,6 +40,7 @@ _THRESHOLD_FOR_PAGER = 50
 def _LessPipe():
   """Output to `less`. Yields a file object to write to."""
   try:
+    # pylint: disable=unexpected-keyword-arg
     proc = subprocess.Popen(
       ['less'], stdin=subprocess.PIPE, stdout=sys.stdout, encoding='utf-8'
     )
@@ -61,9 +63,9 @@ def _WriteToStream(lines, has_newlines=False, use_pager=None, to_file=None):
     lines = itertools.chain(first_lines, lines)
 
   if has_newlines:
-    func = lambda lines, obj: obj.writelines(lines)  # noqa: E731
+    func = lambda lines, obj: obj.writelines(lines)
   else:
-    func = lambda lines, obj: describe.WriteLines(lines, obj.write)  # noqa: E731
+    func = lambda lines, obj: describe.WriteLines(lines, obj.write)
 
   if use_pager:
     with _LessPipe() as stdin:
@@ -576,7 +578,9 @@ class _Session:
       if isinstance(value, types.ModuleType):
         continue
       if key.startswith('size_info'):
+        # pylint: disable=no-member
         lines.append(f'  {key}: Loaded from {value.size_path}')
+        # pylint: enable=no-member
     lines.append('*' * 80)
     return '\n'.join(lines)
 

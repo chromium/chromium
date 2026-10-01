@@ -34,7 +34,7 @@ args = parser.parse_args()
 # manually.
 
 # Open one file with line number.
-if args.filepath != None:  # noqa: E711
+if args.filepath != None:
   qtcreator_open_file(args.filepath, args.line)
 # Open multiple files.
 else:

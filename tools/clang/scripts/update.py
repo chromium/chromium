@@ -18,19 +18,19 @@ import sys
 
 assert sys.version_info >= (3, 0), 'This script requires Python 3.'
 
-import argparse  # noqa: E402
-import glob  # noqa: E402
-import os  # noqa: E402
-import platform  # noqa: E402
-import shutil  # noqa: E402
-import stat  # noqa: E402
-import tarfile  # noqa: E402
-import tempfile  # noqa: E402
-import time  # noqa: E402
-import urllib.request  # noqa: E402
-import urllib.error  # noqa: E402
-import zipfile  # noqa: E402
-import zlib  # noqa: E402
+import argparse
+import glob
+import os
+import platform
+import shutil
+import stat
+import tarfile
+import tempfile
+import time
+import urllib.request
+import urllib.error
+import zipfile
+import zlib
 
 
 # Do NOT CHANGE this if you don't know what you're doing -- see
@@ -328,7 +328,7 @@ def UpdatePackage(
         exec(open(gclient_config).read(), env, env)
         target_os = env.get('target_os', target_os)
         break
-      except:  # noqa: E722
+      except:
         pass
 
   if os.path.exists(OLD_STAMP_FILE):

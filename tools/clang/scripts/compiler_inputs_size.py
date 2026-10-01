@@ -51,7 +51,7 @@ norm_paths = {}  # Memoization cache for norm_path().
 
 
 def norm_path(build_dir, filename):
-  if filename not in norm_paths:
+  if not filename in norm_paths:
     p = pathlib.Path(os.path.join(build_dir, filename)).resolve()
     x = os.path.relpath(p)
     norm_paths[filename] = x
@@ -63,7 +63,7 @@ file_sizes = {}  # Memoization cache for size().
 
 def size(filename):
   """Get the size of a file."""
-  if filename not in file_sizes:
+  if not filename in file_sizes:
     file_sizes[filename] = os.path.getsize(filename)
   return file_sizes[filename]
 

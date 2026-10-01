@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import difflib
 import glob
+import json
 import ntpath
 import os
 import os.path

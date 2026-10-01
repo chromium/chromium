@@ -9,12 +9,13 @@ import json
 import os
 import pandas as pd
 import pathlib
+import string
 import sys
 from dataclasses import dataclass, field
 
 _HAS_IPYTHON = False
 try:
-    if 'unittest' not in sys.modules:
+    if not 'unittest' in sys.modules:
         # Do not import IPython when running unit tests to avoid module name
         # conflicts. There is `import cProfile as profile` in IPython.
         from IPython.display import HTML, display
@@ -23,12 +24,12 @@ try:
 except ImportError:
     _HAS_IPYTHON = False
 
-from . import demangler  # noqa: E402
+from . import demangler
 
 _MEMORY_USAGE_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_PATH = _MEMORY_USAGE_DIR.parents[3]
 sys.path.append(str(_SRC_PATH / 'third_party/perfetto/python'))
-from perfetto.trace_processor import TraceProcessor  # noqa: E402
+from perfetto.trace_processor import TraceProcessor
 
 
 @dataclass

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import json
 import os
 import sys
@@ -103,7 +104,7 @@ def _FindTestTargetsViaGnRefs(
   if not is_cpp_only:
     cmd.append('--relation=input')
 
-  response_file = None  # noqa: F841
+  response_file = None
   if len(gn_paths) > 100:
     cm = tempfile.NamedTemporaryFile(mode='w', delete=False)
   else:

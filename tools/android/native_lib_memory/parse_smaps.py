@@ -18,7 +18,7 @@ _SRC_PATH = os.path.join(
   os.path.dirname(__file__), os.pardir, os.pardir, os.pardir
 )
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_utils  # noqa: E402
+from devil.android import device_utils
 
 
 class Mapping:

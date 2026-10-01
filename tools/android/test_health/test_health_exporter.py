@@ -6,6 +6,7 @@
 import json
 import logging
 import pathlib
+import sys
 from typing import Dict, List, Union
 
 from java_test_utils import JavaTestHealth

@@ -9,7 +9,7 @@ import json
 import pathlib
 import subprocess
 import sys
-from typing import Callable, NamedTuple
+from typing import Any, Callable, NamedTuple
 
 
 class TrybotEntry(NamedTuple):
@@ -262,9 +262,9 @@ def main() -> None:
     sys.exit(0)
 
   if args.revision:
-    read_fn = lambda path: read_git(src_root, args.revision, path)  # noqa: E731
+    read_fn = lambda path: read_git(src_root, args.revision, path)
   else:
-    read_fn = lambda path: read_local(src_root, path)  # noqa: E731
+    read_fn = lambda path: read_local(src_root, path)
 
   revision_msg = f' at revision {args.revision}' if args.revision else ''
   print(

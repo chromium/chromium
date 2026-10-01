@@ -72,7 +72,7 @@ class _Options:
 
 
 def _run_benchmark(options: _Options):
-    outdir_name = "out/Debug"
+    outdir_name = f"out/Debug"
     if '_test_' in options.benchmark:
         target = "chrome_test_apk"
     elif 'chrome_junit_' in options.benchmark:

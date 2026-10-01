@@ -59,7 +59,7 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
 
     r = MAP_RX.match(line)
     if not r:
-      sys.stderr.write('Skipping %s from %s\n' % (line, memdump_file))  # noqa: F821
+      sys.stderr.write('Skipping %s from %s\n' % (line, memdump_file))
       continue
 
     map_start = int(r.group(1), 16)
@@ -102,7 +102,7 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
       print('')
 
     assert bitmap_pages_count >= map_pages_count
-    for i in xrange(map_pages_count):  # noqa: F821
+    for i in xrange(map_pages_count):
       bitmap_idx = i / 8
       bitmap_off = i % 8
       if bitmap_idx < len(bitmap) and _TestBit(
@@ -169,7 +169,7 @@ def main(argv):
 
     sym_addr = int(r.group(1), 16)
     sym_page = sym_addr / _PAGE_SIZE
-    last_sym_matched = sym_page in resident_pages  # noqa: F841
+    last_sym_matched = sym_page in resident_pages
     if (sym_page in resident_pages) != options.reverse:
       print(line)
   return 0

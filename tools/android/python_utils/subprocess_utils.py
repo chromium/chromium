@@ -15,7 +15,7 @@ from typing import Optional, Sequence, Union
 _PYTHON_UTILS_PATH = pathlib.Path(__file__).resolve().parents[0]
 if str(_PYTHON_UTILS_PATH) not in sys.path:
     sys.path.append(str(_PYTHON_UTILS_PATH))
-import git_metadata_utils  # noqa: E402
+import git_metadata_utils
 
 
 def resolve_ninja() -> str:

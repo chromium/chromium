@@ -8,6 +8,7 @@ import argparse
 import atexit
 import logging
 import pathlib
+import platform
 import resource
 import sys
 

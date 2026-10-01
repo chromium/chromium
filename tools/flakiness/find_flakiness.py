@@ -162,25 +162,21 @@ def FindUnaryFlakiness(test_path, output_path, num_procs, num_repeats, timeout):
 
 
 def main():
-  if not args:  # noqa: F821
-    parser.error('You must specify a path to test!')  # noqa: F821
-  if not os.path.exists(args[0]):  # noqa: F821
-    parser.error('%s does not exist!' % args[0])  # noqa: F821
+  if not args:
+    parser.error('You must specify a path to test!')
+  if not os.path.exists(args[0]):
+    parser.error('%s does not exist!' % args[0])
 
-  data_path = os.path.basename(args[0]) + FF_DATA_SUFFIX  # noqa: F821
-  output_path = os.path.basename(args[0]) + FF_OUTPUT_SUFFIX  # noqa: F821
+  data_path = os.path.basename(args[0]) + FF_DATA_SUFFIX
+  output_path = os.path.basename(args[0]) + FF_OUTPUT_SUFFIX
 
   for i in range(FF_NUM_ITERATIONS):
-    FindShardingFlakiness(args[0], data_path, FF_SUPERVISOR_ARGS)  # noqa: F821
+    FindShardingFlakiness(args[0], data_path, FF_SUPERVISOR_ARGS)
     print('That was just iteration %i of %i.' % (i + 1, FF_NUM_ITERATIONS))
     time.sleep(FF_SLEEP_INTERVAL)
 
   FindUnaryFlakiness(
-    args[0],  # noqa: F821
-    output_path,
-    FF_NUM_PROCS,
-    FF_NUM_REPEATS,
-    FF_TIMEOUT,
+    args[0], output_path, FF_NUM_PROCS, FF_NUM_REPEATS, FF_TIMEOUT
   )
 
 

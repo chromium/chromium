@@ -82,6 +82,7 @@ import json
 import logging
 import multiprocessing
 import os
+import platform
 import re
 import shlex
 import shutil
@@ -94,6 +95,7 @@ sys.path.append(
     os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'third_party'
   )
 )
+from collections import defaultdict
 
 import coverage_utils
 import telemetry_utils
@@ -590,7 +592,7 @@ def _ExecuteCommand(target, command, output_file_path):
         stderr=subprocess.STDOUT,
         env=_GetEnvironmentVars(expected_profraw_file_path),
       )
-  except subprocess.CalledProcessError:
+  except subprocess.CalledProcessError as e:
     logging.warning('Command: "%s" exited with non-zero return code.', command)
 
   return open(output_file_path, 'rb').read()
@@ -637,7 +639,7 @@ def _ExecuteIOSCommand(command, output_file_path):
         stderr=subprocess.STDOUT,
         env=_GetEnvironmentVars(iossim_profraw_file_path),
       )
-  except subprocess.CalledProcessError:
+  except subprocess.CalledProcessError as e:
     # iossim emits non-zero return code even if tests run successfully, so
     # ignore the return code.
     pass
@@ -1378,7 +1380,7 @@ def Main():
     binary_paths = [_GetBinaryPathForWebTests()]
   elif args.command:
     for i in range(len(args.command)):
-      assert 'run_web_tests.py' not in args.command[i], (
+      assert not 'run_web_tests.py' in args.command[i], (
         'run_web_tests.py is not supported via --command argument. '
         'Please use --run-web-tests argument instead.'
       )

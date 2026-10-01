@@ -15,6 +15,7 @@ import os
 import re
 import subprocess
 import sys
+import urllib.request
 
 from build import (
   CheckoutGitRepo,
@@ -22,8 +23,9 @@ from build import (
   GetLatestLLVMCommit,
   LLVM_DIR,
   LLVM_GIT_URL,
+  RunCommand,
 )
-from update import CHROMIUM_DIR
+from update import CHROMIUM_DIR, DownloadAndUnpack
 
 # Access to //tools/rust
 sys.path.append(
@@ -35,7 +37,7 @@ from build_rust import RUST_GIT_URL, RUST_SRC_DIR, GetLatestRustCommit
 
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
-CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))  # noqa: F811
+CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
 RUST_UPDATE_PY_PATH = os.path.join(
   THIS_DIR, '..', '..', 'rust', 'update_rust.py'
@@ -254,7 +256,7 @@ def PatchRustRemoveOverride():
   REV = '([0-9a-z-]+)'
   content = re.sub(
     f'OVERRIDE_CLANG_REVISION = \'{REV}\'',
-    'OVERRIDE_CLANG_REVISION = None',
+    f'OVERRIDE_CLANG_REVISION = None',
     content,
     count=1,
   )

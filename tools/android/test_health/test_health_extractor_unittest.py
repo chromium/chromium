@@ -15,7 +15,7 @@ import test_health_extractor
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils  # noqa: E402
+from python_utils import git_metadata_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 _CHROMIUM_REPO_INFO = test_health_extractor.GitRepoInfo(

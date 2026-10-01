@@ -4,11 +4,15 @@
 """Script for building a Chromium CodeQL database."""
 
 import argparse
+import functools
+import json
 import multiprocessing
 import subprocess
 import logging
 import time
 import os
+import traceback
+import gn_sources_tools
 import targets_to_index
 
 from collections import namedtuple
@@ -79,7 +83,7 @@ def index_one_target(
   print("Initializing codeql.")
   codeql_db = ""
   try:
-    codeql_db = CodeQLDatabase(src_path, db_path, codeql_binary_path)  # noqa: F841
+    codeql_db = CodeQLDatabase(src_path, db_path, codeql_binary_path)
   except ValueError:
     print("Could not initialize CodeQL database at %s" % db_path)
     exit(1)

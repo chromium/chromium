@@ -4,6 +4,7 @@
 
 import asyncio
 import dataclasses
+import sys
 import shlex
 import signal
 import os
@@ -75,7 +76,7 @@ async def run(command, *args, input="", interruption_signal=signal.SIGKILL):
             try:
                 os.killpg(process.pid, interruption_signal)
                 await asyncio.wait_for(process.wait(), timeout=10)
-            except:  # noqa: E722
+            except:
                 # The process may have exited before kill or wait was called, or
                 # is otherwise unresponsive. Swallow the exception if the
                 # process has exited because that is all we care about here.

@@ -8,7 +8,7 @@
 HTTP server for handling requests to open files.
 """
 
-from bottle import install, get, response, request, run
+from bottle import Bottle, install, get, response, request, run
 import logging
 import sys
 import sh

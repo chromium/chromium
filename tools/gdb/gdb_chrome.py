@@ -80,7 +80,7 @@ def yield_fields(val):
   """
   try:
     fields = val.type.target().fields()
-  except:  # noqa: E722
+  except:
     fields = val.type.fields()
   for field in fields:
     if field.is_base_class:

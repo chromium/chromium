@@ -23,6 +23,7 @@ import diff
 import file_format
 import json_config_parser
 import models
+import pakfile
 import test_util
 import zip_util
 
@@ -90,12 +91,10 @@ def _CompareWithGolden(name=None):
     def inner(self):
       actual_lines = func(self)
       actual_lines = (
-        re.sub(r'(elf_mtime=).*', r'\1{redacted}', l)
-        for l in actual_lines  # noqa: E741
+        re.sub(r'(elf_mtime=).*', r'\1{redacted}', l) for l in actual_lines
       )
       actual_lines = (
-        re.sub(r'(Loaded from ).*', r'\1{redacted}', l)
-        for l in actual_lines  # noqa: E741
+        re.sub(r'(Loaded from ).*', r'\1{redacted}', l) for l in actual_lines
       )
       test_util.Golden.CheckOrUpdate(golden_path, actual_lines)
 
@@ -580,7 +579,7 @@ class IntegrationTest(unittest.TestCase):
       ]
       ret = _RunApp('console', [size_file.name, '--query', '; '.join(query)])
       with open(output_file.name) as f:
-        ret.extend(l.rstrip() for l in f)  # noqa: E741
+        ret.extend(l.rstrip() for l in f)
       return ret
 
   @_CompareWithGolden()
@@ -597,7 +596,7 @@ class IntegrationTest(unittest.TestCase):
       ]
       ret = _RunApp('console', [size_file.name, '--query', '; '.join(query)])
       with open(output_file.name) as f:
-        ret.extend(l.rstrip() for l in f)  # noqa: E741
+        ret.extend(l.rstrip() for l in f)
       return ret
 
   @_CompareWithGolden()

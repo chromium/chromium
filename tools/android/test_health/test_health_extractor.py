@@ -16,9 +16,9 @@ from typing import List, Optional, Set, Tuple, Union
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils  # noqa: E402
+from python_utils import git_metadata_utils
 
-import java_test_utils  # noqa: E402
+import java_test_utils
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 

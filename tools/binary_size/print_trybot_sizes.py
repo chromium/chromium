@@ -9,6 +9,8 @@ import collections
 import concurrent.futures
 import csv
 import json
+import os
+import posixpath
 import re
 import subprocess
 import sys
@@ -167,7 +169,7 @@ def main():
   if args.csv:
     print_func = csv.writer(sys.stdout).writerow
   else:
-    print_func = lambda v: print('{:<12}{:14}{:12}{:12}{:32}{}'.format(*v))  # noqa: E731
+    print_func = lambda v: print('{:<12}{:14}{:12}{:12}{:32}{}'.format(*v))
 
   print_func(
     ('Commit #', 'Git Hash', 'Arm32 Size', 'Arm64 Size', 'Date', 'Subject')

@@ -17,10 +17,10 @@ _SRC_ROOT = os.path.abspath(
   os.path.join(os.path.dirname(__file__), '..', '..', '..')
 )
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
-from devil.utils import logging_common  # noqa: E402
+from devil.utils import logging_common
 
 sys.path.append(os.path.join(_SRC_ROOT, 'tools', 'android', 'avd'))
-from avd import get_avd_configs  # noqa: E402
+from avd import get_avd_configs
 
 
 def get_emulators(all_emulators):

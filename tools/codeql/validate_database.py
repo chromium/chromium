@@ -116,7 +116,7 @@ def main():
       # non-zero status.
       with open(filename, 'r') as f:
         lines = f.read().splitlines()
-        if GENERIC_EXTRACTOR_ERROR not in lines[-1]:
+        if not GENERIC_EXTRACTOR_ERROR in lines[-1]:
           continue
         # If so, scan all errors emanated by the extractor and classify them.
         num_files_with_errors += 1

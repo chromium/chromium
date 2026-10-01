@@ -74,7 +74,7 @@ def _ApplyTool(scripts_dir, spanify_dir, test_dir, actual_files, project):
         # run_tool.py will skip them when applying replacements.
         _RunGit(['add'] + actual_files)
 
-        python = sys.executable  # noqa: F841
+        python = sys.executable
 
         # run_tool.py ... | extract_edits.py | apply_edits.py ...
         returncode = RunScriptsAsPipedCommands(

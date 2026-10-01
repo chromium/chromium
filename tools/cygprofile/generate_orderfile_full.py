@@ -32,11 +32,11 @@ import orderfile_shared
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
-from devil.android import device_utils  # noqa: E402
-from devil.android.sdk import version_codes  # noqa: E402
+from devil.android import device_utils
+from devil.android.sdk import version_codes
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
-import devil_chromium  # noqa: E402
+import devil_chromium
 
 _OUT_PATH = _SRC_PATH / 'out'
 # use depot_tools/gn to find actual binary path for any platforms.

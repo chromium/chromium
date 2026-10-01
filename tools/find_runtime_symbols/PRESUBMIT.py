@@ -8,12 +8,44 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+import sys
+
 
 def CommonChecks(input_api, output_api):
   if not input_api.HasAffectedFiles(extensions='.py'):
     return []
 
+  def join(*args):
+    return input_api.os_path.join(input_api.PresubmitLocalPath(), *args)
+
   output = []
+  sys_path_backup = sys.path
+  try:
+    sys.path = [
+      join('..', 'find_runtime_symbols'),
+    ] + sys.path
+    disabled_warnings = [
+      'anomalous-backslash-in-string',
+      'bad-indentation',
+      'deprecated-method',
+      'deprecated-module',
+      'logging-not-lazy',
+      'missing-module-docstring',
+      'superfluous-parens',
+      'undefined-variable',
+      'unspecified-encoding',
+    ]
+    output.extend(
+      input_api.canned_checks.RunPylint(
+        input_api,
+        output_api,
+        disabled_warnings=disabled_warnings,
+        version='3.2',
+      )
+    )
+  finally:
+    sys.path = sys_path_backup
+
   output.extend(
     input_api.canned_checks.RunUnitTestsInDirectory(
       input_api,

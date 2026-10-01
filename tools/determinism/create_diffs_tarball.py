@@ -8,8 +8,10 @@
 import argparse
 import json
 import os
+import shutil
 import sys
 import tarfile
+import tempfile
 
 
 def CreateArchive(first, second, input_files, output_file):

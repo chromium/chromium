@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import seaborn as sns
+import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.colors as mcolors
 
@@ -79,7 +80,7 @@ def stripplot(
 
     # Overlay a pointplot to display the mean and 95% confidence interval.
     # `join=False` prevents drawing lines between points of different groups.
-    point_plot = sns.pointplot(  # noqa: F841
+    point_plot = sns.pointplot(
         x=x_key,
         y=y_key,
         data=data,

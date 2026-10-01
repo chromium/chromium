@@ -94,7 +94,7 @@ def gen_file_body(flags, mstone):
   >>> gen_file_body(flags, None)
   '  {"foo", 1},\\n  {"bar", 2},'
   """
-  if mstone != None:  # noqa: E711
+  if mstone != None:
     flags = flags_utils.keep_expired_by(flags, mstone)
   output = []
   for f in flags:

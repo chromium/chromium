@@ -22,7 +22,7 @@ FILES_CFG = os.path.join(
 PEFILE_DIR = os.path.join(REPO_ROOT, 'third_party', 'pefile_py3')
 sys.path.append(PEFILE_DIR)
 
-import pefile  # noqa: E402
+import pefile
 
 PE_FILE_EXTENSIONS = ['.exe', '.dll']
 # https://docs.microsoft.com/en-us/windows/win32/debug/pe-format

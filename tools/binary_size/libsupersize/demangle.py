@@ -5,6 +5,7 @@
 """Utilities for demangling C++ symbols."""
 
 import collections
+import itertools
 import logging
 import re
 import subprocess
@@ -88,6 +89,7 @@ def _PostProcessDemangledSymbol(old_name, new_name):
 
 def _DemangleNames(names):
   """Uses cxxfilt to demangle a list of names."""
+  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
     [path_util.GetCppFiltPath()],
     stdin=subprocess.PIPE,

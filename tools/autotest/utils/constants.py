@@ -23,6 +23,7 @@ DEPOT_TOOLS_DIR: Path = SRC_DIR / 'third_party' / 'depot_tools'
 
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
+# pylint: disable=line-too-long
 TEST_TARGET_ALLOWLIST: list[str] = [
   # The tests below this line were output from the ripgrep command just below:
   '//ash:ash_pixeltests',
@@ -110,6 +111,7 @@ TEST_TARGET_ALLOWLIST: list[str] = [
   '//third_party/rapidhash:rapidhash_fuzztests',
   '//ui/ozone:ozone_integration_tests',
 ]
+# pylint: disable=line-too-long
 r"""
  You can run this command to find test targets that do not match
  _TEST_TARGET_SUFFIXES, and use it to update _TEST_TARGET_ALLOWLIST.

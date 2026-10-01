@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 """Utils for invoking UTR (Universal Test Runner) from autotest."""
 
+import argparse
 import os
 import subprocess
 import sys
+from dataclasses import dataclass
 
 from utils.command_error import AutotestError
 

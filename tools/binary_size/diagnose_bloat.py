@@ -512,7 +512,7 @@ class _BuildArchive:
       self.build.output_directory,
     ]
     if self.build.IsTrichrome():
-      get_apk = lambda t: next(x for x in self.build.abs_apk_paths if t in x)  # noqa: E731
+      get_apk = lambda t: next(x for x in self.build.abs_apk_paths if t in x)
       cmd += ['--trichrome-chrome', get_apk('Chrome')]
       cmd += ['--trichrome-webview', get_apk('WebView')]
       cmd += ['--trichrome-library', get_apk('Library')]
@@ -795,6 +795,7 @@ def _RunCmd(cmd, cwd=None, verbose=False, exit_on_failure=True):
   if verbose:
     proc_stdout, proc_stderr = sys.stdout, subprocess.STDOUT
 
+  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
     cmd, cwd=cwd, stdout=proc_stdout, stderr=proc_stderr, encoding='utf-8'
   )

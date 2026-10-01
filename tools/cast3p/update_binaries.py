@@ -8,14 +8,16 @@ import os
 import subprocess
 import shutil
 import sys
+import tempfile
 
+from zipfile import ZipFile
 
 DIR_SOURCE_ROOT = os.path.abspath(
   os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 )
 
 sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'build'))
-import find_depot_tools  # noqa: E402
+import find_depot_tools
 
 CAST_CORE_ROOT = os.path.abspath(
   os.path.join(DIR_SOURCE_ROOT, 'third_party', 'cast_core', 'prebuilts')
@@ -43,7 +45,7 @@ def DownloadFromCloudStorage(url, output_dir):
     url,
     output_dir,
   ]
-  task = subprocess.check_call(  # noqa: F841
+  task = subprocess.check_call(
     cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
   )
 

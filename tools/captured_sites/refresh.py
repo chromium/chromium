@@ -108,7 +108,7 @@ class Refresh:
   def update_expectations(self, site_name):
     """Update .test file expectations to reflect the changes in the newly merged
     Server Predictions"""
-    cmd = '...'  # noqa: F841
+    cmd = '...'
     # TODO(crbug.com/40216356)
     print('Not Implemented')
 

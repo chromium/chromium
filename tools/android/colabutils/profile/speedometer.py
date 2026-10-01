@@ -4,6 +4,7 @@
 
 from enum import Enum
 import os
+import re
 import pandas as pd
 
 from .. import chrome

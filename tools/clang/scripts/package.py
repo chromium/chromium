@@ -71,7 +71,7 @@ def PrintTarProgress(tarinfo):
 
 
 def GetGsutilPath():
-  if 'find_depot_tools' not in sys.modules:
+  if not 'find_depot_tools' in sys.modules:
     sys.path.insert(0, os.path.join(CHROMIUM_DIR, 'build'))
     global find_depot_tools
     import find_depot_tools
@@ -116,7 +116,7 @@ def VerifyPackageDoesntExist(gcs_bucket, filename, gcs_platform):
   """Verifies that the package doesn't already exist on GCS, exiting if so."""
   gcs_path = f'gs://{gcs_bucket}/{gcs_platform}/{filename}'
   print(f'Checking if {gcs_path} already exists...')
-  if RunGsutil(['stat', gcs_path]) == 0:
+  if (RunGsutil(['stat', gcs_path]) == 0):
     print(f'Package {gcs_path} already exists!')
     print('Did you forget to update the sub-revision?')
     sys.exit(1)
@@ -168,8 +168,7 @@ def UploadPDBsToSymbolServer(binaries):
   #   but tools/symsrc/pdb_fingerprint_from_img.py can compute it already, so
   #   again just use that.
   sys.path.insert(0, os.path.join(CHROMIUM_DIR, 'tools', 'symsrc'))
-  import img_fingerprint
-  import pdb_fingerprint_from_img
+  import img_fingerprint, pdb_fingerprint_from_img
 
   files = []
   for binary_path in binaries:
@@ -215,9 +214,7 @@ def UploadPDBsToSymbolServer(binaries):
     exit_code = RunGsutil(gsutil_args)
     if exit_code != 0:
       print("gsutil failed, exit_code: %s" % exit_code)
-      print(
-        "If a precondition did not hold, a package at this revision likely aready exists."
-      )
+      print("If a precondition did not hold, a package at this revision likely aready exists.")
       sys.exit(exit_code)
 
 
@@ -419,6 +416,7 @@ def main():
     runtime_package_name = 'clang-linux-runtime-library'
     runtime_packages = set(
       [
+        # pylint: disable=line-too-long
         # AddressSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a.syms',
@@ -499,6 +497,7 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
         # Ignorelist for MemorySanitizer (used on Linux only).
         'lib/clang/$V/share/msan_ignorelist.txt',
+        # pylint: enable=line-too-long
       ]
     )
     want.update(runtime_packages)
@@ -519,6 +518,7 @@ def main():
     android_runtime_package_name = 'clang-android-runtime-library'
     android_runtime_packages = set(
       [
+        # pylint: disable=line-too-long
         # AddressSanitizer Android runtime.
         'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
@@ -553,6 +553,7 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-i686-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-riscv64-android.so',
+        # pylint: enable=line-too-long
       ]
     )
   elif sys.platform == 'win32':
@@ -560,6 +561,7 @@ def main():
 
     runtime_packages = set(
       [
+        # pylint: disable=line-too-long
         'bin/llvm-symbolizer.exe',
         # AddressSanitizer runtime.
         'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
@@ -580,6 +582,7 @@ def main():
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
         # UndefinedBehaviorSanitizer C++ runtime.
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
+        # pylint: enable=line-too-long
       ]
     )
     want.update(runtime_packages)
