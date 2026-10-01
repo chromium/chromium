@@ -6,3 +6,6 @@ sandv@google.com
 
 # For Android media pipeline changes, please add:
 yucliu@chromium.org
+
+# For Linux specific changes, please add:
+rknichols@google.com
