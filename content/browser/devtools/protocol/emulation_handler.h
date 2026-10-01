@@ -149,6 +149,7 @@ class EmulationHandler : public DevToolsDomainHandler,
  private:
   WebContentsImpl* GetWebContents();
 
+  void ResetWebContentsEmulation();
   void UpdateTouchEventEmulationState();
   void UpdateDeviceEmulationState(
       const blink::mojom::DeviceEmulationCacheBehavior& cache_behavior =

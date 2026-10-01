@@ -1,0 +1,23 @@
+Tests that emulation overrides are cleared after prerender activation.
+
+Get emulation state on primary page with override
+Geolocation data: {
+    accuracy : 1.23
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 56.83
+    longitude : 60.63
+    speed : null
+}
+Dimensions: 600x400
+Touch event received: true
+
+Get emulation state in activated page
+Geolocation data: {
+    code : 3
+    message : Timeout expired
+}
+Dimensions: 800x600
+Touch event received: false
+

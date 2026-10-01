@@ -159,17 +159,7 @@ void EmulationHandler::SetRenderer(int process_host_id,
     }
   }
   if (!frame_host) {
-    sensor_overrides_.clear();
-#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-    pressure_overrides_.clear();
-#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-    if (screen_orientation_lock_emulation_enabled_) {
-      screen_orientation_lock_emulation_enabled_ = false;
-      UpdateScreenOrientationEmulation(false);
-    }
-    if (device_posture_emulation_enabled_) {
-      ClearDevicePostureOverride();
-    }
+    ResetWebContentsEmulation();
   }
   host_ = frame_host;
   if (touch_emulation_enabled_)
@@ -184,14 +174,20 @@ void EmulationHandler::Wire(UberDispatcher* dispatcher) {
   Emulation::Dispatcher::wire(dispatcher, this);
 }
 
-Response EmulationHandler::Disable() {
+// Reverts emulation that lives on the WebContents or its frame widgets rather
+// than on this handler. Must run while |host_| is still set: once |host_| is
+// null, these overrides are unreachable (their cleanup early-returns) and
+// would silently outlive the debugging session for the rest of the
+// WebContents' lifetime (e.g. when a session is orphaned by
+// DisconnectWebContents on prerender activation).
+void EmulationHandler::ResetWebContentsEmulation() {
   if (touch_emulation_enabled_) {
     touch_emulation_enabled_ = false;
     UpdateTouchEventEmulationState();
   }
-  user_agent_ = std::string();
   if (device_emulation_enabled_) {
     device_emulation_enabled_ = false;
+    device_emulation_params_ = blink::DeviceEmulationParams();
     // Restore the view size changed by SetDeviceMetricsOverride(), as
     // ClearDeviceMetricsOverride() does. Otherwise a client that disconnects
     // without clearing its override leaves the view at the emulated size, and
@@ -202,25 +198,32 @@ Response EmulationHandler::Disable() {
         web_contents->ClearDeviceEmulationSize();
       }
     }
-    if (screen_orientation_lock_emulation_enabled_) {
-      screen_orientation_lock_emulation_enabled_ = false;
-      UpdateScreenOrientationEmulation(false);
-    }
     UpdateDeviceEmulationState();
   }
+  if (screen_orientation_lock_emulation_enabled_) {
+    screen_orientation_lock_emulation_enabled_ = false;
+    UpdateScreenOrientationEmulation(false);
+  }
+  sensor_overrides_.clear();
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  pressure_overrides_.clear();
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+  if (device_posture_emulation_enabled_) {
+    ClearDevicePostureOverride();
+  }
+  if (geolocation_overridden_) {
+    ClearGeolocationOverride();
+  }
+}
+
+Response EmulationHandler::Disable() {
+  ResetWebContentsEmulation();
+  user_agent_ = std::string();
   if (focus_emulation_enabled_)
     SetFocusEmulationEnabled(false);
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
   prefers_reduced_transparency_ = "";
-  sensor_overrides_.clear();
-#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  pressure_overrides_.clear();
-#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
-  ClearDevicePostureOverride();
-  if (geolocation_overridden_) {
-    ClearGeolocationOverride();
-  }
   return Response::Success();
 }
 
@@ -1193,6 +1196,9 @@ Response EmulationHandler::SetDevicePostureOverride(
 }
 
 Response EmulationHandler::ClearDevicePostureOverride() {
+  if (!host_) {
+    return Response::InternalError();
+  }
   if (device_posture_emulation_enabled_) {
     device_posture_emulation_enabled_ = false;
     if (WebContentsImpl* web_contents = GetWebContents()) {
