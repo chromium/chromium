@@ -4,12 +4,22 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <map>
+#include <memory>
 #include <optional>
+#include <ostream>
+#include <set>
+#include <string>
 #include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/byte_size.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -24,7 +34,6 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
-#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -43,7 +52,6 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -64,7 +72,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
-#include "net/base/load_flags.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -75,7 +82,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "services/network/test/test_network_context.h"
@@ -5154,6 +5160,101 @@ TEST_P(PrefetchServiceAheadOfActualNavigationTest,
   task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
   ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+}
+
+// Tests that a prefetch ahead of an actual navigation gets burst scheduler
+// priority (`kBurstAheadOfActualNavigation`) with active set size limit
+// `base + 1`.
+//
+// Scenario:
+//
+// - Base active set size limit is 1; burst limit for ahead-of-actual-navigation
+//   is 2.
+// - `url_1` (normal) starts (active: 1).
+// - `url_2` (normal) stays eligible because base limit (1) is reached.
+// - `url_3` (ahead of actual navigation) starts (active: 2), bypassing `url_2`.
+// - `url_4` (ahead of actual navigation) stays eligible because burst limit (2)
+//   is reached.
+// - Resetting `handle_3` (active: 2 -> 1) starts `url_4` (active: 1 -> 2) while
+//   `url_2` remains eligible.
+// - Resetting `handle_1` (active: 2 -> 1): `pc_2` stays eligible because base
+//   limit (1) is occupied by `pc_4`.
+// - Resetting `handle_4` (active: 1 -> 0): `pc_2` starts.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       BurstAheadOfActualNavigation) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kPrefetchAheadOfActualNavigation},
+      /*disabled_features=*/{
+          features::kPrerender2FallbackPrefetchSpecRules,
+          features::kPrefetchMultipleActiveSetSizeLimitForBase,
+          features::kPrefetchSchedulerTesting,
+      });
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
+                                   /*use_prefetch_proxy=*/false);
+  const auto url_1 = GURL("https://example.com/one");
+  const auto url_2 = GURL("https://example.com/two");
+  const auto url_3 = GURL("https://example.com/three");
+  const auto url_4 = GURL("https://example.com/four");
+
+  auto handle_1 = MakePrefetchFromEmbedder(
+      url_1, prefetch_type, /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/false);
+  auto handle_2 = MakePrefetchFromEmbedder(
+      url_2, prefetch_type, /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/false);
+  auto handle_3 = MakePrefetchFromEmbedder(
+      url_3, prefetch_type, /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true);
+  auto handle_4 = MakePrefetchFromEmbedder(
+      url_4, prefetch_type, /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> pc_1, pc_2, pc_3, pc_4;
+  std::tie(std::ignore, pc_1) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_1))[0];
+  std::tie(std::ignore, pc_2) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_2))[0];
+  std::tie(std::ignore, pc_3) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_3))[0];
+  std::tie(std::ignore, pc_4) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_4))[0];
+
+  ASSERT_EQ(pc_1->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_3->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_4->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+
+  handle_3.reset();
+  EXPECT_FALSE(pc_3);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_1->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(pc_2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_4->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+
+  handle_1.reset();
+  EXPECT_FALSE(pc_1);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_2->GetLoadState(), PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(pc_4->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+
+  handle_4.reset();
+  EXPECT_FALSE(pc_4);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(pc_2->GetLoadState(), PrefetchContainer::LoadState::kStarted);
 }
 
 // Tests that browsing data removal for prefetch is performed per 1) its

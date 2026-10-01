@@ -54,6 +54,8 @@ enum class PrefetchSchedulerPriority {
   kBurstForPrefetchPriority = 12,
   // Burst priority for prefetch ahead of prerender.
   kBurstAheadOfPrerender = 13,
+  // Burst priority for prefetch ahead of actual navigation.
+  kBurstAheadOfActualNavigation = 14,
 };
 
 // Priority queue for prefetches

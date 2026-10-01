@@ -21,6 +21,13 @@ namespace content {
 
 namespace {
 
+bool IsBurstLimitPerPriorityEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kPrefetchSchedulerBurstLimitPerPriority) ||
+         base::FeatureList::IsEnabled(
+             features::kPrefetchAheadOfActualNavigation);
+}
+
 size_t GetActiveSetSizeLimitForBase() {
   // TODO(crbug.com/406403063): Update the limit for base.
 
@@ -39,8 +46,7 @@ size_t GetActiveSetSizeLimitForBase() {
 // TODO(crbug.com/558142263): Remove once
 // `kPrefetchSchedulerBurstLimitPerPriority` is launched.
 size_t GetActiveSetSizeLimitForBurst() {
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kPrefetchSchedulerBurstLimitPerPriority));
+  CHECK(!IsBurstLimitPerPriorityEnabled());
 
   if (base::FeatureList::IsEnabled(features::kPrefetchSchedulerTesting)) {
     return features::kPrefetchSchedulerTestingActiveSetSizeLimitForBurst.Get();
@@ -71,8 +77,7 @@ size_t GetActiveSetSizeLimitForBurst() {
 }
 
 size_t GetActiveSetSizeLimit(PrefetchSchedulerPriority priority) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrefetchSchedulerBurstLimitPerPriority));
+  CHECK(IsBurstLimitPerPriorityEnabled());
 
   if (base::FeatureList::IsEnabled(features::kPrefetchSchedulerTesting)) {
     if (priority >= PrefetchSchedulerPriority::kBurstThreshold) {
@@ -113,6 +118,18 @@ size_t GetActiveSetSizeLimit(PrefetchSchedulerPriority priority) {
 
       break;
 
+    case PrefetchSchedulerPriority::kBurstAheadOfActualNavigation:
+      // A prefetch ahead of an actual navigation is triggered by a signal that
+      // the navigation is (almost) certain to happen soon. Allow it to run
+      // independently of the ordinary prefetch queue so that it is not blocked
+      // by queued prefetch requests.
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchAheadOfActualNavigation)) {
+        return GetActiveSetSizeLimitForBase() + 1;
+      }
+
+      break;
+
     case PrefetchSchedulerPriority::kBurstForPrefetchPriority:
       // WebView prefetches with the highest priority have a configurable burst
       // limit. Note that `kWebViewPrefetchHighestPrefetchPriorityBurstLimit`
@@ -132,6 +149,13 @@ size_t GetActiveSetSizeLimit(PrefetchSchedulerPriority priority) {
 
 PrefetchSchedulerPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchAheadOfActualNavigation)) {
+    if (prefetch_container.request().is_ahead_of_actual_navigation()) {
+      return PrefetchSchedulerPriority::kBurstAheadOfActualNavigation;
+    }
+  }
+
   if (prefetch_container.request().priority().has_value()) {
     switch (prefetch_container.request().priority().value()) {
       case PrefetchPriority::kLow:
@@ -413,8 +437,7 @@ void PrefetchScheduler::Progress() {
   // TODO(crbug.com/443681583)): Remove it if possible.
   prefetch_service_->PrepareProgress(base::PassKey<PrefetchScheduler>());
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchSchedulerBurstLimitPerPriority)) {
+  if (IsBurstLimitPerPriorityEnabled()) {
     ProgressInternalWithBurstLimitPerPriority();
     return;
   }
@@ -425,8 +448,7 @@ void PrefetchScheduler::Progress() {
 // TODO(crbug.com/558142263): Remove once
 // `kPrefetchSchedulerBurstLimitPerPriority` is launched.
 void PrefetchScheduler::ProgressInternalLegacy() {
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kPrefetchSchedulerBurstLimitPerPriority));
+  CHECK(!IsBurstLimitPerPriorityEnabled());
 
   // #algorithm
   //
@@ -482,8 +504,7 @@ void PrefetchScheduler::ProgressInternalLegacy() {
 }
 
 void PrefetchScheduler::ProgressInternalWithBurstLimitPerPriority() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrefetchSchedulerBurstLimitPerPriority));
+  CHECK(IsBurstLimitPerPriorityEnabled());
 
   // #algorithm
   //
