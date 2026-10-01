@@ -14,7 +14,6 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
@@ -28,8 +27,8 @@ import '../internal/icons.html.js';
 // </if>
 
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -64,7 +63,7 @@ export interface SettingsAutofillAiEntriesListElement {
 }
 
 const SettingsAutofillAiEntriesListElementBase = SettingsViewMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+    WebUiListenerMixin(I18nMixin(PrefServiceObserverMixin(PolymerElement))));
 
 export class SettingsAutofillAiEntriesListElement extends
     SettingsAutofillAiEntriesListElementBase {
@@ -196,10 +195,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
   static get observers() {
     return [
-      'updateAllowNewEntitiesAddition_(' +
-          'prefs.autofill.profile_enabled.value, ' +
-          `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value, ` +
-          'allowNewEntitiesAdditionPref.*)',
+      'updateAllowNewEntitiesAddition_(allowNewEntitiesAdditionPref.*)',
     ];
   }
 
@@ -255,6 +251,13 @@ export class SettingsAutofillAiEntriesListElement extends
 
     this.addWebUiListener(
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
+
+    this.addPrefObserver(
+        'autofill.profile_enabled',
+        () => this.updateAllowNewEntitiesAddition_());
+    this.addPrefObserver(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+        () => this.updateAllowNewEntitiesAddition_());
   }
 
   override disconnectedCallback() {
@@ -442,10 +445,13 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private async updateAllowNewEntitiesAddition_(): Promise<void> {
-    await CrSettingsPrefs.initialized;
-    const addressPref = this.getPref<boolean>('autofill.profile_enabled');
-    const autofillAiPref = this.getPref<ModelExecutionEnterprisePolicyValue>(
-        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+    const addressPref =
+        prefService.getPref<boolean>('autofill.profile_enabled');
+    const autofillAiPref =
+        prefService.getPref<ModelExecutionEnterprisePolicyValue>(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI);
     const meetsAddressPrefRequirement =
         this.autofillSettingsEnterprisePolicyEnabled_ || addressPref.value;
     const meetsAiPrefRequirement =

@@ -26,6 +26,16 @@ suite('AutofillPageIndex', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy([
       ...getPaymentsPrefs(),
       ...getContactInfoPrefs(),
+      {
+        key: AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: ModelExecutionEnterprisePolicyValue.ALLOW,
+      },
+      {
+        key: 'autofill.autofill_ai.identity_entities_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
     ]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();

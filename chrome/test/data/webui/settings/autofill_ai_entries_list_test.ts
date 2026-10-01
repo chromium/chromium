@@ -8,9 +8,7 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertGE, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
-import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue, loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {ModelExecutionEnterprisePolicyValue, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiEntriesListElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,22 +16,44 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'autofill.profile_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW,
+    },
+    {
+      key: 'autofill.autofill_ai.reauth_before_viewing_sensitive_data',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+  ];
+}
+
 suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   let entityDataManager: TestEntityDataManagerProxy;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    settingsPrefs = document.createElement('settings-prefs');
-    await CrSettingsPrefs.initialized;
-
-    // Ensure clean state for prefs.
-    settingsPrefs.set('prefs.autofill.profile_enabled.value', true);
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -80,10 +100,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     entityDataManager.setGetOptInStatusResponse(false);
   });
 
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
   async function createEntriesList(
       eligibleUser: boolean = true,
       autofillSettingsEnterprisePolicyEnabled: boolean = false,
@@ -97,7 +113,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     });
     const entriesList: SettingsAutofillAiEntriesListElement =
         document.createElement('settings-autofill-ai-entries-list');
-    entriesList.prefs = settingsPrefs.prefs!;
     document.body.appendChild(entriesList);
     await flushTasks();
     return entriesList;
@@ -145,7 +160,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
 
     // Check that when the autofill pref is off, the add button becomes
     // disabled, which essentially means the feature is off.
-    entriesList.setPrefValue('autofill.profile_enabled', false);
+    prefService.setPrefValue('autofill.profile_enabled', false);
     await flushTasks();
 
     assertTrue(addButton.disabled);
@@ -165,7 +180,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         assertTrue(!!addButton);
         assertFalse(addButton.disabled);
 
-        entriesList.setPrefValue('autofill.profile_enabled', false);
+        prefService.setPrefValue('autofill.profile_enabled', false);
         await flushTasks();
         assertFalse(addButton.disabled);
       });
@@ -208,7 +223,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     };
-    entriesList.setPrefValue('autofill.profile_enabled', true);
+    prefService.setPrefValue('autofill.profile_enabled', true);
     await flushTasks();
 
     const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
@@ -216,7 +231,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
-    entriesList.setPrefValue('autofill.profile_enabled', false);
+    prefService.setPrefValue('autofill.profile_enabled', false);
     await flushTasks();
 
     assertTrue(addButton.disabled);
@@ -229,7 +244,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     };
-    entriesList.setPrefValue(
+    prefService.setPrefValue(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI,
         ModelExecutionEnterprisePolicyValue.ALLOW);
     await flushTasks();
@@ -239,7 +254,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
-    entriesList.setPrefValue(
+    prefService.setPrefValue(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI,
         ModelExecutionEnterprisePolicyValue.DISABLE);
     await flushTasks();
@@ -256,7 +271,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,  // Editing is disabled
         };
-        entriesList.setPrefValue('autofill.profile_enabled', true);
+        prefService.setPrefValue('autofill.profile_enabled', true);
         await flushTasks();
 
         const addButton =
@@ -265,10 +280,11 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         assertTrue(!!addButton);
         assertTrue(addButton.disabled);
 
-        entriesList.set('prefs.autofill.profile_enabled', {
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'autofill.profile_enabled',
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           value: true,
-        });
+        }]);
         await flushTasks();
 
         assertTrue(addButton.disabled);
@@ -281,13 +297,14 @@ suite('AutofillAiEntriesListUiTest', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
-  let settingsPrefs: SettingsPrefsElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    settingsPrefs = document.createElement('settings-prefs');
-    await CrSettingsPrefs.initialized;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
       enableAutofillAiWalletPrivatePasses: true,
@@ -397,25 +414,11 @@ suite('AutofillAiEntriesListUiTest', function() {
     // alphabetically.
     testEntityTypes.sort(
         (a, b) => a.typeNameAsString.localeCompare(b.typeNameAsString));
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
-        ModelExecutionEnterprisePolicyValue.ALLOW);
-    settingsPrefs.set(
-        'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data', {
-          key: 'autofill.autofill_ai.reauth_before_viewing_sensitive_data',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        });
-  });
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
   });
 
   async function createEntriesList(
       allowedEntityTypes: Set<number>|null = null) {
     entriesList = document.createElement('settings-autofill-ai-entries-list');
-    entriesList.prefs = settingsPrefs.prefs!;
     entriesList.allowedEntityTypes = allowedEntityTypes;
     document.body.appendChild(entriesList);
     await flushTasks();
@@ -820,13 +823,14 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
-  let settingsPrefs: SettingsPrefsElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    settingsPrefs = document.createElement('settings-prefs');
-    await CrSettingsPrefs.initialized;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
     });
@@ -880,7 +884,6 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
       allowedEntityTypes: Set<number>|null = null, pageName: string = '',
       metricEntityTypes: Record<number, string>|null = null) {
     entriesList = document.createElement('settings-autofill-ai-entries-list');
-    entriesList.prefs = settingsPrefs.prefs!;
     entriesList.allowedEntityTypes = allowedEntityTypes;
     entriesList.metricEntityTypes = metricEntityTypes;
     entriesList.pageName = pageName;
@@ -995,13 +998,14 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
 
 suite('AutofillAiEntriesListLongLabelsUiTest', function() {
   let entriesList: SettingsAutofillAiEntriesListElement;
-  let settingsPrefs: SettingsPrefsElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    settingsPrefs = document.createElement('settings-prefs');
-    await CrSettingsPrefs.initialized;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     const entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
@@ -1059,16 +1063,8 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
     await flushTasks();
   });
 
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
   async function createEntriesList() {
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
-        ModelExecutionEnterprisePolicyValue.ALLOW);
     entriesList = document.createElement('settings-autofill-ai-entries-list');
-    entriesList.prefs = settingsPrefs.prefs!;
     document.body.appendChild(entriesList);
 
     await flushTasks();
