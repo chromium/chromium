@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_contents.h"
 
 HistoryCrossDeviceSigninPromoHandler::HistoryCrossDeviceSigninPromoHandler(
@@ -41,8 +41,10 @@ void HistoryCrossDeviceSigninPromoHandler::OnPromoCardDismissed() {
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardActionClicked(
     OnPromoCardActionClickedCallback callback) {
+  // May be null if this WebUI is not currently hosted in a browser window.
+  // `OpenSigninToPhoneQrCodeBubble()` handles that by dropping the bubble.
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+      webui::GetBrowserWindowInterface(web_contents_);
   OpenSigninToPhoneQrCodeBubble(
       browser, CrossDeviceSigninPromoEntryPoint::kHistoryPage,
       std::move(callback));
