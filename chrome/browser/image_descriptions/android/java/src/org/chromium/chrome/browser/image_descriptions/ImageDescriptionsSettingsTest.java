@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -48,6 +49,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Unit tests for {@link ImageDescriptionsSettings} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ImageDescriptionsSettingsTest {
     // Test output error messages and widget names
     private static final String CONTENT_ERROR = "Content mismatch / error";
