@@ -12,6 +12,7 @@ COMMON_PERF_DATA = [
   "//third_party/crossbench/config/",
   "//third_party/crossbench/third_party/",
   "//third_party/crossbench/tools/",
+  "//third_party/perfetto/tools/traceconv",
 ]
 
 if (!is_android) {
@@ -20,6 +21,7 @@ if (!is_android) {
     data = COMMON_PERF_DATA
     data_deps = [
       ":perf_without_chrome",
+      "//build/config/clang:llvm-symbolizer_data($host_toolchain)",
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
     if (is_linux || is_mac || is_win) {
@@ -40,6 +42,7 @@ if (!is_android) {
       }
       data_deps = [
         ":perf_without_chrome",
+        "//build/config/clang:llvm-symbolizer_data($host_toolchain)",
         "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
         "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
       ]
