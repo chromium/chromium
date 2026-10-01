@@ -461,7 +461,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "-i",
       "VideoCaptureHost",
     ]
-    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    deps = [
+      "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator",
+      "//media/capture/mojom:video_capture_js",
+    ]
     outputs = [
       "${target_gen_dir}/VideoCaptureHost.txt",
       "${root_build_dir}/VideoCaptureHost_in_process_fuzzer.html",
