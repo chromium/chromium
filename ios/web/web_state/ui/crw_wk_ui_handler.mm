@@ -83,6 +83,8 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
 // Overriden to return NO for
 // -webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:
+// -webView:requestGeolocationPermissionForOrigin:
+// initiatedByFrame:decisionHandler:
 // if there is no delegate or `delegate->CanRunOpenPanel()` returns false.
 - (BOOL)respondsToSelector:(SEL)selector {
   SEL runOpenPanelWithParametersSelector = @selector
@@ -97,6 +99,22 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                       "18.4+ so it should not be used in former versions.";
     }
   }
+
+  SEL requestGeolocationPermissionSelector =
+      @selector(webView:requestGeolocationPermissionForOrigin:initiatedByFrame:
+                decisionHandler:);
+  if (selector == requestGeolocationPermissionSelector) {
+    if (@available(iOS 27.0, *)) {
+      return base::FeatureList::IsEnabled(
+          web::features::kNewGeolocationPermissionDelegate);
+    } else {
+      NOTREACHED()
+          << "@selector(-webView:requestGeolocationPermissionForOrigin:"
+             "initiatedByFrame:decisionHandler:) only exists on "
+             "27.0+ so it should not be used in former versions.";
+    }
+  }
+
   return [super respondsToSelector:selector];
 }
 
@@ -139,6 +157,26 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     }
   }
   [request displayPromptForMediaCaptureType:type origin:securityOrigin];
+}
+
+- (void)webView:(WKWebView*)webView
+    requestGeolocationPermissionForOrigin:(WKSecurityOrigin*)origin
+                         initiatedByFrame:(WKFrameInfo*)frame
+                          decisionHandler:
+                              (void (^)(WKPermissionDecision decision))
+                                  decisionHandler API_AVAILABLE(ios(27.0)) {
+  if (!base::FeatureList::IsEnabled(
+          web::features::kNewGeolocationPermissionDelegate)) {
+    decisionHandler(WKPermissionDecisionPrompt);
+    return;
+  }
+
+  CRWPermissionRequest* request =
+      [[CRWPermissionRequest alloc] initWithPresenter:self
+                                      decisionHandler:decisionHandler
+                                         onTaskRunner:self.mainTaskRunner];
+  GURL securityOrigin = web::GURLOriginWithWKSecurityOrigin(origin);
+  [request displayPromptForGeolocationOrigin:securityOrigin];
 }
 
 - (WKWebView*)webView:(WKWebView*)webView
