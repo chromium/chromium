@@ -24,19 +24,11 @@ bool FcpFlags::enable_confidential_aggregation() const {
   return true;
 }
 
-bool FcpFlags::enable_relative_uri_prefix() const {
-  return true;
-}
-
 bool FcpFlags::enable_private_logger() const {
   return true;
 }
 
 bool FcpFlags::drop_out_based_data_availability() const {
-  return true;
-}
-
-bool FcpFlags::enable_attestation_transparency_verifier() const {
   return true;
 }
 
@@ -81,8 +73,8 @@ int64_t FcpFlags::federated_training_permanent_errors_retry_delay_secs() const {
   return kFcpPermanentErrorsRetryDelay.Get().InSeconds();
 }
 
-bool FcpFlags::enable_privacy_id_generation() const {
-  return kFcpEnablePrivacyIdGeneration.Get();
+bool FcpFlags::enable_privacy_id_v2() const {
+  return kFcpEnablePrivacyIdV2.Get();
 }
 
 }  // namespace private_insights

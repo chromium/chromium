@@ -64,7 +64,7 @@ COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<base::TimeDelta> kFcpPermanentErrorsRetryDelay;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
-extern const base::FeatureParam<bool> kFcpEnablePrivacyIdGeneration;
+extern const base::FeatureParam<bool> kFcpEnablePrivacyIdV2;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<int> kMaxContextualCueEvents;
