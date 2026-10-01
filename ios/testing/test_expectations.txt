@@ -119,7 +119,7 @@ crbug.com/557278120 [ iPad Simulator ] InfobarTestCase/testInfobarTopMostVisible
 crbug.com/557278184 [ iPad Simulator ] SaveToDriveTestCase/testSaveToDriveAccountRemoved [ Pass Failure ]
 crbug.com/557277880 [ iPad Simulator ] FeatureEngagementTestCase/testRequestDesktopTip [ Pass Failure ]
 crbug.com/557278187 [ iPad Simulator ] TabStripGroupTestCase/testDragLastTabOutOfGroupCancel [ Pass Failure ]
-crbug.com/557278123 [ iPhone Simulator ] PinnedTabsDragDropTestCase/testDragRegularTabInPinnedView [ Pass Failure ]
+crbug.com/557278123 [ iPhone ] PinnedTabsDragDropTestCase/testDragRegularTabInPinnedView [ Pass Failure ]
 crbug.com/557276970 [ iPhone Simulator ] PinnedTabsGenericConsistencyTestCase/testCloseAllPinnedThenRegularTabs [ Pass Failure ]
 
 # Gardening suppression 2026-09-08
@@ -176,7 +176,7 @@ crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testFloatyHidd
 crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
 crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Pass Failure ]
-crbug.com/565749273 [ iPad14 Simulator ] GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Failure ]
+crbug.com/565749273 [ iPad Simulator ] GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Pass Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiEntrypointTestCase/testInvokeGeminiFloatyViaAssistantButton [ Pass Failure ]
 crbug.com/565749273 [ iPad14 Simulator ] GeminiEntrypointTestCase/testInvokeGeminiFloatyViaAssistantButton [ Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiFirstRunEGTest/testAppSwitchingAISummarizationGeminiFirstRunExperience [ Pass Failure ]
@@ -207,3 +207,14 @@ crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummar
 crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
 crbug.com/565749273 [ iPad ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationPageLoadingSnackbar [ Pass Failure ]
 crbug.com/567546565 [ Device ] WindowOpenByDOMTestCase/testLinkWithBlankTargetMultipleTimes [ Pass Failure ]
+
+# Gardening suppression 2026-10-01
+crbug.com/538053103 SendTabToSelfCoordinatorAutoOpenTestCase/testTabCardLabelPersistsAcrossRelaunch [ Pass Failure ]
+crbug.com/557196796 [ Simulator ] FileUploadPanelTestCase/testDriveFilePickerFromContextMenu [ Pass Failure ]
+crbug.com/556653764 [ iPad Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
+crbug.com/568359121 [ iPhone Simulator ] AccountMenuTestCase/testSwitch [ Pass Failure ]
+crbug.com/568359962 [ iPhone Simulator ] AdaptiveToolbarBottomOmniboxTestCase/testTapLocationBarAboveTheKeyboardForVoiceOver [ Pass Failure ]
+crbug.com/568360510 [ iPad Simulator ] ContentSuggestionsTestCase/testMagicStackCompactedSetUpListCompleteAllItems [ Pass Failure ]
+crbug.com/568360452 [ iPad Simulator ] PasswordManagerDetailsTestCase/testShowHidePassword [ Pass Failure ]
+crbug.com/568360194 [ iPhone Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
+
