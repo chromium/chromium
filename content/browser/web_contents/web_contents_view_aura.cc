@@ -1350,8 +1350,10 @@ void WebContentsViewAura::StartDragging(
   }
 }
 
-void WebContentsViewAura::UpdateDragOperation(DragOperation operation,
-                                              bool document_is_handling_drag) {
+void WebContentsViewAura::UpdateDragOperation(
+    DragOperation operation,
+    bool document_is_handling_drag,
+    RenderWidgetHostImpl* source_rwh) {
   // This asynchronous update may arrive after a drop has already been cancelled
   // or completed, in which case `current_drag_data_` will have been reset.
   if (current_drag_data_) {

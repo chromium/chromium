@@ -186,8 +186,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     ui::DropTargetEvent event(*data.get(), point, point,
                               ui::DragDropTypes::DRAG_COPY);
     view->OnDragEntered(event);
-    view->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
-                              document_is_handling_drag);
+    view->UpdateDragOperation(
+        ui::mojom::DragOperation::kCopy, document_is_handling_drag,
+        GetWebContentsImpl()->GetPrimaryMainFrame()->GetRenderWidgetHost());
     EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
     auto drop_cb = view->GetDropCallback(event);
     ASSERT_TRUE(drop_cb);

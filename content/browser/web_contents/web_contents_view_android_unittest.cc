@@ -363,4 +363,72 @@ TEST_F(WebContentsViewAndroidTest, ColorProviderSourceFallback) {
   web_contents()->GetColorProvider();
 }
 
+TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+
+  ui::DragEventAndroid enter_event(
+      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
+      mime_types, false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(enter_event);
+  ASSERT_EQ(GetRenderWidgetHost(), view()->current_target_rwh_for_drag_.get());
+
+  // Update from the current target RWH succeeds.
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              /*document_is_handling_drag=*/true,
+                              GetRenderWidgetHost());
+  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
+  EXPECT_TRUE(view()->document_is_handling_drag_);
+
+  // UpdateDragOperation from a non-current or null RWH must not overwrite the
+  // current target RWH's state.
+  std::unique_ptr<WebContents> other_web_contents = CreateTestWebContents();
+  RenderWidgetHostImpl* other_rwh = static_cast<RenderWidgetHostImpl*>(
+      other_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kNone,
+                              /*document_is_handling_drag=*/false, other_rwh);
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kNone,
+                              /*document_is_handling_drag=*/false, nullptr);
+  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
+  EXPECT_TRUE(view()->document_is_handling_drag_);
+
+  // Exiting the drag resets current_target_rwh_for_drag_, drag_operation_, and
+  // document_is_handling_drag_, and ignores late replies arriving after exit.
+  ui::DragEventAndroid exit_event(
+      env, DragEventJni::ACTION_DRAG_EXITED, gfx::PointF(), gfx::PointF(), {},
+      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(exit_event);
+  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
+  EXPECT_FALSE(view()->document_is_handling_drag_);
+
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              /*document_is_handling_drag=*/true,
+                              GetRenderWidgetHost());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
+  EXPECT_FALSE(view()->document_is_handling_drag_);
+
+  // Re-entering and then ending the drag also resets drag_operation_ and
+  // document_is_handling_drag_, and ignores late replies arriving after end.
+  view()->OnDragEvent(enter_event);
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              /*document_is_handling_drag=*/true,
+                              GetRenderWidgetHost());
+  EXPECT_EQ(ui::mojom::DragOperation::kCopy, view()->drag_operation_);
+  EXPECT_TRUE(view()->document_is_handling_drag_);
+
+  ui::DragEventAndroid end_event(
+      env, DragEventJni::ACTION_DRAG_ENDED, gfx::PointF(), gfx::PointF(), {},
+      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(end_event);
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
+  EXPECT_FALSE(view()->document_is_handling_drag_);
+
+  view()->UpdateDragOperation(ui::mojom::DragOperation::kCopy,
+                              /*document_is_handling_drag=*/true,
+                              GetRenderWidgetHost());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, view()->drag_operation_);
+  EXPECT_FALSE(view()->document_is_handling_drag_);
+}
+
 }  // namespace content

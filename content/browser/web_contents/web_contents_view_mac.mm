@@ -342,7 +342,8 @@ DropData* WebContentsViewMac::GetDropData() const {
 }
 
 void WebContentsViewMac::UpdateDragOperation(ui::mojom::DragOperation operation,
-                                             bool document_is_handling_drag) {
+                                             bool document_is_handling_drag,
+                                             RenderWidgetHostImpl* source_rwh) {
   [drag_dest_ setCurrentOperation:operation
            documentIsHandlingDrag:document_is_handling_drag];
 }

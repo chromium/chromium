@@ -126,7 +126,8 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
       const gfx::Rect& drag_obj_rect,
       const blink::mojom::DragEventSourceInfo& event_info) override;
   void UpdateDragOperation(ui::mojom::DragOperation operation,
-                           bool document_is_handling_drag) override;
+                           bool document_is_handling_drag,
+                           RenderWidgetHostImpl* source_rwh) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
@@ -197,6 +198,8 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
       DragInaccessibleImage_MixedMimeTypes_PreservesStringTypes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
                            OnDragEnded_ResetsDropDataAndSecurityInfo);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           UpdateDragOperation_IgnoresStaleTargetRwh);
 
   void OnDragEntered(const gfx::PointF& location,
                      const gfx::PointF& screen_location);

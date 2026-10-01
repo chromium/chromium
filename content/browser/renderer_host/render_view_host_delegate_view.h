@@ -92,7 +92,8 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // `document_is_handling_drag` describes if the document is handling the
   // drop.
   virtual void UpdateDragOperation(ui::mojom::DragOperation operation,
-                                   bool document_is_handling_drag) {}
+                                   bool document_is_handling_drag,
+                                   RenderWidgetHostImpl* source_rwh) {}
 
   // Notification that view for this delegate got the focus.
   virtual void GotFocus(RenderWidgetHostImpl* render_widget_host) {}

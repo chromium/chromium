@@ -250,9 +250,10 @@ DropData* WebContentsViewChildFrame::GetDropData() const {
 
 void WebContentsViewChildFrame::UpdateDragOperation(
     ui::mojom::DragOperation operation,
-    bool document_is_handling_drag) {
+    bool document_is_handling_drag,
+    RenderWidgetHostImpl* source_rwh) {
   if (auto* view = GetOuterDelegateView()) {
-    view->UpdateDragOperation(operation, document_is_handling_drag);
+    view->UpdateDragOperation(operation, document_is_handling_drag, source_rwh);
   }
 }
 

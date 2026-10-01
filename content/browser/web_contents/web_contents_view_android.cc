@@ -531,7 +531,21 @@ void WebContentsViewAndroid::StartDragging(
 
 void WebContentsViewAndroid::UpdateDragOperation(
     ui::mojom::DragOperation op,
-    bool document_is_handling_drag) {
+    bool document_is_handling_drag,
+    RenderWidgetHostImpl* source_rwh) {
+  // On Android, ACTION_DRAG_ENTERED carries no valid coordinates, so
+  // OnDragEntered always enters the main-frame RenderWidgetHost first before
+  // ACTION_DRAG_LOCATION hit-tests into child/inner RenderWidgetHosts (such as
+  // an OOPIF or <webview> guest) — unlike Aura and Mac, where DragEnter carries
+  // coordinates and hit-tests the target RenderWidgetHost directly. Ignore
+  // stale asynchronous replies from a previously entered RenderWidgetHost (or
+  // after the drag has exited/ended) so they cannot clobber `drag_operation_`
+  // or `document_is_handling_drag_` before ACTION_DROP copies
+  // `document_is_handling_drag_` into `drop_data_`.
+  if (!current_target_rwh_for_drag_ ||
+      source_rwh != current_target_rwh_for_drag_.get()) {
+    return;
+  }
   drag_operation_ = op;
   document_is_handling_drag_ = document_is_handling_drag;
 }
@@ -651,6 +665,10 @@ void WebContentsViewAndroid::DragEnteredCallback(
   }
 
   current_target_rwh_for_drag_ = target_rwh->GetWeakPtr();
+  // Reset per-target drag state until the newly entered RWH replies via
+  // UpdateDragOperation().
+  drag_operation_ = ui::mojom::DragOperation::kNone;
+  document_is_handling_drag_ = false;
 
   blink::DragOperationsMask allowed_ops =
       static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
@@ -739,7 +757,13 @@ void WebContentsViewAndroid::OnDragExited() {
   if (current_target_rwh_for_drag_) {
     current_target_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(),
                                                       gfx::PointF());
+    current_target_rwh_for_drag_.reset();
   }
+  // Clear target drag state so a drag that exits and ends outside the view is
+  // not treated as handled, and any in-flight UpdateDragOperation() replies are
+  // ignored.
+  drag_operation_ = ui::mojom::DragOperation::kNone;
+  document_is_handling_drag_ = false;
 }
 
 void WebContentsViewAndroid::OnPerformDrop(const gfx::PointF& location,
@@ -823,6 +847,7 @@ void WebContentsViewAndroid::OnDragEnded() {
   // ACTION_DRAG_ENDED asynchronously before `PerformDropCallback` finishes
   // executing. If we destroy `drop_data_` here, we risk a race condition where
   // the callback attempts to dereference a null pointer or dropped payload.
+  // Reset all per-drag state for the next drag session.
   drag_metadata_.clear();
   current_source_rwh_for_drag_.reset();
   current_target_rwh_for_drag_.reset();
@@ -830,6 +855,7 @@ void WebContentsViewAndroid::OnDragEnded() {
   drag_exceeded_movement_threshold_ = false;
   drag_dropped_ = false;
   drag_operation_ = ui::mojom::DragOperation::kNone;
+  document_is_handling_drag_ = false;
   drag_entered_location_ = gfx::PointF();
   drag_location_ = gfx::PointF();
   drag_screen_location_ = gfx::PointF();

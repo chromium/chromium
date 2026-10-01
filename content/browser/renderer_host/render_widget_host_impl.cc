@@ -2424,7 +2424,7 @@ void RenderWidgetHostImpl::OnUpdateDragOperation(
     bool document_is_handling_drag) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view) {
-    view->UpdateDragOperation(current_op, document_is_handling_drag);
+    view->UpdateDragOperation(current_op, document_is_handling_drag, this);
   }
   std::move(callback).Run(current_op, document_is_handling_drag);
 }
