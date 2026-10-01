@@ -53,7 +53,8 @@ public class GlicMicPermissionDialogRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(0)
+                    .setRevision(1)
+                    .setDescription("Replace mic icon with the header illustration.")
                     .build();
 
     @Rule public final MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
