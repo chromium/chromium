@@ -96,10 +96,25 @@ unsigned char* realloc(unsigned char* p,
 unsigned char* alloc_zeroed(size_t size, size_t align) {
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) || \
     BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
-  // TODO(danakj): When RUST_ALLOCATOR_USES_PARTITION_ALLOC is true, it's
-  // possible that a partition_alloc::UncheckedAllocZeroed() call would perform
-  // better than partition_alloc::UncheckedAlloc() + memset. But there is no
-  // such API today. See b/342251590.
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
+  // This check only picks the faster of two ways to get zeroed memory. Both
+  // ways return zeroed memory, so a wrong choice only affects performance, not
+  // correctness or security.
+  //
+  // PartitionAlloc direct-maps large allocations, so they always get new pages,
+  // which are zeroed already: `UncheckedCalloc()` doesn't zero them again, and
+  // the pages that are never written are never faulted in.
+  //
+  // Smaller allocations usually reuse freed memory, which has to be zeroed
+  // anyway, and `UncheckedCalloc()` would zero their whole slot rather than
+  // only `size` bytes, so `alloc()` and `memset()` are faster for them. There
+  // is no aligned `UncheckedCalloc()`.
+  if (partition_alloc::IsAlwaysDirectMapped(size) &&
+      align <= alignof(std::max_align_t)) {
+    return static_cast<unsigned char*>(
+        allocator_shim::UncheckedCalloc(1, size));
+  }
+#endif  // BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   unsigned char* p = alloc(size, align);
   if (p) {
     // SAFETY: `p` points to a newly allocated block of `size` bytes, so

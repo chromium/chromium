@@ -305,6 +305,14 @@ static_assert(MaxGigaAllocationSize() + internal::kSuperPageSize <=
                   internal::BucketSizeDetails::kMaxSlotSize,
               "slot_size no longer fits in BucketSizeDetails");
 
+// Returns whether PartitionAlloc always direct-maps allocations of
+// `requested_size` bytes, which is the case when they are larger than its
+// largest bucket. PartitionAlloc adds metadata to the requested size, so it can
+// also direct-map slightly smaller allocations.
+PA_ALWAYS_INLINE constexpr bool IsAlwaysDirectMapped(size_t requested_size) {
+  return requested_size > BucketIndexLookup::kMaxBucketSize;
+}
+
 // When trying to conserve memory, set the thread cache limit to this.
 static inline constexpr size_t kThreadCacheDefaultSizeThreshold = 512;
 

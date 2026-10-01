@@ -6240,6 +6240,29 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
         //  || PA_BUILDFLAG(IS_DEBUG))
 }
 
+TEST_P(PartitionAllocTest, IsAlwaysDirectMapped) {
+  static_assert(!IsAlwaysDirectMapped(BucketIndexLookup::kMaxBucketSize));
+  static_assert(IsAlwaysDirectMapped(BucketIndexLookup::kMaxBucketSize + 1));
+
+  for (size_t size : {BucketIndexLookup::kMaxBucketSize + 1,
+                      2 * BucketIndexLookup::kMaxBucketSize}) {
+    SCOPED_TRACE(size);
+    ASSERT_TRUE(IsAlwaysDirectMapped(size));
+
+    void* ptr = allocator.root()->Alloc(size, type_name);
+    ASSERT_TRUE(ptr);
+    EXPECT_TRUE(
+        IsManagedByDirectMapForTesting(UntagPtr(ptr), allocator.root()));
+    allocator.root()->Free(ptr);
+
+    ptr = allocator.root()->AlignedAlloc(64, size);
+    ASSERT_TRUE(ptr);
+    EXPECT_TRUE(
+        IsManagedByDirectMapForTesting(UntagPtr(ptr), allocator.root()));
+    allocator.root()->Free(ptr);
+  }
+}
+
 // Test for crash http://crbug.com/1169003.
 TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Size is large enough to satisfy it from a single-slot slot span

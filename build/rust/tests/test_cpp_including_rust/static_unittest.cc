@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
 #include "partition_alloc/buildflags.h"
@@ -21,6 +22,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/bucket_lookup.h"              // nogncheck
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #endif
 
@@ -88,4 +90,31 @@ TEST(RustStaticTest, RustLargeAllocationFailure) {
   // will always fail, the realloc can't happen anyway.
 
 #endif
+}
+
+TEST(RustStaticTest, RustAllocZeroed) {
+  std::vector<size_t> sizes = {1u, 100u, 4097u, 4u << 20};
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // alloc_zeroed() uses calloc() for the sizes that PartitionAlloc always
+  // direct-maps, and alloc() and memset() for the other sizes. Also test the
+  // sizes on both sides of this threshold.
+  constexpr size_t kMaxBucketSize =
+      partition_alloc::BucketIndexLookup::kMaxBucketSize;
+  static_assert(!partition_alloc::IsAlwaysDirectMapped(kMaxBucketSize));
+  static_assert(partition_alloc::IsAlwaysDirectMapped(kMaxBucketSize + 1));
+  sizes.push_back(kMaxBucketSize);
+  sizes.push_back(kMaxBucketSize + 1);
+#endif
+
+  // The larger alignment uses the aligned allocation functions.
+  size_t big_alignment = alignof(std::max_align_t) * 2u;
+  for (size_t size : sizes) {
+    for (size_t align : {size_t{1}, big_alignment}) {
+      // Before alloc_zeroed(), this frees memory with non-zero bytes, which the
+      // allocator can reuse. So this checks that alloc_zeroed() zeroes it,
+      // though a pass doesn't prove that it always does.
+      EXPECT_TRUE(allocate_zeroed_via_rust_returns_zeros(size, align))
+          << "size: " << size << ", align: " << align;
+    }
+  }
 }
