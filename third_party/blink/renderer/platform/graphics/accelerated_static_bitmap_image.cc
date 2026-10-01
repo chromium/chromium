@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_texture_backing.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -134,8 +135,15 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
         std::move(animated_image_frame_index_map));
   }
 
-  return resource_provider->DoExternalOverdrawAndSnapshot(draw_callback,
-                                                          orientation);
+  draw_callback(
+      resource_provider->recorder_for_external_draws()->getRecordingCanvas());
+  if (resource_provider->recorder_for_external_draws()
+          ->HasReleasableDrawOps()) {
+    resource_provider->FlushRecording(
+        resource_provider->recorder_for_external_draws()
+            ->ReleaseMainRecording());
+  }
+  return resource_provider->Snapshot(orientation);
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
