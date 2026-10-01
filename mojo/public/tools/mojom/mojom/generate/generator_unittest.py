@@ -23,7 +23,7 @@ try:
   importlib.util.find_spec("mojom")
 except ImportError:
   sys.path.append(os.path.join(_GetDirAbove("pylib"), "pylib"))
-from mojom.generate import generator
+from mojom.generate import generator  # noqa: E402
 
 
 class StringManipulationTest(unittest.TestCase):

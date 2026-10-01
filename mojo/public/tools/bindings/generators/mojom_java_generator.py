@@ -8,7 +8,6 @@ import argparse
 import ast
 import contextlib
 import os
-import re
 import shutil
 import sys
 import tempfile
@@ -294,7 +293,7 @@ def ComputeInterfaceImports(module):
   def has_result_response(module):
     for interface in module.interfaces:
       for method in interface.methods:
-        if method.result_response != None:
+        if method.result_response != None:  # noqa: E711
           return True
     return False
 

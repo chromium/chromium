@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 from mojom_parser_test_case import MojomParserTestCase
-from mojom.generate import module as mojom
 
 
 class ConstTest(MojomParserTestCase):

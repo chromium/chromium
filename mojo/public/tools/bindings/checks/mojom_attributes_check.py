@@ -4,7 +4,6 @@
 """Validate mojo attributes are allowed in Chrome before generation."""
 
 import mojom.generate.check as check
-import mojom.generate.module as module
 
 _COMMON_ATTRIBUTES = {
   'EnableIf',
@@ -182,7 +181,7 @@ class Check(check.Check):
     if not attributes:
       return
     for attribute in attributes:
-      if not attribute in allowed:
+      if attribute not in allowed:
         # Is there a close misspelling?
         hint = self._Respell(allowed, attribute)
         raise check.CheckException(
@@ -193,7 +192,7 @@ class Check(check.Check):
     if enum.attributes:
       self._CheckAttributes("enum", _ENUM_ATTRIBUTES, enum.attributes)
       full_name = f"{self.module.mojom_namespace}.{enum.mojom_name}"
-      if 'Stable' in enum.attributes and not 'Extensible' in enum.attributes:
+      if 'Stable' in enum.attributes and 'Extensible' not in enum.attributes:
         raise check.CheckException(
           self.module, f"[Extensible] required on [Stable] enum {full_name}"
         )
@@ -204,7 +203,7 @@ class Check(check.Check):
           "no new uses should be introduced",
         )
       if full_name in _NATIVE_ALLOWLIST and (
-        not enum.attributes or not 'Native' in enum.attributes
+        not enum.attributes or 'Native' not in enum.attributes
       ):
         raise check.CheckException(
           self.module, f"{full_name} can be removed from _NATIVE_ALLOWLIST"
@@ -246,7 +245,7 @@ class Check(check.Check):
           "no new uses should be introduced",
         )
     if full_name in _NATIVE_ALLOWLIST and (
-      not struct.attributes or not 'Native' in struct.attributes
+      not struct.attributes or 'Native' not in struct.attributes
     ):
       raise check.CheckException(
         self.module, f"{full_name} can be removed from _NATIVE_ALLOWLIST"

@@ -13,13 +13,11 @@ import hashlib
 import importlib
 import json
 import os
-import pprint
 import re
 import struct
 import sys
 
 # Disable lint check for finding modules:
-# pylint: disable=F0401
 
 
 def _GetDirAbove(dirname):
@@ -40,12 +38,9 @@ sys.path.insert(
   ),
 )
 
-from mojom.error import Error
-import mojom.fileutil as fileutil
-from mojom.generate.module import Module
-from mojom.generate import template_expander
-from mojom.generate import translate
-from mojom.generate.generator import WriteFile
+import mojom.fileutil as fileutil  # noqa: E402
+from mojom.generate.module import Module  # noqa: E402
+from mojom.generate import template_expander  # noqa: E402
 
 
 _BUILTIN_GENERATORS = {
@@ -219,7 +214,7 @@ def LoadTypemaps(typemaps, langs):
       if '_metadata' in typemaps:
         for lang, names in typemaps['_metadata']['module_typemaps'].items():
           if lang in langs:
-            if not lang in declared:
+            if lang not in declared:
               declared[lang] = []
             declared[lang] += names
 

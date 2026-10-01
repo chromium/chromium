@@ -67,7 +67,7 @@ from mojom.generate import module
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
 CHROME_SRC_DIR = fileutil._GetDirAbove('mojo')
 
-import jinja2
+import jinja2  # noqa: E402
 
 
 class MojoLPMDefinitionType(enum.Enum):
@@ -443,7 +443,7 @@ class MojoLPMActionSet:
       self.actions.append(action)
 
     for dep in action.dependencies:
-      if not dep in self.deps:
+      if dep not in self.deps:
         self.deps.append(dep)
 
   def add_actions(self, actions: typing.List[MojoLPMAction]):

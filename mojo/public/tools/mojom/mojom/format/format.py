@@ -97,7 +97,7 @@ def _write_import_list(nodes, state):
         else:
             no_attributes.append(node)
 
-    sort_key = lambda i: i.import_filename
+    sort_key = lambda i: i.import_filename  # noqa: E731
     no_attributes.sort(key=sort_key)
     with_attributes.sort(key=sort_key)
 

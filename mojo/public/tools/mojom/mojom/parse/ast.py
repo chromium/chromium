@@ -13,7 +13,6 @@ import os.path
 
 
 # Instance of 'NodeListBase' has no '_list_item_type' member (no-member)
-# pylint: disable=no-member
 
 Location = namedtuple('Location', ('line', 'lexpos'))
 Location.__doc__ = (
@@ -40,8 +39,7 @@ class NodeBase:
   def __eq__(self, other):
     # We want strict comparison of the two object's types. Disable pylint's
     # insistence upon recommending isinstance().
-    # pylint: disable=unidiomatic-typecheck
-    return type(self) == type(other)
+    return type(self) == type(other)  # noqa: E721
 
   # Make != the inverse of ==. (Subclasses shouldn't have to override this.)
   def __ne__(self, other):

@@ -20,13 +20,13 @@ def _GetDirAbove(dirname):
 
 
 sys.path.insert(1, os.path.join(_GetDirAbove("mojo"), "third_party"))
-from ply import lex
+from ply import lex  # noqa: E402
 
 try:
   importlib.util.find_spec("mojom")
 except ImportError:
   sys.path.append(os.path.join(_GetDirAbove("pylib"), "pylib"))
-import mojom.parse.lexer
+import mojom.parse.lexer  # noqa: E402
 
 
 # This (monkey-patching LexToken to make comparison value-based) is evil, but

@@ -21,7 +21,7 @@ sys.path.append(_BINDINGS_DIR)
 sys.path.append(
   os.path.join(_SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
 )
-import typ
+import typ  # noqa: E402
 
 
 def Main():

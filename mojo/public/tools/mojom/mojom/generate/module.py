@@ -16,8 +16,6 @@ import pickle
 from collections import OrderedDict
 from uuid import UUID
 
-# pylint: disable=raise-missing-from
-
 
 # We use our own version of __repr__ when displaying the AST, as the
 # AST currently doesn't capture which nodes are reference (e.g. to
@@ -135,7 +133,6 @@ class Kind:
     setattr(cls, name, property(Get, Set))
 
   def Repr(self, as_ref=True):
-    # pylint: disable=unused-argument
     return '<%s spec=%r is_nullable=%r>' % (
       self.__class__.__name__,
       self.spec,
@@ -147,8 +144,7 @@ class Kind:
     return self.Repr()
 
   def __eq__(self, rhs):
-    # pylint: disable=unidiomatic-typecheck
-    return type(self) == type(rhs) and (
+    return type(self) == type(rhs) and (  # noqa: E721
       self.spec,
       self.parent_kind,
       self.is_nullable,
@@ -250,7 +246,7 @@ class ValueKind(Kind):
   def __eq__(self, rhs):
     return isinstance(rhs, ValueKind) and super().__eq__(rhs)
 
-  def __hash__(self):  # pylint: disable=useless-super-delegation
+  def __hash__(self):
     return super().__hash__()
 
 
@@ -325,7 +321,7 @@ class ReferenceKind(Kind):
   def __eq__(self, rhs):
     return isinstance(rhs, ReferenceKind) and super().__eq__(rhs)
 
-  def __hash__(self):  # pylint: disable=useless-super-delegation
+  def __hash__(self):
     return super().__hash__()
 
 
@@ -526,7 +522,6 @@ class Field:
     self.attributes = attributes
 
   def Repr(self, as_ref=True):
-    # pylint: disable=unused-argument
     # Fields are only referenced by objects which define them and thus
     # they are always displayed as non-references.
     return GenericRepr(self, {'mojom_name': False, 'kind': True})
@@ -1056,7 +1051,6 @@ class Parameter:
     self.attributes = attributes
 
   def Repr(self, as_ref=True):
-    # pylint: disable=unused-argument
     return '<%s mojom_name=%r kind=%s>' % (
       self.__class__.__name__,
       self.mojom_name,
@@ -1154,7 +1148,7 @@ class Method:
   def AddResponseParameter(
     self, mojom_name, kind, ordinal=None, default=None, attributes=None
   ):
-    if self.response_parameters == None:
+    if self.response_parameters == None:  # noqa: E711
       self.response_parameters = []
     parameter = Parameter(mojom_name, kind, ordinal, default, attributes)
     self.response_parameters.append(parameter)
@@ -1384,7 +1378,7 @@ class Interface(ReferenceKind):
 
     try:
       u = UUID(uuid_str)
-    except:
+    except:  # noqa: E722
       raise ValueError(
         'Invalid format for Uuid attribute on interface {}. '
         'Expected standard RFC 4122 string representation of '
@@ -1824,7 +1818,7 @@ def IsAssociatedKind(kind):
 
 def HasCallbacks(interface):
   for method in interface.methods:
-    if method.response_parameters != None:
+    if method.response_parameters != None:  # noqa: E711
       return True
   return False
 

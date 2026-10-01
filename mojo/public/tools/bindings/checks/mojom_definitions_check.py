@@ -4,7 +4,6 @@
 """Ensure no duplicate type definitions before generation."""
 
 import mojom.generate.check as check
-import mojom.generate.module as module
 
 
 class Check(check.Check):

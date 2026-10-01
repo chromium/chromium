@@ -4,10 +4,6 @@
 """Generates a syntax tree from a Mojo IDL file."""
 
 # Breaking parser stanzas is unhelpful so allow longer lines.
-# pylint: disable=line-too-long
-
-import os.path
-import sys
 
 from mojom import fileutil
 from mojom.error import Error
@@ -15,8 +11,8 @@ from mojom.parse import ast
 from mojom.parse.lexer import Lexer
 
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
-from ply import lex
-from ply import yacc
+from ply import lex  # noqa: E402
+from ply import yacc  # noqa: E402
 
 _MAX_ORDINAL_VALUE = 0xFFFFFFFF
 _MAX_ARRAY_SIZE = 0xFFFFFFFF
@@ -36,7 +32,6 @@ class ParseError(Error):
 
 
 # We have methods which look like they could be functions:
-# pylint: disable=R0201
 class Parser:
   def __init__(self, lexer, source, filename):
     self.tokens = lexer.tokens

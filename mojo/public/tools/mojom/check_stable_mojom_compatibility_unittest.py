@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
 import os
 import os.path
 import shutil
@@ -11,8 +10,6 @@ import tempfile
 import unittest
 
 import check_stable_mojom_compatibility
-
-from mojom.generate import module
 
 
 class Change:

@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Generates C++ source files from a mojom.Module."""
 
-import os
-import sys
 from functools import partial
 from generators.mojom_cpp_generator import _NameFormatter as CppNameFormatter
 from generators.mojom_cpp_generator import Generator as CppGenerator
@@ -18,7 +16,6 @@ import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 from mojom.generate.template_expander import (
   UseJinja,
-  UseJinjaForImportedTemplate,
 )
 
 _kind_to_proto_type = {
@@ -281,7 +278,7 @@ class Generator(CppGenerator):
       "is_any_interface_kind": mojom.IsAnyInterfaceKind,
       "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
       "is_associated_kind": mojom.IsAssociatedKind,
-      "is_float_kind": mojom.IsFloatKind,
+      "is_float_kind": mojom.IsFloatKind,  # noqa: F601
       "is_hashable": self._IsHashableKind,
       "is_map_kind": mojom.IsMapKind,
       "is_move_only_kind": self._IsMoveOnlyKind,
@@ -383,7 +380,7 @@ class Generator(CppGenerator):
         constant.name,
       )
     return "constexpr %s %s = %s" % (
-      GetCppPodType(constant.kind),
+      GetCppPodType(constant.kind),  # noqa: F821
       constant.name,
       self._ConstantValue(constant),
     )
@@ -441,7 +438,7 @@ class Generator(CppGenerator):
     elif mojom.IsPlatformHandleKind(kind):
       return "mojolpm::PlatformHandle"
 
-    if not kind in _kind_to_cpp_proto_type:
+    if kind not in _kind_to_cpp_proto_type:
       raise Exception("Unrecognized kind %s" % kind.spec)
     return _kind_to_cpp_proto_type[kind]
 
@@ -551,7 +548,7 @@ class Generator(CppGenerator):
         # If there is no provided value, then the value is simply the next one
         value = i
 
-      assert value != None
+      assert value != None  # noqa: E711
       # If the value appears in the enum already, then it's a duplicate.
       if value in values.values():
         return True

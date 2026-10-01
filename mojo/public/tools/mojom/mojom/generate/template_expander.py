@@ -5,12 +5,11 @@
 # Based on third_party/WebKit/Source/build/scripts/template_expander.py.
 
 import os.path
-import sys
 
 from mojom import fileutil
 
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
-import jinja2
+import jinja2  # noqa: E402
 
 
 def ApplyTemplate(mojo_generator, path_to_template, params, **kwargs):

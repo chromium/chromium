@@ -60,7 +60,6 @@ generates a bar.typemap containing
 import argparse
 import json
 import os
-import re
 import sys
 
 sys.path.insert(

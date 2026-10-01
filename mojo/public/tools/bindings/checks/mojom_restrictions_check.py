@@ -81,7 +81,7 @@ class Check(check.Check):
   def _GatherReferencedInterfaces(self, field):
     key = field.kind.spec
     # structs/unions can nest themselves so we need to bookkeep.
-    if not key in self.kind_to_interfaces:
+    if key not in self.kind_to_interfaces:
       # Might reference ourselves so have to create the list first.
       self.kind_to_interfaces[key] = set()
       for param in field.kind.fields:

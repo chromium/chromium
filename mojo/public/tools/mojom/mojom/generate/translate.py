@@ -12,7 +12,6 @@ already been parsed and converted to ASTs before.
 import enum as pyenum
 import itertools
 import os
-import re
 
 from collections import OrderedDict
 from mojom.error import Error
@@ -314,13 +313,15 @@ def _ProcessElements(scope, elements, operations_by_type):
   only in error messages."""
   names_in_this_scope = set()
   for element in elements:
-    # pylint: disable=unidiomatic-typecheck
     element_type = type(element)
     if element_type in operations_by_type:
       if element.mojom_name.name in names_in_this_scope:
         raise Exception(
-          'Names must be unique within a scope. The name "%s" is '
-          'used more than once within the scope "%s".' % (duplicate_name, scope)
+          (
+            'Names must be unique within a scope. The name "%s" is '
+            'used more than once within the scope "%s".'
+          )
+          % (duplicate_name, scope)  # noqa: F821
         )
       operations_by_type[element_type](element)
 
@@ -1239,7 +1240,7 @@ def _CollectReferencedKinds(module, all_defined_kinds):
 
   # Consts can reference imported enums.
   for const in module.constants:
-    if not const.kind in mojom.PRIMITIVES:
+    if const.kind not in mojom.PRIMITIVES:
       sanitized_kind = sanitize_kind(const.kind)
       referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
 
@@ -1418,7 +1419,7 @@ def _Module(tree, path, imports, extensible_enum_mode: ExtensibleEnumMode):
   # Methods with result response will generate its own return union, so we do a
   # second pass.
   for defined_union in module.unions:
-    if not defined_union.spec in all_defined_kinds:
+    if defined_union.spec not in all_defined_kinds:
       all_defined_kinds[defined_union.spec] = defined_union
 
   for enum in module.enums:

@@ -19,11 +19,8 @@ import os.path
 import sys
 
 from mojom.generate import compatibility_checker
-from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
-
-# pylint: disable=raise-missing-from
 
 
 class ParseError(Exception):

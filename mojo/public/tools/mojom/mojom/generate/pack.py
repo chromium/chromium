@@ -68,7 +68,7 @@ class PackedField:
     if isinstance(kind, mojom.Enum):
       # TODO(mpcomplete): what about big enums?
       return cls.kind_to_size[mojom.INT32]
-    if not kind in cls.kind_to_size:
+    if kind not in cls.kind_to_size:
       raise Exception(
         "Undefined type: %s. Did you forget to import the file "
         "containing the definition?" % kind.spec

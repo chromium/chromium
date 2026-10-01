@@ -7,7 +7,6 @@ import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 import os
-import sys
 import urllib.request
 from mojom.generate.template_expander import UseJinja
 
@@ -1051,7 +1050,7 @@ class Generator(generator.Generator):
 
   def _GetJsModuleImports(self):
     this_module_path = _GetWebUiModulePath(self.module)
-    this_module_is_shared = bool(
+    this_module_is_shared = bool(  # noqa: F841
       this_module_path and _IsSharedModulePath(this_module_path)
     )
     imports = dict()

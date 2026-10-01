@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import unittest
-import sys
-import os
 
 
 # Mocking the mojom objects for testing _GetQualifiedName
@@ -31,7 +29,7 @@ class MockKind:
 
 
 # Import the functions to test
-from generators import mojom_rust_generator
+from generators import mojom_rust_generator  # noqa: E402
 
 
 class TestGetQualifiedName(unittest.TestCase):

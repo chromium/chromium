@@ -4,8 +4,6 @@
 
 from mojom_parser_test_case import MojomParserTestCase
 
-from mojom.generate import module
-
 
 class StableAttributeTest(MojomParserTestCase):
   """Tests covering usage of the [Stable] attribute."""

@@ -2,14 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os.path
-import sys
 
 from mojom import fileutil
 from mojom.error import Error
 
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
-from ply.lex import LexToken, TOKEN
+from ply.lex import LexToken, TOKEN  # noqa: E402
 
 
 class LexError(Error):
@@ -20,7 +18,6 @@ class LexError(Error):
 
 
 # We have methods which look like they could be functions:
-# pylint: disable=R0201
 class Lexer:
   def __init__(self, filename):
     self.filename = filename

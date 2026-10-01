@@ -6,9 +6,7 @@
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
-import itertools
 import os
-import sys
 import urllib.request
 from mojom.generate.template_expander import UseJinja
 from pathlib import Path
@@ -353,7 +351,7 @@ class Generator(generator.Generator):
     )
 
   def _TypescriptType(self, kind, maybe_nullable=False):
-    typemap = self._TypeMappedStructs()
+    typemap = self._TypeMappedStructs()  # noqa: F841
 
     def recurse_nullable(kind):
       return self._TypescriptType(kind, maybe_nullable=True)
@@ -499,7 +497,7 @@ class Generator(generator.Generator):
       imports = [make_import(kind.name, 'Spec')]
       # if the type is typemapped, the typemap import will replace the
       # mojo type, so no need to import it here.
-      if not kind.qualified_name in self.typemap:
+      if kind.qualified_name not in self.typemap:
         imports += [make_import(kind.name)]
       return imports
     if mojom.IsInterfaceKind(kind):
@@ -921,7 +919,7 @@ class Generator(generator.Generator):
           qualified = field.kind.qualified_name
           type_import = qualified_type_to_import[qualified]
           # We should have an entry for all non-primitive types
-          assert type_import != None
+          assert type_import != None  # noqa: E711
 
           imports.setdefault(type_import.path, []).append(
             type_import.import_name()

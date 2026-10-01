@@ -334,7 +334,7 @@ class Generator(generator.Generator):
       if interface.uuid:
         headers.add('base/token.h')
       for method in interface.methods:
-        if not method.result_response is None:
+        if method.result_response is not None:
           headers.add('base/types/expected.h')
 
     types = set(
@@ -1095,7 +1095,7 @@ class Generator(generator.Generator):
           self._IsTypemappedKind(kind)
           and not self._GetTypemappedForwardDeclaration(kind)
         )
-        or kind.parent_kind != None
+        or kind.parent_kind != None  # noqa: E711
       )
       for kind in self.module.imported_kinds.values()
     ):

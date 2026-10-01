@@ -11,7 +11,6 @@ generate usable language bindings.
 """
 
 import argparse
-import builtins
 import errno
 import json
 import logging
@@ -251,7 +250,7 @@ class _FuncWrapper:
     # https://crbug.com/1219044
     try:
       return self._func(*args)
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
       return _ExceptionWrapper()
 
 

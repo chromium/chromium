@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import unittest
 
 import mojom.generate.check as check
 from mojom_bindings_generator import LoadChecks, _Generate
