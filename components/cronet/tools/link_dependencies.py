@@ -27,36 +27,36 @@ class SubprocessError(Exception):
 def extract_inputs(query_result, prefix=''):
     """Extracts inputs from ninja query output.
 
-  Given 'ninja -t query' output for a target, extracts all the inputs of that
-  target, prefixing them with an optional prefix. Inputs prefixed with '|' are
-  implicit, so we discard them as they shouldn't be linked into the resulting
-  binary (these are things like the .ninja files themselves, dep lists, and so
-  on).
+    Given 'ninja -t query' output for a target, extracts all the inputs of that
+    target, prefixing them with an optional prefix. Inputs prefixed with '|' are
+    implicit, so we discard them as they shouldn't be linked into the resulting
+    binary (these are things like the .ninja files themselves, dep lists, and so
+    on).
 
-  Example query result:
-    arch/crnet_consumer.armv7:
-      input: link
-        obj/[long path...]/crnet_consumer.crnet_consumer_app_delegate.armv7.o
-        obj/[long path...]/crnet_consumer.crnet_consumer_view_controller.armv7.o
-        obj/[long path...]/crnet_consumer.main.armv7.o
-        libcrnet.a
-        libdata_reduction_proxy_code_browser.a
-        ... many more inputs ...
-        liburl_util.a
-        | obj/content/content.actions_depends.stamp
-        | gen/components/data_reduction_proxy/common/version.h
-        | obj/ui/resources/ui_resources.actions_rules_copies.stamp
-        ... more implicit inputs ...
-    outputs:
-      crnet_consumer.app/crnet_consumer
+    Example query result:
+      arch/crnet_consumer.armv7:
+        input: link
+          obj/[long path...]/crnet_consumer.crnet_consumer_app_delegate.armv7.o
+          obj/[long path...]/crnet_consumer.crnet_consumer_view_controller.armv7.o
+          obj/[long path...]/crnet_consumer.main.armv7.o
+          libcrnet.a
+          libdata_reduction_proxy_code_browser.a
+          ... many more inputs ...
+          liburl_util.a
+          | obj/content/content.actions_depends.stamp
+          | gen/components/data_reduction_proxy/common/version.h
+          | obj/ui/resources/ui_resources.actions_rules_copies.stamp
+          ... more implicit inputs ...
+      outputs:
+        crnet_consumer.app/crnet_consumer
 
-  Args:
-    query_result: output from 'ninja -t query'
-    prefix: optional file system path to prefix to returned inputs
+    Args:
+      query_result: output from 'ninja -t query'
+      prefix: optional file system path to prefix to returned inputs
 
-  Returns:
-    A list of the inputs.
-  """
+    Returns:
+      A list of the inputs.
+    """
     extracting = False
     inputs = []
     for line in query_result.splitlines():
@@ -72,19 +72,20 @@ def extract_inputs(query_result, prefix=''):
 def query_ninja(target, workdir, prefix=''):
     """Returns the inputs for the named target.
 
-  Queries ninja for the set of inputs of the named target, then returns the list
-  of inputs to that target.
+    Queries ninja for the set of inputs of the named target, then returns the list
+    of inputs to that target.
 
-  Args:
-    target: ninja target name to query for
-    workdir: workdir for ninja
-    prefix: optional file system path to prefix to returned inputs
+    Args:
+      target: ninja target name to query for
+      workdir: workdir for ninja
+      prefix: optional file system path to prefix to returned inputs
 
-  Returns:
-    A list of file system paths to the inputs to the named target.
-  """
-    proc = subprocess.Popen(['ninja', '-C', workdir, '-t', 'query', target],
-                            stdout=subprocess.PIPE)
+    Returns:
+      A list of file system paths to the inputs to the named target.
+    """
+    proc = subprocess.Popen(
+        ['ninja', '-C', workdir, '-t', 'query', target], stdout=subprocess.PIPE
+    )
     stdout, _ = proc.communicate()
     return extract_inputs(stdout, prefix)
 
@@ -97,20 +98,20 @@ def is_library(target):
 def library_deps(targets, workdir, query=query_ninja):
     """Returns the set of library dependencies for the supplied targets.
 
-  The entries in the targets list can be either a static library, an object
-  file, or an executable. Static libraries and object files are incorporated
-  directly; executables are treated as being thin executable inputs to a fat
-  executable link step, and have their own library dependencies added in their
-  place.
+    The entries in the targets list can be either a static library, an object
+    file, or an executable. Static libraries and object files are incorporated
+    directly; executables are treated as being thin executable inputs to a fat
+    executable link step, and have their own library dependencies added in their
+    place.
 
-  Args:
-    targets: list of targets to include library dependencies from
-    workdir: working directory to run ninja queries in
-    query: function taking target, workdir, and prefix and returning an input
-           set
-  Returns:
-    Set of library dependencies.
-  """
+    Args:
+      targets: list of targets to include library dependencies from
+      workdir: working directory to run ninja queries in
+      query: function taking target, workdir, and prefix and returning an input
+             set
+    Returns:
+      Set of library dependencies.
+    """
     deps = set()
     for target in targets:
         if is_library(target):
@@ -123,14 +124,17 @@ def library_deps(targets, workdir, query=query_ninja):
 def link(output, inputs):
     """Links output from inputs using libtool.
 
-  Args:
-    output: file system path to desired output library
-    inputs: list of file system paths to input libraries
-  """
-    libtool_re = re.compile(r'^.*libtool: (?:for architecture: \S* )?'
-                            r'file: .* has no symbols$')
-    p = subprocess.Popen(['libtool', '-o', output] + inputs,
-                         stderr=subprocess.PIPE)
+    Args:
+      output: file system path to desired output library
+      inputs: list of file system paths to input libraries
+    """
+    libtool_re = re.compile(
+        r'^.*libtool: (?:for architecture: \S* )?'
+        r'file: .* has no symbols$'
+    )
+    p = subprocess.Popen(
+        ['libtool', '-o', output] + inputs, stderr=subprocess.PIPE
+    )
     _, err = p.communicate()
     for line in err.splitlines():
         if not libtool_re.match(line):
@@ -146,9 +150,7 @@ def main():
     )
     parser.add_argument('workdir', nargs=1, help='ninja working directory')
     parser.add_argument('target', nargs=1, help='target to query for deps')
-    parser.add_argument('output',
-                        nargs=1,
-                        help='path to output static library')
+    parser.add_argument('output', nargs=1, help='path to output static library')
     args = parser.parse_args()
 
     inputs = query_ninja(args.target[0], args.workdir[0])

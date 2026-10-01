@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 def CheckChangeOnUpload(input_api, output_api):
     results = []
 
@@ -12,5 +13,7 @@ def CheckChangeOnUpload(input_api, output_api):
             output_api.PresubmitPromptWarning(
                 'You modified one or more of the download file type protos '
                 'in: \n  ' + proto_path + '\n'
-                'Please ensure this change is backwards compatible.'))
+                'Please ensure this change is backwards compatible.'
+            )
+        )
     return results

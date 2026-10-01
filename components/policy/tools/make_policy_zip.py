@@ -2,8 +2,7 @@
 # Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Creates a zip archive with policy template files.
-"""
+"""Creates a zip archive with policy template files."""
 
 import argparse
 import os
@@ -27,10 +26,12 @@ def main():
   """
   parser = argparse.ArgumentParser()
   parser.add_argument("--output", dest="output")
-  parser.add_argument("--timestamp",
-                      type=int,
-                      metavar="TIME",
-                      help="Unix timestamp to use for files in the archive")
+  parser.add_argument(
+    "--timestamp",
+    type=int,
+    metavar="TIME",
+    help="Unix timestamp to use for files in the archive",
+  )
   parser.add_argument("--base_dir", dest="base_dir")
   parser.add_argument("--languages", dest="languages")
   parser.add_argument("--add", action="append", dest="files", default=[])
@@ -41,17 +42,16 @@ def main():
   languages = list(filter(bool, args.languages.split(',')))
   file_list = []
   for file_to_add in args.files:
-    if (_LANG_PLACEHOLDER in file_to_add):
+    if _LANG_PLACEHOLDER in file_to_add:
       for lang in languages:
         file_list.append(file_to_add.replace(_LANG_PLACEHOLDER, lang))
     else:
       file_list.append(file_to_add)
 
   with action_helpers.atomic_output(args.output) as f:
-    zip_helpers.add_files_to_zip(file_list,
-                                 f,
-                                 base_dir=args.base_dir,
-                                 timestamp=args.timestamp)
+    zip_helpers.add_files_to_zip(
+      file_list, f, base_dir=args.base_dir, timestamp=args.timestamp
+    )
 
 
 if '__main__' == __name__:

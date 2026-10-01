@@ -39,8 +39,9 @@ class RegWriter(template_writer.TemplateWriter):
       self._last_key[id(list)] = key
 
   def PreprocessPolicies(self, policy_list):
-    return self.FlattenGroupsAndSortPolicies(policy_list,
-                                             self.GetPolicySortingKey)
+    return self.FlattenGroupsAndSortPolicies(
+      policy_list, self.GetPolicySortingKey
+    )
 
   def GetPolicySortingKey(self, policy):
     '''Extracts a sorting key from a policy. These keys can be used for
@@ -66,7 +67,8 @@ class RegWriter(template_writer.TemplateWriter):
         example_value_str = self._QuoteAndEscapeString(example_value)
       elif policy['type'] in ('dict', 'external'):
         example_value_str = self._QuoteAndEscapeString(
-            json.dumps(example_value, sort_keys=True))
+          json.dumps(example_value, sort_keys=True)
+        )
       elif policy['type'] in ('main', 'int', 'int-enum'):
         example_value_str = 'dword:%08x' % int(example_value)
       else:
@@ -79,12 +81,14 @@ class RegWriter(template_writer.TemplateWriter):
 
   def WritePolicy(self, policy):
     if self.CanBeMandatory(policy):
-      self._WritePolicy(policy, self._winconfig['reg_mandatory_key_name'],
-                        self._mandatory)
+      self._WritePolicy(
+        policy, self._winconfig['reg_mandatory_key_name'], self._mandatory
+      )
 
   def WriteRecommendedPolicy(self, policy):
-    self._WritePolicy(policy, self._winconfig['reg_recommended_key_name'],
-                      self._recommended)
+    self._WritePolicy(
+      policy, self._winconfig['reg_recommended_key_name'], self._recommended
+    )
 
   def BeginTemplate(self):
     pass
@@ -102,7 +106,8 @@ class RegWriter(template_writer.TemplateWriter):
   def GetTemplateText(self):
     self._prefix.append('Windows Registry Editor Version 5.00')
     if self._GetChromiumVersionString() is not None:
-      self.WriteComment(self.config['build'] + ' version: ' + \
-          self._GetChromiumVersionString())
+      self.WriteComment(
+        self.config['build'] + ' version: ' + self._GetChromiumVersionString()
+      )
     all = self._prefix + self._mandatory + self._recommended
     return self.NEWLINE.join(all)

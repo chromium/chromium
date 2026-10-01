@@ -66,14 +66,14 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
   '''
 
   TYPE_TO_INPUT = {
-      'string': 'EDITTEXT',
-      'int': 'NUMERIC',
-      'string-enum': 'DROPDOWNLIST',
-      'int-enum': 'DROPDOWNLIST',
-      'list': 'LISTBOX',
-      'string-enum-list': 'LISTBOX',
-      'dict': 'EDITTEXT',
-      'external': 'EDITTEXT'
+    'string': 'EDITTEXT',
+    'int': 'NUMERIC',
+    'string-enum': 'DROPDOWNLIST',
+    'int-enum': 'DROPDOWNLIST',
+    'list': 'LISTBOX',
+    'string-enum-list': 'LISTBOX',
+    'dict': 'EDITTEXT',
+    'external': 'EDITTEXT',
   }
 
   def _Escape(self, string):
@@ -85,8 +85,11 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
     # Escape newlines in the value.
     value = value.replace('\n', '\\n')
     if name in self.strings_seen:
-      err = ('%s was added as "%s" and now added again as "%s"' %
-             (name, self.strings_seen[name], value))
+      err = '%s was added as "%s" and now added again as "%s"' % (
+        name,
+        self.strings_seen[name],
+        value,
+      )
       assert value == self.strings_seen[name], err
     else:
       self.strings_seen[name] = value
@@ -144,8 +147,9 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
           value_text = 'NUMERIC ' + str(item['value'])
         else:
           value_text = '"' + item['value'] + '"'
-        string_id = self._Escape(policy['name'] + '_' + item['name'] +
-                                 '_DropDown')
+        string_id = self._Escape(
+          policy['name'] + '_' + item['name'] + '_DropDown'
+        )
         builder.AddLine('NAME !!%s VALUE %s' % (string_id, value_text))
         self._AddGuiString(string_id, item['caption'])
       builder.AddLine('END ITEMLIST', -1)
@@ -153,8 +157,9 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
 
   def PolicyHasRestrictions(self, policy):
     if 'schema' in policy:
-      return any(keyword in policy['schema'] \
-        for keyword in ['minimum', 'maximum'])
+      return any(
+        keyword in policy['schema'] for keyword in ['minimum', 'maximum']
+      )
     return False
 
   def _WritePolicy(self, policy, key_name, builder):
@@ -188,8 +193,9 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
 
     if policy_desc is not None:
       policy_desc += '\n\n'
-      if (not policy.get('deprecated', False) and
-          not self._IsRemovedPolicy(policy)):
+      if not policy.get('deprecated', False) and not self._IsRemovedPolicy(
+        policy
+      ):
         policy_desc += reference_link_text
       return policy_desc
     else:
@@ -200,12 +206,16 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
 
   def WritePolicy(self, policy):
     if self.CanBeMandatory(policy):
-      self._WritePolicy(policy, self.winconfig['reg_mandatory_key_name'],
-                        self.policies)
+      self._WritePolicy(
+        policy, self.winconfig['reg_mandatory_key_name'], self.policies
+      )
 
   def WriteRecommendedPolicy(self, policy):
-    self._WritePolicy(policy, self.winconfig['reg_recommended_key_name'],
-                      self.recommended_policies)
+    self._WritePolicy(
+      policy,
+      self.winconfig['reg_recommended_key_name'],
+      self.recommended_policies,
+    )
 
   def BeginPolicyGroup(self, group):
     category_name = self._Escape(group['name'] + '_Category')
@@ -250,23 +260,32 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
 
   def BeginTemplate(self):
     if self._GetChromiumVersionString() is not None:
-      self.WriteComment(self.config['build'] + ' version: ' + \
-          self._GetChromiumVersionString())
-    self._AddGuiString(self.config['win_supported_os'],
-                       self.messages['win_supported_all']['text'])
-    self._AddGuiString(self.config['win_supported_os_win7'],
-                       self.messages['win_supported_win7']['text'])
-    categories = self.winconfig['mandatory_category_path'] + \
-                 self.winconfig['recommended_category_path']
+      self.WriteComment(
+        self.config['build'] + ' version: ' + self._GetChromiumVersionString()
+      )
+    self._AddGuiString(
+      self.config['win_supported_os'],
+      self.messages['win_supported_all']['text'],
+    )
+    self._AddGuiString(
+      self.config['win_supported_os_win7'],
+      self.messages['win_supported_win7']['text'],
+    )
+    categories = (
+      self.winconfig['mandatory_category_path']
+      + self.winconfig['recommended_category_path']
+    )
     strings = self.winconfig['category_path_strings'].copy()
     if 'adm_category_path_strings' in self.config:
       strings.update(self.config['adm_category_path_strings'])
     for category in categories:
-      if (category in strings):
+      if category in strings:
         # Replace {...} by localized messages.
-        string = re.sub(r"\{(\w+)\}", \
-                        lambda m: self.messages[m.group(1)]['text'], \
-                        strings[category])
+        string = re.sub(
+          r"\{(\w+)\}",
+          lambda m: self.messages[m.group(1)]['text'],
+          strings[category],
+        )
         self._AddGuiString(category, string)
     # All the policies will be written into self.policies.
     # The final template text will be assembled into self.lines by
@@ -280,13 +299,19 @@ class AdmWriter(gpo_editor_writer.GpoEditorWriter):
         continue
       self.lines.AddLine('CLASS ' + class_name, 1)
       self.lines.AddLines(
-          self._CreateTemplate(self.winconfig['mandatory_category_path'],
-                               self.winconfig['reg_mandatory_key_name'],
-                               self.policies))
+        self._CreateTemplate(
+          self.winconfig['mandatory_category_path'],
+          self.winconfig['reg_mandatory_key_name'],
+          self.policies,
+        )
+      )
       self.lines.AddLines(
-          self._CreateTemplate(self.winconfig['recommended_category_path'],
-                               self.winconfig['reg_recommended_key_name'],
-                               self.recommended_policies))
+        self._CreateTemplate(
+          self.winconfig['recommended_category_path'],
+          self.winconfig['reg_recommended_key_name'],
+          self.recommended_policies,
+        )
+      )
       self.lines.AddLine('', -1)
     # Copy user strings into self.lines.
     self.lines.AddLine('[Strings]')

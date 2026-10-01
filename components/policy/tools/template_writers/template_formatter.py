@@ -16,11 +16,22 @@ import sys
 import writer_configuration
 import policy_template_generator
 
-from writers import adm_writer, adml_writer, admx_writer, \
-                    google_admx_writer, google_adml_writer, \
-                    android_policy_writer, reg_writer, doc_writer, \
-                    doc_atomic_groups_writer , json_writer, plist_writer, \
-                    plist_strings_writer, ios_app_config_writer, jamf_writer
+from writers import (
+  adm_writer,
+  adml_writer,
+  admx_writer,
+  google_admx_writer,
+  google_adml_writer,
+  android_policy_writer,
+  reg_writer,
+  doc_writer,
+  doc_atomic_groups_writer,
+  json_writer,
+  plist_writer,
+  plist_strings_writer,
+  ios_app_config_writer,
+  jamf_writer,
+)
 
 
 def MacLanguageMap(lang):
@@ -43,26 +54,32 @@ Members:
   language_map: Optional language mapping for file paths.
   force_windows_line_ending: Forces output file to use Windows line ending.
 '''
-WriterDesc = collections.namedtuple('WriterDesc', [
-    'type', 'is_per_language', 'encoding', 'language_map',
-    'force_windows_line_ending'
-])
+WriterDesc = collections.namedtuple(
+  'WriterDesc',
+  [
+    'type',
+    'is_per_language',
+    'encoding',
+    'language_map',
+    'force_windows_line_ending',
+  ],
+)
 
 _WRITER_DESCS = [
-    WriterDesc('adm', True, 'utf-16', None, True),
-    WriterDesc('adml', True, 'utf-16', None, True),
-    WriterDesc('admx', False, 'utf-16', None, True),
-    WriterDesc('google_adml', True, 'utf-8', None, True),
-    WriterDesc('google_admx', False, 'utf-8', None, True),
-    WriterDesc('android_policy', False, 'utf-8', None, False),
-    WriterDesc('reg', False, 'utf-16', None, False),
-    WriterDesc('doc', True, 'utf-8', None, False),
-    WriterDesc('doc_atomic_groups', True, 'utf-8', None, False),
-    WriterDesc('json', False, 'utf-8', None, False),
-    WriterDesc('plist', False, 'utf-8', None, False),
-    WriterDesc('plist_strings', True, 'utf-8', MacLanguageMap, False),
-    WriterDesc('jamf', False, 'utf-8', None, False),
-    WriterDesc('ios_app_config', False, 'utf-8', None, False),
+  WriterDesc('adm', True, 'utf-16', None, True),
+  WriterDesc('adml', True, 'utf-16', None, True),
+  WriterDesc('admx', False, 'utf-16', None, True),
+  WriterDesc('google_adml', True, 'utf-8', None, True),
+  WriterDesc('google_admx', False, 'utf-8', None, True),
+  WriterDesc('android_policy', False, 'utf-8', None, False),
+  WriterDesc('reg', False, 'utf-16', None, False),
+  WriterDesc('doc', True, 'utf-8', None, False),
+  WriterDesc('doc_atomic_groups', True, 'utf-8', None, False),
+  WriterDesc('json', False, 'utf-8', None, False),
+  WriterDesc('plist', False, 'utf-8', None, False),
+  WriterDesc('plist_strings', True, 'utf-8', MacLanguageMap, False),
+  WriterDesc('jamf', False, 'utf-8', None, False),
+  WriterDesc('ios_app_config', False, 'utf-8', None, False),
 ]
 
 # Template writers that are not per-language use policy_templates.json from
@@ -123,8 +140,8 @@ def _JsonToUtf8Encoding(data, ignore_dicts=False):
     return [_JsonToUtf8Encoding(item, False) for item in data]
   elif isinstance(data, dict):
     return {
-        _JsonToUtf8Encoding(key): _JsonToUtf8Encoding(value)
-        for key, value in data.items()
+      _JsonToUtf8Encoding(key): _JsonToUtf8Encoding(value)
+      for key, value in data.items()
     }
   return data
 
@@ -169,19 +186,24 @@ def main():
   parser.add_argument('--reg', action='append', dest='reg')
   parser.add_argument('--doc', action='append', dest='doc')
   parser.add_argument(
-      '--doc_atomic_groups', action='append', dest='doc_atomic_groups')
-  parser.add_argument('--local',
-                      action='store_true',
-                      help='If set, the documentation will be built so '
-                      'that links work locally in the generated path.')
+    '--doc_atomic_groups', action='append', dest='doc_atomic_groups'
+  )
+  parser.add_argument(
+    '--local',
+    action='store_true',
+    help='If set, the documentation will be built so '
+    'that links work locally in the generated path.',
+  )
   parser.add_argument('--json', action='append', dest='json')
   parser.add_argument('--plist', action='append', dest='plist')
   parser.add_argument('--plist_strings', action='append', dest='plist_strings')
   parser.add_argument('--jamf', action='append', dest='jamf')
   parser.add_argument(
-      '--android_policy', action='append', dest='android_policy')
+    '--android_policy', action='append', dest='android_policy'
+  )
   parser.add_argument(
-      '--ios_app_config', action='append', dest='ios_app_config')
+    '--ios_app_config', action='append', dest='ios_app_config'
+  )
   parser.add_argument('-D', action='append', dest='grit_defines')
   parser.add_argument('-E', action='append', dest='grit_build_env')
   parser.add_argument('-t', action='append', dest='grit_target')
@@ -198,42 +220,46 @@ def main():
   version = _ParseVersionFile(args.version_path)
   if version != None:
     config['major_version'] = int(version['major'])
-    config['version'] = '.'.join([
-        version['major'], version['minor'], version['build'], version['patch']
-    ])
+    config['version'] = '.'.join(
+      [version['major'], version['minor'], version['build'], version['patch']]
+    )
   config['local'] = args.local
 
   # For each language, load policy data once and run all writers on it.
   for lang in languages:
     # Load the policy data.
     policy_templates_json_path = args.translations.replace(
-        _LANG_PLACEHOLDER, lang)
+      _LANG_PLACEHOLDER, lang
+    )
     # Loads the localized policy json file which must be a valid json file
     # encoded in utf-8.
     with open(policy_templates_json_path, 'r', encoding='utf-8') as policy_file:
       policy_data = json.loads(
-          policy_file.read(), object_hook=_JsonToUtf8Encoding)
+        policy_file.read(), object_hook=_JsonToUtf8Encoding
+      )
 
     # Preprocess the policy data.
     policy_generator = policy_template_generator.PolicyTemplateGenerator(
-        config, policy_data)
+      config, policy_data
+    )
 
     for writer_desc in _WRITER_DESCS:
       # For writer types that are not per language (e.g. admx), only do it once.
-      if (not writer_desc.is_per_language and lang != _DEFAULT_LANGUAGE):
+      if not writer_desc.is_per_language and lang != _DEFAULT_LANGUAGE:
         continue
 
       # Was the current writer type passed as argument, e.g. --admx <path>?
       # Note that all paths are arrays and we loop over all of them.
       output_paths = getattr(args, writer_desc.type, '')
-      if (not output_paths):
+      if not output_paths:
         continue
       for output_path in output_paths:
         # Substitute language placeholder in output file.
-        if (writer_desc.is_per_language):
+        if writer_desc.is_per_language:
           assert _LANG_PLACEHOLDER in output_path
-          mapped_lang = writer_desc.language_map(
-              lang) if writer_desc.language_map else lang
+          mapped_lang = (
+            writer_desc.language_map(lang) if writer_desc.language_map else lang
+          )
           output_path = output_path.replace(_LANG_PLACEHOLDER, mapped_lang)
         else:
           assert _LANG_PLACEHOLDER not in output_path
@@ -253,10 +279,9 @@ def main():
           os.makedirs(output_dir)
 
         # Write output file.
-        with open(output_path,
-                  'w',
-                  encoding=writer_desc.encoding,
-                  newline='\n') as output_file:
+        with open(
+          output_path, 'w', encoding=writer_desc.encoding, newline='\n'
+        ) as output_file:
           output_file.write(output_data)
 
 

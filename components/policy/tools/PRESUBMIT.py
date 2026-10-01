@@ -5,14 +5,13 @@
 import os
 import sys
 
+
 def _RunPythonUnitTests(input_api, output_api):
   if not input_api.HasAffectedFiles(extensions='.py'):
     return []
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
-      input_api,
-      output_api,
-      directory='.',
-      files_to_check=[r'^.+test\.py$'])
+    input_api, output_api, directory='.', files_to_check=[r'^.+test\.py$']
+  )
   return input_api.RunTests(tests)
 
 

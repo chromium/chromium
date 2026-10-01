@@ -10,6 +10,7 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+
 def CheckNoBannedFunctions(input_api, output_api):
     """Makes sure that banned functions are not used."""
     errors = []
@@ -18,16 +19,20 @@ def CheckNoBannedFunctions(input_api, output_api):
         and f.LocalPath().endswith(('.h', '.cc'))
     )
     banned_functions = [
-        (r'\bFormControlType\(',
-         'Consider FormControlTypeForAutofill() instead.'),
-        (r'\bIsConnected\b',
-         'Consider IsAccessible() instead.'),
-        (r'\bForm\b',
-         'Consider GetOwningFormForAutofill() instead.'),
-        (r'\bGetFormControlElements\b',
-         'Consider GetOwnedFormControls() instead.'),
-        (r'\bUnassociatedFormControls\b',
-         'Consider GetOwnedFormControls() instead.'),
+        (
+            r'\bFormControlType\(',
+            'Consider FormControlTypeForAutofill() instead.',
+        ),
+        (r'\bIsConnected\b', 'Consider IsAccessible() instead.'),
+        (r'\bForm\b', 'Consider GetOwningFormForAutofill() instead.'),
+        (
+            r'\bGetFormControlElements\b',
+            'Consider GetOwnedFormControls() instead.',
+        ),
+        (
+            r'\bUnassociatedFormControls\b',
+            'Consider GetOwnedFormControls() instead.',
+        ),
     ]
     for f in input_api.AffectedSourceFiles(file_filter):
         for line_num, line in f.ChangedContents():

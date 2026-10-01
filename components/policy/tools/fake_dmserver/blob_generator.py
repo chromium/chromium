@@ -32,7 +32,8 @@ try:
   import device_management_backend_pb2
 except ImportError as e:
   logging.warning(
-      f"Could not import core protobufs from {POLICY_TEST_TOOL_PATH}: {e}")
+    f"Could not import core protobufs from {POLICY_TEST_TOOL_PATH}: {e}"
+  )
 
 
 def generate_device_policy_schema(manual_map_path):
@@ -50,11 +51,14 @@ def generate_device_policy_schema(manual_map_path):
           proto_path = parts[1].strip().split(" #")[0].strip()
           schema[policy_name] = proto_path
         else:
-          raise ValueError(f"Malformed line in manual map file: '{line}'. "
-                           "Expected format 'policy_name: proto_path'.")
+          raise ValueError(
+            f"Malformed line in manual map file: '{line}'. "
+            "Expected format 'policy_name: proto_path'."
+          )
   except IOError as e:
     raise IOError(
-        f"Could not read manual map file at '{manual_map_path}': {e}") from e
+      f"Could not read manual map file at '{manual_map_path}': {e}"
+    ) from e
   return schema
 
 
@@ -63,8 +67,9 @@ def populate_message_from_dict(message, data_dict):
   for key, value in data_dict.items():
     field_descriptor = message.DESCRIPTOR.fields_by_name.get(key)
     if not field_descriptor:
-      logging.warning(f"Field '{key}' not found in protobuf message "
-                      f"{message.DESCRIPTOR.name}")
+      logging.warning(
+        f"Field '{key}' not found in protobuf message {message.DESCRIPTOR.name}"
+      )
       continue
 
     if field_descriptor.type == field_descriptor.TYPE_MESSAGE:
@@ -109,7 +114,8 @@ def apply_user_policies(policies, settings):
         setattr(wrapper_message, key, value)
 
       wrapper_message.policy_options.mode = (
-          policy_common_definitions_pb2.PolicyOptions.MANDATORY)
+        policy_common_definitions_pb2.PolicyOptions.MANDATORY
+      )
     except (AttributeError, TypeError) as e:
       raise ValueError(f"Error setting user policy '{key}': {e}") from e
 
@@ -140,8 +146,9 @@ def apply_device_policies(policies, settings, schema):
       else:
         setattr(message, final_field, value)
     except (AttributeError, TypeError, ValueError) as e:
-      raise ValueError(f"Error setting device policy '{key}' with path "
-                       f"'{proto_path}': {e}") from e
+      raise ValueError(
+        f"Error setting device policy '{key}' with path '{proto_path}': {e}"
+      ) from e
 
 
 def apply_extension_install_policies(policies, policy_blobs):
@@ -175,43 +182,47 @@ def apply_extension_install_policies(policies, policy_blobs):
         raise ValueError(f"Invalid reason: {reason}.")
     policies = dm.ExtensionInstallPolicies()
     policies.policies.append(policy)
-    encoded_policies = base64.b64encode(
-        policies.SerializeToString()).decode("utf-8")
-    policy_blobs.append({
+    encoded_policies = base64.b64encode(policies.SerializeToString()).decode(
+      "utf-8"
+    )
+    policy_blobs.append(
+      {
         "policy_type": "google/extension-install-cloud-policy/chrome/machine",
         "entity_id": key,
         "value": encoded_policies,
-    })
+      }
+    )
 
 
 def main():
   """Main script execution."""
 
   parser = argparse.ArgumentParser(
-      description="Generates a policy blob for fake_dmserver from a simple "
-      "JSON file.\n\nThis tool is for advanced/manual usage. It converts a "
-      "user-friendly JSON\nfile into the serialized protobuf format that "
-      "fake_dmserver requires.",
-      epilog="""For detailed usage instructions, including the manual workflow,
+    description="Generates a policy blob for fake_dmserver from a simple "
+    "JSON file.\n\nThis tool is for advanced/manual usage. It converts a "
+    "user-friendly JSON\nfile into the serialized protobuf format that "
+    "fake_dmserver requires.",
+    epilog="""For detailed usage instructions, including the manual workflow,
 please refer to the README.md in this directory.""",
-      formatter_class=argparse.RawTextHelpFormatter)
-
-  parser.add_argument(
-      "--input-policies",
-      required=True,
-      help="Path to the simple JSON file defining policies.",
+    formatter_class=argparse.RawTextHelpFormatter,
   )
 
   parser.add_argument(
-      "--output-blob",
-      required=True,
-      help="Path to write the final fake_dmserver policy.json blob.",
+    "--input-policies",
+    required=True,
+    help="Path to the simple JSON file defining policies.",
   )
 
   parser.add_argument(
-      "--manual-map",
-      required=True,
-      help="Path to the manual_device_policy_proto_map.yaml file.",
+    "--output-blob",
+    required=True,
+    help="Path to write the final fake_dmserver policy.json blob.",
+  )
+
+  parser.add_argument(
+    "--manual-map",
+    required=True,
+    help="Path to the manual_device_policy_proto_map.yaml file.",
   )
 
   args = parser.parse_args()
@@ -235,15 +246,15 @@ please refer to the README.md in this directory.""",
     policy_blob["policies"] = []
 
     optional_params = [
-        "allow_set_device_attributes",
-        "current_key_index",
-        "device_affiliation_ids",
-        "directory_api_id",
-        "initial_enrollment_state",
-        "request_errors",
-        "robot_api_auth_code",
-        "user_affiliation_ids",
-        "use_universal_signing_keys",
+      "allow_set_device_attributes",
+      "current_key_index",
+      "device_affiliation_ids",
+      "directory_api_id",
+      "initial_enrollment_state",
+      "request_errors",
+      "robot_api_auth_code",
+      "user_affiliation_ids",
+      "use_universal_signing_keys",
     ]
     for param in optional_params:
       if param in simple_policies:
@@ -253,47 +264,52 @@ please refer to the README.md in this directory.""",
       user_settings = chrome_settings_pb2.ChromeSettingsProto()
       apply_user_policies(simple_policies["user"], user_settings)
       encoded_policy = base64.b64encode(
-          user_settings.SerializeToString()).decode("utf-8")
-      policy_blob["policies"].append({
-          "policy_type": "google/chromeos/user",
-          "value": encoded_policy
-      })
-      policy_blob["policies"].append({
-          "policy_type": "google/chrome/user",
-          "value": encoded_policy
-      })
+        user_settings.SerializeToString()
+      ).decode("utf-8")
+      policy_blob["policies"].append(
+        {"policy_type": "google/chromeos/user", "value": encoded_policy}
+      )
+      policy_blob["policies"].append(
+        {"policy_type": "google/chrome/user", "value": encoded_policy}
+      )
 
     if "user-level-extension-install" in simple_policies:
       apply_extension_install_policies(
-          simple_policies["user-level-extension-install"],
-          policy_blob["policies"])
+        simple_policies["user-level-extension-install"], policy_blob["policies"]
+      )
 
     if "machine-level-user" in simple_policies:
       browser_settings = chrome_settings_pb2.ChromeSettingsProto()
-      apply_user_policies(simple_policies["machine-level-user"],
-                          browser_settings)
+      apply_user_policies(
+        simple_policies["machine-level-user"], browser_settings
+      )
       encoded_policy = base64.b64encode(
-          browser_settings.SerializeToString()).decode("utf-8")
-      policy_blob["policies"].append({
+        browser_settings.SerializeToString()
+      ).decode("utf-8")
+      policy_blob["policies"].append(
+        {
           "policy_type": "google/chrome/machine-level-user",
-          "value": encoded_policy
-      })
+          "value": encoded_policy,
+        }
+      )
 
     if "machine-level-extension-install" in simple_policies:
       apply_extension_install_policies(
-          simple_policies["machine-level-extension-install"],
-          policy_blob["policies"])
+        simple_policies["machine-level-extension-install"],
+        policy_blob["policies"],
+      )
 
     if "device" in simple_policies:
       device_settings = chrome_device_policy_pb2.ChromeDeviceSettingsProto()
-      apply_device_policies(simple_policies["device"], device_settings,
-                            device_schema)
+      apply_device_policies(
+        simple_policies["device"], device_settings, device_schema
+      )
       encoded_policy = base64.b64encode(
-          device_settings.SerializeToString()).decode("utf-8")
-      policy_blob["policies"].append({
-          "policy_type": "google/chromeos/device",
-          "value": encoded_policy
-      })
+        device_settings.SerializeToString()
+      ).decode("utf-8")
+      policy_blob["policies"].append(
+        {"policy_type": "google/chromeos/device", "value": encoded_policy}
+      )
 
     with open(args.output_blob, "w", encoding="utf-8") as f:
       json.dump(policy_blob, f, indent=2)

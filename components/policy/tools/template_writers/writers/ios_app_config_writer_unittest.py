@@ -5,6 +5,7 @@
 
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
 
@@ -33,7 +34,10 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
     else:
       definition = '<dict/>'
     if policy_presentation:
-      presentation = '<presentation defaultLocale="en-US">\n    %s\n  </presentation>' % policy_presentation
+      presentation = (
+        '<presentation defaultLocale="en-US">\n    %s\n  </presentation>'
+        % policy_presentation
+      )
     else:
       presentation = '<presentation defaultLocale="en-US"/>'
 
@@ -46,13 +50,17 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
 </managedAppConfiguration>''' % (version, definition, presentation)
 
   def testStringPolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'string policy',
-        'type': 'string',
-        'supported_on': ['ios:80-'],
-        'caption': 'string caption',
-        'desc': 'string description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'string policy',
+          'type': 'string',
+          'supported_on': ['ios:80-'],
+          'caption': 'string caption',
+          'desc': 'string description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<string keyName="string policy">
       <constraint nullable="true"/>
@@ -65,22 +73,28 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">string description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testIntPolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'IntPolicy',
-        'type': 'int',
-        'supported_on': ['ios:80-'],
-        'caption': 'int caption',
-        'desc': 'int description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'IntPolicy',
+          'type': 'int',
+          'supported_on': ['ios:80-'],
+          'caption': 'int caption',
+          'desc': 'int description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<integer keyName="IntPolicy">
       <constraint nullable="true"/>
@@ -93,39 +107,44 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">int description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testIntEnumPolicy(self):
-    policy_definition = json.dumps([{
-        'name':
-        'IntEnumPolicy',
-        'type':
-        'int-enum',
-        'supported_on': ['ios:80-'],
-        'caption':
-        'int-enum caption',
-        'desc':
-        'int-enum description',
-        'schema': {
-          'type': 'integer',
-          'enum': [0, 1],
-        },
-        'items': [{
-            'name': 'item0',
-            'value': 0,
-            'caption': 'item 0',
-        }, {
-            'name': 'item1',
-            'value': 1,
-            'caption': 'item 1',
-        }]
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'IntEnumPolicy',
+          'type': 'int-enum',
+          'supported_on': ['ios:80-'],
+          'caption': 'int-enum caption',
+          'desc': 'int-enum description',
+          'schema': {
+            'type': 'integer',
+            'enum': [0, 1],
+          },
+          'items': [
+            {
+              'name': 'item0',
+              'value': 0,
+              'caption': 'item 0',
+            },
+            {
+              'name': 'item1',
+              'value': 1,
+              'caption': 'item 1',
+            },
+          ],
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<integer keyName="IntEnumPolicy">
       <constraint nullable="true">
@@ -151,39 +170,44 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testStringEnumPolicy(self):
-    policy_definition = json.dumps([{
-        'name':
-        'StringEnumPolicy',
-        'type':
-        'string-enum',
-        'supported_on': ['ios:80-'],
-        'caption':
-        'string-enum caption',
-        'desc':
-        'string-enum description',
-        'schema': {
-          'type': 'string',
-          'enum': ['0', '1'],
-        },
-        'items': [{
-            'name': 'item0',
-            'value': '0',
-            'caption': 'item 0',
-        }, {
-            'name': 'item1',
-            'value': '1',
-            'caption': 'item 1',
-        }]
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'StringEnumPolicy',
+          'type': 'string-enum',
+          'supported_on': ['ios:80-'],
+          'caption': 'string-enum caption',
+          'desc': 'string-enum description',
+          'schema': {
+            'type': 'string',
+            'enum': ['0', '1'],
+          },
+          'items': [
+            {
+              'name': 'item0',
+              'value': '0',
+              'caption': 'item 0',
+            },
+            {
+              'name': 'item1',
+              'value': '1',
+              'caption': 'item 1',
+            },
+          ],
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<string keyName="StringEnumPolicy">
       <constraint nullable="true">
@@ -209,42 +233,47 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testStringEnumListPolicy(self):
-    policy_definition = json.dumps([{
-        'name':
-        'StringEnumListPolicy',
-        'type':
-        'string-enum-list',
-        'supported_on': ['ios:80-'],
-        'caption':
-        'string-enum-list caption',
-        'desc':
-        'string-enum-list description',
-        'schema': {
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'StringEnumListPolicy',
+          'type': 'string-enum-list',
+          'supported_on': ['ios:80-'],
+          'caption': 'string-enum-list caption',
+          'desc': 'string-enum-list description',
+          'schema': {
             'type': 'array',
             'items': {
-                'type': 'string',
-                'enum': ['0', '1'],
+              'type': 'string',
+              'enum': ['0', '1'],
             },
-        },
-        'items': [{
-            'name': 'item0',
-            'value': '0',
-            'caption': 'item 0',
-        }, {
-            'name': 'item1',
-            'value': '1',
-            'caption': 'item 1',
-        }]
-    }])
+          },
+          'items': [
+            {
+              'name': 'item0',
+              'value': '0',
+              'caption': 'item 0',
+            },
+            {
+              'name': 'item1',
+              'value': '1',
+              'caption': 'item 1',
+            },
+          ],
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<stringArray keyName="StringEnumListPolicy">
       <constraint nullable="true">
@@ -270,22 +299,28 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testBooleanPolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'BooleanPolicy',
-        'type': 'main',
-        'supported_on': ['ios:80-'],
-        'caption': 'boolean caption',
-        'desc': 'boolean description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'BooleanPolicy',
+          'type': 'main',
+          'supported_on': ['ios:80-'],
+          'caption': 'boolean caption',
+          'desc': 'boolean description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<boolean keyName="BooleanPolicy">
       <constraint nullable="true"/>
@@ -298,22 +333,28 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">boolean description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testListPolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'ListPolicy',
-        'type': 'list',
-        'supported_on': ['ios:80-'],
-        'caption': 'list caption',
-        'desc': 'list description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'ListPolicy',
+          'type': 'list',
+          'supported_on': ['ios:80-'],
+          'caption': 'list caption',
+          'desc': 'list description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<stringArray keyName="ListPolicy">
       <constraint nullable="true"/>
@@ -326,22 +367,28 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">list description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testDictPolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'DictPolicy',
-        'type': 'dict',
-        'supported_on': ['ios:80-'],
-        'caption': 'dict caption',
-        'desc': 'dict description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'DictPolicy',
+          'type': 'dict',
+          'supported_on': ['ios:80-'],
+          'caption': 'dict caption',
+          'desc': 'dict description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     # Dict policies are not supported by the appconfig.xml format, therefore
     # they are treated as JSON strings.
@@ -356,22 +403,28 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">dict description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testFuturePolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'FuturePolicy',
-        'type': 'string',
-        'future_on': ['ios'],
-        'caption': 'string caption',
-        'desc': 'string description'
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'FuturePolicy',
+          'type': 'string',
+          'future_on': ['ios'],
+          'caption': 'string caption',
+          'desc': 'string description',
+        }
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<!--FUTURE POLICY-->
     <string keyName="FuturePolicy">
@@ -385,28 +438,35 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">string description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
   def testPolicyWithGroup(self):
-    policy_definition = json.dumps([{
-        'name': 'PolicyInGroup',
-        'type': 'string',
-        'supported_on': ['ios:80-'],
-        'caption': 'string caption',
-        'desc': 'string description'
-    }, {
-        'name': 'DummyGroup',
-        'type': 'group',
-        'caption': 'Dummy Group',
-        'desc': 'Dummy group for testing',
-        'policies': ['PolicyInGroup']
-    }])
+    policy_definition = json.dumps(
+      [
+        {
+          'name': 'PolicyInGroup',
+          'type': 'string',
+          'supported_on': ['ios:80-'],
+          'caption': 'string caption',
+          'desc': 'string description',
+        },
+        {
+          'name': 'DummyGroup',
+          'type': 'group',
+          'caption': 'Dummy Group',
+          'desc': 'Dummy group for testing',
+          'policies': ['PolicyInGroup'],
+        },
+      ]
+    )
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     expected_configuration = '''<string keyName="PolicyInGroup">
       <constraint nullable="true"/>
@@ -424,12 +484,14 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </description>
       </field>
     </fieldGroup>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
+    expected = self._GetExpectedOutput(
+      '83', expected_configuration, expected_presentation
+    )
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'version': '83.0.4089.0'},
+      'ios_app_config',
+    )
     self.assertEquals(output.strip(), expected.strip())
 
 

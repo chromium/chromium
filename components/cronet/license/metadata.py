@@ -12,15 +12,17 @@ def get_most_restrictive_type(licenses_names: List[str]) -> LicenseType:
     """Returns the most restrictive license according to the values of LicenseType."""
     most_restrictive = LicenseType.UNKNOWN
     for license_name in licenses_names:
-        if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][
-                1].value > most_restrictive.value:
+        if (
+            constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][1].value
+            > most_restrictive.value
+        ):
             most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[
-                license_name][1]
+                license_name
+            ][1]
     return most_restrictive
 
 
 class Metadata:
-
     def __init__(self, metadata_dict: Dict[str, Union[str, List[str]]]):
         self.metadata = metadata_dict
 
@@ -32,7 +34,9 @@ class Metadata:
 
     def get_version(self):
         if not self._get_version() or self._get_version() in [
-                "0", "unknown", "N/A"
+            "0",
+            "unknown",
+            "N/A",
         ]:
             # This is a heuristic try to avoid putting a version when the version
             # in the README.chromium does not make any sense.
@@ -41,7 +45,7 @@ class Metadata:
 
     def _get_version_control(self):
         """Returns the VCS of the URL provided if possible,
-    otherwise None is returned."""
+        otherwise None is returned."""
         url = self.get_url()
         if "git" in url or "googlesource" in url:
             return "Git"
@@ -52,9 +56,11 @@ class Metadata:
         return None
 
     def _create_identifier_block(
-            self) -> metadata_dictionary.MetadataDictionary:
+        self,
+    ) -> metadata_dictionary.MetadataDictionary:
         identifier_dictionary = metadata_dictionary.MetadataDictionary(
-            "identifier")
+            "identifier"
+        )
 
         vcs = self._get_version_control()
         identifier_dictionary["type"] = f"\"{vcs}\""
@@ -83,24 +89,25 @@ class Metadata:
         return get_most_restrictive_type(self.get_licenses())
 
     def to_android_metadata(self):
-        third_party_dict = metadata_dictionary.MetadataDictionary(
-            "third_party")
+        third_party_dict = metadata_dictionary.MetadataDictionary("third_party")
         third_party_dict["license_type"] = self.get_license_type().name
         if self.get_version():
             third_party_dict["version"] = f"\"{self.get_version()}\""
 
         if self._get_version_control():
-            third_party_dict[
-                "identifier_primary"] = self._create_identifier_block()
+            third_party_dict["identifier_primary"] = (
+                self._create_identifier_block()
+            )
         else:
             third_party_dict["homepage"] = f"\"{self.get_url()}\""
 
         cpe_prefix = self.metadata.get("CPEPrefix")
         if cpe_prefix is not None:
-            third_party_dict[
-                "security"] = security_dict = metadata_dictionary.MetadataDictionary(
-                    "security")
+            third_party_dict["security"] = security_dict = (
+                metadata_dictionary.MetadataDictionary("security")
+            )
             security_dict["tag"] = f"\"NVD-CPE2.3:{cpe_prefix}\""
 
         return "\n".join(
-            [f"name: \"{self.get_name()}\"", f"{third_party_dict}"])
+            [f"name: \"{self.get_name()}\"", f"{third_party_dict}"]
+        )

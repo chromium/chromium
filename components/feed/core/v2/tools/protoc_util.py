@@ -16,7 +16,8 @@ _protoc_path = None
 def run_command(args, input):
     """Uses subprocess to execute the command line args."""
     proc = subprocess.run(
-        args, input=input, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        args, input=input, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode('utf-8'))
@@ -44,17 +45,21 @@ def encode_proto(text, message_name, root_dir, proto_path):
     input_buffer = text
     if isinstance(input_buffer, str):
         input_buffer = text.encode()
-    return run_command([protoc_path(root_dir), '--encode=' + message_name
-                        ] + get_protoc_common_args(root_dir, proto_path),
-                       input_buffer)
+    return run_command(
+        [protoc_path(root_dir), '--encode=' + message_name]
+        + get_protoc_common_args(root_dir, proto_path),
+        input_buffer,
+    )
 
 
 def decode_proto(data, message_name, root_dir, proto_path):
     """Calls a command line to decode the binary bytes array into text
     string."""
-    return run_command([protoc_path(root_dir), '--decode=' + message_name
-                        ] + get_protoc_common_args(root_dir, proto_path),
-                       data).decode('utf-8')
+    return run_command(
+        [protoc_path(root_dir), '--decode=' + message_name]
+        + get_protoc_common_args(root_dir, proto_path),
+        data,
+    ).decode('utf-8')
 
 
 def protoc_path(root_dir):
@@ -62,11 +67,13 @@ def protoc_path(root_dir):
     global _protoc_path
     if not _protoc_path:
         protoc_list = list(
-            glob.glob(os.path.join(root_dir, "out") + "/*/protoc")) + list(
-                glob.glob(os.path.join(root_dir, "out") + "/*/*/protoc"))
+            glob.glob(os.path.join(root_dir, "out") + "/*/protoc")
+        ) + list(glob.glob(os.path.join(root_dir, "out") + "/*/*/protoc"))
         if not len(protoc_list):
-            print("Can't find a suitable build output directory",
-                  "(it should have protoc)")
+            print(
+                "Can't find a suitable build output directory",
+                "(it should have protoc)",
+            )
             sys.exit(1)
         _protoc_path = protoc_list[0]
     return _protoc_path

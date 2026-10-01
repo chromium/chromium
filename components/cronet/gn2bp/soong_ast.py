@@ -28,18 +28,16 @@ def get_jni_zero_target_type(target):
     return JniZeroTargetType.GENERATOR
 
 
-def write_blueprint_key_value(output,
-                              name,
-                              value,
-                              sort=True,
-                              list_to_multiline_string=False):
+def write_blueprint_key_value(
+    output, name, value, sort=True, list_to_multiline_string=False
+):
     """Writes a Blueprint key-value pair to the output.
 
-  If list_to_multiline_string is set, and the value is a list, then the output
-  value will be the list elements concatenated into a single Blueprint string,
-  formatted such that each list element appears on its own line. This is a
-  purely cosmetic feature to make the Blueprint file more readable.
-  """
+    If list_to_multiline_string is set, and the value is a list, then the output
+    value will be the list elements concatenated into a single Blueprint string,
+    formatted such that each list element appears on its own line. This is a
+    purely cosmetic feature to make the Blueprint file more readable.
+    """
 
     def escape(s):
         return str(s).replace('\\', '\\\\').replace('"', '\\"')
@@ -74,11 +72,15 @@ def write_blueprint_key_value(output,
         output.append('    },')
         return
     output.append(
-        '    %s: "%s",' %
-        (name,
-         NEWLINE.join(
-             escape(line)
-             for line in (value if isinstance(value, list) else [value]))))
+        '    %s: "%s",'
+        % (
+            name,
+            NEWLINE.join(
+                escape(line)
+                for line in (value if isinstance(value, list) else [value])
+            ),
+        )
+    )
 
 
 def label_to_module_name(label, context, short=False):
@@ -90,8 +92,11 @@ def label_to_module_name(label, context, short=False):
         # somewhat readable. To do this we replace just the path by a short hash.
         parts = module.rsplit('/', maxsplit=1)
         if len(parts) > 1 and len(parts[0]) > 10:
-            module = hashlib.sha256(
-                parts[0].encode('utf-8')).hexdigest()[:8] + '_' + parts[1]
+            module = (
+                hashlib.sha256(parts[0].encode('utf-8')).hexdigest()[:8]
+                + '_'
+                + parts[1]
+            )
 
     module = re.sub(r'[^a-zA-Z0-9_]', '_', module)
 
@@ -102,12 +107,14 @@ def label_to_module_name(label, context, short=False):
 
 def get_protoc_module_name(gn, context):
     protoc_gn_target_name = gn.get_target(
-        '//third_party/protobuf:protoc__toolchain_clang').name
+        '//third_party/protobuf:protoc__toolchain_clang'
+    ).name
     return label_to_module_name(protoc_gn_target_name, context)
 
 
 class Target:
     """A target-scoped part of a module"""
+
     COMMON_FIELDS = {'compile_multilib', 'srcs'}
     SUPPORTED_FIELDS = set()
     _allowed_fields = SUPPORTED_FIELDS.union(COMMON_FIELDS)
@@ -125,7 +132,8 @@ class Target:
         if name not in self._allowed_fields:
             raise AttributeError(
                 f"Target '{self._arch}' (parent type '{self._parent.type if self._parent else None}') "
-                f"does not support attribute '{name}'")
+                f"does not support attribute '{name}'"
+            )
         super().__setattr__(name, value)
 
     def to_string(self, output):
@@ -144,10 +152,11 @@ class Target:
             # determinism)
             #
             # TODO: this logic is duplicated in `Module`.
-            self._output_field(nested_out,
-                               field,
-                               sort=field not in ('cflags', 'cppflags',
-                                                  'ldflags', 'flags'))
+            self._output_field(
+                nested_out,
+                field,
+                sort=field not in ('cflags', 'cppflags', 'ldflags', 'flags'),
+            )
 
         if nested_out:
             output.append('    %s: {' % self._arch)
@@ -155,24 +164,33 @@ class Target:
                 output.append('    %s' % line)
             output.append('    },')
 
-    def _output_field(self,
-                      output,
-                      name,
-                      sort=True,
-                      list_to_multiline_string=False):
+    def _output_field(
+        self, output, name, sort=True, list_to_multiline_string=False
+    ):
         return write_blueprint_key_value(
             output,
             name,
             getattr(self, name),
             sort=sort,
-            list_to_multiline_string=list_to_multiline_string)
+            list_to_multiline_string=list_to_multiline_string,
+        )
 
 
 class CcTarget(Target):
     SUPPORTED_FIELDS = {
-        'shared_libs', 'static_libs', 'whole_static_libs', 'header_libs',
-        'cflags', 'stl', 'cppflags', 'include_dirs', 'generated_headers',
-        'export_generated_headers', 'ldflags', 'linker_scripts', 'stem'
+        'shared_libs',
+        'static_libs',
+        'whole_static_libs',
+        'header_libs',
+        'cflags',
+        'stl',
+        'cppflags',
+        'include_dirs',
+        'generated_headers',
+        'export_generated_headers',
+        'ldflags',
+        'linker_scripts',
+        'stem',
     }
     _allowed_fields = SUPPORTED_FIELDS.union(Target.COMMON_FIELDS)
 
@@ -195,8 +213,15 @@ class CcTarget(Target):
 
 class RustTarget(Target):
     SUPPORTED_FIELDS = {
-        'edition', 'features', 'cfgs', 'flags', 'rustlibs', 'proc_macros',
-        'shared_libs', 'static_libs', 'whole_static_libs'
+        'edition',
+        'features',
+        'cfgs',
+        'flags',
+        'rustlibs',
+        'proc_macros',
+        'shared_libs',
+        'static_libs',
+        'whole_static_libs',
     }
     _allowed_fields = SUPPORTED_FIELDS.union(Target.COMMON_FIELDS)
 
@@ -214,14 +239,33 @@ class RustTarget(Target):
 
 
 COMMON_FIELDS = {
-    'context', 'type', 'gn_target', 'name', 'comment', 'visibility',
-    'default_applicable_licenses', 'default_visibility', 'build_file_path',
-    'allow_rebasing', 'gn_type', 'target', 'jni_zero_target_type',
-    'java_unfiltered_module', 'java_prevent_excluded_classes_from_classpath',
-    'genrule_headers', 'genrule_srcs', 'genrule_shared_libs',
-    'genrule_header_libs', 'include_build_directory', 'apex_available',
-    'host_supported', 'host_cross_supported', 'device_supported', 'defaults',
-    'srcs', 'role'
+    'context',
+    'type',
+    'gn_target',
+    'name',
+    'comment',
+    'visibility',
+    'default_applicable_licenses',
+    'default_visibility',
+    'build_file_path',
+    'allow_rebasing',
+    'gn_type',
+    'target',
+    'jni_zero_target_type',
+    'java_unfiltered_module',
+    'java_prevent_excluded_classes_from_classpath',
+    'genrule_headers',
+    'genrule_srcs',
+    'genrule_shared_libs',
+    'genrule_header_libs',
+    'include_build_directory',
+    'apex_available',
+    'host_supported',
+    'host_cross_supported',
+    'device_supported',
+    'defaults',
+    'srcs',
+    'role',
 }
 
 SKIP_IF_FALSY = {
@@ -237,8 +281,14 @@ SKIP_IF_TRUTHY = {
 }
 
 ARCH_NAMES = {
-    'android', 'android_x86', 'android_x86_64', 'android_arm', 'android_arm64',
-    'android_riscv64', 'host', 'glibc'
+    'android',
+    'android_x86',
+    'android_x86_64',
+    'android_arm',
+    'android_arm64',
+    'android_riscv64',
+    'host',
+    'glibc',
 }
 
 COMMON_SOONG_FIELDS = {
@@ -257,15 +307,12 @@ COMMON_SOONG_FIELDS = {
 
 class Module:
     """Base class for Soong modules."""
+
     SUPPORTED_FIELDS = set()
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         self.context = context
         self.type = mod_type
         self.gn_target = gn_target
@@ -298,8 +345,14 @@ class Module:
 
     def _initialize_targets(self, target_class=Target):
         for arch in [
-                'android', 'android_x86', 'android_x86_64', 'android_arm',
-                'android_arm64', 'android_riscv64', 'host', 'glibc'
+            'android',
+            'android_x86',
+            'android_x86_64',
+            'android_arm',
+            'android_arm64',
+            'android_riscv64',
+            'host',
+            'glibc',
         ]:
             self.target[arch] = target_class(arch, self)
 
@@ -336,10 +389,9 @@ class Module:
                 continue
 
             if field == 'cmd':
-                self._output_field(output,
-                                   'cmd',
-                                   sort=False,
-                                   list_to_multiline_string=True)
+                self._output_field(
+                    output, 'cmd', sort=False, list_to_multiline_string=True
+                )
             elif field in ('cflags', 'cppflags', 'ldflags', 'flags'):
                 # While sorting is a requirement for a deterministic output, sorting these flags correctly is
                 # challenging. Sorting requires knowing the boundaries of each flag, but we cannot simply
@@ -375,10 +427,12 @@ class Module:
     def add_android_shared_lib(self, lib):
         if self.type.startswith('java'):
             raise Exception(
-                'Adding Android shared lib for java_* targets is unsupported')
+                'Adding Android shared lib for java_* targets is unsupported'
+            )
         if self.type == 'cc_binary_host':
             raise Exception(
-                'Adding Android shared lib for host tool is unsupported')
+                'Adding Android shared lib for host tool is unsupported'
+            )
 
         if self.host_supported:
             self.target['android'].shared_libs.add(lib)
@@ -393,24 +447,26 @@ class Module:
 
     def is_test(self):
         if gn_utils.TESTING_SUFFIX in self.name:
-            name_without_prefix = self.name[:self.name.find(gn_utils.
-                                                            TESTING_SUFFIX)]
-            return any(name_without_prefix == label_to_module_name(
-                target, self.context)
-                       for target in gn2bp_targets.DEFAULT_TESTS)
+            name_without_prefix = self.name[
+                : self.name.find(gn_utils.TESTING_SUFFIX)
+            ]
+            return any(
+                name_without_prefix
+                == label_to_module_name(target, self.context)
+                for target in gn2bp_targets.DEFAULT_TESTS
+            )
         return False
 
-    def _output_field(self,
-                      output,
-                      name,
-                      sort=True,
-                      list_to_multiline_string=False):
+    def _output_field(
+        self, output, name, sort=True, list_to_multiline_string=False
+    ):
         return write_blueprint_key_value(
             output,
             name,
             getattr(self, name),
             sort=sort,
-            list_to_multiline_string=list_to_multiline_string)
+            list_to_multiline_string=list_to_multiline_string,
+        )
 
     def is_compiled(self):
         return self.type not in ('cc_genrule', 'filegroup', 'java_genrule')
@@ -419,10 +475,14 @@ class Module:
         return self.type == "cc_genrule"
 
     def has_input_files(self):
-        return self.type in [
-            "java_library", "java_import", "rust_bindgen"
-        ] or (self.srcs and len(self.srcs) > 0) or (self.target and any(
-            len(target.srcs) > 0 for target in self.target.values()))
+        return (
+            self.type in ["java_library", "java_import", "rust_bindgen"]
+            or (self.srcs and len(self.srcs) > 0)
+            or (
+                self.target
+                and any(len(target.srcs) > 0 for target in self.target.values())
+            )
+        )
 
     def is_java_top_level_module(self):
         return self.java_unfiltered_module is not None
@@ -430,23 +490,42 @@ class Module:
 
 class CcModule(Module):
     SUPPORTED_FIELDS = {
-        'srcs', 'shared_libs', 'static_libs', 'whole_static_libs', 'init_rc',
-        'export_include_dirs', 'generated_headers', 'export_generated_headers',
-        'export_static_lib_headers', 'export_header_lib_headers', 'cflags',
-        'include_dirs', 'local_include_dirs', 'header_libs', 'strip', 'stl',
-        'cpp_std', 'min_sdk_version', 'version_script', 'test_suites',
-        'test_config', 'proto', 'linker_scripts', 'ldflags', 'cppflags',
-        'stem', 'compile_multilib', 'c_std', 'whole_program_vtables', 'afdo',
-        'rtti'
+        'srcs',
+        'shared_libs',
+        'static_libs',
+        'whole_static_libs',
+        'init_rc',
+        'export_include_dirs',
+        'generated_headers',
+        'export_generated_headers',
+        'export_static_lib_headers',
+        'export_header_lib_headers',
+        'cflags',
+        'include_dirs',
+        'local_include_dirs',
+        'header_libs',
+        'strip',
+        'stl',
+        'cpp_std',
+        'min_sdk_version',
+        'version_script',
+        'test_suites',
+        'test_config',
+        'proto',
+        'linker_scripts',
+        'ldflags',
+        'cppflags',
+        'stem',
+        'compile_multilib',
+        'c_std',
+        'whole_program_vtables',
+        'afdo',
+        'rtti',
     }
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.shared_libs = set()
         self.static_libs = set()
@@ -481,24 +560,29 @@ class CcModule(Module):
         self._initialize_targets(CcTarget)
 
     def has_input_files(self):
-        return super().has_input_files() or bool(self.export_generated_headers
-                                                 or self.generated_headers)
+        return super().has_input_files() or bool(
+            self.export_generated_headers or self.generated_headers
+        )
 
 
 class JavaModule(Module):
     SUPPORTED_FIELDS = {
-        'srcs', 'plugins', 'processor_class', 'sdk_version', 'javacflags',
-        'jarjar_rules', 'jars', 'errorprone', 'libs', 'static_libs',
-        'min_sdk_version'
+        'srcs',
+        'plugins',
+        'processor_class',
+        'sdk_version',
+        'javacflags',
+        'jarjar_rules',
+        'jars',
+        'errorprone',
+        'libs',
+        'static_libs',
+        'min_sdk_version',
     }
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.plugins = set()
         self.processor_class = None
@@ -529,25 +613,33 @@ class JavaModule(Module):
                 self.java_unfiltered_module.libs.add(dep_module.name)
             else:
                 self.java_unfiltered_module.libs.add(
-                    dep_module.java_unfiltered_module.name)
+                    dep_module.java_unfiltered_module.name
+                )
                 self.java_unfiltered_module.libs.update(
-                    dep_module.java_unfiltered_module.libs)
+                    dep_module.java_unfiltered_module.libs
+                )
 
 
 class RustModule(Module):
     SUPPORTED_FIELDS = {
-        'srcs', 'min_sdk_version', 'crate_name', 'crate_root', 'edition',
-        'rustlibs', 'proc_macros', 'cargo_env_compat', 'cargo_pkg_version',
-        'shared_libs', 'static_libs', 'header_libs', 'whole_static_libs'
+        'srcs',
+        'min_sdk_version',
+        'crate_name',
+        'crate_root',
+        'edition',
+        'rustlibs',
+        'proc_macros',
+        'cargo_env_compat',
+        'cargo_pkg_version',
+        'shared_libs',
+        'static_libs',
+        'header_libs',
+        'whole_static_libs',
     }
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.min_sdk_version = None
         self.shared_libs = set()
@@ -566,19 +658,26 @@ class RustModule(Module):
 
 class RustBindgenModule(Module):
     SUPPORTED_FIELDS = {
-        'srcs', 'min_sdk_version', 'crate_name', 'crate_root', 'wrapper_src',
-        'source_stem', 'bindgen_flags', 'handle_static_inline',
-        'static_inline_library', 'shared_libs', 'static_libs', 'cpp_std',
-        'c_std', 'header_libs', 'whole_static_libs'
+        'srcs',
+        'min_sdk_version',
+        'crate_name',
+        'crate_root',
+        'wrapper_src',
+        'source_stem',
+        'bindgen_flags',
+        'handle_static_inline',
+        'static_inline_library',
+        'shared_libs',
+        'static_libs',
+        'cpp_std',
+        'c_std',
+        'header_libs',
+        'whole_static_libs',
     }
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.min_sdk_version = None
         self.shared_libs = set()
@@ -598,16 +697,17 @@ class RustBindgenModule(Module):
 
 class GenruleModule(Module):
     SUPPORTED_FIELDS = {
-        'srcs', 'tools', 'cmd', 'out', 'tool_files', 'export_include_dirs'
+        'srcs',
+        'tools',
+        'cmd',
+        'out',
+        'tool_files',
+        'export_include_dirs',
     }
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.tools = set()
         self.cmd = None
@@ -619,13 +719,9 @@ class GenruleModule(Module):
 class AidlModule(Module):
     SUPPORTED_FIELDS = {'srcs', 'unstable', 'include_dirs'}
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.unstable = ""
         self.include_dirs = []
@@ -634,13 +730,9 @@ class AidlModule(Module):
 class FilegroupModule(Module):
     SUPPORTED_FIELDS = {'srcs', 'path'}
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.path = ""
 
@@ -648,13 +740,9 @@ class FilegroupModule(Module):
 class LicenseModule(Module):
     SUPPORTED_FIELDS = {'license_kinds', 'license_text'}
 
-    def __init__(self,
-                 mod_type,
-                 name,
-                 gn_target,
-                 context,
-                 is_test=False,
-                 role=None):
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
         self.license_kinds = set()
         self.license_text = set()
@@ -664,30 +752,33 @@ class PackageModule(Module):
     SUPPORTED_FIELDS = set()
 
 
-def create_module(mod_type,
-                  name,
-                  gn_target,
-                  context,
-                  is_test=False,
-                  role=None):
-    if mod_type in ('cc_library_static', 'cc_library_shared', 'cc_binary',
-                    'cc_test', 'cc_defaults', 'cc_library_headers',
-                    'cc_preprocess_no_configuration'):
+def create_module(mod_type, name, gn_target, context, is_test=False, role=None):
+    if mod_type in (
+        'cc_library_static',
+        'cc_library_shared',
+        'cc_binary',
+        'cc_test',
+        'cc_defaults',
+        'cc_library_headers',
+        'cc_preprocess_no_configuration',
+    ):
         return CcModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('java_library', 'java_import', 'java_defaults'):
         return JavaModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('rust_ffi_static', 'rust_binary', 'rust_proc_macro'):
         return RustModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'rust_bindgen':
-        return RustBindgenModule(mod_type, name, gn_target, context, is_test,
-                                 role)
+        return RustBindgenModule(
+            mod_type, name, gn_target, context, is_test, role
+        )
     if mod_type in ('cc_genrule', 'java_genrule', 'genrule'):
         return GenruleModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'aidl_interface':
         return AidlModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'filegroup':
-        return FilegroupModule(mod_type, name, gn_target, context, is_test,
-                               role)
+        return FilegroupModule(
+            mod_type, name, gn_target, context, is_test, role
+        )
     if mod_type == 'license':
         return LicenseModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'package':
@@ -741,8 +832,9 @@ class Blueprint:
             self._license_module.to_string(ret)
         for m in sorted(self.modules.values(), key=lambda m: m.name):
             if (m.type != "cc_library_static" or m.has_input_files()) and (
-                    exclude_gn_targets is None
-                    or m.gn_target not in exclude_gn_targets):
+                exclude_gn_targets is None
+                or m.gn_target not in exclude_gn_targets
+            ):
                 # Don't print cc_library_static with empty srcs. These attributes are already
                 # propagated up the tree. Printing them messes the presubmits because
                 # every module is compiled while those targets are not reachable in

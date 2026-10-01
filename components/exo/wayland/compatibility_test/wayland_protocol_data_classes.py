@@ -24,13 +24,19 @@ class Description:
 
     @staticmethod
     def parse_xml(e: Element) -> Optional['Description']:
-        return Description(summary=e.get('summary'),
-                           description=e.text.strip()
-                           if e.text else '') if e is not None else None
+        return (
+            Description(
+                summary=e.get('summary'),
+                description=e.text.strip() if e.text else '',
+            )
+            if e is not None
+            else None
+        )
 
 
 class MessageArgType(enum.Enum):
     """The valid types of an <arg>."""
+
     INT = 'int'
     UINT = 'uint'
     FIXED = 'fixed'
@@ -71,20 +77,23 @@ class MessageArg:
 
     @staticmethod
     def parse_xml(message: 'Message', e: Element) -> 'MessageArg':
-        return MessageArg(message=message,
-                          name=e.get('name'),
-                          type=e.get('type'),
-                          summary=e.get('summary'),
-                          interface=e.get('interface'),
-                          nullable=e.get('allow-null') == 'true'
-                          if e.get('allow-null') else None,
-                          enum=e.get('enum'),
-                          description=Description.parse_xml(
-                              e.find('description')))
+        return MessageArg(
+            message=message,
+            name=e.get('name'),
+            type=e.get('type'),
+            summary=e.get('summary'),
+            interface=e.get('interface'),
+            nullable=e.get('allow-null') == 'true'
+            if e.get('allow-null')
+            else None,
+            enum=e.get('enum'),
+            description=Description.parse_xml(e.find('description')),
+        )
 
 
 class RequestType(enum.Enum):
     """The valid types of a <request> message."""
+
     DESTRUCTOR = 'destructor'
 
 
@@ -116,20 +125,24 @@ class Message:
     args: Tuple[MessageArg, ...] = dataclasses.field(init=False)
 
     @staticmethod
-    def parse_xml(interface: 'Interface', is_event: bool,
-                  e: Element) -> 'Message':
+    def parse_xml(
+        interface: 'Interface', is_event: bool, e: Element
+    ) -> 'Message':
         message = Message(
             interface=interface,
             is_event=is_event,
             name=e.get('name'),
             request_type=e.get('type'),
             since=int(e.get('since')) if e.get('since') else None,
-            description=Description.parse_xml(e.find('description')))
+            description=Description.parse_xml(e.find('description')),
+        )
 
         # Note: This is needed to finish up since the instance is frozen.
         object.__setattr__(
-            message, 'args',
-            tuple(MessageArg.parse_xml(message, c) for c in e.findall('arg')))
+            message,
+            'args',
+            tuple(MessageArg.parse_xml(message, c) for c in e.findall('arg')),
+        )
 
         return message
 
@@ -164,7 +177,8 @@ class EnumEntry:
             value=int(e.get('value'), 0),
             summary=e.get('summary'),
             since=int(e.get('since'), 0) if e.get('since') else None,
-            description=Description.parse_xml(e.find('description')))
+            description=Description.parse_xml(e.find('description')),
+        )
 
 
 @dataclasses.dataclass(frozen=True)
@@ -191,17 +205,20 @@ class Enum:
 
     @staticmethod
     def parse_xml(interface: 'Interface', e: Element) -> 'Enum':
-        enum = Enum(interface=interface,
-                    name=e.get('name'),
-                    since=int(e.get('since'), 0) if e.get('since') else None,
-                    bitfield=e.get('bitfield') == 'true'
-                    if e.get('bitfield') else None,
-                    description=Description.parse_xml(e.find('description')))
+        enum = Enum(
+            interface=interface,
+            name=e.get('name'),
+            since=int(e.get('since'), 0) if e.get('since') else None,
+            bitfield=e.get('bitfield') == 'true' if e.get('bitfield') else None,
+            description=Description.parse_xml(e.find('description')),
+        )
 
         # Note: This is needed to finish up since the instance is frozen.
         object.__setattr__(
-            enum, 'entries',
-            tuple(EnumEntry.parse_xml(enum, c) for c in e.findall('entry')))
+            enum,
+            'entries',
+            tuple(EnumEntry.parse_xml(enum, c) for c in e.findall('entry')),
+        )
 
         return enum
 
@@ -233,26 +250,35 @@ class Interface:
 
     @staticmethod
     def parse_xml(protocol: 'Protocol', e: Element) -> 'Interface':
-        interface = Interface(protocol=protocol,
-                              name=e.get('name'),
-                              version=int(e.get('version'), 0),
-                              description=Description.parse_xml(
-                                  e.find('description')))
+        interface = Interface(
+            protocol=protocol,
+            name=e.get('name'),
+            version=int(e.get('version'), 0),
+            description=Description.parse_xml(e.find('description')),
+        )
 
         # Note: This is needed to finish up since the instance is frozen.
         object.__setattr__(
-            interface, 'requests',
+            interface,
+            'requests',
             tuple(
                 Message.parse_xml(interface, False, c)
-                for c in e.findall('request')))
+                for c in e.findall('request')
+            ),
+        )
         object.__setattr__(
-            interface, 'events',
+            interface,
+            'events',
             tuple(
                 Message.parse_xml(interface, True, c)
-                for c in e.findall('event')))
+                for c in e.findall('event')
+            ),
+        )
         object.__setattr__(
-            interface, 'enums',
-            tuple(Enum.parse_xml(interface, c) for c in e.findall('enum')))
+            interface,
+            'enums',
+            tuple(Enum.parse_xml(interface, c) for c in e.findall('enum')),
+        )
 
         return interface
 
@@ -292,21 +318,25 @@ class Protocol:
     interfaces: Tuple[Interface, ...] = dataclasses.field(init=False)
 
     @staticmethod
-    def parse_xml(protocols: 'Protocols', filename: str,
-                  e: Element) -> 'Protocol':
-        protocol = Protocol(protocols,
-                            filename=filename,
-                            name=e.get('name'),
-                            copyright=Copyright.parse_xml(e.find('copyright')),
-                            description=Description.parse_xml(
-                                e.find('description')))
+    def parse_xml(
+        protocols: 'Protocols', filename: str, e: Element
+    ) -> 'Protocol':
+        protocol = Protocol(
+            protocols,
+            filename=filename,
+            name=e.get('name'),
+            copyright=Copyright.parse_xml(e.find('copyright')),
+            description=Description.parse_xml(e.find('description')),
+        )
 
         # Note: This is needed to finish up since the instance is frozen.
         object.__setattr__(
-            protocol, 'interfaces',
+            protocol,
+            'interfaces',
             tuple(
-                Interface.parse_xml(protocol, i)
-                for i in e.findall('interface')))
+                Interface.parse_xml(protocol, i) for i in e.findall('interface')
+            ),
+        )
 
         return protocol
 
@@ -324,12 +354,16 @@ class Protocols:
 
         # Note: This is needed to finish up since the instance is frozen.
         object.__setattr__(
-            protocols, 'protocols',
+            protocols,
+            'protocols',
             tuple(
                 Protocol.parse_xml(
                     protocols,
                     os.path.splitext(os.path.basename(filename))[0],
-                    xml.etree.ElementTree.parse(filename).getroot())
-                for filename in filenames))
+                    xml.etree.ElementTree.parse(filename).getroot(),
+                )
+                for filename in filenames
+            ),
+        )
 
         return protocols

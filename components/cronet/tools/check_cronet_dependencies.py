@@ -13,7 +13,8 @@ import tempfile
 from typing import List, Set
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, REPOSITORY_ROOT)
 import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
@@ -26,37 +27,38 @@ _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 def _get_current_gn_args() -> List[str]:
     """Returns the GN args in the current working directory"""
-    args = subprocess.check_output(["cat",
-                                    "args.gn"]).decode('utf-8').split("\n")
+    args = (
+        subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+    )
     return [arg for arg in args if arg and not arg.startswith("#")]
 
 
 def normalize_third_party_dep(dependency: str) -> str:
     """Normalizes a GN label that includes `third_party` string
 
-  Required because Chromium allows multiple libraries to live under the
-  same third_party directory (eg: `third_party/android_deps` contains
-  more than a single library), In order to decrease the failure rate
-  each time a dependency is added, normalize the `third_party` paths
-  to its root.
+    Required because Chromium allows multiple libraries to live under the
+    same third_party directory (eg: `third_party/android_deps` contains
+    more than a single library), In order to decrease the failure rate
+    each time a dependency is added, normalize the `third_party` paths
+    to its root.
 
-  If more than one `third_party` string appears in the GN label, the
-  last one is picked for normalization. See examples below:
+    If more than one `third_party` string appears in the GN label, the
+    last one is picked for normalization. See examples below:
 
-  * "//third_party/foo" -> "//third_party/foo"
-  * "//third_party/foo/bar" -> "//third_party/foo"
-  * "//third_party/foo/bar/X" -> "//third_party/foo"
-  * "//third_party/foo/third_party/bar" -> "//third_party/foo/third_party/bar"
+    * "//third_party/foo" -> "//third_party/foo"
+    * "//third_party/foo/bar" -> "//third_party/foo"
+    * "//third_party/foo/bar/X" -> "//third_party/foo"
+    * "//third_party/foo/third_party/bar" -> "//third_party/foo/third_party/bar"
 
-  Args:
-    dependency: GN label that represents relative path to a dependency.
+    Args:
+      dependency: GN label that represents relative path to a dependency.
 
-  Raises:
-    ValueError: Raised if the dependency is not a third_party dependency.
+    Raises:
+      ValueError: Raised if the dependency is not a third_party dependency.
 
-  Returns:
-    The normalized third_party path.
-  """
+    Returns:
+      The normalized third_party path.
+    """
     if _THIRD_PARTY_STR not in dependency:
         raise ValueError('Dependency is not a third_party dependency')
 
@@ -71,38 +73,42 @@ def normalize_third_party_dep(dependency: str) -> str:
     return dependency[:dependency_name_end_index]
 
 
-def _get_transitive_deps_from_root_targets(out_dir: str,
-                                           gn_targets: List[str]) -> Set[str]:
+def _get_transitive_deps_from_root_targets(
+    out_dir: str, gn_targets: List[str]
+) -> Set[str]:
     """Executes gn desc |out_dir| |gn_target| deps --all for each gn target"""
     all_deps = set()
     for gn_target in gn_targets:
         all_deps.update(
             subprocess.check_output(
-                [_GN_PATH, "desc", out_dir, gn_target, "deps",
-                 "--all"]).decode("utf-8").split("\n"))
+                [_GN_PATH, "desc", out_dir, gn_target, "deps", "--all"]
+            )
+            .decode("utf-8")
+            .split("\n")
+        )
     return all_deps
 
 
 def normalize_and_dedup_deps(deps: Set[str]) -> Set[str]:
     """Deduplicate after normalizing third_party dependencies
 
-  This process involve the following steps:
+    This process involve the following steps:
 
-  (1) Remove the target name from the gn label to retrieve
-  the proper path.
-  (2) If the gn label involves a third_party dependency then
-  normalize it according to |normalize_third_party_dep|.
-  (3) Add the final path after processing to the set.
+    (1) Remove the target name from the gn label to retrieve
+    the proper path.
+    (2) If the gn label involves a third_party dependency then
+    normalize it according to |normalize_third_party_dep|.
+    (3) Add the final path after processing to the set.
 
-  AndroidX dependencies are a special case and they don't go
-  through any processing, they are added as is.
+    AndroidX dependencies are a special case and they don't go
+    through any processing, they are added as is.
 
-  Args:
-    deps: A set of all the dependencies.
+    Args:
+      deps: A set of all the dependencies.
 
-  Returns:
-    A sorted collection of normalized deps.
-  """
+    Returns:
+      A sorted collection of normalized deps.
+    """
     cleaned_deps = set()
     for dep in deps:
         if not dep:
@@ -140,8 +146,8 @@ def normalize_and_dedup_deps(deps: Set[str]) -> Set[str]:
 def main():
     parser = argparse.ArgumentParser(
         prog='Check cronet dependencies',
-        description=
-        "Checks whether Cronet's current dependencies match the known ones.")
+        description="Checks whether Cronet's current dependencies match the known ones.",
+    )
     parser.add_argument(
         '--root-deps',
         nargs="+",
@@ -164,7 +170,8 @@ def main():
     gn_args = _get_current_gn_args()
     # remove remoteexec related gn args.
     gn_args = [
-        arg for arg in gn_args
+        arg
+        for arg in gn_args
         if not re.search(r'use_(remoteexec|reclient|siso)\s*=.*', arg)
     ]
     # make sure it doesn't use remoteexec
@@ -176,8 +183,8 @@ def main():
         cronet_utils.gn(tmp_dir_name, " ".join(gn_args))
 
         final_deps = normalize_and_dedup_deps(
-            _get_transitive_deps_from_root_targets(tmp_dir_name,
-                                                   args.root_deps))
+            _get_transitive_deps_from_root_targets(tmp_dir_name, args.root_deps)
+        )
         golden_deps = cronet_utils.read_file(args.old_dependencies).split("\n")
         if not all(dep in golden_deps for dep in final_deps):
             # Only generate this text if we found a new dependency
@@ -185,7 +192,8 @@ def main():
             # that we will know not if a dependency gets removed
             # as we don't care about that scenario and we don't
             # want to block people while cleaning-up code.
-            print("""
+            print(
+                """
 Cronet Dependency check has failed. Please re-generate the golden file:
 #######################################################
 #                                                     #
@@ -198,10 +206,13 @@ patch -p1 << 'END_DIFF'
 %s
 END_DIFF
 ############ END ############
-""" % cronet_utils.compare_text_and_generate_diff(
-                '\n'.join(final_deps),
-                cronet_utils.read_file(args.old_dependencies),
-                args.old_dependencies))
+"""
+                % cronet_utils.compare_text_and_generate_diff(
+                    '\n'.join(final_deps),
+                    cronet_utils.read_file(args.old_dependencies),
+                    args.old_dependencies,
+                )
+            )
             return -1
 
         build_utils.Touch(args.stamp)

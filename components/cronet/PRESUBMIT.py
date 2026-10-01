@@ -26,6 +26,7 @@ def CheckPyLint(input_api, output_api):
         'consider-using-in',
         'consider-using-with',
         'deprecated-module',
+        'duplicate-code',
         'line-too-long',
         'missing-module-docstring',
         'possibly-used-before-assignment',
@@ -40,10 +41,13 @@ def CheckPyLint(input_api, output_api):
         'use-list-literal',
     ]
     return input_api.RunTests(
-        input_api.canned_checks.GetPylint(input_api,
-                                          output_api,
-                                          disabled_warnings=disabled_warnings,
-                                          version='3.2'))
+        input_api.canned_checks.GetPylint(
+            input_api,
+            output_api,
+            disabled_warnings=disabled_warnings,
+            version='3.2',
+        )
+    )
 
 
 def CheckChangeFormatted(input_api, output_api):
@@ -52,6 +56,7 @@ def CheckChangeFormatted(input_api, output_api):
             input_api,
             output_api,
             check_python=True,
-            result_factory=output_api.PresubmitError),
-        *input_api.canned_checks.CheckGNFormatted(input_api, output_api)
+            result_factory=output_api.PresubmitError,
+        ),
+        *input_api.canned_checks.CheckGNFormatted(input_api, output_api),
     ]

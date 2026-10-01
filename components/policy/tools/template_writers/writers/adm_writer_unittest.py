@@ -6,6 +6,7 @@
 
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
 
@@ -74,22 +75,32 @@ class AdmWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     Raises:
       AssertionError: if the two strings are not equivalent.
     '''
-    self.assertEquals(output.strip(),
-                      expected_output.strip().replace('\n', '\r\n'))
+    self.assertEquals(
+      output.strip(), expected_output.strip().replace('\n', '\r\n')
+    )
 
   def testEmpty(self):
     # Test PListWriter in case of empty polices.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [],
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
-    output = self.GetOutput(policy_json, {
+      }'''
+      % MESSAGES
+    )
+    output = self.GetOutput(
+      policy_json,
+      {
         '_chromium': '1',
-    }, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+      },
+      'adm',
+    )
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -101,28 +112,33 @@ class AdmWriterUnittest(writer_unittest_common.WriterUnittestCommon):
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
-chromium_recommended="Chromium - Recommended"''')
+chromium_recommended="Chromium - Recommended"''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testVersionAnnotation(self):
     # Test PListWriter in case of empty polices.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [],
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'version': '39.0.0.0'
-    }, 'adm')
-    expected_output = '; chromium version: 39.0.0.0\n' + \
-        self.ConstructOutput(['MACHINE', 'USER'], '''
+      }'''
+      % MESSAGES
+    )
+    output = self.GetOutput(
+      policy_json, {'_chromium': '1', 'version': '39.0.0.0'}, 'adm'
+    )
+    expected_output = '; chromium version: 39.0.0.0\n' + self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -134,16 +150,19 @@ chromium_recommended="Chromium - Recommended"''')
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
-chromium_recommended="Chromium - Recommended"''')
+chromium_recommended="Chromium - Recommended"''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testMainPolicy(self):
     # Tests a policy group with a single policy of type 'main'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -158,9 +177,13 @@ chromium_recommended="Chromium - Recommended"''')
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -196,7 +219,8 @@ chromium_recommended="Chromium - Recommended"''')
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -205,12 +229,14 @@ googlechrome_recommended="Google Chrome - Recommended"
 MainPolicy_Policy="Caption of main."
 MainPolicy_Explain="Description of main.\\n\\n\
 Reference: \
-https://chromeenterprise.google/policies/?policy=MainPolicy"''')
+https://chromeenterprise.google/policies/?policy=MainPolicy"''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testMainPolicyRecommendedOnly(self):
     # Tests a policy group with a single policy of type 'main'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -228,9 +254,13 @@ https://chromeenterprise.google/policies/?policy=MainPolicy"''')
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -256,7 +286,8 @@ https://chromeenterprise.google/policies/?policy=MainPolicy"''')
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -265,12 +296,14 @@ googlechrome_recommended="Google Chrome - Recommended"
 MainPolicy_Policy="Caption of main."
 MainPolicy_Explain="Description of main.\\n\\n\
 Reference: \
-https://chromeenterprise.google/policies/?policy=MainPolicy"''')
+https://chromeenterprise.google/policies/?policy=MainPolicy"''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testStringPolicy(self):
     # Tests a policy group with a single policy of type 'string'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -286,9 +319,13 @@ With a newline.""",
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -324,7 +361,8 @@ With a newline.""",
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -334,12 +372,14 @@ StringPolicy_Explain="Description of group.\\nWith a newline.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=StringPolicy"
 StringPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testIntPolicy(self):
     # Tests a policy group with a single policy of type 'int'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -354,9 +394,13 @@ StringPolicy_Part="Caption of policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -392,7 +436,8 @@ StringPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -402,13 +447,15 @@ IntPolicy_Explain="Description of policy.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=IntPolicy"
 IntPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testIntPolicyWithWin7(self):
     # Tests a policy group with a single policy of type 'int' that is supported
     # on Windows 7 only.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -423,9 +470,13 @@ IntPolicy_Part="Caption of policy."
         'placeholders': [],
         'policy_atomic_group_definitions': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -461,7 +512,8 @@ IntPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -471,13 +523,15 @@ IntPolicy_Explain="Description of policy.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=IntPolicy"
 IntPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testIntPolicyWithRange(self):
     # Tests a policy group with a single policy of type 'int' with a min and
     # max value.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -493,9 +547,13 @@ IntPolicy_Part="Caption of policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -531,7 +589,8 @@ IntPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -541,12 +600,14 @@ IntPolicy_Explain="Description of policy.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=IntPolicy"
 IntPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testIntEnumPolicy(self):
     # Tests a policy group with a single policy of type 'int-enum'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -573,9 +634,13 @@ IntPolicy_Part="Caption of policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -621,7 +686,8 @@ IntPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -634,12 +700,14 @@ https://chromeenterprise.google/policies/?policy=EnumPolicy"
 EnumPolicy_Part="Caption of policy."
 EnumPolicy_ProxyServerDisabled_DropDown="Option1"
 EnumPolicy_ProxyServerAutoDetect_DropDown="Option2"
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testStringEnumPolicy(self):
     # Tests a policy group with a single policy of type 'int-enum'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -660,9 +728,13 @@ EnumPolicy_ProxyServerAutoDetect_DropDown="Option2"
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -708,7 +780,8 @@ EnumPolicy_ProxyServerAutoDetect_DropDown="Option2"
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -721,12 +794,14 @@ https://chromeenterprise.google/policies/?policy=EnumPolicy"
 EnumPolicy_Part="Caption of policy."
 EnumPolicy_ProxyServerDisabled_DropDown="Option1"
 EnumPolicy_ProxyServerAutoDetect_DropDown="Option2"
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testListPolicy(self):
     # Tests a policy group with a single policy of type 'list'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -743,9 +818,13 @@ With a newline.""",
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s,
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -781,7 +860,8 @@ With a newline.""",
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -791,12 +871,14 @@ ListPolicy_Explain="Description of list policy.\\nWith a newline.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=ListPolicy"
 ListPolicy_Part="Label of list policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testStringEnumListPolicy(self):
     # Tests a policy group with a single policy of type 'string-enum-list'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -819,9 +901,13 @@ With a newline.""",
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -857,7 +943,8 @@ With a newline.""",
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -867,12 +954,14 @@ ListPolicy_Explain="Description of list policy.\\nWith a newline.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=ListPolicy"
 ListPolicy_Part="Label of list policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testDictionaryPolicy(self):
     # Tests a policy group with a single policy of type 'dict'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -887,9 +976,13 @@ ListPolicy_Part="Label of list policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -925,7 +1018,8 @@ ListPolicy_Part="Label of list policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -935,12 +1029,14 @@ DictionaryPolicy_Explain="Description of group.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=DictionaryPolicy"
 DictionaryPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testExternalPolicy(self):
     # Tests a policy group with a single policy of type 'external'.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -955,9 +1051,13 @@ DictionaryPolicy_Part="Caption of policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -993,7 +1093,8 @@ DictionaryPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -1003,13 +1104,15 @@ ExternalPolicy_Explain="Description of group.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=ExternalPolicy"
 ExternalPolicy_Part="Caption of policy."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testNonSupportedPolicy(self):
     # Tests a policy that is not supported on Windows, so it shouldn't
     # be included in the ADM file.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1030,9 +1133,13 @@ ExternalPolicy_Part="Caption of policy."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -1044,17 +1151,20 @@ ExternalPolicy_Part="Caption of policy."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
 chromium_recommended="Chromium - Recommended"
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testNonRecommendedPolicy(self):
     # Tests a policy that is not recommended, so it should be included.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1068,9 +1178,13 @@ chromium_recommended="Chromium - Recommended"
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -1096,7 +1210,8 @@ chromium_recommended="Chromium - Recommended"
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -1105,12 +1220,14 @@ googlechrome_recommended="Google Chrome - Recommended"
 MainPolicy_Policy="Caption of main."
 MainPolicy_Explain="Description of main.\\n\\n\
 Reference: \
-https://chromeenterprise.google/policies/?policy=MainPolicy"''')
+https://chromeenterprise.google/policies/?policy=MainPolicy"''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testPolicyGroup(self):
     # Tests a policy group that has more than one policies.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1141,9 +1258,13 @@ With a newline."""
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -1197,7 +1318,8 @@ With a newline."""
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -1213,13 +1335,15 @@ Policy2_Explain="Description of policy2.\\nWith a newline.\\n\\n\
 Reference: \
 https://chromeenterprise.google/policies/?policy=Policy2"
 Policy2_Part="Caption of policy2."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testDuplicatedStringEnumPolicy(self):
     # Verifies that duplicated enum constants with different descriptions are
     # allowed.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1246,9 +1370,13 @@ Policy2_Part="Caption of policy2."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!Google:Cat_Google
     CATEGORY !!googlechrome
       KEYNAME "Software\\Policies\\Google\\Chrome"
@@ -1292,7 +1420,8 @@ Policy2_Part="Caption of policy2."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 Google:Cat_Google="Google"
@@ -1310,13 +1439,15 @@ Reference: \
 https://chromeenterprise.google/policies/?policy=EnumPolicy.B"
 EnumPolicy_B_Part="Caption of policy B."
 EnumPolicy_B_tls1_2_DropDown="tls1.2"
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testDeprecatedPolicy(self):
     # Tests that a deprecated policy gets placed in the special
     # 'DeprecatedPolicies' group.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1332,9 +1463,13 @@ EnumPolicy_B_tls1_2_DropDown="tls1.2"
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
+      }'''
+      % MESSAGES
+    )
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -1376,7 +1511,8 @@ EnumPolicy_B_tls1_2_DropDown="tls1.2"
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -1385,13 +1521,15 @@ DeprecatedPolicies_Category="Deprecated policies"
 Policy1_Policy="Caption of policy1."
 Policy1_Explain="This policy is deprecated. blah blah blah\\n\\n"
 Policy1_Part="Caption of policy1."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
 
   def testRemovedPolicy(self):
     # Tests that a deprecated policy gets placed in the special
     # 'RemovedPolicies' group.
-    policy_json = '''
+    policy_json = (
+      '''
       {
         'policy_definitions': [
           {
@@ -1407,10 +1545,15 @@ Policy1_Part="Caption of policy1."
         'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': %s
-      }''' % MESSAGES
-    output = self.GetOutput(policy_json, {'_chromium': '1',
-                                          'major_version': 84}, 'adm')
-    expected_output = self.ConstructOutput(['MACHINE', 'USER'], '''
+      }'''
+      % MESSAGES
+    )
+    output = self.GetOutput(
+      policy_json, {'_chromium': '1', 'major_version': 84}, 'adm'
+    )
+    expected_output = self.ConstructOutput(
+      ['MACHINE', 'USER'],
+      '''
   CATEGORY !!chromium
     KEYNAME "Software\\Policies\\Chromium"
 
@@ -1452,7 +1595,8 @@ Policy1_Part="Caption of policy1."
   END CATEGORY
 
 
-''', '''[Strings]
+''',
+      '''[Strings]
 SUPPORTED_WIN7="Microsoft Windows 7 or later"
 SUPPORTED_WIN7_ONLY="Microsoft Windows 7"
 chromium="Chromium"
@@ -1461,9 +1605,9 @@ RemovedPolicies_Category="Removed policies"
 Policy1_Policy="Caption of policy1."
 Policy1_Explain="This policy is removed. blah blah blah\\n\\n"
 Policy1_Part="Caption of policy1."
-''')
+''',
+    )
     self.CompareOutputs(output, expected_output)
-
 
 
 if __name__ == '__main__':

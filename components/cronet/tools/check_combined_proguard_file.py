@@ -9,7 +9,8 @@ import os
 import sys
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, REPOSITORY_ROOT)
 import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
@@ -33,27 +34,28 @@ def CompareGeneratedWithGolden(generated_file_path, golden_file_path):
     if golden_text is None:
         print(f'Golden file does not exist: {golden_file_path}')
 
-    return cronet_utils.compare_text_and_generate_diff(generated_text,
-                                                       golden_text,
-                                                       golden_file_path)
+    return cronet_utils.compare_text_and_generate_diff(
+        generated_text, golden_text, golden_file_path
+    )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_generated_file',
-                        type=str,
-                        help="Path to the generated file.")
-    parser.add_argument('--input_golden_file',
-                        type=str,
-                        help='Path to the input golden file.')
-    parser.add_argument('--target_name',
-                        help='Target name that generates the golden file.')
+    parser.add_argument(
+        '--input_generated_file', type=str, help="Path to the generated file."
+    )
+    parser.add_argument(
+        '--input_golden_file', type=str, help='Path to the input golden file.'
+    )
+    parser.add_argument(
+        '--target_name', help='Target name that generates the golden file.'
+    )
     parser.add_argument('--stamp', type=str, help='Path to touch on success')
     args = parser.parse_args()
-    text_diff = CompareGeneratedWithGolden(args.input_generated_file,
-                                           args.input_golden_file)
+    text_diff = CompareGeneratedWithGolden(
+        args.input_generated_file, args.input_golden_file
+    )
     if text_diff:
-
         print(f"""
 Cronet Proguard golden test failed. To generate it:
 #######################################################

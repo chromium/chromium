@@ -26,15 +26,15 @@ class PListWriter(xml_formatted_writer.XMLFormattedWriter):
 
   STRING_TABLE = 'Localizable.strings'
   TYPE_TO_INPUT = {
-      'string': 'string',
-      'int': 'integer',
-      'int-enum': 'integer',
-      'string-enum': 'string',
-      'string-enum-list': 'array',
-      'main': 'boolean',
-      'list': 'array',
-      'dict': 'dictionary',
-      'external': 'dictionary',
+    'string': 'string',
+    'int': 'integer',
+    'int-enum': 'integer',
+    'string-enum': 'string',
+    'string-enum-list': 'array',
+    'main': 'boolean',
+    'list': 'array',
+    'dict': 'dictionary',
+    'external': 'dictionary',
   }
 
   def _AddKeyValuePair(self, parent, key_string, value_tag):
@@ -80,13 +80,13 @@ class PListWriter(xml_formatted_writer.XMLFormattedWriter):
 
   def _AddTargets(self, parent, policy):
     '''Adds the following XML snippet to an XML element:
-      <key>pfm_targets</key>
-      <array>
-        <string>user-managed</string>
-      </array>
+    <key>pfm_targets</key>
+    <array>
+      <string>user-managed</string>
+    </array>
 
-      Args:
-        parent: The parent XML element where the snippet will be added.
+    Args:
+      parent: The parent XML element where the snippet will be added.
     '''
     array = self._AddKeyValuePair(parent, 'pfm_targets', 'array')
     if self.CanBeRecommended(policy):
@@ -109,8 +109,9 @@ class PListWriter(xml_formatted_writer.XMLFormattedWriter):
     self._AddStringKeyValuePair(dict, 'pfm_description', '')
     self._AddStringKeyValuePair(dict, 'pfm_title', '')
     self._AddTargets(dict, policy)
-    self._AddStringKeyValuePair(dict, 'pfm_type',
-                                self.TYPE_TO_INPUT[policy_type])
+    self._AddStringKeyValuePair(
+      dict, 'pfm_type', self.TYPE_TO_INPUT[policy_type]
+    )
     if policy_type in ('int-enum', 'string-enum'):
       range_list = self._AddKeyValuePair(dict, 'pfm_range_list', 'array')
       for item in policy['items']:
@@ -129,23 +130,28 @@ class PListWriter(xml_formatted_writer.XMLFormattedWriter):
     self._plist.attributes['version'] = '1'
     dict = self.AddElement(self._plist, 'dict')
     if self._GetChromiumVersionString() is not None:
-      self.AddComment(self._plist, self.config['build'] + ' version: ' + \
-          self._GetChromiumVersionString())
+      self.AddComment(
+        self._plist,
+        self.config['build'] + ' version: ' + self._GetChromiumVersionString(),
+      )
     app_name = plist_helper.GetPlistFriendlyName(self.config['app_name'])
     self._AddStringKeyValuePair(dict, 'pfm_name', app_name)
     self._AddStringKeyValuePair(dict, 'pfm_description', '')
     self._AddStringKeyValuePair(dict, 'pfm_title', '')
     self._AddRealKeyValuePair(dict, 'pfm_version', '1')
-    self._AddStringKeyValuePair(dict, 'pfm_domain',
-                                self.config['mac_bundle_id'])
+    self._AddStringKeyValuePair(
+      dict, 'pfm_domain', self.config['mac_bundle_id']
+    )
 
     self._array = self._AddKeyValuePair(dict, 'pfm_subkeys', 'array')
 
   def CreatePlistDocument(self):
     dom_impl = minidom.getDOMImplementation('')
     doctype = dom_impl.createDocumentType(
-        'plist', '-//Apple//DTD PLIST 1.0//EN',
-        'http://www.apple.com/DTDs/PropertyList-1.0.dtd')
+      'plist',
+      '-//Apple//DTD PLIST 1.0//EN',
+      'http://www.apple.com/DTDs/PropertyList-1.0.dtd',
+    )
     return dom_impl.createDocument(None, 'plist', doctype)
 
   def Init(self):

@@ -18,12 +18,14 @@ if __name__ == '__main__' and not os.path.exists('components'):
     sys.exit('This script must be run from the chromium src directory.')
 
 SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 
 # Path to the directory containing segmentation platform models.
 # TODO(haileywang): Also include home_modules/ folder.
-MODEL_DIR = os.path.join(SRC_ROOT, 'components', 'segmentation_platform',
-                         'embedder', 'default_model')
+MODEL_DIR = os.path.join(
+    SRC_ROOT, 'components', 'segmentation_platform', 'embedder', 'default_model'
+)
 
 # Name of the golden files.
 # TODO(haileywang): Add ukm metrics.
@@ -54,7 +56,8 @@ def _FindMetrics(cwd, patterns):
     for root, _, files in os.walk(cwd):
         for filename in files:
             if not filename.endswith('.cc') or filename.endswith(
-                ('_unittest.cc', '_test.cc')):
+                ('_unittest.cc', '_test.cc')
+            ):
                 continue
 
             file_path = os.path.join(root, filename)
@@ -72,15 +75,18 @@ def _FindMetrics(cwd, patterns):
 def _FindHistograms(cwd):
     """Finds all histograms used in the segmentation platform models."""
     histogram_patterns = [
-        re.compile(r'From(?:Enum|Value)Histogram\s*\(\s*"([^"]+)"',
-                   re.MULTILINE),
+        re.compile(
+            r'From(?:Enum|Value)Histogram\s*\(\s*"([^"]+)"', re.MULTILINE
+        ),
         re.compile(r'FromLatestOrDefaultValue\s*\(\s*"([^"]+)"', re.MULTILINE),
         re.compile(
             r'MetadataWriter::UMAFeature\s*\{[^}]*\.name\s*=\s*"([^"]+)"',
-            re.MULTILINE),
+            re.MULTILINE,
+        ),
         re.compile(r'features::UMA\w*\s*\(\s*"([^"]+)"', re.MULTILINE),
-        re.compile(r'features::LatestOrDefaultValue\s*\(\s*"([^"]+)"',
-                   re.MULTILINE),
+        re.compile(
+            r'features::LatestOrDefaultValue\s*\(\s*"([^"]+)"', re.MULTILINE
+        ),
     ]
     return _FindMetrics(cwd, histogram_patterns)
 
@@ -111,8 +117,9 @@ def GetActualHistogramsFileContent():
 def GetActualHistogramNames():
     """Returns the list of histogram names in the golden file."""
     histograms_content = GetActualHistogramsFileContent()
-    segmentation_histograms = set(line.strip()
-                                  for line in histograms_content.splitlines())
+    segmentation_histograms = set(
+        line.strip() for line in histograms_content.splitlines()
+    )
     segmentation_histograms.discard('')
     return segmentation_histograms
 
@@ -135,8 +142,9 @@ def GetActualUserActionsFileContent():
 def GetActualActionNames():
     """Returns the list of action names in the golden file."""
     actions_content = GetActualUserActionsFileContent()
-    segmentation_actions = set(line.strip()
-                               for line in actions_content.splitlines())
+    segmentation_actions = set(
+        line.strip() for line in actions_content.splitlines()
+    )
     segmentation_actions.discard('')
     return segmentation_actions
 

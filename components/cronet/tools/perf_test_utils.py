@@ -16,7 +16,8 @@ from cronet.tools import android_rndis_forwarder
 # pylint: disable=useless-object-inheritance
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..')
+)
 BUILD_TYPE = 'Release'
 BUILD_DIR = os.path.join(REPOSITORY_ROOT, 'out', BUILD_TYPE)
 QUIC_SERVER = os.path.join(BUILD_DIR, 'quic_server')
@@ -65,11 +66,10 @@ globals().update(DEFAULT_BENCHMARK_CONFIG)
 # Pylint doesn't really interpret the file, so it won't find the definitions
 # added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable and
 # bad string format type warnings.
-#pylint: disable=undefined-variable,bad-string-format-type
+# pylint: disable=undefined-variable,bad-string-format-type
 
 
 class NativeDevice(object):
-
     def GetExternalStoragePath(self):
         return '/tmp'
 
@@ -113,7 +113,6 @@ def GetHttpServerURL(device, resource):
 
 
 class QuicServer(object):
-
     def __init__(self, quic_server_doc_root):
         self._process = None
         self._quic_server_doc_root = quic_server_doc_root
@@ -124,30 +123,42 @@ class QuicServer(object):
             '--quic_response_cache_dir=%s' % self._quic_server_doc_root,
             '--certificate_file=%s' % QUIC_CERT,
             '--key_file=%s' % QUIC_KEY,
-            '--port=%d' % QUIC_PORT
+            '--port=%d' % QUIC_PORT,
         ]
         logging.info("Starting Quic Server: %s", cmd)
         self._process = subprocess.Popen(cmd)
         assert self._process is not None
         # Wait for quic_server to start serving.
         waited_s = 0
-        while subprocess.call([
-                'lsof', '-i',
-                'udp:%d' % QUIC_PORT, '-p',
-                '%d' % self._process.pid
-        ],
-                              stdout=open(os.devnull, 'w')) != 0:
+        while (
+            subprocess.call(
+                [
+                    'lsof',
+                    '-i',
+                    'udp:%d' % QUIC_PORT,
+                    '-p',
+                    '%d' % self._process.pid,
+                ],
+                stdout=open(os.devnull, 'w'),
+            )
+            != 0
+        ):
             sleep(0.1)
             waited_s += 0.1
-            assert waited_s < 5, "quic_server failed to start after %fs" % waited_s
+            assert waited_s < 5, (
+                "quic_server failed to start after %fs" % waited_s
+            )
         # Push certificate to device.
         cert = open(QUIC_CERT, 'r').read()
-        device_cert_path = posixpath.join(device.GetExternalStoragePath(),
-                                          'chromium_tests_root', CERT_PATH)
-        device.RunShellCommand(['mkdir', '-p', device_cert_path],
-                               check_return=True)
-        device.WriteFile(os.path.join(device_cert_path, QUIC_CERT_FILENAME),
-                         cert)
+        device_cert_path = posixpath.join(
+            device.GetExternalStoragePath(), 'chromium_tests_root', CERT_PATH
+        )
+        device.RunShellCommand(
+            ['mkdir', '-p', device_cert_path], check_return=True
+        )
+        device.WriteFile(
+            os.path.join(device_cert_path, QUIC_CERT_FILENAME), cert
+        )
 
     def ShutdownQuicServer(self):
         if self._process:
@@ -179,17 +190,28 @@ def GenerateQuicTestResources(device):
     # Use wget to build up fake QUIC in-memory cache dir for serving.
     # quic_server expects the dir/file layout that wget produces.
     for resource in [SMALL_RESOURCE, LARGE_RESOURCE]:
-        assert subprocess.Popen([
-            'wget', '-p', '-q', '--save-headers',
-            GetHttpServerURL(device, resource)
-        ],
-                                cwd=quic_server_doc_root).wait() == 0
+        assert (
+            subprocess.Popen(
+                [
+                    'wget',
+                    '-p',
+                    '-q',
+                    '--save-headers',
+                    GetHttpServerURL(device, resource),
+                ],
+                cwd=quic_server_doc_root,
+            ).wait()
+            == 0
+        )
     # wget places results in host:port directory.  Adjust for QUIC port.
     os.rename(
-        os.path.join(quic_server_doc_root,
-                     "%s:%d" % (GetServersHost(device), HTTP_PORT)),
-        os.path.join(quic_server_doc_root,
-                     "%s:%d" % (QUIC_CERT_HOST, QUIC_PORT)))
+        os.path.join(
+            quic_server_doc_root, "%s:%d" % (GetServersHost(device), HTTP_PORT)
+        ),
+        os.path.join(
+            quic_server_doc_root, "%s:%d" % (QUIC_CERT_HOST, QUIC_PORT)
+        ),
+    )
     return quic_server_doc_root
 
 

@@ -14,11 +14,14 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 FLAGS = flags.FLAGS
 flags.DEFINE_string('images_dir', None, 'Directory containing input images.')
 flags.DEFINE_list(
-    'image_names', None,
-    'Comma-separated list of image names in the order in which they should ' +
-    'be included in the generated source.')
-flags.DEFINE_string('key', None,
-                    'Base64url-encoded key used to obfuscate images.')
+    'image_names',
+    None,
+    'Comma-separated list of image names in the order in which they should '
+    + 'be included in the generated source.',
+)
+flags.DEFINE_string(
+    'key', None, 'Base64url-encoded key used to obfuscate images.'
+)
 flags.mark_flags_as_required(['images_dir', 'image_names', 'key'])
 
 _TEMPLATE_FILE_NAME = 'alt_game_images.cc.template'
@@ -41,8 +44,7 @@ def ObfuscateImage(name, key_bytes, image_bytes):
     ciphertext_hex_literals = []
     for b in ciphertext_bytes:
         ciphertext_hex_literals.append(hex(b))
-    return Image(name, ','.join(ciphertext_hex_literals),
-                 len(ciphertext_bytes))
+    return Image(name, ','.join(ciphertext_hex_literals), len(ciphertext_bytes))
 
 
 def ConvertToDataUrl(image_bytes):
@@ -58,8 +60,8 @@ def ObfuscateImages(key_bytes, images_dir, image_suffix):
         name = chr(ord('A') + i)
         image_bytes = None
         with open(
-                os.path.join(images_dir, image_name) + image_suffix + '.png',
-                'rb') as file:
+            os.path.join(images_dir, image_name) + image_suffix + '.png', 'rb'
+        ) as file:
             image_bytes = file.read()
         image_bytes = ConvertToDataUrl(image_bytes)
         result.append(ObfuscateImage(name, key_bytes, image_bytes))
@@ -69,17 +71,21 @@ def ObfuscateImages(key_bytes, images_dir, image_suffix):
 
 def CreateAltGameImagesCc(images_1x, images_2x, script_dir):
     template_dir_path = script_dir
-    env = Environment(loader=FileSystemLoader(template_dir_path),
-                      autoescape=select_autoescape())
+    env = Environment(
+        loader=FileSystemLoader(template_dir_path),
+        autoescape=select_autoescape(),
+    )
     template = env.get_template(_TEMPLATE_FILE_NAME)
-    rendered = template.render(images_1x=images_1x,
-                               images_2x=images_2x,
-                               template_file='alt_game_images/' +
-                               _TEMPLATE_FILE_NAME,
-                               readme_file=_README_FILE)
+    rendered = template.render(
+        images_1x=images_1x,
+        images_2x=images_2x,
+        template_file='alt_game_images/' + _TEMPLATE_FILE_NAME,
+        readme_file=_README_FILE,
+    )
 
-    with open(os.path.join(script_dir, '../alt_game_image_data.cc'),
-              'w') as out_file:
+    with open(
+        os.path.join(script_dir, '../alt_game_image_data.cc'), 'w'
+    ) as out_file:
         out_file.write(rendered)
 
 
@@ -92,8 +98,9 @@ def main(argv):
 
     obfuscated_images_1x = ObfuscateImages(key_bytes, FLAGS.images_dir, '_1x')
     obfuscated_images_2x = ObfuscateImages(key_bytes, FLAGS.images_dir, '_2x')
-    CreateAltGameImagesCc(obfuscated_images_1x, obfuscated_images_2x,
-                          script_dir)
+    CreateAltGameImagesCc(
+        obfuscated_images_1x, obfuscated_images_2x, script_dir
+    )
 
 
 if __name__ == '__main__':

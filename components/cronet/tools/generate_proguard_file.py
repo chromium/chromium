@@ -18,7 +18,8 @@ import sys
 import json
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build'))
 import action_helpers  # pylint: disable=wrong-import-position
@@ -45,20 +46,24 @@ def _post_process_concatenated_rules(rules: str, rename_map: dict) -> str:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output_file',
-                        help='Output file for the generated proguard file')
+    parser.add_argument(
+        '--output_file', help='Output file for the generated proguard file'
+    )
     parser.add_argument(
         '--rename-rule',
         action='append',
         default=[],
         help='Renaming rules in the format "source_package=dest_package". '
-        'Can be repeated.')
-    parser.add_argument('--dep_file',
-                        help='Depfile path to write the implicit inputs')
+        'Can be repeated.',
+    )
+    parser.add_argument(
+        '--dep_file', help='Depfile path to write the implicit inputs'
+    )
     parser.add_argument(
         'build_config',
         help='Path to the generated build_config that contains the transitive '
-        'dependencies of the proguard rules')
+        'dependencies of the proguard rules',
+    )
 
     args = parser.parse_args()
 
@@ -86,8 +91,9 @@ def main():
         str_output = _post_process_concatenated_rules(str_output, rename_map)
     with open(args.output_file, 'w') as target:
         target.write(str_output)
-    action_helpers.write_depfile(args.dep_file, args.output_file,
-                                 all_proguard_configs_path)
+    action_helpers.write_depfile(
+        args.dep_file, args.output_file, all_proguard_configs_path
+    )
 
 
 if __name__ == '__main__':

@@ -17,7 +17,8 @@ import difflib
 from typing import Set, List
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
 JAR_PATH = os.path.abspath(os.path.join(JAVA_HOME, 'bin', 'jar'))
@@ -40,17 +41,17 @@ _MAX_TARGETS_PER_NINJA_EXECUTION = 500
 
 def build_targets_list_chunking(out_path: str, targets: List[str]) -> None:
     """Builds the provided targets by chunking them and passing each chunk into GN. This is
-  generally faster than building each target separately. However, the |chunk_size| must be
-  tweaked carefully to avoid exceeding the command-line length.
+    generally faster than building each target separately. However, the |chunk_size| must be
+    tweaked carefully to avoid exceeding the command-line length.
 
-  Args:
-    out_path: GN output path
-    targets: List of targets to build.
-  """
+    Args:
+      out_path: GN output path
+      targets: List of targets to build.
+    """
     # Split the build script actions into chunk of _MAX_TARGETS_PER_NINJA_EXECUTION.
     # This is needed in order not to exceed the command-line length.
     build_script_actions_chunks = [
-        targets[i:i + _MAX_TARGETS_PER_NINJA_EXECUTION]
+        targets[i : i + _MAX_TARGETS_PER_NINJA_EXECUTION]
         for i in range(0, len(targets), _MAX_TARGETS_PER_NINJA_EXECUTION)
     ]
     for chunk in build_script_actions_chunks:
@@ -60,9 +61,9 @@ def build_targets_list_chunking(out_path: str, targets: List[str]) -> None:
 def run(command, verbose=True, **kwargs):
     """See the official documentation for subprocess.check_call.
 
-  Args:
-    command (list[str]): command to be executed
-  """
+    Args:
+      command (list[str]): command to be executed
+    """
     if kwargs.get("shell"):
         quoted_cmd = command
     else:
@@ -75,43 +76,47 @@ def run(command, verbose=True, **kwargs):
 def run_and_get_stdout(command, verbose=True, **kwargs):
     """See the official documentation for subprocess.run.
 
-  Args:
-    command (list[str]): command to be executed
+    Args:
+      command (list[str]): command to be executed
 
-  Returns:
-    str: stdout for the executed command
-  """
+    Returns:
+      str: stdout for the executed command
+    """
     if verbose:
         print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
-    return subprocess.run(command, capture_output=True, check=True,
-                          **kwargs).stdout.decode('utf-8').strip()
+    return (
+        subprocess.run(command, capture_output=True, check=True, **kwargs)
+        .stdout.decode('utf-8')
+        .strip()
+    )
 
 
 def gn(out_dir, gn_args, gn_extra=None, **kwargs):
-    """ Executes `gn gen`.
+    """Executes `gn gen`.
 
-  Runs `gn gen |out_dir| |gn_args + gn_extra|` which will generate
-  a GN configuration that lives under |out_dir|. This is done
-  locally on the same chromium checkout.
+    Runs `gn gen |out_dir| |gn_args + gn_extra|` which will generate
+    a GN configuration that lives under |out_dir|. This is done
+    locally on the same chromium checkout.
 
-  Args:
-    out_dir (str): Path to delegate to `gn gen`.
-    gn_args (str): Args as a string delimited by space.
-    gn_extra (str): extra args as a string delimited by space.
-  """
+    Args:
+      out_dir (str): Path to delegate to `gn gen`.
+      gn_args (str): Args as a string delimited by space.
+      gn_extra (str): extra args as a string delimited by space.
+    """
     cmd = [GN_PATH, 'gen', out_dir, '--args=%s' % gn_args]
     if gn_extra:
         cmd += gn_extra
     run(cmd, **kwargs)
 
 
-def compare_text_and_generate_diff(generated_text, golden_text,
-                                   golden_file_path):
+def compare_text_and_generate_diff(
+    generated_text, golden_text, golden_file_path
+):
     """
-  Compares the generated text with the golden text.
+    Compares the generated text with the golden text.
 
-  returns a diff that can be applied with `patch` if exists.
-  """
+    returns a diff that can be applied with `patch` if exists.
+    """
     golden_lines = [line.rstrip() for line in golden_text.splitlines()]
     generated_lines = [line.rstrip() for line in generated_text.splitlines()]
     if golden_lines == generated_lines:
@@ -146,10 +151,10 @@ def write_file(path, contents):
 def build(out_dir, build_target, extra_options=None):
     """Runs `ninja build`.
 
-  Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
-  the target |build_target| for the GN configuration living under |out_dir|.
-  This is done locally on the same chromium checkout.
-  """
+    Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
+    the target |build_target| for the GN configuration living under |out_dir|.
+    This is done locally on the same chromium checkout.
+    """
     cmd = [NINJA_PATH, '-C', out_dir, build_target]
     if extra_options:
         cmd += extra_options
@@ -159,10 +164,10 @@ def build(out_dir, build_target, extra_options=None):
 def build_all(out_dir, build_targets, extra_options=None):
     """Runs `ninja build`.
 
-  Runs `ninja -C |out_dir| |build_targets| |extra_options|` which will build
-  the targets |build_targets| for the GN configuration living under |out_dir|.
-  This is done locally on the same chromium checkout.
-  """
+    Runs `ninja -C |out_dir| |build_targets| |extra_options|` which will build
+    the targets |build_targets| for the GN configuration living under |out_dir|.
+    This is done locally on the same chromium checkout.
+    """
     cmd = [NINJA_PATH, '-C', out_dir]
     cmd.extend(build_targets)
     if extra_options:
@@ -170,22 +175,33 @@ def build_all(out_dir, build_targets, extra_options=None):
     run(cmd)
 
 
-def get_transitive_deps_build_files(repo_path: str, out_dir: str,
-                                    gn_targets: List[str]) -> Set[str]:
+def get_transitive_deps_build_files(
+    repo_path: str, out_dir: str, gn_targets: List[str]
+) -> Set[str]:
     """Executes gn desc |out_dir| |gn_target| deps --all --as=buildfile for each gn target"""
     all_deps = set()
     for gn_target in gn_targets:
         all_deps.update(
-            subprocess.check_output([
-                GN_PATH, "desc", out_dir, gn_target, "deps", "--all",
-                "--as=buildfile"
-            ]).decode("utf-8").split("\n"))
+            subprocess.check_output(
+                [
+                    GN_PATH,
+                    "desc",
+                    out_dir,
+                    gn_target,
+                    "deps",
+                    "--all",
+                    "--as=buildfile",
+                ]
+            )
+            .decode("utf-8")
+            .split("\n")
+        )
         # gn desc deps does not return the build file that includes the target
         # which we want to find its transitive dependencies, in order to
         # account for this corner case, the BUILD file for the current target
         # is added manually.
         all_deps.add(
-            f"{os.path.join(repo_path, gn_target[2:gn_target.find(':')])}/BUILD.gn"
+            f"{os.path.join(repo_path, gn_target[2 : gn_target.find(':')])}/BUILD.gn"
         )
     # It seems that we always get an empty string as part of the output. This
     # could happen if we get an empty line in the output which can happen so
@@ -227,47 +243,59 @@ def get_gn_args_for_aosp(arch: str) -> List[str]:
 def android_gn_gen(is_release, target_cpu, out_dir):
     """Runs `gn gen` using Cronet's android gn_args.
 
-  Creates a local GN configuration under |out_dir| with the provided argument
-  as input to `get_android_gn_args`, see the documentation of
-  `get_android_gn_args` for more information.
-  """
+    Creates a local GN configuration under |out_dir| with the provided argument
+    as input to `get_android_gn_args`, see the documentation of
+    `get_android_gn_args` for more information.
+    """
     return gn(out_dir, ' '.join(get_android_gn_args(is_release, target_cpu)))
 
 
 def get_android_gn_args(is_release, target_cpu):
     """Fetches the gn args for a specific builder.
 
-  Returns a list of gn args used by the builders whose target cpu
-  is |target_cpu| and (dev or rel) depending on is_release.
+    Returns a list of gn args used by the builders whose target cpu
+    is |target_cpu| and (dev or rel) depending on is_release.
 
-  See https://ci.chromium.org/p/chromium/g/chromium.android/console for
-  a list of the builders
+    See https://ci.chromium.org/p/chromium/g/chromium.android/console for
+    a list of the builders
 
-  Example:
+    Example:
 
-  get_android_gn_args(true, 'x86') -> GN Args for `android-cronet-x86-rel`
-  get_android_gn_args(false, 'x86') -> GN Args for `android-cronet-x86-dev`
-  """
+    get_android_gn_args(true, 'x86') -> GN Args for `android-cronet-x86-rel`
+    get_android_gn_args(false, 'x86') -> GN Args for `android-cronet-x86-dev`
+    """
     group_name = 'chromium.android'
     builder_name = _map_config_to_android_builder(is_release, target_cpu)
     # Ideally we would call `mb_py gen` directly, but we need to filter out the
     # use_remoteexec arg, as that cannot be used in a local environment.
-    gn_args = subprocess.check_output(
-        ['python3', _MB_PATH, 'lookup', '-m', group_name, '-b',
-         builder_name]).decode('utf-8').strip()
+    gn_args = (
+        subprocess.check_output(
+            [
+                'python3',
+                _MB_PATH,
+                'lookup',
+                '-m',
+                group_name,
+                '-b',
+                builder_name,
+            ]
+        )
+        .decode('utf-8')
+        .strip()
+    )
     return filter_gn_args(gn_args.split("\n"), [])
 
 
 def get_path_from_gn_label(gn_label: str) -> str:
     """Returns the path part from a GN Label
 
-  GN label consist of two parts, path and target_name, this will
-  remove the target name and return the path or throw an error
-  if it can't remove the target_name or if it doesn't exist.
-  """
+    GN label consist of two parts, path and target_name, this will
+    remove the target name and return the path or throw an error
+    if it can't remove the target_name or if it doesn't exist.
+    """
     if ":" not in gn_label:
         raise ValueError(f"Provided gn label {gn_label} is not a proper label")
-    return gn_label[:gn_label.find(":")]
+    return gn_label[: gn_label.find(":")]
 
 
 def _map_config_to_android_builder(is_release, target_cpu):
@@ -297,16 +325,17 @@ def _should_remove_arg(arg, keys):
 def filter_gn_args(gn_args, keys_to_remove):
     """Returns a list of filtered GN args.
 
-  (1) GN arg's returned must match the regex |_GN_ARG_MATCHER|.
-  (2) GN arg's key must not be in |keys_to_remove|.
+    (1) GN arg's returned must match the regex |_GN_ARG_MATCHER|.
+    (2) GN arg's key must not be in |keys_to_remove|.
 
-  Args:
-    gn_args: list of GN args.
-    keys_to_remove: List of string that will be removed from gn_args.
-  """
+    Args:
+      gn_args: list of GN args.
+      keys_to_remove: List of string that will be removed from gn_args.
+    """
     filtered_args = []
     for arg in gn_args:
         if _GN_ARG_MATCHER.match(arg) and not _should_remove_arg(
-                arg, keys_to_remove):
+            arg, keys_to_remove
+        ):
             filtered_args.append(arg)
     return filtered_args

@@ -9,7 +9,6 @@ from writers import google_admx_writer
 
 
 class GoogleAdmxWriterUnittest(unittest.TestCase):
-
   def setUp(self):
     self.writer = google_admx_writer.GetWriter(None)  # Config unused
 

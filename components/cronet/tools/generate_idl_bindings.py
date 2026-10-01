@@ -21,13 +21,21 @@ def run(command, extra_options=''):
 
 def GenerateIdlBindings(_, __):
     bytecode_path = tempfile.mkdtemp('idl_bytecode')
-    generator = 'components/cronet/tools/generators/cronet_bindings_generator.py'
+    generator = (
+        'components/cronet/tools/generators/cronet_bindings_generator.py'
+    )
     input_file = 'components/cronet/native/cronet.idl'
     # Precompile bindings templates
     run(generator + ' precompile -o ', bytecode_path)
     # Generate C interface.
-    run(generator + ' --use_bundled_pylibs generate ' + input_file +
-        ' --bytecode_path ' + bytecode_path + ' -g c')
+    run(
+        generator
+        + ' --use_bundled_pylibs generate '
+        + input_file
+        + ' --bytecode_path '
+        + bytecode_path
+        + ' -g c'
+    )
     # TODO(mef): Use output_path to put generated code into
     # out/<blah>/gen/components/cronet/native directory.
     # -o ' + output_path)
@@ -38,8 +46,9 @@ def GenerateIdlBindings(_, __):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output-path',
-                        help='Output path for generated bindings')
+    parser.add_argument(
+        '--output-path', help='Output path for generated bindings'
+    )
 
     args, input_files = parser.parse_known_args()
     GenerateIdlBindings(args.output_path, input_files)

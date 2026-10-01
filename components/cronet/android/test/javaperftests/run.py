@@ -49,7 +49,8 @@ import time
 import urllib.parse
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..')
+)
 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'perf'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
@@ -98,23 +99,25 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
             # passed to the Cronet perf test app via the Intent data field.
             data=self.url,
             extras=None,
-            category=None)
+            category=None,
+        )
         super(CronetPerfTestAndroidStory, self).__init__(
             start_intent,
             name='CronetPerfTest',
             # No reason to wait for app; Run() will wait for results. By
             # default StartActivity will timeout waiting for CronetPerfTest, so
             # override |is_app_ready_predicate| to not wait.
-            is_app_ready_predicate=lambda app: True)
+            is_app_ready_predicate=lambda app: True,
+        )
 
     def Run(self, _):
         while not self._device.FileExists(
-                perf_test_utils.GetConfig(self._device)['DONE_FILE']):
+            perf_test_utils.GetConfig(self._device)['DONE_FILE']
+        ):
             time.sleep(1.0)
 
 
 class CronetPerfTestStorySet(story_module.StorySet):
-
     def __init__(self, device):
         super(CronetPerfTestStorySet, self).__init__()
         # Create and add Cronet perf test AndroidStory.
@@ -122,7 +125,8 @@ class CronetPerfTestStorySet(story_module.StorySet):
 
 
 class CronetPerfTestMeasurement(
-        timeline_based_measurement.TimelineBasedMeasurement):
+    timeline_based_measurement.TimelineBasedMeasurement
+):
     # For now AndroidStory's SharedAppState works only with
     # TimelineBasedMeasurements, so implement one that just forwards results
     # from Cronet perf test app.
@@ -140,7 +144,9 @@ class CronetPerfTestMeasurement(
         # Reads results from |RESULTS_FILE| on target and adds to |results|.
         jsonResults = json.loads(
             self._device.ReadFile(
-                perf_test_utils.GetConfig(self._device)['RESULTS_FILE']))
+                perf_test_utils.GetConfig(self._device)['RESULTS_FILE']
+            )
+        )
         for test in jsonResults:
             results.AddMeasurement(test, 'ms', jsonResults[test])
 
@@ -168,14 +174,17 @@ class CronetPerfTestBenchmark(benchmark.Benchmark):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output-format',
-                        default='html',
-                        help='The output format of the results file.')
+    parser.add_argument(
+        '--output-format',
+        default='html',
+        help='The output format of the results file.',
+    )
     parser.add_argument(
         '--output-dir',
         default=None,
         help='The directory for the output file. Default value is '
-        'the base directory of this script.')
+        'the base directory of this script.',
+    )
     args, _ = parser.parse_known_args()
     constants.SetBuildType(perf_test_utils.BUILD_TYPE)
     # Install APK
@@ -184,16 +193,19 @@ def main():
     device.Install(perf_test_utils.APP_APK)
     # Start USB reverse tethering.
     android_rndis_forwarder.AndroidRndisForwarder(
-        device, perf_test_utils.GetAndroidRndisConfig(device))
+        device, perf_test_utils.GetAndroidRndisConfig(device)
+    )
     # Start HTTP server.
     http_server_doc_root = perf_test_utils.GenerateHttpTestResources()
     config_file = tempfile.NamedTemporaryFile()
     http_server = lighttpd_server.LighttpdServer(
         http_server_doc_root,
         port=perf_test_utils.HTTP_PORT,
-        base_config_path=config_file.name)
-    perf_test_utils.GenerateLighttpdConfig(config_file, http_server_doc_root,
-                                           http_server)
+        base_config_path=config_file.name,
+    )
+    perf_test_utils.GenerateLighttpdConfig(
+        config_file, http_server_doc_root, http_server
+    )
     assert http_server.StartupHttpServer()
     config_file.close()
     # Start QUIC server.
@@ -209,7 +221,8 @@ def main():
     runner_config = chromium_config.ChromiumConfig(
         top_level_dir=top_level_dir,
         benchmark_dirs=[top_level_dir],
-        expectations_files=expectations_files)
+        expectations_files=expectations_files,
+    )
     sys.argv.insert(1, 'run')
     sys.argv.insert(2, 'run.CronetPerfTestBenchmark')
     sys.argv.insert(3, '--browser=android-system-chrome')

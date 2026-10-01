@@ -16,8 +16,9 @@ def GetToolPathRelativeToRepositoryRoot(input_api) -> str:
     presubmit_local_path = input_api.PresubmitLocalPath()
     repository_root = input_api.change.RepositoryRoot()
     common_path = input_api.os_path.commonpath(
-        [repository_root, presubmit_local_path])
-    component_relative_path = presubmit_local_path[len(common_path) + 1:]
+        [repository_root, presubmit_local_path]
+    )
+    component_relative_path = presubmit_local_path[len(common_path) + 1 :]
     return input_api.os_path.join(component_relative_path, TOOL_PATH)
 
 
@@ -26,10 +27,13 @@ def FetchLauncherFilterFileData(input_api, cwd: str) -> Dict[str, str]:
     # compared. Returns a dictionary that contains 'expected' and 'actual' as
     # comparable strings.
     import importlib.util
-    tool_path = input_api.os_path.join(cwd, 'tools', 'testing',
-                                       'launcher_filter_file.py')
-    spec = importlib.util.spec_from_file_location('launcher_filter_file',
-                                                  tool_path)
+
+    tool_path = input_api.os_path.join(
+        cwd, 'tools', 'testing', 'launcher_filter_file.py'
+    )
+    spec = importlib.util.spec_from_file_location(
+        'launcher_filter_file', tool_path
+    )
     lff = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(lff)
     ret = {}
@@ -48,21 +52,26 @@ def GetPylintConfiguration(input_api, output_api) -> List:
         input_api,
         output_api,
         version='2.7',
-        disabled_warnings=disabled_warnings)
+        disabled_warnings=disabled_warnings,
+    )
 
 
 def _CheckUmaMetrics(input_api, output_api):
     """Checks if the UMA metric lists are up to date."""
     # Path to the directory containing segmentation platform models.
-    model_dir = input_api.os_path.join('components', 'segmentation_platform',
-                                       'embedder', 'default_model')
+    model_dir = input_api.os_path.join(
+        'components', 'segmentation_platform', 'embedder', 'default_model'
+    )
 
     # Check if any of the affected files are relevant to the histogram check.
     relevant_files_changed = False
     for f in input_api.AffectedFiles():
         path = f.LocalPath()
-        if path.startswith(model_dir) and path.endswith('.cc') and \
-           not path.endswith(('_unittest.cc', '_test.cc')):
+        if (
+            path.startswith(model_dir)
+            and path.endswith('.cc')
+            and not path.endswith(('_unittest.cc', '_test.cc'))
+        ):
             relevant_files_changed = True
             break
 
@@ -81,20 +90,25 @@ def _CheckUmaMetrics(input_api, output_api):
 
     warnings = []
     expected_histograms = (
-        generate_histogram_list.GetExpectedHistogramsFileContent())
-    actual_histograms = generate_histogram_list.GetActualHistogramsFileContent(
+        generate_histogram_list.GetExpectedHistogramsFileContent()
     )
+    actual_histograms = generate_histogram_list.GetActualHistogramsFileContent()
     expected_user_actions = (
-        generate_histogram_list.GetExpectedUserActionsFileContent())
+        generate_histogram_list.GetExpectedUserActionsFileContent()
+    )
     actual_user_actions = (
-        generate_histogram_list.GetActualUserActionsFileContent())
+        generate_histogram_list.GetActualUserActionsFileContent()
+    )
 
-    if (expected_user_actions != actual_user_actions
-            or expected_histograms != actual_histograms):
+    if (
+        expected_user_actions != actual_user_actions
+        or expected_histograms != actual_histograms
+    ):
         error_message = (
             'The Segmentation histogram list is out of date.\n\n'
             'Please run:\npython3 components/segmentation_platform'
-            '/tools/generate_histogram_list.py')
+            '/tools/generate_histogram_list.py'
+        )
         warnings.append(output_api.PresubmitPromptWarning(error_message, []))
 
     return warnings
@@ -110,8 +124,11 @@ def _CommonChecks(input_api, output_api):
     if filter_file_data['expected'] != filter_file_data['actual']:
         output.append(
             output_api.PresubmitPromptWarning(
-                'The test launcher filter file does not match the ' +
-                f'available tests.\n\nPlease run:\n{tool_help_path}', []))
+                'The test launcher filter file does not match the '
+                + f'available tests.\n\nPlease run:\n{tool_help_path}',
+                [],
+            )
+        )
 
     output.extend(_CheckUmaMetrics(input_api, output_api))
     return output

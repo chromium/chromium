@@ -37,19 +37,24 @@ def _create_file_pair_class():
                         name='old_file',
                         number=1,
                         label=required,
-                        type=bytes_type),
+                        type=bytes_type,
+                    ),
                     descriptor_pb2.FieldDescriptorProto(
                         name='new_or_patch_file',
                         number=2,
                         label=required,
-                        type=bytes_type),
+                        type=bytes_type,
+                    ),
                     descriptor_pb2.FieldDescriptorProto(
                         name='imposed_matches',
                         number=3,
                         label=optional,
-                        type=string_type),
-                ])
-        ])
+                        type=string_type,
+                    ),
+                ],
+            )
+        ],
+    )
     pool = descriptor_pool.DescriptorPool()
     descriptor = pool.AddSerializedFile(file_descriptor.SerializeToString())
     message_descriptor = descriptor.message_types_by_name['FilePair']
@@ -57,7 +62,6 @@ def _create_file_pair_class():
 
 
 class CreateSeedFilePairTest(unittest.TestCase):
-
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.temp_dir)
@@ -77,26 +81,32 @@ class CreateSeedFilePairTest(unittest.TestCase):
         # becomes \377, and UTF-8 'é' (0xc3, 0xa9) becomes \303\251.
         old_escape = b'\\000' + b'1' + b'\\"' + b'\\\\' + b'\\377'
         imposed_escape = b'\\"' + b'\\\\' + b'\\303' + b'\\251'
-        return b'\n'.join([
-            b'old_file: "' + old_escape + b'"',
-            b'new_or_patch_file: "\\nA"',
-            b'imposed_matches: "' + imposed_escape + b'"',
-        ])
+        return b'\n'.join(
+            [
+                b'old_file: "' + old_escape + b'"',
+                b'new_or_patch_file: "\\nA"',
+                b'imposed_matches: "' + imposed_escape + b'"',
+            ]
+        )
 
     def test_proto_escape_uses_protobuf_text_format(self):
         old_escape = b'\\000' + b'1' + b'\\"' + b'\\\\' + b'\\377'
         imposed_escape = b'\\"' + b'\\\\' + b'\\303' + b'\\251'
-        self.assertEqual(old_escape,
-                         create_seed_file_pair.proto_escape(self.old_payload))
+        self.assertEqual(
+            old_escape, create_seed_file_pair.proto_escape(self.old_payload)
+        )
         self.assertEqual(
             imposed_escape,
-            create_seed_file_pair.proto_escape('"\\é'.encode('utf-8')))
+            create_seed_file_pair.proto_escape('"\\é'.encode('utf-8')),
+        )
 
     def test_builds_file_pair_text(self):
         self.assertEqual(
             self._expected_proto_text(),
             create_seed_file_pair.build_file_pair_text(
-                self.old_file, self.new_file, '"\\é'))
+                self.old_file, self.new_file, '"\\é'
+            ),
+        )
 
     def test_protobuf_text_and_binary_round_trip(self):
         old_payload = bytes(range(256))
@@ -113,8 +123,10 @@ class CreateSeedFilePairTest(unittest.TestCase):
         text_message = file_pair_class()
         text_format.Parse(
             create_seed_file_pair.build_file_pair_text(
-                self.old_file, self.new_file,
-                imposed_matches).decode('ascii'), text_message)
+                self.old_file, self.new_file, imposed_matches
+            ).decode('ascii'),
+            text_message,
+        )
         binary_message = file_pair_class()
         binary_message.ParseFromString(text_message.SerializeToString())
 
@@ -125,24 +137,25 @@ class CreateSeedFilePairTest(unittest.TestCase):
     @mock.patch.object(create_seed_file_pair.subprocess, 'run')
     def test_encodes_binary_content_and_imposed_matches(self, run):
         run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout=b'encoded seed')
+            args=[], returncode=0, stdout=b'encoded seed'
+        )
         output_file = os.path.join(self.temp_dir, 'nested', 'seed.bin')
 
         returncode = create_seed_file_pair.create_seed_file_pair(
-            '/build/protoc', self.old_file, self.new_file, output_file,
-            '"\\é')
+            '/build/protoc', self.old_file, self.new_file, output_file, '"\\é'
+        )
 
         run.assert_called_once_with(
             [
                 '/build/protoc',
                 '--proto_path=%s' % create_seed_file_pair.ABS_PATH,
                 '--encode=zucchini.fuzzers.FilePair',
-                os.path.join(create_seed_file_pair.ABS_PATH,
-                             'file_pair.proto'),
+                os.path.join(create_seed_file_pair.ABS_PATH, 'file_pair.proto'),
             ],
             input=self._expected_proto_text(),
             stdout=subprocess.PIPE,
-            check=False)
+            check=False,
+        )
         self.assertEqual(0, returncode)
         with open(output_file, 'rb') as f:
             self.assertEqual(b'encoded seed', f.read())
@@ -150,14 +163,16 @@ class CreateSeedFilePairTest(unittest.TestCase):
     @mock.patch.object(create_seed_file_pair.subprocess, 'run')
     def test_protoc_failure_preserves_existing_output(self, run):
         run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=23, stdout=b'invalid output')
+            args=[], returncode=23, stdout=b'invalid output'
+        )
         output_file = os.path.join(self.temp_dir, 'seed.bin')
         with open(output_file, 'wb') as f:
             f.write(b'existing seed')
 
         with self.assertLogs(level='ERROR'):
             returncode = create_seed_file_pair.create_seed_file_pair(
-                '/build/protoc', self.old_file, self.new_file, output_file)
+                '/build/protoc', self.old_file, self.new_file, output_file
+            )
 
         self.assertEqual(23, returncode)
         with open(output_file, 'rb') as f:
@@ -166,12 +181,14 @@ class CreateSeedFilePairTest(unittest.TestCase):
     @mock.patch.object(create_seed_file_pair.subprocess, 'run')
     def test_protoc_failure_does_not_create_output(self, run):
         run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=24, stdout=b'invalid output')
+            args=[], returncode=24, stdout=b'invalid output'
+        )
         output_file = os.path.join(self.temp_dir, 'missing', 'seed.bin')
 
         with self.assertLogs(level='ERROR'):
             returncode = create_seed_file_pair.create_seed_file_pair(
-                '/build/protoc', self.old_file, self.new_file, output_file)
+                '/build/protoc', self.old_file, self.new_file, output_file
+            )
 
         self.assertEqual(24, returncode)
         self.assertFalse(os.path.exists(output_file))
@@ -179,18 +196,21 @@ class CreateSeedFilePairTest(unittest.TestCase):
     @mock.patch.object(create_seed_file_pair.subprocess, 'run')
     def test_output_write_failure_preserves_existing_output(self, run):
         run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout=b'encoded seed')
+            args=[], returncode=0, stdout=b'encoded seed'
+        )
         output_file = os.path.join(self.temp_dir, 'seed.bin')
         with open(output_file, 'wb') as f:
             f.write(b'existing seed')
 
-        with mock.patch.object(create_seed_file_pair.action_helpers,
-                               'atomic_output') as atomic_output:
+        with mock.patch.object(
+            create_seed_file_pair.action_helpers, 'atomic_output'
+        ) as atomic_output:
             writer = atomic_output.return_value.__enter__.return_value
             writer.write.side_effect = OSError('write failed')
             with self.assertRaisesRegex(OSError, 'write failed'):
                 create_seed_file_pair.create_seed_file_pair(
-                    '/build/protoc', self.old_file, self.new_file, output_file)
+                    '/build/protoc', self.old_file, self.new_file, output_file
+                )
 
         atomic_output.assert_called_once_with(output_file)
         with open(output_file, 'rb') as f:
@@ -200,15 +220,25 @@ class CreateSeedFilePairTest(unittest.TestCase):
     def test_main_accepts_explicit_arguments(self, create):
         create.return_value = 7
 
-        returncode = create_seed_file_pair.main([
-            '--imposed_matches', '1+2=3+4', '/build/protoc', self.old_file,
-            self.new_file, '/output/seed.bin'
-        ])
+        returncode = create_seed_file_pair.main(
+            [
+                '--imposed_matches',
+                '1+2=3+4',
+                '/build/protoc',
+                self.old_file,
+                self.new_file,
+                '/output/seed.bin',
+            ]
+        )
 
         self.assertEqual(7, returncode)
-        create.assert_called_once_with('/build/protoc', self.old_file,
-                                       self.new_file, '/output/seed.bin',
-                                       '1+2=3+4')
+        create.assert_called_once_with(
+            '/build/protoc',
+            self.old_file,
+            self.new_file,
+            '/output/seed.bin',
+            '1+2=3+4',
+        )
 
 
 if __name__ == '__main__':

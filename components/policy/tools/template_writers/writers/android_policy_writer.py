@@ -23,14 +23,15 @@ def _EscapeResource(resource):
   if resource == None or type(resource) in (int, bool):
     return str(resource)
   return xml_escape.escape(
-      resource,
-      {
-          # Written order is matter to prevent "'" becomes "\\\\'" instead of
-          # "\\'".
-          "\\": "\\\\",
-          "'": "\\'",
-          '"': '\\"',
-      })
+    resource,
+    {
+      # Written order is matter to prevent "'" becomes "\\\\'" instead of
+      # "\\'".
+      "\\": "\\\\",
+      "'": "\\'",
+      '"': '\\"',
+    },
+  )
 
 
 class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
@@ -46,8 +47,7 @@ class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
   _resources = None
 
   def AddStringResource(self, name, string):
-    '''Add a string resource of the given name.
-    '''
+    '''Add a string resource of the given name.'''
     string_node = self._doc.createElement('string')
     string_node.setAttribute('name', name)
     string_node.appendChild(self._doc.createTextNode(_EscapeResource(string)))
@@ -82,9 +82,12 @@ class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
     items = policy.get('items')
     if items is not None:
       items = [
-          item for item in items
-          if ('supported_on' not in item or
-              self.IsPolicyOrItemSupportedOnPlatform(item, 'android'))
+        item
+        for item in items
+        if (
+          'supported_on' not in item
+          or self.IsPolicyOrItemSupportedOnPlatform(item, 'android')
+        )
       ]
       entries = [item['caption'] for item in items]
       values = [item['value'] for item in items]
@@ -92,11 +95,17 @@ class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
       self.AddStringArrayResource(name + 'Values', values)
 
   def BeginTemplate(self):
-    comment_text = 'DO NOT MODIFY THIS FILE DIRECTLY!\n' \
-                   'IT IS GENERATED FROM policy_templates.json.'
+    comment_text = (
+      'DO NOT MODIFY THIS FILE DIRECTLY!\n'
+      'IT IS GENERATED FROM policy_templates.json.'
+    )
     if self._GetChromiumVersionString():
-      comment_text += '\n' + self.config['build'] + ' version: '\
-                      + self._GetChromiumVersionString()
+      comment_text += (
+        '\n'
+        + self.config['build']
+        + ' version: '
+        + self._GetChromiumVersionString()
+      )
     comment_node = self._doc.createComment(comment_text)
     self._doc.insertBefore(comment_node, self._resources)
 

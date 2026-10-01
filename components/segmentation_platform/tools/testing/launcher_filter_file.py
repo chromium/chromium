@@ -40,8 +40,9 @@ def FindTestSuites(cwd: str) -> List[str]:
     # *   TEST_P(MyTest, ...)
     # *   TEST(MyTest, ...)
     # All relevant matches will be in a named capture group called 'suite'.
-    test_search = re.compile(r'^TEST(_F|_P)?\s*\(\s*(?P<suite>\s*[^,]+)',
-                             re.MULTILINE)
+    test_search = re.compile(
+        r'^TEST(_F|_P)?\s*\(\s*(?P<suite>\s*[^,]+)', re.MULTILINE
+    )
     # Use a set to ensure we only get unique test suites.
     test_suites = set()
     # Walk through all directories to find all *.cc files.
@@ -54,8 +55,8 @@ def FindTestSuites(cwd: str) -> List[str]:
                     file_contents = f.read()
                     # Find all the group matches in the regex.
                     for matches in [
-                            m.groupdict()
-                            for m in test_search.finditer(file_contents)
+                        m.groupdict()
+                        for m in test_search.finditer(file_contents)
                     ]:
                         # Only keep matches that are named 'suite'.
                         if 'suite' in matches:

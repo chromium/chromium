@@ -18,9 +18,10 @@ def GetWriter(config):
   return ADMLWriter(['win', 'win7'], config)
 
 
-class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
-                 gpo_editor_writer.GpoEditorWriter):
-  ''' Class for generating an ADML policy template. It is used by the
+class ADMLWriter(
+  xml_formatted_writer.XMLFormattedWriter, gpo_editor_writer.GpoEditorWriter
+):
+  '''Class for generating an ADML policy template. It is used by the
   PolicyTemplateGenerator to write the ADML file.
   '''
 
@@ -35,7 +36,7 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
   _presentation_table_elem = None
 
   def _AddString(self, id, text):
-    ''' Adds an ADML "string" element to _string_table_elem. The following
+    '''Adds an ADML "string" element to _string_table_elem. The following
     ADML snippet contains an example:
 
     <string id="$(id)">$(text)</string>
@@ -49,8 +50,9 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
       assert text == self.strings_seen[id]
     else:
       self.strings_seen[id] = text
-      string_elem = self.AddElement(self._string_table_elem, 'string',
-                                    {'id': id})
+      string_elem = self.AddElement(
+        self._string_table_elem, 'string', {'id': id}
+      )
       string_elem.appendChild(self._doc.createTextNode(text))
 
   def _GetAdmxElementType(self, policy):
@@ -83,8 +85,11 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
     if policy_desc is not None and self.HasExpandedPolicyDescription(policy):
       policy_desc += '\n' + self.GetExpandedPolicyDescription(policy) + '\n'
 
-    if (policy_desc is not None and example_value_text is not None and
-        not self._IsRemovedPolicy(policy)):
+    if (
+      policy_desc is not None
+      and example_value_text is not None
+      and not self._IsRemovedPolicy(policy)
+    ):
       policy_explain = policy_desc + '\n\n' + example_value_text
     elif policy_desc is not None:
       policy_explain = policy_desc
@@ -96,45 +101,52 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
 
     self._AddString(policy_name, policy_caption)
     self._AddString(policy_name + '_Explain', policy_explain)
-    presentation_elem = self.AddElement(self._presentation_table_elem,
-                                        'presentation', {'id': policy_name})
+    presentation_elem = self.AddElement(
+      self._presentation_table_elem, 'presentation', {'id': policy_name}
+    )
 
     admx_element_type = self._GetAdmxElementType(policy)
     if admx_element_type == AdmxElementType.MAIN:
       pass
     elif admx_element_type == AdmxElementType.STRING:
-      textbox_elem = self.AddElement(presentation_elem, 'textBox',
-                                     {'refId': policy_name})
+      textbox_elem = self.AddElement(
+        presentation_elem, 'textBox', {'refId': policy_name}
+      )
       label_elem = self.AddElement(textbox_elem, 'label')
       label_elem.appendChild(self._doc.createTextNode(policy_label))
     elif admx_element_type == AdmxElementType.MULTI_STRING:
       # We currently also show a single-line textbox - see http://crbug/829328
-      textbox_elem = self.AddElement(presentation_elem, 'textBox',
-                                     {'refId': policy_name + '_Legacy'})
+      textbox_elem = self.AddElement(
+        presentation_elem, 'textBox', {'refId': policy_name + '_Legacy'}
+      )
       label_elem = self.AddElement(textbox_elem, 'label')
       legacy_label = self._GetLegacySingleLineLabel(policy_label)
       self._AddString(policy_name + '_Legacy', legacy_label)
       label_elem.appendChild(self._doc.createTextNode(legacy_label))
       # New multi-line textbox, easier to use than old single-line textbox:
-      multitextbox_elem = self.AddElement(presentation_elem, 'multiTextBox', {
-          'refId': policy_name,
-          'defaultHeight': '8'
-      })
+      multitextbox_elem = self.AddElement(
+        presentation_elem,
+        'multiTextBox',
+        {'refId': policy_name, 'defaultHeight': '8'},
+      )
       multitextbox_elem.appendChild(self._doc.createTextNode(policy_label))
     elif admx_element_type == AdmxElementType.INT:
-      textbox_elem = self.AddElement(presentation_elem, 'decimalTextBox',
-                                     {'refId': policy_name})
+      textbox_elem = self.AddElement(
+        presentation_elem, 'decimalTextBox', {'refId': policy_name}
+      )
       textbox_elem.appendChild(self._doc.createTextNode(policy_label + ':'))
     elif admx_element_type == AdmxElementType.ENUM:
       for item in policy['items']:
         self._AddString(policy_name + "_" + item['name'], item['caption'])
-      dropdownlist_elem = self.AddElement(presentation_elem, 'dropdownList',
-                                          {'refId': policy_name})
+      dropdownlist_elem = self.AddElement(
+        presentation_elem, 'dropdownList', {'refId': policy_name}
+      )
       dropdownlist_elem.appendChild(self._doc.createTextNode(policy_label))
     elif admx_element_type == AdmxElementType.LIST:
       self._AddString(policy_name + 'Desc', policy_caption)
-      listbox_elem = self.AddElement(presentation_elem, 'listBox',
-                                     {'refId': policy_name + 'Desc'})
+      listbox_elem = self.AddElement(
+        presentation_elem, 'listBox', {'refId': policy_name + 'Desc'}
+      )
       listbox_elem.appendChild(self._doc.createTextNode(policy_label))
     elif admx_element_type == AdmxElementType.GROUP:
       pass
@@ -158,22 +170,30 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
     self._AddString(group['name'] + '_group', group['caption'])
 
   def _AddBaseStrings(self):
-    ''' Adds ADML "string" elements to the string-table that are referenced by
+    '''Adds ADML "string" elements to the string-table that are referenced by
     the ADMX file but not related to any specific Policy-Group or Policy.
     '''
-    self._AddString(self.config['win_supported_os'],
-                    self.messages['win_supported_all']['text'])
-    self._AddString(self.config['win_supported_os_win7'],
-                    self.messages['win_supported_win7']['text'])
-    categories = self.winconfig['mandatory_category_path'] + \
-                  self.winconfig['recommended_category_path']
+    self._AddString(
+      self.config['win_supported_os'],
+      self.messages['win_supported_all']['text'],
+    )
+    self._AddString(
+      self.config['win_supported_os_win7'],
+      self.messages['win_supported_win7']['text'],
+    )
+    categories = (
+      self.winconfig['mandatory_category_path']
+      + self.winconfig['recommended_category_path']
+    )
     strings = self.winconfig['category_path_strings']
     for category in categories:
-      if (category in strings):
+      if category in strings:
         # Replace {...} by localized messages.
-        string = re.sub(r"\{(\w+)\}", \
-                        lambda m: self.messages[m.group(1)]['text'], \
-                        strings[category])
+        string = re.sub(
+          r"\{(\w+)\}",
+          lambda m: self.messages[m.group(1)]['text'],
+          strings[category],
+        )
         self._AddString(category, string)
 
   def _GetExampleValueText(self, policy):
@@ -220,7 +240,8 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
       else:
         # Lists should be type 'dict', 'list', or something like '...enum-list'
         raise Exception(
-            'Unexpected policy type with list example value: %s' % policy_type)
+          'Unexpected policy type with list example value: %s' % policy_type
+        )
 
       return self.GetLocalizedMessage('example_value') + '\n\n' + value_as_text
 
@@ -229,27 +250,32 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
 
   def _GetLegacySingleLineLabel(self, policy_label):
     '''Generates a label for a legacy single-line textbox.'''
-    return (self.GetLocalizedMessage('legacy_single_line_label').replace(
-        '$6', policy_label))
+    return self.GetLocalizedMessage('legacy_single_line_label').replace(
+      '$6', policy_label
+    )
 
   def BeginTemplate(self):
     dom_impl = minidom.getDOMImplementation('')
     self._doc = dom_impl.createDocument(None, 'policyDefinitionResources', None)
     if self._GetChromiumVersionString() is not None:
-      self.AddComment(self._doc.documentElement, self.config['build'] + \
-          ' version: ' + self._GetChromiumVersionString())
+      self.AddComment(
+        self._doc.documentElement,
+        self.config['build'] + ' version: ' + self._GetChromiumVersionString(),
+      )
     policy_definitions_resources_elem = self._doc.documentElement
     policy_definitions_resources_elem.attributes['revision'] = '1.0'
     policy_definitions_resources_elem.attributes['schemaVersion'] = '1.0'
 
     self.AddElement(policy_definitions_resources_elem, 'displayName')
     self.AddElement(policy_definitions_resources_elem, 'description')
-    resources_elem = self.AddElement(policy_definitions_resources_elem,
-                                     'resources')
+    resources_elem = self.AddElement(
+      policy_definitions_resources_elem, 'resources'
+    )
     self._string_table_elem = self.AddElement(resources_elem, 'stringTable')
     self._AddBaseStrings()
-    self._presentation_table_elem = self.AddElement(resources_elem,
-                                                    'presentationTable')
+    self._presentation_table_elem = self.AddElement(
+      resources_elem, 'presentationTable'
+    )
 
   def Init(self):
     # Map of all strings seen.

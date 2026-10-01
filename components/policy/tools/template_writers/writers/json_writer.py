@@ -50,8 +50,10 @@ class JsonWriter(template_writer.TemplateWriter):
     if not self.CanBeMandatory(policy) and self.CanBeRecommended(policy):
       line = '  // Note: this policy is supported only in recommended mode.'
       self._out.append(line)
-      line = '  // The JSON file should be placed in %srecommended.' % \
-             self.config['linux_policy_path']
+      line = (
+        '  // The JSON file should be placed in %srecommended.'
+        % self.config['linux_policy_path']
+      )
       self._out.append(line)
 
     line = '  // %s' % policy['caption']
@@ -71,8 +73,11 @@ class JsonWriter(template_writer.TemplateWriter):
 
   def BeginTemplate(self):
     if self._GetChromiumVersionString() is not None:
-      self.WriteComment(self.config['build'] + ''' version: ''' + \
-          self._GetChromiumVersionString())
+      self.WriteComment(
+        self.config['build']
+        + ''' version: '''
+        + self._GetChromiumVersionString()
+      )
     self._out.append(TEMPLATE_HEADER)
 
   def EndTemplate(self):
@@ -84,10 +89,11 @@ class JsonWriter(template_writer.TemplateWriter):
     self._first_written = True
     # Create the TextWrapper object once.
     self._text_wrapper = TextWrapper(
-        initial_indent='  // ',
-        subsequent_indent='  // ',
-        break_long_words=False,
-        width=80)
+      initial_indent='  // ',
+      subsequent_indent='  // ',
+      break_long_words=False,
+      width=80,
+    )
 
   def GetTemplateText(self):
     return '\n'.join(self._out)

@@ -22,8 +22,9 @@ RequestType = wayland_protocol_data_classes.RequestType
 
 
 @functools.lru_cache(maxsize=None)
-def get_interface_for_name(protocols: Iterable[Protocol],
-                           target_interface_name: str) -> Optional[Interface]:
+def get_interface_for_name(
+    protocols: Iterable[Protocol], target_interface_name: str
+) -> Optional[Interface]:
     """Given a name string, gets the interface that has that name, or None."""
     for protocol in protocols:
         for interface in protocol.interfaces:
@@ -34,7 +35,8 @@ def get_interface_for_name(protocols: Iterable[Protocol],
 
 @functools.lru_cache(maxsize=None)
 def get_constructor_for_interface(
-        target_interface: Interface) -> Optional[Message]:
+    target_interface: Interface,
+) -> Optional[Message]:
     """Gets the message to use to construct the target interface, or None."""
 
     # Note: We assume there is only one constructor for any interface, and
@@ -44,13 +46,17 @@ def get_constructor_for_interface(
     for interface in target_interface.protocol.interfaces:
         for request in interface.requests:
             for arg in request.args:
-                if (arg.type == 'new_id'
-                        and arg.interface == target_interface.name):
+                if (
+                    arg.type == 'new_id'
+                    and arg.interface == target_interface.name
+                ):
                     return request
         for event in interface.events:
             for arg in event.args:
-                if (arg.type == 'new_id'
-                        and arg.interface == target_interface.name):
+                if (
+                    arg.type == 'new_id'
+                    and arg.interface == target_interface.name
+                ):
                     return event
     return None
 
@@ -98,7 +104,8 @@ class ConstructionStep:
 
 @functools.lru_cache(maxsize=None)
 def get_construction_steps(
-        target_interface: Interface) -> Tuple[ConstructionStep, ...]:
+    target_interface: Interface,
+) -> Tuple[ConstructionStep, ...]:
     """Generates the ConstructionSteps to construct a target interface."""
 
     # For brevity later, get the list of protocols as a local
@@ -107,7 +114,9 @@ def get_construction_steps(
     # Helper map for constructing human readable instance names
     base_human_readable_name_map = (
         wayland_protocol_identifiers.get_base_human_readable_name_map(
-            target_interface.protocol.protocols.protocols))
+            target_interface.protocol.protocols.protocols
+        )
+    )
 
     # Globals that will be needed (not ordered)
     global_steps = {}
@@ -136,8 +145,9 @@ def get_construction_steps(
         uniquifier[name] += 1
         return name + suffix + "_"
 
-    def recursive_construction_steps(current_target: Interface, prefix: str,
-                                     minimum_version: int):
+    def recursive_construction_steps(
+        current_target: Interface, prefix: str, minimum_version: int
+    ):
         ctor_message = get_constructor_for_interface(current_target)
         ctor = None
 
@@ -145,9 +155,13 @@ def get_construction_steps(
             # If we have a message, we have to use another interface to
             # create the current target.
             ctor_interface = recursive_construction_steps(
-                ctor_message.interface, prefix,
-                max(minimum_version,
-                    ctor_message.since if ctor_message.since else 1))
+                ctor_message.interface,
+                prefix,
+                max(
+                    minimum_version,
+                    ctor_message.since if ctor_message.since else 1,
+                ),
+            )
             ctor_object_args = []
 
             if not ctor_message.is_event:
@@ -159,21 +173,26 @@ def get_construction_steps(
                     arg_step = None
                     if arg.type == 'object':
                         arg_interface = get_interface_for_name(
-                            protocols, arg.interface)
+                            protocols, arg.interface
+                        )
                         arg_step = recursive_construction_steps(
-                            arg_interface, f'{prefix}{arg.name}_', 1)
+                            arg_interface, f'{prefix}{arg.name}_', 1
+                        )
                     ctor_object_args.append(arg_step)
 
-            ctor = ConstructionStepCtor(ctor_interface, ctor_message,
-                                        tuple(ctor_object_args))
+            ctor = ConstructionStepCtor(
+                ctor_interface, ctor_message, tuple(ctor_object_args)
+            )
 
         # Construct the step
-        step = ConstructionStep(interface=current_target,
-                                instance_name=unique_instance_name(
-                                    prefix if ctor is not None else '',
-                                    current_target.name),
-                                ctor=ctor,
-                                minimum_version=minimum_version)
+        step = ConstructionStep(
+            interface=current_target,
+            instance_name=unique_instance_name(
+                prefix if ctor is not None else '', current_target.name
+            ),
+            ctor=ctor,
+            minimum_version=minimum_version,
+        )
 
         if ctor is None:
             # For a global, interface, we only make/get one instance
@@ -186,8 +205,9 @@ def get_construction_steps(
 
     recursive_construction_steps(target_interface, '', 1)
 
-    return tuple([global_steps[name]
-                  for name in sorted(global_steps)] + instance_steps)
+    return tuple(
+        [global_steps[name] for name in sorted(global_steps)] + instance_steps
+    )
 
 
 @functools.lru_cache(maxsize=None)
@@ -201,6 +221,7 @@ def get_destructor(interface: Interface) -> Optional[Message]:
 
 def get_minimum_version_to_construct(target: Interface) -> int:
     """Gets the minimum version of the global needed to construct a target."""
+
     def recursive_minimum(interface: Interface, minimum_version: int) -> int:
         ctor_message = get_constructor_for_interface(interface)
 
@@ -221,16 +242,23 @@ def get_minimum_version_to_construct(target: Interface) -> int:
 
 
 def get_versions_to_test_for_event_delivery(
-        interface: Interface) -> Tuple[int, ...]:
+    interface: Interface,
+) -> Tuple[int, ...]:
     # Get the minimum interface version
     min_version = get_minimum_version_to_construct(interface)
 
     # Include all versions where events are introduced
-    versions = set(event.since for event in interface.events
-                   if event.since and event.since > min_version)
+    versions = set(
+        event.since
+        for event in interface.events
+        if event.since and event.since > min_version
+    )
     # Include all versions one less than where events are introduced
-    versions = versions.union(event.since - 1 for event in interface.events
-                              if event.since and event.since - 1 > min_version)
+    versions = versions.union(
+        event.since - 1
+        for event in interface.events
+        if event.since and event.since - 1 > min_version
+    )
     # Include the minimum and maximum versions
     versions = versions.union((min_version, interface.version))
 

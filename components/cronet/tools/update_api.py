@@ -14,18 +14,20 @@ import sys
 import tempfile
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, REPOSITORY_ROOT)
 from components.cronet.tools import utils  # pylint: disable=wrong-import-position
 
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', 'android', 'api.txt'))
+    os.path.join(os.path.dirname(__file__), '..', 'android', 'api.txt')
+)
 # Filename of file containing API version number.
 API_VERSION_FILENAME = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', 'android',
-                 'api_version.txt'))
+    os.path.join(os.path.dirname(__file__), '..', 'android', 'api_version.txt')
+)
 
 # Regular expression that catches the beginning of lines that declare classes.
 # The first group returned by a match is the class name.
@@ -38,17 +40,18 @@ UNNAMED_CLASS_RE = re.compile(r'.*\$[0-9]')
 # javap still prints internal (package private, nested...) classes even though
 # -protected is passed so they need to be filtered out.
 INTERNAL_CLASS_RE = re.compile(
-    r'^(?!public ((final|abstract) )?(class|interface)).*')
+    r'^(?!public ((final|abstract) )?(class|interface)).*'
+)
 
 
 def _split_by_class(javap_output):
     """Splits the combined javap output to separate classes.
 
-   * Removes unneeded comments like "Compiled from ...".
-   * Sorts the declarations inside the class.
+     * Removes unneeded comments like "Compiled from ...".
+     * Sorts the declarations inside the class.
 
-  Returns an array where each element represents a class.
-  """
+    Returns an array where each element represents a class.
+    """
     current_class_lines = []
     all_classes = []
     for line in javap_output:
@@ -59,9 +62,11 @@ def _split_by_class(javap_output):
         current_class_lines.append(line)
         if line == '}':
             # sort only the lines between the {}.
-            current_class_lines = ([current_class_lines[0]] +
-                                   sorted(current_class_lines[1:-1]) +
-                                   [current_class_lines[-1]])
+            current_class_lines = (
+                [current_class_lines[0]]
+                + sorted(current_class_lines[1:-1])
+                + [current_class_lines[-1]]
+            )
             all_classes.append(current_class_lines)
             current_class_lines = []
     return all_classes
@@ -94,7 +99,8 @@ def _generate_api(api_jar, output_filename, verbose=False):
         first_line = class_lines[0]
         # Skip classes we do not care about.
         if UNNAMED_CLASS_RE.match(first_line) or INTERNAL_CLASS_RE.match(
-                first_line):
+            first_line
+        ):
             continue
         output_lines.extend(class_lines)
 
@@ -119,8 +125,7 @@ def _check_api_update(old_api, new_api):
     new_hash = hashlib.md5()
     old_hash = hashlib.md5()
     seen_stamp = False
-    with open(old_api, 'r') as old_api_file, open(new_api,
-                                                  'r') as new_api_file:
+    with open(old_api, 'r') as old_api_file, open(new_api, 'r') as new_api_file:
         for old_line in old_api_file:
             while True:
                 new_line = new_api_file.readline()
@@ -128,15 +133,15 @@ def _check_api_update(old_api, new_api):
                     print('ERROR: Stamp is not the last line.')
                     return False
                 if new_line.startswith('Stamp: ') and old_line.startswith(
-                        'Stamp: '):
+                    'Stamp: '
+                ):
                     if old_line != 'Stamp: %s\n' % old_hash.hexdigest():
                         print(
                             'ERROR: Prior api.txt not stamped by update_api.py'
                         )
                         return False
                     if new_line != 'Stamp: %s\n' % new_hash.hexdigest():
-                        print(
-                            'ERROR: New api.txt not stamped by update_api.py')
+                        print('ERROR: New api.txt not stamped by update_api.py')
                         return False
                     seen_stamp = True
                     break
@@ -145,8 +150,7 @@ def _check_api_update(old_api, new_api):
                     break
                 if not new_line:
                     if old_line.startswith('Stamp: '):
-                        print(
-                            'ERROR: New api.txt not stamped by update_api.py')
+                        print('ERROR: New api.txt not stamped by update_api.py')
                     else:
                         print('ERROR: This API was modified or removed:')
                         print('           ' + old_line)
@@ -163,20 +167,22 @@ def _check_api_update(old_api, new_api):
 
 def main(args):
     parser = argparse.ArgumentParser(description='Update Cronet api.txt.')
-    parser.add_argument('--api_jar',
-                        help='Path to API jar (i.e. cronet_api.jar)',
-                        required=True,
-                        metavar='path/to/cronet_api.jar')
+    parser.add_argument(
+        '--api_jar',
+        help='Path to API jar (i.e. cronet_api.jar)',
+        required=True,
+        metavar='path/to/cronet_api.jar',
+    )
     parser.add_argument(
         '--allow_breaking_api_changes',
-        help=
-        'If true, allows changing the API surface in a non-backward compatible manner (e.g., deleting existing APIs)',
+        help='If true, allows changing the API surface in a non-backward compatible manner (e.g., deleting existing APIs)',
         required=False,
         default=False,
-        action='store_true')
-    parser.add_argument('--verbose',
-                        help='Print verbose output.',
-                        action='store_true')
+        action='store_true',
+    )
+    parser.add_argument(
+        '--verbose', help='Print verbose output.', action='store_true'
+    )
     opts = parser.parse_args(args)
 
     if check_up_to_date(opts.api_jar, verbose=opts.verbose):
@@ -185,7 +191,8 @@ def main(args):
     with tempfile.NamedTemporaryFile() as temp:
         _generate_api(opts.api_jar, temp.name, verbose=opts.verbose)
         if opts.allow_breaking_api_changes or _check_api_update(
-                API_FILENAME, temp.name):
+            API_FILENAME, temp.name
+        ):
             # Update API version number to new version number
             with open(API_VERSION_FILENAME, 'r+') as f:
                 version = int(f.read())

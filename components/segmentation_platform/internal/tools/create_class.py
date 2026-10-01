@@ -348,19 +348,21 @@ def _GetHeader(args):
 
     if args.segment_id:
         _PREFIXES_TO_REMOVE = [
-            'OPTIMIZATION_TARGET_SEGMENTATION_', 'OPTIMIZATION_TARGET_'
+            'OPTIMIZATION_TARGET_SEGMENTATION_',
+            'OPTIMIZATION_TARGET_',
         ]
         _GetLogger().info('Creating default model for %s', args.segment_id)
         model_name = args.segment_id
         for prefix in _PREFIXES_TO_REMOVE:
             print(prefix, model_name, model_name.startswith(prefix))
             if model_name.startswith(prefix):
-                model_name = model_name[len(prefix):]
+                model_name = model_name[len(prefix) :]
                 break
         print(model_name)
         return (
-            'components/segmentation_platform/embedder/default_model/%s.h' %
-            model_name.lower())
+            'components/segmentation_platform/embedder/default_model/%s.h'
+            % model_name.lower()
+        )
 
     raise ValueError('Required either --header or --segment_id argument.')
 
@@ -384,7 +386,8 @@ def _CreateFilesForClass(args):
     format_args['year'] = datetime.date.today().year
     format_args['file_path'] = header
     format_args['macro'] = (
-        header.replace('/', '_').replace('.', '_').upper() + '_')
+        header.replace('/', '_').replace('.', '_').upper() + '_'
+    )
     format_args['clas'] = _GetClassNameFromFile(header)
     format_args['segment_id'] = args.segment_id
     format_args['segmentation_key'] = _GetSegmentationKeyFromFile(header)
@@ -405,16 +408,17 @@ def _CreateOptionParser():
     """Options parser for the tool."""
     parser = argparse.ArgumentParser(
         description=_DOCUMENTATION,
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--header',
-                        help='Path to the header file from src/',
-                        default='')
-    parser.add_argument('--segment_id',
-                        help='The segment ID enum value',
-                        default='')
-    parser.add_argument('--namespace',
-                        dest='namespace',
-                        default='segmentation_platform')
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        '--header', help='Path to the header file from src/', default=''
+    )
+    parser.add_argument(
+        '--segment_id', help='The segment ID enum value', default=''
+    )
+    parser.add_argument(
+        '--namespace', dest='namespace', default='segmentation_platform'
+    )
     return parser
 
 

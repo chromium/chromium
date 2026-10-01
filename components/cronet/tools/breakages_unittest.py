@@ -9,19 +9,20 @@ import re
 import sys
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, REPOSITORY_ROOT)
 
 import components.cronet.tools.breakages_constants as breakages_constants  # pylint: disable=wrong-import-position
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 
-FILE_PATH = os.path.join(REPOSITORY_ROOT, 'components', 'cronet', 'android',
-                         'breakages.json')
+FILE_PATH = os.path.join(
+    REPOSITORY_ROOT, 'components', 'cronet', 'android', 'breakages.json'
+)
 
 
 class TestBreakagesJson(unittest.TestCase):
-
     parsed_breakages = []
 
     @classmethod
@@ -29,12 +30,14 @@ class TestBreakagesJson(unittest.TestCase):
         """Loads the JSON file once before tests run."""
         if not os.path.exists(FILE_PATH):
             raise FileNotFoundError(
-                f"CRITICAL: The file '{FILE_PATH}' could not be found.")
+                f"CRITICAL: The file '{FILE_PATH}' could not be found."
+            )
 
         content = json.loads(cronet_utils.read_file(FILE_PATH))
         if "breakages" not in content:
             raise ValueError(
-                "CRITICAL: Root of JSON must contain a 'breakages' key.")
+                "CRITICAL: Root of JSON must contain a 'breakages' key."
+            )
 
         if not isinstance(content["breakages"], list):
             raise ValueError("CRITICAL: 'breakages' key must contain a list.")
@@ -48,7 +51,8 @@ class TestBreakagesJson(unittest.TestCase):
         zeros_pattern = r'^I00*$'
         return bool(
             re.fullmatch(pattern, change_id)
-            and not re.fullmatch(zeros_pattern, change_id))
+            and not re.fullmatch(zeros_pattern, change_id)
+        )
 
     def _format_error(self, entry, message):
         entry_str = json.dumps(entry, indent=2)
@@ -63,23 +67,28 @@ class TestBreakagesJson(unittest.TestCase):
 
     def test_missing_mandatory_keys(self):
         required_keys = [
-            breakages_constants.BUG_TXT, breakages_constants.BAD_CHANGE_ID_TXT,
+            breakages_constants.BUG_TXT,
+            breakages_constants.BAD_CHANGE_ID_TXT,
             breakages_constants.GOOD_CHANGE_IDS_TXT,
-            breakages_constants.COMMENT_TXT
+            breakages_constants.COMMENT_TXT,
         ]
 
         for entry in self.parsed_breakages:
             for key in required_keys:
                 self.assertIn(
-                    key, entry,
-                    self._format_error(entry,
-                                       f"Missing mandatory key: '{key}'"))
+                    key,
+                    entry,
+                    self._format_error(
+                        entry, f"Missing mandatory key: '{key}'"
+                    ),
+                )
 
     def test_unknown_keys(self):
         allowed_keys = {
             breakages_constants.GOOD_CHANGE_IDS_TXT,
-            breakages_constants.BAD_CHANGE_ID_TXT, breakages_constants.BUG_TXT,
-            breakages_constants.COMMENT_TXT
+            breakages_constants.BAD_CHANGE_ID_TXT,
+            breakages_constants.BUG_TXT,
+            breakages_constants.COMMENT_TXT,
         }
 
         for entry in self.parsed_breakages:
@@ -87,10 +96,12 @@ class TestBreakagesJson(unittest.TestCase):
                 if key.startswith('_'):
                     continue  # comments are allowed
                 self.assertIn(
-                    key, allowed_keys,
+                    key,
+                    allowed_keys,
                     self._format_error(
                         entry,
-                        f"Unknown key found: '{key}'. Allowed: {allowed_keys}")
+                        f"Unknown key found: '{key}'. Allowed: {allowed_keys}",
+                    ),
                 )
 
     def test_bad_change_id_format_in_file(self):
@@ -101,18 +112,21 @@ class TestBreakagesJson(unittest.TestCase):
                 self._is_valid_change_id(val),
                 self._format_error(
                     entry,
-                    f"Invalid '{breakages_constants.BAD_CHANGE_ID_TXT}' format: '{val}'"
-                ))
+                    f"Invalid '{breakages_constants.BAD_CHANGE_ID_TXT}' format: '{val}'",
+                ),
+            )
 
     def test_good_change_ids_is_list(self):
         for entry in self.parsed_breakages:
             val = entry[breakages_constants.GOOD_CHANGE_IDS_TXT]
             self.assertIsInstance(
-                val, list,
+                val,
+                list,
                 self._format_error(
                     entry,
-                    f"'{breakages_constants.GOOD_CHANGE_IDS_TXT}' must be a list. Found {type(val)}"
-                ))
+                    f"'{breakages_constants.GOOD_CHANGE_IDS_TXT}' must be a list. Found {type(val)}",
+                ),
+            )
 
     def test_good_change_ids_format_in_file(self):
         for entry in self.parsed_breakages:
@@ -121,8 +135,9 @@ class TestBreakagesJson(unittest.TestCase):
                     self._is_valid_change_id(val),
                     self._format_error(
                         entry,
-                        f"Invalid ID in '{breakages_constants.GOOD_CHANGE_IDS_TXT}': '{val}'"
-                    ))
+                        f"Invalid ID in '{breakages_constants.GOOD_CHANGE_IDS_TXT}': '{val}'",
+                    ),
+                )
 
 
 if __name__ == '__main__':

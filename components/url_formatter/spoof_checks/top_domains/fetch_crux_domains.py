@@ -46,6 +46,7 @@ autoninja -C out/Release
 # 4. Create a CL to upload the new domains.list and domains.skeletons files.
 ```
 """
+
 import argparse
 import sys
 
@@ -53,18 +54,19 @@ from google.cloud import bigquery
 
 
 def main():
-  parser = argparse.ArgumentParser(
-      description="Fetch top domain list from CrUX.")
-  parser.add_argument(
-      "--table",
-      default="chrome-ux-report.all.202309",
-      help="Monthly table name",
-  )
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description="Fetch top domain list from CrUX."
+    )
+    parser.add_argument(
+        "--table",
+        default="chrome-ux-report.all.202309",
+        help="Monthly table name",
+    )
+    args = parser.parse_args()
 
-  client = bigquery.Client()
+    client = bigquery.Client()
 
-  query = f"""
+    query = f"""
         SELECT
           NET.REG_DOMAIN(origin) AS hostname,
           experimental.popularity.rank AS rank
@@ -73,36 +75,39 @@ def main():
         GROUP BY hostname, rank
         ORDER BY rank ASC, hostname ASC;
     """
-  results = client.query(query)
+    results = client.query(query)
 
-  top_1k = set([
-      # These domains don't appear in CrUX list because of redirects.
-      # We add them here to improve our coverage.
-      "fb.com",
-      "gmail.com",
-      "hotmail.com",
-  ])
-  top_10k = set([])
+    top_1k = set(
+        [
+            # These domains don't appear in CrUX list because of redirects.
+            # We add them here to improve our coverage.
+            "fb.com",
+            "gmail.com",
+            "hotmail.com",
+        ]
+    )
+    top_10k = set([])
 
-  for row in results:
-    hostname = row["hostname"]
-    rank = int(row["rank"])
-    if rank <= 1000:
-      top_1k.add(hostname)
-    elif hostname not in top_1k:
-      top_10k.add(hostname)
+    for row in results:
+        hostname = row["hostname"]
+        rank = int(row["rank"])
+        if rank <= 1000:
+            top_1k.add(hostname)
+        elif hostname not in top_1k:
+            top_10k.add(hostname)
 
-  print(
-      f"# This list was generated from {args.table} by fetch_crux_domains.py.")
+    print(
+        f"# This list was generated from {args.table} by fetch_crux_domains.py."
+    )
 
-  for hostname in sorted(list(top_1k)):
-    print(hostname)
+    for hostname in sorted(list(top_1k)):
+        print(hostname)
 
-  print("\n###END_TOP_BUCKET###\n")
+    print("\n###END_TOP_BUCKET###\n")
 
-  for hostname in sorted(list(top_10k)):
-    print(hostname)
+    for hostname in sorted(list(top_10k)):
+        print(hostname)
 
 
 if __name__ == "__main__":
-  sys.exit(main())
+    sys.exit(main())

@@ -3,9 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
- Fetch the real time URL allowlist hash prefixes using the SBv5 API (gca-32b).
- Once we've validated the response, save these concatenated prefixes as the
- url_hashes in the real_time_url_allowlist.asciipb file.
+Fetch the real time URL allowlist hash prefixes using the SBv5 API (gca-32b).
+Once we've validated the response, save these concatenated prefixes as the
+url_hashes in the real_time_url_allowlist.asciipb file.
 """
 
 import optparse
@@ -24,8 +24,11 @@ from validation_utils import (
 
 sys.path.append(
     os.path.abspath(
-        os.path.join(os.path.abspath(__file__),
-                     *[os.path.pardir] * 6 + ['google_apis'])))
+        os.path.join(
+            os.path.abspath(__file__), *[os.path.pardir] * 6 + ['google_apis']
+        )
+    )
+)
 import google_api_keys
 
 
@@ -45,23 +48,27 @@ def FetchSafeBrowsingAllowlistHashes(buildpath):
     req = urllib.request.Request(url + params)
 
     response_proto_bytes = urllib.request.urlopen(req).read()
-    assert (len(response_proto_bytes)
-            > 0), 'Bad response from SB API - empty response received'
+    assert len(response_proto_bytes) > 0, (
+        'Bad response from SB API - empty response received'
+    )
 
     assert sys.platform.startswith('linux'), (
         'Updating the real-time URL allowlist is only supported on Linux since '
         'Android builds are only supported on Linux. If this ever changes, '
         'autoninja/executable path resolution below and binary stdin/stdout '
         'handling in v5_rice_decoder_tool will need to be re-evaluated for '
-        'other platforms.')
+        'other platforms.'
+    )
 
     # Build the host C++ tool that decodes 256-bit Rice-encoded full hashes and
     # truncates each 32-byte full hash to a 16-byte prefix.
-    target = ('components/safe_browsing/content/resources/'
-              'real_time_url_checks_allowlist:v5_rice_decoder_tool')
-    subprocess.run(['autoninja', '-C', buildpath, target],
-                   cwd=buildpath,
-                   check=True)
+    target = (
+        'components/safe_browsing/content/resources/'
+        'real_time_url_checks_allowlist:v5_rice_decoder_tool'
+    )
+    subprocess.run(
+        ['autoninja', '-C', buildpath, target], cwd=buildpath, check=True
+    )
 
     # Locate the compiled host binary (under clang_x64/ or clang_arm64/ for
     # cross-compiled Android build directories, or directly in buildpath for host
@@ -74,7 +81,8 @@ def FetchSafeBrowsingAllowlistHashes(buildpath):
     ]
     existing_paths = [p for p in candidate_paths if os.path.exists(p)]
     assert existing_paths, (
-        f'Failed to find compiled v5_rice_decoder_tool in {buildpath}')
+        f'Failed to find compiled v5_rice_decoder_tool in {buildpath}'
+    )
     tool_bin = max(existing_paths, key=os.path.getmtime)
 
     # Pipe the raw protobuf response into the decoder tool and read the
@@ -99,22 +107,25 @@ def WriteHashesToFile(hash_prefixes):
     with open(outfile, 'r') as ifile:
         ascii_pb_str = ifile.read()
     # New contents should keep version_id and scheme_id then replace url_hashes
-    new_contents = (ascii_pb_str.split('url_hashes')[0] + 'url_hashes: ' +
-                    str(hash_prefixes)[1:])
+    new_contents = (
+        ascii_pb_str.split('url_hashes')[0]
+        + 'url_hashes: '
+        + str(hash_prefixes)[1:]
+    )
     # Write new ASCII contents
     with open(outfile, 'w') as ofile:
         ofile.write(new_contents)
 
 
 class StoreRealTimeUrlAllowlistPrefixes:
-
     def Run(self):
         parser = optparse.OptionParser()
         parser.add_option(
             '-p',
             '--buildpath',
             help='File path of the out build directory. Required for compiling'
-            ' and running the v5 Rice decoder tool.')
+            ' and running the v5 Rice decoder tool.',
+        )
 
         (opts, args) = parser.parse_args()
         if opts.buildpath is None:
@@ -133,11 +144,13 @@ class StoreRealTimeUrlAllowlistPrefixes:
             num_prefixes = len(hash_prefixes) // HASH_PREFIX_SIZE
             print(
                 f'Successfully validated and wrote {num_prefixes} URL hash prefixes'
-                ' to real_time_url_allowlist.asciipb.')
+                ' to real_time_url_allowlist.asciipb.'
+            )
         except Exception as e:
             print(
                 "ERROR: Failed to receive valid response from SB API:\n  %s\n%s"
-                % (str(e), traceback.format_exc()))
+                % (str(e), traceback.format_exc())
+            )
             return 1
 
 

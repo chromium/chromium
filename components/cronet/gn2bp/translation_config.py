@@ -164,8 +164,7 @@ def add_rustversion_deps(module, arch, context):
 # pylint: enable=unused-argument
 
 _builtin_deps = {
-    '//buildtools/third_party/libunwind:libunwind':
-    always_disable,
+    '//buildtools/third_party/libunwind:libunwind': always_disable,
     # rustc_print_cfg is used to print rustc compiler default assumption
     # for a specific CPU architecture (e.g. target_feature="ssse3"). Those
     # features only changes from one CPU architecture to another. It's used
@@ -179,87 +178,50 @@ _builtin_deps = {
     #
     # From the above reasoning, we can safely assume that we should not need
     # to build this target at all.
-    '//build/rust/gni_impl:rustc_print_cfg':
-    always_disable,
+    '//build/rust/gni_impl:rustc_print_cfg': always_disable,
     # allow_all_warnings generates allow_all_warnings.rsp dynamically at build
     # time using Chromium's host rustc toolchain. In AOSP Soong, crates are
     # compiled with AOSP's own Rust compiler flags (and response files are
     # stripped by gn2bp), so this action and group are not needed.
-    '//build/rust/gni_impl:allow_all_warnings':
-    always_disable,
-    '//build/rust/gni_impl:gen_allow_all_warnings_rsp':
-    always_disable,
-    '//net/data/ssl/chrome_root_store:gen_root_store_inc':
-    always_disable,
-    '//third_party/zstd:headers':
-    always_disable,
-    '//testing/buildbot/filters:base_unittests_filters':
-    always_disable,
-    '//testing/buildbot/filters:net_unittests_filters':
-    always_disable,
-    '//third_party/boringssl/src/third_party/fiat:fiat_license':
-    always_disable,
-    '//net/tools/root_store_tool:root_store_tool':
-    always_disable,
-    '//third_party/zlib:zlib':
-    enable_zlib,
-    '//third_party/androidx:androidx_annotation_annotation_java':
-    add_androidx_annotation_java_deps,
-    '//third_party/androidx:androidx_annotation_annotation_experimental_java':
-    add_androidx_experimental_java_deps,
-    '//third_party/androidx:androidx_core_core_java':
-    add_androidx_core_java_deps,
-    '//third_party/android_deps:com_google_code_findbugs_jsr305_java':
-    add_jsr305_java_deps,
-    '//third_party/android_deps:com_google_errorprone_error_prone_annotations_java':
-    add_errorprone_annotation_java_deps,
-    '//third_party/androidx:androidx_collection_collection_java':
-    add_androidx_collection_java_deps,
-    '//third_party/junit:junit':
-    add_junit_java_deps,
-    '//third_party/google-truth:google_truth_java':
-    add_truth_java_deps,
-    '//third_party/hamcrest:hamcrest_core_java':
-    add_hamcrest_java_deps,
-    '//third_party/mockito:mockito_java':
-    add_mockito_java_deps,
-    '//third_party/android_deps:guava_android_java':
-    add_guava_java_deps,
-    '//third_party/androidx:androidx_test_ext_junit_java':
-    add_androidx_junit_java_deps,
-    '//third_party/androidx:androidx_test_runner_java':
-    add_androidx_test_runner_java_deps,
-    '//third_party/android_sdk:android_test_base_java':
-    add_android_test_base_java_deps,
-    '//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java':
-    add_accessibility_test_framework_java_deps,
-    '//third_party/android_deps:espresso_java':
-    add_espresso_java_deps,
-    '//third_party/android_sdk:android_test_mock_java':
-    add_android_test_mock_java_deps,
-    '//third_party/androidx:androidx_multidex_multidex_java':
-    add_androidx_multidex_java_deps,
-    '//third_party/androidx:androidx_test_monitor_java':
-    add_androidx_test_monitor_java_deps,
-    '//third_party/androidx:androidx_test_annotation_java':
-    add_androidx_test_annotation_java_deps,
-    '//third_party/androidx:androidx_test_core_java':
-    add_androidx_test_core_java_deps,
-    '//third_party/androidx:androidx_test_uiautomator_uiautomator_java':
-    add_androidx_ui_automator_java_deps,
-    '//third_party/hamcrest:hamcrest_java':
-    add_hamcrest_java_deps,
-    '//third_party/androidx:androidx_activity_activity_java':
-    add_androidx_activity_activity,
-    '//third_party/androidx:androidx_fragment_fragment_java':
-    add_androidx_fragment_fragment,
-    '//third_party/androidx:androidx_test_rules_java':
-    add_androidx_test_rules_java_deps,
+    '//build/rust/gni_impl:allow_all_warnings': always_disable,
+    '//build/rust/gni_impl:gen_allow_all_warnings_rsp': always_disable,
+    '//net/data/ssl/chrome_root_store:gen_root_store_inc': always_disable,
+    '//third_party/zstd:headers': always_disable,
+    '//testing/buildbot/filters:base_unittests_filters': always_disable,
+    '//testing/buildbot/filters:net_unittests_filters': always_disable,
+    '//third_party/boringssl/src/third_party/fiat:fiat_license': always_disable,
+    '//net/tools/root_store_tool:root_store_tool': always_disable,
+    '//third_party/zlib:zlib': enable_zlib,
+    '//third_party/androidx:androidx_annotation_annotation_java': add_androidx_annotation_java_deps,
+    '//third_party/androidx:androidx_annotation_annotation_experimental_java': add_androidx_experimental_java_deps,
+    '//third_party/androidx:androidx_core_core_java': add_androidx_core_java_deps,
+    '//third_party/android_deps:com_google_code_findbugs_jsr305_java': add_jsr305_java_deps,
+    '//third_party/android_deps:com_google_errorprone_error_prone_annotations_java': add_errorprone_annotation_java_deps,
+    '//third_party/androidx:androidx_collection_collection_java': add_androidx_collection_java_deps,
+    '//third_party/junit:junit': add_junit_java_deps,
+    '//third_party/google-truth:google_truth_java': add_truth_java_deps,
+    '//third_party/hamcrest:hamcrest_core_java': add_hamcrest_java_deps,
+    '//third_party/mockito:mockito_java': add_mockito_java_deps,
+    '//third_party/android_deps:guava_android_java': add_guava_java_deps,
+    '//third_party/androidx:androidx_test_ext_junit_java': add_androidx_junit_java_deps,
+    '//third_party/androidx:androidx_test_runner_java': add_androidx_test_runner_java_deps,
+    '//third_party/android_sdk:android_test_base_java': add_android_test_base_java_deps,
+    '//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java': add_accessibility_test_framework_java_deps,
+    '//third_party/android_deps:espresso_java': add_espresso_java_deps,
+    '//third_party/android_sdk:android_test_mock_java': add_android_test_mock_java_deps,
+    '//third_party/androidx:androidx_multidex_multidex_java': add_androidx_multidex_java_deps,
+    '//third_party/androidx:androidx_test_monitor_java': add_androidx_test_monitor_java_deps,
+    '//third_party/androidx:androidx_test_annotation_java': add_androidx_test_annotation_java_deps,
+    '//third_party/androidx:androidx_test_core_java': add_androidx_test_core_java_deps,
+    '//third_party/androidx:androidx_test_uiautomator_uiautomator_java': add_androidx_ui_automator_java_deps,
+    '//third_party/hamcrest:hamcrest_java': add_hamcrest_java_deps,
+    '//third_party/androidx:androidx_activity_activity_java': add_androidx_activity_activity,
+    '//third_party/androidx:androidx_fragment_fragment_java': add_androidx_fragment_fragment,
+    '//third_party/androidx:androidx_test_rules_java': add_androidx_test_rules_java_deps,
     # rustversion uses a build script. AOSP doesn't support build scripts, so
     # instead use the library from AOSP which has a workaround for it. See
     # https://crbug.com/394303030.
-    '//third_party/rust/rustversion/v1:lib__proc_macro':
-    add_rustversion_deps,
+    '//third_party/rust/rustversion/v1:lib__proc_macro': add_rustversion_deps,
 }
 
 builtin_deps = {
@@ -269,13 +231,15 @@ builtin_deps = {
 }
 
 # Same as _builtin_deps but will only apply what is explicitly specified.
-builtin_deps.update({
-    '//third_party/boringssl:boringssl_asm':
-    # Due to FIPS requirements, downstream BoringSSL has a different "shape" than upstream's.
-    # We're guaranteed that if X depends on :boringssl it will also depend on :boringssl_asm.
-    # Hence, always drop :boringssl_asm and handle the translation entirely in :boringssl.
-    always_disable,
-})
+builtin_deps.update(
+    {
+        '//third_party/boringssl:boringssl_asm':
+        # Due to FIPS requirements, downstream BoringSSL has a different "shape" than upstream's.
+        # We're guaranteed that if X depends on :boringssl it will also depend on :boringssl_asm.
+        # Hence, always drop :boringssl_asm and handle the translation entirely in :boringssl.
+        always_disable,
+    }
+)
 
 replace_deps = {
     '//third_party/boringssl:boringssl': enable_boringssl,
@@ -300,5 +264,5 @@ java_api_target_name = "//components/cronet/android:cronet_api_java"
 package_default_visibility = ":__subpackages__"
 root_modules_visibility = {
     "//packages/modules/Connectivity:__subpackages__",
-    "//external/cronet:__subpackages__"
+    "//external/cronet:__subpackages__",
 }

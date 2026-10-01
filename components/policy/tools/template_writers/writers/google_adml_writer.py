@@ -15,12 +15,11 @@ def GetWriter(config):
 
 
 class GoogleADMLWriter(template_writer.TemplateWriter):
-  '''Simple writer that writes fixed google.adml files.
-  '''
+  '''Simple writer that writes fixed google.adml files.'''
 
   def WriteTemplate(self, template):
     '''Returns the contents of the google.adml file. It's independent of
-      policy_templates.json.
+    policy_templates.json.
     '''
 
     return '''<?xml version="1.0" ?>

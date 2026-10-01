@@ -12,66 +12,65 @@ import syntax_check_policy_template_json
 
 class SyntaxCheckPolicyTemplateUnittest(unittest.TestCase):
   '''Unit tests for syntax_check_policy_template_json.py'''
-  def do_test(self,
-              policy_list,
-              current_version=1,
-              known_features=['per_profile', 'dynamic_refresh'],
-              expect_exception=False,
-              warnings=0,
-              errors=0):
+
+  def do_test(
+    self,
+    policy_list,
+    current_version=1,
+    known_features=['per_profile', 'dynamic_refresh'],
+    expect_exception=False,
+    warnings=0,
+    errors=0,
+  ):
     exception_raised = False
     try:
       schemas_by_id = {}
       checker = syntax_check_policy_template_json.PolicyTemplateChecker()
       checker.SetFeatures(known_features)
-      checker.CheckPolicyDefinitions(policy_list, current_version,
-                                     schemas_by_id)
+      checker.CheckPolicyDefinitions(
+        policy_list, current_version, schemas_by_id
+      )
     except Exception as e:
       exception_raised = True
       if not expect_exception:
         print(e)
 
-    self.assertEqual(exception_raised, expect_exception,
-                     'Exception expectation failed')
+    self.assertEqual(
+      exception_raised, expect_exception, 'Exception expectation failed'
+    )
     if exception_raised:
       return
-    self.assertEqual(len(checker.warnings), warnings,
-                     'Warnings expectation failed: ' + str(checker.warnings))
-    self.assertEqual(len(checker.errors), errors,
-                     'Errors expectation failed: ' + str(checker.errors))
+    self.assertEqual(
+      len(checker.warnings),
+      warnings,
+      'Warnings expectation failed: ' + str(checker.warnings),
+    )
+    self.assertEqual(
+      len(checker.errors),
+      errors,
+      'Errors expectation failed: ' + str(checker.errors),
+    )
 
   def testCorrectPolicy(self):
-    policy_list = [{
-        'name':
-        'TestName',
+    policy_list = [
+      {
+        'name': 'TestName',
         'supported_on': ['chrome.*:1-'],
-        'schema': {
-            'type': 'boolean'
-        },
-        'type':
-        'main',
-        'desc':
-        'test desc, when true, when false',
-        'features': {
-            'per_profile': True,
-            'dynamic_refresh': True
-        },
-        'caption':
-        'test caption',
+        'schema': {'type': 'boolean'},
+        'type': 'main',
+        'desc': 'test desc, when true, when false',
+        'features': {'per_profile': True, 'dynamic_refresh': True},
+        'caption': 'test caption',
         'owners': ['test@chromium.org'],
         'tags': [],
-        'items': [{
-            'value': False,
-            'caption': 'false caption'
-        }, {
-            'value': True,
-            'caption': 'true caption'
-        }],
-        'example_value':
-        True,
-        'default':
-        False
-    }]
+        'items': [
+          {'value': False, 'caption': 'false caption'},
+          {'value': True, 'caption': 'true caption'},
+        ],
+        'example_value': True,
+        'default': False,
+      }
+    ]
     self.do_test(policy_list)
 
   def testEmptyPolicy(self):
@@ -80,43 +79,26 @@ class SyntaxCheckPolicyTemplateUnittest(unittest.TestCase):
 
   def testDefaultForEnterpriseUsersWithFutureOn(self):
     policy = {
-        'name':
-        'NewFutureOnPolicy',
-        'future_on': ['chrome_os'],
-        'default_for_enterprise_users':
-        True,
-        'schema': {
-            'type': 'boolean'
-        },
-        'type':
-        'main',
-        'desc':
-        'test desc, when true, when false',
-        'features': {
-            'per_profile': True,
-            'dynamic_refresh': True
-        },
-        'caption':
-        'test caption',
-        'owners': ['test@chromium.org'],
-        'tags': [],
-        'items': [{
-            'value': False,
-            'caption': 'false'
-        }, {
-            'value': True,
-            'caption': 'true'
-        }],
-        'example_value':
-        True,
-        'default':
-        False,
+      'name': 'NewFutureOnPolicy',
+      'future_on': ['chrome_os'],
+      'default_for_enterprise_users': True,
+      'schema': {'type': 'boolean'},
+      'type': 'main',
+      'desc': 'test desc, when true, when false',
+      'features': {'per_profile': True, 'dynamic_refresh': True},
+      'caption': 'test caption',
+      'owners': ['test@chromium.org'],
+      'tags': [],
+      'items': [
+        {'value': False, 'caption': 'false'},
+        {'value': True, 'caption': 'true'},
+      ],
+      'example_value': True,
+      'default': False,
     }
-    policy_change_list = [{
-        'policy': 'NewFutureOnPolicy',
-        'old_policy': None,
-        'new_policy': policy
-    }]
+    policy_change_list = [
+      {'policy': 'NewFutureOnPolicy', 'old_policy': None, 'new_policy': policy}
+    ]
 
     # Case 1: Unallowlisted policy with future_on on ChromeOS logs error.
     checker = syntax_check_policy_template_json.PolicyTemplateChecker()
@@ -129,26 +111,31 @@ class SyntaxCheckPolicyTemplateUnittest(unittest.TestCase):
     # Case 2: Allowlisted policy with future_on on ChromeOS logs no error.
     legacy_policy = dict(policy)
     legacy_policy['name'] = 'CastReceiverEnabled'
-    legacy_policy_change_list = [{
+    legacy_policy_change_list = [
+      {
         'policy': 'CastReceiverEnabled',
         'old_policy': None,
-        'new_policy': legacy_policy
-    }]
+        'new_policy': legacy_policy,
+      }
+    ]
     checker_legacy = syntax_check_policy_template_json.PolicyTemplateChecker()
     checker_legacy.SetFeatures(['per_profile', 'dynamic_refresh'])
-    checker_legacy.CheckModifiedPolicies(legacy_policy_change_list, 1, {},
-                                         False)
+    checker_legacy.CheckModifiedPolicies(
+      legacy_policy_change_list, 1, {}, False
+    )
     self.assertEqual(len(checker_legacy.errors), 0)
 
     # Case 3: Non-ChromeOS future_on policy (e.g. fuchsia) logs no error.
     non_cros_policy = dict(policy)
     non_cros_policy['name'] = 'NonCrosFutureOnPolicy'
     non_cros_policy['future_on'] = ['fuchsia']
-    non_cros_change_list = [{
+    non_cros_change_list = [
+      {
         'policy': 'NonCrosFutureOnPolicy',
         'old_policy': None,
-        'new_policy': non_cros_policy
-    }]
+        'new_policy': non_cros_policy,
+      }
+    ]
     checker_non_cros = syntax_check_policy_template_json.PolicyTemplateChecker()
     checker_non_cros.SetFeatures(['per_profile', 'dynamic_refresh'])
     checker_non_cros.CheckModifiedPolicies(non_cros_change_list, 1, {}, False)

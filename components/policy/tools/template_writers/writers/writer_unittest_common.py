@@ -35,7 +35,8 @@ class WriterUnittestCommon(unittest.TestCase):
     policy_data = eval(textwrap.dedent(policy_json[start_idx:]))
 
     config = writer_configuration.GetConfigurationForBuild(definitions)
-    policy_generator = \
-        policy_template_generator.PolicyTemplateGenerator(config, policy_data)
+    policy_generator = policy_template_generator.PolicyTemplateGenerator(
+      config, policy_data
+    )
     writer = template_formatter.GetWriter(writer_type, config)
     return policy_generator.GetTemplateText(writer)

@@ -12,22 +12,22 @@ import sys
 
 
 def parse_args(args):
-  """Parses the command-line."""
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--input', required=True, help='Path to input file')
-  parser.add_argument('--output', required=True, help='Path to output file')
-  return parser.parse_args(args)
+    """Parses the command-line."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', required=True, help='Path to input file')
+    parser.add_argument('--output', required=True, help='Path to output file')
+    return parser.parse_args(args)
 
 
 def main(args):
-  parsed = parse_args(args)
+    parsed = parse_args(args)
 
-  with open(parsed.input, 'r') as f:
-    with open(parsed.output, 'w') as g:
-      for line in f:
-        if not line.startswith('//'):
-          g.write(line)
+    with open(parsed.input, 'r') as f:
+        with open(parsed.output, 'w') as g:
+            for line in f:
+                if not line.startswith('//'):
+                    g.write(line)
 
 
 if __name__ == '__main__':
-  main(sys.argv[1:])
+    main(sys.argv[1:])

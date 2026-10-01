@@ -16,7 +16,8 @@ def _ReadVersionFromJson():
 def main():
     version = _ReadVersionFromJson()
     with open(os.path.join(sys.argv[2], "android_apk_assets.h"), 'w') as f:
-        f.write("""\
+        f.write(
+            """\
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -37,7 +38,9 @@ inline constexpr std::string_view kAttestationsListAssetVersion =
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_ATTESTATIONS_PRELOAD_ANDROID_APK_ASSETS_H_
-""" % {'version': version})
+"""
+            % {'version': version}
+        )
 
 
 if __name__ == '__main__':

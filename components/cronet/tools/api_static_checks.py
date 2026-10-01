@@ -13,7 +13,8 @@ import sys
 import tempfile
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, REPOSITORY_ROOT)
 from components.cronet.tools import update_api  # pylint: disable=wrong-import-position
@@ -164,8 +165,9 @@ def find_api_calls(dump, api_classes, bad_calls):
                 caller_method = METHOD_RE.match(line).group(1)
             idx = line.find(': invoke')
             if idx != -1 and not line.startswith('dynamic', idx + 8):
-                callee = line.split(' // ')[1].split('Method ')[1].split(
-                    '\n')[0]
+                callee = (
+                    line.split(' // ')[1].split('Method ')[1].split('\n')[0]
+                )
                 callee_class = callee.split('.')[0]
                 assert callee_class
                 if callee_class in api_classes:
@@ -177,13 +179,17 @@ def find_api_calls(dump, api_classes, bad_calls):
                     # https://crbug.com/674975
                     if callee_method.startswith('"<init>"'):
                         continue
-                    bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
-                                                   callee_class, callee_method)
+                    bad_call = '%s/%s -> %s/%s' % (
+                        caller_class,
+                        caller_method,
+                        callee_class,
+                        callee_method,
+                    )
                     if bad_call in ALLOWED_EXCEPTIONS:
                         continue
                     bad_calls += [bad_call]
         except Exception:
-            sys.stderr.write(f'Failed on line {i+1}: {line}')
+            sys.stderr.write(f'Failed on line {i + 1}: {line}')
             raise
 
 
@@ -205,7 +211,7 @@ def check_api_calls(opts):
         package = os.path.relpath(dirpath, temp_dir)
         for filename in filenames:
             if filename.endswith('.class'):
-                classname = filename[:-len('.class')]
+                classname = filename[: -len('.class')]
                 api_classes += [
                     os.path.normpath(os.path.join(package, classname))
                 ]
@@ -226,11 +232,13 @@ def check_api_calls(opts):
             continue
         # Dump classes
         dump_file = os.path.join(temp_dir, 'dump.txt')
-        javap_cmd = [JAVAP_PATH, '-private', '-c'
-                     ] + [os.path.join(dirpath, f) for f in filenames]
+        javap_cmd = [JAVAP_PATH, '-private', '-c'] + [
+            os.path.join(dirpath, f) for f in filenames
+        ]
         try:
-            dump_output = utils.run_and_get_stdout(javap_cmd,
-                                                   verbose=opts.verbose)
+            dump_output = utils.run_and_get_stdout(
+                javap_cmd, verbose=opts.verbose
+            )
             utils.write_file(dump_file, dump_output)
         except subprocess.CalledProcessError:
             print('ERROR: javap failed on ' + ' '.join(filenames))
@@ -242,10 +250,11 @@ def check_api_calls(opts):
     shutil.rmtree(temp_dir)
 
     if bad_api_calls:
-        print('ERROR: Found the following calls from implementation classes '
-              'through')
         print(
-            '       API classes.  These could fail if older API is used that')
+            'ERROR: Found the following calls from implementation classes '
+            'through'
+        )
+        print('       API classes.  These could fail if older API is used that')
         print('       does not contain newer methods.  Please call through a')
         print('       wrapper class from VersionSafeCallbacks.')
         print('\n'.join(bad_api_calls))
@@ -256,28 +265,34 @@ def check_api_version(opts):
     if update_api.check_up_to_date(opts.api_jar, verbose=opts.verbose):
         return True
     print('ERROR: API file out of date.  Please run this command:')
-    print('       components/cronet/tools/update_api.py --api_jar %s' %
-          (os.path.abspath(opts.api_jar)))
+    print(
+        '       components/cronet/tools/update_api.py --api_jar %s'
+        % (os.path.abspath(opts.api_jar))
+    )
     return False
 
 
 def main(args):
     parser = argparse.ArgumentParser(
-        description='Enforce Cronet API requirements.')
-    parser.add_argument('--api_jar',
-                        help='Path to API jar (i.e. cronet_api.jar)',
-                        required=True,
-                        metavar='path/to/cronet_api.jar')
-    parser.add_argument('--impl_jar',
-                        help='Path to implementation jar '
-                        '(i.e. cronet_impl_native_java.jar)',
-                        required=True,
-                        metavar='path/to/cronet_impl_native_java.jar',
-                        action='append')
+        description='Enforce Cronet API requirements.'
+    )
+    parser.add_argument(
+        '--api_jar',
+        help='Path to API jar (i.e. cronet_api.jar)',
+        required=True,
+        metavar='path/to/cronet_api.jar',
+    )
+    parser.add_argument(
+        '--impl_jar',
+        help='Path to implementation jar (i.e. cronet_impl_native_java.jar)',
+        required=True,
+        metavar='path/to/cronet_impl_native_java.jar',
+        action='append',
+    )
     parser.add_argument('--stamp', help='Path to touch on success.')
-    parser.add_argument('--verbose',
-                        help='Print verbose output.',
-                        action='store_true')
+    parser.add_argument(
+        '--verbose', help='Print verbose output.', action='store_true'
+    )
     opts = parser.parse_args(args)
 
     ret = True

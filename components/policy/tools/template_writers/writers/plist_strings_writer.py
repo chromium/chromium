@@ -37,8 +37,8 @@ class PListStringsWriter(template_writer.TemplateWriter):
     caption = caption.replace('\n', '\\n')
     desc = desc.replace('"', '\\"')
     desc = desc.replace('\n', '\\n')
-    self._out.append('%s.pfm_title = \"%s\";' % (item_name, caption))
-    self._out.append('%s.pfm_description = \"%s\";' % (item_name, desc))
+    self._out.append('%s.pfm_title = "%s";' % (item_name, caption))
+    self._out.append('%s.pfm_description = "%s";' % (item_name, desc))
 
   def PreprocessPolicies(self, policy_list):
     return self.FlattenGroupsAndSortPolicies(policy_list)
@@ -65,10 +65,16 @@ class PListStringsWriter(template_writer.TemplateWriter):
   def BeginTemplate(self):
     app_name = plist_helper.GetPlistFriendlyName(self.config['app_name'])
     if self._GetChromiumVersionString() is not None:
-      self.WriteComment(self.config['build'] + ''' version: ''' + \
-          self._GetChromiumVersionString())
-    self._AddToStringTable(app_name, self.config['app_name'],
-                           self.messages['mac_chrome_preferences']['text'])
+      self.WriteComment(
+        self.config['build']
+        + ''' version: '''
+        + self._GetChromiumVersionString()
+      )
+    self._AddToStringTable(
+      app_name,
+      self.config['app_name'],
+      self.messages['mac_chrome_preferences']['text'],
+    )
 
   def Init(self):
     # A buffer for the lines of the string table being generated.

@@ -8,6 +8,7 @@ class TemplateWriter(object):
   '''Abstract base class for writing policy templates in various formats.
   The methods of this class will be called by PolicyTemplateGenerator.
   '''
+
   def __init__(self, platforms, config):
     '''Initializes a TemplateWriter object.
 
@@ -83,16 +84,21 @@ class TemplateWriter(object):
     Returns:
       True if the writer chooses to include 'policy' in its output.
     '''
-    if ('deprecated' in policy and policy['deprecated'] is True
-        and not self.IsDeprecatedPolicySupported(policy)):
+    if (
+      'deprecated' in policy
+      and policy['deprecated'] is True
+      and not self.IsDeprecatedPolicySupported(policy)
+    ):
       return False
 
-    if (self.IsCloudOnlyPolicy(policy)
-        and not self.IsCloudOnlyPolicySupported(policy)):
+    if self.IsCloudOnlyPolicy(policy) and not self.IsCloudOnlyPolicySupported(
+      policy
+    ):
       return False
 
-    if (self.IsInternalOnlyPolicy(policy)
-        and not self.IsInternalOnlyPolicySupported(policy)):
+    if self.IsInternalOnlyPolicy(
+      policy
+    ) and not self.IsInternalOnlyPolicySupported(policy):
       return False
 
     for supported_on in policy['supported_on']:
@@ -144,31 +150,34 @@ class TemplateWriter(object):
         'chrome', 'chrome_frame', 'chrome_os', 'webview'.
     '''
     for supported_on in item['supported_on']:
-      if (platform == supported_on['platform']
-          and (not product or product in supported_on['product'])
-          and self.IsVersionSupported(item, supported_on)):
+      if (
+        platform == supported_on['platform']
+        and (not product or product in supported_on['product'])
+        and self.IsVersionSupported(item, supported_on)
+      ):
         return True
     if self.IsFuturePolicySupported(item):
-      if (product and {
-          'platform': platform,
-          'product': product
-      } in item.get('future_on', [])):
+      if product and {'platform': platform, 'product': product} in item.get(
+        'future_on', []
+      ):
         return True
-      if (not product and filter(lambda f: f['platform'] == platform,
-                                 item.get('future_on', []))):
+      if not product and filter(
+        lambda f: f['platform'] == platform, item.get('future_on', [])
+      ):
         return True
     return False
 
   def IsPolicySupportedOnWindows(self, policy, product=None):
-    ''' Checks if |policy| is supported on any Windows platform.
+    '''Checks if |policy| is supported on any Windows platform.
 
     Args:
       policy: The dictionary of the policy.
       product: Optional product to check; one of
         'chrome', 'chrome_frame', 'chrome_os', 'webview'
     '''
-    return (self.IsPolicyOrItemSupportedOnPlatform(policy, 'win', product)
-            or self.IsPolicyOrItemSupportedOnPlatform(policy, 'win7', product))
+    return self.IsPolicyOrItemSupportedOnPlatform(
+      policy, 'win', product
+    ) or self.IsPolicyOrItemSupportedOnPlatform(policy, 'win7', product)
 
   def IsVersionSupported(self, policy, supported_on):
     '''Checks whether the policy is supported on current version'''
@@ -179,8 +188,9 @@ class TemplateWriter(object):
     since_version = supported_on.get('since_version', None)
     until_version = supported_on.get('until_version', None)
 
-    return ((not since_version or int(since_version) <= major_version)
-            and (not until_version or int(until_version) >= major_version))
+    return (not since_version or int(since_version) <= major_version) and (
+      not until_version or int(until_version) >= major_version
+    )
 
   def _GetChromiumVersionString(self):
     '''Returns the Chromium version string stored in the environment variable
@@ -191,7 +201,7 @@ class TemplateWriter(object):
     return self.config.get('version', None)
 
   def _GetChromiumMajorVersion(self):
-    ''' Returns the major version of Chromium if it exists
+    '''Returns the major version of Chromium if it exists
     in config.
     '''
     return self.config.get('major_version', None)
@@ -232,8 +242,9 @@ class TemplateWriter(object):
     '''
     self.messages = template['messages']
     self.Init()
-    template['policy_definitions'] = \
-        self.PreprocessPolicies(template['policy_definitions'])
+    template['policy_definitions'] = self.PreprocessPolicies(
+      template['policy_definitions']
+    )
     self.BeginTemplate()
     self.WritePolicies(template['policy_definitions'])
     self.EndTemplate()
@@ -267,7 +278,8 @@ class TemplateWriter(object):
       if policy['type'] == 'group':
         child_policies = list(self._GetPoliciesForWriter(policy))
         child_recommended_policies = list(
-            filter(self.CanBeRecommended, child_policies))
+          filter(self.CanBeRecommended, child_policies)
+        )
         # Only write nonempty groups.
         if child_policies:
           # Miscellaneous should not be considered a group.
@@ -303,7 +315,7 @@ class TemplateWriter(object):
   def WriteComment(self, comment):
     '''Appends the comment to the internal buffer.
 
-      comment: The comment to be added.
+    comment: The comment to be added.
     '''
     raise NotImplementedError()
 
@@ -315,7 +327,7 @@ class TemplateWriter(object):
       policy: The recommended policy as it is found in the JSON file.
     '''
     # TODO
-    #raise NotImplementedError()
+    # raise NotImplementedError()
     pass
 
   def BeginPolicyGroup(self, group):
@@ -432,20 +444,27 @@ class TemplateWriter(object):
     '''Returns whether the policy has expanded documentation containing the link
     to the documentation with schema and formatting.
     '''
-    return (policy['type'] in ('dict', 'external') or 'url_schema' in policy
-            or 'validation_schema' in policy or 'description_schema' in policy)
+    return (
+      policy['type'] in ('dict', 'external')
+      or 'url_schema' in policy
+      or 'validation_schema' in policy
+      or 'description_schema' in policy
+    )
 
   def GetExpandedPolicyDescription(self, policy):
     '''Returns the expanded description of the policy containing the link to the
     documentation with schema and formatting.
     '''
     schema_description_link_text = self.GetLocalizedMessage(
-        'schema_description_link')
+      'schema_description_link'
+    )
     url = None
     if 'url_schema' in policy:
       url = policy['url_schema']
-    if (policy['type'] in ('dict', 'external') or 'validation_schema' in policy
-        or 'description_schema' in policy):
-      url = ('https://chromeenterprise.google/policies/?policy=' +
-             policy['name'])
+    if (
+      policy['type'] in ('dict', 'external')
+      or 'validation_schema' in policy
+      or 'description_schema' in policy
+    ):
+      url = 'https://chromeenterprise.google/policies/?policy=' + policy['name']
     return schema_description_link_text.replace('$6', url) if url else ''

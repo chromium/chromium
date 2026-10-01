@@ -9,7 +9,8 @@ import os
 import sys
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
 from util import build_utils  # pylint: disable=wrong-import-position
@@ -17,13 +18,18 @@ from util import build_utils  # pylint: disable=wrong-import-position
 
 def main(args):
     parser = argparse.ArgumentParser(
-        description='Check modules do not contain ARM Neon instructions.')
+        description='Check modules do not contain ARM Neon instructions.'
+    )
     parser.add_argument('objdump', metavar='path/to/ARM/objdump')
     parser.add_argument('objects', metavar='files/to/check/*.o')
     parser.add_argument('--stamp', help='Path to touch on success.')
     opts = parser.parse_args(args)
-    ret = os.system(opts.objdump + ' -d --no-show-raw-insn ' + opts.objects +
-                    ' | grep -q "vld[1-9]\\|vst[1-9]"')
+    ret = os.system(
+        opts.objdump
+        + ' -d --no-show-raw-insn '
+        + opts.objects
+        + ' | grep -q "vld[1-9]\\|vst[1-9]"'
+    )
 
     # Non-zero exit code means no neon.
     if ret and opts.stamp:

@@ -6,6 +6,7 @@
 
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))
 
@@ -50,8 +51,9 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
   </dict>
 </plist>''' % (product_name, bundle_id, policies)
 
-  def _GetExpectedOutputsWithVersion(self, product_name, bundle_id, policies,
-                                     version):
+  def _GetExpectedOutputsWithVersion(
+    self, product_name, bundle_id, policies, version
+  ):
     '''Substitutes the variable parts into a plist template. The result
     of this function can be used as an expected result to test the output
     of PListWriter.
@@ -95,12 +97,14 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'messages': {},
       }'''
 
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
-    expected_output = self._GetExpectedOutputs('Chromium', 'com.example.Test',
-                                               '<array/>')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
+    expected_output = self._GetExpectedOutputs(
+      'Chromium', 'com.example.Test', '<array/>'
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testEmptyVersion(self):
@@ -114,14 +118,17 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
       }'''
 
     output = self.GetOutput(
-        policy_json, {
-            '_chromium': '1',
-            'mac_bundle_id': 'com.example.Test',
-            'version': '39.0.0.0'
-        }, 'plist')
+      policy_json,
+      {
+        '_chromium': '1',
+        'mac_bundle_id': 'com.example.Test',
+        'version': '39.0.0.0',
+      },
+      'plist',
+    )
     expected_output = self._GetExpectedOutputsWithVersion(
-        'Chromium', 'com.example.Test', '<array/>',
-        'chromium version: 39.0.0.0')
+      'Chromium', 'com.example.Test', '<array/>', 'chromium version: 39.0.0.0'
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testMainPolicy(self):
@@ -148,12 +155,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {}
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>MainPolicy</string>
@@ -168,7 +178,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>boolean</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testRecommendedPolicy(self):
@@ -198,12 +209,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {}
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>MainPolicy</string>
@@ -219,7 +233,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>boolean</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testRecommendedOnlyPolicy(self):
@@ -250,12 +265,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {}
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>MainPolicy</string>
@@ -270,7 +288,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>boolean</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testStringPolicy(self):
@@ -297,12 +316,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>StringPolicy</string>
@@ -317,7 +339,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>string</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testListPolicy(self):
@@ -348,12 +371,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>ListPolicy</string>
@@ -375,7 +401,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           </dict>
         </array>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testStringEnumListPolicy(self):
@@ -411,12 +438,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>ListPolicy</string>
@@ -438,7 +468,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           </dict>
         </array>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testIntPolicy(self):
@@ -465,12 +496,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>IntPolicy</string>
@@ -485,7 +519,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>integer</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testIntEnumPolicy(self):
@@ -516,12 +551,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'mac_bundle_id': 'com.example.Test2'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'mac_bundle_id': 'com.example.Test2'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Google_Chrome', 'com.example.Test2', '''<array>
+      'Google_Chrome',
+      'com.example.Test2',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>EnumPolicy</string>
@@ -541,7 +579,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           <integer>1</integer>
         </array>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testStringEnumPolicy(self):
@@ -572,12 +611,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'mac_bundle_id': 'com.example.Test2'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'mac_bundle_id': 'com.example.Test2'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Google_Chrome', 'com.example.Test2', '''<array>
+      'Google_Chrome',
+      'com.example.Test2',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>EnumPolicy</string>
@@ -597,7 +639,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
           <string>two</string>
         </array>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testDictionaryPolicy(self):
@@ -624,12 +667,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>DictionaryPolicy</string>
@@ -644,7 +690,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>dictionary</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testExternalPolicy(self):
@@ -671,12 +718,15 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_chromium': '1',
-        'mac_bundle_id': 'com.example.Test'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_chromium': '1', 'mac_bundle_id': 'com.example.Test'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Chromium', 'com.example.Test', '''<array>
+      'Chromium',
+      'com.example.Test',
+      '''<array>
       <dict>
         <key>pfm_name</key>
         <string>ExternalPolicy</string>
@@ -691,7 +741,8 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         <key>pfm_type</key>
         <string>dictionary</string>
       </dict>
-    </array>''')
+    </array>''',
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
   def testNonSupportedPolicy(self):
@@ -719,12 +770,14 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         'placeholders': [],
         'messages': {},
       }'''
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'mac_bundle_id': 'com.example.Test2'
-    }, 'plist')
+    output = self.GetOutput(
+      policy_json,
+      {'_google_chrome': '1', 'mac_bundle_id': 'com.example.Test2'},
+      'plist',
+    )
     expected_output = self._GetExpectedOutputs(
-        'Google_Chrome', 'com.example.Test2', '''<array/>''')
+      'Google_Chrome', 'com.example.Test2', '''<array/>'''
+    )
     self.assertEquals(output.strip(), expected_output.strip())
 
 

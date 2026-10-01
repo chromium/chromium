@@ -51,7 +51,7 @@ def is_ignored_readme_chromium(path: str) -> bool:
 
 def get_license_file_format(license_name: str):
     """Return a different representation of the license that is better suited
-  for file names."""
+    for file names."""
     return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][0]
 
 
@@ -59,23 +59,23 @@ class InvalidMetadata(Exception):
     """This exception is raised when metadata is invalid."""
 
 
-def parse_chromium_readme_file(readme_path: str,
-                               post_process_operation: Callable = None
-                               ) -> Metadata:
+def parse_chromium_readme_file(
+    readme_path: str, post_process_operation: Callable = None
+) -> Metadata:
     """Parses the metadata from the file.
 
-  Args:
-    readme_path: the path to a file from which to parse metadata.
-    post_process_operation: Operation done on the dictionary after parsing
-    metadata, this callable must return a dictionary.
+    Args:
+      readme_path: the path to a file from which to parse metadata.
+      post_process_operation: Operation done on the dictionary after parsing
+      metadata, this callable must return a dictionary.
 
-  Returns: the metadata for all dependencies described in the file.
+    Returns: the metadata for all dependencies described in the file.
 
-  Raises:
-    InvalidMetadata - Raised when the metadata can't be parsed correctly. This
-    could happen due to plenty of reasons (eg: unidentifiable license, license
-    file path does not exist or duplicate fields).
-  """
+    Raises:
+      InvalidMetadata - Raised when the metadata can't be parsed correctly. This
+      could happen due to plenty of reasons (eg: unidentifiable license, license
+      file path does not exist or duplicate fields).
+    """
     field_lookup = {name.lower(): name for name in KNOWN_FIELDS}
 
     dependencies = []
@@ -103,7 +103,8 @@ def parse_chromium_readme_file(readme_path: str,
                 if field in metadata:
                     # Duplicate field for this dependency.
                     raise InvalidMetadata(
-                        f"duplicate '{field}' in {readme_path}")
+                        f"duplicate '{field}' in {readme_path}"
+                    )
                 if field in MULTIVALUE_FIELDS:
                     metadata[field] = [
                         entry.strip() for entry in value.split(VALUE_DELIMITER)
@@ -118,12 +119,14 @@ def parse_chromium_readme_file(readme_path: str,
 
     if len(dependencies) == 0:
         raise Exception(
-            f"Failed to parse any valid metadata from \"{readme_path}\"")
+            f"Failed to parse any valid metadata from \"{readme_path}\""
+        )
 
     try:
         if post_process_operation is None:
             post_process_operation = constants.POST_PROCESS_OPERATION.get(
-                readme_path, lambda _metadata: _metadata)
+                readme_path, lambda _metadata: _metadata
+            )
         metadata = Metadata(post_process_operation(dependencies[0]))
     except MapperException as e:
         raise Exception(f"Failed to post-process {readme_path}") from e
@@ -138,17 +141,17 @@ def parse_chromium_readme_file(readme_path: str,
 
 def resolve_license_path(readme_chromium_path: str, license_path: str) -> str:
     """
-  Resolves the relative path from the repository root to the license file.
+    Resolves the relative path from the repository root to the license file.
 
-  :param readme_chromium_path: Relative path to the README.chromium starting
-  from the root of the repository.
-  :param license_path: The field value of `License File` in the README.chromium.
-  If the value of the license_path starts with `//` then that means that the
-  license file path is already relative from the repo path. Otherwise, it is
-  assumed that the provided path is relative from the README.chromium path.
-  :return: The relative path from the repository root to the declared license
-  file.
-  """
+    :param readme_chromium_path: Relative path to the README.chromium starting
+    from the root of the repository.
+    :param license_path: The field value of `License File` in the README.chromium.
+    If the value of the license_path starts with `//` then that means that the
+    license file path is already relative from the repo path. Otherwise, it is
+    assumed that the provided path is relative from the README.chromium path.
+    :return: The relative path from the repository root to the declared license
+    file.
+    """
     if license_path.startswith("//"):
         # This is an relative path that starts from the root of external/cronet
         # repository, we should not use the directory path for resolution here.

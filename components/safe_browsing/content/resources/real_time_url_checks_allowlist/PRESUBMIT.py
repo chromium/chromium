@@ -6,6 +6,7 @@
 Presubmit checks for SafeBrowsing real_time_url_checks_allowlist.
 """
 
+
 def _CheckIdHelper(contents, id_type):
     """Return the version or scheme id from the
     provided file contents.
@@ -15,6 +16,7 @@ def _CheckIdHelper(contents, id_type):
         if len(line_split) > 1:
             return line_split[1]
     return -1
+
 
 def CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
     output_api, allowlist_ascii_file
@@ -33,16 +35,20 @@ def CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
     if new_version_id != old_version_id + 1:
         results.append(
             output_api.PresubmitError(
-                'The new |version_id| in ' +
-                allowlist_ascii_file.LocalPath() + ' should be '
+                'The new |version_id| in '
+                + allowlist_ascii_file.LocalPath()
+                + ' should be '
                 'the incremented old |version_id| if you are updating the real '
-                'time url allowlist proto.'))
+                'time url allowlist proto.'
+            )
+        )
     return results
+
 
 def CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
     output_api, allowlist_ascii_file
 ):
-  # Report error if scheme id is invalid
+    # Report error if scheme id is invalid
     results = []
 
     old_scheme_id = int(
@@ -56,8 +62,9 @@ def CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
     if new_scheme_id < old_scheme_id or new_scheme_id > old_scheme_id + 1:
         results.append(
             output_api.PresubmitError(
-                'The new |scheme_id| in ' +
-                allowlist_ascii_file.LocalPath() + ' should be '
+                'The new |scheme_id| in '
+                + allowlist_ascii_file.LocalPath()
+                + ' should be '
                 'the same or the incremented old |scheme_id| if you are '
                 'updating the real time url allowlist proto.'
             )
@@ -74,42 +81,42 @@ def CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
     )
     return results
 
+
 def CheckChangeOnUpload(input_api, output_api):
-  # If there are no changes, return no warnings
-  if input_api.no_diffs:
-    return []
+    # If there are no changes, return no warnings
+    if input_api.no_diffs:
+        return []
 
-  def IsRealTimeUrlAllowlistAsciiPb(x):
-    return input_api.os_path.basename(
-      x.LocalPath()) == 'real_time_url_allowlist.asciipb'
-
-  real_time_url_allowlist_ascii_file = input_api.AffectedFiles(
-    file_filter=IsRealTimeUrlAllowlistAsciiPb)
-  if not real_time_url_allowlist_ascii_file:
-    return []
-
-  ascii_file = real_time_url_allowlist_ascii_file[0]
-  if len(ascii_file.NewContents()) != 3:
-    return [
-        output_api.PresubmitError(
-            'The asciipb file located at ' +
-            allowlist_ascii_file.LocalPath() + ' should have '
-            'three fields: version_id, scheme_id, and url_hashes, ' +
-            'each on its own line within the file.'
+    def IsRealTimeUrlAllowlistAsciiPb(x):
+        return (
+            input_api.os_path.basename(x.LocalPath())
+            == 'real_time_url_allowlist.asciipb'
         )
-    ]
 
-  # If the asciipb file is being added in this CL, then we will not
-  # check it against the old contents.
-  if len(ascii_file.OldContents()) == 0:
-    return []
-
-  # Check the new version of the component with the old to ensure validity
-  return (
-    CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
-        output_api, ascii_file
-    ) +
-    CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
-        output_api, ascii_file
+    real_time_url_allowlist_ascii_file = input_api.AffectedFiles(
+        file_filter=IsRealTimeUrlAllowlistAsciiPb
     )
-  )
+    if not real_time_url_allowlist_ascii_file:
+        return []
+
+    ascii_file = real_time_url_allowlist_ascii_file[0]
+    if len(ascii_file.NewContents()) != 3:
+        return [
+            output_api.PresubmitError(
+                'The asciipb file located at '
+                + allowlist_ascii_file.LocalPath()
+                + ' should have '
+                'three fields: version_id, scheme_id, and url_hashes, '
+                + 'each on its own line within the file.'
+            )
+        ]
+
+    # If the asciipb file is being added in this CL, then we will not
+    # check it against the old contents.
+    if len(ascii_file.OldContents()) == 0:
+        return []
+
+    # Check the new version of the component with the old to ensure validity
+    return CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
+        output_api, ascii_file
+    ) + CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(output_api, ascii_file)

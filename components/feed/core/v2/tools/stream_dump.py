@@ -28,12 +28,15 @@ from os.path import join, dirname, realpath
 parser = argparse.ArgumentParser()
 parser.add_argument("--db", help="Path to db", default='/tmp/feed_dump/db')
 parser.add_argument(
-    "--dump_to", help="Dump output directory", default='/tmp/feed_dump')
+    "--dump_to", help="Dump output directory", default='/tmp/feed_dump'
+)
 parser.add_argument(
-    "--reverse", help="Write dump back to database", action='store_true')
+    "--reverse", help="Write dump back to database", action='store_true'
+)
 parser.add_argument("--device", help="adb device to use")
 parser.add_argument(
-    "--apk", help="APK to dump from/to", default='com.chrome.canary')
+    "--apk", help="APK to dump from/to", default='com.chrome.canary'
+)
 
 args = parser.parse_args()
 
@@ -42,7 +45,8 @@ DUMP_DIR = args.dump_to
 DB_PATH = args.db
 STREAM_DB_PATH = join(DB_PATH, 'shared_proto_db')
 DEVICE_DB_PATH = (
-    "/data/data/{}/" + "app_chrome/Default/shared_proto_db").format(args.apk)
+    "/data/data/{}/" + "app_chrome/Default/shared_proto_db"
+).format(args.apk)
 STORAGE_PROTO = 'components/feed/core/proto/v2/store.proto'
 
 # From the shared proto db ID, see
@@ -51,8 +55,9 @@ KEY_PREFIX = '26_'
 
 
 def adb_base_args():
-    adb_path = join(ROOT_DIR,
-                    "third_party/android_sdk/public/platform-tools/adb")
+    adb_path = join(
+        ROOT_DIR, "third_party/android_sdk/public/platform-tools/adb"
+    )
     adb_device = args.device
     if adb_device:
         return [adb_path, "-s", adb_device]
@@ -64,14 +69,16 @@ def adb_pull_db():
 
 
 def adb_push_db():
-    subprocess.check_call(adb_base_args() +
-                          ["push", STREAM_DB_PATH, DEVICE_DB_PATH])
+    subprocess.check_call(
+        adb_base_args() + ["push", STREAM_DB_PATH, DEVICE_DB_PATH]
+    )
 
 
 # Extract a binary proto database entry into textproto.
 def extract_db_entry(key, data):
-    return protoc_util.decode_proto(data, 'feedstore.Record', ROOT_DIR,
-                                    STORAGE_PROTO)
+    return protoc_util.decode_proto(
+        data, 'feedstore.Record', ROOT_DIR, STORAGE_PROTO
+    )
 
 
 # Dump the database to a local directory as textproto files.
@@ -83,12 +90,14 @@ def dump():
     with db.iterator() as it:
         for i, (k, v) in enumerate(it):
             k = k.decode('utf-8')
-            if not k.startswith(KEY_PREFIX): continue
+            if not k.startswith(KEY_PREFIX):
+                continue
             key = k[3:]
             with open(join(DUMP_DIR, 'entry{:03d}.key'.format(i)), 'w') as f:
                 f.write(key)
-            with open(join(DUMP_DIR, 'entry{:03d}.textproto'.format(i)),
-                      'w') as f:
+            with open(
+                join(DUMP_DIR, 'entry{:03d}.textproto'.format(i)), 'w'
+            ) as f:
                 f.write(extract_db_entry(k, v))
     print('Finished dumping to', DUMP_DIR)
     db.close()
@@ -107,7 +116,8 @@ def load():
             with open(join(DUMP_DIR, f), 'r') as file:
                 value_text_proto = file.read()
             value_encoded = protoc_util.encode_proto(
-                value_text_proto, 'feedstore.Record', ROOT_DIR, STORAGE_PROTO)
+                value_text_proto, 'feedstore.Record', ROOT_DIR, STORAGE_PROTO
+            )
             db.put(key.encode(), value_encoded)
     db.close()
     adb_push_db()

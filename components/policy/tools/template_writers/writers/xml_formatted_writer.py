@@ -7,8 +7,7 @@ from writers import template_writer
 
 
 class XMLFormattedWriter(template_writer.TemplateWriter):
-  '''Helper class for generating XML-based templates.
-  '''
+  '''Helper class for generating XML-based templates.'''
 
   def AddElement(self, parent, name, attrs=None, text=None):
     '''
@@ -38,8 +37,7 @@ class XMLFormattedWriter(template_writer.TemplateWriter):
     return element
 
   def AddText(self, parent, text):
-    '''Adds text to a parent node.
-    '''
+    '''Adds text to a parent node.'''
     doc = parent.ownerDocument
     parent.appendChild(doc.createTextNode(text))
 
@@ -71,7 +69,7 @@ class XMLFormattedWriter(template_writer.TemplateWriter):
     # Get all the XML content in a one-line string.
     xml = doc.toxml(**kwargs)
     # Determine where the line breaks will be. (They will only be between tags.)
-    lines = xml[1:len(xml) - 1].split('><')
+    lines = xml[1 : len(xml) - 1].split('><')
     indent = ''
     res = ''
     # Determine indent for each line.
@@ -81,8 +79,11 @@ class XMLFormattedWriter(template_writer.TemplateWriter):
         # printing.
         indent = indent[2:]
       lines[i] = indent + '<' + line + '>'
-      if (line[0] not in ['/', '?', '!'] and '</' not in line and
-          line[len(line) - 1] != '/'):
+      if (
+        line[0] not in ['/', '?', '!']
+        and '</' not in line
+        and line[len(line) - 1] != '/'
+      ):
         # If the current line starts with an opening tag and does not conatin a
         # closing tag, increase indent after the line is printed.
         indent += '  '

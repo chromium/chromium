@@ -16,8 +16,7 @@ import common
 from arguments import CommandLineUtility
 
 
-class BaseActionSanitizer():
-
+class BaseActionSanitizer:
     def __init__(self, target, arch, context):
         self.context = context
         # Just to be on the safe side, create a deep-copy.
@@ -29,8 +28,10 @@ class BaseActionSanitizer():
             self.target.common.outputs |= arch.outputs
             self.target.script = self.target.script or arch.script
             self.target.common.args = self.target.common.args or arch.args
-            self.target.common.response_file_contents = \
-              self.target.common.response_file_contents or arch.response_file_contents
+            self.target.common.response_file_contents = (
+                self.target.common.response_file_contents
+                or arch.response_file_contents
+            )
         self.args = CommandLineUtility(self.target.common.args or [])
 
     def get_name(self):
@@ -59,7 +60,8 @@ class BaseActionSanitizer():
     def get_pre_cmd(self):
         pre_cmd = []
         out_dirs = [
-            out[:out.rfind("/")] for out in self.target.common.outputs
+            out[: out.rfind("/")]
+            for out in self.target.common.outputs
             if "/" in out
         ]
         # Sort the list to make the output deterministic.
@@ -74,11 +76,17 @@ class BaseActionSanitizer():
         # shoves a $() macro in an arg, we still run that through shell quoting,
         # which does preserve the "$" but that's mostly luck. We should design
         # a better mechanism for handling "$" and $() macros.
-        return (([
-            f"echo {shlex.quote(self.target.common.response_file_contents)} |"
-        ] if self.target.common.response_file_contents else []) +
-                [f"$(location {gn_utils.label_to_path(self.target.script)})"] +
-                [shlex.quote(arg) for arg in self.args.get_args()])
+        return (
+            (
+                [
+                    f"echo {shlex.quote(self.target.common.response_file_contents)} |"
+                ]
+                if self.target.common.response_file_contents
+                else []
+            )
+            + [f"$(location {gn_utils.label_to_path(self.target.script)})"]
+            + [shlex.quote(arg) for arg in self.args.get_args()]
+        )
 
     def get_cmd(self):
         # Note: don't be confused by the return type. This function returns a list,
@@ -99,7 +107,8 @@ class BaseActionSanitizer():
         files = self.target.common.sources.union(self.target.common.inputs)
         return {
             gn_utils.label_to_path(file)
-            for file in files if common.is_supported_source_file(file)
+            for file in files
+            if common.is_supported_source_file(file)
         }
 
     def get_tools(self):
@@ -115,7 +124,8 @@ class BaseActionSanitizer():
             # Files that starts with "out/" are usually an output of another action.
             # This is under the assumption that we generate the desc files in an
             # out/ directory usually.
-            for file in files if not common.is_supported_source_file(file)
+            for file in files
+            if not common.is_supported_source_file(file)
             and not file.startswith("//out/")
         }
         tool_files.add(gn_utils.label_to_path(self.target.script))
@@ -131,8 +141,9 @@ class BaseActionSanitizer():
         use_response_file = self.args.has_arg(gn_utils.RESPONSE_FILE)
         if use_response_file:
             # Replace {{response_file_contents}} with /dev/stdin
-            self.args.update_all_args(lambda it: '/dev/stdin'
-                                      if it == gn_utils.RESPONSE_FILE else it)
+            self.args.update_all_args(
+                lambda it: '/dev/stdin' if it == gn_utils.RESPONSE_FILE else it
+            )
 
     def _sanitize_inputs(self):
         pass
@@ -146,12 +157,10 @@ class BaseActionSanitizer():
 
     # Whether this target generates header files
     def is_header_generated(self):
-        return any(
-            os.path.splitext(it)[1] == '.h' for it in self.get_outputs())
+        return any(os.path.splitext(it)[1] == '.h' for it in self.get_outputs())
 
 
 class GenerateCanonicalLocalesListSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_arg_at(0, '$(out)')
         super()._sanitize_args()
@@ -161,7 +170,6 @@ class GenerateCanonicalLocalesListSanitizer(BaseActionSanitizer):
 
 
 class GenerateKnownBcp47SubtagsSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_arg_at(0, '$(out)')
         super()._sanitize_args()
@@ -171,24 +179,22 @@ class GenerateKnownBcp47SubtagsSanitizer(BaseActionSanitizer):
 
 
 class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_arg_at(0, '$(out)')
         super()._sanitize_args()
 
 
 class WriteGenerateAllowlistFromHistogramsFileSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_flag_value('--output_dir', '.')
         self.args.set_flag_value('--file', '$(out)')
-        self.args.update_flag_value('--input',
-                                    self._sanitize_filepath_with_location_tag)
+        self.args.update_flag_value(
+            '--input', self._sanitize_filepath_with_location_tag
+        )
         super()._sanitize_args()
 
 
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_flag_value('--gen-dir', '.')
         self.args.set_flag_value('--output', '$(out)')
@@ -196,19 +202,16 @@ class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
 
 
 class PerfettoWriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_flag_value('--out', '$(out)')
         super()._sanitize_args()
 
 
 class GnRunBinarySanitizer(BaseActionSanitizer):
-
     def __init__(self, target, arch, context):
         super().__init__(target, arch, context)
         self.binary_to_target = {
-            "clang_x64/transport_security_state_generator":
-            f"{context.module_prefix}net_tools_transport_security_state_generator_transport_security_state_generator__toolchain_clang__testing",
+            "clang_x64/transport_security_state_generator": f"{context.module_prefix}net_tools_transport_security_state_generator_transport_security_state_generator__toolchain_clang__testing",
         }
         self.binary = self.binary_to_target[self.args.get_args()[0]]
 
@@ -224,7 +227,8 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
 
     def _remove_python_args(self):
         self.args.set_args(
-            [arg for arg in self.args.get_args() if "python3" not in arg])
+            [arg for arg in self.args.get_args() if "python3" not in arg]
+        )
 
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
@@ -246,18 +250,19 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
 
 
 class JniGeneratorSanitizer(BaseActionSanitizer):
-
     def __init__(self, target, arch, is_test_target, context):
         self.is_test_target = is_test_target
         super().__init__(target, arch, context)
 
     def get_srcs(self):
         all_srcs = super().get_srcs()
-        all_srcs.update({
-            gn_utils.label_to_path(file)
-            for file in self.target.transitive_jni_java_sources
-            if common.is_supported_source_file(file)
-        })
+        all_srcs.update(
+            {
+                gn_utils.label_to_path(file)
+                for file in self.target.transitive_jni_java_sources
+                if common.is_supported_source_file(file)
+            }
+        )
         return set(src for src in all_srcs if src.endswith(".java"))
 
     def _add_location_tag_to_filepath(self, arg):
@@ -268,20 +273,25 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
         return arg
 
     def _sanitize_args(self):
-        self.args.set_flag_value('--jar-file',
-                                 '$(location :current_android_jar)', False)
+        self.args.set_flag_value(
+            '--jar-file', '$(location :current_android_jar)', False
+        )
         if self.args.has_arg('--jar-file'):
             self.args.set_flag_value('--javap', '$(location :javap)')
-        self.args.update_flag_value('--srcjar-path', self._sanitize_filepath,
-                                    False)
+        self.args.update_flag_value(
+            '--srcjar-path', self._sanitize_filepath, False
+        )
         self.args.update_flag_value('--output-dir', self._sanitize_filepath)
-        self.args.update_flag_value('--extra-include', self._sanitize_filepath,
-                                    False)
-        self.args.update_flag_value('--placeholder-srcjar-path',
-                                    self._sanitize_filepath, False)
+        self.args.update_flag_value(
+            '--extra-include', self._sanitize_filepath, False
+        )
+        self.args.update_flag_value(
+            '--placeholder-srcjar-path', self._sanitize_filepath, False
+        )
         self.args.update_list_arg('--input-file', self._sanitize_filepath)
-        self.args.update_list_arg('--input-file',
-                                  self._add_location_tag_to_filepath)
+        self.args.update_list_arg(
+            '--input-file', self._add_location_tag_to_filepath
+        )
 
         # Strip jni_zero's GN metadata type catalog plumbing. The catalog lets a
         # safe JNI pointer resolve a @JniType token that is declared in another
@@ -316,8 +326,9 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
             # from those genrule can simply call into the original class as it exists outside
             # of cronet's jar.
             # Only jarjar platform code
-            self.args.append_flag_value('--package-prefix',
-                                        'android.net.http.internal')
+            self.args.append_flag_value(
+                '--package-prefix', 'android.net.http.internal'
+            )
         super()._sanitize_args()
 
     def get_outputs(self):
@@ -340,14 +351,12 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
 
         # Filter android.jar and add :current_android_jar
         tool_files = {
-            file
-            if not file.endswith('android.jar') else ':current_android_jar'
+            file if not file.endswith('android.jar') else ':current_android_jar'
             for file in tool_files
         }
         # Filter bin/javap
         tool_files = {
-            file
-            for file in tool_files if not file.endswith('bin/javap')
+            file for file in tool_files if not file.endswith('bin/javap')
         }
 
         # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
@@ -366,7 +375,6 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
 
 
 class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
-
     def __init__(self, target, arch, is_test_target, context):
         self.is_test_target = is_test_target
         super().__init__(target, arch, is_test_target, context)
@@ -374,8 +382,7 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
     def get_outputs(self):
         # fix target.output directory to match #include statements.
         outputs = {
-            re.sub('^jni_headers/', '', out)
-            for out in super().get_outputs()
+            re.sub('^jni_headers/', '', out) for out in super().get_outputs()
         }
         self.target.common.outputs = [
             out for out in outputs if out.endswith(".srcjar")
@@ -391,7 +398,6 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
 
 
 class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
-
     def __init__(self, target, arch, is_test_target, context, mode=None):
         self.is_test_target = is_test_target
         self.mode = mode
@@ -405,16 +411,19 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
     def get_srcs(self):
         all_srcs = super().get_srcs()
-        all_srcs.update({
-            gn_utils.label_to_path(file)
-            for file in self.target.transitive_jni_java_sources
-            if common.is_supported_source_file(file)
-        })
+        all_srcs.update(
+            {
+                gn_utils.label_to_path(file)
+                for file in self.target.transitive_jni_java_sources
+                if common.is_supported_source_file(file)
+            }
+        )
         return set(src for src in all_srcs if src.endswith(".java"))
 
     def _sanitize_inputs(self):
         self.target.common.inputs = [
-            file for file in self.target.common.inputs
+            file
+            for file in self.target.common.inputs
             if not file.startswith('//out/')
         ]
 
@@ -441,24 +450,27 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     def _sanitize_args(self):
         self.args.update_flag_value('--depfile', self._sanitize_filepath)
         self.args.update_flag_value('--srcjar-path', self._sanitize_filepath)
-        self.args.update_flag_value('--header-path',
-                                    self._sanitize_filepath,
-                                    throw_if_absent=False)
-        self.args.update_flag_value('--impl-path',
-                                    self._sanitize_filepath,
-                                    throw_if_absent=False)
-        self.args.update_flag_value('--placeholder-srcjar-path',
-                                    self._sanitize_filepath, False)
+        self.args.update_flag_value(
+            '--header-path', self._sanitize_filepath, throw_if_absent=False
+        )
+        self.args.update_flag_value(
+            '--impl-path', self._sanitize_filepath, throw_if_absent=False
+        )
+        self.args.update_flag_value(
+            '--placeholder-srcjar-path', self._sanitize_filepath, False
+        )
         self.args.remove_flag('--depfile', False)
-        self.args.set_flag_value('--java-sources-file',
-                                 '$(genDir)/java_sources.json')
+        self.args.set_flag_value(
+            '--java-sources-file', '$(genDir)/java_sources.json'
+        )
 
         self.args.remove_flag('--package-prefix', throw_if_absent=False)
         self.args.remove_flag('--package-prefix-filter', throw_if_absent=False)
         if not self.is_test_target:
             # Only jarjar platform code
-            self.args.append_flag_value('--package-prefix',
-                                        'android.net.http.internal')
+            self.args.append_flag_value(
+                '--package-prefix', 'android.net.http.internal'
+            )
         super()._sanitize_args()
 
     def get_cmd(self):
@@ -484,7 +496,9 @@ import sys
 d = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}
 """
         if module_name:
-            jni_registration_helper_script += f'd["module_name"] = "{module_name}"\n'
+            jni_registration_helper_script += (
+                f'd["module_name"] = "{module_name}"\n'
+            )
         jni_registration_helper_script += "print(json.dumps([d]))"
 
         # Convert the multi-line script into a single semicolon-separated line.
@@ -493,13 +507,14 @@ d = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}
         python_script = '; '.join(
             line.strip()
             for line in jni_registration_helper_script.strip().split('\n')
-            if line.strip())
+            if line.strip()
+        )
 
-        base_cmd = ([
+        base_cmd = [
             "current_dir=`basename \\`pwd\\``;",
             f"python3 -c '{python_script}' $$current_dir $(in) > $(genDir)/java_sources.json;",
-            f"python3 {base_cmd[0]}"
-        ] + base_cmd[1:])
+            f"python3 {base_cmd[0]}",
+        ] + base_cmd[1:]
 
         return self.get_pre_cmd() + base_cmd
 
@@ -514,7 +529,6 @@ d = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}
 
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
-
     def get_name(self):
         name = super().get_name() + "__java"
         return name
@@ -527,7 +541,6 @@ class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
 
 
 class VersionSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_flag_value('-o', '$(out)')
         # args for the version.py contain file path without leading --arg key. So apply sanitize
@@ -543,7 +556,6 @@ class VersionSanitizer(BaseActionSanitizer):
 
 
 class JavaCppEnumSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
         self.args.set_flag_value('--srcjar', '$(out)')
@@ -551,7 +563,6 @@ class JavaCppEnumSanitizer(BaseActionSanitizer):
 
 
 class MakeDafsaSanitizer(BaseActionSanitizer):
-
     def is_header_generated(self):
         # This script generates .cc files but they are #included by other sources
         # (e.g. registry_controlled_domain.cc)
@@ -564,7 +575,6 @@ class MakeDafsaSanitizer(BaseActionSanitizer):
 
 
 class JavaCppFeatureSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
         self.args.set_flag_value('--srcjar', '$(out)')
@@ -572,7 +582,6 @@ class JavaCppFeatureSanitizer(BaseActionSanitizer):
 
 
 class JavaCppStringSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
         self.args.set_flag_value('--srcjar', '$(out)')
@@ -580,21 +589,22 @@ class JavaCppStringSanitizer(BaseActionSanitizer):
 
 
 class WriteNativeLibrariesJavaSanitizer(BaseActionSanitizer):
-
     def _sanitize_args(self):
         self.args.set_flag_value('--output', '$(out)')
         super()._sanitize_args()
 
 
 class CopyActionSanitizer(BaseActionSanitizer):
-
     def get_tool_files(self):
         # CopyAction makes use of no tools, it simply relies on cp.
         return set()
 
     def get_cmd(self):
-        return (super().get_pre_cmd() + ['cp'] +
-                [shlex.quote(arg) for arg in self.args.get_args()])
+        return (
+            super().get_pre_cmd()
+            + ['cp']
+            + [shlex.quote(arg) for arg in self.args.get_args()]
+        )
 
     def get_srcs(self):
         srcs = super().get_srcs()
@@ -607,8 +617,10 @@ class CopyActionSanitizer(BaseActionSanitizer):
             raise Exception(
                 f'CopyAction {self.target.name} specifies multiple {deps=}. Only a single dep is supported'
             )
-        return set(f':{soong_ast.label_to_module_name(dep, self.context)}'
-                   for dep in deps)
+        return set(
+            f':{soong_ast.label_to_module_name(dep, self.context)}'
+            for dep in deps
+        )
 
     def sanitize(self):
         # By convention, copy targets use their deps as args for the copy (see get_srcs).
@@ -622,7 +634,6 @@ class CopyActionSanitizer(BaseActionSanitizer):
 
 
 class ProtocJavaSanitizer(BaseActionSanitizer):
-
     def __init__(self, target, arch, gn, context):
         super().__init__(target, arch, context)
         self._protoc = soong_ast.get_protoc_module_name(gn, context)
@@ -642,12 +653,15 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
             if arg == '--import-dir':
                 self.args.set_arg_at(
                     i + 1,
-                    f"{self.context.tree_path}/{args_list[i+1].removeprefix('../../')}"
+                    f"{self.context.tree_path}/{args_list[i + 1].removeprefix('../../')}",
                 )
-            elif arg.startswith('../../') and arg.removeprefix(
-                    '../../') in self.get_srcs():
+            elif (
+                arg.startswith('../../')
+                and arg.removeprefix('../../') in self.get_srcs()
+            ):
                 self.args.set_arg_at(
-                    i, self._sanitize_filepath_with_location_tag(arg))
+                    i, self._sanitize_filepath_with_location_tag(arg)
+                )
 
     def _sanitize_inputs(self):
         super()._sanitize_inputs()
@@ -658,7 +672,8 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
         # need to add that as an input because it's already a tool dependency in
         # the generated module.
         self.target.common.inputs.discard(
-            "//third_party/android_build_tools/protoc/cipd/protoc")
+            "//third_party/android_build_tools/protoc/cipd/protoc"
+        )
 
     def get_tools(self):
         tools = super().get_tools()
@@ -666,14 +681,14 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
         return tools
 
 
-def get_action_sanitizer(gn,
-                         target,
-                         gn_type,
-                         arch,
-                         is_test_target,
-                         context,
-                         mode=None):
-    if target.script == "//build/write_buildflag_header.py" or target.script == "//base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py":
+def get_action_sanitizer(
+    gn, target, gn_type, arch, is_test_target, context, mode=None
+):
+    if (
+        target.script == "//build/write_buildflag_header.py"
+        or target.script
+        == "//base/allocator/partition_allocator/src/partition_alloc/write_buildflag_header.py"
+    ):
         # PartitionAlloc has forked the same write_buildflag_header.py script from
         # Chromium to break its dependency on //build.
         return WriteBuildFlagHeaderSanitizer(target, arch, context)
@@ -685,9 +700,13 @@ def get_action_sanitizer(gn,
         return GenerateCanonicalLocalesListSanitizer(target, arch, context)
     if target.script == "//tools/i18n/generate_known_bcp47_subtags.py":
         return GenerateKnownBcp47SubtagsSanitizer(target, arch, context)
-    if target.script == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py":
+    if (
+        target.script
+        == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py"
+    ):
         return WriteGenerateAllowlistFromHistogramsFileSanitizer(
-            target, arch, context)
+            target, arch, context
+        )
     if target.script == "//build/util/version.py":
         return VersionSanitizer(target, arch, context)
     if target.script == "//build/android/gyp/java_cpp_enum.py":
@@ -707,7 +726,10 @@ def get_action_sanitizer(gn,
     if target.script == '//build/protoc_java.py':
         return ProtocJavaSanitizer(target, arch, gn, context)
     if jni_zero_target_type := soong_ast.get_jni_zero_target_type(target):
-        if jni_zero_target_type == soong_ast.JniZeroTargetType.REGISTRATION_GENERATOR:
+        if (
+            jni_zero_target_type
+            == soong_ast.JniZeroTargetType.REGISTRATION_GENERATOR
+        ):
             if gn_type == 'java_genrule':
                 # Fill up the sources of the target for JniRegistrationGenerator
                 # actions with all the java sources found under targets of type
@@ -730,14 +752,14 @@ def get_action_sanitizer(gn,
                 if is_test_target:
                     target.common.sources.update(gn.jni_java_sources)
                 return JavaJniRegistrationGeneratorSanitizer(
-                    target, arch, is_test_target, context)
-            return JniRegistrationGeneratorSanitizer(target,
-                                                     arch,
-                                                     is_test_target,
-                                                     context,
-                                                     mode=mode)
+                    target, arch, is_test_target, context
+                )
+            return JniRegistrationGeneratorSanitizer(
+                target, arch, is_test_target, context, mode=mode
+            )
         if gn_type == 'cc_genrule':
             return JniGeneratorSanitizer(target, arch, is_test_target, context)
         return JavaJniGeneratorSanitizer(target, arch, is_test_target, context)
-    raise Exception('Unsupported action %s from %s' %
-                    (target.script, target.name))
+    raise Exception(
+        'Unsupported action %s from %s' % (target.script, target.name)
+    )

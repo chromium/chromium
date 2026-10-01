@@ -9,7 +9,6 @@ from writers import google_adml_writer
 
 
 class GoogleAdmlWriterUnittest(unittest.TestCase):
-
   def setUp(self):
     self.writer = google_adml_writer.GetWriter(None)  # Config unused
 

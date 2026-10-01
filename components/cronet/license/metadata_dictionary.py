@@ -5,12 +5,12 @@
 
 class MetadataDictionary(dict):
     """
-  This is a very simple class that prints out a textproto using a dictionary.
-  Realistically, we should not be re-inventing the wheel as we are doing here
-  and we should be using protobuf instead.
+    This is a very simple class that prints out a textproto using a dictionary.
+    Realistically, we should not be re-inventing the wheel as we are doing here
+    and we should be using protobuf instead.
 
-  TODO(b/360322121): Use protobuf generated classes instead of this.
-  """
+    TODO(b/360322121): Use protobuf generated classes instead of this.
+    """
 
     def __init__(self, field_name):
         super().__init__()
@@ -18,12 +18,13 @@ class MetadataDictionary(dict):
 
     def _as_string(self, dict_items, width=2, depth=1):
         string = self.field_name + " {\n"
-        for (key, value) in dict_items:
+        for key, value in dict_items:
             if not isinstance(value, MetadataDictionary):
                 string += (" " * width * depth) + f"{key}: {value}\n"
             else:
                 string += (" " * width * depth) + value._as_string(
-                    value.items(), width, depth + 1)
+                    value.items(), width, depth + 1
+                )
         string += (" " * width * (depth - 1)) + "}\n"
         return string
 

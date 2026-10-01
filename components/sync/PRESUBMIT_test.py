@@ -10,31 +10,39 @@ import unittest
 import PRESUBMIT
 
 sys.path.append(
-    str(Path(__file__).resolve().parent / "../../third_party/depot_tools"))
+    str(Path(__file__).resolve().parent / "../../third_party/depot_tools")
+)
 
-from testing_support.presubmit_canned_checks_test_mocks import MockInputApi, MockOutputApi, MockAffectedFile
+from testing_support.presubmit_canned_checks_test_mocks import (
+    MockInputApi,
+    MockOutputApi,
+    MockAffectedFile,
+)
 
 
 class CheckProtoVisitorChangeTest(unittest.TestCase):
-
     def test_no_warning(self):
         input_api = MockInputApi()
         input_api.files = [
             MockAffectedFile("components/sync/protocol/proto_visitors.h", ""),
-            MockAffectedFile("components/sync/protocol/entity_specifics.proto",
-                             ""),
+            MockAffectedFile(
+                "components/sync/protocol/entity_specifics.proto", ""
+            ),
         ]
         self.assertFalse(
-            PRESUBMIT.CheckProtoVisitorChange(input_api, MockOutputApi()))
+            PRESUBMIT.CheckProtoVisitorChange(input_api, MockOutputApi())
+        )
 
     def test_warning(self):
         input_api = MockInputApi()
         input_api.files = [
-            MockAffectedFile("components/sync/protocol/entity_specifics.proto",
-                             ""),
+            MockAffectedFile(
+                "components/sync/protocol/entity_specifics.proto", ""
+            ),
         ]
         self.assertTrue(
-            PRESUBMIT.CheckProtoVisitorChange(input_api, MockOutputApi()))
+            PRESUBMIT.CheckProtoVisitorChange(input_api, MockOutputApi())
+        )
 
 
 if __name__ == "__main__":

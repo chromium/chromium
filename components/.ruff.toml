@@ -1,0 +1,10 @@
+line-length = 80
+indent-width = 4
+extend-exclude = [
+  "*_pb2.py",
+  "feed/core/v2/tools/decode_feed_request.py",
+  "test/data/autofill/merge/tools/*",
+]
+
+[format]
+quote-style = "preserve"

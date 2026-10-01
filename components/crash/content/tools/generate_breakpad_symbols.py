@@ -29,8 +29,9 @@ if sys.platform == 'win32':
   CONCURRENT_TASKS = min(CONCURRENT_TASKS, 56)
 
 # The BINARY_INFO tuple describes a binary as dump_syms identifies it.
-BINARY_INFO = collections.namedtuple('BINARY_INFO',
-                                     ['platform', 'arch', 'hash', 'name'])
+BINARY_INFO = collections.namedtuple(
+  'BINARY_INFO', ['platform', 'arch', 'hash', 'name']
+)
 
 
 def _GetDumpSymsBinary(dump_syms_path: str, build_dir: str):
@@ -139,8 +140,8 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
         continue
       # `cmd.path` is an offset from the start of the load command, while
       # `data` holds only the bytes after the fixed-size command structs.
-      offset = (cmd.path - sizeof(load_cmd.__class__) - sizeof(cmd.__class__))
-      rpath = data[offset:data.find(b'\0', offset)].decode('utf-8')
+      offset = cmd.path - sizeof(load_cmd.__class__) - sizeof(cmd.__class__)
+      rpath = data[offset : data.find(b'\0', offset)].decode('utf-8')
       rpath = rpath.replace('@loader_path', loader_path)
       rpath = rpath.replace('@executable_path', exe_path)
       rpaths.append(rpath)
@@ -157,9 +158,13 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
     if dep:
       deps.append(os.path.normpath(dep))
     else:
-      print(('ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
-             'rpaths %s' % (dylib, exe_path, loader_path, ', '.join(rpaths))),
-            file=sys.stderr)
+      print(
+        (
+          'ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
+          'rpaths %s' % (dylib, exe_path, loader_path, ', '.join(rpaths))
+        ),
+        file=sys.stderr,
+      )
       sys.exit(1)
   return deps
 
@@ -200,15 +205,16 @@ def GetSharedLibraryDependencies(options, binary, exe_path):
   result = []
   build_dir = os.path.abspath(options.build_dir)
   for dep in deps:
-    if (os.path.isfile(dep)
-        and os.path.abspath(os.path.dirname(dep)).startswith(build_dir)):
+    if os.path.isfile(dep) and os.path.abspath(os.path.dirname(dep)).startswith(
+      build_dir
+    ):
       result.append(dep)
   return result
 
 
 def GetTransitiveDependencies(options):
   """Return absolute paths to the transitive closure of all shared library
-     dependencies of the binary, along with the binary itself."""
+  dependencies of the binary, along with the binary itself."""
   binary = os.path.abspath(options.binary)
   exe_path = os.path.dirname(binary)
   if options.platform == 'linux':
@@ -216,8 +222,12 @@ def GetTransitiveDependencies(options):
     deps = set(GetSharedLibraryDependencies(options, binary, exe_path))
     deps.add(binary)
     return list(deps)
-  elif (options.platform == 'darwin' or options.platform == 'android'
-        or options.platform == 'chromeos' or options.platform == 'fuchsia'):
+  elif (
+    options.platform == 'darwin'
+    or options.platform == 'android'
+    or options.platform == 'chromeos'
+    or options.platform == 'fuchsia'
+  ):
     binaries = set([binary])
     q = [binary]
     while q:
@@ -252,14 +262,16 @@ def GetBinaryInfoFromHeaderInfo(header_info):
 
 def CreateSymbolDir(options, output_dir, relative_hash_dir):
   """Create the directory to store breakpad symbols in. On Android/Linux, we
-     also create a symlink in case the hash in the binary is missing."""
+  also create a symlink in case the hash in the binary is missing."""
   mkdir_p(output_dir)
   if options.platform == 'android' or options.platform == 'linux':
     try:
       os.symlink(
-          relative_hash_dir,
-          os.path.join(os.path.dirname(output_dir),
-                       '000000000000000000000000000000000'))
+        relative_hash_dir,
+        os.path.join(
+          os.path.dirname(output_dir), '000000000000000000000000000000000'
+        ),
+      )
     except:
       pass
 
@@ -289,8 +301,9 @@ def GenerateSymbols(options, binaries):
             reason = "Could not locate dump_syms executable."
             break
 
-          dump_syms_output = subprocess.check_output([dump_syms, '-i',
-                                                      binary]).decode('utf-8')
+          dump_syms_output = subprocess.check_output(
+            [dump_syms, '-i', binary]
+          ).decode('utf-8')
           header_info = dump_syms_output.splitlines()[0]
           binary_info = GetBinaryInfoFromHeaderInfo(header_info)
           if not binary_info:
@@ -299,8 +312,9 @@ def GenerateSymbols(options, binaries):
             break
 
           # See if the output file already exists.
-          output_dir = os.path.join(options.symbols_dir, binary_info.name,
-                                    binary_info.hash)
+          output_dir = os.path.join(
+            options.symbols_dir, binary_info.name, binary_info.hash
+          )
           output_path = os.path.join(output_dir, binary_info.name + '.sym')
           if os.path.isfile(output_path):
             should_dump_syms = False
@@ -348,45 +362,54 @@ def GenerateSymbols(options, binaries):
 
   q.join()
   if exceptions:
-    exception_str = ('One or more exceptions occurred while generating '
-                     'symbols:\n')
+    exception_str = (
+      'One or more exceptions occurred while generating symbols:\n'
+    )
     exception_str += '\n'.join(exceptions)
     raise Exception(exception_str)
 
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--build-dir',
-                      required=True,
-                      help='The build output directory.')
-  parser.add_argument('--symbols-dir',
-                      required=True,
-                      help='The directory where to write the symbols file.')
-  parser.add_argument('--binary',
-                      required=True,
-                      help='The path of the binary to generate symbols for.')
-  parser.add_argument('--dump-syms-path',
-                      default='',
-                      help='The path of the dump_syms binary. If not provided, '
-                      'by default looks in --build-dir for it.')
-  parser.add_argument('--clear',
-                      default=False,
-                      action='store_true',
-                      help='Clear the symbols directory before writing new '
-                      'symbols.')
-  parser.add_argument('-j',
-                      '--jobs',
-                      default=CONCURRENT_TASKS,
-                      action='store',
-                      type=int,
-                      help='Number of parallel tasks to run.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='store_true',
-                      help='Print verbose status output.')
-  parser.add_argument('--platform',
-                      default=sys.platform,
-                      help='Target platform of the binary.')
+  parser.add_argument(
+    '--build-dir', required=True, help='The build output directory.'
+  )
+  parser.add_argument(
+    '--symbols-dir',
+    required=True,
+    help='The directory where to write the symbols file.',
+  )
+  parser.add_argument(
+    '--binary',
+    required=True,
+    help='The path of the binary to generate symbols for.',
+  )
+  parser.add_argument(
+    '--dump-syms-path',
+    default='',
+    help='The path of the dump_syms binary. If not provided, '
+    'by default looks in --build-dir for it.',
+  )
+  parser.add_argument(
+    '--clear',
+    default=False,
+    action='store_true',
+    help='Clear the symbols directory before writing new symbols.',
+  )
+  parser.add_argument(
+    '-j',
+    '--jobs',
+    default=CONCURRENT_TASKS,
+    action='store',
+    type=int,
+    help='Number of parallel tasks to run.',
+  )
+  parser.add_argument(
+    '-v', '--verbose', action='store_true', help='Print verbose status output.'
+  )
+  parser.add_argument(
+    '--platform', default=sys.platform, help='Target platform of the binary.'
+  )
 
   args = parser.parse_args()
 

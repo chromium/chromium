@@ -52,7 +52,7 @@ class PolicyTemplateGenerator:
         policy metafile. See
           components/policy/resources/policy_templates.json
         for description and content.
-            '''
+    '''
     # List of all the policies. Create a copy since the data is modified.
     self._policy_data = copy.deepcopy(policy_data)
     # Localized messages to be inserted to the policy_definitions structure:
@@ -60,18 +60,25 @@ class PolicyTemplateGenerator:
     self._config = config
     for key in self._messages.keys():
       self._messages[key]['text'] = self._ImportMessage(
-          self._messages[key]['text'])
+        self._messages[key]['text']
+      )
     self._AddGroups(self._policy_data['policy_definitions'])
-    self._AddAtomicGroups(self._policy_data['policy_definitions'],
-                          self._policy_data['policy_atomic_group_definitions'])
-    self._policy_data[
-        'policy_atomic_group_definitions'] = self._ExpandAtomicGroups(
-            self._policy_data['policy_definitions'],
-            self._policy_data['policy_atomic_group_definitions'])
+    self._AddAtomicGroups(
+      self._policy_data['policy_definitions'],
+      self._policy_data['policy_atomic_group_definitions'],
+    )
+    self._policy_data['policy_atomic_group_definitions'] = (
+      self._ExpandAtomicGroups(
+        self._policy_data['policy_definitions'],
+        self._policy_data['policy_atomic_group_definitions'],
+      )
+    )
     self._ProcessPolicyList(
-        self._policy_data['policy_atomic_group_definitions'])
+      self._policy_data['policy_atomic_group_definitions']
+    )
     self._policy_data['policy_definitions'] = self._ExpandGroups(
-        self._policy_data['policy_definitions'])
+      self._policy_data['policy_definitions']
+    )
     self._policy_definitions = self._policy_data['policy_definitions']
     self._ProcessPolicyList(self._policy_definitions)
 
@@ -89,12 +96,12 @@ class PolicyTemplateGenerator:
     else:
       # e.g.: 'chrome_frame:7-'
       product, platform = {
-          'android': ('chrome', 'android'),
-          'webview_android': ('webview', 'android'),
-          'ios': ('chrome', 'ios'),
-          'chrome_os': ('chrome_os', 'chrome_os'),
-          'chrome_frame': ('chrome_frame', 'win'),
-          'fuchsia': ('chrome', 'fuchsia'),
+        'android': ('chrome', 'android'),
+        'webview_android': ('webview', 'android'),
+        'ios': ('chrome', 'ios'),
+        'chrome_os': ('chrome_os', 'chrome_os'),
+        'chrome_frame': ('chrome_frame', 'win'),
+        'fuchsia': ('chrome', 'fuchsia'),
       }[product_platform_string]
       platforms = [platform]
     return product, platforms
@@ -125,16 +132,19 @@ class PolicyTemplateGenerator:
     for supported_on_item in supported_on:
       product_platform_part, version_part = supported_on_item.split(':')
       product, platforms = self._ProcessProductPlatformString(
-          product_platform_part)
+        product_platform_part
+      )
 
       since_version, until_version = version_part.split('-')
       for platform in platforms:
-        result.append({
+        result.append(
+          {
             'product': product,
             'platform': platform,
             'since_version': since_version,
-            'until_version': until_version
-        })
+            'until_version': until_version,
+          }
+        )
     return result
 
   def _ProcessFutureOn(self, future_on):
@@ -158,10 +168,12 @@ class PolicyTemplateGenerator:
     for future in future_on:
       product, platforms = self._ProcessProductPlatformString(future)
       for platform in platforms:
-        result.append({
+        result.append(
+          {
             'product': product,
             'platform': platform,
-        })
+          }
+        )
     return result
 
   def _ProcessPolicy(self, policy):
@@ -193,7 +205,8 @@ class PolicyTemplateGenerator:
         # If 'label' is not specified, then it defaults to 'caption':
         policy['label'] = policy['caption']
       policy['supported_on'] = self._ProcessSupportedOn(
-          policy.get('supported_on', []))
+        policy.get('supported_on', [])
+      )
       policy['future_on'] = self._ProcessFutureOn(policy.get('future_on', []))
 
   def _ProcessPolicyList(self, policy_list):
@@ -223,7 +236,6 @@ class PolicyTemplateGenerator:
     policy_data_copy = copy.deepcopy(self._policy_data)
     return template_writer.WriteTemplate(policy_data_copy)
 
-
   def _AddGroups(self, policy_list):
     '''Adds a 'group' field, which is set to be the group's name, to the
        policies that are part of a group.
@@ -234,9 +246,9 @@ class PolicyTemplateGenerator:
     '''
     groups = [policy for policy in policy_list if policy['type'] == 'group']
     policy_lookup = {
-        policy['name']: policy
-        for policy in policy_list
-        if not IsGroupOrAtomicGroup(policy)
+      policy['name']: policy
+      for policy in policy_list
+      if not IsGroupOrAtomicGroup(policy)
     }
     for group in groups:
       for policy_name in group['policies']:
@@ -251,9 +263,9 @@ class PolicyTemplateGenerator:
       policy_atomic_groups: A list of policy atomic groups
     '''
     policy_lookup = {
-        policy['name']: policy
-        for policy in policy_list
-        if not IsGroupOrAtomicGroup(policy)
+      policy['name']: policy
+      for policy in policy_list
+      if not IsGroupOrAtomicGroup(policy)
     }
     for group in policy_atomic_groups:
       for policy_name in group['policies']:
@@ -271,7 +283,7 @@ class PolicyTemplateGenerator:
       Modified policy_list
     '''
     policies = [
-        policy for policy in policy_list if not IsGroupOrAtomicGroup(policy)
+      policy for policy in policy_list if not IsGroupOrAtomicGroup(policy)
     ]
     for group in policy_atomic_groups:
       group['type'] = 'atomic_group'
@@ -291,24 +303,28 @@ class PolicyTemplateGenerator:
     '''
     groups = [policy for policy in policy_list if IsGroupOrAtomicGroup(policy)]
     policies = {
-        policy['name']: policy
-        for policy in policy_list
-        if not IsGroupOrAtomicGroup(policy)
+      policy['name']: policy
+      for policy in policy_list
+      if not IsGroupOrAtomicGroup(policy)
     }
     policies_in_groups = set()
     result_policies = []
     for group in groups:
       group_policies = group['policies']
       expanded_policies = [
-          policies[policy_name] for policy_name in group_policies
+        policies[policy_name] for policy_name in group_policies
       ]
       assert policies_in_groups.isdisjoint(group_policies)
       policies_in_groups.update(group_policies)
       group['policies'] = expanded_policies
       result_policies.append(group)
 
-    result_policies.extend([
-        policy for policy in policy_list if not IsGroupOrAtomicGroup(policy) and
-        policy['name'] not in policies_in_groups
-    ])
+    result_policies.extend(
+      [
+        policy
+        for policy in policy_list
+        if not IsGroupOrAtomicGroup(policy)
+        and policy['name'] not in policies_in_groups
+      ]
+    )
     return result_policies

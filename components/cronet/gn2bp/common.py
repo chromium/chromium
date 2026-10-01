@@ -6,9 +6,11 @@ import multiprocessing.dummy
 from typing import Callable, List, Any
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+)
 OUT_DIR = os.path.join(REPOSITORY_ROOT, 'out')
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
+
 
 def is_rust_build_script(script: str) -> bool:
     return script == "//build/rust/gni_impl/run_build_script.py"
@@ -17,7 +19,14 @@ def is_rust_build_script(script: str) -> bool:
 def is_supported_source_file(name):
     """Returns True if |name| can appear in a 'srcs' list."""
     return os.path.splitext(name)[1] in [
-        '.c', '.cc', '.cpp', '.java', '.proto', '.S', '.aidl', '.rs'
+        '.c',
+        '.cc',
+        '.cpp',
+        '.java',
+        '.proto',
+        '.S',
+        '.aidl',
+        '.rs',
     ]
 
 
@@ -26,11 +35,11 @@ tethering_apex = "com.android.tethering"
 
 
 def get_toolchain_name(toolchain_label: str) -> str:
-    return toolchain_label[toolchain_label.find(":") + 1:]
+    return toolchain_label[toolchain_label.find(":") + 1 :]
 
 
 def get_toolchain_label_from_label(target_label: str) -> str:
-    return target_label[target_label.find('(') + 1:-1]
+    return target_label[target_label.find('(') + 1 : -1]
 
 
 def label_without_toolchain(label: str) -> str:
@@ -42,8 +51,9 @@ def label_without_toolchain(label: str) -> str:
     return label.split('(')[0]
 
 
-def run_concurrently(func: Callable[..., Any],
-                     args_list: List[tuple]) -> List[Any]:
+def run_concurrently(
+    func: Callable[..., Any], args_list: List[tuple]
+) -> List[Any]:
     """Runs a function concurrently using a thread pool.
 
     Args:

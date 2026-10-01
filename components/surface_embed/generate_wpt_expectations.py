@@ -118,7 +118,9 @@ def main():
     )
 
     print("Fetching run details from wpt.fyi...")
-    runs_url = "https://wpt.fyi/api/runs?product=chrome&label=master&max-count=1"
+    runs_url = (
+        "https://wpt.fyi/api/runs?product=chrome&label=master&max-count=1"
+    )
     req = urllib.request.Request(
         runs_url, headers={"User-Agent": "Mozilla/5.0"}
     )

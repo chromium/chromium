@@ -29,6 +29,7 @@ import urllib.error
 import urllib.request
 
 from blob_generator import POLICY_TEST_TOOL_PATH
+
 # Add the new consolidated directory to sys.path.
 sys.path.insert(0, POLICY_TEST_TOOL_PATH)
 
@@ -47,8 +48,7 @@ except ImportError as e:
 
 FAKE_DMSERVER_PATH = "/usr/local/libexec/chrome-binary-tests/fake_dmserver"
 PERSISTENT_DATA_DIR = "/var/tmp/dmserver_data"
-MANUAL_MAP_PATH = (
-    f"{POLICY_TEST_TOOL_PATH}/manual_device_policy_proto_map.yaml")
+MANUAL_MAP_PATH = f"{POLICY_TEST_TOOL_PATH}/manual_device_policy_proto_map.yaml"
 CHROME_DEV_CONFIG_PATH = "/etc/chrome_dev.conf"
 
 
@@ -86,15 +86,15 @@ class Orchestrator:
     policy_blob["policies"] = []
 
     optional_params = [
-        "allow_set_device_attributes",
-        "current_key_index",
-        "device_affiliation_ids",
-        "directory_api_id",
-        "initial_enrollment_state",
-        "request_errors",
-        "robot_api_auth_code",
-        "user_affiliation_ids",
-        "use_universal_signing_keys",
+      "allow_set_device_attributes",
+      "current_key_index",
+      "device_affiliation_ids",
+      "directory_api_id",
+      "initial_enrollment_state",
+      "request_errors",
+      "robot_api_auth_code",
+      "user_affiliation_ids",
+      "use_universal_signing_keys",
     ]
     for param in optional_params:
       if param in simple_policies:
@@ -104,22 +104,23 @@ class Orchestrator:
       user_settings = chrome_settings_pb2.ChromeSettingsProto()
       apply_user_policies(simple_policies["user"], user_settings)
       encoded_policy = base64.b64encode(
-          user_settings.SerializeToString()).decode("utf-8")
-      policy_blob["policies"].append({
-          "policy_type": "google/chromeos/user",
-          "value": encoded_policy
-      })
+        user_settings.SerializeToString()
+      ).decode("utf-8")
+      policy_blob["policies"].append(
+        {"policy_type": "google/chromeos/user", "value": encoded_policy}
+      )
 
     if "device" in simple_policies:
       device_settings = chrome_device_policy_pb2.ChromeDeviceSettingsProto()
-      apply_device_policies(simple_policies["device"], device_settings,
-                            device_schema)
+      apply_device_policies(
+        simple_policies["device"], device_settings, device_schema
+      )
       encoded_policy = base64.b64encode(
-          device_settings.SerializeToString()).decode("utf-8")
-      policy_blob["policies"].append({
-          "policy_type": "google/chromeos/device",
-          "value": encoded_policy
-      })
+        device_settings.SerializeToString()
+      ).decode("utf-8")
+      policy_blob["policies"].append(
+        {"policy_type": "google/chromeos/device", "value": encoded_policy}
+      )
 
     with open(output_path, "w", encoding="utf-8") as f:
       json.dump(policy_blob, f, indent=2)
@@ -130,27 +131,29 @@ class Orchestrator:
   def configure_chrome_for_local_server(self, server_url):
     """Writes the device management URL to the Chrome dev config file."""
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    timestamped_backup_path = (f"{CHROME_DEV_CONFIG_PATH}.original.{timestamp}")
+    timestamped_backup_path = f"{CHROME_DEV_CONFIG_PATH}.original.{timestamp}"
 
     # Back up the original file to restore it later during cleanup.
     if os.path.exists(CHROME_DEV_CONFIG_PATH):
       os.rename(CHROME_DEV_CONFIG_PATH, timestamped_backup_path)
-      logging.info(f"Backed up original {CHROME_DEV_CONFIG_PATH} to "
-                   f"{timestamped_backup_path}")
+      logging.info(
+        f"Backed up original {CHROME_DEV_CONFIG_PATH} to "
+        f"{timestamped_backup_path}"
+      )
 
     REMOTE_DEBUGGING_PORT = 9224
     chrome_flags = [
-        f"--device-management-url={server_url}",
-        f"--remote-debugging-port={REMOTE_DEBUGGING_PORT}",
-        "--enable-devtools-pwa-handler",
-        "--force-devtools-available",
-        "--enable-features=IsolatedWebAppDevMode",
-        "--ignore-urlfetcher-cert-requests",
-        "--enterprise-enable-initial-enrollment=never",
-        "--enterprise-enable-state-determination=never",
-        "--enterprise-enrollment-skip-robot-auth",
-        "--policy-fetch-timeout=1",
-        "--disable-policy-key-verification",
+      f"--device-management-url={server_url}",
+      f"--remote-debugging-port={REMOTE_DEBUGGING_PORT}",
+      "--enable-devtools-pwa-handler",
+      "--force-devtools-available",
+      "--enable-features=IsolatedWebAppDevMode",
+      "--ignore-urlfetcher-cert-requests",
+      "--enterprise-enable-initial-enrollment=never",
+      "--enterprise-enable-state-determination=never",
+      "--enterprise-enrollment-skip-robot-auth",
+      "--policy-fetch-timeout=1",
+      "--disable-policy-key-verification",
     ]
     chrome_flags.extend(self.chrome_flags)
 
@@ -170,10 +173,9 @@ class Orchestrator:
     """Restarts the Chrome UI to apply new configurations."""
     logging.info("Restarting Chrome UI...")
     try:
-      subprocess.run(["restart", "ui"],
-                     check=True,
-                     capture_output=True,
-                     text=True)
+      subprocess.run(
+        ["restart", "ui"], check=True, capture_output=True, text=True
+      )
       logging.info("Chrome UI restarted successfully.")
     except (FileNotFoundError, subprocess.CalledProcessError) as e:
       raise RuntimeError(f"Error restarting UI: {e}") from e
@@ -183,8 +185,9 @@ class Orchestrator:
     logging.info("Cleaning up...")
 
     if self.dmserver_process and self.dmserver_process.poll() is None:
-      logging.info(f"Terminating fake_dmserver "
-                   f"(PID: {self.dmserver_process.pid})...")
+      logging.info(
+        f"Terminating fake_dmserver (PID: {self.dmserver_process.pid})..."
+      )
       self.dmserver_process.terminate()
       try:
         self.dmserver_process.wait(timeout=5)
@@ -200,22 +203,27 @@ class Orchestrator:
       os.remove(config_path)
 
     # Find the latest timestamped backup to restore
-    backups = sorted([
-        f for f in os.listdir("/etc")
+    backups = sorted(
+      [
+        f
+        for f in os.listdir("/etc")
         if f.startswith(os.path.basename(backup_prefix))
-    ])
+      ]
+    )
     if backups:
       latest_backup_path = os.path.join("/etc", backups[-1])
       try:
         os.rename(latest_backup_path, config_path)
         logging.info(
-            f"Restored original {config_path} from {latest_backup_path}")
+          f"Restored original {config_path} from {latest_backup_path}"
+        )
         self.restart_chrome_ui()
       except OSError as e:
         logging.error(
-            f"Failed to restore original {config_path} from "
-            f"{latest_backup_path}: {e}",
-            exc_info=True)
+          f"Failed to restore original {config_path} from "
+          f"{latest_backup_path}: {e}",
+          exc_info=True,
+        )
 
     logging.info("Cleanup complete.")
 
@@ -227,7 +235,8 @@ class Orchestrator:
 
     if not os.path.exists(FAKE_DMSERVER_PATH):
       raise FileNotFoundError(
-          f"fake_dmserver not found at {FAKE_DMSERVER_PATH}")
+        f"fake_dmserver not found at {FAKE_DMSERVER_PATH}"
+      )
 
     os.makedirs(PERSISTENT_DATA_DIR, exist_ok=True)
     logging.info(f"Using persistent data directory: {PERSISTENT_DATA_DIR}")
@@ -240,19 +249,19 @@ class Orchestrator:
     policy_blob_path = os.path.join(PERSISTENT_DATA_DIR, "policy.json")
     client_state_path = os.path.join(PERSISTENT_DATA_DIR, "state.json")
     dmserver_args = [
-        FAKE_DMSERVER_PATH,
-        f'--policy-blob-path={policy_blob_path}',
-        f'--client-state-path={client_state_path}',
-        f"--startup-pipe={write_fd}",
+      FAKE_DMSERVER_PATH,
+      f'--policy-blob-path={policy_blob_path}',
+      f'--client-state-path={client_state_path}',
+      f"--startup-pipe={write_fd}",
     ]
     logging.info(f"Starting fake_dmserver: {' '.join(dmserver_args)}")
     # pylint: disable=consider-using-with
     self.dmserver_process = subprocess.Popen(
-        dmserver_args,
-        pass_fds=[write_fd],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
+      dmserver_args,
+      pass_fds=[write_fd],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      text=True,
     )
     os.close(write_fd)  # Close the write end in the parent
 
@@ -265,14 +274,17 @@ class Orchestrator:
         signal.alarm(0)  # Disable the alarm
     except TimeoutError:  # pylint: disable=broad-except-clause
       stdout, _ = self.dmserver_process.communicate()
-      raise RuntimeError("Timed out waiting for fake_dmserver to start. "
-                         f"fake_dmserver output:\n{stdout}") from None
+      raise RuntimeError(
+        "Timed out waiting for fake_dmserver to start. "
+        f"fake_dmserver output:\n{stdout}"
+      ) from None
 
     if not server_info_raw:
       stdout, _ = self.dmserver_process.communicate()
       raise RuntimeError(
-          "fake_dmserver did not report its address. It may have crashed. "
-          f"fake_dmserver output:\n{stdout}") from None
+        "fake_dmserver did not report its address. It may have crashed. "
+        f"fake_dmserver output:\n{stdout}"
+      ) from None
 
     server_info = json.loads(server_info_raw)
     ping_url = f"http://{server_info['host']}:{server_info['port']}/test/ping"
@@ -290,7 +302,8 @@ class Orchestrator:
       raise RuntimeError("fake_dmserver did not become responsive.")
 
     device_management_url = (
-        f"http://{server_info['host']}:{server_info['port']}/device_management")
+      f"http://{server_info['host']}:{server_info['port']}/device_management"
+    )
     self.configure_chrome_for_local_server(device_management_url)
 
     self.restart_chrome_ui()
@@ -311,8 +324,10 @@ class Orchestrator:
             last_mtime = current_mtime
           time.sleep(1)
         except FileNotFoundError:
-          logging.warning(f"Policy file '{self.policy_file}' not found. "
-                          "Will re-check in 1 second.")
+          logging.warning(
+            f"Policy file '{self.policy_file}' not found. "
+            "Will re-check in 1 second."
+          )
           time.sleep(1)
 
     except Exception as e:
@@ -323,23 +338,22 @@ def main():
   """Main script execution."""
 
   parser = argparse.ArgumentParser(
-      description="Automates local policy testing on a ChromeOS device.\n\n"
-      "This script handles generating policy blobs, starting fake_dmserver,\n"
-      "configuring Chrome, and restarting the UI in a single command.",
-      epilog="""For detailed usage instructions, including device setup,
+    description="Automates local policy testing on a ChromeOS device.\n\n"
+    "This script handles generating policy blobs, starting fake_dmserver,\n"
+    "configuring Chrome, and restarting the UI in a single command.",
+    epilog="""For detailed usage instructions, including device setup,
 policy file format, and advanced options, please refer to the README.md in
 this directory.""",
-      formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument(
-      "policy_file",
-      help="Path to a simple JSON file defining user and/or device "
-      "policies.",
+    formatter_class=argparse.RawTextHelpFormatter,
   )
   parser.add_argument(
-      "--chrome-flags",
-      action="append",
-      help="Additional flags to pass to Chrome. Can be specified multiple "
-      "times.",
+    "policy_file",
+    help="Path to a simple JSON file defining user and/or device policies.",
+  )
+  parser.add_argument(
+    "--chrome-flags",
+    action="append",
+    help="Additional flags to pass to Chrome. Can be specified multiple times.",
   )
   args = parser.parse_args()
 
