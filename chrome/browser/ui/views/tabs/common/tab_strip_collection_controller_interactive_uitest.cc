@@ -4,7 +4,6 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -575,7 +574,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TabStripCollectionControllerTabGroupFocusingInteractiveUiTest,
     UnfocusButtonShowsWhenGroupFocused) {
-  base::HistogramTester histogram_tester;
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kNewTabButtonElementId),
@@ -592,16 +590,11 @@ IN_PROC_BROWSER_TEST_F(
         // Focus on the group, which should show the unfocus button.
         browser()->GetTabStripModel()->EnterFocusMode(group.value());
       }),
-      WaitForShow(kUnfocusTabGroupButtonElementId),
-      PressButton(kUnfocusTabGroupButtonElementId),
-      WaitForHide(kUnfocusTabGroupButtonElementId),
-      Do([this, &histogram_tester]() {
-        EXPECT_EQ(browser()->GetTabStripModel()->GetFocusedGroup(),
-                  std::nullopt);
-        histogram_tester.ExpectUniqueSample(
-            "TabGroups.Focus.ExitReason",
-            TabGroupFocusExitReason::kHeaderUnfocusButton, 1);
-      }));
+      WaitForShow(kUnfocusTabGroupButtonElementId), Do([this]() {
+        // Unset focused group, which should hide the button.
+        browser()->GetTabStripModel()->ExitFocusMode();
+      }),
+      WaitForHide(kUnfocusTabGroupButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(

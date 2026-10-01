@@ -20,7 +20,6 @@
 class TabCollectionNode;
 class TabGroupHeaderView;
 class TabGroupLineView;
-class TabGroupUnfocusButton;
 
 namespace tabs {
 class TabGroupDataObserver;
@@ -89,11 +88,6 @@ class TabGroupView : public TabCollectionZOrderManager,
     return tab_group_visual_data_;
   }
 
-  TabGroupUnfocusButton* unfocus_header() { return unfocus_header_; }
-  const TabGroupUnfocusButton* unfocus_header() const {
-    return unfocus_header_;
-  }
-
   TabGroupHeaderView* group_header() { return group_header_; }
   const TabGroupHeaderView* group_header() const { return group_header_; }
 
@@ -132,12 +126,10 @@ class TabGroupView : public TabCollectionZOrderManager,
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
-  void ExitFocusMode();
 
   TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   tab_groups::TabGroupVisualData tab_group_visual_data_;
-  const raw_ptr<TabGroupUnfocusButton> unfocus_header_ = nullptr;
   const raw_ptr<TabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<TabGroupLineView> group_line_ = nullptr;
 
@@ -148,7 +140,6 @@ class TabGroupView : public TabCollectionZOrderManager,
   // updates occur only when collapse/expand animations complete, rather than
   // reacting immediately to visual data updates during animation.
   bool is_collapsed_ = false;
-  bool is_ephemeral_ = false;
 
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 

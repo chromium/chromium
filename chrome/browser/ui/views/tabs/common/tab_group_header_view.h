@@ -16,7 +16,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -138,9 +137,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   void UpdateAttentionState(bool needs_attention);
 
   int GetCornerRadius() const;
-  gfx::RoundedCornersF GetCornerRadii() const;
   int GetHorizontalInset() const;
-  gfx::Insets GetHeaderInsets() const;
 
   SkColor GetBackgroundColor() const;
   SkColor GetForegroundColor() const;

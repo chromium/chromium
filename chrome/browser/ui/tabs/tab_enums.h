@@ -151,8 +151,7 @@ enum class TabGroupFocusExitReason {
   kBookmarksBarContextMenu = 11,
   kAppMenu = 12,
   kOrganizerPanel = 13,
-  kHeaderUnfocusButton = 14,
-  kMaxValue = kHeaderUnfocusButton,
+  kMaxValue = kOrganizerPanel,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusExitReason)
 
