@@ -1207,15 +1207,17 @@
     ],
     "bases": [
       "http/tests/fenced_frame",
+      "http/tests/inspector-protocol/issues/fenced-frame-deprecation-issue.js",
       "external/wpt/html/anonymous-iframe",
       "external/wpt/fenced-frame"
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
+      "http/tests/inspector-protocol/issues/fenced-frame-deprecation-issue.js",
       "external/wpt/fenced-frame"
     ],
     "args": [
-      "--enable-features=PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData"
+      "--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData"
     ],
     "expires": "Jan 9, 2027"
   },

@@ -666,12 +666,6 @@ html element embed
     property src
     property type
     property width
-html element fencedframe
-    property allow
-    property config
-    property height
-    property sandbox
-    property width
 html element fieldset
     property checkValidity
     property checkable

@@ -3005,15 +3005,6 @@ interface FederatedCredential : Credential
     getter protocol
     getter provider
     method constructor
-interface Fence
-    attribute @@toStringTag
-    method constructor
-    method getNestedConfigs
-    method reportEvent
-    method setReportEventDataForAutomaticBeacons
-interface FencedFrameConfig
-    attribute @@toStringTag
-    method constructor
 interface FetchLaterResult
     attribute @@toStringTag
     getter activated
@@ -4347,19 +4338,6 @@ interface HTMLEmbedElement : HTMLElement
     setter name
     setter src
     setter type
-    setter width
-interface HTMLFencedFrameElement : HTMLElement
-    attribute @@toStringTag
-    getter allow
-    getter config
-    getter height
-    getter sandbox
-    getter width
-    method constructor
-    setter allow
-    setter config
-    setter height
-    setter sandbox
     setter width
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
@@ -13853,7 +13831,6 @@ namespace console
     getter documentPictureInPicture
     getter event
     getter external
-    getter fence
     getter frameElement
     getter frames
     getter history
