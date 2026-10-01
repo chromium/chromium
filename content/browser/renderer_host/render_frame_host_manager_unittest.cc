@@ -63,6 +63,7 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_content_client.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -4125,6 +4126,7 @@ class RenderFrameHostManagerTestWithBackForwardCache
       public WebContentsDelegate {
  public:
   RenderFrameHostManagerTestWithBackForwardCache() {
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
     scoped_feature_list_.InitWithFeaturesAndParameters(
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false),
@@ -4632,6 +4634,77 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest, RemoteGrandchildAdTagSignal) {
   EXPECT_NE(grandchild_node->current_replication_state().ad_frame_status,
             blink::mojom::FrameAdStatus::kNotAd);
   ExpectAdSubframeSignalForFrameProxy(proxy_to_main_frame, true);
+}
+
+// Tests that destroying a WebContents while a BackForwardCache restore is
+// waiting on a SetPageLifecycleState reply from a RenderViewHost owned by a
+// pending-delete RenderFrameHost does not commit the restore during
+// FrameTree::Shutdown(). Regression test for crbug.com/567160164.
+TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
+       ShutdownDuringBFCacheRestoreWithPendingDeleteRFH) {
+  const GURL kUrl1("http://a.com/");
+  const GURL kUrl2("http://b.com/");
+  const GURL kUrl3("http://c.com/");
+
+  contents()->SetDelegate(this);
+
+  // 1. Navigate to kUrl1 and disable proactive BrowsingInstance swap so that
+  // `rfh1` stays in `pending_delete_hosts_` in the same BrowsingInstance when
+  // navigating to kUrl2.
+  contents()->NavigateAndCommit(kUrl1);
+  TestRenderFrameHost* rfh1 = contents()->GetPrimaryMainFrame();
+  RenderViewHostImpl* rvh1 = rfh1->render_view_host();
+  RenderViewHostDeletedObserver rvh1_deleted_observer(rvh1);
+  rfh1->DisableProactiveBrowsingInstanceSwapForTesting();
+
+  // 2. Navigate to kUrl2 (same BrowsingInstance) while dropping the unload ACK
+  // for `rfh1`. `rfh1` is now pending deletion on the root
+  // RenderFrameHostManager, and `rfh2` has a proxy to `rfh1`'s
+  // SiteInstanceGroup.
+  auto nav2 =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl2, rfh1);
+  nav2->set_drop_unload_ack(true);
+  nav2->Commit();
+  TestRenderFrameHost* rfh2 = contents()->GetPrimaryMainFrame();
+  ASSERT_NE(rfh1, rfh2);
+  ASSERT_FALSE(rvh1_deleted_observer.deleted());
+  ASSERT_TRUE(rfh1->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh2->GetSiteInstance()));
+  EXPECT_TRUE(rfh1->IsPendingDeletion());
+
+  // 3. Navigate to kUrl3 (cross-BrowsingInstance). `rfh2` enters
+  // BackForwardCache and its StoredPage tracks both `rfh2`'s RVH and `rvh1`.
+  contents()->NavigateAndCommit(kUrl3);
+  EXPECT_TRUE(rfh2->IsInBackForwardCache());
+
+  // 4. Rebind `rvh1`'s PageBroadcast to an unanswered receiver so that its
+  // `SetPageLifecycleState` reply remains pending until `rvh1` is destroyed.
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
+  auto unanswered_receiver =
+      broadcast_remote.BindNewEndpointAndPassDedicatedReceiver();
+  rvh1->BindPageBroadcast(broadcast_remote.Unbind());
+
+  // 5. Start a BackForwardCache restore navigation to kUrl2. `rfh2`'s RVH
+  // replies to `SetPageLifecycleState`, while `rvh1`'s reply remains pending.
+  TestNavigationObserver back_nav_observer(
+      contents(), /*expected_number_of_navigations=*/1,
+      MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  auto back_navigation =
+      NavigationSimulatorImpl::CreateHistoryNavigation(-1, contents(), false);
+  back_navigation->Start();
+  base::RunLoop().RunUntilIdle();
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  ASSERT_TRUE(root->navigation_request());
+  EXPECT_TRUE(root->navigation_request()->IsServedFromBackForwardCache());
+
+  // 6. Destroy the WebContents (calling FrameTree::Shutdown()). This must
+  // abort the in-flight NavigationRequest rather than synchronously committing
+  // the BFCache restore inside Shutdown().
+  DeleteContents();
+  EXPECT_EQ(kUrl2, back_nav_observer.last_navigation_url());
+  EXPECT_FALSE(back_nav_observer.last_navigation_succeeded());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -669,9 +670,13 @@ void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
     base::OnceClosure done_cb) {
   // We wrap `done_cb` in a default invoke because if this RenderViewHostImpl
   // disappears we still need to call `done_cb` otherwise the navigation
-  // will be blocked indefinitely.
+  // will be blocked indefinitely. We also post a task so that if `done_cb` is
+  // invoked from the destructor of this RenderViewHostImpl (e.g., on an unload
+  // timeout or during shutdown), the BackForwardCache restore does not commit
+  // synchronously in the middle of ~RenderFrameHostImpl / ~RenderViewHostImpl.
   page_lifecycle_state_manager_->SetIsLeavingBackForwardCache(
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done_cb)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindPostTaskToCurrentDefault(std::move(done_cb))));
 }
 
 void RenderViewHostImpl::LeaveBackForwardCache(
