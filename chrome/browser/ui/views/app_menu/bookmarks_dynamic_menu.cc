@@ -179,19 +179,13 @@ void BookmarksDynamicMenu::AddBookmarkFolderAction(
       .SetImage(
           chrome::GetBookmarkFolderIcon(folder_icon_type, ui::kColorMenuIcon))
       .SetProperty(AppMenuActionItem::kContainerColorKey,
-                   ui::kColorMenuBackground);
+                   ui::kColorMenuBackground)
+      .SetProperty(AppMenuActionItem::kIsSubmenuKey, true);
   auto folder_action = std::move(builder).Build();
 
-  if (children.size() == 0) {
-    auto empty_builder = actions::ActionItem::Builder();
-    empty_builder.SetText(l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU))
-        .SetEnabled(false);
-    folder_action->AddChild(std::move(empty_builder).Build());
-  } else {
-    for (const auto* child : children) {
-      if (child) {
-        AddBookmarkNodeAction(folder_action.get(), child, service);
-      }
+  for (const auto* child : children) {
+    if (child) {
+      AddBookmarkNodeAction(folder_action.get(), child, service);
     }
   }
 

@@ -414,7 +414,8 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
   const bool has_submenu =
       display_type != AppMenuActionItem::DisplayType::kCustom &&
-      !base_action_item->GetChildren().children().empty();
+      (action_item->GetProperty(AppMenuActionItem::kIsSubmenuKey) ||
+       !base_action_item->GetChildren().children().empty());
 
   command_to_action_map_[command_id] = base_action_item;
 

@@ -35,6 +35,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuSeparatorType,
                              ui::NORMAL_SEPARATOR)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsCheckableInternal, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsSubmenuInternal, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuActionItem::ItemHeight,
                              kAppMenuItemHeightInternal,
                              AppMenuActionItem::ItemHeight::kDefault)
@@ -81,6 +82,9 @@ const ui::ClassProperty<std::u16string*>* const
 
 const ui::ClassProperty<bool>* const AppMenuActionItem::kIsCheckableKey =
     kAppMenuIsCheckableInternal;
+
+const ui::ClassProperty<bool>* const AppMenuActionItem::kIsSubmenuKey =
+    kAppMenuIsSubmenuInternal;
 
 const ui::ClassProperty<AppMenuActionItem::ItemHeight>* const
     AppMenuActionItem::kItemHeightKey = kAppMenuItemHeightInternal;

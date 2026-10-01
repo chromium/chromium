@@ -73,6 +73,7 @@ class AppMenuActionItem {
   static const ui::ClassProperty<ui::MenuSeparatorType>* const kSeparatorKey;
   static const ui::ClassProperty<std::u16string*>* const kChipTextKey;
   static const ui::ClassProperty<bool>* const kIsCheckableKey;
+  static const ui::ClassProperty<bool>* const kIsSubmenuKey;
   static const ui::ClassProperty<ItemHeight>* const kItemHeightKey;
   static const ui::ClassProperty<const base::Feature*>* const
       kNewBadgeFeatureKey;

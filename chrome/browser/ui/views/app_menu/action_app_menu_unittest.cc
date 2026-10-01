@@ -457,18 +457,19 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   }
   ASSERT_NE(child_item, nullptr);
 
-  // Empty folder containing disabled "(empty)" placeholder item.
+  // Empty folder is a submenu that populates a kEmpty MenuItemView when its
+  // empty menu state is updated.
   ASSERT_NE(empty_folder_item, nullptr);
   EXPECT_TRUE(empty_folder_item->HasSubmenu());
-  views::MenuItemView* empty_item = nullptr;
-  for (views::MenuItemView* item :
-       empty_folder_item->GetSubmenu()->GetMenuItems()) {
-    if (item->title() == l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU)) {
-      empty_item = item;
-      break;
-    }
-  }
+  EXPECT_TRUE(empty_folder_item->GetSubmenu()->GetMenuItems().empty());
+  empty_folder_item->ChildrenChanged();
+  ASSERT_EQ(empty_folder_item->GetSubmenu()->children().size(), 1u);
+  auto* empty_item = views::AsViewClass<views::MenuItemView>(
+      empty_folder_item->GetSubmenu()->children().front());
   ASSERT_NE(empty_item, nullptr);
+  EXPECT_EQ(empty_item->GetType(), views::MenuItemView::Type::kEmpty);
+  EXPECT_EQ(empty_item->title(),
+            l10n_util::GetStringUTF16(IDS_MENU_EMPTY_SUBMENU));
   EXPECT_FALSE(empty_item->GetEnabled());
 
   // Other bookmarks folder containing child bookmark.
