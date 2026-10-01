@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+
+// The FedCM endpoint type being intercepted by the identity handler SW.
+enum IdentityRequestEndpoint {
+  kAccounts,
+  kIdAssertion,
+  kDisconnect,
+};
+
+// Data for an identity request event dispatched to a Service Worker.
+struct IdentityRequestEventData {
+  // The endpoint type for this identity request.
+  IdentityRequestEndpoint endpoint;
+  // A descriptor of the request the user agent would otherwise send to the
+  // endpoint, exposed to the Service Worker as event.request. Carries the
+  // method, URL, headers, credentials mode, and body.
+  //
+  // No cookie values are carried here: cookies are attached downstream by the
+  // network service per the request's credentials mode and site-for-cookies,
+  // neither of which is reconstructible from this struct. This says nothing
+  // about what the worker can learn by other means -- it is same-origin with
+  // the IdP and can read non-HttpOnly cookies via cookieStore.
+  //
+  // Producers must populate `headers` from an explicit allowlist rather than
+  // copying the outgoing request's headers, so that a header added to the
+  // credentialed FedCM fetch is not exposed to the worker by default.
+  FetchAPIRequest request;
+};
+
+// Callback interface for receiving responses from the Service Worker's
+// identity request event handler.
+//
+// Exactly one method is called per dispatched event. The methods for the
+// respondWith() paths (a successful response, and the failure cases) are added
+// alongside the code that implements them.
+interface IdentityRequestResponseCallback {
+  // Called when the SW did not call respondWith() (i.e., the event was not
+  // handled). The caller should fall back to a credentialed network fetch.
+  OnNotHandled();
+};
