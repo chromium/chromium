@@ -149,10 +149,13 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   virtual void LogContextualCueEvent(events::ContextualCueLogEvent event);
 
  private:
-  struct ContextualCueEventEntry {
+  template <typename EventProto>
+  struct EventEntry {
     base::Time timestamp;
-    events::ContextualCueLogEvent event;
+    EventProto event;
   };
+
+  using ContextualCueEventEntry = EventEntry<events::ContextualCueLogEvent>;
 
   void OnMetricsChoiceChanged();
 
