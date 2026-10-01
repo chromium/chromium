@@ -194,6 +194,37 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
       canvas_painter.context(), group_view->group_line()->size()));
 }
 
+IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
+                       CreateSplitWithCollapsedTabGroup) {
+  // Append two tabs that will form the split, then group and collapse the
+  // initial tab.
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->AddToNewGroup({0});
+  auto* group_node = unpinned_collection_node()->GetChildNodeOfType(
+      TabCollectionNode::Type::GROUP);
+  ASSERT_TRUE(group_node);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_TRUE(group_view);
+  group_view->ToggleCollapsedState(
+      ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  RunScheduledLayouts();
+  ASSERT_TRUE(group_view->IsCollapsed());
+
+  // Create a split tab from the two ungrouped tabs.
+  tab_strip_model()->AddToNewSplit(
+      {1}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  RunScheduledLayouts();
+
+  auto* split_node = unpinned_collection_node()->GetChildNodeOfType(
+      TabCollectionNode::Type::SPLIT);
+  ASSERT_TRUE(split_node);
+  auto* split_view = views::AsViewClass<SplitTabView>(split_node->view());
+  ASSERT_TRUE(split_view);
+  EXPECT_LE(split_view->GetMinimumSize().width(),
+            split_view->GetPreferredSize().width());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SplitTabViewParameterizedTest,
                          testing::Values(TabStripOrientation::kVertical,
