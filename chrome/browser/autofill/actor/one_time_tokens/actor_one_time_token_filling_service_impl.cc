@@ -334,14 +334,14 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   // TODO(b/502907994): Do we want to check for incognito profiles here?
   // Gemini should not be available in incognito, but should we check just to
   // be sure (and future-proof)?
-  one_time_tokens::OneTimeTokenService* const service =
-      OneTimeTokenServiceFactory::GetForProfile(profile_);
-  if (!service) {
+  one_time_tokens::GmailOtpBackend* const backend =
+      GmailOtpBackendFactory::GetForProfile(profile_);
+  if (!backend) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
     journal_->Log(url, task_id_,
                   "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                   ::actor::JournalDetailsBuilder()
-                      .AddError("OneTimeTokenService not available.")
+                      .AddError("GmailOtpBackend not available.")
                       .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -377,7 +377,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   auto checker = std::make_unique<affiliations::DomainRelationChecker>(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
-      *service, std::move(checker), otp_frame_origin, is_login_flow,
+      *backend, std::move(checker), otp_frame_origin, is_login_flow,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }

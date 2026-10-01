@@ -28,7 +28,6 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
-#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -41,7 +40,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -86,25 +84,6 @@ class TestJournalObserver : public AggregatedJournal::Observer {
   std::vector<std::string> entries_;
 };
 
-// Note: There's a MockOneTimeTokenService for OneTimeTokenService (not -Impl)
-// but that mock does not implement the KeyedService. So we need our own mock
-// of the -Impl with the KeyedService so that we can use the KeyedService
-// factory for injection.
-class MockKeyedOneTimeTokenService
-    : public one_time_tokens::OneTimeTokenServiceImpl {
- public:
-  MockKeyedOneTimeTokenService() : OneTimeTokenServiceImpl(nullptr, nullptr) {}
-  ~MockKeyedOneTimeTokenService() override = default;
-
-  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
-              Subscribe,
-              (one_time_tokens::OneTimeTokenSource,
-               base::Time,
-               one_time_tokens::OneTimeTokenService::Callback,
-               base::OnceClosure),
-              (override));
-};
-
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -139,18 +118,6 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
         one_time_tokens::UserDataProcessingConsentStates{
             .comms_apps = one_time_tokens::ConsentState::kEnabled,
             .google_apps = one_time_tokens::ConsentState::kEnabled});
-
-    // Allow no-op calls to Subscribe for SMS from Autofill OtpManager.
-    EXPECT_CALL(
-        GetMockOtpService(),
-        Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _, _, _))
-        .WillRepeatedly(
-            [](one_time_tokens::OneTimeTokenSource source,
-               base::Time expiration,
-               one_time_tokens::OneTimeTokenService::Callback callback,
-               base::OnceClosure expiration_callback) {
-              return one_time_tokens::ExpiringSubscription();
-            });
   }
 
   void TearDownOnMainThread() override {
@@ -163,16 +130,8 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     return observer_->Entries();
   }
 
-  static std::unique_ptr<MockKeyedOneTimeTokenService> CreateMockOtpService(
-      content::BrowserContext* context) {
-    return std::make_unique<testing::NiceMock<MockKeyedOneTimeTokenService>>();
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
-    autofill::OneTimeTokenServiceFactory::GetInstance()
-        ->SetTestingSubclassFactoryAndUse<MockKeyedOneTimeTokenService>(
-            context, base::BindOnce(&CreateMockOtpService));
     GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
@@ -201,13 +160,6 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
   }
 
  protected:
-  MockKeyedOneTimeTokenService& GetMockOtpService() {
-    auto* mock_otp_service = static_cast<MockKeyedOneTimeTokenService*>(
-        autofill::OneTimeTokenServiceFactory::GetForProfile(GetProfile()));
-    CHECK(mock_otp_service);
-    return *mock_otp_service;
-  }
-
   one_time_tokens::FakeGmailOtpBackend& GetFakeGmailOtpBackend() {
     auto* fake_backend = static_cast<one_time_tokens::FakeGmailOtpBackend*>(
         GmailOtpBackendFactory::GetForProfile(GetProfile()));
@@ -222,27 +174,14 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
   void SetExpectedOtp(std::optional<std::string> otp,
                       std::string sender = "sender@example.com") {
-    EXPECT_CALL(GetMockOtpService(),
-                Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
-        .WillOnce(
-            [otp, sender](
-                one_time_tokens::OneTimeTokenSource source,
-                base::Time expiration,
-                one_time_tokens::OneTimeTokenService::Callback callback,
-                base::OnceClosure expiration_callback) {
-              if (otp) {
-                callback.Run(one_time_tokens::OneTimeTokenSource::kGmail,
-                             one_time_tokens::OneTimeToken(
-                                 one_time_tokens::OneTimeTokenType::kGmail,
-                                 *otp, base::TimeTicks::Now(), sender));
-              } else {
-                callback.Run(
-                    one_time_tokens::OneTimeTokenSource::kGmail,
-                    base::unexpected(
-                        one_time_tokens::OneTimeTokenRetrievalError::kUnknown));
-              }
-              return one_time_tokens::ExpiringSubscription();
-            });
+    if (otp) {
+      GetFakeGmailOtpBackend().ProcessCallbacks(one_time_tokens::OneTimeToken(
+          one_time_tokens::OneTimeTokenType::kGmail, *otp,
+          base::TimeTicks::Now(), sender));
+    } else {
+      GetFakeGmailOtpBackend().ProcessCallbacks(base::unexpected(
+          one_time_tokens::OneTimeTokenRetrievalError::kUnknown));
+    }
   }
 
   // Seeds affiliation between the test server's port-specific origin for a
@@ -461,22 +400,14 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                                 url::Origin::Create(url),
                                 /*should_use_strong_matching=*/true, {});
 
-  EXPECT_CALL(GetMockOtpService(),
-              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
-      .WillOnce([](one_time_tokens::OneTimeTokenSource source,
-                   base::Time expiration,
-                   one_time_tokens::OneTimeTokenService::Callback callback,
-                   base::OnceClosure expiration_callback) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                callback, one_time_tokens::OneTimeTokenSource::kGmail,
-                one_time_tokens::OneTimeToken(
-                    one_time_tokens::OneTimeTokenType::kGmail, "1234",
-                    base::TimeTicks::Now(), "sender@example.com")),
-            base::Milliseconds(100));
-        return one_time_tokens::ExpiringSubscription();
-      });
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&one_time_tokens::FakeGmailOtpBackend::ProcessCallbacks,
+                     base::Unretained(&GetFakeGmailOtpBackend()),
+                     one_time_tokens::OneTimeToken(
+                         one_time_tokens::OneTimeTokenType::kGmail, "1234",
+                         base::TimeTicks::Now(), "sender@example.com")),
+      base::Milliseconds(100));
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
@@ -690,9 +621,6 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       one_time_tokens::UserDataProcessingConsentStates{
           .comms_apps = one_time_tokens::ConsentState::kDisabled,
           .google_apps = one_time_tokens::ConsentState::kEnabled});
-  EXPECT_CALL(GetMockOtpService(),
-              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
-      .Times(0);
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
@@ -703,6 +631,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
   ExpectErrorResult(result, mojom::ActionResultCode::kOtpGmailConsentRequired);
+  EXPECT_EQ(GetFakeGmailOtpBackend().num_callbacks(), 0u);
 }
 
 // Tests verifying if the OTP filling attempt is part of an ongoing actor login

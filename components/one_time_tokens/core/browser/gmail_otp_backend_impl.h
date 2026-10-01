@@ -57,6 +57,11 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   ExpiringSubscription Subscribe(base::Time expiration,
                                  Callback callback) override;
 
+  ExpiringSubscription Subscribe(
+      base::Time expiration,
+      Callback callback,
+      base::OnceClosure expiration_callback) override;
+
   ExpiringSubscription SubscribeToTickles(base::Time expiration,
                                           TickleCallback callback) override;
 

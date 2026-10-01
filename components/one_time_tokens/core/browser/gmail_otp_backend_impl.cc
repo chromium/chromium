@@ -50,9 +50,16 @@ OneTimeTokenLogSink* GmailOtpBackendImpl::GetLogSink() const {
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
                                                     Callback callback) {
+  return Subscribe(expiration, std::move(callback),
+                   /*expiration_callback=*/base::DoNothing());
+}
+
+ExpiringSubscription GmailOtpBackendImpl::Subscribe(
+    base::Time expiration,
+    Callback callback,
+    base::OnceClosure expiration_callback) {
   ExpiringSubscription subscription = subscription_manager_.Subscribe(
-      expiration, std::move(callback),
-      /*expiration_callback=*/base::DoNothing());
+      expiration, std::move(callback), std::move(expiration_callback));
   if (!url_loader_factory_) {
     LOG_OTT(log_sink_) << "Subscription failed: SharedURLLoaderFactory is null "
                           "(backend initialization failed)";

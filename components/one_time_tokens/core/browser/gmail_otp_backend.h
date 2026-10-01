@@ -47,6 +47,7 @@ class GmailOtpBackend : public KeyedService {
   using Callback = base::RepeatingCallback<CallbackSignature>;
   using FetchUserDataProcessingConsentCallback =
       base::OnceCallback<void(std::optional<UserDataProcessingConsentStates>)>;
+  using TickleCallback = base::RepeatingClosure;
 
   ~GmailOtpBackend() override;
 
@@ -55,13 +56,18 @@ class GmailOtpBackend : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager);
 
-  virtual void SetLogSink(OneTimeTokenLogSink* log_sink) {}
-
-  using TickleCallback = base::RepeatingClosure;
+  virtual void SetLogSink(OneTimeTokenLogSink* log_sink) = 0;
+  virtual OneTimeTokenLogSink* GetLogSink() const = 0;
 
   // Creates a subscription for new incoming OTPs.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
                                                        Callback callback) = 0;
+
+  // Creates a subscription for new incoming OTPs with an expiration callback.
+  [[nodiscard]] virtual ExpiringSubscription Subscribe(
+      base::Time expiration,
+      Callback callback,
+      base::OnceClosure expiration_callback) = 0;
 
   // Creates a subscription for incoming push notifications (tickles) without
   // triggering token fetching or network requests.

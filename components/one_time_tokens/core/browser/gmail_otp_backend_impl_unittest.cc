@@ -914,4 +914,13 @@ TEST_F(GmailOtpBackendImplTest, TokenCacheDeduplication) {
   EXPECT_EQ(backend_.GetCachedOneTimeTokens().size(), 1u);
 }
 
+TEST_F(GmailOtpBackendImplTest, SubscribeRunsExpirationCallback) {
+  base::test::TestFuture<void> expired;
+  ExpiringSubscription subscription =
+      backend_.Subscribe(base::Time::Now() + base::Seconds(10),
+                         base::DoNothing(), expired.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(11));
+  EXPECT_TRUE(expired.IsReady());
+}
+
 }  // namespace one_time_tokens

@@ -17,9 +17,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "url/origin.h"
 
@@ -63,27 +63,27 @@ void RecordSenderDomainMatchAcceptedMatchType(
 
 // static
 std::unique_ptr<GmailOtpRetriever> GmailOtpRetriever::CreateAndStart(
-    OneTimeTokenService& service,
+    GmailOtpBackend& backend,
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
     bool is_login_flow,
     ResultCallback callback) {
   auto retriever = base::WrapUnique(new GmailOtpRetriever(
-      service, std::move(domain_relation_checker), otp_frame_origin,
+      backend, std::move(domain_relation_checker), otp_frame_origin,
       is_login_flow, std::move(callback)));
   retriever->Start();
   return retriever;
 }
 
 GmailOtpRetriever::GmailOtpRetriever(
-    OneTimeTokenService& service,
+    GmailOtpBackend& backend,
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
     bool is_login_flow,
     ResultCallback callback)
-    : one_time_token_service_(service),
+    : gmail_otp_backend_(backend),
       otp_frame_origin_(otp_frame_origin),
       is_login_flow_(is_login_flow),
       sender_domain_matcher_(std::move(domain_relation_checker),
@@ -103,29 +103,20 @@ void GmailOtpRetriever::Start() {
     return;
   }
 
-  // Note: OneTimeTokenService caches tokens for 1 minute. It does not clear
+  // Note: GmailOtpBackend caches tokens for 1 minute. It does not clear
   // them upon use. If a user triggers a "Resend OTP" flow within that 1
   // minute, this will return the originally cached token rather than waiting
   // for the new one. This relies on the assumption that previously sent tokens
   // typically remain valid for the duration of the cache.
-  std::vector<OneTimeToken> cached_tokens;
-  // `GetRecentOneTimeTokens()` is synchronous, making it safe to pass a
-  // reference to the local `cached_tokens` stack variable.
-  one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
-      [](std::vector<OneTimeToken>& tokens, OneTimeTokenSource source,
-         base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
-        if (source == OneTimeTokenSource::kGmail && result.has_value()) {
-          tokens.push_back(std::move(*result));
-        }
-      },
-      std::ref(cached_tokens)));
+  std::vector<OneTimeToken> cached_tokens =
+      gmail_otp_backend_->PurgeExpiredAndGetCachedOneTimeTokens();
 
-  // The cache checking is async, so also listen to the service in the meantime
+  // The cache checking is async, so also listen to the backend in the meantime
   // in case the matching token is not in the cache. The tokens arriving from
-  // the service are also checked for relevance.
+  // the backend are also checked for relevance.
   SubscribeForOneTimeToken();
 
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever checking " << cached_tokens.size()
       << " cached Gmail token(s).";
 
@@ -142,11 +133,11 @@ void GmailOtpRetriever::Start() {
 }
 
 void GmailOtpRetriever::SubscribeForOneTimeToken() {
-  // Subscribe to OneTimeTokenService with configurable period.
+  // Subscribe to GmailOtpBackend with configurable period.
   base::TimeDelta subscription_period =
       features::kGmailOtpSubscriptionPeriodParam.Get();
-  subscription_ = one_time_token_service_->Subscribe(
-      OneTimeTokenSource::kGmail, base::Time::Now() + subscription_period,
+  subscription_ = gmail_otp_backend_->Subscribe(
+      base::Time::Now() + subscription_period,
       base::BindRepeating(&GmailOtpRetriever::OnOneTimeTokenReceived,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&GmailOtpRetriever::OnOneTimeTokenTimeout,
@@ -158,7 +149,7 @@ void GmailOtpRetriever::StartSenderDomainCheck(
     GmailOtpSenderDomainMatcher::ResultCallback callback) {
   CHECK(!otp_frame_origin_.opaque());
 
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever checking sender domain match: sender_address="
       << sender_address << ", otp_frame_origin=" << otp_frame_origin_;
 
@@ -190,17 +181,17 @@ bool GmailOtpRetriever::IsMatchTypeAllowed(
     GmailOtpSenderDomainMatchType match_type) const {
   switch (match_type) {
     case GmailOtpSenderDomainMatchType::kExact:
-      LOG_OTT(one_time_token_service_->log_sink())
+      LOG_OTT(gmail_otp_backend_->GetLogSink())
           << "GmailOtpRetriever exact match";
       return true;
     case GmailOtpSenderDomainMatchType::kFrameIsWwwPsl:
       // This is a particular case of PSL matching that is considered
       // a strong match.
-      LOG_OTT(one_time_token_service_->log_sink())
+      LOG_OTT(gmail_otp_backend_->GetLogSink())
           << "GmailOtpRetriever frame is www PSL match";
       return true;
     case GmailOtpSenderDomainMatchType::kAffiliated:
-      LOG_OTT(one_time_token_service_->log_sink())
+      LOG_OTT(gmail_otp_backend_->GetLogSink())
           << "GmailOtpRetriever affiliated match";
       return true;
     case GmailOtpSenderDomainMatchType::kPsl:
@@ -209,7 +200,7 @@ bool GmailOtpRetriever::IsMatchTypeAllowed(
       // expressed the intention to fill the target frame, by approving the
       // login flow.
       if (is_login_flow_) {
-        LOG_OTT(one_time_token_service_->log_sink())
+        LOG_OTT(gmail_otp_backend_->GetLogSink())
             << "GmailOtpRetriever PSL match during login flow";
       }
       return is_login_flow_;
@@ -233,7 +224,7 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   pending_sender_domain_checks_--;
 
   bool allowed = IsMatchTypeAllowed(match_type);
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever cached token match checked: allowed=" << allowed
       << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
@@ -272,24 +263,22 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
 }
 
 void GmailOtpRetriever::OnOneTimeTokenReceived(
-    OneTimeTokenSource source,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
-  CHECK_EQ(source, OneTimeTokenSource::kGmail);
   // If the retriever had already completed, all weak pointers would have been
   // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
 
   if (!result.has_value()) {
-    LOG_OTT(one_time_token_service_->log_sink())
-        << "GmailOtpRetriever received error from service: error="
+    LOG_OTT(gmail_otp_backend_->GetLogSink())
+        << "GmailOtpRetriever received error from backend: error="
         << static_cast<int>(result.error());
     error_ = result.error();
     MaybeCompleteOrWaitForPendingRequests();
     return;
   }
 
-  LOG_OTT(one_time_token_service_->log_sink())
-      << "GmailOtpRetriever received token from service: sender_address="
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
+      << "GmailOtpRetriever received token from backend: sender_address="
       << result->sender_address().value_or("");
 
   std::string sender_address = result->sender_address().value_or("");
@@ -311,7 +300,7 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
   pending_sender_domain_checks_--;
 
   bool allowed = IsMatchTypeAllowed(match_type);
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever received token match checked: allowed=" << allowed
       << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
@@ -334,7 +323,7 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
 }
 
 void GmailOtpRetriever::OnOneTimeTokenTimeout() {
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever subscription timed out waiting for matching OTP.";
 
   // The retriever will no longer be called after timeout anyway, but
@@ -357,8 +346,7 @@ void GmailOtpRetriever::MaybeCompleteOrWaitForPendingRequests() {
 
   // Only wait for pending backend requests if the subscription is still alive,
   // which has a timeout of its own.
-  if (subscription_.IsAlive() &&
-      one_time_token_service_->HasPendingRequests(OneTimeTokenSource::kGmail)) {
+  if (subscription_.IsAlive() && gmail_otp_backend_->HasPendingRequests()) {
     return;
   }
 
@@ -382,7 +370,7 @@ void GmailOtpRetriever::MaybeCompleteOrWaitForPendingRequests() {
 
 void GmailOtpRetriever::OnOpaqueOriginDetected() {
   CHECK(retrieve_otp_callback_);
-  LOG_OTT(one_time_token_service_->log_sink())
+  LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever failed: Opaque frame origin.";
   std::move(retrieve_otp_callback_)
       .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));

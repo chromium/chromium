@@ -94,10 +94,20 @@ class MockGmailOtpBackend : public GmailOtpBackend {
                               &OneTimeToken::on_device_arrival_time,
                               OneTimeTokenCacheProjection()) {}
 
+  void SetLogSink(OneTimeTokenLogSink* log_sink) override {}
+  OneTimeTokenLogSink* GetLogSink() const override { return nullptr; }
+
   MOCK_METHOD(ExpiringSubscription,
               Subscribe,
               (base::Time expiration, Callback callback),
               (override));
+
+  ExpiringSubscription Subscribe(
+      base::Time expiration,
+      Callback callback,
+      base::OnceClosure expiration_callback) override {
+    return Subscribe(expiration, std::move(callback));
+  }
 
   MOCK_METHOD(ExpiringSubscription,
               SubscribeToTickles,
@@ -138,11 +148,12 @@ class MockGmailOtpBackend : public GmailOtpBackend {
 
   // Notifies the mock backend that a subscription was created successfully.
   // This is needed for `SimulateOtpArrived` to have a callback to run.
-  ExpiringSubscription CreateMockSubscription(base::Time expiration,
-                                              Callback callback) {
+  ExpiringSubscription CreateMockSubscription(
+      base::Time expiration,
+      Callback callback,
+      base::OnceClosure expiration_callback = base::DoNothing()) {
     auto subscription = subscription_manager_.Subscribe(
-        expiration, std::move(callback),
-        /*expiration_callback=*/base::DoNothing());
+        expiration, std::move(callback), std::move(expiration_callback));
     last_handle_ = subscription.handle();
     return subscription;
   }
