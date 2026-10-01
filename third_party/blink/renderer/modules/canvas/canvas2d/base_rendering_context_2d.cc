@@ -209,6 +209,13 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   return base::ByteSize();
 }
 
+void BaseRenderingContext2D::CreateBitmapProvider() {
+  bitmap_provider_ = Canvas2DBitmapProvider::CreateWithClear(
+      Host()->Size(), color_params_.GetSharedImageFormat(),
+      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
+      color_params_.GetGfxHdrMetadata(), Host());
+}
+
 scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() const {
   if (shared_image_provider_) {
     return shared_image_provider_->Snapshot();

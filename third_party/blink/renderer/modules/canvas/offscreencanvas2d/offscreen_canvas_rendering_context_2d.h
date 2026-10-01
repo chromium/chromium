@@ -21,8 +21,6 @@
 
 namespace blink {
 
-class Canvas2DBitmapProvider;
-class Canvas2DResourceProvider;
 class ExceptionState;
 class ExecutionContext;
 class MemoryManagedPaintCanvas;

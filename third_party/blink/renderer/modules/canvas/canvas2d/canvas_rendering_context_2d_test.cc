@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_bitmap_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -749,14 +748,9 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a CanvasResourceProvider that does not support direct compositing.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = Canvas2DBitmapProvider::CreateForTesting(
-      size, Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
-                                CanvasPixelFormat::kUint8,
-                                /*has_alpha=*/true));
-
-  Context2D()->SetBitmapProviderForTesting(std::move(provider), size);
+  // Install a Canvas2DBitmapProvider, which does not support direct
+  // compositing.
+  Context2D()->CreateBitmapProviderForTesting();
 
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -866,13 +860,9 @@ TEST_P(CanvasRenderingContext2DTest, FlushNotDeferredWhenNonComposited) {
   ScopedCanvas2dDeferredFlushForTest enable_feature(true);
   CreateContext(kNonOpaque);
 
-  // Install a CanvasResourceProvider that does not support direct compositing.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = Canvas2DBitmapProvider::CreateForTesting(
-      size, Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
-                                CanvasPixelFormat::kUint8,
-                                /*has_alpha=*/true));
-  Context2D()->SetBitmapProviderForTesting(std::move(provider), size);
+  // Install a Canvas2DBitmapProvider, which does not support direct
+  // compositing.
+  Context2D()->CreateBitmapProviderForTesting();
   ASSERT_FALSE(Context2D()->IsComposited());
 
   // Non-composited canvas flushes immediately on kCanvasPushFrame.

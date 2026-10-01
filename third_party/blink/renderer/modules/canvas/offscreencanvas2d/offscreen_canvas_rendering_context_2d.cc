@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_bitmap_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
@@ -264,8 +263,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
     // visible on screen, but at least readbacks will work. Failure to create
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
-    bitmap_provider_ = Canvas2DBitmapProvider::CreateWithClear(
-        host->Size(), format, alpha_type, color_space, hdr_metadata, host);
+    CreateBitmapProvider();
   }
 
   if (HasResourceProvider()) {
@@ -285,7 +283,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
     host->DidDraw();
     return true;
   }
-  if (bitmap_provider_) {
+  if (HasResourceProvider()) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               false);
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",

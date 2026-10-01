@@ -289,6 +289,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   void SetRestoreFailedCallbackForTesting(base::RepeatingClosure callback) {
     on_restore_failed_callback_for_testing_ = std::move(callback);
   }
+  Canvas2DBitmapProvider* GetBitmapProviderForTesting() const {
+    return bitmap_provider_.get();
+  }
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
@@ -353,12 +356,12 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  bool clear_frame,
                                  FlushReason reason) {}
 
+  void CreateBitmapProvider();
   scoped_refptr<StaticBitmapImage> Snapshot() const;
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
-  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
 
  private:
   void UpdateRecordingLimits(bool is_graphite);
@@ -381,6 +384,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void WillUseCurrentFont() const;
 
+  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
   size_t max_recorded_op_bytes_ = 0;

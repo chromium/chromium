@@ -87,7 +87,6 @@ class MemoryManagedPaintCanvas;
 class Path2D;
 class SVGResource;
 class Canvas2DResourceProvider;
-class Canvas2DBitmapProvider;
 enum class FlushReason;
 enum class PredefinedColorSpace;
 
@@ -162,9 +161,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasHibernationHandler::Delegate implementation
   Canvas2DResourceProvider* GetSharedImageProvider() const override;
-  Canvas2DBitmapProvider* GetBitmapProviderForTesting() const {
-    return bitmap_provider_.get();
-  }
   bool HasResourceProvider() const override;
   bool IsContextLost() const override { return isContextLost(); }
   bool IsPageVisible() const override {
@@ -241,9 +237,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetCanvas2DResourceProviderForTesting(
       std::unique_ptr<Canvas2DResourceProvider> provider,
       const gfx::Size& size);
-  void SetBitmapProviderForTesting(
-      std::unique_ptr<Canvas2DBitmapProvider> provider,
-      const gfx::Size& size);
+  void CreateBitmapProviderForTesting();
   void SetCanvas2DResourceProviderForTesting(std::nullptr_t,
                                              const gfx::Size& size);
 
