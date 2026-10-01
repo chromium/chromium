@@ -947,9 +947,8 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
   EXPECT_FALSE(TabDragController::IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TabDragControllerTest,
-    DISABLED_DragBrowserToNewTabStripDragEndedDuringActivate) {
+IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
+                       DragBrowserToNewTabStripDragEndedDuringActivate) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -976,13 +975,14 @@ IN_PROC_BROWSER_TEST_F(
       tab_strip->GetDragContext()->GetDragController();
   ASSERT_NE(controller, nullptr);
 
-  ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
-            TabDragController::Liveness::kAlive);
-
   class TargetWindowFinder : public WindowFinder {
    public:
     explicit TargetWindowFinder(gfx::NativeWindow target_window)
         : target_window_(target_window) {}
+
+    void set_target_window(gfx::NativeWindow target_window) {
+      target_window_ = target_window;
+    }
 
     gfx::NativeWindow GetLocalProcessWindowAtPoint(
         const gfx::Point& screen_point,
@@ -994,8 +994,15 @@ IN_PROC_BROWSER_TEST_F(
    private:
     gfx::NativeWindow target_window_;
   };
-  SetWindowFinderForTabStrip(tab_strip, std::make_unique<TargetWindowFinder>(
-                                            target_widget->GetNativeWindow()));
+  auto window_finder =
+      std::make_unique<TargetWindowFinder>(source_widget->GetNativeWindow());
+  TargetWindowFinder* window_finder_ptr = window_finder.get();
+  SetWindowFinderForTabStrip(tab_strip, std::move(window_finder));
+
+  ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
+            TabDragController::Liveness::kAlive);
+
+  window_finder_ptr->set_target_window(target_widget->GetNativeWindow());
 
   bool ended_during_activate = false;
   auto end_drag_on_activate = [&]() {
