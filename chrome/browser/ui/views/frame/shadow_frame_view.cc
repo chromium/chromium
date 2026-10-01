@@ -90,9 +90,25 @@ void ShadowFrameView::OnThemeChanged() {
   }
 }
 
+void ShadowFrameView::AddedToWidget() {
+  if (view_shadow_) {
+    UpdateShadowColors();
+  }
+}
+
 void ShadowFrameView::UpdateShadowColors() {
+  CHECK(view_shadow_);
+  if (!view_shadow_->shadow()) {
+    return;
+  }
+
+  auto* const color_provider = GetColorProvider();
+  if (!color_provider) {
+    return;
+  }
+
   const bool is_dark =
-      color_utils::IsDark(GetColorProvider()->GetColor(kColorToolbar));
+      color_utils::IsDark(color_provider->GetColor(kColorToolbar));
   if (was_dark_ == is_dark) {
     return;
   }

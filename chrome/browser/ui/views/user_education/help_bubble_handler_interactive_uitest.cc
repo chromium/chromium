@@ -26,6 +26,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarksWebContentsElementId);
 }  // namespace
 
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
@@ -64,7 +65,11 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
         PressButton(kToolbarAppMenuButtonElementId),
         SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
         SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
-        WaitForShow(kSidePanelElementId));
+        WaitForShow(kSidePanelElementId),
+        WaitForShow(kBookmarkSidePanelWebViewElementId),
+        // Ensure the bookmarks side panel loads properly.
+        InstrumentNonTabWebView(kBookmarksWebContentsElementId,
+                                kBookmarkSidePanelWebViewElementId));
   }
 
   auto CloseSidePanel() {

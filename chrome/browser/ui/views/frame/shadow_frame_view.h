@@ -50,6 +50,7 @@ class ShadowFrameView : public views::View {
  protected:
   // views::View:
   void OnThemeChanged() override;
+  void AddedToWidget() override;
 
  private:
   void UpdateShadowColors();
