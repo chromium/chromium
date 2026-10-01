@@ -106,8 +106,9 @@ class SendTabToSelfModel {
                                   ShareActivatedEntryPoint entry_point) = 0;
 
   // Guarantee that the model is operational and syncing, i.e., the local
-  // database is started and the initial data has been downloaded.
-  // This call and SendTabToSelfModelObserver::SendTabToSelfModelLoaded overlap,
+  // database is started, the initial data has been downloaded, and the device
+  // info tracker is syncing.
+  // This call and SendTabToSelfModelObserver::OnModelReady overlap,
   // but this call allows non observers to infer if it is safe to interact with
   // the model without first becoming an observer and creating a new bridge.
   // This provides a more direct path for classes that would like to modify the

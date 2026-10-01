@@ -167,6 +167,7 @@ class SendTabToSelfActiveChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
+  void OnModelReady() override;
   void OnEntriesAddedRemotely(
       base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
       override;

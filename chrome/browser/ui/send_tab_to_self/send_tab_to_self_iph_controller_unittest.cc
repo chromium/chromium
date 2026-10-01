@@ -252,6 +252,41 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnModelReady) {
   controller.OnModelReady();
 }
 
+TEST_F(SendTabToSelfIphControllerTest,
+       PromoDeferredWhileDeviceInfoNotYetLoaded) {
+  EXPECT_CALL(*user_education(),
+              MaybeShowStartupFeaturePromo(
+                  user_education::test::MatchFeaturePromoParams(
+                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+      .Times(0);
+
+  // Simulate startup where an eligible tab is active, but DeviceInfo has not
+  // finished loading from disk yet so the model is not ready and
+  // GetEntryPointDisplayReason returns std::nullopt.
+  FakeSendTabToSelfModel* fake_model =
+      static_cast<StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
+          ->GetFakeSendTabToSelfModel();
+  SetEntryPointDisplayReason(std::nullopt);
+  tabs::TabInterface* tab = AddTab(kEligibleUrl);
+
+  SendTabToSelfIphController controller(browser_window_interface());
+
+  // Navigating while still waiting for DeviceInfo should not mark the promo as
+  // attempted or tear down observers.
+  controller.OnTabChangedAt(tab, TabChangeType::kAll);
+
+  EXPECT_CALL(*user_education(),
+              MaybeShowStartupFeaturePromo(
+                  user_education::test::MatchFeaturePromoParams(
+                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+
+  // Once DeviceInfo finishes loading from disk, the model becomes ready and
+  // notifies observers via OnModelReady(), triggering the startup promo.
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  fake_model->SetIsReady(true);
+}
+
 TEST_F(SendTabToSelfIphControllerTest, PromoNotShownWhenEnhancedUIDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(

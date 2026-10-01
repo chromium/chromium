@@ -192,6 +192,7 @@ SendTabToSelfBridge::SendTabToSelfBridge(
       pref_service_(pref_service) {
   DCHECK(clock_);
   DCHECK(device_info_tracker_);
+  device_info_tracker_observation_.Observe(device_info_tracker_);
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
@@ -214,11 +215,7 @@ std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
   DCHECK(entries_.empty());
   std::optional<syncer::ModelError> error = ApplyIncrementalSyncChanges(
       std::move(metadata_change_list), std::move(entity_data));
-  if (IsReady()) {
-    for (auto& observer : observers_) {
-      observer.OnModelReady();
-    }
-  }
+  MaybeNotifyModelReady();
   return error;
 }
 
@@ -410,6 +407,7 @@ void SendTabToSelfBridge::ApplyDisableSyncChanges(
   unknown_opened_entries_.clear();
   unknown_activated_entries_.clear();
   mru_entry_guid_.clear();
+  model_ready_notified_ = false;
 
   commit_tracker_->OnSyncDisabled();
 
@@ -697,8 +695,23 @@ void SendTabToSelfBridge::OnHistoryDeletions(
   DeleteAllEntries();
 }
 
+void SendTabToSelfBridge::OnDeviceInfoChange() {
+  MaybeNotifyModelReady();
+}
+
+void SendTabToSelfBridge::MaybeNotifyModelReady() {
+  if (!IsReady() || model_ready_notified_) {
+    return;
+  }
+  model_ready_notified_ = true;
+  for (SendTabToSelfModelObserver& observer : observers_) {
+    observer.OnModelReady();
+  }
+}
+
 bool SendTabToSelfBridge::IsReady() {
-  return change_processor()->IsTrackingMetadata();
+  return change_processor()->IsTrackingMetadata() &&
+         device_info_tracker_->IsSyncing();
 }
 
 bool SendTabToSelfBridge::HasValidTargetDevice() {
@@ -708,7 +721,7 @@ bool SendTabToSelfBridge::HasValidTargetDevice() {
 std::vector<TargetDeviceInfo>
 SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   TRACE_EVENT0("ui", "SendTabToSelfBridge::GetTargetDeviceInfoSortedList");
-  if (!IsReady() || !device_info_tracker_->IsSyncing()) {
+  if (!IsReady()) {
     return {};
   }
 
@@ -897,7 +910,7 @@ void SendTabToSelfBridge::OnReadAllMetadata(
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  if (IsReady()) {
+  if (change_processor()->IsTrackingMetadata()) {
     base::flat_map<std::string, base::Time, std::less<>> opened_queued =
         std::move(unknown_opened_entries_);
     unknown_opened_entries_.clear();
@@ -913,11 +926,9 @@ void SendTabToSelfBridge::OnReadAllMetadata(
       MarkEntryActivatedImpl(guid, /*entry_point=*/data.second,
                              /*activated_time=*/data.first);
     }
-
-    for (auto& observer : observers_) {
-      observer.OnModelReady();
-    }
   }
+
+  MaybeNotifyModelReady();
 
   DoGarbageCollection();
 }

@@ -50,7 +50,8 @@ struct TargetDeviceInfo;
 // All interface methods have to be called on main thread.
 class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
                             public SendTabToSelfModel,
-                            public history::HistoryServiceObserver {
+                            public history::HistoryServiceObserver,
+                            public syncer::DeviceInfoTracker::Observer {
  public:
   using SendTabToSelfEntries =
       std::map<std::string, std::unique_ptr<SendTabToSelfEntry>, std::less<>>;
@@ -125,12 +126,19 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
+  // syncer::DeviceInfoTracker::Observer:
+  void OnDeviceInfoChange() override;
+
   // For testing only.
   static std::unique_ptr<syncer::DataTypeStore> DestroyAndStealStoreForTest(
       std::unique_ptr<SendTabToSelfBridge> bridge);
   void SetLocalDeviceNameForTest(const std::string& local_device_name);
 
  private:
+  // Notifies observers that the model is ready once both the local store
+  // metadata and DeviceInfoTracker are ready.
+  void MaybeNotifyModelReady();
+
   // Notify all observers of any added |new_entries| when they are added the the
   // model via sync.
   void NotifyRemoteSendTabToSelfEntryAdded(
@@ -243,8 +251,15 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // deduplication.
   std::string mru_entry_guid_;
 
+  // Whether OnModelReady() has been notified for the current sync session.
+  bool model_ready_notified_ = false;
+
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      device_info_tracker_observation_{this};
 
   base::WeakPtrFactory<SendTabToSelfBridge> weak_ptr_factory_{this};
 };

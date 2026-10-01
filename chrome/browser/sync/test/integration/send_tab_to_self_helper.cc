@@ -209,6 +209,10 @@ bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service_->GetSendTabToSelfModel()->IsReady();
 }
 
+void SendTabToSelfActiveChecker::OnModelReady() {
+  CheckExitCondition();
+}
+
 void SendTabToSelfActiveChecker::OnEntriesAddedRemotely(
     base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   CheckExitCondition();

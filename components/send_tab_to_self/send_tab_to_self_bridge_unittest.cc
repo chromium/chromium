@@ -214,8 +214,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
   // Initializes only the bridge without creating local device. This is useful
   // to test the case when the device info tracker is not initialized yet.
   void InitializeBridgeWithoutDevice(bool is_tracking_metadata = true) {
-    ON_CALL(mock_processor_, IsTrackingMetadata())
-        .WillByDefault(Return(is_tracking_metadata));
+    SetIsTrackingMetadata(is_tracking_metadata);
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
         syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
@@ -227,7 +226,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   void InitializeBridgeWithoutRunningLoop() {
     InitializeLocalDeviceIfNeeded();
-    ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
+    SetIsTrackingMetadata(true);
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
         syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
@@ -248,8 +247,9 @@ class SendTabToSelfBridgeTest : public testing::Test {
     return clock_.Now();
   }
 
-  void DisableBridge() {
-    ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(false));
+  void SetIsTrackingMetadata(bool is_tracking_metadata) {
+    ON_CALL(mock_processor_, IsTrackingMetadata())
+        .WillByDefault(Return(is_tracking_metadata));
   }
 
   syncer::EntityData MakeEntityData(const SendTabToSelfEntry& entry) {
@@ -386,7 +386,7 @@ TEST_F(SendTabToSelfBridgeTest, MergeFullSyncDataNotifiesOnModelReady) {
   InitializeBridge(/*is_tracking_metadata=*/false);
   ASSERT_FALSE(bridge()->IsReady());
 
-  ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
+  SetIsTrackingMetadata(true);
   ASSERT_TRUE(bridge()->IsReady());
 
   syncer::EntityChangeList remote_input;
@@ -405,6 +405,62 @@ TEST_F(SendTabToSelfBridgeTest, ModelReadyCalledOnStartupWithMetadata) {
 TEST_F(SendTabToSelfBridgeTest, ModelReadyNotCalledOnStartupWithoutMetadata) {
   EXPECT_CALL(*mock_observer(), OnModelReady()).Times(0);
   InitializeBridge(/*is_tracking_metadata=*/false);
+}
+
+TEST_F(SendTabToSelfBridgeTest, ModelReadyDeferredUntilDeviceInfoSyncing) {
+  EXPECT_CALL(*mock_observer(), OnModelReady()).Times(0);
+  InitializeBridgeWithoutDevice(/*is_tracking_metadata=*/true);
+  EXPECT_FALSE(bridge()->IsReady());
+
+  // Once DeviceInfo finishes loading from disk and starts syncing, the bridge
+  // becomes ready and notifies OnModelReady() exactly once.
+  EXPECT_CALL(*mock_observer(), OnModelReady()).Times(1);
+  InitializeLocalDeviceIfNeeded();
+  EXPECT_TRUE(bridge()->IsReady());
+
+  // Subsequent DeviceInfo changes (including transient IsSyncing() toggles) do
+  // not re-fire OnModelReady() within the same sync session.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDevice("remote_guid", "remote_device", clock()->Now());
+  AddTestDevice(remote_device.get());
+  device_info_tracker()->SetIsSyncingOverride(false);
+  device_info_tracker()->SetIsSyncingOverride(true);
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       MergeFullSyncDataNotifiesOnModelReadyOnceDeviceInfoSyncing) {
+  EXPECT_CALL(*mock_observer(), OnModelReady()).Times(0);
+  InitializeBridgeWithoutDevice(/*is_tracking_metadata=*/false);
+  ASSERT_FALSE(bridge()->IsReady());
+
+  SetIsTrackingMetadata(true);
+  bridge()->MergeFullSyncData(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      syncer::EntityChangeList());
+  EXPECT_FALSE(bridge()->IsReady());
+
+  EXPECT_CALL(*mock_observer(), OnModelReady());
+  InitializeLocalDeviceIfNeeded();
+  EXPECT_TRUE(bridge()->IsReady());
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       NotifiesOnModelReadyAgainAfterDisableAndReenableSync) {
+  EXPECT_CALL(*mock_observer(), OnModelReady());
+  InitializeBridge(/*is_tracking_metadata=*/true);
+  ASSERT_TRUE(bridge()->IsReady());
+  testing::Mock::VerifyAndClearExpectations(mock_observer());
+
+  SetIsTrackingMetadata(false);
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+  ASSERT_FALSE(bridge()->IsReady());
+
+  SetIsTrackingMetadata(true);
+  EXPECT_CALL(*mock_observer(), OnModelReady());
+  bridge()->MergeFullSyncData(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      syncer::EntityChangeList());
+  EXPECT_TRUE(bridge()->IsReady());
 }
 
 TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesAddTwoSpecifics) {
@@ -1222,18 +1278,16 @@ TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {
   InitializeBridge();
   ASSERT_TRUE(bridge()->IsReady());
 
-  DisableBridge();
+  SetIsTrackingMetadata(false);
   ASSERT_FALSE(bridge()->IsReady());
 }
 
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_BridgeNotReady) {
   InitializeBridge();
   ASSERT_TRUE(bridge()->IsReady());
-
-  device_info_tracker()->SetIsSyncingOverride(true);
   ASSERT_TRUE(device_info_tracker()->IsSyncing());
 
-  DisableBridge();
+  SetIsTrackingMetadata(false);
   ASSERT_FALSE(bridge()->IsReady());
 
   // Should return empty list and not crash.
@@ -1765,6 +1819,7 @@ TEST_F(SendTabToSelfBridgeTest,
   ASSERT_FALSE(bridge()->change_processor()->TrackedCacheGuid().empty());
   ASSERT_FALSE(device_info_tracker()->IsSyncing());
 
+  EXPECT_FALSE(bridge()->IsReady());
   EXPECT_FALSE(bridge()->HasValidTargetDevice());
 }
 
@@ -2486,7 +2541,7 @@ TEST_F(SendTabToSelfBridgeTest, ReceivedTimePropagatesFromRemoteUpdate) {
 TEST_F(SendTabToSelfBridgeTest,
        InvokesCallbackWithFailureForNotTrackingMetadata) {
   InitializeBridgeWithoutDevice();
-  DisableBridge();
+  SetIsTrackingMetadata(false);
 
   base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
       mock_callback;
