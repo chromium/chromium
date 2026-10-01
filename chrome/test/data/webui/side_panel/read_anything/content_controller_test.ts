@@ -661,6 +661,68 @@ suite('ContentController', () => {
       assertArrayEquals([rootId], visualBrowserProxy.fetchedImages);
     });
 
+    test(
+        'builds a figure with display none when images disabled and no selection',
+        () => {
+          const rootId = contentBrowserProxy.rootId;
+          const childId = 11;
+          const captionText = 'A scenic landscape';
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = false;
+          contentBrowserProxy.htmlTagMap = {[rootId]: 'figure', [childId]: ''};
+          contentBrowserProxy.textContentMap = {[childId]: captionText};
+          contentBrowserProxy.childrenMap = {[rootId]: [childId]};
+
+          const root = contentController.updateContent();
+
+          assertTrue(root instanceof HTMLElement);
+          assertEquals('FIGURE', root.nodeName);
+          assertEquals('none', root.style.display);
+        });
+
+    test(
+        'builds a figure with display visible when images disabled and figure is selected',
+        () => {
+          const rootId = contentBrowserProxy.rootId;
+          const childId = 11;
+          const captionText = 'A scenic landscape';
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
+          contentBrowserProxy.startNodeId = childId;
+          contentBrowserProxy.endNodeId = childId;
+          contentBrowserProxy.htmlTagMap = {[rootId]: 'figure', [childId]: ''};
+          contentBrowserProxy.textContentMap = {[childId]: captionText};
+          contentBrowserProxy.childrenMap = {[rootId]: [childId]};
+
+          const root = contentController.updateContent();
+
+          assertTrue(root instanceof HTMLElement);
+          assertEquals('FIGURE', root.nodeName);
+          assertEquals('', root.style.display);
+          assertEquals(captionText, root.textContent);
+        });
+
+    test(
+        'builds a figure with display none when images disabled and selection is unrelated',
+        () => {
+          const rootId = contentBrowserProxy.rootId;
+          const childId = 11;
+          const captionText = 'A scenic landscape';
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
+          contentBrowserProxy.startNodeId = 99;
+          contentBrowserProxy.endNodeId = 99;
+          contentBrowserProxy.htmlTagMap = {[rootId]: 'figure', [childId]: ''};
+          contentBrowserProxy.textContentMap = {[childId]: captionText};
+          contentBrowserProxy.childrenMap = {[rootId]: [childId]};
+
+          const root = contentController.updateContent();
+
+          assertTrue(root instanceof HTMLElement);
+          assertEquals('FIGURE', root.nodeName);
+          assertEquals('none', root.style.display);
+        });
+
     test('builds a button as a <div> tag', () => {
       const rootId = 5;
       const childId = 7;
@@ -1233,12 +1295,16 @@ suite('ContentController', () => {
     const id1 = 2;
     const textId = 4;
     const id3 = 6;
+    const captionId = 8;
+    const captionTextId = 10;
     let shadowRoot: ShadowRoot;
     let canvas: HTMLCanvasElement;
     let figure: HTMLElement;
     let textNode: Text;
+    let captionTextNode: Text;
 
     setup(() => {
+      contentBrowserProxy.hasValidSelectionVal = false;
       const container = document.createElement('div');
       document.body.appendChild(container);
       shadowRoot = container.attachShadow({mode: 'open'});
@@ -1249,12 +1315,18 @@ suite('ContentController', () => {
       shadowRoot.appendChild(canvas);
 
       figure = document.createElement('figure');
+      const figcaption = document.createElement('figcaption');
+      captionTextNode = document.createTextNode('Caption text');
+      figcaption.appendChild(captionTextNode);
+      figure.appendChild(figcaption);
       shadowRoot.appendChild(figure);
 
       // Associate nodes with IDs for the test.
       nodeStore.setDomNode(canvas, id1);
       nodeStore.setDomNode(textNode, textId);
       nodeStore.setDomNode(figure, id3);
+      nodeStore.setDomNode(figcaption, captionId);
+      nodeStore.setDomNode(captionTextNode, captionTextId);
     });
 
     test('hides images and associated text nodes when disabled', async () => {
@@ -1268,6 +1340,8 @@ suite('ContentController', () => {
       assertEquals('none', figure.style.display);
       assertTrue(nodeStore.areNodesAllHidden(
           [ReadAloudNode.createFromAxNode(textId)!]));
+      assertTrue(nodeStore.areNodesAllHidden(
+          [ReadAloudNode.createFromAxNode(captionTextId)!]));
       assertTrue(receivedContentChange);
     });
 
@@ -1288,6 +1362,47 @@ suite('ContentController', () => {
       assertTrue(receivedContentChange);
     });
 
+    test(
+        'shows figure and does not hide caption text nodes when images disabled with figure selected',
+        async () => {
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
+          contentBrowserProxy.startNodeId = captionTextId;
+          contentBrowserProxy.endNodeId = captionTextId;
+          contentController.setState(ContentType.HAS_CONTENT);
+
+          contentController.updateImages(shadowRoot);
+          await microtasksFinished();
+
+          assertEquals('none', canvas.style.display);
+          assertEquals('', figure.style.display);
+          assertTrue(nodeStore.areNodesAllHidden(
+              [ReadAloudNode.createFromAxNode(textId)!]));
+          assertFalse(nodeStore.areNodesAllHidden(
+              [ReadAloudNode.createFromAxNode(captionTextId)!]));
+          assertTrue(receivedContentChange);
+        });
+
+    test(
+        'hides figure when images disabled with unrelated selection',
+        async () => {
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
+          contentBrowserProxy.startNodeId = 99;
+          contentBrowserProxy.endNodeId = 99;
+          const unrelatedNode = document.createElement('p');
+          shadowRoot.appendChild(unrelatedNode);
+          nodeStore.setDomNode(unrelatedNode, 99);
+
+          contentController.setState(ContentType.HAS_CONTENT);
+
+          contentController.updateImages(shadowRoot);
+          await microtasksFinished();
+
+          assertEquals('none', canvas.style.display);
+          assertEquals('none', figure.style.display);
+        });
+
     test('notifies of content change with readability', async () => {
       visualBrowserProxy.imagesEnabled = false;
       contentBrowserProxy.activeDistillationMethod =
@@ -1300,6 +1415,28 @@ suite('ContentController', () => {
 
       assertTrue(receivedContentChange);
     });
+
+    test(
+        'readability: hides figure and images when disabled even with selection',
+        async () => {
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
+          contentBrowserProxy.startNodeId = captionTextId;
+          contentBrowserProxy.endNodeId = captionTextId;
+          contentController.setState(ContentType.HAS_CONTENT);
+
+          const img = document.createElement('img');
+          shadowRoot.appendChild(img);
+
+          contentController.updateImages(shadowRoot);
+          await microtasksFinished();
+
+          assertEquals('none', img.style.display);
+          assertEquals('none', figure.style.display);
+          assertTrue(receivedContentChange);
+        });
 
     test('updates read aloud state when images are updated', async () => {
       const containerElement = document.createElement('div');

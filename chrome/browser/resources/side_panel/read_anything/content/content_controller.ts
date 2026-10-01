@@ -548,11 +548,6 @@ export class ContentController {
       element.style.display = display;
       element.classList.add('downloaded-image');
     }
-
-    if (element.nodeName === 'FIGURE') {
-      element.style.display = display;
-    }
-
     if (url && element.nodeName === 'A') {
       this.setLinkAttributes_(element, url, nodeId);
     }
@@ -562,6 +557,14 @@ export class ContentController {
     }
 
     this.appendChildSubtrees_(element, nodeId);
+
+    // Check after the children are built so the figure's contents are in the
+    // node store.
+    if (element.nodeName === 'FIGURE') {
+      const showFigure = this.visualBrowserProxy_.isImagesEnabled() ||
+          this.isFigureSelected_(element);
+      element.style.display = showFigure ? '' : 'none';
+    }
     return element;
   }
 
@@ -1070,6 +1073,20 @@ export class ContentController {
     return score;
   }
 
+  // Returns true if the selection starts or ends inside the figure. This
+  // matches when the model switches to selection mode for figure selections.
+  private isFigureSelected_(figure: HTMLElement): boolean {
+    if (!this.contentBrowserProxy_.hasValidSelection()) {
+      return false;
+    }
+    const startNode =
+        this.nodeStore_.getDomNode(this.contentBrowserProxy_.getStartNodeId());
+    const endNode =
+        this.nodeStore_.getDomNode(this.contentBrowserProxy_.getEndNodeId());
+    return (!!startNode && figure.contains(startNode)) ||
+        (!!endNode && figure.contains(endNode));
+  }
+
   private updateImagesForAxTree_(shadowRoot: ParentNode): boolean {
     const imagesEnabled = this.visualBrowserProxy_.isImagesEnabled();
     if (imagesEnabled) {
@@ -1079,8 +1096,12 @@ export class ContentController {
     // on canvases.
     const canvases = shadowRoot.querySelectorAll<HTMLElement>('canvas, figure');
     for (const canvas of canvases) {
-      canvas.style.display = imagesEnabled ? '' : 'none';
-      this.markTextNodesHiddenIfImagesHidden_(canvas);
+      const show = imagesEnabled ||
+          (canvas.nodeName === 'FIGURE' && this.isFigureSelected_(canvas));
+      canvas.style.display = show ? '' : 'none';
+      if (!show) {
+        this.markTextNodesHiddenIfImagesHidden_(canvas);
+      }
     }
     return canvases.length > 0;
   }

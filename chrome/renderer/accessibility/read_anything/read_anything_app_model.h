@@ -646,7 +646,9 @@ class ReadAnythingAppModel {
   void UpdateSelectionEndpoints();
 
   // Returns true if the user's current selection is entirely contained within
-  // the distilled article content (display_node_ids_).
+  // the distilled article content (display_node_ids_). When images are
+  // disabled, returns false if the selection starts or ends in a figure, so
+  // that the hidden figure is redrawn in selection mode.
   bool IsSelectionInDistilledContent() const;
 
   // Traverses the accessibility tree to populate |selection_node_ids_| with

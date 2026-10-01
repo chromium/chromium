@@ -63,6 +63,19 @@ const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
   return parent == node ? nullptr : parent;
 }
 
+// Returns true if the node or one of its ancestors is rendered as a <figure>
+// in the side panel, which is hidden when images are disabled.
+bool IsNodeInFigure(const ui::AXNode* ax_node) {
+  for (auto* node = ax_node; node != nullptr;
+       node = node->GetUnignoredParentCrossingTreeBoundary()) {
+    if (node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
+        "figure") {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
@@ -252,6 +265,10 @@ void ReadAnythingAppModel::UpdateSelectionEndpoints() {
 }
 
 bool ReadAnythingAppModel::IsSelectionInDistilledContent() const {
+  if (!images_enabled_ && (IsNodeInFigure(GetAXNode(start_.id)) ||
+                           IsNodeInFigure(GetAXNode(end_.id)))) {
+    return false;
+  }
   return display_node_ids_.contains(start_.id) &&
          display_node_ids_.contains(end_.id);
 }

@@ -3397,6 +3397,149 @@ TEST_F(
             ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
 }
 
+// Tests for image captions and select-to-distill behavior.
+class ReadAnythingAppModelCaptionTest
+    : public ReadAnythingAppModelScreen2xTest {
+ public:
+  static constexpr ui::AXNodeID kRootId = 1;
+  static constexpr ui::AXNodeID kParagraphId = 2;
+  static constexpr ui::AXNodeID kFigureId = 3;
+  static constexpr ui::AXNodeID kImageId = 4;
+  static constexpr ui::AXNodeID kFigcaptionId = 5;
+  static constexpr ui::AXNodeID kCaptionTextId = 6;
+
+  ReadAnythingAppModelCaptionTest() = default;
+  ~ReadAnythingAppModelCaptionTest() override = default;
+
+  void SetUp() override {
+    ReadAnythingAppModelScreen2xTest::SetUp();
+
+    // Tree structure:
+    // 1: Root container
+    //   2: Paragraph text (not in figure)
+    //   3: <figure>
+    //     4: Image
+    //     5: <figcaption>
+    //       6: Caption text
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+
+    ui::AXNodeData root = test::GenericContainerNode(kRootId);
+    ui::AXNodeData paragraph = test::TextNode(kParagraphId);
+
+    ui::AXNodeData figure = test::GenericContainerNode(kFigureId);
+    figure.role = ax::mojom::Role::kFigure;
+    figure.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "figure");
+
+    ui::AXNodeData image =
+        test::ImageNode(kImageId, "https://test.com/img.jpg");
+
+    ui::AXNodeData figcaption = test::GenericContainerNode(kFigcaptionId);
+    figcaption.role = ax::mojom::Role::kFigcaption;
+    figcaption.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  "figcaption");
+
+    ui::AXNodeData caption_text = test::TextNode(kCaptionTextId);
+
+    figcaption.child_ids = {kCaptionTextId};
+    figure.child_ids = {kImageId, kFigcaptionId};
+    root.child_ids = {kParagraphId, kFigureId};
+    update.nodes = {root, paragraph, figure, image, figcaption, caption_text};
+
+    ApplyAccessibilityUpdates(tree_id_, {update});
+    ProcessDisplayNodes({kParagraphId, kFigureId});
+  }
+
+  void SetSelection(ui::AXNodeID anchor_id,
+                    int anchor_offset,
+                    ui::AXNodeID focus_id,
+                    int focus_offset) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.tree_data.sel_anchor_object_id = anchor_id;
+    update.tree_data.sel_focus_object_id = focus_id;
+    update.tree_data.sel_anchor_offset = anchor_offset;
+    update.tree_data.sel_focus_offset = focus_offset;
+    update.tree_data.sel_is_backward = false;
+    ApplyAccessibilityUpdates(tree_id_, {update});
+  }
+};
+
+TEST_F(ReadAnythingAppModelCaptionTest,
+       CaptionSelection_ImagesEnabled_RemainsInMainContentMode) {
+  model().set_images_enabled(true);
+  SetSelection(kCaptionTextId, 0, kCaptionTextId, 4);
+
+  EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_TRUE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
+TEST_F(ReadAnythingAppModelCaptionTest,
+       CaptionSelection_ImagesDisabled_TriggersSelectionMode) {
+  model().set_images_enabled(false);
+  SetSelection(kCaptionTextId, 0, kCaptionTextId, 4);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_FALSE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+}
+
+TEST_F(
+    ReadAnythingAppModelCaptionTest,
+    SelectionSpanningParagraphToCaption_ImagesDisabled_TriggersSelectionMode) {
+  model().set_images_enabled(false);
+  SetSelection(kParagraphId, 0, kCaptionTextId, 4);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_FALSE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+}
+
+TEST_F(
+    ReadAnythingAppModelCaptionTest,
+    SelectionSpanningCaptionToParagraph_ImagesDisabled_TriggersSelectionMode) {
+  model().set_images_enabled(false);
+  SetSelection(kCaptionTextId, 0, kParagraphId, 4);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_FALSE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+}
+
+TEST_F(ReadAnythingAppModelCaptionTest,
+       ParagraphSelection_ImagesDisabled_RemainsInMainContentMode) {
+  model().set_images_enabled(false);
+  SetSelection(kParagraphId, 0, kParagraphId, 4);
+
+  EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_TRUE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
+TEST_F(ReadAnythingAppModelCaptionTest,
+       ParagraphSelection_AfterEnteringSelectionMode_ReturnsToMainContent) {
+  model().set_images_enabled(false);
+
+  // First select caption to enter selection mode.
+  SetSelection(kCaptionTextId, 0, kCaptionTextId, 4);
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+
+  // Subsequent selection in paragraph returns to main content mode.
+  SetSelection(kParagraphId, 0, kParagraphId, 4);
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_TRUE(model().IsSelectionInDistilledContent());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
 TEST_F(ReadAnythingAppModelScreen2xTest,
        StartAndEndNodesHaveDifferentParents_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
