@@ -57,6 +57,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
@@ -2804,7 +2805,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // On automotive, ignore density and fontScale changes to prevent Chrome from restarting
             // when window size changes. See https://crbug.com/537023087.
             if (newConfig.densityDpi != mConfig.densityDpi
-                    || newConfig.fontScale != mConfig.fontScale) {
+                    || !MathUtils.areFloatsEqual(newConfig.fontScale, mConfig.fontScale)) {
                 if (!DeviceInfo.isAutomotive()) {
                     doRecreateActivity();
                     return;
