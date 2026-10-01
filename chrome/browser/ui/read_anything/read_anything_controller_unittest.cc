@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -288,8 +289,11 @@ TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInSidePanel);
 
-  // ToggleUI when open in Side Panel -> closes Side Panel.
-  EXPECT_CALL(*mock_side_panel_ui_, Close).Times(1);
+  // ToggleUI when open in Side Panel -> closes Side Panel with animation.
+  EXPECT_CALL(*mock_side_panel_ui_,
+              Close(SidePanelEntryHideReason::kSidePanelClosed,
+                    /*suppress_animations=*/false))
+      .Times(1);
   controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInactive);
@@ -310,6 +314,21 @@ TEST_F(ReadAnythingControllerUnitTest, ToggleUI_TogglesAndRespectsPreference) {
   controller_->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInactive);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       ShowImmersiveUI_FromSidePanel_ClosesSidePanelWithoutAnimation) {
+  controller_->SetPresentationState(
+      ReadAnythingPresentationState::kInSidePanel);
+
+  EXPECT_CALL(*mock_side_panel_ui_,
+              Close(SidePanelEntryHideReason::kSidePanelClosed,
+                    /*suppress_animations=*/true))
+      .Times(1);
+  EXPECT_CALL(mock_immersive_observer_, OnShowImmersive).Times(1);
+  controller_->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInImmersiveOverlay);
 }
 
 }  // namespace

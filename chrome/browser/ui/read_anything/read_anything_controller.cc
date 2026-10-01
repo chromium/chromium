@@ -502,8 +502,9 @@ void ReadAnythingController::CloseSidePanelUI(ReadAnythingCloseReason reason) {
         (reason == ReadAnythingCloseReason::kTabSwitched)
             ? SidePanelEntryHideReason::kBackgrounded
             : SidePanelEntryHideReason::kSidePanelClosed;
-    side_panel_ui->Close(hide_reason,
-                         /*suppress_animations=*/true);
+    // Only user-initiated closes should animate.
+    bool suppress_animations = reason != ReadAnythingCloseReason::kClosedByUser;
+    side_panel_ui->Close(hide_reason, suppress_animations);
   }
 }
 
