@@ -2310,7 +2310,6 @@ static_library("ui") {
       ":scoped_tabbed_browser_displayer",
       ":singleton_tabs",
       "//chrome/browser:certificate_viewer",
-      "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/ui/sessions",
       "//chrome/browser/ui/views/drive_picker_host",
@@ -4331,11 +4330,7 @@ static_library("ui") {
   }
 
   if (enable_printing) {
-    deps += [
-      "//chrome/browser/printing",
-      "//chrome/browser/printing:impl",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/printing:impl" ]
+    deps += [ "//chrome/browser/printing" ]
   }
 
   if (enable_print_preview) {

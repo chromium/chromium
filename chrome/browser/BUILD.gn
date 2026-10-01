@@ -1264,6 +1264,7 @@ source_set("core") {
     "//services/metrics",
     "//ui/base:ozone_buildflags",
     "//ui/display/util",
+    "//ui/events/blink:blink_features",
     "//ui/gl:buildflags",
     "//ui/message_center",
     "//ui/webui",
