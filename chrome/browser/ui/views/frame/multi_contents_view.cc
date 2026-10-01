@@ -384,10 +384,11 @@ void MultiContentsView::SetTargetContentBounds(
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
-void MultiContentsView::SetIsAnimatingContent(bool is_animating) {
+void MultiContentsView::SetIsAnimatingContent(bool is_animating,
+                                              bool is_origin_changing) {
   for (auto& contents_container_view : contents_container_views_) {
     contents_container_view->contents_view()->SetIsAnimatingBounds(
-        is_animating);
+        is_animating, is_origin_changing);
   }
 }
 

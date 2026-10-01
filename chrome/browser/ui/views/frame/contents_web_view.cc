@@ -76,7 +76,8 @@ void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   background_layer->SetIsFastRoundedCorner(true);
 }
 
-void ContentsWebView::SetIsAnimatingBounds(bool is_animating) {
+void ContentsWebView::SetIsAnimatingBounds(bool is_animating,
+                                           bool is_origin_changing) {
   if (is_animating_bounds_ == is_animating) {
     return;
   }
@@ -88,7 +89,7 @@ void ContentsWebView::SetIsAnimatingBounds(bool is_animating) {
       status_bubble_->Hide();
     }
 
-    if (use_default_deadline_when_animating_) {
+    if (use_default_deadline_when_animating_ && is_origin_changing) {
       // Update the render widget host view to set to use default deadline when
       // animating. This is a best effort synchronization between browser and
       // web contents.

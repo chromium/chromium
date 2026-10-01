@@ -163,7 +163,7 @@ class MultiContentsView
   void SetTargetContentBounds(
       std::optional<TargetContentBounds> target_content_bounds);
 
-  void SetIsAnimatingContent(bool is_animating);
+  void SetIsAnimatingContent(bool is_animating, bool is_origin_changing);
 
   // Returns accessible panes to be used in BrowserView to create the order of
   // pane traversal.

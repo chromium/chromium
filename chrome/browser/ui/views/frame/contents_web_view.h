@@ -50,7 +50,7 @@ class ContentsWebView : public views::WebView,
     use_default_deadline_when_animating_ = use_default_deadline;
   }
 
-  void SetIsAnimatingBounds(bool is_animating);
+  void SetIsAnimatingBounds(bool is_animating, bool is_origin_changing);
 
   // Update the blocked state based on the tab's modal dialog status.
   void UpdateIsBlockedByModal();
