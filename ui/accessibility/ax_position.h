@@ -3455,10 +3455,16 @@ class AXPosition {
     // position that is either at the start of an anchor that is preceded by a
     // generated newline, at a grapheme boundary or a null position.
     if (text_position->IsPrecededByGeneratedNewline()) {
-      // When `text_position` is right after a generated newline character, we
-      // should create a position located at the end of the previous anchor.
-      text_position = CreatePreviousPositionAtAnchorWithText();
-      DCHECK(!text_position->IsNullPosition());
+      // When `text_position` is right after a generated newline, the preceding
+      // character boundary is at the end of the previous anchor with text or,
+      // if there isn't one before the newline, at the start of content.
+      AXPositionInstance previous_position =
+          CreatePreviousPositionAtAnchorWithText();
+      if (previous_position->IsNullPosition()) {
+        previous_position = text_position->CreatePositionAtStartOfContent()
+                                ->AsLeafTextPosition();
+      }
+      text_position = std::move(previous_position);
     } else {
       // If our text offset is pointing to a position that is in the middle of a
       // grapheme cluster, we should not erroneously assume that we are at a
