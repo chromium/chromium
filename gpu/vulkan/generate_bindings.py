@@ -17,7 +17,7 @@ from subprocess import call
 vulkan_reg_path = path.join(path.dirname(__file__), "..", "..", "third_party",
                             "vulkan-headers", "src", "registry")
 sys.path.append(vulkan_reg_path)
-from reg import Registry
+from reg import Registry  # noqa: E402
 
 registry = Registry()
 registry.loadFile(open(path.join(vulkan_reg_path, "vk.xml")))
@@ -366,7 +366,7 @@ def WriteMacros(out_file, functions):
       template = Template(
           '#define $name gpu::GetVulkanFunctionPointers()->${name}\n')
       return  template.substitute({'name': func, 'extension_suffix' : suffix})
-    none_str = lambda s: s if s else ''
+    none_str = lambda s: s if s else ''  # noqa: E731
     cmd = registry.cmddict[func].elem
     proto = cmd.find('proto')
     params = cmd.findall('param')
@@ -597,7 +597,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   // Instance functions
 """)
 
-  WriteFunctionDeclarations(out_file, VULKAN_INSTANCE_FUNCTIONS);
+  WriteFunctionDeclarations(out_file, VULKAN_INSTANCE_FUNCTIONS)
 
   out_file.write("""\
 
@@ -631,7 +631,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 // Instance functions
 """)
 
-  WriteMacros(out_file, VULKAN_INSTANCE_FUNCTIONS);
+  WriteMacros(out_file, VULKAN_INSTANCE_FUNCTIONS)
 
   out_file.write("""\
 
@@ -754,7 +754,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
 """)
 
   WriteInstanceFunctionPointerInitialization(
-      out_file, VULKAN_INSTANCE_FUNCTIONS);
+      out_file, VULKAN_INSTANCE_FUNCTIONS)
 
   out_file.write("""\
 

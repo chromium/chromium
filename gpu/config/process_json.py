@@ -589,7 +589,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_multi_gpu_category(multi_gpu_category, data_file)
   write_multi_gpu_style(multi_gpu_style, data_file)
   # group driver info
-  if driver_vendor != '' or driver_version != None:
+  if driver_vendor != '' or driver_version != None:  # noqa: E711
     if multi_gpu_category != '':
       assert vendor_id != 0, 'Need vendor_id in entry with id: '+ str(entry_id)
     if driver_version and driver_version.get('schema') == 'intel_driver':
@@ -635,19 +635,20 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                          intel_gpu_series_list, intel_gpu_generation,
                          data_file, data_helper_file)
   # group a bunch of less used conditions
-  if gl_type != '' or gl_version != None:
+  if gl_type != '' or gl_version != None:  # noqa: E711
     if gl_type == 'gles':
       assert os_type == 'android'
     elif gl_type == 'angle_gl':
       assert os_type == 'linux'
     elif gl_type in ('angle_gles', 'angle_vulkan'):
       assert os_type in ('android', 'linux', 'chromeos')
-  if (gl_type != '' or gl_version != None or pixel_shader_version != None or
-      d3d11_feature_level != None or
-      in_process_gpu or gl_reset_notification_strategy != None or
-      direct_rendering_version != None or gpu_count != None or
-      hardware_overlay != None or test_group != 0 or
-      subpixel_font_rendering != None):
+  if (gl_type != '' or gl_version != None or  # noqa: E711
+      pixel_shader_version != None or  # noqa: E711
+      d3d11_feature_level != None or  # noqa: E711
+      in_process_gpu or gl_reset_notification_strategy != None or  # noqa: E711
+      direct_rendering_version != None or gpu_count != None or  # noqa: E711
+      hardware_overlay != None or test_group != 0 or  # noqa: E711
+      subpixel_font_rendering != None):  # noqa: E711
     write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
                           gl_version, pixel_shader_version, d3d11_feature_level,
                           in_process_gpu,
@@ -1059,7 +1060,7 @@ def main(argv):
 
   script_dir = os.path.dirname(os.path.realpath(__file__))
 
-  if options.output_dir != None:
+  if options.output_dir != None:  # noqa: E711
     process_software_rendering_list(
         script_dir, options.output_dir, options.os_filter)
     process_gpu_driver_bug_list(

@@ -541,11 +541,11 @@ _NAMED_TYPE_INFO = {
     'type': 'GLenum',
     'valid': ["GL_%s" % cap['name'].upper()
               for cap in build_cmd_buffer_lib._CAPABILITY_FLAGS
-              if ('es3' not in cap or cap['es3'] != True)
+              if ('es3' not in cap or cap['es3'] != True)  # noqa: E712
               and 'extension_flag' not in cap],
     'valid_es3': ["GL_%s" % cap['name'].upper()
                   for cap in build_cmd_buffer_lib._CAPABILITY_FLAGS
-                  if ('es3' in cap and cap['es3'] == True)
+                  if ('es3' in cap and cap['es3'] == True)  # noqa: E712
                   and 'extension_flag' not in cap],
   },
   'DrawMode': {
@@ -4015,7 +4015,7 @@ def main(argv):
     if 'extension_flag' in state:
       continue
     if 'enum' in state:
-      if not state['enum'] in gl_state_valid:
+      if state['enum'] not in gl_state_valid:
         gl_state_valid.append(state['enum'])
     else:
       for item in state['states']:
@@ -4023,16 +4023,16 @@ def main(argv):
           continue
         if 'es3' in item:
           assert item['es3']
-          if not item['enum'] in gl_state_valid_es3:
+          if item['enum'] not in gl_state_valid_es3:
             gl_state_valid_es3.append(item['enum'])
         else:
-          if not item['enum'] in gl_state_valid:
+          if item['enum'] not in gl_state_valid:
             gl_state_valid.append(item['enum'])
   for capability in build_cmd_buffer_lib._CAPABILITY_FLAGS:
     if 'extension_flag' in capability:
       continue
     valid_value = "GL_%s" % capability['name'].upper()
-    if not valid_value in gl_state_valid:
+    if valid_value not in gl_state_valid:
       gl_state_valid.append(valid_value)
 
   # This script lives under src/gpu/command_buffer.

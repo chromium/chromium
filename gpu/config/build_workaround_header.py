@@ -5,7 +5,6 @@
 """code generator for gpu workaround definitions"""
 
 import argparse
-import os
 import sys
 import typing
 
@@ -39,7 +38,8 @@ def write_header(filename: str, workarounds: typing.List[str]) -> None:
 
     # length of max string passed to write + 1
     max_len = len(indent) + len(macro) + 1 + max_workaround_len + 1 + 1
-    write = lambda line: f.write(line + ' ' * (max_len - len(line)) + '\\\n')
+    write = lambda line: f.write(  # noqa: E731
+        line + ' ' * (max_len - len(line)) + '\\\n')
 
     write('#define GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)')
     for w in workarounds:
