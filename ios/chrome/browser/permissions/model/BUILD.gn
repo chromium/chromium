@@ -31,6 +31,7 @@ source_set("tab_helper") {
   deps = [
     ":infobar_delegate",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/infobars/core",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/infobars/model",

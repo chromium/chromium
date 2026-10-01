@@ -6,7 +6,7 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/timer.h"
-#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -130,6 +130,7 @@ void PermissionsTabHelper::
     PresentPermissionsDecisionDialogWithCompletionHandler(
         NSArray<NSNumber*>* permissions,
         web::WebStatePermissionDecisionHandler handler) {
+  EnsureObservingContentSettings();
   GURL requesting_url = web_state_->GetLastCommittedURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(requesting_url,
@@ -169,6 +170,7 @@ void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
     }
     return;
   }
+  EnsureObservingContentSettings();
   // Adds/replaces infobar if previous state was "NotAccessible".
   if (permissions_to_state_[@(permission)].unsignedIntegerValue ==
       web::PermissionStateNotAccessible) {
@@ -191,6 +193,7 @@ void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
 void PermissionsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(banner_queue_);
+  content_settings_scoped_observation_.Reset();
   web_state_->RemoveObserver(this);
 
   web_state_ = nullptr;
@@ -210,6 +213,45 @@ void PermissionsTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();
+}
+
+void PermissionsTabHelper::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (!web_state_) {
+    return;
+  }
+  const GURL& url = web_state_->GetLastCommittedURL();
+  if (!url.is_valid() || !primary_pattern.Matches(url)) {
+    return;
+  }
+  HostContentSettingsMap* settings_map =
+      content_settings_scoped_observation_.GetSource();
+  if (!settings_map) {
+    return;
+  }
+
+  static constexpr web::Permission kPermissions[] = {
+      web::PermissionCamera,
+      web::PermissionMicrophone,
+  };
+  for (web::Permission permission : kPermissions) {
+    ContentSettingsType type = ContentSettingsTypeForPermission(permission);
+    if (!content_type_set.Contains(type)) {
+      continue;
+    }
+    ContentSetting setting = settings_map->GetContentSetting(url, url, type);
+    if (setting == CONTENT_SETTING_BLOCK) {
+      // Setting `PermissionStateNotAccessible` maps to
+      // `WKMediaCaptureStateNone` on `WKWebView`, which calls
+      // `WebPageProxy::stopMediaCapture` and
+      // `UserMediaPermissionRequestManagerProxy::resetAccess` to revoke any
+      // active or cached permission grant in WebKit.
+      web_state_->SetStateForPermission(web::PermissionStateNotAccessible,
+                                        permission);
+    }
+  }
 }
 
 void PermissionsTabHelper::ShowInfoBar() {
@@ -259,4 +301,21 @@ void PermissionsTabHelper::UpdateIsInfoBarAccepted() {
     }
   }
   static_cast<InfoBarIOS*>(infobar_)->set_accepted(accepted);
+}
+
+void PermissionsTabHelper::EnsureObservingContentSettings() {
+  if (!web_state_ || content_settings_scoped_observation_.IsObserving() ||
+      !IsDomainLevelSitePermissionsEnabled()) {
+    return;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile) {
+    return;
+  }
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
+  if (settings_map) {
+    content_settings_scoped_observation_.Observe(settings_map);
+  }
 }

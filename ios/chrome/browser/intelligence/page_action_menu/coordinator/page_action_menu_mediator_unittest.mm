@@ -391,12 +391,12 @@ TEST_F(PageActionMenuMediatorTest, UpdatePermissionSetting) {
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_ALLOW);
 
-  // 2. Never allow persists a BLOCK content setting and blocks the session.
+  // 2. Never allow persists a BLOCK content setting and revokes the session.
   [mediator_
       updatePermissionSetting:PageActionMenuPermissionSetting::kNeverAllow
                    forFeature:PageActionMenuCameraPermission];
   EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
-            web::PermissionStateBlocked);
+            web::PermissionStateNotAccessible);
   EXPECT_EQ(settings_map_->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_BLOCK);
@@ -470,10 +470,13 @@ TEST_F(PageActionMenuMediatorTest, PermissionFeatureDropdown) {
   EXPECT_EQ(feature.permissionSetting,
             PageActionMenuPermissionSetting::kNeverAllow);
 
-  // 5. A blocked permission keeps its row so that it can be changed back.
+  // 5. A blocked permission revokes WebState access and keeps its row so that
+  // it can be changed back.
   [mediator_
       updatePermissionSetting:PageActionMenuPermissionSetting::kNeverAllow
                    forFeature:PageActionMenuCameraPermission];
+  EXPECT_EQ(web_state_->GetStateForPermission(web::PermissionCamera),
+            web::PermissionStateNotAccessible);
   EXPECT_TRUE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
   feature = CameraFeature([mediator_ activeFeatures]);
   ASSERT_TRUE(feature);

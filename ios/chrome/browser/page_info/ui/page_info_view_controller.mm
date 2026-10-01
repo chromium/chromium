@@ -709,7 +709,7 @@ SectionIdentifier PermissionSectionForItem(ItemIdentifier item_identifier) {
   PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
   permissionDescription.permission = permission;
   permissionDescription.state = (setting == SitePermissionSetting::kNeverAllow)
-                                    ? web::PermissionStateBlocked
+                                    ? web::PermissionStateNotAccessible
                                     : web::PermissionStateAllowed;
   permissionDescription.setting = setting;
 
@@ -749,10 +749,39 @@ SectionIdentifier PermissionSectionForItem(ItemIdentifier item_identifier) {
 - (void)updateSnapshot:
             (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot
          forPermission:(PermissionInfo*)permissionInfo {
+  ItemIdentifier itemIdentifier =
+      ItemIdentifierForPermission(permissionInfo.permission);
+  BOOL itemVisible = permissionInfo.state != web::PermissionStateNotAccessible;
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    SectionIdentifier sectionIdentifier =
+        PermissionSectionForItem(itemIdentifier);
+    BOOL sectionExists =
+        [snapshot indexOfSectionIdentifier:@(sectionIdentifier)] != NSNotFound;
+    itemVisible = itemVisible || sectionExists ||
+                  permissionInfo.setting != SitePermissionSetting::kAllowOnce;
+    if (itemVisible) {
+      if (!sectionExists) {
+        SectionIdentifier afterSection = SectionIdentifierSecurityContent;
+        if (sectionIdentifier == SectionIdentifierPermissionsMicrophone &&
+            [snapshot indexOfSectionIdentifier:
+                          @(SectionIdentifierPermissionsCamera)] !=
+                NSNotFound) {
+          afterSection = SectionIdentifierPermissionsCamera;
+        }
+        [snapshot insertSectionsWithIdentifiers:@[ @(sectionIdentifier) ]
+                     afterSectionWithIdentifier:@(afterSection)];
+        [snapshot appendItemsWithIdentifiers:@[ @(itemIdentifier) ]
+                   intoSectionWithIdentifier:@(sectionIdentifier)];
+      } else {
+        [snapshot reloadSectionsWithIdentifiers:@[ @(sectionIdentifier) ]];
+      }
+    }
+    return;
+  }
+
   [self updateSnapshot:snapshot
       forPermissionState:permissionInfo.state
-                  toItem:ItemIdentifierForPermission(
-                             permissionInfo.permission)];
+                  toItem:itemIdentifier];
 }
 
 // Invoked when a permission switch is toggled.
@@ -772,32 +801,6 @@ SectionIdentifier PermissionSectionForItem(ItemIdentifier item_identifier) {
     forPermissionState:(web::PermissionState)state
                 toItem:(ItemIdentifier)itemIdentifier {
   BOOL itemVisible = state != web::PermissionStateNotAccessible;
-  if (IsDomainLevelSitePermissionsEnabled()) {
-    SectionIdentifier sectionIdentifier =
-        PermissionSectionForItem(itemIdentifier);
-    if (itemVisible) {
-      if ([snapshot indexOfSectionIdentifier:@(sectionIdentifier)] ==
-          NSNotFound) {
-        SectionIdentifier afterSection = SectionIdentifierSecurityContent;
-        if (sectionIdentifier == SectionIdentifierPermissionsMicrophone &&
-            [snapshot indexOfSectionIdentifier:
-                          @(SectionIdentifierPermissionsCamera)] !=
-                NSNotFound) {
-          afterSection = SectionIdentifierPermissionsCamera;
-        }
-        [snapshot insertSectionsWithIdentifiers:@[ @(sectionIdentifier) ]
-                     afterSectionWithIdentifier:@(afterSection)];
-        [snapshot appendItemsWithIdentifiers:@[ @(itemIdentifier) ]
-                   intoSectionWithIdentifier:@(sectionIdentifier)];
-      } else {
-        [snapshot reloadSectionsWithIdentifiers:@[ @(sectionIdentifier) ]];
-      }
-    } else if ([snapshot indexOfSectionIdentifier:@(sectionIdentifier)] !=
-               NSNotFound) {
-      [snapshot deleteSectionsWithIdentifiers:@[ @(sectionIdentifier) ]];
-    }
-    return;
-  }
 
   NSInteger sectionIndex =
       [snapshot indexOfSectionIdentifier:@(SectionIdentifierPermissions)];

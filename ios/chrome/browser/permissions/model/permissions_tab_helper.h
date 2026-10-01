@@ -10,6 +10,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
+#import "components/content_settings/core/browser/content_settings_observer.h"
+#import "components/content_settings/core/browser/content_settings_type_set.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
@@ -31,7 +35,8 @@ ContentSettingsType ContentSettingsTypeForPermission(
 // Tab helper that observes changes to web permissions and creates/replaces the
 // respective infobar accordingly.
 class PermissionsTabHelper
-    : public infobars::InfoBarManager::Observer,
+    : public content_settings::Observer,
+      public infobars::InfoBarManager::Observer,
       public web::WebStateObserver,
       public web::WebStateUserData<PermissionsTabHelper> {
  public:
@@ -57,6 +62,12 @@ class PermissionsTabHelper
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
   void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
+  // content_settings::Observer implementation.
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
  private:
   friend class web::WebStateUserData<PermissionsTabHelper>;
 
@@ -66,8 +77,11 @@ class PermissionsTabHelper
   // Update the acceptance of the infobar.
   void UpdateIsInfoBarAccepted();
 
+  // Starts observing `HostContentSettingsMap` if not already observing.
+  void EnsureObservingContentSettings();
+
   // The WebState that this object is attached to.
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The currently displayed infobar.
   raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_ = nullptr;
@@ -87,6 +101,10 @@ class PermissionsTabHelper
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       infobar_manager_scoped_observation_{this};
+
+  // Scoped observer that facilitates observing `HostContentSettingsMap`.
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_scoped_observation_{this};
 
   // Banner queue for the TabHelper's WebState;
   raw_ptr<OverlayRequestQueue, DanglingUntriaged> banner_queue_ = nullptr;

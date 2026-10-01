@@ -9,6 +9,8 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
@@ -441,7 +443,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 
   web::PermissionState state =
       setting == PageActionMenuPermissionSetting::kNeverAllow
-          ? web::PermissionStateBlocked
+          ? web::PermissionStateNotAccessible
           : web::PermissionStateAllowed;
   _webState->SetStateForPermission(state, permission);
 }
@@ -654,17 +656,28 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 
 // Returns whether the row for `permission` should be shown. With domain level
 // site permissions, the row remains visible for any permission the site has
-// requested, so that a blocked permission can still be changed back.
+// requested or has a site-specific setting for, so that a blocked permission
+// can still be changed back.
 - (BOOL)isPermissionRowAvailable:(web::Permission)permission {
   if (!_webState) {
     return NO;
   }
   web::PermissionState state = _webState->GetStateForPermission(permission);
-  if (state == web::PermissionStateNotAccessible) {
+  if (state != web::PermissionStateNotAccessible) {
+    return state == web::PermissionStateAllowed ||
+           IsDomainLevelSitePermissionsEnabled();
+  }
+  if (!_hostContentSettingsMap || !IsDomainLevelSitePermissionsEnabled()) {
     return NO;
   }
-  return state == web::PermissionStateAllowed ||
-         IsDomainLevelSitePermissionsEnabled();
+  const GURL& url = _webState->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return NO;
+  }
+  content_settings::SettingInfo settingInfo;
+  _hostContentSettingsMap->GetWebsiteSetting(
+      url, url, ContentSettingsTypeForPermission(permission), &settingInfo);
+  return !settingInfo.primary_pattern.MatchesAllHosts();
 }
 
 // Populates `feature` with the current state of `permission`, either as a

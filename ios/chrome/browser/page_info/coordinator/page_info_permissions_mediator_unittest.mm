@@ -90,6 +90,7 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   // Select Always Allow for Camera.
   PermissionInfo* cameraAlwaysAllow = [[PermissionInfo alloc] init];
   cameraAlwaysAllow.permission = web::PermissionCamera;
+  cameraAlwaysAllow.state = web::PermissionStateAllowed;
   cameraAlwaysAllow.setting = SitePermissionSetting::kAlwaysAllow;
   [mediator() updatePermissionInfo:cameraAlwaysAllow];
 
@@ -102,11 +103,12 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   // Select Never Allow for Camera.
   PermissionInfo* cameraNeverAllow = [[PermissionInfo alloc] init];
   cameraNeverAllow.permission = web::PermissionCamera;
+  cameraNeverAllow.state = web::PermissionStateNotAccessible;
   cameraNeverAllow.setting = SitePermissionSetting::kNeverAllow;
   [mediator() updatePermissionInfo:cameraNeverAllow];
 
   EXPECT_EQ(web_state()->GetStateForPermission(web::PermissionCamera),
-            web::PermissionStateBlocked);
+            web::PermissionStateNotAccessible);
   EXPECT_EQ(settings_map()->GetContentSetting(
                 url, url, ContentSettingsType::MEDIASTREAM_CAMERA),
             CONTENT_SETTING_BLOCK);
@@ -114,6 +116,7 @@ TEST_F(PageInfoPermissionsTest, TestUpdateSettingForPermission) {
   // Select Allow Once for Camera.
   PermissionInfo* cameraAllowOnce = [[PermissionInfo alloc] init];
   cameraAllowOnce.permission = web::PermissionCamera;
+  cameraAllowOnce.state = web::PermissionStateAllowed;
   cameraAllowOnce.setting = SitePermissionSetting::kAllowOnce;
   [mediator() updatePermissionInfo:cameraAllowOnce];
 
@@ -149,8 +152,8 @@ TEST_F(PageInfoPermissionsTest, TestDispatchInitialPermissionSettings) {
   EXPECT_OCMOCK_VERIFY(consumer);
 }
 
-// Tests that when web state permission is blocked but HostContentSettingsMap
-// has `CONTENT_SETTING_ALLOW`, the domain setting resolves to `kAlwaysAllow`.
+// Test that when web state permission is blocked, the domain setting resolves
+// to `kNeverAllow` even if HostContentSettingsMap has `CONTENT_SETTING_ALLOW`.
 TEST_F(PageInfoPermissionsTest, TestBlockedWebStateWithAllowContentSetting) {
   base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
   GURL url(kTestUrl);
@@ -169,15 +172,15 @@ TEST_F(PageInfoPermissionsTest, TestBlockedWebStateWithAllowContentSetting) {
         PermissionInfo* info = infos.firstObject;
         return info.permission == web::PermissionCamera &&
                info.state == web::PermissionStateBlocked &&
-               info.setting == SitePermissionSetting::kAlwaysAllow;
+               info.setting == SitePermissionSetting::kNeverAllow;
       }]]);
 
   mediator().consumer = consumer;
   EXPECT_OCMOCK_VERIFY(consumer);
 }
 
-// Tests that when web state permission is blocked and HostContentSettingsMap
-// is default/ask, the domain setting resolves to `kAllowOnce`.
+// Test that when web state permission is blocked and HostContentSettingsMap
+// is default/ask, the domain setting resolves to `kNeverAllow`.
 TEST_F(PageInfoPermissionsTest, TestBlockedWebStateWithAskContentSetting) {
   base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
   GURL url(kTestUrl);
@@ -196,14 +199,14 @@ TEST_F(PageInfoPermissionsTest, TestBlockedWebStateWithAskContentSetting) {
         PermissionInfo* info = infos.firstObject;
         return info.permission == web::PermissionCamera &&
                info.state == web::PermissionStateBlocked &&
-               info.setting == SitePermissionSetting::kAllowOnce;
+               info.setting == SitePermissionSetting::kNeverAllow;
       }]]);
 
   mediator().consumer = consumer;
   EXPECT_OCMOCK_VERIFY(consumer);
 }
 
-// Tests that an invalid URL safely defaults to `kAllowOnce` and does not crash
+// Test that an invalid URL safely defaults to `kAllowOnce` and does not crash
 // or modify `HostContentSettingsMap`.
 TEST_F(PageInfoPermissionsTest, TestInvalidUrlHandling) {
   base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
@@ -229,4 +232,32 @@ TEST_F(PageInfoPermissionsTest, TestInvalidUrlHandling) {
   cameraAlwaysAllow.setting = SitePermissionSetting::kAlwaysAllow;
   // Should not crash when persisting with an invalid URL.
   [mediator() updatePermissionInfo:cameraAlwaysAllow];
+}
+
+// Test that a permission with `PermissionStateNotAccessible` is still
+// dispatched when a site-specific content setting exists.
+TEST_F(PageInfoPermissionsTest,
+       TestNotAccessibleWebStateWithSiteExceptionDispatchesPermissionInfo) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  GURL url(kTestUrl);
+  web_state()->SetStateForPermission(web::PermissionStateNotAccessible,
+                                     web::PermissionCamera);
+  settings_map()->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+
+  id consumer = OCMProtocolMock(@protocol(PermissionsConsumer));
+  OCMExpect([consumer
+      setPermissionsInfo:[OCMArg checkWithBlock:^BOOL(
+                                     NSArray<PermissionInfo*>* infos) {
+        if (infos.count != 1) {
+          return NO;
+        }
+        PermissionInfo* info = infos.firstObject;
+        return info.permission == web::PermissionCamera &&
+               info.state == web::PermissionStateNotAccessible &&
+               info.setting == SitePermissionSetting::kNeverAllow;
+      }]]);
+
+  mediator().consumer = consumer;
+  EXPECT_OCMOCK_VERIFY(consumer);
 }

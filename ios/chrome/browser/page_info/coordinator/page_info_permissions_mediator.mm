@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_pattern.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
@@ -115,11 +116,8 @@ SitePermissionSetting SitePermissionSettingForContentSetting(
     return;
   }
   if (IsDomainLevelSitePermissionsEnabled()) {
-    SitePermissionSetting setting = permissionInfo.setting;
-    [self persistSetting:setting forPermission:permissionInfo.permission];
-    permissionInfo.state = (setting == SitePermissionSetting::kNeverAllow)
-                               ? web::PermissionStateBlocked
-                               : web::PermissionStateAllowed;
+    [self persistSetting:permissionInfo.setting
+           forPermission:permissionInfo.permission];
     // TODO(crbug.com/552563362): Record domain-level permission dropdown
     // selection histogram.
   } else {
@@ -142,11 +140,11 @@ SitePermissionSetting SitePermissionSettingForContentSetting(
   NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
       _webState->GetStatesForAllPermissions();
   for (NSNumber* key in statesForAllPermissions) {
+    web::Permission permission =
+        static_cast<web::Permission>(key.unsignedIntValue);
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
-    if (state != web::PermissionStateNotAccessible) {
-      web::Permission permission =
-          static_cast<web::Permission>(key.unsignedIntValue);
+    if ([self shouldShowPermission:permission withState:state]) {
       PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
       permissionInfo.permission = permission;
       permissionInfo.state = state;
@@ -159,10 +157,34 @@ SitePermissionSetting SitePermissionSettingForContentSetting(
   [self.consumer setPermissionsInfo:permissionsInfo];
 }
 
+// Returns whether `permission` with `state` should be displayed in Page Info.
+- (BOOL)shouldShowPermission:(web::Permission)permission
+                   withState:(web::PermissionState)state {
+  if (state != web::PermissionStateNotAccessible) {
+    return YES;
+  }
+  if (!_webState || !_hostContentSettingsMap ||
+      !IsDomainLevelSitePermissionsEnabled()) {
+    return NO;
+  }
+  const GURL& url = _webState->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return NO;
+  }
+  content_settings::SettingInfo settingInfo;
+  _hostContentSettingsMap->GetWebsiteSetting(
+      url, url, ContentSettingsTypeForPermission(permission), &settingInfo);
+  return !settingInfo.primary_pattern.MatchesAllHosts();
+}
+
 // Resolves the current domain-level permission setting for `permission`.
 - (SitePermissionSetting)permissionSettingFor:(web::Permission)permission {
   if (!_webState || !_hostContentSettingsMap) {
     return SitePermissionSetting::kAllowOnce;
+  }
+  if (_webState->GetStateForPermission(permission) ==
+      web::PermissionStateBlocked) {
+    return SitePermissionSetting::kNeverAllow;
   }
   const GURL& url = _webState->GetLastCommittedURL();
   if (!url.is_valid()) {

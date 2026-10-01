@@ -442,3 +442,98 @@ TEST_F(PermissionsTabHelperTest,
                                      GURL(kTestURL), GURL(kTestURL),
                                      ContentSettingsType::MEDIASTREAM_CAMERA));
 }
+
+// Test that setting a site exception to CONTENT_SETTING_BLOCK in
+// HostContentSettingsMap revokes an allowed permission on the WebState, and
+// continues observing even after a stream returns to
+// PermissionStateNotAccessible.
+TEST_F(PermissionsTabHelperTest,
+       TestContentSettingBlockRevokesAllowedPermission) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  GURL url(kTestURL);
+  web_state_.SetCurrentURL(url);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(web::PermissionStateNotAccessible,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+
+  // Even after transitioning to PermissionStateNotAccessible, observation
+  // remains active if the permission becomes active again and is subsequently
+  // blocked.
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(web::PermissionStateNotAccessible,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+}
+
+// Test that changing the default content setting to CONTENT_SETTING_BLOCK
+// revokes a one-time allowed permission on the WebState.
+TEST_F(PermissionsTabHelperTest,
+       TestDefaultContentSettingBlockRevokesOneTimeAllowedPermission) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  GURL url(kTestURL);
+  web_state_.SetCurrentURL(url);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionMicrophone);
+
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  settings_map->SetDefaultContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+                                         CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(web::PermissionStateNotAccessible,
+            web_state_.GetStateForPermission(web::PermissionMicrophone));
+}
+
+// Test that deleting an allowed or blocked site exception (resetting to
+// CONTENT_SETTING_DEFAULT) does not revoke an allowed permission or re-enable a
+// revoked permission on the WebState.
+TEST_F(PermissionsTabHelperTest,
+       TestDeletingSiteExceptionsDoesNotMutateActivePermissionState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  GURL url(kTestURL);
+  web_state_.SetCurrentURL(url);
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
+
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+  web_state_.SetStateForPermission(web::PermissionStateAllowed,
+                                   web::PermissionCamera);
+
+  // Deleting the ALLOW site exception resets to ASK and keeps the session
+  // permission allowed.
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
+      CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(web::PermissionStateAllowed,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+
+  // Blocking the site revokes the session permission.
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(web::PermissionStateNotAccessible,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+
+  // Deleting the BLOCK site exception resets to ASK and keeps the session
+  // permission revoked.
+  settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
+      CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(web::PermissionStateNotAccessible,
+            web_state_.GetStateForPermission(web::PermissionCamera));
+}

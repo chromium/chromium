@@ -247,8 +247,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 }
 
 // Disables `permission` in Page Info via the dropdown menu (when
-// `kDomainLevelSitePermissions` is enabled) or the toggle switch.
-- (void)disablePermission:(web::Permission)permission {
+// `kDomainLevelSitePermissions` is enabled) or the toggle switch, and returns
+// the expected `web::PermissionState` after disabling.
+- (web::PermissionState)disablePermission:(web::Permission)permission {
   id<GREYMatcher> dropdownMatcher = (permission == web::PermissionCamera)
                                         ? CameraPermissionsDropdown()
                                         : MicrophonePermissionsDropdown();
@@ -264,7 +265,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
             chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                 IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW)]
         performAction:grey_tap()];
-    return;
+    return web::PermissionStateNotAccessible;
   }
 
   id<GREYMatcher> switchMatcher = (permission == web::PermissionCamera)
@@ -272,6 +273,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
                                       : MicrophonePermissionsSwitch(YES);
   [[EarlGrey selectElementWithMatcher:switchMatcher]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  return web::PermissionStateBlocked;
 }
 
 // Tests that rotating the device will don't dismiss the page info view.
@@ -358,14 +360,15 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
           grey_accessibilityID(kPageInfoCameraSwitchAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
   // Check that microphone permission item is visible, and turn it off.
-  [self disablePermission:web::PermissionMicrophone];
+  web::PermissionState expectedState =
+      [self disablePermission:web::PermissionMicrophone];
   [[EarlGrey  // Dismiss view.
       selectElementWithMatcher:grey_accessibilityID(
                                    kPageInfoViewAccessibilityIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [self checkStatesForPermissions:@{
     @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
-    @(web::PermissionMicrophone) : @(web::PermissionStateBlocked)
+    @(web::PermissionMicrophone) : @(expectedState)
   }];
 
   // Check that the correct histograms are logged when a camera permission is
@@ -394,13 +397,14 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       selectElementWithMatcher:grey_anyOf(MicrophonePermissionsSwitch(YES),
                                           MicrophonePermissionsDropdown(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [self disablePermission:web::PermissionCamera];
+  web::PermissionState expectedState =
+      [self disablePermission:web::PermissionCamera];
   [[EarlGrey  // Dismiss view.
       selectElementWithMatcher:grey_accessibilityID(
                                    kPageInfoViewAccessibilityIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [self checkStatesForPermissions:@{
-    @(web::PermissionCamera) : @(web::PermissionStateBlocked),
+    @(web::PermissionCamera) : @(expectedState),
     @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
   }];
 

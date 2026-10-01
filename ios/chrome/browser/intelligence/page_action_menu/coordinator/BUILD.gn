@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
