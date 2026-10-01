@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -181,13 +182,17 @@ bool SkiaGraphiteVkAndroidImageRepresentation::BeginAccessInternal(
       DLOG(ERROR) << "Failed to import semaphore from sync_fd.";
       return false;
     }
-
-    // TODO(crbug.com/55295190): Submit `begin_access_semaphore_` to Skia to
-    // wait on.
   }
 
   // TODO(crbug.com/55295190): Create `end_access_semaphore_`, if necessary,
   // and pass to Skia to signal after work is completed.
+
+  if (begin_access_semaphore_ != VK_NULL_HANDLE) {
+    // Any work submitted after this access begins will wait for the semaphore.
+    context_state_->graphite_shared_context()->AddPendingWaitSemaphore(
+        skgpu::graphite::BackendSemaphores::MakeVulkan(
+            begin_access_semaphore_));
+  }
 
   std::move(end_access_helper).Cancel();
   mode_ = readonly ? RepresentationAccessMode::kRead

@@ -82,6 +82,16 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   std::unique_ptr<skgpu::graphite::PrecompileContext> makePrecompileContext();
 
+  // Enqueues `semaphore` to be waited on / signaled by the next submission.
+  // Returns the submit generation current at enqueue time. The caller can
+  // compare it against submit_generation() to know if the semaphore has been
+  // submitted.
+  uint64_t AddPendingWaitSemaphore(
+      const skgpu::graphite::BackendSemaphore& semaphore);
+  uint64_t AddPendingSignalSemaphore(
+      const skgpu::graphite::BackendSemaphore& semaphore);
+  uint64_t submit_generation() const;
+
   bool insertRecording(const skgpu::graphite::InsertRecordingInfo& info);
   void submit(skgpu::graphite::SubmitInfo = {});
 
@@ -243,6 +253,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   bool InsertRecordingImpl(const skgpu::graphite::InsertRecordingInfo&);
   bool SubmitImpl(skgpu::graphite::SubmitInfo);
   void SubmitAndFlushBackendImpl(const skgpu::graphite::SubmitInfo&);
+  void InsertSemaphoreOnlyRecording();
 
   // The lock for protecting skgpu::graphite::Context.
   // Valid only when |is_thread_safe| is set to true in Ctor.
@@ -278,6 +289,17 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   skgpu::graphite::InsertStatus simulated_insert_status_ =
       skgpu::graphite::InsertStatus::kSuccess;
+
+  // Used to produce empty recordings to submit semaphores.
+  // TODO(crbug.com/552951905): Add a way to insert semaphores without a
+  // recording.
+  std::unique_ptr<skgpu::graphite::Recorder> semaphore_recorder_;
+
+  std::vector<skgpu::graphite::BackendSemaphore> pending_wait_semaphores_;
+  std::vector<skgpu::graphite::BackendSemaphore> pending_signal_semaphores_;
+
+  // Incremented after each context submit.
+  std::atomic<uint64_t> submit_generation_{0};
 };
 
 }  // namespace gpu

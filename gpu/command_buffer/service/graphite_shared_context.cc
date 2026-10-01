@@ -19,8 +19,10 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/graphite/BackendSemaphore.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
+#include "third_party/skia/include/gpu/graphite/Recording.h"
 
 namespace gpu {
 
@@ -154,9 +156,8 @@ static void ReadPixelsCallbackThreadSafe(
   base::SingleThreadTaskRunner* task_runner = context->task_runner.get();
   if (task_runner && !task_runner->BelongsToCurrentThread()) {
     task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ReadPixelsCallbackThreadSafe, context.release(),
-                       std::move(async_result)));
+        FROM_HERE, base::BindOnce(&ReadPixelsCallbackThreadSafe,
+                                  context.release(), std::move(async_result)));
     return;
   }
 
@@ -186,6 +187,7 @@ class AutoReset {
 // Recursive lock is permitted for locking will be skipped upon reentance.
 class SCOPED_LOCKABLE GraphiteSharedContext::AutoLock {
   STACK_ALLOCATED();
+
  public:
   explicit AutoLock(const GraphiteSharedContext* context)
       EXCLUSIVE_LOCK_FUNCTION(context->lock_);
@@ -321,6 +323,26 @@ void GraphiteSharedContext::set_simulated_insert_status(
   simulated_insert_status_ = status;
 }
 
+uint64_t GraphiteSharedContext::AddPendingWaitSemaphore(
+    const skgpu::graphite::BackendSemaphore& semaphore) {
+  CHECK(semaphore.isValid());
+  AutoLock auto_lock(this);
+  pending_wait_semaphores_.push_back(semaphore);
+  return submit_generation();
+}
+
+uint64_t GraphiteSharedContext::AddPendingSignalSemaphore(
+    const skgpu::graphite::BackendSemaphore& semaphore) {
+  CHECK(semaphore.isValid());
+  AutoLock auto_lock(this);
+  pending_signal_semaphores_.push_back(semaphore);
+  return submit_generation();
+}
+
+uint64_t GraphiteSharedContext::submit_generation() const {
+  return submit_generation_.load(std::memory_order_relaxed);
+}
+
 bool GraphiteSharedContext::insertRecording(
     const skgpu::graphite::InsertRecordingInfo& info) {
   AutoLock auto_lock(this);
@@ -351,35 +373,72 @@ bool GraphiteSharedContext::insertRecording(
   return true;
 }
 
+void GraphiteSharedContext::InsertSemaphoreOnlyRecording() {
+  if (!semaphore_recorder_) {
+    skgpu::graphite::RecorderOptions options;
+    options.fGpuBudgetInBytes = 0;
+    options.fRequireOrderedRecordings = false;
+    semaphore_recorder_ = graphite_context_->makeRecorder(options);
+    CHECK(semaphore_recorder_);
+  }
+
+  auto recording = semaphore_recorder_->snap();
+  CHECK(recording);
+
+  skgpu::graphite::InsertRecordingInfo info;
+  info.fRecording = recording.get();
+  InsertRecordingImpl(info);
+}
+
 bool GraphiteSharedContext::InsertRecordingImpl(
     const skgpu::graphite::InsertRecordingInfo& info) {
+  CHECK_EQ(info.fNumWaitSemaphores, 0u);
+  CHECK_EQ(info.fNumSignalSemaphores, 0u);
+  CHECK(info.fSimulatedStatus == skgpu::graphite::InsertStatus::kSuccess);
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
           : nullptr;
 
-  const skgpu::graphite::InsertRecordingInfo* info_ptr = &info;
+  std::optional<skgpu::graphite::InsertRecordingInfo> info_copy;
+
+  if (!pending_wait_semaphores_.empty() ||
+      !pending_signal_semaphores_.empty()) {
+    info_copy = info;
+    info_copy->fNumWaitSemaphores = pending_wait_semaphores_.size();
+    info_copy->fWaitSemaphores = pending_wait_semaphores_.data();
+    info_copy->fNumSignalSemaphores = pending_signal_semaphores_.size();
+    info_copy->fSignalSemaphores = pending_signal_semaphores_.data();
+  }
 
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
-  std::optional<skgpu::graphite::InsertRecordingInfo> info_copy;
   if (info.fFinishedProc && task_runner) {
-    info_copy = *info_ptr;
+    if (!info_copy.has_value()) {
+      info_copy = info;
+    }
     std::tie(info_copy->fFinishedProc, info_copy->fFinishedContext) =
         CreateFinishedProcThreadSafe(info.fFinishedProc, info.fFinishedContext,
                                      std::move(task_runner));
-    info_ptr = &info_copy.value();
   }
-  if (simulated_insert_status_ != skgpu::graphite::InsertStatus::kSuccess) {
-    info_copy = *info_ptr;
-    info_copy->fSimulatedStatus = simulated_insert_status_;
-    info_ptr = &info_copy.value();
-  }
-
-  auto insert_status = graphite_context_->insertRecording(*info_ptr);
 
   const bool simulating_insert_failure =
-      info_ptr->fSimulatedStatus != skgpu::graphite::InsertStatus::kSuccess;
+      simulated_insert_status_ != skgpu::graphite::InsertStatus::kSuccess;
+  if (simulating_insert_failure) {
+    if (!info_copy.has_value()) {
+      info_copy = info;
+    }
+    info_copy->fSimulatedStatus = simulated_insert_status_;
+  }
+
+  auto insert_status = graphite_context_->insertRecording(
+      info_copy.has_value() ? *info_copy : info);
+
+  if (insert_status == skgpu::graphite::InsertStatus::kSuccess) {
+    pending_wait_semaphores_.clear();
+    pending_signal_semaphores_.clear();
+  }
 
   // Crash, log, or emit UMA only if we're not simulating a failure for testing.
   if (!simulating_insert_failure) {
@@ -437,6 +496,13 @@ bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) 
   num_pending_recordings_ = 0;
   last_submit_time_ = base::TimeTicks::Now();
 
+  if (!pending_wait_semaphores_.empty() ||
+      !pending_signal_semaphores_.empty()) {
+    // Drain any pending semaphores before checking hasPendingGPUWork() so that
+    // enqueued semaphores are always submitted.
+    InsertSemaphoreOnlyRecording();
+  }
+
   if (submit_info.fSync == skgpu::graphite::SyncToCpu::kNo &&
       !submit_info.fFinishedProc && !graphite_context_->hasPendingGPUWork()) {
     // Skip submitting if there is no pending GPU work and no finish proc. If a
@@ -451,7 +517,6 @@ bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) 
       IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
           : nullptr;
-  bool success = false;
 
   const bool shoud_record_metric = base::ShouldRecordSubsampledMetric(0.01);
   base::TimeTicks start_time;
@@ -475,25 +540,32 @@ bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) 
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
   if (submit_info.fFinishedProc && task_runner) {
-    std::tie(submit_info.fFinishedProc,
-             submit_info.fFinishedContext) =
+    std::tie(submit_info.fFinishedProc, submit_info.fFinishedContext) =
         CreateFinishedProcThreadSafe(submit_info.fFinishedProc,
                                      submit_info.fFinishedContext,
                                      std::move(task_runner));
   }
-  success = graphite_context_->submit(submit_info);
+  bool success = graphite_context_->submit(submit_info);
 
-  if (success && sync_to_cpu) {
-    // Report progress between the submit and the wait to tell the GPU watchdog
-    // that we are making progress. Otherwise, a long submit followed by a long
-    // wait could be mistaken for a hang and cause the GPU process to be killed.
-    if (delegate_) {
-      delegate_->ReportProgress();
+  if (success) {
+    // Real submits via submit() or submitAndFlushBackend() CHECK that
+    // SubmitImpl() was successful. As a result, if a real submit happened with
+    // pending semaphores it guarantees generation was incremented.
+    submit_generation_.fetch_add(1, std::memory_order_relaxed);
+
+    if (sync_to_cpu) {
+      // Report progress between the submit and the wait to tell the GPU
+      // watchdog that we are making progress. Otherwise, a long submit followed
+      // by a long wait could be mistaken for a hang and cause the GPU process
+      // to be killed.
+      if (delegate_) {
+        delegate_->ReportProgress();
+      }
+      // Submitting without any new recording is fine. Graphite won't generate
+      // an empty command buffer in this case, it will just wait for the last
+      // submitted command buffer.
+      success = graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
     }
-    // Submitting without any new recording is fine. Graphite won't generate an
-    // empty command buffer in this case, it will just wait for the last
-    // submitted command buffer.
-    success = graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
   }
 
   if (shoud_record_metric) {

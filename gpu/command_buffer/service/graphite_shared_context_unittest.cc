@@ -208,12 +208,12 @@ TEST_P(GraphiteSharedContextTest, AsyncShaderCompilesFailed) {
 
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
-  info.fSimulatedStatus =
-      skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed;
 
   EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(1);
   EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(1);
 
+  graphite_shared_context_->set_simulated_insert_status(
+      skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed);
   EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
 }
 
@@ -258,11 +258,12 @@ TEST_P(GraphiteSharedContextTest, AddCommandsFailed) {
 
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
-  info.fSimulatedStatus = skgpu::graphite::InsertStatus::kAddCommandsFailed;
 
   EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(0);
   EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(0);
 
+  graphite_shared_context_->set_simulated_insert_status(
+      skgpu::graphite::InsertStatus::kAddCommandsFailed);
   EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
 }
 
