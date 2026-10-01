@@ -8,8 +8,8 @@
 
 #include <array>
 #include <memory>
+#include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -94,49 +94,55 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellingServiceStats) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
-  const char* const histogram_names[] = {
-      "Spellcheck.Windows.ChromeLocalesSupport2.Both",
-      "Spellcheck.Windows.ChromeLocalesSupport2.HunspellOnly",
-      "Spellcheck.Windows.ChromeLocalesSupport2.NativeOnly",
-      "Spellcheck.Windows.ChromeLocalesSupport2.NoSupport"};
-  const size_t expected_counts[] = {1, 2, 3, 4};
+  struct Expectation {
+    std::string_view histogram_name;
+    int expected_count;
+  };
+  constexpr std::array kExpectations = std::to_array<Expectation>({
+      {"Spellcheck.Windows.ChromeLocalesSupport2.Both", 1},
+      {"Spellcheck.Windows.ChromeLocalesSupport2.HunspellOnly", 2},
+      {"Spellcheck.Windows.ChromeLocalesSupport2.NativeOnly", 3},
+      {"Spellcheck.Windows.ChromeLocalesSupport2.NoSupport", 4},
+  });
   base::HistogramTester histogram_tester;
 
   SpellCheckHostMetrics::RecordAcceptLanguageStats({
-      expected_counts[0],
-      expected_counts[1],
-      expected_counts[2],
-      expected_counts[3],
+      kExpectations[0].expected_count,
+      kExpectations[1].expected_count,
+      kExpectations[2].expected_count,
+      kExpectations[3].expected_count,
   });
 
-  for (size_t i = 0; i < std::size(histogram_names); ++i) {
-    histogram_tester.ExpectTotalCount(UNSAFE_TODO(histogram_names[i]), 1);
-    histogram_tester.ExpectBucketCount(
-        UNSAFE_TODO(histogram_names[i]),
-        static_cast<int>(UNSAFE_TODO(expected_counts[i])), 1);
+  for (const auto& expectation : kExpectations) {
+    histogram_tester.ExpectTotalCount(expectation.histogram_name, 1);
+    histogram_tester.ExpectBucketCount(expectation.histogram_name,
+                                       expectation.expected_count, 1);
   }
 }
 
 TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
-  const char* const histogram_names[] = {
-      "Spellcheck.Windows.SpellcheckLocalesSupport2.Both",
-      "Spellcheck.Windows.SpellcheckLocalesSupport2.HunspellOnly",
-      "Spellcheck.Windows.SpellcheckLocalesSupport2.NativeOnly"};
-  const size_t expected_counts[] = {1, 2, 3};
+  struct Expectation {
+    std::string_view histogram_name;
+    int expected_count;
+  };
+  constexpr std::array kExpectations = std::to_array<Expectation>({
+      {"Spellcheck.Windows.SpellcheckLocalesSupport2.Both", 1},
+      {"Spellcheck.Windows.SpellcheckLocalesSupport2.HunspellOnly", 2},
+      {"Spellcheck.Windows.SpellcheckLocalesSupport2.NativeOnly", 3},
+  });
   base::HistogramTester histogram_tester;
 
   SpellCheckHostMetrics::RecordSpellcheckLanguageStats({
-      expected_counts[0],
-      expected_counts[1],
-      expected_counts[2],
+      kExpectations[0].expected_count,
+      kExpectations[1].expected_count,
+      kExpectations[2].expected_count,
       0,
   });
 
-  for (size_t i = 0; i < std::size(histogram_names); ++i) {
-    histogram_tester.ExpectTotalCount(UNSAFE_TODO(histogram_names[i]), 1);
-    histogram_tester.ExpectBucketCount(
-        UNSAFE_TODO(histogram_names[i]),
-        static_cast<int>(UNSAFE_TODO(expected_counts[i])), 1);
+  for (const auto& expectation : kExpectations) {
+    histogram_tester.ExpectTotalCount(expectation.histogram_name, 1);
+    histogram_tester.ExpectBucketCount(expectation.histogram_name,
+                                       expectation.expected_count, 1);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
