@@ -65,6 +65,8 @@ class CORE_EXPORT StepRange {
           step_scale_factor(1),
           step_value_should_be(kStepValueShouldBeReal) {}
 
+    bool operator==(const StepDescription&) const = default;
+
     Decimal DefaultValue() const { return default_step * step_scale_factor; }
   };
 
@@ -78,6 +80,8 @@ class CORE_EXPORT StepRange {
             bool supports_reversed_range,
             const Decimal& step,
             const StepDescription&);
+
+  bool operator==(const StepRange&) const = default;
 
   Decimal AlignValueForStep(const Decimal& current_value,
                             const Decimal& new_value) const;

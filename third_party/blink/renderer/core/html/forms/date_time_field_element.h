@@ -83,6 +83,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
   virtual String Placeholder() const = 0;
   virtual void PopulateDateTimeFieldsState(DateTimeFieldsState&) = 0;
   void RemoveEventHandler() { field_owner_ = nullptr; }
+  virtual void ResetTypeAhead() {}
   void SetDisabled();
   virtual void SetEmptyValue(EventBehavior = kDispatchNoEvent) = 0;
   virtual void SetValueAsDate(const DateComponents&) = 0;

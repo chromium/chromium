@@ -143,11 +143,11 @@ void TimeInputType::SetupLayoutParameters(
     DateTimeEditElement::LayoutParameters& layout_parameters,
     const DateComponents& date) const {
   if (ShouldHaveSecondField(date)) {
-    layout_parameters.date_time_format = layout_parameters.locale.TimeFormat();
+    layout_parameters.date_time_format = layout_parameters.locale->TimeFormat();
     layout_parameters.fallback_date_time_format = "HH:mm:ss";
   } else {
     layout_parameters.date_time_format =
-        layout_parameters.locale.ShortTimeFormat();
+        layout_parameters.locale->ShortTimeFormat();
     layout_parameters.fallback_date_time_format = "HH:mm";
   }
   if (!ParseToDateComponents(
@@ -158,6 +158,16 @@ void TimeInputType::SetupLayoutParameters(
           GetElement().FastGetAttribute(html_names::kMaxAttr),
           &layout_parameters.maximum))
     layout_parameters.maximum = DateComponents();
+  static constexpr int kMillisecondsPerSecond =
+      static_cast<int>(base::Time::kMillisecondsPerSecond);
+  layout_parameters.need_millisecond_field =
+      date.Millisecond() ||
+      !layout_parameters.step_range.Minimum()
+           .Remainder(kMillisecondsPerSecond)
+           .IsZero() ||
+      !layout_parameters.step_range.Step()
+           .Remainder(kMillisecondsPerSecond)
+           .IsZero();
 }
 
 bool TimeInputType::IsValidFormat(bool has_year,

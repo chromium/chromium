@@ -91,6 +91,7 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
   void Initialize(const AtomicString& pseudo, const String& ax_help_text);
   int Maximum() const;
   String Placeholder() const override;
+  void ResetTypeAhead() override;
   void SetEmptyValue(EventBehavior = kDispatchNoEvent) final;
   void SetValueAsInteger(int, EventBehavior = kDispatchNoEvent) override;
   int ValueAsInteger() const final;
