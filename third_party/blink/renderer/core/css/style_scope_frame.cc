@@ -32,7 +32,10 @@ StyleScopeFrame& StyleScopeFrame::GetParentFrameOrThis(
 }
 
 bool StyleScopeFrame::HasSeenImplicitScope(const StyleScope& style_scope) {
-  return EnsureSeenImplicitScopes().Contains(&style_scope);
+  if (!seen_implicit_scopes_) {
+    EnsureSeenImplicitScopes();
+  }
+  return seen_implicit_scopes_->Contains(&style_scope);
 }
 
 StyleScopeFrame::ScopeSet& StyleScopeFrame::EnsureSeenImplicitScopes() {
