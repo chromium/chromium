@@ -9,7 +9,7 @@ chromium::import! {
     "//ui/android:texture_compressor";
 }
 
-use texture_compressor::{interleave_etc1, load_input_block};
+use texture_compressor::{compress_etc1, decompress_etc1, interleave_etc1, load_input_block};
 
 #[gtest(TextureCompressorTest, InterleaveEtc1)]
 fn test() {
@@ -58,6 +58,62 @@ fn test() {
         for x in 0..4 {
             for ch in 0..3 {
                 expect_eq!(result[y][x][ch].as_array()[0], expected);
+            }
+        }
+    }
+}
+
+#[gtest(TextureCompressorTest, CompressAndDecompressRoundTrip)]
+fn test() {
+    // Test a 7x5 non-block-aligned image with padded row strides and distinct
+    // R, G, B values.
+    let width = 7u32;
+    let height = 5u32;
+    let src_row_width = 10u32;
+    let dst_blocks_row_width = 4u32; // padded beyond width.div_ceil(4) = 2
+    let decompressed_row_width = 9u32;
+
+    let mut src = vec![0u32; (src_row_width * height) as usize];
+    for y in 0..height {
+        for x in 0..width {
+            let luma = x * 12 + y * 8;
+            let r = 30 + luma;
+            let g = 70 + luma;
+            let b = 120 + luma;
+            src[(y * src_row_width + x) as usize] = 0xFF000000 | (b << 16) | (g << 8) | r;
+        }
+    }
+
+    let num_block_rows = height.div_ceil(4);
+    let mut compressed = vec![0u8; (dst_blocks_row_width * num_block_rows * 8) as usize];
+    compress_etc1(&src, &mut compressed, width, height, src_row_width, dst_blocks_row_width);
+
+    let sentinel = 0xDEADBEEFu32;
+    let mut decompressed = vec![sentinel; (decompressed_row_width * height) as usize];
+    decompress_etc1(
+        &compressed,
+        &mut decompressed,
+        width,
+        height,
+        dst_blocks_row_width,
+        decompressed_row_width,
+    );
+
+    for y in 0..height {
+        for x in 0..decompressed_row_width {
+            let actual = decompressed[(y * decompressed_row_width + x) as usize];
+            if x >= width {
+                // Out-of-bounds stride padding must not be overwritten.
+                expect_eq!(actual, sentinel);
+            } else {
+                let expected = src[(y * src_row_width + x) as usize];
+                // Alpha must be 0xFF.
+                expect_eq!(actual >> 24, 0xFF);
+                for shift in [0, 8, 16] {
+                    let expected_ch = ((expected >> shift) & 0xFF) as i32;
+                    let actual_ch = ((actual >> shift) & 0xFF) as i32;
+                    expect_true!((expected_ch - actual_ch).abs() <= 20);
+                }
             }
         }
     }

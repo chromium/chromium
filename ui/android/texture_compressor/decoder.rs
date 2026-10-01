@@ -235,12 +235,13 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     //  [ d h l p ]].
     let mut output = [[0_u32; 4]; 4];
 
-    // In ETC1, each block can be divided into two subblocks, either vertically or
-    // horizontally depending on the flip bit. Regardless of the direction, the
-    // loop is structured so that pixels in the first subblock is processed first,
-    // then the second. Within each loop, the same base color and table index is
-    // used. This is faster than iterating the block in pixel order, which requires
-    // switching between the base colors inside the loop.
+    // In ETC1, each block can be divided into two subblocks, either vertically
+    // or horizontally depending on the flip bit. Regardless of the
+    // direction, the loop is structured so that pixels in the first
+    // subblock is processed first, then the second. Within each loop, the
+    // same base color and table index is used. This is faster than
+    // iterating the block in pixel order, which requires switching between
+    // the base colors inside the loop.
     if metadata.flip {
         // When flip bit = 1, the block is divided into two 4×2 subblocks.
         // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use base color 1.
@@ -248,8 +249,8 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
 
         for row in 0..2 {
             for col in 0..4 {
-                // TODO: base[0] actually means base color 1, and base[1] means base color 2.
-                //       Refactor this section for clarity.
+                // TODO: base[0] actually means base color 1, and base[1] means
+                // base color 2. Refactor this section for clarity.
                 output[row][col] = apply_modifier(
                     metadata.base[0],
                     metadata.table_idx_1,
@@ -261,9 +262,9 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
             for col in 0..4 {
                 output[row][col] = apply_modifier(
                     metadata.base[1],
-                    metadata.table_idx_1,
+                    metadata.table_idx_2,
                     get_pixel_modifier_index(row, col, morton_interleaved),
-                )
+                );
             }
         }
     } else {
@@ -276,18 +277,18 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
                     metadata.base[0],
                     metadata.table_idx_1,
                     get_pixel_modifier_index(row, col, morton_interleaved),
-                )
+                );
             }
         }
         for row in 0..4 {
             for col in 2..4 {
                 output[row][col] = apply_modifier(
                     metadata.base[1],
-                    metadata.table_idx_1,
+                    metadata.table_idx_2,
                     get_pixel_modifier_index(row, col, morton_interleaved),
-                )
+                );
             }
         }
     }
-    return output;
+    output
 }

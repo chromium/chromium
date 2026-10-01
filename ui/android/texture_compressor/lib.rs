@@ -15,7 +15,6 @@ use std::simd::prelude::*;
 use std::simd::Simd;
 
 use bytemuck::cast_slice;
-use bytemuck::cast_slice_mut;
 
 use crate::decoder::decode_etc1_block;
 use crate::dither::dither;
@@ -98,8 +97,8 @@ pub fn load_input_block(
     base_y: u32,
 ) -> [[[Reg; 3]; 4]; 4] {
     let mut data = [[[Reg::default(); 3]; 4]; 4];
-    // For now, input load and output store are not vectorized. The main reason is
-    // that efficient loading requires shuffling and is poorly supported
+    // For now, input load and output store are not vectorized. The main reason
+    // is that efficient loading requires shuffling and is poorly supported
     // by std::simd and the wide crate (which we plan to use for
     // supporting stable toolchain). Input load currently accounts for
     // ~20% of the runtime. If shuffle support improves this would be a
@@ -115,7 +114,8 @@ pub fn load_input_block(
                     src[(y * row_width + x) as usize]
                 } else {
                     // Slow path: mirror out-of-bound pixels
-                    // If width or height is 1, mirroring can overflow, so make it saturate.
+                    // If width or height is 1, mirroring can overflow, so make
+                    // it saturate.
                     let xm = if x >= width { (width - 1).saturating_sub(x - width) } else { x };
                     let ym = if y >= height { (height - 1).saturating_sub(y - height) } else { y };
                     src[(ym * row_width + xm) as usize]
@@ -171,11 +171,11 @@ pub fn compress_etc1(
     let copy_len = dst_width as usize * ETC1_BLOCK_BYTES;
     // Note on vectorization scheme:
     //
-    // We process one 4x4 block per SIMD lane, instead of the more common practice
-    // of processing pixels within the same block in parallel using multiple
-    // lanes. The one-block-per-lane scheme, more akin to SPMD programming,
-    // allows most of our code to be shuffle-free, and works much better with
-    // portable SIMD than schemes that heavily shuffles.
+    // We process one 4x4 block per SIMD lane, instead of the more common
+    // practice of processing pixels within the same block in parallel using
+    // multiple lanes. The one-block-per-lane scheme, more akin to SPMD
+    // programming, allows most of our code to be shuffle-free, and works
+    // much better with portable SIMD than schemes that heavily shuffles.
     for dst_y in 0..dst_height {
         for dst_x0 in (0..dst_width).step_by(SIMD_WIDTH) {
             let data =
@@ -193,15 +193,15 @@ pub fn compress_etc1(
     }
 }
 
-/// Decompress ETC1 to RGBA
+/// Decompress ETC1 blocks to RGBA pixels.
 ///
-/// - `src` should be in ETC1
-/// - `dst` will be filled with RGBA
-/// - `width` and `height` should be the dimensions of `dst`. If width or height
-///   are not multiples of 4, note that the edges become partial blocks and
-///   pixels out of bounds will be discarded. The number is truncated.
-/// - `src_row_width` should be the width of ETC1 image `dst_row_width` should
-///   be the width of RGBA image
+/// - `src` should contain compressed ETC1 blocks.
+/// - `dst` will be filled with decompressed RGBA pixels (0xAABBGGRR in u32).
+/// - `dst_width` and `dst_height` specify the logical dimensions of `dst` in
+///   pixels. If `dst_width` or `dst_height` are not multiples of 4,
+///   out-of-bounds pixels in partial edge blocks are discarded.
+/// - `src_row_width` and `dst_row_width` specify the in-memory length of each
+///   row, in 4x4 blocks and pixels, respectively.
 pub fn decompress_etc1(
     src: &[u8],
     dst: &mut [u32],
@@ -210,38 +210,31 @@ pub fn decompress_etc1(
     src_row_width: u32,
     dst_row_width: u32,
 ) {
-    // We access 'src' as array of u64s, but 'src' is not always aligned to 8-byte
-    // because of constrains at the callsite.(b/464139989) To solve the
-    // alignment issue, we copy the data from `src` into a temporary buffer that
-    // is guaranteed to be 8-byte aligned. To balance between copying overhead
-    // and memory overhead, we copy one row at a time.
+    let src_height = dst_height.div_ceil(4);
+    let src_width = dst_width.div_ceil(4);
+    assert!(src_width <= src_row_width);
+    assert!(dst_width <= dst_row_width);
 
-    let mut staging_row_u64 = vec![0u64; src_row_width as usize];
     let bytes_per_row = src_row_width as usize * ETC1_BLOCK_BYTES;
-    for y in (0..dst_height).step_by(4) {
-        let src_y = (y / 4) as usize;
-        let copy_start_idx = src_y * bytes_per_row;
-        let copy_end_idx = (src_y + 1) * bytes_per_row;
-        let staging_row_bytes: &mut [u8] = cast_slice_mut(&mut staging_row_u64);
-        staging_row_bytes[..bytes_per_row].copy_from_slice(&src[copy_start_idx..copy_end_idx]);
+    for src_y in 0..src_height {
+        let y = src_y * 4;
+        let row_start_idx = src_y as usize * bytes_per_row;
 
-        for x in (0..dst_width).step_by(4) {
-            // The ETC1 specification ("Khronos Data Format Specification v1.1 rev 9")
-            // defines the 64-bit block data as big endian.
-            let src_x = (x / 4) as usize;
-            let output_rgba_block = decode_etc1_block(u64::from_be(staging_row_u64[src_x]));
-            for y_in_block in 0..4 {
-                for x_in_block in 0..4 {
-                    let dst_x = x + x_in_block;
-                    let dst_y = y + y_in_block;
-
-                    if dst_y < dst_height && dst_x < dst_width {
-                        let dst_idx = dst_y * dst_row_width + dst_x;
-
-                        dst[dst_idx as usize] =
-                            output_rgba_block[y_in_block as usize][x_in_block as usize];
-                    }
-                }
+        for src_x in 0..src_width {
+            let x = src_x * 4;
+            // The ETC1 specification ("Khronos Data Format Specification v1.1
+            // rev 9") defines the 64-bit block data as big endian.
+            // Reading 8 bytes via `u64::from_be_bytes` avoids any
+            // 8-byte alignment requirement on `src`.
+            let block_offset = row_start_idx + src_x as usize * ETC1_BLOCK_BYTES;
+            let block_bytes: [u8; ETC1_BLOCK_BYTES] =
+                src[block_offset..block_offset + ETC1_BLOCK_BYTES].try_into().unwrap();
+            let output_rgba_block = decode_etc1_block(u64::from_be_bytes(block_bytes));
+            let copy_width = (dst_width - x).min(4) as usize;
+            let copy_height = (dst_height - y).min(4) as usize;
+            for (y_in_block, row) in output_rgba_block[..copy_height].iter().enumerate() {
+                let dst_idx = (y as usize + y_in_block) * dst_row_width as usize + x as usize;
+                dst[dst_idx..dst_idx + copy_width].copy_from_slice(&row[..copy_width]);
             }
         }
     }

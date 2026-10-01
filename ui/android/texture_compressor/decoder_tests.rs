@@ -65,9 +65,9 @@ fn test() {
 #[gtest(TextureCompressorTest, CalculateColorDifferentialModeInvalid)]
 fn test() {
     // Test invalid input colors in the differential mode.
-    // base_color2 is base_color1 + delta, but additions are not allowed to under-
-    // or overflow. Since the behavior for over- or underflowing values is
-    // undefined, but we clamp it to [0,31].
+    // base_color2 is base_color1 + delta, but additions are not allowed to
+    // under- or overflow. Since the behavior for over- or underflowing
+    // values is undefined, but we clamp it to [0,31].
     let input =
         0b_00010_100_11111_011_00011_000_111_110_1_1_0000_0000_0000_0000_0000_0000_0000_0000;
 
@@ -104,9 +104,9 @@ fn test() {
 
 #[gtest(TextureCompressorTest, ApplyModifier)]
 fn test() {
-    // In this tast case, we use the modifier table: [-8, -2, 2, 8](table codeword
-    // is 0b000), and base color: [R, G, B] = [16, 16, 16] Input format is [R,
-    // G, B], and Output format is 0xAABBGGRR.
+    // In this tast case, we use the modifier table: [-8, -2, 2, 8](table
+    // codeword is 0b000), and base color: [R, G, B] = [16, 16, 16] Input
+    // format is [R, G, B], and Output format is 0xAABBGGRR.
     let base = [16, 16, 16];
 
     // If negative = true, large = true, pixel_mod is 0b_11.
@@ -133,27 +133,27 @@ fn test() {
 #[gtest(TextureCompressorTest, ApplyModifierClampToMax)]
 fn test() {
     let base = [231, 8, 16];
-    // If negative = false, large = true, and the modifier table [-29, -9, 9, 29]
-    // is used, then the modifier value is +29. So expected components is
-    // [231+29, 8+29, 16+29], resulting in the color[255, 37, 45]
+    // If negative = false, large = true, and the modifier table [-29, -9, 9,
+    // 29] is used, then the modifier value is +29. So expected components
+    // is [231+29, 8+29, 16+29], resulting in the color[255, 37, 45]
     expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(base, 0b010, 0b01));
 }
 
 #[gtest(TextureCompressorTest, ApplyModifierClampToMin)]
 fn test() {
     let base = [231, 8, 16];
-    // If negative = true, large = true, and the modifier table [-29, -9, 9, 29] is
-    // used, then the modifier value is -29. So expected components is [231-29,
-    // 8-29, 16-29], resulting in the color[202, 0, 0]
+    // If negative = true, large = true, and the modifier table [-29, -9, 9, 29]
+    // is used, then the modifier value is -29. So expected components is
+    // [231-29, 8-29, 16-29], resulting in the color[202, 0, 0]
     expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(base, 0b010, 0b11));
 }
 
 #[gtest(TextureCompressorTest, DecodeETC1BlockFlipFalse)]
 fn test() {
-    // If flip is false, the block is divided into two 2x4 subblocks side-by-side.
-    // basecolor1 fills the left one, and basecolor2 fills the right one.
-    // Input (upper 32 bits): 0b_RRRR_RRRR_GGGG_GGGG_BBBB_BBBB_TTT_TTT_D_F
-    // basecolor_1: FF0000FF
+    // If flip is false, the block is divided into two 2x4 subblocks
+    // side-by-side. basecolor1 fills the left one, and basecolor2 fills the
+    // right one. Input (upper 32 bits):
+    // 0b_RRRR_RRRR_GGGG_GGGG_BBBB_BBBB_TTT_TTT_D_F basecolor_1: FF0000FF
     // basecolor_2: 0000FFFF
     // offset: 2 (table codeword = 0, pixel index value = 00)
     // Note: Output format is 0xAABBGGRR.
@@ -171,9 +171,9 @@ fn test() {
 
 #[gtest(TextureCompressorTest, DecodeETC1BlockFlipTrue)]
 fn test() {
-    // If flip is true, the block is divided into two 4x2 subblocks on top of each
-    // other. basecolor1 fills the top one, and basecolor2 fills the bottom one.
-    // `input` is same as above.
+    // If flip is true, the block is divided into two 4x2 subblocks on top of
+    // each other. basecolor1 fills the top one, and basecolor2 fills the
+    // bottom one. `input` is same as above.
     let input = 0b_1111_0000_0000_0000_0000_1111_000_000_0_1 << 32;
 
     let expected = [
@@ -184,6 +184,88 @@ fn test() {
     ];
 
     expect_eq!(expected, decode_etc1_block(input));
+}
+
+#[gtest(TextureCompressorTest, DecodeETC1BlockSubblock2TableIndex)]
+fn test() {
+    // Subblock 1 uses table_idx_1 = 0b000 (offset +2 for selector 00) and
+    // subblock 2 uses table_idx_2 = 0b001 (offset +5 for selector 00).
+    // basecolor_1: FF0000FF, basecolor_2: 0000FFFF.
+    let input_flip_false = 0b_1111_0000_0000_0000_0000_1111_000_001_0_0 << 32;
+    let expected_flip_false = [
+        [0xff0202ff, 0xff0202ff, 0xffff0505, 0xffff0505],
+        [0xff0202ff, 0xff0202ff, 0xffff0505, 0xffff0505],
+        [0xff0202ff, 0xff0202ff, 0xffff0505, 0xffff0505],
+        [0xff0202ff, 0xff0202ff, 0xffff0505, 0xffff0505],
+    ];
+    expect_eq!(expected_flip_false, decode_etc1_block(input_flip_false));
+
+    let input_flip_true = 0b_1111_0000_0000_0000_0000_1111_000_001_0_1 << 32;
+    let expected_flip_true = [
+        [0xff0202ff, 0xff0202ff, 0xff0202ff, 0xff0202ff],
+        [0xff0202ff, 0xff0202ff, 0xff0202ff, 0xff0202ff],
+        [0xffff0505, 0xffff0505, 0xffff0505, 0xffff0505],
+        [0xffff0505, 0xffff0505, 0xffff0505, 0xffff0505],
+    ];
+    expect_eq!(expected_flip_true, decode_etc1_block(input_flip_true));
+}
+
+#[gtest(TextureCompressorTest, DecodeETC1BlockPixelSelectorOrder)]
+fn test() {
+    // Verify that all 16 texels (a..p) in column-major order (k = row + col *
+    // 4) apply their respective 2-bit selector (msb at bit k + 16, lsb at
+    // bit k). Use differential mode with base1 = (16, 16, 16) -> scaled
+    // (132, 132, 132), delta = (0, 0, 0), table_idx_1 = 0b000 ([-8, -2, +2,
+    // +8]), table_idx_2 = 0b010 ([-29, -9, +9, +29]), flip = false.
+    let header: u64 = 0b_10000_000_10000_000_10000_000_000_010_1_0 << 32;
+    // Assign selector index (row + col) % 4 to each pixel (row, col):
+    //   0 (0b00): +small
+    //   1 (0b01): +large
+    //   2 (0b10): -small
+    //   3 (0b11): -large
+    let mut msb: u64 = 0;
+    let mut lsb: u64 = 0;
+    for col in 0..4 {
+        for row in 0..4 {
+            let k = row + col * 4;
+            let sel = ((row + col) % 4) as u64;
+            lsb |= (sel & 1) << k;
+            msb |= ((sel >> 1) & 1) << k;
+        }
+    }
+    let block = header | (msb << 16) | lsb;
+    let decoded = decode_etc1_block(block);
+
+    let subblock1_deltas = [2_i32, 8, -2, -8];
+    let subblock2_deltas = [9_i32, 29, -9, -29];
+    for row in 0..4 {
+        for col in 0..4 {
+            let sel = (row + col) % 4;
+            let delta = if col < 2 { subblock1_deltas[sel] } else { subblock2_deltas[sel] };
+            let c = (132 + delta) as u32;
+            let expected_pixel = 0xFF000000 | (c << 16) | (c << 8) | c;
+            expect_eq!(expected_pixel, decoded[row][col]);
+        }
+    }
+
+    // Also verify all 8 modifier tables (0..=7) on both subblock 1 and subblock
+    // 2.
+    let expected_small_large: [[i32; 2]; 8] =
+        [[2, 8], [5, 17], [9, 29], [13, 42], [18, 60], [24, 80], [33, 106], [47, 183]];
+    for t1 in 0u64..8 {
+        let t2 = 7 - t1;
+        // Base1 = (128, 128, 128) in 5-bit (16 -> 132), Base2 = Base1 - 1 (15
+        // -> 123).
+        let hdr =
+            (0b_10000_111_10000_111_10000_111_u64 << 40) | (t1 << 37) | (t2 << 34) | 0b10_u64 << 32;
+        // Selector 0b01 (+large) for all pixels (lsb = 0xFFFF, msb = 0x0000).
+        let blk = hdr | 0x0000_FFFF;
+        let out = decode_etc1_block(blk);
+        let c1 = (132 + expected_small_large[t1 as usize][1]).clamp(0, 255) as u32;
+        let c2 = (123 + expected_small_large[t2 as usize][1]).clamp(0, 255) as u32;
+        expect_eq!(out[0][0], 0xFF000000 | (c1 << 16) | (c1 << 8) | c1);
+        expect_eq!(out[0][2], 0xFF000000 | (c2 << 16) | (c2 << 8) | c2);
+    }
 }
 
 #[gtest(TextureCompressorTest, BitInterleaving)]
