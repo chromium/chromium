@@ -214,8 +214,7 @@ void AudioBufferConverter::ConvertIfPossible() {
     output_bus->set_frames(frames_this_iteration);
     for (int ch = 0; ch < output_buffer->channel_count(); ++ch) {
       AudioBus::Channel output_channel =
-          base::subtle::reinterpret_span<float>(output_buffer->channels()[ch])
-              .first(base::checked_cast<size_t>(output_buffer->frame_count()));
+          output_buffer->planar_channel_cast<float>(ch);
 
       output_bus->SetChannelData(
           ch, output_channel.subspan(
