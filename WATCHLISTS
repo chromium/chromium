@@ -1549,6 +1549,14 @@
     'ios_web_view': {
       'filepath': 'ios/web_view/',
     },
+    'ios_webauthn': {
+      'filepath': 'components/webauthn/ios/|'\
+                  'ios/chrome/browser/credential_exchange/|'\
+                  'ios/chrome/browser/credential_provider|'\
+                  'ios/chrome/browser/webauthn/|'\
+                  'ios/chrome/common/credential_provider/|'\
+                  'ios/chrome/credential_provider_extension/',
+    },
     'ios_widget_kit': {
       'filepath': 'ios/chrome/common/widget_kit|'\
                   'ios/chrome/browser/widget_kit|'\
@@ -3160,6 +3168,7 @@
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_web_view': ['ios-web-view-eng+reviews@google.com'],
+    'ios_webauthn': ['rgod+watch@google.com'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ipcz': ['andreaorru+watch@chromium.org'],
     'isolated_web_apps_apis': ['greengrape@google.com',
