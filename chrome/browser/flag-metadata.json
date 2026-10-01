@@ -2391,6 +2391,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "contextual-tasks-updated-entry-points",
+    "owners": [ "nguyenbryan@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "controlled-frame-web-request-security-info",
     "owners": ["vkrot@google.com", "bhaskarsharma@google.com"],
     "expiry_milestone": 160

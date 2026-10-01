@@ -47,6 +47,10 @@ BASE_FEATURE(kContextualTasksSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables updated entry points for contextual tasks.
+BASE_FEATURE(kContextualTasksUpdatedEntryPoints,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables extra OAuth scopes for contextual tasks.
 BASE_FEATURE(kContextualTasksExtraOauthScopes,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -604,6 +608,22 @@ const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
     "ContextualTasksEnableNativeZeroStateSuggestions",
     true);
 
+const base::FeatureParam<bool> kContextualTasksContextMenuShowAskGoogle(
+    &kContextualTasksUpdatedEntryPoints,
+    "ContextualTasksContextMenuShowAskGoogle",
+    false);
+
+const base::FeatureParam<bool>
+    kContextualTasksContextMenuRouteAskGoogleToOmnibox(
+        &kContextualTasksUpdatedEntryPoints,
+        "ContextualTasksContextMenuRouteAskGoogleToOmnibox",
+        false);
+
+const base::FeatureParam<bool> kContextualTasksContextMenuSubmenu(
+    &kContextualTasksUpdatedEntryPoints,
+    "ContextualTasksContextMenuSubmenu",
+    false);
+
 // The URL parameter name to check for NLM mode.
 const base::FeatureParam<std::string> kContextualTasksNlmUrlParam{
     &kContextualTasksCustomNlmUi, "ContextualTasksNlmUrlParam", "ajid"};
@@ -1015,6 +1035,10 @@ const char kContextualTasksEphemeralBrandedEntryPointName[] =
     "Contextual Tasks Ephemeral Branded Entry Point";
 const char kContextualTasksEphemeralBrandedEntryPointDescription[] =
     "Enables the ephemeral branded entry point for contextual tasks.";
+const char kContextualTasksUpdatedEntryPointsName[] =
+    "Contextual Tasks Updated Entry Points";
+const char kContextualTasksUpdatedEntryPointsDescription[] =
+    "Enables updated entry points for contextual tasks.";
 const char kContextualTasksSidePanelRearchitectureName[] =
     "Contextual Tasks Side Panel Rearchitecture";
 const char kContextualTasksSidePanelRearchitectureDescription[] =

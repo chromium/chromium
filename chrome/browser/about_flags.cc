@@ -4608,6 +4608,39 @@ const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
     {"Enabled with circular button next to battery saver",
      kEphemeralBrandedEntryPointWithCircularNextToBatterySaver, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kContextualTasksUpdatedEntryPointsSidePanelRouting[] = {
+        {"ContextualTasksContextMenuShowAskGoogle", "true"},
+        {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"},
+        {"ContextualTasksContextMenuSubmenu", "false"}};
+
+const FeatureEntry::FeatureParam
+    kContextualTasksUpdatedEntryPointsVisualSelectionOnly[] = {
+        {"ContextualTasksContextMenuShowAskGoogle", "false"},
+        {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"},
+        {"ContextualTasksContextMenuSubmenu", "false"}};
+
+const FeatureEntry::FeatureParam
+    kContextualTasksUpdatedEntryPointsOmniboxRouting[] = {
+        {"ContextualTasksContextMenuShowAskGoogle", "true"},
+        {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"},
+        {"ContextualTasksContextMenuSubmenu", "false"}};
+
+const FeatureEntry::FeatureParam kContextualTasksUpdatedEntryPointsSubmenu[] = {
+    {"ContextualTasksContextMenuShowAskGoogle", "true"},
+    {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"},
+    {"ContextualTasksContextMenuSubmenu", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kContextualTasksUpdatedEntryPointsVariations[] = {
+        {"with side panel routing",
+         kContextualTasksUpdatedEntryPointsSidePanelRouting, nullptr},
+        {"with visual selection only",
+         kContextualTasksUpdatedEntryPointsVisualSelectionOnly, nullptr},
+        {"with omnibox routing",
+         kContextualTasksUpdatedEntryPointsOmniboxRouting, nullptr},
+        {"with submenu", kContextualTasksUpdatedEntryPointsSubmenu, nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
     {"fps_cap", "30"}};
@@ -12246,6 +12279,17 @@ const FeatureEntry kFeatureEntries[] = {
          contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
          kEphemeralBrandedEntryPointVariations,
          "ContextualTasksEphemeralBrandedEntryPoint")},
+
+    {"contextual-tasks-updated-entry-points",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksUpdatedEntryPointsName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksUpdatedEntryPointsDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksUpdatedEntryPoints,
+         kContextualTasksUpdatedEntryPointsVariations,
+         "ContextualTasksUpdatedEntryPoints")},
 
     {"contextual-tasks-ephemeral-pinning-visible-when-permanently-pinned",
      contextual_tasks::flag_descriptions::

@@ -12376,6 +12376,7 @@ from previous Chrome versions.
   <int value="-777568290" label="FilesTransferDetails:disabled"/>
   <int value="-776686417" label="SiteExplorationUi:disabled"/>
   <int value="-776598844" label="AIRewriterAPI:disabled"/>
+  <int value="-776470025" label="ContextualTasksUpdatedEntryPoints:enabled"/>
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775361878" label="ReadAnythingImagesViaAlgorithm:disabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
@@ -15282,6 +15283,7 @@ from previous Chrome versions.
   <int value="108874121" label="InstanceSwitcher:disabled"/>
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
+  <int value="111889632" label="ContextualTasksUpdatedEntryPoints:disabled"/>
   <int value="112126033"
       label="ClearInstanceInfoWhenClosedIntentionally:disabled"/>
   <int value="112131756" label="AndroidSmsOtpFilling:disabled"/>
