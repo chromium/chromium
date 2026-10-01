@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -475,6 +476,41 @@ public class BookmarkFolderPickerMediatorUnitTest {
         // Navigating back into a subfolder re-enables back press handling.
         mMediator.populateFoldersForParentId(mMobileFolderId);
         assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testCoordinatorBackPressStateSupplier() {
+        ImprovedBookmarkRowCoordinator rowCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
+        BookmarkFolderPickerCoordinator coordinator =
+                new BookmarkFolderPickerCoordinator(
+                        mActivity,
+                        mBookmarkModel,
+                        Arrays.asList(mUserBookmarkId),
+                        mFinishRunnable,
+                        mAddNewFolderCoordinator,
+                        mBookmarkUiPrefs,
+                        rowCoordinator,
+                        mShoppingService,
+                        /* isFromBookmarkDialog= */ false);
+        mFinishModelLoadCallback.run();
+
+        // Initially populated at mMobileFolderId (not root), so back press is handled.
+        assertTrue(coordinator.getHandleBackPressChangedSupplier().get());
+
+        // Pressing back navigates to mRootFolderId and disables the supplier so the activity
+        // root callback can handle subsequent back presses.
+        assertEquals(BackPressResult.SUCCESS, coordinator.handleBackPress());
+        assertFalse(coordinator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.FAILURE, coordinator.handleBackPress());
+
+        coordinator.destroy();
     }
 
     @Test

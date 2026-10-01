@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
@@ -207,9 +206,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     @Override
     public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
-            return mMediator.getHandleBackPressChangedSupplier();
-        }
-        return ObservableSuppliers.alwaysTrue();
+        return mMediator.getHandleBackPressChangedSupplier();
     }
 }
