@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -24,7 +23,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/switches.h"
 
@@ -32,31 +30,18 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-class UnpackedInstallerUnitTest : public ExtensionServiceTestWithInstall,
-                                  public testing::WithParamInterface<bool> {
+class UnpackedInstallerUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  UnpackedInstallerUnitTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
-    }
-  }
+  UnpackedInstallerUnitTest() = default;
   ~UnpackedInstallerUnitTest() override = default;
 
   ManagementPolicy* GetManagementPolicy() {
     return ExtensionSystem::Get(browser_context())->management_policy();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests host permissions are withheld by default at installation when flag is
-// enabled.
-TEST_P(UnpackedInstallerUnitTest, WithheldHostPermissionsWithFlag) {
+// Tests host permissions are not withheld by default for unpacked extensions.
+TEST_F(UnpackedInstallerUnitTest, HostPermissionsNotWithheld) {
   InitializeEmptyExtensionService();
 
   // Load extension.
@@ -70,15 +55,12 @@ TEST_P(UnpackedInstallerUnitTest, WithheldHostPermissionsWithFlag) {
   // Verify extension was installed.
   EXPECT_EQ(loaded_extension->name(), "All Urls Extension");
 
-  // Host permissions should be withheld at installation only when flag is
-  // enabled.
-  bool flag_enabled = GetParam();
+  // Host permissions should not be withheld at installation.
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser_context());
-  EXPECT_EQ(permissions_manager->HasWithheldHostPermissions(*loaded_extension),
-            flag_enabled);
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(*loaded_extension));
 }
-
 
 class MockLoadErrorReporterObserver : public LoadErrorReporter::Observer {
  public:
@@ -100,7 +82,7 @@ class MockLoadErrorReporterObserver : public LoadErrorReporter::Observer {
   base::OnceClosure quit_closure_;
 };
 
-TEST_P(UnpackedInstallerUnitTest, LoadNonExistentPathPreservesPath) {
+TEST_F(UnpackedInstallerUnitTest, LoadNonExistentPathPreservesPath) {
   InitializeEmptyExtensionService();
 
   // Setup error LoadErrorReporter observer.
@@ -119,7 +101,5 @@ TEST_P(UnpackedInstallerUnitTest, LoadNonExistentPathPreservesPath) {
 
   LoadErrorReporter::GetInstance()->RemoveObserver(&observer);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, UnpackedInstallerUnitTest, testing::Bool());
 
 }  // namespace extensions

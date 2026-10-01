@@ -1290,7 +1290,7 @@ base::SequencedTaskRunner* CrxInstaller::GetUnpackerTaskRunner() {
 
 void CrxInstaller::set_withhold_permissions() {
   DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kAllowWithholdingExtensionPermissionsOnInstall));
+      extensions_features::kExtensionInstallSiteAccessOptions));
   creation_flags_ |= Extension::WITHHOLD_PERMISSIONS;
 }
 

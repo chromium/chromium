@@ -496,7 +496,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
  public:
   ExtensionInstallDialogViewInteractiveBrowserTest() {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+        extensions_features::kExtensionInstallSiteAccessOptions);
   }
 
   ExtensionInstallDialogViewInteractiveBrowserTest(
@@ -804,7 +804,7 @@ class ExtensionInstallDialogWithWithholdPermissionsUI
  public:
   ExtensionInstallDialogWithWithholdPermissionsUI() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+        extensions_features::kExtensionInstallSiteAccessOptions);
   }
 
   ExtensionInstallDialogWithWithholdPermissionsUI(

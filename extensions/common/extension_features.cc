@@ -101,7 +101,7 @@ BASE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist,
 
 // For historical reasons, this includes some APIs. Please don't add more.
 
-BASE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall,
+BASE_FEATURE(kExtensionInstallSiteAccessOptions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockBackgroundContentsOffExtentNavigation,

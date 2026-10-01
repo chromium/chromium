@@ -1476,7 +1476,7 @@ class ExtensionCrxInstallerTestWithWithholdingUI
  public:
   ExtensionCrxInstallerTestWithWithholdingUI() {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+        extensions_features::kExtensionInstallSiteAccessOptions);
   }
 
  private:

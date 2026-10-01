@@ -4933,6 +4933,11 @@
     "expiry_milestone": 162
   },
   {
+    "name": "extension-install-site-access-options",
+    "owners": [ "evasu@chromium.org", "//chrome/browser/extensions/OWNERS" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "extension-tab-context-menu",
     "owners": [ "migueloruiz@google.com" ],
     "expiry_milestone": 152

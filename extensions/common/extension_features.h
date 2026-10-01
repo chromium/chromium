@@ -126,10 +126,6 @@ BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist);
 
 // For historical reasons, this includes some APIs. Please don't add more APIs.
 
-// Enables the UI in the install prompt which lets a user choose to withhold
-// requested host permissions by default.
-BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
-
 // If enabled, navigations and window.open calls to URLs outside a hosted app's
 // web extent in background contents are blocked and not persisted to prefs.
 // TODO(crbug.com/511824746): Clean up in M156.
@@ -188,6 +184,10 @@ BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
 
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
+
+// Enables the "Allow site access" section in the extension install dialog which
+// lets the user choose site permissions.
+BASE_DECLARE_FEATURE(kExtensionInstallSiteAccessOptions);
 
 // If enabled, allows an extension to specify protocol_handlers keys in the
 // Manifest, registering a group of custom handlers so that the browser can

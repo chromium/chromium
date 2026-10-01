@@ -16619,6 +16619,7 @@ from previous Chrome versions.
       label="AutofillEnableTouchToFillReshowForBnpl:enabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
+  <int value="528371383" label="ExtensionInstallSiteAccessOptions:disabled"/>
   <int value="528614527" label="LeftClickOpensTabGroupBubble:disabled"/>
   <int value="529235584" label="PhoneHub:enabled"/>
   <int value="529665808"
@@ -20540,6 +20541,7 @@ from previous Chrome versions.
   <int value="1715216421" label="ReadAnythingReadabilitySelectText:enabled"/>
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
+  <int value="1715574211" label="ExtensionInstallSiteAccessOptions:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
   <int value="1717051555" label="AndroidTabDeclutterArchiveOnDesktop:enabled"/>

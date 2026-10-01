@@ -180,20 +180,20 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
   }
 }
 
-class ExtensionInstallPromptTestWithholdingAllowed
+class ExtensionInstallPromptTestSiteAccessOptionsEnabled
     : public ExtensionInstallPromptUnitTest {
  public:
-  ExtensionInstallPromptTestWithholdingAllowed() {
+  ExtensionInstallPromptTestSiteAccessOptionsEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+        extensions_features::kExtensionInstallSiteAccessOptions);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
-       PromptShouldShowWithholdingUI) {
+TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
+       PromptShouldShowSiteAccessOptionsUI) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   content::TestWebContentsFactory factory;
@@ -209,7 +209,7 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   EXPECT_EQ(install_prompt->ShouldWithheldPermissionsOnDialogAccept(), true);
 }
 
-TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
+TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
        DoesntShowForNoHostsRequested) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("no_host").AddAPIPermission("tabs").Build();
@@ -226,7 +226,7 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   EXPECT_EQ(install_prompt->ShouldWithheldPermissionsOnDialogAccept(), false);
 }
 
-TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
+TEST_F(ExtensionInstallPromptTestSiteAccessOptionsEnabled,
        DoesntShowForWithholdingNotAllowed) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("all_hosts")

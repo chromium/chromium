@@ -9135,6 +9135,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsCollapseMainMenuDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kExtensionsCollapseMainMenu)},
 
+    {"extension-install-site-access-options",
+     flag_descriptions::kExtensionInstallSiteAccessOptionsName,
+     flag_descriptions::kExtensionInstallSiteAccessOptionsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kExtensionInstallSiteAccessOptions)},
+
     {"extensions-menu-access-control",
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,

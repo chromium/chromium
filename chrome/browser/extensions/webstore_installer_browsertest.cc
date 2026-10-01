@@ -222,7 +222,7 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
                                      kAppDomain,
                                      kNonAppDomain) {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+        extensions_features::kExtensionInstallSiteAccessOptions);
   }
   ~WebstoreInstallerWithWithholdingUIBrowserTest() override = default;
 

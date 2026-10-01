@@ -338,8 +338,7 @@ void InstallPromptData::OnDialogCanceled() {
 
 bool InstallPromptData::ShouldWithheldPermissionsOnDialogAccept() const {
   return base::FeatureList::IsEnabled(
-             extensions_features::
-                 kAllowWithholdingExtensionPermissionsOnInstall) &&
+             extensions_features::kExtensionInstallSiteAccessOptions) &&
          util::CanWithholdPermissionsFromExtension(*extension_) &&
          is_requesting_host_permissions_ && type_ == INSTALL_PROMPT;
 }

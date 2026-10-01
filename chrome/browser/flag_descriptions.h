@@ -2602,6 +2602,12 @@ inline constexpr char kExtensionsCollapseMainMenuDescription[] =
     "Enables a mode where if the current profile has no extensions, the "
     "extensions submenu in the application menu is replaced by a single item, "
     "e.g. \"Explore Extensions\".";
+inline constexpr char kExtensionInstallSiteAccessOptionsName[] =
+    "Extension Install Site Access Options";
+inline constexpr char kExtensionInstallSiteAccessOptionsDescription[] =
+    "Enables an 'Allow site access' section in the extension install dialog to "
+    "let users choose default site permissions on install.";
+
 inline constexpr char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 inline constexpr char kExtensionsMenuAccessControlDescription[] =
