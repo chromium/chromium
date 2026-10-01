@@ -4,30 +4,51 @@
 
 #include "components/webauthn/core/browser/device_authorization/device_authorization_service_impl.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace webauthn {
+namespace {
+
+// Returns whether `keys` contain a key for each of `required_versions`.
+bool CoversKeyVersions(const DeviceAuthorizationKeys& keys,
+                       const base::flat_set<int32_t>& required_versions) {
+  base::flat_set<int32_t> versions;
+  for (const DeviceAuthorizationKey& key : keys.keys()) {
+    versions.insert(key.version());
+  }
+  return std::ranges::includes(versions, required_versions);
+}
+
+}  // namespace
 
 DeviceAuthorizationServiceImpl::DeviceAuthorizationServiceImpl(
     signin::IdentityManager* identity_manager,
+    PasskeyModel* passkey_model,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<DeviceAuthorizationClient> client,
     version_info::Channel channel)
     : identity_manager_(identity_manager),
+      passkey_model_(passkey_model),
       url_loader_factory_(std::move(url_loader_factory)),
       client_(std::move(client)),
       fetcher_(std::make_unique<DeviceAuthorizationKeysFetcher>(channel)) {
   CHECK(identity_manager_);
+  CHECK(passkey_model_);
   CHECK(url_loader_factory_);
   CHECK(client_);
   CHECK(fetcher_);
@@ -47,6 +68,7 @@ void DeviceAuthorizationServiceImpl::Shutdown() {
   CancelPendingFetch();
   fetcher_.reset();
   client_.reset();
+  passkey_model_ = nullptr;
   url_loader_factory_.reset();
 }
 
@@ -140,7 +162,8 @@ void DeviceAuthorizationServiceImpl::OnCachedKeysFetched(
   if (cached_keys.has_value() &&
       cached_keys->cache_version() ==
           features::kDeviceAuthorizationKeyCacheVersion.Get() &&
-      cached_keys->keys().keys_size() > 0) {
+      cached_keys->keys().keys_size() > 0 &&
+      CoversKeyVersions(cached_keys->keys(), GetRequiredKeyVersions())) {
     NotifyPendingCallbacks(DeviceAuthFetchResult{cached_keys->keys()});
     return;
   }
@@ -172,7 +195,16 @@ void DeviceAuthorizationServiceImpl::OnFetchCompleted(
   }
 
   if (response->has_device_authorization_keys()) {
-    // TODO(crbug.com/405036154): Handle key validation (e.g. expected count).
+    if (response->device_authorization_keys().keys().empty()) {
+      NotifyPendingCallbacks(DeviceAuthFetchResult{});
+      return;
+    }
+
+    if (!CoversKeyVersions(response->device_authorization_keys(),
+                           GetRequiredKeyVersions())) {
+      DVLOG(1) << "Fetched keys miss a version required by stored passkeys.";
+    }
+
     DeviceAuthorizationKeys keys = response->device_authorization_keys();
     CachedDeviceAuthorizationKeys cached_keys;
     cached_keys.set_cache_version(
@@ -222,6 +254,22 @@ void DeviceAuthorizationServiceImpl::NotifyPendingCallbacks(
   for (FetchDeviceAuthKeysCallback& callback : callbacks) {
     std::move(callback).Run(result);
   }
+}
+
+base::flat_set<int32_t> DeviceAuthorizationServiceImpl::GetRequiredKeyVersions()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_set<int32_t> versions;
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
+       passkey_model_->GetPasskeys(
+           PasskeyModel::AnyRp(),
+           PasskeyModel::ShadowedCredentials::kInclude)) {
+    if (passkey.encrypted_data_case() ==
+        sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted) {
+      versions.insert(passkey.device_authorization_key_version());
+    }
+  }
+  return versions;
 }
 
 }  // namespace webauthn

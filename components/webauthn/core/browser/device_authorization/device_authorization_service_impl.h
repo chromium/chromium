@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_SERVICE_IMPL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_SERVICE_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +34,8 @@ class GetDeviceAuthorizationKeyRequest;
 
 namespace webauthn {
 
+class PasskeyModel;
+
 // Coordinates the process of retrieving the device authorization keys,
 // including communication with the server, validation of the retrieved keys
 // and delegating platform-specific logic to DeviceAuthorizationClient.
@@ -41,6 +45,7 @@ class DeviceAuthorizationServiceImpl
  public:
   DeviceAuthorizationServiceImpl(
       signin::IdentityManager* identity_manager,
+      PasskeyModel* passkey_model,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<DeviceAuthorizationClient> client,
       version_info::Channel channel);
@@ -93,8 +98,15 @@ class DeviceAuthorizationServiceImpl
   // Invokes all pending callbacks with `result` and clears them.
   void NotifyPendingCallbacks(const DeviceAuthFetchResult& result);
 
+  // Returns all device authorization key versions that stored passkeys are
+  // encrypted with.
+  base::flat_set<int32_t> GetRequiredKeyVersions() const;
+
   // Used to obtain the primary account and authenticate requests.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Used to obtain the key versions required by stored passkeys.
+  raw_ptr<PasskeyModel> passkey_model_ = nullptr;
 
   // Factory used to create loaders for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

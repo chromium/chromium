@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_client.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -33,6 +34,7 @@ IOSDeviceAuthorizationServiceFactory::IOSDeviceAuthorizationServiceFactory()
     : ProfileKeyedServiceFactoryIOS("DeviceAuthorizationService",
                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(IOSPasskeyModelFactory::GetInstance());
 }
 
 IOSDeviceAuthorizationServiceFactory::~IOSDeviceAuthorizationServiceFactory() =
@@ -48,6 +50,7 @@ IOSDeviceAuthorizationServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<webauthn::DeviceAuthorizationServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
+      IOSPasskeyModelFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
       std::make_unique<IOSDeviceAuthorizationClient>(), ::GetChannel());
 }
