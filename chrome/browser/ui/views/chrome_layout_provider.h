@@ -236,6 +236,9 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING,
   // Horizontal margin for Block-style Action App Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN,
+  // Vertical padding at the top and bottom of multi-row Block-style Action App
+  // Menu section container cards.
+  DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING,
   // Top margin added below a notification header in the Block-style App Menu.
   DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN,
   // Maximum width for the Block-style Action App Menu.

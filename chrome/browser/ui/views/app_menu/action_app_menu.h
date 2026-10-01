@@ -79,7 +79,9 @@ class ActionAppMenu : public views::MenuDelegate {
   void ConfigureMenuItem(views::MenuItemView* menu_item,
                          actions::BaseAction* child_base,
                          bool round_top_corners,
-                         bool round_bottom_corners);
+                         bool round_bottom_corners,
+                         bool add_top_padding,
+                         bool add_bottom_padding);
 
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);

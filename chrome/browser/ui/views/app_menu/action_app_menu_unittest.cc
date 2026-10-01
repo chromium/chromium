@@ -235,6 +235,33 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_radius, 0);
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_radius, 12);
 
+  // Check vertical padding on multi-row cards: above the first standard-height
+  // row and below the last row. Expanded and middle rows get none.
+  views::MenuItemView* more_tools_item =
+      root->GetMenuItemByID(kActionDeveloperSubmenu);
+  ASSERT_TRUE(more_tools_item);
+  ASSERT_TRUE(more_tools_item->GetMenuItemBackground().has_value());
+  const int card_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->bottom_padding, 0);
+#endif
+  EXPECT_EQ(password_item->GetMenuItemBackground()->top_padding, card_padding);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_padding, 0);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->bottom_padding, 0);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_padding,
+            card_padding);
+  EXPECT_EQ(zoom_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(zoom_item->GetMenuItemBackground()->bottom_padding, 0);
+  EXPECT_EQ(print_item->GetMenuItemBackground()->top_padding, card_padding);
+  EXPECT_EQ(print_item->GetMenuItemBackground()->bottom_padding, 0);
+  EXPECT_EQ(more_tools_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(more_tools_item->GetMenuItemBackground()->bottom_padding,
+            card_padding);
+
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(profile_item->GetTopMargin(), 12);
@@ -2447,6 +2474,8 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
   ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
   EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 12);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_padding, 0);
 
   views::MenuItemView* global_error_item =
       root->GetMenuItemByID(kActionGlobalError);
@@ -2454,6 +2483,8 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
   ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_padding, 0);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_padding, 0);
 
   ASSERT_GE(submenu->children().size(), 3u);
   EXPECT_EQ(submenu->children()[0], upgrade_item);

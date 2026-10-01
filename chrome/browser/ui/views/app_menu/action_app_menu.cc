@@ -111,6 +111,39 @@ bool ShouldRoundTopCorners(size_t index,
   return true;
 }
 
+bool SupportsVerticalPadding(const actions::ActionItem* item) {
+  return item->GetProperty(AppMenuActionItem::kItemHeightKey) !=
+             AppMenuActionItem::ItemHeight::kExpanded &&
+         item->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
+             AppMenuActionItem::DisplayType::kNotification;
+}
+
+bool ShouldAddTopPadding(size_t index, const actions::ActionListVector& items) {
+  if (!SupportsVerticalPadding(items[index]->GetActionItem())) {
+    return false;
+  }
+  for (size_t i = index; i > 0; --i) {
+    actions::ActionItem* const prev_item = items[i - 1]->GetActionItem();
+    const auto display_type =
+        prev_item->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+    if (!prev_item->GetVisible() ||
+        display_type == AppMenuActionItem::DisplayType::kDivider ||
+        display_type == AppMenuActionItem::DisplayType::kHeader) {
+      continue;
+    }
+    if (SupportsVerticalPadding(prev_item)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ShouldAddBottomPadding(size_t index,
+                            const actions::ActionListVector& items) {
+  return SupportsVerticalPadding(items[index]->GetActionItem()) &&
+         ShouldRoundBottomCorners(index, items);
+}
+
 actions::ActionInvocationContext BuildActionInvocationContext(
     const actions::BaseAction* base_action,
     int mouse_event_flags) {
@@ -346,12 +379,12 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       PopulateMenu(view_parent, child_base);
     } else {
       auto* const menu_item = AppendMenuItem(child_base, view_parent);
-      const bool round_top_corners =
-          ShouldRoundTopCorners(i, children_action_items);
-      const bool round_bottom_corners =
-          ShouldRoundBottomCorners(i, children_action_items);
-      ConfigureMenuItem(menu_item, child_base, round_top_corners,
-                        round_bottom_corners);
+      ConfigureMenuItem(menu_item,
+                        child_base,
+                        ShouldRoundTopCorners(i, children_action_items),
+                        ShouldRoundBottomCorners(i, children_action_items),
+                        ShouldAddTopPadding(i, children_action_items),
+                        ShouldAddBottomPadding(i, children_action_items));
       if (display_type == AppMenuActionItem::DisplayType::kCustom) {
         PopulateCustomRow(menu_item, child_base);
       } else if (!child_base->HasPopulateChildActionsCallback()) {
@@ -413,7 +446,9 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
 void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                       actions::BaseAction* child_base,
                                       bool round_top_corners,
-                                      bool round_bottom_corners) {
+                                      bool round_bottom_corners,
+                                      bool add_top_padding,
+                                      bool add_bottom_padding) {
   actions::ActionItem* const action_item = child_base->GetActionItem();
   CHECK(action_item);
 
@@ -509,11 +544,15 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                         kActionAppMenuContainerCornerRadius)
                                   : 0;
 
-    menu_item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
+    views::MenuItemView::MenuItemBackground background(
         container_color, top_radius, bottom_radius,
         /*horizontal_margin=*/
-        provider->GetDistanceMetric(
-            DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN)));
+        provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN));
+    const int padding = provider->GetDistanceMetric(
+        DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
+    background.top_padding = add_top_padding ? padding : 0;
+    background.bottom_padding = add_bottom_padding ? padding : 0;
+    menu_item->SetMenuItemBackground(background);
 
     // Apply darker hover selection states matching section theme.
     menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
