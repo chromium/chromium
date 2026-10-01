@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Empty array for supported_origins fails validation
+  assert_equals: Browser must issue only 2 server requests (HEAD PMI, GET PMM) when supported_origins is an empty array expected 2 but got 3
+Harness: the test ran to completion.

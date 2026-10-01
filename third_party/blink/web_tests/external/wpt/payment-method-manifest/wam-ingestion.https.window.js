@@ -1,5 +1,5 @@
 // META: spec=https://w3c.github.io/payment-method-manifest/#fetch-wam
-// META: title=Web App Manifest (WAM) default_applications ingestion
+// META: title=Payment Method Manifest default_applications and Web App Manifest ingestion
 // META: script=/common/utils.js
 // META: script=/payment-method-manifest/resources/helpers.js
 
@@ -191,6 +191,50 @@ promise_test(async t => {
 promise_test(async t => {
   const testId = token();
   const wamUrl = createWebAppManifestUrl(testId);
+  const pmmUrl = createPaymentMethodManifestUrl(testId, {
+    body: JSON.stringify({
+      default_applications: [wamUrl],
+      supported_origins: [`https://${location.host}`],
+      created_by: 'Alice',
+      created_in: 'Wonderland',
+      extra_list: [1, 2, 3],
+      extra_object: {nested: true},
+    }),
+  });
+  const pmiUrl = createPaymentMethodIdentifierUrl(testId, {
+    link: `<${pmmUrl}>; rel="payment-method-manifest"`,
+  });
+
+  const request = new PaymentRequest(
+      [{supportedMethods: pmiUrl}],
+      {total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}}});
+
+  try {
+    await request.canMakePayment();
+  } catch (err) {
+    // It is fine for this call to fail; server logs are still captured and
+    // inspected below.
+  }
+
+  const logs = await waitForServerAccessLogs(t, testId, 3);
+
+  assert_equals(
+      logs.length, 3,
+      'Browser must perform 3 server requests (HEAD PMI, GET PMM, GET WAM)');
+  assert_equals(logs[0].endpoint, 'payment-method-identifier',
+                'First request must hit PMI URL');
+  assert_equals(logs[0].method, 'HEAD', 'PMI request must use HEAD method');
+  assert_equals(logs[1].endpoint, 'payment-method-manifest',
+                'Second request must hit PMM URL');
+  assert_equals(logs[1].method, 'GET', 'PMM request must use GET method');
+  assert_equals(logs[2].endpoint, 'web-app-manifest',
+                'Third request must hit WAM URL');
+  assert_equals(logs[2].method, 'GET', 'WAM request must use GET method');
+}, 'Unrecognized members in a payment method manifest are ignored');
+
+promise_test(async t => {
+  const testId = token();
+  const wamUrl = createWebAppManifestUrl(testId);
   // Note that default_applications here is just a string, not a URL as
   // is required by the spec.
   const manifestUrl = createPaymentMethodManifestUrl(testId, {
@@ -230,6 +274,88 @@ promise_test(async t => {
       wamLogs.length, 0,
       'Non-array default_applications must not trigger any WAM fetch');
 }, 'Payment method manifest with non-array default_applications fails parsing cleanly and does not fetch web app manifest');
+
+promise_test(async t => {
+  const testId = token();
+  const wamUrl = createWebAppManifestUrl(testId);
+  const pmmUrl = createPaymentMethodManifestUrl(testId, {
+    body: JSON.stringify({
+      default_applications: [wamUrl, 123],
+      supported_origins: [`https://${location.host}`],
+    }),
+  });
+  const pmiUrl = createPaymentMethodIdentifierUrl(testId, {
+    link: `<${pmmUrl}>; rel="payment-method-manifest"`,
+  });
+
+  const request = new PaymentRequest(
+      [{supportedMethods: pmiUrl}],
+      {total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}}});
+
+  try {
+    await request.canMakePayment();
+  } catch (err) {
+    // It is fine for this call to fail; server logs are still captured and
+    // inspected below.
+  }
+
+  const logs = await waitForServerAccessLogs(t, testId, 2);
+
+  assert_equals(
+      logs.length, 2,
+      'Browser must issue only 2 server requests (HEAD PMI, GET PMM) when default_applications contains a non-string');
+  assert_equals(logs[0].endpoint, 'payment-method-identifier',
+                'First request must hit PMI URL');
+  assert_equals(logs[0].method, 'HEAD', 'PMI request must use HEAD method');
+  assert_equals(logs[1].endpoint, 'payment-method-manifest',
+                'Second request must hit PMM URL');
+  assert_equals(logs[1].method, 'GET', 'PMM request must use GET method');
+  const wamLogs = logs.filter(l => l.endpoint === 'web-app-manifest');
+  assert_equals(
+      wamLogs.length, 0,
+      'Non-string item in default_applications must fail validation before fetching any WAM');
+}, 'Non-string item in default_applications fails parsing cleanly and does not fetch web app manifest');
+
+promise_test(async t => {
+  const testId = token();
+  const wamUrl = createWebAppManifestUrl(testId);
+  const pmmUrl = createPaymentMethodManifestUrl(testId, {
+    body: JSON.stringify({
+      default_applications: [wamUrl, 'https://'],
+      supported_origins: [`https://${location.host}`],
+    }),
+  });
+  const pmiUrl = createPaymentMethodIdentifierUrl(testId, {
+    link: `<${pmmUrl}>; rel="payment-method-manifest"`,
+  });
+
+  const request = new PaymentRequest(
+      [{supportedMethods: pmiUrl}],
+      {total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}}});
+
+  try {
+    await request.canMakePayment();
+  } catch (err) {
+    // It is fine for this call to fail; server logs are still captured and
+    // inspected below.
+  }
+
+  const logs = await waitForServerAccessLogs(t, testId, 2);
+
+  assert_equals(
+      logs.length, 2,
+      'Browser must issue only 2 server requests (HEAD PMI, GET PMM) when default_applications contains an unparseable URL');
+  assert_equals(logs[0].endpoint, 'payment-method-identifier',
+                'First request must hit PMI URL');
+  assert_equals(logs[0].method, 'HEAD', 'PMI request must use HEAD method');
+  assert_equals(logs[1].endpoint, 'payment-method-manifest',
+                'Second request must hit PMM URL');
+  assert_equals(logs[1].method, 'GET', 'PMM request must use GET method');
+  const wamLogs = logs.filter(l => l.endpoint === 'web-app-manifest');
+  assert_equals(
+      wamLogs.length, 0,
+      'Unparseable URL in default_applications must fail validation before fetching any WAM');
+}, 'Unparseable URL in default_applications fails parsing cleanly and does not fetch web app manifest');
 
 promise_test(async t => {
   const testId = token();
