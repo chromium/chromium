@@ -701,8 +701,9 @@ size_t BtmDatabase::ClearExpiredRows() {
     ")<?";
   // clang-format on
 
-  CHECK(db_->IsSQLValid(kClearAllExpiredBouncesTableSql),
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/564966486): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_->IsSQLValid(kClearAllExpiredBouncesTableSql));
   sql::Statement bounces_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kClearAllExpiredBouncesTableSql));
   bounces_statement.BindTime(
