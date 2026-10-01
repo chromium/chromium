@@ -142,15 +142,6 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [self addChildViewController:self.zeroStateViewController];
   [containerStack addArrangedSubview:self.zeroStateViewController.view];
 
-  // Allow the zero-state view to expand into any remaining vertical space
-  // and compress first when vertical space is constrained (e.g., when the
-  // keyboard is presented).
-  [self.zeroStateViewController.view
-      setContentHuggingPriority:UILayoutPriorityDefaultLow
-                        forAxis:UILayoutConstraintAxisVertical];
-  [self.zeroStateViewController.view
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
   [self.zeroStateViewController didMoveToParentViewController:self];
 }
 
@@ -159,15 +150,6 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [self addChildViewController:_geminiViewController];
   [containerStack addArrangedSubview:_geminiViewController.view];
 
-  // Keep `_geminiViewController` sized strictly to its intrinsic content
-  // height and prevent it from compressing when vertical space is
-  // constrained.
-  [_geminiViewController.view
-      setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                        forAxis:UILayoutConstraintAxisVertical];
-  [_geminiViewController.view
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisVertical];
   [_geminiViewController didMoveToParentViewController:self];
 }
 
