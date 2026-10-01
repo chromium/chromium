@@ -202,6 +202,39 @@ constexpr char kExpectedPDFAXTree[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
+constexpr char kExpectedPDFAXTreeWithHeuristics[] =
+    "pdfRoot 'PDF document containing 3 pages'\n"
+    "  region 'Page 1'\n"
+    "    heading '1 First Section'\n"
+    "      staticText '1 First Section'\n"
+    "        inlineTextBox '1 '\n"
+    "        inlineTextBox 'First Section '\n"
+    "    paragraph\n"
+    "      staticText 'This is the first section.'\n"
+    "        inlineTextBox 'This is the first section. '\n"
+    "    paragraph\n"
+    "      staticText '1'\n"
+    "        inlineTextBox '1'\n"
+    "  region 'Page 2'\n"
+    "    heading '1.1 First Subsection'\n"
+    "      staticText '1.1 First Subsection'\n"
+    "        inlineTextBox '1.1 '\n"
+    "        inlineTextBox 'First Subsection '\n"
+    "    paragraph\n"
+    "      staticText 'This is the first subsection.'\n"
+    "        inlineTextBox 'This is the first subsection. '\n"
+    "    paragraph\n"
+    "      staticText '2'\n"
+    "        inlineTextBox '2'\n"
+    "  region 'Page 3'\n"
+    "    paragraph\n"
+    "      staticText '2 Second Section'\n"
+    "        inlineTextBox '2 '\n"
+    "        inlineTextBox 'Second Section '\n"
+    "    paragraph\n"
+    "      staticText '3'\n"
+    "        inlineTextBox '3'\n";
+
 }  // namespace
 
 // Using ASSERT_TRUE deliberately instead of ASSERT_EQ or ASSERT_STREQ
@@ -536,6 +569,48 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   EXPECT_EQ(kExepectedPDFSelection, selected_text);
 }
 
+class PDFExtensionAccessibilityHeuristicsTestWithOopifOverride
+    : public PDFExtensionAccessibilityTestWithOopifOverride {
+ public:
+  PDFExtensionAccessibilityHeuristicsTestWithOopifOverride() = default;
+  ~PDFExtensionAccessibilityHeuristicsTestWithOopifOverride() override =
+      default;
+
+ protected:
+  bool UseHeuristicEnhancements() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTestWithOopifOverride,
+                       PdfAccessibilityInIframe) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+
+  WebContents* contents = GetActiveWebContents();
+  WaitForAccessibilityTreeToContainNodeWithName(contents, "2 Second Section ");
+
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTreeWithHeuristics, ax_tree_dump);
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTestWithOopifOverride,
+                       PdfAccessibilityInOOPIF) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/pdf/test-cross-site-iframe.html")));
+
+  WebContents* contents = GetActiveWebContents();
+  WaitForAccessibilityTreeToContainNodeWithName(contents, "2 Second Section ");
+
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
+  ASSERT_MULTILINE_STREQ(kExpectedPDFAXTreeWithHeuristics, ax_tree_dump);
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/40086082)
@@ -801,6 +876,17 @@ class PDFExtensionAccessibilityTreeDumpTest
  protected:
   void RunPDFTest(const base::FilePath::CharType* pdf_file,
                   std::string_view expected_subtext) {
+    RunPDFTestWithExpectationsQualifier(
+        pdf_file, expected_subtext,
+        /*expectations_qualifier=*/FILE_PATH_LITERAL(""));
+  }
+
+  // Same as RunPDFTest(), but uses qualified expectation files, e.g.
+  // "weblinks-heuristics-expected-blink.txt" for "heuristics".
+  void RunPDFTestWithExpectationsQualifier(
+      const base::FilePath::CharType* pdf_file,
+      std::string_view expected_subtext,
+      const base::FilePath::StringType& expectations_qualifier) {
     base::FilePath test_path = chrome_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("accessibility")));
@@ -810,7 +896,8 @@ class PDFExtensionAccessibilityTreeDumpTest
     }
     base::FilePath pdf_path = test_path.Append(pdf_file);
 
-    RunTest(pdf_path, "pdf/accessibility", expected_subtext);
+    RunTest(pdf_path, "pdf/accessibility", expected_subtext,
+            expectations_qualifier);
   }
 
  private:
@@ -836,7 +923,8 @@ class PDFExtensionAccessibilityTreeDumpTest
   // The test waits until the tree dump includes `expected_subtext`.
   void RunTest(const base::FilePath& test_file_path,
                const char* file_dir,
-               std::string_view expected_subtext) {
+               std::string_view expected_subtext,
+               const base::FilePath::StringType& expectations_qualifier) {
     std::string pdf_contents;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -855,8 +943,8 @@ class PDFExtensionAccessibilityTreeDumpTest
     // Exit without running the test if we can't find an expectation file or if
     // the expectation file contains a skip marker.
     // This is used to skip certain tests on certain platforms.
-    base::FilePath expected_file_path =
-        test_helper_.GetExpectationFilePath(test_file_path);
+    base::FilePath expected_file_path = test_helper_.GetExpectationFilePath(
+        test_file_path, expectations_qualifier);
     if (expected_file_path.empty()) {
       LOG(INFO) << "No expectation file present, ignoring test on this "
                    "platform.";
@@ -1131,6 +1219,14 @@ class PDFExtensionAccessibilityHeuristicsTreeDumpTest
 
  protected:
   bool UseHeuristicEnhancements() const override { return true; }
+
+  // For PDFs also used by `PDFExtensionAccessibilityTreeDumpTest`, which need
+  // separate "-heuristics" expectation files.
+  void RunHeuristicsPDFTest(const base::FilePath::CharType* pdf_file,
+                            std::string_view expected_subtext) {
+    RunPDFTestWithExpectationsQualifier(pdf_file, expected_subtext,
+                                        FILE_PATH_LITERAL("heuristics"));
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1167,6 +1263,54 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
                        HeadingHeuristicsDenseTableAndBody) {
   RunPDFTest(FILE_PATH_LITERAL("heading-heuristics-dense-table-and-body.pdf"),
              /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       ParagraphsAndHeadingUntagged) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       DirectionalTextRuns) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("directional-text-runs.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TextDirection) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("text-direction.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       WebLinks) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("weblinks.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       OverlappingLinks) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("overlapping-links.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       LinksImagesAndText) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("text-image-link.pdf"),
+                       /*expected_subtext=*/"Page 2");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TextRunStyleHeuristic) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("text-run-style-heuristic.pdf"),
+                       /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       TextStyle) {
+  RunHeuristicsPDFTest(FILE_PATH_LITERAL("text-style.pdf"),
+                       /*expected_subtext=*/"Page 1");
 }
 
 // This test suite contains simple tests for the PDF OCR feature.
@@ -1297,6 +1441,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityTestWithOopifOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityHeuristicsTestWithOopifOverride);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityTextExtractionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

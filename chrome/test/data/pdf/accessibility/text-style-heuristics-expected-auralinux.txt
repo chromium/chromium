@@ -1,0 +1,10 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Case 1 '
+++++[paragraph]
+++++++[static] name='Case 2 '
+++++[paragraph]
+++++++[static] name='Case 3 '
+++++[paragraph]
+++++++[static] name='Case 4'

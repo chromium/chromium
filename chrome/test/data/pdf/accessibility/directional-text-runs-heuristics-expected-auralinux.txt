@@ -1,0 +1,8 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Hello,  world! Goodbye,  world! '
+++++[paragraph]
+++++++[static] name='This is some text '
+++++++[static] name='abc '
+++++++[static] name='def'

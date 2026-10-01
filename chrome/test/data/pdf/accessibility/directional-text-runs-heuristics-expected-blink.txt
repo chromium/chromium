@@ -1,0 +1,15 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++staticText name='Hello,  world! Goodbye,  world! ' restriction=readOnly
+++++++++inlineTextBox name='Hello,  ' restriction=readOnly
+++++++++inlineTextBox name='world! ' restriction=readOnly
+++++++++inlineTextBox name='Goodbye,  ' restriction=readOnly
+++++++++inlineTextBox name='world! ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='This is some text ' restriction=readOnly
+++++++++inlineTextBox name='This is some text ' restriction=readOnly
+++++++staticText name='abc ' restriction=readOnly
+++++++++inlineTextBox name='abc ' restriction=readOnly
+++++++staticText name='def' restriction=readOnly
+++++++++inlineTextBox name='def' restriction=readOnly

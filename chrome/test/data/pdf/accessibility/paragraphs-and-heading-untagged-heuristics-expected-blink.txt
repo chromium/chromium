@@ -1,0 +1,22 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++heading name='Heading' hierarchicalLevel=1 restriction=readOnly
+++++++staticText name='Heading ' restriction=readOnly
+++++++++inlineTextBox name='Heading ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='This is a small pdf file: ' restriction=readOnly
+++++++++inlineTextBox name='This is a small pdf file: ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. ' restriction=readOnly
+++++++++inlineTextBox name='Lorem Ipsum is simply dummy text of the printing and typesetting industry. ' restriction=readOnly
+++++++++inlineTextBox name='Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. ' restriction=readOnly
+++++++++inlineTextBox name='It has survived not only five centuries, but also the leap into electronic typesetting, ' restriction=readOnly
+++++++++inlineTextBox name='remaining essentially unchanged. It was popularised in the 1960s with the release of ' restriction=readOnly
+++++++++inlineTextBox name='Letraset sheets containing Lorem Ipsum passages, and more recently with desktop ' restriction=readOnly
+++++++++inlineTextBox name='publishing software like Aldus PageMaker including versions of Lorem Ipsum. ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' restriction=readOnly
+++++++++inlineTextBox name='Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots ' restriction=readOnly
+++++++++inlineTextBox name='in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' restriction=readOnly
