@@ -1898,7 +1898,7 @@ targets.mixin(
         # Uncommenting this argument will bypass all interactions with Skia
         # Gold in any tests that use it. This is meant as a temporary
         # emergency stop in case of a Gold outage that's affecting the bots.
-        # TODO(crbug.com/skia/568081757): Can comment this out again if/when
+        # TODO(crbug.com/568399534): Can comment this out again if/when
         # it's safe to do so.
         "--bypass-skia-gold-functionality",
     ],
