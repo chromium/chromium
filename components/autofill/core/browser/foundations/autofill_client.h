@@ -777,6 +777,11 @@ class AutofillClient {
   virtual bool ShowAmbientAutoFillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate);
 
+  // Shows the Autofill AI private inference notice in the Touch To Fill bottom
+  // sheet. Returns whether the notice was successfully shown.
+  virtual bool ShowPrivateInferenceNoticeBottomSheet(
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate);
+
   // Hides the Personal Context ambient autofill notice.
   virtual void HideAmbientAutoFillNotice();
 

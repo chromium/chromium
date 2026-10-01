@@ -292,6 +292,11 @@ bool AutofillClient::ShowAmbientAutoFillNotice(
   return false;
 }
 
+bool AutofillClient::ShowPrivateInferenceNoticeBottomSheet(
+    base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
+  return false;
+}
+
 void AutofillClient::HideAmbientAutoFillNotice() {}
 
 AutofillSnackbarControllerImpl*

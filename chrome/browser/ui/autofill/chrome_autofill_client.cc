@@ -1179,6 +1179,16 @@ bool ChromeAutofillClient::ShowAmbientAutoFillNotice(
       std::move(delegate));
 }
 
+bool ChromeAutofillClient::ShowPrivateInferenceNoticeBottomSheet(
+    base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
+  if (!touch_to_fill_autofill_controller_) {
+    return false;
+  }
+  return touch_to_fill_autofill_controller_->ShowPrivateInferenceNotice(
+      std::make_unique<TouchToFillAutofillViewImpl>(web_contents()),
+      std::move(delegate));
+}
+
 void ChromeAutofillClient::HideAmbientAutoFillNotice() {
   if (touch_to_fill_autofill_controller_) {
     touch_to_fill_autofill_controller_->Hide();
