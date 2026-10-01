@@ -2463,23 +2463,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.FocusChanged.RenderWidgetHostViewChildFrame.RootViewFocusState"
-    enum="RootViewFocusState" expires_after="2025-09-28">
-  <owner>amanvr@google.com</owner>
-  <owner>nuskos@chromium.org</owner>
-  <summary>
-    Tracks if the RenderWidgetHostViewChildFrame requests focus on the root
-    RenderWidgetHostViewAndroid or not during the beginning of a touch
-    interaction. This tracking occurs every time the function
-    RenderWidgetHostViewChildFrame::PreProcessTouchEvent() is called when a
-    touch sequence begins (on TouchStart). This would help us in understanding
-    if focus changes on touch input events need to be handled by Viz once it
-    starts receiving transferred input events after InputVizard
-    (go/chrome-inputvizard).
-  </summary>
-</histogram>
-
 <histogram name="Android.Foldable.PageLoadedInTabletMode" enum="Boolean"
     expires_after="2027-09-10">
   <owner>lizeb@chromium.org</owner>
