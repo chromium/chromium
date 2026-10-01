@@ -72,7 +72,7 @@ import org.chromium.ui.base.TestActivity;
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
 })
-@EnableFeatures(ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)
+@EnableFeatures({ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI, ChromeFeatureList.GLIC_VOICE})
 public class GlicSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -331,6 +331,66 @@ public class GlicSettingsUnitTest {
                 GlicSettings.PERMISSION_MICROPHONE);
         assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.Microphone.Enabled"));
         assertEquals(1, mUserActionTester.getActionCount("Glic.Settings.Microphone.Disabled"));
+    }
+
+    @Test
+    public void testMicrophonePermissionVisible_VoiceEnabled() {
+        GlicSettings fragment = launchFragment();
+        Preference microphonePref = fragment.findPreference(GlicSettings.PERMISSION_MICROPHONE);
+        assertTrue(
+                "Preference permissions_microphone should be visible", microphonePref.isVisible());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testMicrophonePermissionHidden_VoiceDisabled() {
+        GlicSettings fragment = launchFragment();
+        Preference microphonePref = fragment.findPreference(GlicSettings.PERMISSION_MICROPHONE);
+        assertFalse(
+                "Preference permissions_microphone should be hidden", microphonePref.isVisible());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testMicrophonePermissionNotSetUp_VoiceDisabled() {
+        // With the pref already enabled, the setup path would request RECORD_AUDIO on load. It
+        // must be skipped entirely so the user is not prompted for a hidden toggle.
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_MICROPHONE_ENABLED)).thenReturn(true);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication())
+                .denyPermissions(Manifest.permission.RECORD_AUDIO);
+
+        GlicSettings fragment = launchFragment();
+
+        Preference microphonePref = fragment.findPreference(GlicSettings.PERMISSION_MICROPHONE);
+        assertFalse(
+                "Preference permissions_microphone should be hidden", microphonePref.isVisible());
+        // No listener and no shared pref sync means setupSwitchPreference() never ran, so
+        // ensureRecordAudioPermissionGranted() could not have been reached either.
+        assertTrue(
+                "Preference permissions_microphone should have no change listener",
+                microphonePref.getOnPreferenceChangeListener() == null);
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(GLIC_MICROPHONE_SETTING_ENABLED, false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_VOICE)
+    public void testSearchIndex_MicrophoneToggleHidden_RemovesEntry() {
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock)
+                .removeEntryForKey(
+                        GlicSettings.class.getName(), GlicSettings.PERMISSION_MICROPHONE);
+    }
+
+    @Test
+    public void testSearchIndex_MicrophoneToggleShown_KeepsEntry() {
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock, never())
+                .removeEntryForKey(
+                        GlicSettings.class.getName(), GlicSettings.PERMISSION_MICROPHONE);
     }
 
     @Test
