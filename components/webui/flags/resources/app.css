@@ -362,7 +362,7 @@ cr-tabs {
 }
 
 @media (max-width: 480px) {
-  #flagsTemplate>.flex-container:first-child:not('.version') {
+  #flagsTemplate>.flex-container:first-child:not(.version) {
     flex-direction: column;
     text-align: left;
     /* csschecker-disable-line left-right */
