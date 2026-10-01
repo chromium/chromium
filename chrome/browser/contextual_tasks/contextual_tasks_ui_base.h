@@ -22,6 +22,7 @@
 #endif
 
 class BrowserWindowInterface;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -35,6 +36,7 @@ namespace contextual_tasks {
 
 class ContextualTasksPanelController;
 class ContextualTasksPermissionController;
+class ContextualTasksUiService;
 
 // Base WebUI controller class for Contextual Tasks.
 //
@@ -71,6 +73,12 @@ class ContextualTasksUIBase
   ContextualTasksUIBase& operator=(const ContextualTasksUIBase&) = delete;
   ~ContextualTasksUIBase() override;
 
+  Profile* GetProfile();
+  content::WebContents* GetWebUIWebContents();
+  BrowserWindowInterface* GetBrowser();
+  contextual_tasks::ContextualTasksPanelController* GetPanelController();
+  contextual_tasks::ContextualTasksUiService* GetUiService();
+
   static content::WebUIDataSource* RegisterWebUIDataSource(Profile* profile);
   static base::DictValue GetContextualTasksLoadTimeData(Profile* profile);
 
@@ -88,6 +96,9 @@ class ContextualTasksUIBase
   void OpenFeedbackUi() override;
   void MoveTaskUiToNewTab() override;
   void ShowThreadHistory() override;
+  void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
+  void OnFileClickedFromSourcesMenu(const GURL& url) override;
+  void OnImageClickedFromSourcesMenu(const GURL& url) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // PinnedToolbarActionsModel::Observer:
@@ -129,11 +140,6 @@ class ContextualTasksUIBase
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnChipCollapseAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
-
-  Profile* GetProfile();
-  content::WebContents* GetWebUIWebContents();
-  BrowserWindowInterface* GetBrowser();
-  ContextualTasksPanelController* GetPanelController();
   contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() {
     return toolbar_page_.is_bound() ? toolbar_page_.get() : nullptr;
   }

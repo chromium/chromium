@@ -225,9 +225,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onboardingTooltipDismissed',
       'askGTooltipDismissed',
       'onContextMenuOpened',
-      'onFileClickedFromSourcesMenu',
-      'onImageClickedFromSourcesMenu',
-      'onTabClickedFromSourcesMenu',
       'onWebviewMessage',
       'openOnboardingHelpUi',
       'openAskGHelpUi',
@@ -365,18 +362,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'gsc': isSidePanel ? '2' : '',
     };
     return Promise.resolve({params});
-  }
-
-  onTabClickedFromSourcesMenu(tabId: number, url: Url) {
-    this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
-  }
-
-  onFileClickedFromSourcesMenu(url: Url) {
-    this.methodCalled('onFileClickedFromSourcesMenu', url);
-  }
-
-  onImageClickedFromSourcesMenu(url: Url) {
-    this.methodCalled('onImageClickedFromSourcesMenu', url);
   }
 
   getSearchUrl(query: string) {
@@ -577,6 +562,9 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'openFeedbackUi',
       'moveTaskUiToNewTab',
       'showThreadHistory',
+      'onFileClickedFromSourcesMenu',
+      'onImageClickedFromSourcesMenu',
+      'onTabClickedFromSourcesMenu',
     ]);
   }
 
@@ -606,6 +594,18 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   showThreadHistory() {
     this.methodCalled('showThreadHistory');
+  }
+
+  onTabClickedFromSourcesMenu(tabId: number, url: Url) {
+    this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
+  }
+
+  onFileClickedFromSourcesMenu(url: Url) {
+    this.methodCalled('onFileClickedFromSourcesMenu', url);
+  }
+
+  onImageClickedFromSourcesMenu(url: Url) {
+    this.methodCalled('onImageClickedFromSourcesMenu', url);
   }
 }
 

@@ -143,6 +143,14 @@ ContextualTasksPanelController* ContextualTasksUIBase::GetPanelController() {
   return ContextualTasksPanelController::From(browser);
 }
 
+contextual_tasks::ContextualTasksUiService*
+ContextualTasksUIBase::GetUiService() {
+  Profile* profile = GetProfile();
+  return profile
+             ? ContextualTasksUiServiceFactory::GetForBrowserContext(profile)
+             : nullptr;
+}
+
 content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
     Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -383,6 +391,28 @@ void ContextualTasksUIBase::OnActionsChanged() {
   }
 }
 #endif
+
+void ContextualTasksUIBase::OnTabClickedFromSourcesMenu(int32_t tab_id,
+                                                        const GURL& url) {
+  auto* ui_service = GetUiService();
+  if (ui_service) {
+    ui_service->OnTabClickedFromSourcesMenu(tab_id, url, GetBrowser());
+  }
+}
+
+void ContextualTasksUIBase::OnFileClickedFromSourcesMenu(const GURL& url) {
+  auto* ui_service = GetUiService();
+  if (ui_service) {
+    ui_service->OnFileClickedFromSourcesMenu(url, GetBrowser());
+  }
+}
+
+void ContextualTasksUIBase::OnImageClickedFromSourcesMenu(const GURL& url) {
+  auto* ui_service = GetUiService();
+  if (ui_service) {
+    ui_service->OnImageClickedFromSourcesMenu(url, GetBrowser());
+  }
+}
 
 void ContextualTasksUIBase::BindInterface(
     mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>

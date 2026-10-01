@@ -419,29 +419,6 @@ void ContextualTasksPageHandler::OpenAskGHelpUi() {
                          WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
 }
 
-void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
-                                                             const GURL& url) {
-  if (ui_service_) {
-    ui_service_->OnTabClickedFromSourcesMenu(tab_id, url,
-                                             web_ui_controller_->GetBrowser());
-  }
-}
-
-void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
-  if (ui_service_) {
-    ui_service_->OnFileClickedFromSourcesMenu(url,
-                                              web_ui_controller_->GetBrowser());
-  }
-}
-
-void ContextualTasksPageHandler::OnImageClickedFromSourcesMenu(
-    const GURL& url) {
-  if (ui_service_) {
-    ui_service_->OnImageClickedFromSourcesMenu(
-        url, web_ui_controller_->GetBrowser());
-  }
-}
-
 void ContextualTasksPageHandler::OnWebviewMessage(
     const std::vector<uint8_t>& message) {
   lens::AimToClientMessage aim_to_client_message;

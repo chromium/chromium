@@ -2772,4 +2772,119 @@ TEST_F(ContextualTasksUiTest, ShowThreadHistory_PostRearchitecture_SafeNoOp) {
   base_ui->ShowThreadHistory();
 }
 
+TEST_F(ContextualTasksUiTest, OnTabClickedFromSourcesMenu_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+
+  int32_t tab_id = 123;
+  GURL url("https://example.com");
+  EXPECT_CALL(*service_for_nav_, OnTabClickedFromSourcesMenu(tab_id, url, _))
+      .Times(1);
+  post_rearch_ui->OnTabClickedFromSourcesMenu(tab_id, url);
+}
+
+TEST_F(ContextualTasksUiTest, OnFileClickedFromSourcesMenu_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+
+  GURL url("https://example.com/sample.pdf");
+  EXPECT_CALL(*service_for_nav_, OnFileClickedFromSourcesMenu(url, _)).Times(1);
+  post_rearch_ui->OnFileClickedFromSourcesMenu(url);
+}
+
+TEST_F(ContextualTasksUiTest, OnTabClickedFromSourcesMenu_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+
+  int32_t tab_id = 123;
+  GURL url("https://example.com");
+  EXPECT_CALL(*service_for_nav_, OnTabClickedFromSourcesMenu(tab_id, url, _))
+      .Times(1);
+  legacy_ui->OnTabClickedFromSourcesMenu(tab_id, url);
+}
+
+TEST_F(ContextualTasksUiTest, OnFileClickedFromSourcesMenu_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+
+  GURL url("https://example.com/sample.pdf");
+  EXPECT_CALL(*service_for_nav_, OnFileClickedFromSourcesMenu(url, _)).Times(1);
+  legacy_ui->OnFileClickedFromSourcesMenu(url);
+}
+
+TEST_F(ContextualTasksUiTest,
+       OnImageClickedFromSourcesMenu_PostRearchitecture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto post_rearch_ui =
+      std::make_unique<ContextualTasksUIPostRearchitecture>(&web_ui);
+  ASSERT_NE(post_rearch_ui, nullptr);
+
+  GURL url("https://example.com/image.png");
+  EXPECT_CALL(*service_for_nav_, OnImageClickedFromSourcesMenu(url, _))
+      .Times(1);
+  post_rearch_ui->OnImageClickedFromSourcesMenu(url);
+}
+
+TEST_F(ContextualTasksUiTest, OnImageClickedFromSourcesMenu_Legacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+
+  ASSERT_TRUE(controller);
+  auto* legacy_ui = controller->GetAs<ContextualTasksUI>();
+  ASSERT_NE(legacy_ui, nullptr);
+
+  GURL url("https://example.com/image.png");
+  EXPECT_CALL(*service_for_nav_, OnImageClickedFromSourcesMenu(url, _))
+      .Times(1);
+  legacy_ui->OnImageClickedFromSourcesMenu(url);
+}
+
 }  // namespace contextual_tasks
