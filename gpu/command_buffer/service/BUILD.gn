@@ -527,7 +527,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
       "shared_image/iosurface_image_backing_factory.mm",
-      "shared_image/shared_image_format_service_utils_mac.mm",
     ]
 
     # Do not compile with ARC because Dawn is not (yet) compatible with being

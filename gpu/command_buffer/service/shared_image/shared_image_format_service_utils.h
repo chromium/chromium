@@ -176,14 +176,6 @@ wgpu::TextureUsage SupportedDawnTextureUsage(
 // wgpu::Texture.
 wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
 
-// Following function return the appropriate Metal format for a
-// SharedImageFormat.
-#if BUILDFLAG(IS_APPLE)
-// Returns MtlPixelFormat format for given `format`.
-GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
-                                               int plane_index = 0);
-#endif
-
 // Returns the graphite::TextureInfo for a given `format` and `plane_index`.
 // `is_yuv_plane` indicates if the texture corresponds to a plane of a
 // multi-planar image. `mipmapped` indicates if the texture has mipmaps.
