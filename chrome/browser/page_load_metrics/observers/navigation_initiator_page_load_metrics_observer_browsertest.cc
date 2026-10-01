@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -56,12 +57,10 @@ int64_t MetricValue(
   return static_cast<int64_t>(location);
 }
 
-void AttachInitiatorLocation(
-    page_load_metrics::NavigationHandleUserData::InitiatorLocation location,
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, location,
-      StringifyChromeInitiatorLocation(GetChromeInitiatorLocation(location)));
+void AttachNavigationInitiator(page_load_metrics::NavigationInitiator initiator,
+                               content::NavigationHandle& navigation_handle) {
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, initiator);
 }
 
 }  // namespace
@@ -192,8 +191,7 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
       navigation_handle_callback = base::BindRepeating(
-          &AttachInitiatorLocation,
-          GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage));
+          &AttachNavigationInitiator, chrome_navigation_initiator::kNewTabPage);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   GetActiveWebContents()->OpenURL(
