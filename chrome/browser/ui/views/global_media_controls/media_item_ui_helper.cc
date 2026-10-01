@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_cast_footer_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #endif
 
 namespace {
@@ -244,40 +243,37 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
     media_message_center::MediaColorTheme media_color_theme) {
-  // Show a footer view for a Cast item.
+  if (!item) {
+    return nullptr;
+  }
+
+  base::RepeatingClosure stop_casting_cb;
+  std::optional<std::string> device_name;
   if (item->GetSourceType() == media_message_center::SourceType::kCast) {
     auto media_cast_item =
         static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
-#if BUILDFLAG(IS_CHROMEOS)
-    return std::make_unique<MediaItemUICastFooterView>(
-        base::BindRepeating(&CastMediaNotificationItem::StopCasting,
-                            media_cast_item),
-        media_color_theme);
-#else
-    return std::make_unique<CastDeviceFooterView>(
-        media_cast_item->device_name(),
-        base::BindRepeating(&CastMediaNotificationItem::StopCasting,
-                            media_cast_item),
-        media_color_theme);
-#endif
+    stop_casting_cb = base::BindRepeating(
+        &CastMediaNotificationItem::StopCasting, media_cast_item);
+    device_name = media_cast_item->device_name();
+  } else if (item->GetSourceType() ==
+             media_message_center::SourceType::kLocalMediaSession) {
+    stop_casting_cb = GetStopCastingCallback(profile, id, item);
+    auto* media_session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    device_name = media_session_item->device_name();
   }
 
-  base::RepeatingClosure stop_casting_cb =
-      GetStopCastingCallback(profile, id, item);
   if (stop_casting_cb.is_null()) {
     return nullptr;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<MediaItemUILegacyCastFooterView>(
-      std::move(stop_casting_cb));
+  return std::make_unique<MediaItemUICastFooterView>(std::move(stop_casting_cb),
+                                                     media_color_theme);
 #else
-  auto* media_session_item =
-      static_cast<global_media_controls::MediaSessionNotificationItem*>(
-          item.get());
   return std::make_unique<CastDeviceFooterView>(
-      media_session_item->device_name(), std::move(stop_casting_cb),
-      media_color_theme);
+      device_name, std::move(stop_casting_cb), media_color_theme);
 #endif
 }
 

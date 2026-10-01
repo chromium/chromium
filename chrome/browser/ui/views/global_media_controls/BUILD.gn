@@ -21,7 +21,6 @@ source_set("global_media_controls") {
     "media_item_ui_cast_footer_view.h",
     "media_item_ui_device_selector_view.h",
     "media_item_ui_helper.h",
-    "media_item_ui_legacy_cast_footer_view.h",
     "media_notification_device_entry_ui.h",
     "media_toolbar_button_contextual_menu.h",
     "media_toolbar_button_view.h",
@@ -55,7 +54,6 @@ source_set("impl") {
     "media_item_ui_cast_footer_view.cc",
     "media_item_ui_device_selector_view.cc",
     "media_item_ui_helper.cc",
-    "media_item_ui_legacy_cast_footer_view.cc",
     "media_notification_device_entry_ui.cc",
     "media_toolbar_button_contextual_menu.cc",
     "media_toolbar_button_view.cc",
@@ -114,7 +112,6 @@ source_set("unit_tests") {
     "cast_device_footer_view_unittest.cc",
     "cast_device_selector_view_unittest.cc",
     "media_item_ui_device_selector_view_unittest.cc",
-    "media_item_ui_legacy_cast_footer_view_unittest.cc",
     "media_toolbar_button_contextual_menu_unittest.cc",
   ]
   deps = [

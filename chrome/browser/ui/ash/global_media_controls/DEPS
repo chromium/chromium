@@ -18,7 +18,7 @@ include_rules = [
 
 specific_include_rules = {
   # Only these files need this dependency.
-  "(cast_media_notification_producer_keyed_service_factory\\.cc|media_notification_provider_impl\\.cc|media_notification_provider_impl_unittest\\.cc)": [
+  "(cast_media_notification_producer_keyed_service_factory\\.cc|global_media_controls_cast_start_browsertest\\.cc|media_notification_provider_impl\\.cc|media_notification_provider_impl_unittest\\.cc)": [
     "+chrome/browser/media/router",
   ],
   "media_notification_provider_impl\\.cc": [
