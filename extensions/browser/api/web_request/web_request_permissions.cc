@@ -332,11 +332,10 @@ bool WebRequestPermissions::HideRequest(
 
   const GURL& url = request.url;
 
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   bool is_request_from_webui_renderer =
       !is_request_from_browser &&
       content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-          request.global_id.child_id.GetUnsafeValue());
+          request.global_id.child_id);
 
   if (is_request_from_webui_renderer) {
 #if DCHECK_IS_ON()

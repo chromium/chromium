@@ -246,7 +246,7 @@ void WebUIImpl::SetProperty(const std::string& name, const std::string& value) {
 void WebUIImpl::Send(const std::string& message, base::ListValue args) {
   const GURL& source_url = frame_host_->GetLastCommittedURL();
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          frame_host_->GetProcess()->GetDeprecatedID()) ||
+          frame_host_->GetProcess()->GetID()) ||
       !WebUIControllerFactoryRegistry::GetInstance()->IsURLAcceptableForWebUI(
           web_contents_->GetBrowserContext(), source_url)) {
     bad_message::ReceivedBadMessage(
@@ -404,7 +404,7 @@ void WebUIImpl::SetController(std::unique_ptr<WebUIController> controller) {
 
 bool WebUIImpl::CanCallJavascript() {
   return (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-              frame_host_->GetProcess()->GetDeprecatedID()) ||
+              frame_host_->GetProcess()->GetID()) ||
           // It's possible to load about:blank in a Web UI renderer.
           // See http://crbug.com/42547
           frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);

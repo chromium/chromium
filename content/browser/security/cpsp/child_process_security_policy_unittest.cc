@@ -1202,7 +1202,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   p->AddForTesting(kRendererProcess, browser_context());
   LockProcessIfNeeded(kRendererProcess, browser_context(), url);
 
-  EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
 
   EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
@@ -1212,9 +1212,9 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
   EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
-  p->GrantWebUIBindings(kRendererID);
+  p->GrantWebUIBindings(kRendererProcess);
 
-  EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
+  EXPECT_TRUE(p->HasWebUIBindings(kRendererProcess));
 
   EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
@@ -1248,12 +1248,12 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
 
   p->GrantCommitURL(kRendererID, url);
   p->GrantReadFile(kRendererProcess, file);
-  p->GrantWebUIBindings(kRendererID);
+  p->GrantWebUIBindings(kRendererProcess);
 
   EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));
   EXPECT_TRUE(p->CanReadFile(kRendererProcess, file));
-  EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
+  EXPECT_TRUE(p->HasWebUIBindings(kRendererProcess));
 
   p->Remove(kRendererProcess);
 
@@ -1265,7 +1265,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
   EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));
   EXPECT_FALSE(p->CanReadFile(kRendererProcess, file));
-  EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, HandleDuplicate) {

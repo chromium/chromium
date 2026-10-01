@@ -101,16 +101,16 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
     EXPECT_EQ(foo_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_FALSE(
         ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-            root->current_frame_host()->GetProcess()->GetDeprecatedID()));
+            root->current_frame_host()->GetProcess()->GetID()));
 
     // Grant WebUI bindings to the process. This will ensure that if there is
     // a mistake in the navigation logic and a process gets somehow WebUI
     // bindings, the web content is correctly isolated regardless of the scheme
     // of the parent document.
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-        root->current_frame_host()->GetProcess()->GetDeprecatedID());
+        root->current_frame_host()->GetProcess()->GetID());
     EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-        root->current_frame_host()->GetProcess()->GetDeprecatedID()));
+        root->current_frame_host()->GetProcess()->GetID()));
     {
       GURL web_url(embedded_test_server()->GetURL("/title2.html"));
       std::string script = base::StringPrintf(
@@ -130,10 +130,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
                 root->child_at(0)->current_frame_host()->GetSiteInstance());
       EXPECT_FALSE(
           ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-              root->child_at(0)
-                  ->current_frame_host()
-                  ->GetProcess()
-                  ->GetDeprecatedID()));
+              root->child_at(0)->current_frame_host()->GetProcess()->GetID()));
     }
   }
 
@@ -156,7 +153,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
               child->current_frame_host()->GetSiteInstance());
     RenderFrameHost* webui_rfh = root->current_frame_host();
     EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-        webui_rfh->GetProcess()->GetDeprecatedID()));
+        webui_rfh->GetProcess()->GetID()));
 
     // Navigate the subframe to the same WebUI.
     {
@@ -686,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   EXPECT_EQ(main_frame_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      webui_rfh->GetProcess()->GetDeprecatedID()));
+      webui_rfh->GetProcess()->GetID()));
   EXPECT_TRUE(
       webui_site_instance->GetProcess()->GetProcessLock().IsLockedToSite());
   EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
@@ -773,26 +770,18 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // Visit a WebUI page with bindings.
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
-  int process1_id = site_instance1->GetProcess()->GetDeprecatedID();
+  ChildProcessId process1_id = site_instance1->GetProcess()->GetID();
 
   // Visit the second WebUI page with bindings. Even though the navigation
   // itself doesn't intend to swap BrowsingInstances, we still swap them due to
   // a change in WebUI type.
   EXPECT_TRUE(NavigateToURLInSameBrowsingInstance(shell(), url2));
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   SiteInstance* site_instance2 = shell()->web_contents()->GetSiteInstance();
-  int process2_id = site_instance2->GetProcess()->GetDeprecatedID();
+  ChildProcessId process2_id = site_instance2->GetProcess()->GetID();
 
   // The 2nd WebUI page should swap to a different process, SiteInstance,
   // and BrowsingInstance.
@@ -821,13 +810,9 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // Visit a WebUI page with bindings.
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
-  int process1_id = site_instance1->GetProcess()->GetDeprecatedID();
+  ChildProcessId process1_id = site_instance1->GetProcess()->GetID();
 
   // Open a new tab.
   TestNavigationObserver nav_observer(nullptr);
@@ -839,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   WebContentsImpl* new_web_contents =
       static_cast<WebContentsImpl*>(new_shell->web_contents());
   SiteInstance* site_instance2 = new_web_contents->GetSiteInstance();
-  int process2_id = site_instance2->GetProcess()->GetDeprecatedID();
+  ChildProcessId process2_id = site_instance2->GetProcess()->GetID();
 
   // The 2nd WebUI page should swap to a different process, SiteInstance,
   // and BrowsingInstance.
@@ -1008,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
 
   EXPECT_EQ(chrome_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      webui_rfh->GetProcess()->GetDeprecatedID()));
+      webui_rfh->GetProcess()->GetID()));
   EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
@@ -1026,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_FALSE(webui_site_instance->IsRelatedSiteInstance(
       root->current_frame_host()->GetSiteInstance()));
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      root->current_frame_host()->GetProcess()->GetDeprecatedID()));
+      root->current_frame_host()->GetProcess()->GetID()));
   EXPECT_NE(root->current_frame_host()->GetProcess()->GetProcessLock(),
             ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }

@@ -1767,12 +1767,11 @@ void ChildProcessSecurityPolicyImpl::GrantRequestScheme(
   }
 }
 
-void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(int child_id) {
+void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = process_states_.GetProcessStateForMutation(
-          ChildProcessId::FromUnsafeValue(child_id))) {
+  if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
     state->grant_web_ui_bindings();
   }
 }
@@ -2317,12 +2316,10 @@ bool ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile(
                                          COPY_INTO_FILE_GRANT);
 }
 
-bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
+bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(ChildProcessId child_id) {
   base::AutoLock lock(lock_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = process_states_.GetProcessStateForQuery(
-          ChildProcessId::FromUnsafeValue(child_id))) {
+  if (auto* state = process_states_.GetProcessStateForQuery(child_id)) {
     return state->has_web_ui_bindings();
   }
   return false;

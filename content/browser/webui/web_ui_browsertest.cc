@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that a WebUI page will stay in the initial RenderFrameHost and its
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
   auto* new_site_instance = web_contents->GetSiteInstance();
   EXPECT_EQ(orig_site_instance, new_site_instance);
   EXPECT_TRUE(
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateFromCrashedAboutBlank) {
   // Check that the resulting WebUI page has bindings, and its process is
   // marked as used.
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->GetProcess()->IsUnused());
 }
 
@@ -459,11 +459,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Navigate the second tab to a WebUI URL.  This should not reuse the
   // initial RFH's process and should end up in a new process.
@@ -472,10 +468,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      new_shell->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Check that if two initial RenderFrameHosts in different tabs share a
@@ -521,11 +514,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_FALSE(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Navigate the first tab to a normal web URL.  This should not stay in the
   // the initial process, which is now used by WebUI.
@@ -535,16 +524,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      new_shell->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Navigate the third tab to the same WebUI URL.  This should stay in the
   // third tab's initial process which is shared with the second tab, since the
@@ -639,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseInitialRFHInRestoredTab) {
   EXPECT_FALSE(
       static_cast<SiteInstanceImpl*>(restore_site_instance.get())->HasSite());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      restore_rfh->GetProcess()->GetDeprecatedID()));
+      restore_rfh->GetProcess()->GetID()));
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
             restore_site_instance);
 
@@ -671,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseInitialRFHInRestoredTab) {
   ASSERT_TRUE(restore_rfh.get());
   EXPECT_FALSE(restore_rfh->GetProcess()->IsUnused());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      restore_rfh->GetProcess()->GetDeprecatedID()));
+      restore_rfh->GetProcess()->GetID()));
 }
 
 // Tests that navigating from chrome:// to chrome-untrusted:// results in
@@ -687,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -703,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that navigating from chrome-untrusted:// to chrome:// results in
@@ -716,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   ASSERT_TRUE(NavigateToURL(web_contents,
                             GetChromeUntrustedUIURL("test-host/title1.html")));
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -735,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {

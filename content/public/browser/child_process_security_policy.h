@@ -202,7 +202,7 @@ class ChildProcessSecurityPolicy {
   // Returns true if the specified child_id has been granted WebUI bindings.
   // The browser should check this property before assuming the child process
   // is allowed to use WebUI bindings.
-  virtual bool HasWebUIBindings(int child_id) = 0;
+  virtual bool HasWebUIBindings(ChildProcessId child_id) = 0;
 
   // Grants permission to send messages to any MIDI devices.
   virtual void GrantSendMidiMessage(int child_id) = 0;

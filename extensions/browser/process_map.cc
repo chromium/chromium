@@ -42,9 +42,8 @@ namespace {
 bool ProcessHasWebUIBindings(content::ChildProcessId process_id) {
   // TODO(crbug.com/40676401): HasWebUIBindings does not always return true for
   // WebUIs. This should be changed to use something else.
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   return content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      process_id.GetUnsafeValue());
+      process_id);
 }
 
 // Returns true if `process_id` is associated with a webview owned by the

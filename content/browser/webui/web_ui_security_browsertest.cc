@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, UntrustedNoBindings) {
   EXPECT_TRUE(NavigateToURL(web_contents, untrusted_url));
 
   auto process_id =
-      *shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       process_id));
   EXPECT_TRUE(shell()
@@ -92,11 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, NoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_TRUE(shell()
                   ->web_contents()
                   ->GetPrimaryMainFrame()
@@ -113,11 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_EQ(
       BindingsPolicySet({BindingsPolicyValue::kWebUi}),
       shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
@@ -132,11 +124,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MojoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_EQ(
       BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}),
       shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
@@ -152,11 +140,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIAndMojoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_EQ(
       BindingsPolicySet(
           {BindingsPolicyValue::kWebUi, BindingsPolicyValue::kMojoWebUi}),

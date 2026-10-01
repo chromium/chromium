@@ -393,7 +393,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     // TODO(nasko): Convert to CHECK() once it is confirmed this is not
     // violated in reality.
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-            render_frame_host->GetProcess()->GetDeprecatedID())) {
+            render_frame_host->GetProcess()->GetID())) {
       base::debug::DumpWithoutCrashing();
     }
 
