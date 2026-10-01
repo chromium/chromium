@@ -1054,18 +1054,18 @@ TextCodecCjk::TextCodecCjk(Encoding encoding) : encoding_(encoding) {}
 
 void TextCodecCjk::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // https://encoding.spec.whatwg.org/#names-and-labels
-  auto registerAliases = [&](std::initializer_list<const char*> list) {
+  auto register_aliases = [&](std::initializer_list<const char*> list) {
     AtomicString canonical_name(*list.begin());
     for (auto* alias : list)
       registrar(alias, canonical_name);
   };
 
-  registerAliases({kCanonicalNameEucJp, "cseucpkdfmtjapanese", "x-euc-jp"});
+  register_aliases({kCanonicalNameEucJp, "cseucpkdfmtjapanese", "x-euc-jp"});
 
-  registerAliases({kCanonicalNameShiftJis, "csshiftjis", "ms932", "ms_kanji",
-                   "shift-jis", "sjis", "windows-31j", "x-sjis"});
+  register_aliases({kCanonicalNameShiftJis, "csshiftjis", "ms932", "ms_kanji",
+                    "shift-jis", "sjis", "windows-31j", "x-sjis"});
 
-  registerAliases({
+  register_aliases({
       kCanonicalNameEucKr,
       "cseuckr",
       "csksc56011987",
@@ -1078,15 +1078,15 @@ void TextCodecCjk::RegisterEncodingNames(EncodingNameRegistrar registrar) {
       "windows-949",
   });
 
-  registerAliases({kCanonicalNameIso2022Jp, "csiso2022jp"});
+  register_aliases({kCanonicalNameIso2022Jp, "csiso2022jp"});
 
-  registerAliases({kCanonicalNameGbk, "chinese", "csgb2312", "csiso58gb231280",
-                   "gb2312", "gb_2312", "gb_2312-80", "iso-ir-58", "x-gbk"});
+  register_aliases({kCanonicalNameGbk, "chinese", "csgb2312", "csiso58gb231280",
+                    "gb2312", "gb_2312", "gb_2312-80", "iso-ir-58", "x-gbk"});
 
-  registerAliases({kCanonicalNameGb18030});
+  register_aliases({kCanonicalNameGb18030});
 
-  registerAliases({kCanonicalNameBig5, "cn-big5", "csbig5", "x-x-big5",
-                   kCanonicalNameBig5Hkscs});
+  register_aliases({kCanonicalNameBig5, "cn-big5", "csbig5", "x-x-big5",
+                    kCanonicalNameBig5Hkscs});
 }
 
 void TextCodecCjk::RegisterCodecs(TextCodecRegistrar registrar) {

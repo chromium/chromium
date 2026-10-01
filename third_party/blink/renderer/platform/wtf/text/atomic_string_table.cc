@@ -213,9 +213,9 @@ class UCharBuffer {
                       : encoding),
         hash_(hash) {}
 
-  base::span<const UChar> characters() const { return characters_; }
-  uint32_t hash() const { return hash_; }
-  AtomicStringUCharEncoding encoding() const { return encoding_; }
+  base::span<const UChar> Characters() const { return characters_; }
+  uint32_t Hash() const { return hash_; }
+  AtomicStringUCharEncoding Encoding() const { return encoding_; }
 
   scoped_refptr<StringImpl> CreateStringImpl() const {
     switch (encoding_) {
@@ -236,10 +236,10 @@ class UCharBuffer {
 };
 
 struct UCharBufferTranslator {
-  static uint32_t GetHash(const UCharBuffer& buf) { return buf.hash(); }
+  static uint32_t GetHash(const UCharBuffer& buf) { return buf.Hash(); }
 
   static bool Equal(StringImpl* const& str, const UCharBuffer& buf) {
-    return blink::Equal(str, buf.characters());
+    return blink::Equal(str, buf.Characters());
   }
 
   static void Store(StringImpl*& location,
@@ -290,8 +290,8 @@ class HashTranslatorLowercaseBuffer {
     }
   }
 
-  const StringImpl* impl() const { return impl_; }
-  uint32_t hash() const { return hash_; }
+  const StringImpl* Impl() const { return impl_; }
+  uint32_t Hash() const { return hash_; }
 
  private:
   const StringImpl* impl_;
@@ -301,7 +301,7 @@ struct LowercaseLookupTranslator {
   // Computes the hash that |query| would have if it were first converted to
   // ASCII lowercase.
   static uint32_t GetHash(const HashTranslatorLowercaseBuffer& buf) {
-    return buf.hash();
+    return buf.Hash();
   }
 
   // Returns true if the hashtable |bucket| contains a string which is the ASCII
@@ -317,7 +317,7 @@ struct LowercaseLookupTranslator {
     //
     // However, similar optimizations are used here as there, so these should
     // have generally similar correctness and performance constraints.
-    const StringImpl* query = buf.impl();
+    const StringImpl* query = buf.Impl();
     if (bucket->length() != query->length())
       return false;
     if (bucket->RawByteSpan().data() == query->RawByteSpan().data() &&
@@ -414,8 +414,8 @@ class LCharBuffer {
   ALWAYS_INLINE LCharBuffer(base::span<const LChar> chars, uint32_t hash)
       : characters_(chars), hash_(hash) {}
 
-  base::span<const LChar> characters() const { return characters_; }
-  uint32_t hash() const { return hash_; }
+  base::span<const LChar> Characters() const { return characters_; }
+  uint32_t Hash() const { return hash_; }
 
  private:
   const base::span<const LChar> characters_;
@@ -423,16 +423,16 @@ class LCharBuffer {
 };
 
 struct LCharBufferTranslator {
-  static uint32_t GetHash(const LCharBuffer& buf) { return buf.hash(); }
+  static uint32_t GetHash(const LCharBuffer& buf) { return buf.Hash(); }
 
   static bool Equal(StringImpl* const& str, const LCharBuffer& buf) {
-    return blink::Equal(str, buf.characters());
+    return blink::Equal(str, buf.Characters());
   }
 
   static void Store(StringImpl*& location,
                     const LCharBuffer& buf,
                     uint32_t hash) {
-    auto string = StringImpl::Create(buf.characters());
+    auto string = StringImpl::Create(buf.Characters());
     location = string.release();
     location->SetHash(hash);
     location->SetIsAtomic();

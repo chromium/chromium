@@ -80,11 +80,11 @@ size_t GetUnderestimatedStackSize() {
 #if BUILDFLAG(IS_IOS)
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    size_t guardSize = 0;
-    pthread_attr_getguardsize(&attr, &guardSize);
+    size_t guard_size = 0;
+    pthread_attr_getguardsize(&attr, &guard_size);
     // Stack size for the main thread is 1MB on iOS including the guard page
     // size.
-    return (1 * 1024 * 1024 - guardSize);
+    return (1 * 1024 * 1024 - guard_size);
 #else
     // Stack size for the main thread is 8MB on OSX excluding the guard page
     // size.
@@ -153,9 +153,9 @@ void* GetStackStartImpl() {
   return reinterpret_cast<void*>(
       reinterpret_cast<NT_TIB*>(NtCurrentTeb())->StackBase);
 #elif defined(ARCH_CPU_ARM64)
-  ULONG_PTR lowLimit, highLimit;
-  ::GetCurrentThreadStackLimits(&lowLimit, &highLimit);
-  return reinterpret_cast<void*>(highLimit);
+  ULONG_PTR low_limit, high_limit;
+  ::GetCurrentThreadStackLimits(&low_limit, &high_limit);
+  return reinterpret_cast<void*>(high_limit);
 #endif
 #else
 #error Unsupported getStackStart on this platform.

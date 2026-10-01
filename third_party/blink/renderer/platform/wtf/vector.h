@@ -1075,11 +1075,11 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
     // clear out the inlined buffer. The check reads uninitialized memory, so
     // don't do it if msan is on.
     if constexpr (Allocator::kIsGarbageCollected) {
-      const auto IsZeroed = [this] {
+      const auto is_zeroed = [this] {
         return std::ranges::all_of(inline_buffer_,
                                    [](char c) { return c == 0; });
       };
-      DCHECK(IsOnStack(inline_buffer_) || IsZeroed());
+      DCHECK(IsOnStack(inline_buffer_) || is_zeroed());
     }
   }
 

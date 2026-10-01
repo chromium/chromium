@@ -11,7 +11,7 @@
 namespace blink {
 namespace unicode {
 
-static UChar32 mathVariantGreek(UChar32 code_point, UChar32 base_char) {
+static UChar32 MathVariantGreek(UChar32 code_point, UChar32 base_char) {
   // As the ranges are contiguous, to find the desired math_variant range it
   // is sufficient to multiply the position within the sequence order
   // (multiplier) with the period of the sequence (which is constant for all
@@ -23,7 +23,7 @@ static UChar32 mathVariantGreek(UChar32 code_point, UChar32 base_char) {
   return ret;
 }
 
-static UChar32 mathVariantLatin(UChar32 code_point, UChar32 base_char) {
+static UChar32 MathVariantLatin(UChar32 code_point, UChar32 base_char) {
   // As the ranges are contiguous, to find the desired math_variant range it
   // is sufficient to multiply the position within the sequence order
   // (multiplier) with the period of the sequence (which is constant for all
@@ -127,9 +127,9 @@ UChar32 ItalicMathVariant(UChar32 code_point) {
   }
 
   if (var_type == kGreekish)
-    return mathVariantGreek(code_point, base_char);
+    return MathVariantGreek(code_point, base_char);
   DCHECK(var_type == kLatin);
-  return mathVariantLatin(code_point, base_char);
+  return MathVariantLatin(code_point, base_char);
 }
 
 }  // namespace unicode

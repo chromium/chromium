@@ -783,15 +783,15 @@ bool EqualIgnoringAsciiCaseSimd(base::span<const LChar> a,
   UNSAFE_BUFFERS({
     size_t i = 0;
     if (a.size() >= kLanes) {
-      const auto upper_A = hw::Set(d, 'A');
-      const auto upper_Z = hw::Set(d, 'Z');
+      const auto upper_a = hw::Set(d, 'A');
+      const auto upper_z = hw::Set(d, 'Z');
       const auto case_bit = hw::Set(d, 0x20);
       for (; i + kLanes <= a.size(); i += kLanes) {
         auto va = hw::LoadU(d, reinterpret_cast<const uint8_t*>(a.data() + i));
         auto vb = hw::LoadU(d, reinterpret_cast<const uint8_t*>(b.data() + i));
-        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_a), hw::Le(va, upper_z));
         va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
-        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_a), hw::Le(vb, upper_z));
         vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
         if (!hw::AllTrue(d, hw::Eq(va, vb))) {
           return false;
@@ -818,8 +818,8 @@ bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
   UNSAFE_BUFFERS({
     size_t i = 0;
     if (a.size() >= kLanes) {
-      const auto upper_A = hw::Set(d16, 'A');
-      const auto upper_Z = hw::Set(d16, 'Z');
+      const auto upper_a = hw::Set(d16, 'A');
+      const auto upper_z = hw::Set(d16, 'Z');
       const auto case_bit = hw::Set(d16, 0x20);
       for (; i + kLanes <= a.size(); i += kLanes) {
         auto va =
@@ -827,9 +827,9 @@ bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
         auto vb_8 =
             hw::LoadU(d8, reinterpret_cast<const uint8_t*>(b.data() + i));
         auto vb = hw::PromoteTo(d16, vb_8);
-        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_a), hw::Le(va, upper_z));
         va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
-        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_a), hw::Le(vb, upper_z));
         vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
         if (!hw::AllTrue(d16, hw::Eq(va, vb))) {
           return false;
@@ -855,15 +855,15 @@ bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
   UNSAFE_BUFFERS({
     size_t i = 0;
     if (a.size() >= kLanes) {
-      const auto upper_A = hw::Set(d, 'A');
-      const auto upper_Z = hw::Set(d, 'Z');
+      const auto upper_a = hw::Set(d, 'A');
+      const auto upper_z = hw::Set(d, 'Z');
       const auto case_bit = hw::Set(d, 0x20);
       for (; i + kLanes <= a.size(); i += kLanes) {
         auto va = hw::LoadU(d, reinterpret_cast<const uint16_t*>(a.data() + i));
         auto vb = hw::LoadU(d, reinterpret_cast<const uint16_t*>(b.data() + i));
-        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_a), hw::Le(va, upper_z));
         va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
-        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_a), hw::Le(vb, upper_z));
         vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
         if (!hw::AllTrue(d, hw::Eq(va, vb))) {
           return false;
