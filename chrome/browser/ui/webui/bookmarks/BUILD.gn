@@ -94,7 +94,10 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "bookmarks_message_handler_browsertest.cc" ]
+    sources = [
+      "bookmarks_message_handler_browsertest.cc",
+      "bookmarks_ui_browsertest.cc",
+    ]
     deps = [
       ":bookmarks",
       "//chrome/browser/bookmarks",
@@ -118,6 +121,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/test:test_support",
       "//services/network:test_support",
+      "//ui/accessibility",
       "//ui/views",
     ]
   }
