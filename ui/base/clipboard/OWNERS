@@ -1,7 +1,8 @@
 daniec@microsoft.com
 roraja@microsoft.com
 
-per-file clipboard_*android*=ender@chromium.org
+per-file clipboard_*android*=charlesyc@google.com
+per-file clipboard_*android*=ender@google.com
 per-file clipboard_*mac*=avi@chromium.org
 per-file clipboard_*ozone*=msisov@igalia.com
 per-file clipboard_*ozone*=adunaev@igalia.com
