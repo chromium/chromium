@@ -28,6 +28,7 @@ class SimpleMenuModel;
 }
 
 namespace views {
+class AnimatingLayoutManager;
 class ImageButton;
 class ImageView;
 class Label;
@@ -103,8 +104,10 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void UpdateActionButtons(const PageActionModelInterface& model);
   void UpdateExpandableContent(const PageActionModelInterface& model);
 
+  raw_ptr<views::AnimatingLayoutManager> animating_layout_ = nullptr;
   raw_ptr<views::View> top_row_ = nullptr;
   raw_ptr<views::View> bottom_container_ = nullptr;
+  raw_ptr<views::View> items_container_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<MultiIconButton> expand_button_ = nullptr;
   raw_ptr<ChipContainerView> chip_container_ = nullptr;

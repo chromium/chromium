@@ -29,12 +29,16 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
@@ -161,14 +165,16 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   set_margins(gfx::Insets());
   set_highlight_button_when_shown(false);
 
-  auto* animating_layout =
+  animating_layout_ =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());
-  animating_layout
+  animating_layout_
       ->SetBoundsAnimationMode(
           views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis)
-      .SetOrientation(views::LayoutOrientation::kVertical);
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .SetDefaultFadeMode(
+          views::AnimatingLayoutManager::FadeInOutMode::kScaleFromZero);
 
-  auto* layout = animating_layout->SetTargetLayoutManager(
+  auto* layout = animating_layout_->SetTargetLayoutManager(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -248,8 +254,8 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   bottom_container_ = AddChildView(std::make_unique<views::View>());
   bottom_container_->SetProperty(views::kElementIdentifierKey,
                                  kAnchoredMessageExpandedContentId);
-  bottom_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
+  bottom_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
   bottom_container_->SetVisible(false);
 
   UpdateContent(model);
@@ -354,6 +360,20 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
   expanded_ = !expanded_;
   bottom_container_->SetVisible(expanded_);
+  if (items_container_) {
+    const float opacity = expanded_ ? 1.0f : 0.0f;
+    if (gfx::Animation::ShouldRenderRichAnimation()) {
+      views::AnimationBuilder()
+          .SetPreemptionStrategy(
+              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+          .Once()
+          .SetDuration(animating_layout_->animation_duration())
+          .SetOpacity(items_container_, opacity,
+                      animating_layout_->tween_type());
+    } else {
+      items_container_->layer()->SetOpacity(opacity);
+    }
+  }
   UpdateExpandButtonTooltip();
   if (expandable_content_ &&
       expandable_content_->expand_button_style == ExpandButtonStyle::kChevron) {
@@ -541,21 +561,25 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
     UpdateExpandButtonTooltip();
     expand_button_->SetVisible(true);
 
+    items_container_ = nullptr;
     bottom_container_->RemoveAllChildViews();
 
     auto* separator =
         bottom_container_->AddChildView(std::make_unique<views::Separator>());
     separator->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 6, 0));
 
-    auto* items_container =
+    items_container_ =
         bottom_container_->AddChildView(std::make_unique<views::View>());
-    items_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+    items_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets::TLBR(0, kAnchoredMessageLeftInset, 8, 12), 0));
+    items_container_->SetPaintToLayer();
+    items_container_->layer()->SetFillsBoundsOpaquely(false);
+    items_container_->layer()->SetOpacity(expanded_ ? 1.0f : 0.0f);
 
     if (expandable_content_->heading) {
       auto* heading_row =
-          items_container->AddChildView(std::make_unique<views::View>());
+          items_container_->AddChildView(std::make_unique<views::View>());
       auto* heading_layout =
           heading_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
@@ -569,6 +593,7 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
       title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
       title_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
       title_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      title_label->SetSubpixelRenderingEnabled(false);
       // Set width to 0 so the text will fill available space, but not stretch
       // the bubble.
       title_label->SetPreferredSize(
@@ -578,7 +603,7 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
 
     for (const auto& item : expandable_content_->items) {
       auto* item_row =
-          items_container->AddChildView(std::make_unique<views::View>());
+          items_container_->AddChildView(std::make_unique<views::View>());
       auto* item_layout =
           item_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
@@ -603,6 +628,7 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
       item_label->SetEnabledColor(ui::kColorSysOnSurface);
       item_label->SetMultiLine(false);
       item_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      item_label->SetSubpixelRenderingEnabled(false);
       // Set width to 0 so the text will fill available space, but not stretch
       // the bubble.
       item_label->SetPreferredSize(
@@ -611,6 +637,7 @@ void AnchoredMessageBubbleView::UpdateExpandableContent(
     }
   } else {
     expand_button_->SetVisible(false);
+    items_container_ = nullptr;
     bottom_container_->RemoveAllChildViews();
     bottom_container_->SetVisible(false);
   }
