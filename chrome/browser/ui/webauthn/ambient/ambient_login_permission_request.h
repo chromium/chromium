@@ -20,11 +20,20 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
       const GURL& embedding_origin,
-      PermissionDecidedCallback permission_decided_callback);
+      PermissionDecidedCallback permission_decided_callback,
+      const std::u16string& username,
+      const std::u16string& provider_name);
   ~AmbientLoginPermissionRequest() override;
+
+  const std::u16string& username() const { return username_; }
+  const std::u16string& provider_name() const { return provider_name_; }
 
   // permissions::PermissionRequest:
   std::u16string GetMessageTextFragment() const override;
+
+ private:
+  std::u16string username_;
+  std::u16string provider_name_;
 };
 
 }  // namespace ambient_signin

@@ -20,6 +20,7 @@ if (toolkit_views) {
 
   source_set("permissions") {
     public = [
+      "ambient_login_permission_bubble_view.h",
       "embedded_permission_prompt.h",
       "embedded_permission_prompt_ask_view.h",
       "embedded_permission_prompt_base_view.h",
@@ -91,6 +92,7 @@ if (toolkit_views) {
   # the public :permissions target.
   source_set("impl") {
     sources = [
+      "ambient_login_permission_bubble_view.cc",
       "chooser_bubble_ui.cc",
       "embedded_permission_prompt.cc",
       "embedded_permission_prompt_ask_view.cc",
@@ -135,6 +137,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:device_chooser_content_view",
@@ -151,6 +154,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/views/picture_in_picture",
       "//chrome/browser/ui/views/tabs/common",
+      "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",
@@ -177,11 +181,16 @@ if (toolkit_views) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "permission_prompt_bubble_one_origin_view_unittest.cc" ]
+    sources = [
+      "ambient_login_permission_bubble_view_unittest.cc",
+      "permission_prompt_bubble_one_origin_view_unittest.cc",
+    ]
 
     deps = [
       ":permissions",
+      "//chrome/browser/ui/permission_bubble:test_support",
       "//chrome/browser/ui/views:title_origin_label",
+      "//chrome/browser/ui/webauthn",
       "//chrome/test:test_support",
       "//components/media_effects/test:test_support",
       "//testing/gmock",

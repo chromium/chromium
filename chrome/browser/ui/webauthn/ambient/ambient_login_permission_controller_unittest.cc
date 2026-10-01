@@ -73,7 +73,7 @@ TEST_F(AmbientLoginPermissionControllerTest, RequestPermission) {
   base::RunLoop run_loop;
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://example.com"), GURL("https://example.com"),
-      base::DoNothing());
+      base::DoNothing(), u"user@example.com", u"Google Password Manager");
   controller()->SetFinishedNotificationForTesting(run_loop.QuitClosure());
 
   controller()->RequestPermission(main_rfh(), std::move(request));
@@ -103,7 +103,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   base::RunLoop run_loop;
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://subframe.example.org"), GURL("https://example.com"),
-      base::DoNothing());
+      base::DoNothing(), u"user@example.com", u"Google Password Manager");
   EXPECT_EQ(request->requesting_origin(), GURL("https://subframe.example.org"));
   EXPECT_EQ(request->embedding_origin(), GURL("https://example.com"));
 
@@ -129,7 +129,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   base::RunLoop first_finished_loop;
   auto request1 = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://example.com"), GURL("https://example.com"),
-      base::DoNothing());
+      base::DoNothing(), u"user@example.com", u"Google Password Manager");
   controller()->SetFinishedNotificationForTesting(
       first_finished_loop.QuitClosure());
 
@@ -148,7 +148,8 @@ TEST_F(AmbientLoginPermissionControllerTest,
              const permissions::PermissionRequestData& request_data) {
             *out = decision.overall_decision;
           },
-          &second_decision));
+          &second_decision),
+      u"user2@example.com", u"Google Password Manager");
 
   controller()->RequestPermission(main_rfh(), std::move(request2));
 

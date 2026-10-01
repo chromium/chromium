@@ -17,7 +17,9 @@ namespace ambient_signin {
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    PermissionDecidedCallback permission_decided_callback)
+    PermissionDecidedCallback permission_decided_callback,
+    const std::u16string& username,
+    const std::u16string& provider_name)
     : permissions::PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
               permissions::RequestType::kAmbientLogin,
@@ -28,7 +30,9 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
           base::DoNothing(),
           // Disable automatic embargo so repeated dismissals of ambient sign-in
           // prompts do not trigger standard permission auto-blocking.
-          /*uses_automatic_embargo=*/false) {}
+          /*uses_automatic_embargo=*/false),
+      username_(username),
+      provider_name_(provider_name) {}
 
 AmbientLoginPermissionRequest::~AmbientLoginPermissionRequest() = default;
 

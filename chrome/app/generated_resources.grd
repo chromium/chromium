@@ -18576,6 +18576,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- WebAuthn passkey / password selector UIs -->
+      <message name="IDS_AMBIENT_LOGIN_TITLE" desc="The title of a prompt that tells the user to choose an account to sign in with.">
+        Choose your account
+      </message>
       <message name="IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE" desc="The title of a bubble that displays passkeys or passwords for signing in to a given site.">
         Sign in to <ph name="RP_ID">$1<ex>webauthn.io</ex></ph>
       </message>
