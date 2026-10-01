@@ -229,6 +229,100 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
 
 
 @pytest.mark.asyncio
+async def test_network_before_request_sent_event_with_cookies_intercepted(
+    websocket, context_id, url_base, url_example
+):
+    await goto_url(websocket, context_id, url_base)
+
+    await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.cookie = 'foo=bar'",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root",
+            },
+        },
+    )
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    intercept_result = await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [
+                    {
+                        "type": "string",
+                        "pattern": url_example,
+                    },
+                ],
+            },
+        },
+    )
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"url": url_example, "wait": "complete", "context": context_id},
+        },
+    )
+
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
+    assert resp == AnyExtending(
+        {
+            "type": "event",
+            "method": "network.beforeRequestSent",
+            "params": {
+                "isBlocked": True,
+                "intercepts": [intercept_result["intercept"]],
+                "context": context_id,
+                "navigation": ANY_STR,
+                "redirectCount": 0,
+                "request": {
+                    "request": ANY_STR,
+                    "url": url_example,
+                    "method": "GET",
+                    "headers": ANY_LIST,
+                    "cookies": [
+                        AnyExtending(
+                            {
+                                "domain": "localhost",
+                                "httpOnly": False,
+                                "name": "foo",
+                                "path": "/",
+                                "sameSite": "none",
+                                "secure": False,
+                                "size": 6,
+                                "value": {"type": "string", "value": "bar"},
+                            }
+                        )
+                    ],
+                    "headersSize": ANY_NUMBER,
+                    "bodySize": 0,
+                    "timings": ANY_DICT,
+                    "initiatorType": None,
+                    "destination": "document",
+                },
+                "initiator": {"type": "other"},
+                "timestamp": ANY_TIMESTAMP,
+            },
+        }
+    )
+    assert {
+        "name": "Cookie",
+        "value": {"type": "string", "value": "foo=bar"},
+    } in resp["params"]["request"]["headers"]
+
+
+@pytest.mark.asyncio
 async def test_network_response_completed_event_emitted(
     websocket, context_id, url_base
 ):
