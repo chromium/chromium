@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -20,7 +19,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -174,11 +172,10 @@ TEST_F(AutocompleteControllerAndroidTest,
       reinterpret_cast<uintptr_t>(&navigation_handle),
       reinterpret_cast<uintptr_t>(&match));
 
-  auto* user_data =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+  auto* holder =
+      page_load_metrics::NavigationInitiatorHolder::GetForNavigationHandle(
           navigation_handle);
-  ASSERT_TRUE(user_data);
-  EXPECT_EQ(user_data->navigation_type(),
-            GetInitiatorLocation(
-                ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
+  ASSERT_TRUE(holder);
+  EXPECT_EQ(holder->initiator(),
+            chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 }

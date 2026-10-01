@@ -1614,15 +1614,12 @@ class TestOmniboxNavigationObserver : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->HasCommitted()) {
-      // TODO(https://crbug.com/517725655): Use `GetNavigationInitiator()` once
-      // the OmniboxDefaultSearchEngine trigger is migrated too.
-      navigation_initiator_id_ =
-          page_load_metrics::GetAttachedNavigationInitiatorId(
-              *navigation_handle);
+      navigation_initiator_ =
+          page_load_metrics::GetNavigationInitiator(*navigation_handle);
     }
   }
 
-  std::optional<int64_t> navigation_initiator_id_;
+  std::optional<page_load_metrics::NavigationInitiator> navigation_initiator_;
 };
 
 }  // namespace
@@ -1649,9 +1646,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, 0));
   observer.Wait();
 
-  ASSERT_TRUE(omnibox_observer.navigation_initiator_id_.has_value());
-  EXPECT_EQ(omnibox_observer.navigation_initiator_id_.value(),
-            chrome_navigation_initiator::kOmniboxDirectUrlInput.id());
+  ASSERT_TRUE(omnibox_observer.navigation_initiator_.has_value());
+  EXPECT_EQ(omnibox_observer.navigation_initiator_.value(),
+            chrome_navigation_initiator::kOmniboxDirectUrlInput);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
@@ -1676,9 +1673,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, 0));
   observer.Wait();
 
-  ASSERT_TRUE(omnibox_observer.navigation_initiator_id_.has_value());
-  EXPECT_EQ(omnibox_observer.navigation_initiator_id_.value(),
-            chrome_navigation_initiator::kOmniboxDefaultSearchEngine.id());
+  ASSERT_TRUE(omnibox_observer.navigation_initiator_.has_value());
+  EXPECT_EQ(omnibox_observer.navigation_initiator_.value(),
+            chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {

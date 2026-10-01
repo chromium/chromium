@@ -109,12 +109,9 @@ void AttachOmniboxDirectUrlInputNavigationHandleUserData(
 
 void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
       navigation_handle,
-      GetInitiatorLocation(
-          ChromeInitiatorLocation::kOmniboxDefaultSearchEngine),
-      StringifyChromeInitiatorLocation(
-          ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
+      chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 }
 
 void AttachBookmarkBarNavigationHandleUserData(
@@ -137,9 +134,9 @@ void AttachContextMenuOpenLinkNavigationHandleUserData(
 
 void MarkNavigationServedBySearchPrefetch(
     content::NavigationHandle& navigation_handle) {
-  if (auto* user_data =
-          page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-              navigation_handle)) {
-    user_data->set_is_served_by_legacy_search_prefetch(true);
-  }
+  // Note: `GetOrCreate`, not `Get`. No trigger creates this user data anymore,
+  // as they attach `page_load_metrics::NavigationInitiatorHolder` instead.
+  page_load_metrics::NavigationHandleUserData::GetOrCreateForNavigationHandle(
+      navigation_handle)
+      ->set_is_served_by_legacy_search_prefetch(true);
 }

@@ -49,6 +49,12 @@ class NavigationHandleUserData
   }
 
  private:
+  // Constructs an instance whose initiator is unknown. This exists for
+  // `GetOrCreateForNavigationHandle()`, which is used to set
+  // `is_served_by_legacy_search_prefetch_` on a navigation whose trigger did
+  // not create this user data.
+  explicit NavigationHandleUserData(content::NavigationHandle& navigation);
+
   NavigationHandleUserData(content::NavigationHandle& navigation,
                            InitiatorLocation navigation_type,
                            std::string navigation_type_string);
