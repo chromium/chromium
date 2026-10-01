@@ -96,6 +96,9 @@ class FacilitatedPaymentsAgentTest : public testing::Test {
     mojo::AssociatedRemote<mojom::FacilitatedPaymentsDriver> driver_remote;
     driver_.Bind(driver_remote.BindNewEndpointAndPassDedicatedReceiver());
     agent_->SetDriverForTesting(std::move(driver_remote));
+    // The agent starts dormant in production; these tests run the enabled
+    // path, so they opt in explicitly.
+    agent_->SetQrCodeDetectionEnabled(true);
   }
 
  protected:
@@ -204,6 +207,29 @@ TEST_F(FacilitatedPaymentsAgentTest, TestOnDestructCancelsRescan) {
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
   EXPECT_TRUE(driver_.reported_signals().empty());
+}
+
+// Test that a new agent is dormant, so that lifecycle events on sites the
+// browser has not opted in never schedule a scan.
+TEST_F(FacilitatedPaymentsAgentTest, TestAgentStartsDormant) {
+  // Built locally because `SetUp` opts `agent_` in. The registry is local too,
+  // since registering the same interface twice in `registry_` fails a DCHECK.
+  blink::AssociatedInterfaceRegistry dormant_registry;
+  TestFacilitatedPaymentsAgent dormant_agent(&dormant_registry);
+  mojo::AssociatedRemote<mojom::FacilitatedPaymentsDriver> driver_remote;
+  FakeFacilitatedPaymentsDriver dormant_driver;
+  dormant_driver.Bind(driver_remote.BindNewEndpointAndPassDedicatedReceiver());
+  dormant_agent.SetDriverForTesting(std::move(driver_remote));
+
+  EXPECT_FALSE(dormant_agent.is_qr_code_detection_enabled());
+
+  dormant_agent.DidFinishLoad();
+  dormant_agent.DidMeaningfulLayout(
+      blink::WebMeaningfulLayout::kVisuallyNonEmpty);
+  EXPECT_FALSE(dormant_agent.GetTimerForTesting().IsRunning());
+
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  EXPECT_TRUE(dormant_driver.reported_signals().empty());
 }
 
 }  // namespace

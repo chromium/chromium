@@ -27,8 +27,8 @@ class RenderFrame;
 namespace payments::facilitated {
 
 // Autonomous agent in the Renderer process that listens to Blink lifecycle
-// events (layout shifts, scrolling, page load) and calculates heuristic scores
-// indicating the probability of a payment QR code being present on the page.
+// events (layout shifts, scrolling, page load) and reports page signals that
+// the browser uses to decide whether the page may show a payment QR code.
 class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
                                  public mojom::FacilitatedPaymentsAgent {
  public:
@@ -87,8 +87,11 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   // is actively scrolling or layout is shifting rapidly.
   base::OneShotTimer rescan_timer_;
 
-  // Tracks whether autonomous QR code detection heuristics are enabled.
-  bool is_qr_code_detection_enabled_ = true;
+  // Tracks whether autonomous QR code detection heuristics are enabled. The
+  // agent starts dormant so that sites the browser has not opted in never run
+  // a timer, a DOM query or a Mojo call. The browser opts each document in from
+  // `DidFinishNavigation` once the merchant allowlist has been checked.
+  bool is_qr_code_detection_enabled_ = false;
 
   // Mojo receiver for `mojom::FacilitatedPaymentsAgent`.
   mojo::AssociatedReceiver<mojom::FacilitatedPaymentsAgent> receiver_{this};

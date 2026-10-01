@@ -18,6 +18,22 @@ BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
 // Desktop.
 BASE_FEATURE(kEnableDesktopQrCodeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Regional tokens (e.g. for PromptPay or QRIS) are added via Finch rather than
+// a binary update.
+const base::FeatureParam<std::string> kQrCodeDetectionKeywords{
+    &kEnableDesktopQrCodeDetection, "keywords",
+    "checkout,pagamento,pix,payment"};
+
+// Excludes favicons, avatars and icons, which would otherwise make the square
+// candidate signal fire on nearly every page.
+const base::FeatureParam<int> kQrCodeDetectionMinImageSize{
+    &kEnableDesktopQrCodeDetection, "min_image_size", 50};
+
+// A QR code is square; the tolerance absorbs padding, borders and captions
+// that merchants often render around it.
+const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio{
+    &kEnableDesktopQrCodeDetection, "max_aspect_ratio", 1.2};
+
 // When enabled, Chrome will receive and cache eWallet creation options from
 // Chrome Sync.
 BASE_FEATURE(kEnableEwalletNewAccountLinking,

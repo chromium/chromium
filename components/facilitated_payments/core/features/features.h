@@ -13,6 +13,14 @@ namespace payments::facilitated {
 
 BASE_DECLARE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist);
 BASE_DECLARE_FEATURE(kEnableDesktopQrCodeDetection);
+// Comma-separated keywords matched against the URL, the document title and the
+// `<meta name="description">` content.
+extern const base::FeatureParam<std::string> kQrCodeDetectionKeywords;
+// Minimum length, in CSS pixels, of the shorter edge of a QR candidate
+// `<img>` or `<canvas>`.
+extern const base::FeatureParam<int> kQrCodeDetectionMinImageSize;
+// Maximum ratio of the longer edge to the shorter edge of a QR candidate.
+extern const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio;
 BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
 #if BUILDFLAG(IS_ANDROID)

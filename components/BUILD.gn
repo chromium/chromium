@@ -1171,6 +1171,7 @@ if (use_blink) {
       "//components/dom_distiller/core",
       "//components/dom_distiller/core:test_support",
       "//components/error_page/content/browser:browser_tests",
+      "//components/facilitated_payments/content/renderer:browser_tests",
       "//components/input:browser_tests",
       "//components/js_injection/browser:browser_tests",
       "//components/metrics:content",
