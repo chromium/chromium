@@ -22,6 +22,7 @@ export default {
     'no-duplicate-selectors': true,
     'no-irregular-whitespace': true,
     'property-no-unknown': true,
+    'selector-no-invalid': true,
     'selector-pseudo-class-no-unknown': true,
     'selector-pseudo-element-no-unknown': true,
     'unit-no-unknown': true,
