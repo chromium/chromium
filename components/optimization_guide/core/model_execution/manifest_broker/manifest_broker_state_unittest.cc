@@ -11,6 +11,7 @@
 #include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/task/execution_fence.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -321,6 +322,34 @@ TEST_F(ManifestBrokerStateTest,
                                session_future.GetCallback());
   EXPECT_TRUE(session_future.Take());
   EXPECT_EQ(obs.reason_, OnDeviceModelEligibilityReason::kSuccess);
+}
+
+TEST_F(ManifestBrokerStateTest, EnsureInitializationBypassesBestEffortFence) {
+  base::ScopedBestEffortExecutionFence best_effort_fence;
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  // Pre-seed the performance class so that ManifestMonitor::OnInputsChanged
+  // posts Manifest::Load during startup while the best-effort execution fence
+  // is active.
+  UpdatePerformanceClassPref(&fake_.local_state(),
+                             OnDeviceModelPerformanceClass::kHigh);
+  fake_.Startup();
+  base::RunLoop().RunUntilIdle();
+
+  // Before EnsureInitialization is called, the manifest load is queued at
+  // BEST_EFFORT priority and blocked by the execution fence.
+  EXPECT_EQ(
+      fake_.state().GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kTest),
+      OnDeviceModelEligibilityReason::kUnknown);
+
+  // Triggering EnsureInitialization should raise the manifest load priority to
+  // USER_VISIBLE and complete even while the best-effort execution fence is
+  // active.
+  fake_.client().RequestAssetsFor("test");
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  EXPECT_TRUE(session_future.Take());
 }
 
 }  // namespace optimization_guide

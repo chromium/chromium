@@ -192,8 +192,9 @@ void ManifestBrokerState::GetOnDeviceModelEligibilityAsync(
 
 void ManifestBrokerState::EnsureInitialization(
     ModelBrokerImpl::InitCallback callback) {
-  // Hurry the performance classifier.
+  // Hurry the performance classifier and manifest loading.
   performance_classifier_.EnsurePerformanceClassAvailable(base::DoNothing());
+  manifest_monitor_.RaiseLoadPriority();
   if (manifest_monitor_.manifest().has_value()) {
     // Initialization is already complete.
     std::move(callback).Run(GetPossibleOnDeviceCapabilities());

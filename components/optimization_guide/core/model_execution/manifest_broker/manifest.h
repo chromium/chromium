@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/task/task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -69,6 +71,7 @@ class Manifest final {
       DeviceCategory device_category);
 
   static void Load(
+      base::TaskRunner& task_runner,
       const base::FilePath& directory,
       DeviceCategory device_category,
       base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback);
