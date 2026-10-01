@@ -49,13 +49,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AuthTab success"/>
 </enum>
 
-<enum name="CustomTabsConnection">
-  <int value="0" label="Disconnected from service w/o KeepAlive connection"/>
-  <int value="1" label="Disconnected from service with KeepAlive connection"/>
-  <int value="2" label="Connected to service w/o KeepAlive connection"/>
-  <int value="3" label="Connected to service with KeepAlive connection"/>
-</enum>
-
 <!--LINT.IfChange(CustomTabsFeatureUsed) -->
 
 <enum name="CustomTabsFeatureUsed">
