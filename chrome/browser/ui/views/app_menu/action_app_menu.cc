@@ -7,13 +7,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -37,9 +33,7 @@
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_separator.h"
@@ -48,7 +42,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_utils.h"
 
 namespace {
 
