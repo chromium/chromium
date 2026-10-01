@@ -47,3 +47,7 @@ tast.ui.ChromeCrashReporterMetrics.success_crashpad@trogdor
 
 # b/555577489
 tast.ui.ChromeCrashReporterMetrics.miss_crashpad
+
+# b/567899351
+tast.crash.SenderNoConsent.fieldtrial_testing_config_on
+
