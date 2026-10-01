@@ -181,7 +181,7 @@
     Keyboard shortcut
   </message>
   <message name="IDS_SETTINGS_GLIC_HOTKEY_GLOBAL_SCOPE_DESCRIPTION" desc="Description for the hotkey scope setting to allow it to work globally.">
-    Use shortcut across OS apps
+    Use this shortcut outside of Chrome
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_EDIT_LABEL" desc="Label of the edit keyboard shortcut setting button.">
     Edit keyboard shortcut
