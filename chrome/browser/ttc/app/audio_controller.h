@@ -23,6 +23,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
@@ -53,6 +54,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   using AudioEnergyCallback = base::RepeatingCallback<void(float energy)>;
   using PlaybackCompletionCallback =
       base::RepeatingCallback<void(int64_t sequence_number)>;
+  using ErrorCallback = base::RepeatingCallback<void(ErrorCode error_code)>;
   using AudioStreamFactoryBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
   using AudioSystemFactory =
@@ -88,6 +90,9 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   // Subscribes to notifications when an audio chunk sequence finishes playback.
   base::CallbackListSubscription AddPlaybackCompletionListener(
       PlaybackCompletionCallback callback);
+
+  // Subscribes to notifications when an audio capture error occurs.
+  base::CallbackListSubscription AddErrorListener(ErrorCallback callback);
 
   // --- Audio Playback (Speaker Output) ---
   // Enqueues signed PCM16 audio data to be rendered natively with specific
@@ -155,6 +160,7 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
                                    media::AudioParameters params,
                                    float energy);
   void OnAudioRenderedOnMainThread(int64_t completed_sequence);
+  void OnAudioErrorOnMainThread(ErrorCode error_code);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   AudioStreamFactoryBinder factory_binder_;
@@ -166,11 +172,13 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
       capture_callbacks_;
   base::RepeatingCallbackList<void(float)> energy_callbacks_;
   base::RepeatingCallbackList<void(int64_t)> completion_callbacks_;
+  base::RepeatingCallbackList<void(ErrorCode)> error_callbacks_;
 
   base::RepeatingCallback<
       void(std::vector<int16_t>, media::AudioParameters, float)>
       capture_callback_runner_;
   base::RepeatingCallback<void(int64_t)> render_callback_runner_;
+  base::RepeatingCallback<void(ErrorCode)> error_callback_runner_;
 
   // True from StartCapture() until StopCapture(), including while the device
   // parameters query is in flight.

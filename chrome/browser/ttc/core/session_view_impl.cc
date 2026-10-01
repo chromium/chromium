@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/voice_plate_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -15,6 +16,26 @@
 #include "chrome/browser/ui/views/dictation/ui_state.h"
 
 namespace ttc {
+
+ToastId GetToastIdForError(ErrorCode error) {
+  switch (error) {
+    case ErrorCode::kUnknown:
+    case ErrorCode::kRateLimited:
+    case ErrorCode::kSafetyBlocked:
+    case ErrorCode::kInternalBackendError:
+    case ErrorCode::kSessionExpired:
+    case ErrorCode::kOptimizationGuideUnavailable:
+    case ErrorCode::kExecutionSessionCreationFailed:
+    case ErrorCode::kAudioUnknownError:
+      return ToastId::kTtcGenericError;
+
+    case ErrorCode::kAudioNoMicrophoneDetected:
+    case ErrorCode::kAudioMicrophoneInUse:
+      return ToastId::kTtcNoMicrophoneError;
+  }
+
+  NOTREACHED();
+}
 
 SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
     : delegate_(delegate),
@@ -40,7 +61,7 @@ void SessionViewImpl::OnSessionInitialized() {
 void SessionViewImpl::OnError(ErrorCode error) {
   if (ToastController* toast_controller =
           ToastController::From(delegate_->GetBrowserWindowInterface())) {
-    toast_controller->MaybeShowToast(ToastParams(ToastId::kTtcGenericError));
+    toast_controller->MaybeShowToast(ToastParams(GetToastIdForError(error)));
   }
 }
 

@@ -127,6 +127,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (!is_android) {
+    sources += [ "session_view_impl_unittest.cc" ]
+    deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
+  }
 }
 
 if (!is_android) {

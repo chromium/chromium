@@ -12,17 +12,22 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/app/test_utils.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -62,10 +67,14 @@ class FakeSessionController : public SessionController {
   }
   void UserAudioLevelUpdate(float audio_level) override {}
   void OnSessionInitialized() override {}
-  void OnError(ErrorCode error) override { last_error_ = error; }
+  void OnError(ErrorCode error) override {
+    last_error_ = error;
+    ++error_count_;
+  }
 
   const ToolRequest& last_request() const { return last_request_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
+  int error_count() const { return error_count_; }
 
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
@@ -77,6 +86,7 @@ class FakeSessionController : public SessionController {
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
   std::optional<ErrorCode> last_error_;
+  int error_count_ = 0;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 };
@@ -329,6 +339,73 @@ TEST_F(ConversationImplTest, ApplicationErrorDoesNotSendToolSetUpdate) {
   // that closes or fails has nothing to send it for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
   conversation.OnApplicationError(ErrorCode::kUnknown);
+}
+
+TEST_F(ConversationImplTest, AudioCaptureErrorIsReported) {
+  audio_manager_.SetHasInputDevices(false);
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.Start();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return session_controller_.error_count() > 0; }));
+
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.last_error(),
+            ErrorCode::kAudioNoMicrophoneDetected);
+  EXPECT_FALSE(audio_controller().is_capturing());
+}
+
+TEST_F(ConversationImplTest, AudioCaptureErrorAfterStopIsIgnored) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  conversation.Stop();
+
+  audio_controller().OnCaptureError(
+      media::AudioCapturerSource::ErrorCode::kDeviceRemoved, "error");
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(session_controller_.error_count(), 0);
+  EXPECT_NE(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
+}
+
+// The backend can report a disconnection as a clean close before the error
+// that caused it, which must still be reported.
+TEST_F(ConversationImplTest, ApplicationErrorAfterCloseIsReported) {
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.OnApplicationClosed();
+  conversation.OnApplicationError(ErrorCode::kUnknown);
+
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kUnknown);
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
+}
+
+TEST_F(ConversationImplTest, OnlyFirstApplicationErrorIsReported) {
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.OnApplicationError(ErrorCode::kRateLimited);
+  conversation.OnApplicationError(ErrorCode::kUnknown);
+
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kRateLimited);
+}
+
+TEST_F(ConversationImplTest, CloseAfterApplicationErrorIsIgnored) {
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.OnApplicationError(ErrorCode::kRateLimited);
+  conversation.OnApplicationClosed();
+
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
 }
 
 }  // namespace ttc

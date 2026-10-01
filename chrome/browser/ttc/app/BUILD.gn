@@ -111,6 +111,8 @@ if (!is_android) {
       "//content/public/browser",
       "//media",
       "//media:test_support",
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//third_party/protobuf:protobuf_lite",
     ]

@@ -76,6 +76,7 @@ found in the LICENSE file.
         summary="send tab to self tab opened in background"/>
     <variant name="Translate" summary="translate"/>
     <variant name="TtcGenericError" summary="TTC generic error"/>
+    <variant name="TtcNoMicrophoneError" summary="TTC no microphone error"/>
   </token>
 </histogram>
 

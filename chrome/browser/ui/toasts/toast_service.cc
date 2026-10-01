@@ -823,7 +823,16 @@ void ToastService::RegisterToasts(
         ToastSpecification::Builder(features::IsRoundedIconsEnabled()
                                         ? vector_icons::kErrorIcon
                                         : vector_icons::kErrorOldIcon,
-                                    IDS_TTC_GENERIC_ERROR_TOAST)
+                                    IDS_DICTATION_ERROR_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcNoMicrophoneError,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOldIcon,
+                                    IDS_DICTATION_NO_MIC_ERROR_TOAST)
             .AddCloseButton()
             .AddGlobalScoped()
             .Build());

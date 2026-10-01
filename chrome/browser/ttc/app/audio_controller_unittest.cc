@@ -11,13 +11,17 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -310,6 +314,87 @@ TEST_F(AudioControllerTest, StartAndStopCaptureWithFakeBinder) {
 
   controller.StopCapture();
   EXPECT_FALSE(controller.is_capturing());
+}
+
+TEST_F(AudioControllerTest, StartCaptureWithoutInputDevicesReportsError) {
+  audio_manager_.SetHasInputDevices(false);
+
+  bool binder_called = false;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        binder_called = true;
+      });
+  AudioController controller(fake_binder, GetAudioSystemFactory());
+
+  std::vector<ErrorCode> errors;
+  base::RunLoop error_loop;
+  auto error_sub = controller.AddErrorListener(
+      base::BindLambdaForTesting([&](ErrorCode error) {
+        errors.push_back(error);
+        error_loop.Quit();
+      }));
+
+  controller.StartCapture();
+  error_loop.Run();
+
+  EXPECT_THAT(errors,
+              testing::ElementsAre(ErrorCode::kAudioNoMicrophoneDetected));
+  EXPECT_FALSE(controller.is_capturing());
+  EXPECT_FALSE(binder_called);
+}
+
+TEST_F(AudioControllerTest, CaptureErrorsAreConvertedAndPostedToListeners) {
+  AudioController controller;
+
+  std::vector<ErrorCode> errors;
+  auto error_sub = controller.AddErrorListener(base::BindLambdaForTesting(
+      [&](ErrorCode error) { errors.push_back(error); }));
+
+  const struct {
+    media::AudioCapturerSource::ErrorCode capture_error;
+    ErrorCode expected_error;
+  } kTestCases[] = {
+      {media::AudioCapturerSource::ErrorCode::kSystemPermissions,
+       ErrorCode::kAudioNoMicrophoneDetected},
+      {media::AudioCapturerSource::ErrorCode::kDeviceRemoved,
+       ErrorCode::kAudioNoMicrophoneDetected},
+      {media::AudioCapturerSource::ErrorCode::kDeviceInUse,
+       ErrorCode::kAudioMicrophoneInUse},
+      {media::AudioCapturerSource::ErrorCode::kUnknown,
+       ErrorCode::kAudioUnknownError},
+      {media::AudioCapturerSource::ErrorCode::kSocketError,
+       ErrorCode::kAudioUnknownError},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.capture_error));
+    errors.clear();
+
+    controller.OnCaptureError(test_case.capture_error, "error");
+    EXPECT_TRUE(errors.empty());
+
+    ASSERT_TRUE(base::test::RunUntil([&] { return !errors.empty(); }));
+    EXPECT_THAT(errors, testing::ElementsAre(test_case.expected_error));
+  }
+}
+
+TEST_F(AudioControllerTest, CaptureErrorIsDroppedIfControllerIsDestroyed) {
+  auto controller = std::make_unique<AudioController>();
+
+  bool error_reported = false;
+  auto error_sub = controller->AddErrorListener(
+      base::BindLambdaForTesting([&](ErrorCode) { error_reported = true; }));
+
+  controller->OnCaptureError(media::AudioCapturerSource::ErrorCode::kUnknown,
+                             "error");
+  controller.reset();
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(error_reported);
 }
 
 }  // namespace ttc

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +18,8 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 class MockOptimizationGuideKeyedService;
@@ -128,6 +131,11 @@ class AppBrowserTestBase : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<media::MockAudioManager> audio_manager_;
+
+  // The AudioController's stream factory pipes. They're kept open but never
+  // read so that stream requests stay pending rather than failing.
+  std::vector<mojo::PendingReceiver<media::mojom::AudioStreamFactory>>
+      audio_stream_factory_receivers_;
 
   // Holds the mock streaming session until the TtcMesClient takes ownership of
   // it.

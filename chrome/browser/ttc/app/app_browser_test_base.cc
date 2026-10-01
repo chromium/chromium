@@ -140,6 +140,7 @@ void AppBrowserTestBase::TearDownOnMainThread() {
   pending_model_execution_session_.reset();
   streaming_callback_.Reset();
 
+  audio_stream_factory_receivers_.clear();
   audio_manager_->Shutdown();
   audio_manager_.reset();
 
@@ -268,11 +269,14 @@ bool AppBrowserTestBase::WaitForServiceState(ServiceState state) {
 
 std::unique_ptr<Conversation> AppBrowserTestBase::MakeConversation(
     SessionController& session_controller) {
-  // Dropping the receiver in the binder means no real capture stream is ever
-  // opened.
+  // Holding on to the receiver without binding it means no real capture stream
+  // is ever opened, while keeping the pipe open so that capture doesn't fail.
   auto audio_controller = std::make_unique<AudioController>(
-      base::BindRepeating(
-          [](mojo::PendingReceiver<media::mojom::AudioStreamFactory>) {}),
+      base::BindLambdaForTesting(
+          [this](mojo::PendingReceiver<media::mojom::AudioStreamFactory>
+                     receiver) {
+            audio_stream_factory_receivers_.push_back(std::move(receiver));
+          }),
       base::BindLambdaForTesting(
           [this]() -> std::unique_ptr<media::AudioSystem> {
             return std::make_unique<media::AudioSystemImpl>(

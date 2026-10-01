@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/audio_service.h"
@@ -53,6 +54,23 @@ constexpr int kDefaultPlaybackSampleRate = 24000;
 AudioController::AudioStreamFactoryBinder& GetDefaultBinderForTestingStorage() {
   static base::NoDestructor<AudioController::AudioStreamFactoryBinder> binder;
   return *binder;
+}
+
+ErrorCode CaptureErrorToErrorCode(media::AudioCapturerSource::ErrorCode code) {
+  switch (code) {
+    case media::AudioCapturerSource::ErrorCode::kSystemPermissions:
+    case media::AudioCapturerSource::ErrorCode::kDeviceRemoved:
+      return ErrorCode::kAudioNoMicrophoneDetected;
+
+    case media::AudioCapturerSource::ErrorCode::kDeviceInUse:
+      return ErrorCode::kAudioMicrophoneInUse;
+
+    case media::AudioCapturerSource::ErrorCode::kUnknown:
+    case media::AudioCapturerSource::ErrorCode::kSocketError:
+      return ErrorCode::kAudioUnknownError;
+  }
+
+  NOTREACHED();
 }
 
 }  // namespace
@@ -159,6 +177,10 @@ AudioController::AudioController(AudioStreamFactoryBinder factory_binder,
       main_task_runner_,
       base::BindRepeating(&AudioController::OnAudioRenderedOnMainThread,
                           weak_factory_.GetWeakPtr()));
+  error_callback_runner_ = base::BindPostTask(
+      main_task_runner_,
+      base::BindRepeating(&AudioController::OnAudioErrorOnMainThread,
+                          weak_factory_.GetWeakPtr()));
 }
 
 AudioController::~AudioController() {
@@ -202,6 +224,7 @@ void AudioController::OnInputDeviceParametersReceived(
     VLOG(1) << "AudioController: no parameters for capture device "
             << device_id;
     capture_requested_ = false;
+    error_callbacks_.Notify(ErrorCode::kAudioNoMicrophoneDetected);
     return;
   }
 
@@ -250,6 +273,11 @@ base::CallbackListSubscription AudioController::AddAudioEnergyListener(
 base::CallbackListSubscription AudioController::AddPlaybackCompletionListener(
     PlaybackCompletionCallback callback) {
   return completion_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription AudioController::AddErrorListener(
+    ErrorCallback callback) {
+  return error_callbacks_.Add(std::move(callback));
 }
 
 void AudioController::PlayAudio(base::span<const int16_t> pcm_data,
@@ -353,6 +381,8 @@ void AudioController::DeliverCapturedAudio(const media::AudioBus& audio_bus) {
 void AudioController::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                                      const std::string& message) {
   VLOG(1) << "AudioController audio capture error: " << message;
+  ErrorCode error_code = CaptureErrorToErrorCode(code);
+  error_callback_runner_.Run(error_code);
 }
 
 void AudioController::OnCaptureMuted(bool is_muted) {}
@@ -430,6 +460,10 @@ void AudioController::OnAudioRenderedOnMainThread(int64_t completed_sequence) {
   if (completed_sequence >= 0) {
     completion_callbacks_.Notify(completed_sequence);
   }
+}
+
+void AudioController::OnAudioErrorOnMainThread(ErrorCode error_code) {
+  error_callbacks_.Notify(error_code);
 }
 
 }  // namespace ttc

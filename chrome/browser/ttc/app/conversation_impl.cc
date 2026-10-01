@@ -40,6 +40,9 @@ void ConversationImpl::Start() {
   playback_completion_subscription_ =
       audio_controller_->AddPlaybackCompletionListener(base::BindRepeating(
           &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
+  audio_capture_error_subscription_ =
+      audio_controller_->AddErrorListener(base::BindRepeating(
+          &ConversationImpl::OnApplicationError, base::Unretained(this)));
   audio_controller_->StartCapture();
 
   backend_->Connect(this);
@@ -54,6 +57,7 @@ void ConversationImpl::Stop() {
   audio_capture_subscription_ = {};
   audio_energy_subscription_ = {};
   playback_completion_subscription_ = {};
+  audio_capture_error_subscription_ = {};
 
   audio_controller_->StopCapture();
   audio_controller_->StopPlayback();
@@ -101,6 +105,10 @@ void ConversationImpl::OnApplicationClosed() {
 }
 
 void ConversationImpl::OnApplicationError(ErrorCode error) {
+  if (ending_due_to_error_) {
+    return;
+  }
+  ending_due_to_error_ = true;
   session_controller_->OnError(error);
   session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
 }

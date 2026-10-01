@@ -121,6 +121,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Email verification error"/>
   <int value="60" label="Autofill AI suggestion removed"/>
   <int value="61" label="TTC generic error"/>
+  <int value="62" label="TTC no microphone error"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
