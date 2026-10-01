@@ -17,7 +17,7 @@ export {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
 export type {RecentlyClosedItem} from './delegates/recent_tabs_delegate.js';
 export {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 export {OrganizerListElement} from './organizer_list.js';
-export {INITIAL_ITEM_COUNT, OrganizerListSectionElement} from './organizer_list_section.js';
+export {OrganizerListSectionElement} from './organizer_list_section.js';
 export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 export type {HighlightableItem, HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemActionButton, OrganizerListSectionItemIcon, OrganizerListSectionItemStackedFavicons} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemElement} from './organizer_list_section_item.js';

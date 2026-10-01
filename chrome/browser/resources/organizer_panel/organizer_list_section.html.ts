@@ -9,37 +9,23 @@ import type {OrganizerListSectionElement} from './organizer_list_section.js';
 export function getHtml(this: OrganizerListSectionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<h2 id="header">${this.delegate?.getHeader() || ''}</h2>
+<cr-expand-button id="header" ?expanded="${this.isExpanded_()}"
+    ?disabled="${this.isSearching_()}"
+    @expanded-changed="${this.onExpandedChanged_}">
+  ${this.delegate?.getHeader() || ''}
+</cr-expand-button>
 ${this.hasNoSearchResults_() ? html`
   <div id="noResults">$i18n{noResults}</div>
 ` : html`
-  <div id="items" role="list">
-    ${this.getInitialItems_().map(item => html`
+  <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}">
+    ${this.getFilteredItems_().map(item => html`
       <organizer-list-section-item .item="${item}" role="listitem"
           @click="${this.onItemClick_}"
           @action-button-click="${this.onItemActionButtonClick_}"
           @context-menu-click="${this.onItemContextMenuClick_}">
       </organizer-list-section-item>
     `)}
-    ${this.hasMoreItems_() ? html`
-      <div id="collapse" @transitionend="${this.onCollapseTransitionend_}">
-        ${this.getRemainingItems_().map(item => html`
-          <organizer-list-section-item .item="${item}" role="listitem"
-              @click="${this.onItemClick_}"
-              @action-button-click="${this.onItemActionButtonClick_}"
-              @context-menu-click="${this.onItemContextMenuClick_}">
-          </organizer-list-section-item>
-        `)}
-      </div>
-      <cr-url-list-item id="expandButton" size="compact"
-          .title="${this.getExpandButtonLabel_()}"
-          @click="${this.onExpandButtonClick_}">
-        <cr-icon id="expandButtonIcon" slot="customIcon"
-            .icon="${this.getExpandButtonIcon_()}">
-        </cr-icon>
-      </cr-url-list-item>
-    ` : ''}
-  </div>
+  </cr-collapse>
 `}
 <!--_html_template_end_-->`;
   // clang-format on

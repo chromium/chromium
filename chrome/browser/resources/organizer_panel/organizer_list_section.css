@@ -12,43 +12,38 @@
 }
 
 #header {
-  align-items: center;
+  --cr-expand-button-icon-size: 16px;
+  --cr-expand-button-size: 24px;
+  --cr-section-vertical-padding: 0;
   color: var(--cr-secondary-text-color);
-  display: flex;
   font-size: 9px;
   font-weight: 700;
   line-height: 16px;
-  margin: 8px 16px;
+  padding: 8px 16px;
   text-transform: uppercase;
+}
+
+#header[disabled] {
+  opacity: 1;
+}
+
+#header::part(icon) {
+  margin-block: -4px;
+  margin-inline-end: 12px;
+  margin-inline-start: 8px;
+  order: -1;
+}
+
+#header[disabled]::part(icon) {
+  display: none;
+}
+
+:host-context(html:not(.focus-outline-visible)) #header::part(icon) {
+  --cr-icon-button-focus-outline-color: transparent;
 }
 
 #noResults {
   color: var(--cr-secondary-text-color);
   font-size: 12px;
   margin: 8px 16px;
-}
-
-#collapse {
-  height: 0;
-  interpolate-size: allow-keywords;
-  overflow: hidden;
-  transition: height 300ms ease-out, visibility 0s 300ms;
-  visibility: hidden;
-}
-
-:host([expanded_]) #collapse {
-  height: auto;
-  transition: height 300ms ease-out;
-  visibility: visible;
-}
-
-#expandButton::part(iconContainer) {
-  background: none;
-  margin-inline-end: 4px;
-  width: 40px;
-}
-
-#expandButtonIcon {
-  --iron-icon-height: 16px;
-  --iron-icon-width: 16px;
 }

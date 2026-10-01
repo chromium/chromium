@@ -54,8 +54,6 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
-      {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
-      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabGroupMoreOptions", IDS_TAB_GROUP_MORE_OPTIONS},
       {"tabGroups", IDS_ORGANIZER_PANEL_TAB_GROUPS},

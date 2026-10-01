@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './organizer_list_section_item.js';
 
-import type {CrUrlListItemElement} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
+import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -21,15 +21,9 @@ import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
 import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
-/**
- * This is the number of items in a section that are rendered before the "Show
- * more" option.
- */
-export const INITIAL_ITEM_COUNT = 3;
-
 export interface OrganizerListSectionElement {
   $: {
-    header: HTMLElement,
+    header: CrExpandButtonElement,
   };
 }
 
@@ -51,11 +45,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return {
       delegate: {type: Object},
       items: {type: Array},
-      expanded_: {
-        type: Boolean,
-        reflect: true,
-      },
-      shouldRenderRemainingItems_: {type: Boolean},
+      expanded_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
       filteredSearchQuery_: {type: String},
@@ -65,10 +55,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
-  protected accessor expanded_: boolean = false;
-  // True while overflow items should be populated in the DOM (from when
-  // expansion starts until the collapse transition finishes).
-  private accessor shouldRenderRemainingItems_: boolean = false;
+  protected accessor expanded_: boolean = true;
   accessor searchQuery: string = '';
   protected accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
@@ -130,32 +117,14 @@ export class OrganizerListSectionElement extends CrLitElement implements
         changedProperties.has('searchQuery')) {
       this.updateFilteredItems_();
     }
-
-    if (this.expanded_) {
-      this.shouldRenderRemainingItems_ = true;
-    }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    this.updateExpandButtonAriaExpanded_();
-  }
-
-  /**
-   * `<cr-url-list-item>` has no `aria-expanded` property, so set the attribute
-   * directly on the focusable element it exposes. Awaiting the button's own
-   * first update is required: this runs before a newly created child element
-   * has rendered its shadow DOM, so its focusable element does not exist yet.
-   */
-  private async updateExpandButtonAriaExpanded_() {
-    const expandButton =
-        this.shadowRoot.querySelector<CrUrlListItemElement>('#expandButton');
-    if (!expandButton) {
-      return;
-    }
-    await expandButton.updateComplete;
-    expandButton.getFocusableElement().setAttribute(
-        'aria-expanded', this.expanded_ ? 'true' : 'false');
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    // Clicking the header label focuses the inner icon button via script, which
+    // still triggers :focus-visible; track keyboard vs mouse input so CSS can
+    // hide the focus ring on mouse clicks.
+    FocusOutlineManager.forDocument(document);
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
@@ -186,51 +155,21 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
-  private isSearching_(): boolean {
+  protected isSearching_(): boolean {
     return this.filteredSearchQuery_.length > 0;
   }
 
-  protected getInitialItems_():
-      Array<HighlightableOrganizerListSectionItem<unknown>> {
-    if (this.isSearching_()) {
-      return this.getFilteredItems_();
-    }
-    return this.getFilteredItems_().slice(0, INITIAL_ITEM_COUNT);
-  }
-
-  protected getRemainingItems_():
-      Array<HighlightableOrganizerListSectionItem<unknown>> {
-    if (!this.shouldRenderRemainingItems_ || this.isSearching_()) {
-      return [];
-    }
-    return this.getFilteredItems_().slice(INITIAL_ITEM_COUNT);
-  }
-
-  protected hasMoreItems_(): boolean {
-    return !this.isSearching_() &&
-        this.getFilteredItems_().length > INITIAL_ITEM_COUNT;
+  protected isExpanded_(): boolean {
+    return this.expanded_ || this.isSearching_();
   }
 
   protected hasNoSearchResults_(): boolean {
     return this.isSearching_() && this.getFilteredItems_().length === 0;
   }
 
-  protected getExpandButtonLabel_(): string {
-    return loadTimeData.getString(this.expanded_ ? 'showLess' : 'showMore');
-  }
-
-  protected getExpandButtonIcon_(): string {
-    return this.expanded_ ? 'cr:keyboard-arrow-up' : 'cr:keyboard-arrow-down';
-  }
-
-  protected onExpandButtonClick_() {
-    this.expanded_ = !this.expanded_;
-  }
-
-  protected onCollapseTransitionend_(e: TransitionEvent) {
-    if (e.target === e.currentTarget && e.propertyName === 'height' &&
-        !this.expanded_) {
-      this.shouldRenderRemainingItems_ = false;
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    if (!this.isSearching_()) {
+      this.expanded_ = e.detail.value;
     }
   }
 
