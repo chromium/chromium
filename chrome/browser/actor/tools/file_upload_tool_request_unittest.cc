@@ -123,10 +123,8 @@ TEST(FileUploadToolRequestTest, VariantConversion) {
   std::vector<FileUploadSource> files;
   FileUploadToolRequest request(mock_tab.GetHandle(), target, files);
 
-  ConvertToVariantFn fn;
-  request.Apply(fn);
-  ASSERT_TRUE(fn.GetVariant().has_value());
-  EXPECT_TRUE(std::holds_alternative<FileUploadToolRequest>(*fn.GetVariant()));
+  EXPECT_TRUE(
+      std::holds_alternative<FileUploadToolRequest>(ConvertToVariant(request)));
 }
 
 }  // namespace

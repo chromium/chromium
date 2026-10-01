@@ -60,62 +60,9 @@ using ToolRequestVariant = std::variant<
     WaitToolRequest>;
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ToolRequest)
 
-// Functor for converting a polymorphic ToolRequest object to the proper
-// ToolRequestVariant type.
-class ConvertToVariantFn : public ToolRequestVisitorFunctor {
- public:
-  ConvertToVariantFn();
-  ~ConvertToVariantFn();
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const ActivateTabToolRequest&) override;
-  void Apply(const ActivateWindowToolRequest&) override;
-#endif
-  void Apply(const AddBookmarkToolRequest&) override;
-  void Apply(const AttemptLoginToolRequest&) override;
-  void Apply(const AttemptFormFillingToolRequest&) override;
-  void Apply(const AttemptOtpFillingToolRequest&) override;
-  void Apply(const ClickToolRequest&) override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const CloseTabToolRequest&) override;
-  void Apply(const CloseWindowToolRequest&) override;
-  void Apply(const CreateTabToolRequest&) override;
-  void Apply(const CreateWindowToolRequest&) override;
-#endif
-  void Apply(const DragAndReleaseToolRequest&) override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const EnterFullscreenToolRequest&) override;
-  void Apply(const ExitFullscreenToolRequest&) override;
-#endif
-  void Apply(const FileUploadToolRequest&) override;
-  void Apply(const FindAndHighlightToolRequest&) override;
-  void Apply(const HistoryToolRequest&) override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const LoadAndExtractContentToolRequest&) override;
-#endif
-  void Apply(const MediaControlToolRequest&) override;
-  void Apply(const MoveMouseToolRequest&) override;
-  void Apply(const NavigateToolRequest&) override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const OpenKnownPageToolRequest&) override;
-#endif
-  void Apply(const PerformSearchToolRequest&) override;
-  void Apply(const RemoveBookmarkToolRequest&) override;
-  void Apply(const ScriptToolRequest&) override;
-  void Apply(const ScrollToolRequest&) override;
-  void Apply(const ScrollToToolRequest&) override;
-  void Apply(const SelectToolRequest&) override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  void Apply(const SwitchTabToolRequest&) override;
-#endif
-  void Apply(const TranslatePageToolRequest&) override;
-  void Apply(const TypeToolRequest&) override;
-  void Apply(const WaitToolRequest&) override;
-
-  const std::optional<ToolRequestVariant>& GetVariant() const { return var_; }
-
- private:
-  std::optional<ToolRequestVariant> var_;
-};
+// Converts a polymorphic ToolRequest object to the proper ToolRequestVariant
+// type.
+ToolRequestVariant ConvertToVariant(const ToolRequest& tr);
 
 }  // namespace actor
 

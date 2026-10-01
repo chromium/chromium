@@ -218,9 +218,7 @@ struct InputTraits<ToolRequest> {
   static constexpr const char* name = "ToolRequest";
   static constexpr auto convert_fn =
       [](const ToolRequest& tr) -> ToolRequestVariant {
-    ConvertToVariantFn fn;
-    tr.Apply(fn);
-    return fn.GetVariant().value();
+    return ConvertToVariant(tr);
   };
   static constexpr auto debug_info = [](const ToolRequest& tr) {
     return tr.JournalEvent();

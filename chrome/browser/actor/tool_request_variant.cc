@@ -4,118 +4,142 @@
 
 #include "chrome/browser/actor/tool_request_variant.h"
 
+#include <optional>
+#include <utility>
+
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
+
 namespace actor {
 
-ConvertToVariantFn::ConvertToVariantFn() = default;
-ConvertToVariantFn::~ConvertToVariantFn() = default;
+namespace {
 
+// Functor for converting a polymorphic ToolRequest object to the proper
+// ToolRequestVariant type.
+class ConvertToVariantFn : public ToolRequestVisitorFunctor {
+ public:
+  ConvertToVariantFn() = default;
+  ~ConvertToVariantFn() = default;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const ActivateTabToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ActivateWindowToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const ActivateTabToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ActivateWindowToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const AddBookmarkToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const AttemptLoginToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const AttemptFormFillingToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const AttemptOtpFillingToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ClickToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const AddBookmarkToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const AttemptLoginToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const AttemptFormFillingToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const AttemptOtpFillingToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ClickToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const CloseTabToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const CloseWindowToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const CreateTabToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const CreateWindowToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const CloseTabToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const CloseWindowToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const CreateTabToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const CreateWindowToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const DragAndReleaseToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const EnterFullscreenToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ExitFullscreenToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const EnterFullscreenToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ExitFullscreenToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const FileUploadToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const FindAndHighlightToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const HistoryToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const FileUploadToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const FindAndHighlightToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const HistoryToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const LoadAndExtractContentToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const LoadAndExtractContentToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const MediaControlToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const MoveMouseToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const NavigateToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const MediaControlToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const MoveMouseToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const NavigateToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const OpenKnownPageToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const OpenKnownPageToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const PerformSearchToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const RemoveBookmarkToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ScriptToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ScrollToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const ScrollToToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const SelectToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const PerformSearchToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const RemoveBookmarkToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ScriptToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ScrollToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const ScrollToToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const SelectToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-void ConvertToVariantFn::Apply(const SwitchTabToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
+  void Apply(const SwitchTabToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
 #endif
-void ConvertToVariantFn::Apply(const TranslatePageToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const TypeToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
-}
-void ConvertToVariantFn::Apply(const WaitToolRequest& tr) {
-  var_ = ToolRequestVariant(tr);
+  void Apply(const TranslatePageToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const TypeToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const WaitToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+
+  std::optional<ToolRequestVariant>& GetVariant() { return var_; }
+
+ private:
+  std::optional<ToolRequestVariant> var_;
+};
+
+}  // namespace
+
+ToolRequestVariant ConvertToVariant(const ToolRequest& tr) {
+  ConvertToVariantFn f;
+  tr.Apply(f);
+  return std::move(f.GetVariant()).value();
 }
 
 }  // namespace actor
