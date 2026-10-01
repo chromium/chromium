@@ -83,7 +83,14 @@ source_set("impl") {
     "//url",
   ]
   if (is_android) {
-    deps += [ "//chrome/browser/ui/android/tab_model" ]
+    sources += [
+      "voice_focused_contents_tracker_android.cc",
+      "voice_focused_contents_tracker_android.h",
+    ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [
       "session_view_impl.cc",
