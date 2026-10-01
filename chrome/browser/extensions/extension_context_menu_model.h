@@ -100,6 +100,18 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.extensions
   enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
 
+  // Outcome of the "Rate it" menu item for a menu session in which it was
+  // shown, logged to UMA when the menu closes.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ExtensionContextMenuRateExtensionOutcome)
+  enum class RateExtensionOutcome {
+    kNotClicked = 0,
+    kClicked = 1,
+    kMaxValue = kClicked,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionContextMenuRateExtensionOutcome)
+
   // Delegate to handle showing an ExtensionAction popup.
   class PopupDelegate {
    public:

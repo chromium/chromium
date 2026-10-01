@@ -142,6 +142,15 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="kRateExtension"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionContextMenuRateExtensionOutcome) -->
+
+<enum name="ExtensionContextMenuRateExtensionOutcome">
+  <int value="0" label="Not clicked"/>
+  <int value="1" label="Clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/extensions/extension_context_menu_model.h:ExtensionContextMenuRateExtensionOutcome) -->
+
 <enum name="ExtensionDisableReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="USER_ACTION"/>

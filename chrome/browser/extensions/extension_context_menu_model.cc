@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -15,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -32,8 +34,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"   // nogncheck
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"  // nogncheck
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"         // nogncheck
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -70,13 +77,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
-
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"   // nogncheck
-#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"  // nogncheck
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"         // nogncheck
-#include "chrome/common/extensions/api/side_panel.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/extensions/extension_site_settings_android.h"
@@ -697,6 +697,24 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
         action_taken_ == ContextMenuAction::kToggleSidePanelVisibility;
 #endif
     UMA_HISTOGRAM_ENUMERATION("Extensions.ContextMenuAction", action);
+
+    // If the "Rate it" item was shown, records whether it was clicked for this
+    // menu session, split by surface (ExtensionsMenu vs. ContextMenu). The menu
+    // is populated in Init() and never mutated afterwards, so querying `this`
+    // here is equivalent to checking what ShouldShowReviewPrompt() decided.
+    // Note this deliberately queries `this` and not `menu`, which may be a
+    // submenu.
+    if (GetIndexOfCommandId(RATE_EXTENSION).has_value()) {
+      RateExtensionOutcome rate_outcome = RateExtensionOutcome::kNotClicked;
+      if (action == ContextMenuAction::kRateExtension) {
+        rate_outcome = RateExtensionOutcome::kClicked;
+      }
+      base::UmaHistogramEnumeration(
+          source_ == ContextMenuSource::kMenuItem
+              ? "Extensions.ContextMenuRateExtension.ExtensionsMenu"
+              : "Extensions.ContextMenuRateExtension.ContextMenu",
+          rate_outcome);
+    }
 
     // Clear out the action to avoid any possible UAF if we close the parent
     // menu.

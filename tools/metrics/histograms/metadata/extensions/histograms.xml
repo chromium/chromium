@@ -740,6 +740,22 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContextMenuRateExtension.{Source}"
+    enum="ExtensionContextMenuRateExtensionOutcome" expires_after="2026-12-31">
+  <owner>ikabadzhov@google.com</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Records whether the &quot;Rate it&quot; menu item was clicked when the
+    {Source} closes. Only recorded if the item was shown. Emitted from
+    MenuClosed() alongside Extensions.ContextMenuAction to measure the
+    click-through rate of the review prompt.
+  </summary>
+  <token key="Source">
+    <variant name="ContextMenu" summary="extension icon context menu"/>
+    <variant name="ExtensionsMenu" summary="extensions menu"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.CookieAPIPartitionKeyWellFormatted"
     enum="BooleanEnabled" expires_after="2027-04-30">
   <owner>arichiv@google.com</owner>
