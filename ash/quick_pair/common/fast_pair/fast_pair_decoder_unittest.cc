@@ -18,16 +18,16 @@
 
 namespace {
 
-const std::string kModelId = "AABBCC";
+constexpr char kModelId[] = "AABBCC";
 // Corresponds to version = 0 and flags = 0.
 constexpr uint8_t kHeaderLeAudioSharing2025 = 0b00000000;
 // Corresponds to length of 3 and type of 7 (model ID).
 constexpr uint8_t kModelIdExtraFieldHeader = 0b00110111;
 
 // Only used when feature flag is disabled.
-const std::string kLongModelId = "1122334455667788";
-const std::string kPaddedModelId = "00001111";
-const std::string kTrimmedModelId = "001111";
+constexpr char kLongModelId[] = "1122334455667788";
+constexpr char kPaddedModelId[] = "00001111";
+constexpr char kTrimmedModelId[] = "001111";
 constexpr uint8_t kLongModelIdHeader = 0b00010000;
 constexpr uint8_t kPaddedLongModelIdHeader = 0b00001000;
 

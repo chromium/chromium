@@ -55,7 +55,7 @@ using AccessProhibitedReason =
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 constexpr char kTrayBackgroundViewHistogramName[] =
     "Ash.StatusArea.TrayBackgroundView.Pressed";
-const std::string kPhoneHubNudgeId = "PhoneHubNudge";
+constexpr char kPhoneHubNudgeId[] = "PhoneHubNudge";
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {

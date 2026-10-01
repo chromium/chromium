@@ -27,8 +27,8 @@ namespace ash {
 namespace {
 
 // Test constants
-const std::u16string kTestText = u"text";
-const std::u16string kTestButtonText = u"dismiss";
+constexpr char16_t kTestText[] = u"text";
+constexpr char16_t kTestButtonText[] = u"dismiss";
 const gfx::VectorIcon* kTestIcon = &kSystemMenuBusinessIcon;
 
 views::ImageView* GetToastImageView(SystemToastView* system_toast_view) {

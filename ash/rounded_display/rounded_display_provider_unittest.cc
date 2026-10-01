@@ -191,8 +191,8 @@ TEST_P(RoundedDisplayProviderSurfaceUpdateTest,
   EXPECT_EQ(before_update_gutters, after_update_gutters);
 }
 
-const std::string kInitialDisplaySpec = "500x400~15";
-const std::string kInitialDisplaySpecWithRotation = "500x400/r~15";
+constexpr char kInitialDisplaySpec[] = "500x400~15";
+constexpr char kInitialDisplaySpecWithRotation[] = "500x400/r~15";
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,

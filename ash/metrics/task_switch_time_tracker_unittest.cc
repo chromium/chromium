@@ -16,7 +16,7 @@ namespace ash {
 namespace {
 
 // A dummy histogram name.
-const std::string kHistogramName = "Dummy.Histogram";
+constexpr char kHistogramName[] = "Dummy.Histogram";
 
 }  // namespace
 

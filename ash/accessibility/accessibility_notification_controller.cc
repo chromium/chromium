@@ -16,7 +16,7 @@ namespace ash {
 
 namespace {
 
-const std::string kAccessibilityToastId = "AccessibilityToast";
+constexpr char kAccessibilityToastId[] = "AccessibilityToast";
 
 ToastData GetToastData(AccessibilityToastType type) {
   switch (type) {

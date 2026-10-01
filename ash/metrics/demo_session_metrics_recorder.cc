@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -76,14 +77,14 @@ constexpr char kCloudPolicyConnectionTimeoutAction[] =
     "DemoMode.CloudPolicyConnectionTimeout";
 
 struct AppHistogramSuffix {
-  const DemoModeApp app_type;
-  const std::string name;
+  DemoModeApp app_type;
+  std::string_view name;
 };
 
 // Apps in Demo mode have the highest launched count. Note that
 // `DemoModeApp::kOtherChromeApp` includes the demo mode SWA. Not recording this
 // one until we exclude it from `DemoModeApp::kOtherChromeApp`.
-const AppHistogramSuffix kAppsHistogramSuffix[] = {
+constexpr AppHistogramSuffix kAppsHistogramSuffix[] = {
     {DemoModeApp::kGooglePhotos, "GooglePhoto"},
     {DemoModeApp::kStardewValley, "StardewValley"},
     {DemoModeApp::kMinecraft, "Minecraft"},
@@ -206,7 +207,7 @@ const std::string GetAppHistogramSuffix(DemoModeApp app_type) {
   if (suffix == std::end(kAppsHistogramSuffix)) {
     return std::string();
   }
-  return suffix->name;
+  return std::string(suffix->name);
 }
 
 // Maps an ARC++ package name to a DemoModeApp value for metrics.

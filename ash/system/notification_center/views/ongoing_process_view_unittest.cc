@@ -54,8 +54,8 @@ IconButton* GetSecondaryIconButton(views::View* notification_view) {
 }
 
 // Sample constants to use in the created test views.
-const std::u16string sample_text = u"sample";
-raw_ptr<const gfx::VectorIcon> sample_icon = &kPinnedIcon;
+constexpr char16_t sample_text[] = u"sample";
+const gfx::VectorIcon* const sample_icon = &kPinnedIcon;
 
 // Histogram names.
 constexpr char kOngoingProcessShownWithoutIconCount[] =

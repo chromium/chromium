@@ -13,7 +13,7 @@
 namespace ash {
 namespace quick_pair {
 
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
 
 class LoggedInUserEnabledProviderTest : public AshTestBase {
  public:
