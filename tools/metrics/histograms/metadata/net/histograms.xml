@@ -4525,30 +4525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time3{HostType}.{Protocol}{AddressFamily}"
-    units="ms" expires_after="2027-01-31">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>Deprecated. Replaced by Create{StreamType}Time4.</summary>
-  <token key="StreamType">
-    <variant name="HttpStream"/>
-    <variant name="WebSocketStream"/>
-  </token>
-  <token key="HostType">
-    <variant name=""/>
-    <variant name=".GoogleHost"/>
-  </token>
-  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
-  <token key="AddressFamily">
-    <variant name=""/>
-    <variant name=".IPv4"/>
-    <variant name=".IPv6"/>
-    <variant name=".Unspecified"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time4{HostType}.{Protocol}{AddressFamily}"
+    name="Net.NetworkTransaction.Create{StreamType}Time{HistogramVersion}{HostType}.{Protocol}{AddressFamily}"
     units="ms" expires_after="2027-01-31">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -4556,10 +4533,18 @@ chromium-metrics-reviews@google.com.
     The time taken for creating a(n) {StreamType}. Recorded in
     HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
     completes successfully for the first time (i.e. not for retries).
+    {HistogramVersion}
   </summary>
   <token key="StreamType">
     <variant name="HttpStream"/>
     <variant name="WebSocketStream"/>
+  </token>
+  <token key="HistogramVersion">
+    <variant name="4"
+        summary="Deprecated (capped at 10 seconds). Replaced by version 5."/>
+    <variant name="5"
+        summary="Version 5 extends the maximum bucket range from 10 seconds
+                 to 3 minutes."/>
   </token>
   <token key="HostType">
     <variant name=""/>

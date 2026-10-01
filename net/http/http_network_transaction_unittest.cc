@@ -29832,6 +29832,14 @@ TEST_P(HttpNetworkTransactionTest, TerminalStateResponseOk) {
   histogram_tester_.ExpectUniqueSample(
       "Net.NetworkTransaction.TerminalState",
       HttpNetworkTransaction::TerminalState::kResponseOk, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Net.NetworkTransaction.CreateHttpStreamTime4.H1", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Net.NetworkTransaction.CreateHttpStreamTime4.H1.IPv4", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Net.NetworkTransaction.CreateHttpStreamTime5.H1", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Net.NetworkTransaction.CreateHttpStreamTime5.H1.IPv4", 1);
 }
 
 TEST_P(HttpNetworkTransactionTest, TerminalStateSuccessMultiChunkBody) {

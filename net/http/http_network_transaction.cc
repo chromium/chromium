@@ -2619,21 +2619,31 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
         create_stream_end_time_ - create_stream_start_time_;
 
     const std::string_view histogram_base_name =
-        ForWebSocketHandshake() ? "CreateWebSocketStreamTime4"
-                                : "CreateHttpStreamTime4";
+        ForWebSocketHandshake() ? "CreateWebSocketStreamTime"
+                                : "CreateHttpStreamTime";
     const std::string_view host_suffix =
         IsGoogleHostWithAlpnH3(url_.host()) ? ".GoogleHost" : "";
     const std::string_view protocol_suffix =
         NegotiatedProtocolToHistogramSuffixCoalesced(negotiated_protocol_);
-    std::string histogram_name =
-        base::StrCat({"Net.NetworkTransaction.", histogram_base_name,
-                      host_suffix, ".", protocol_suffix});
-    base::UmaHistogramTimes(histogram_name, create_time);
-
     const std::string_view address_suffix =
         AddressFamilyToString(endpoint.GetFamily());
-    base::UmaHistogramTimes(base::StrCat({histogram_name, ".", address_suffix}),
-                            create_time);
+
+    // TODO(crbug.com/531975349): Remove version 4 histograms once ongoing
+    // experiments have migrated to version 5.
+    std::string deprecated_histogram_name =
+        base::StrCat({"Net.NetworkTransaction.", histogram_base_name, "4",
+                      host_suffix, ".", protocol_suffix});
+    base::UmaHistogramTimes(deprecated_histogram_name, create_time);
+    base::UmaHistogramTimes(
+        base::StrCat({deprecated_histogram_name, ".", address_suffix}),
+        create_time);
+
+    std::string histogram_name =
+        base::StrCat({"Net.NetworkTransaction.", histogram_base_name, "5",
+                      host_suffix, ".", protocol_suffix});
+    base::UmaHistogramMediumTimes(histogram_name, create_time);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({histogram_name, ".", address_suffix}), create_time);
 
     CHECK(stream_request_completion_details_.has_value());
     if (stream_request_completion_details_->session_source.has_value()) {
