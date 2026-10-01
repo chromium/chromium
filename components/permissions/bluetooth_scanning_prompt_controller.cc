@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#include "device/base/public/cpp/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace permissions {
@@ -105,7 +106,8 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
     const std::u16string& device_name) {
-  std::u16string device_name_for_display = device_name;
+  std::u16string device_name_for_display =
+      device::ContainStringForDisplay(device_name);
   if (device_name_for_display.empty()) {
     device_name_for_display = l10n_util::GetStringFUTF16(
         IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN, base::UTF8ToUTF16(device_id));
