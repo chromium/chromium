@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -1062,6 +1063,203 @@ TEST_F(DeviceTrustChallengeTabHelperTest,
       DeviceTrustChallengeTabHelper::kMaxPendingRequests);
   histogram_tester_.ExpectTotalCount(kHandshakeResultHistogram, 0);
   histogram_tester_.ExpectTotalCount(kFailureLatencyHistogram, 0);
+}
+
+// Verifies that a committed cross-document navigation drops pending page reply
+// callbacks, cancels their timeout timers, and ignores any subsequent service
+// response.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseCommittedCrossDocumentNavigationDropsReply) {
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  ON_CALL(*mock_service(), Watches(testing::_))
+      .WillByDefault(testing::Return(levels));
+  enterprise_connectors::DeviceTrustService::DeviceTrustCallback saved_callback;
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, levels, testing::_))
+      .WillOnce(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { saved_callback = std::move(callback); });
+  AttestationResult response;
+  int response_count = 0;
+  helper()->BuildChallengeResponse(
+      url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl), "challenge",
+      CaptureResponseCallback(&response, &response_count));
+  EXPECT_TRUE(saved_callback);
+  EXPECT_EQ(response_count, 0);
+  // A committed cross-document navigation occurs.
+  web::FakeNavigationContext context;
+  context.SetWebState(web_state_.get());
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_->OnNavigationFinished(&context);
+  EXPECT_EQ(response_count, 0);
+  // Fast forward past timeout duration to verify the timer was cancelled.
+  task_environment_.FastForwardBy(base::Seconds(25));
+  EXPECT_EQ(response_count, 0);
+  // Late response from the service produces no reply.
+  enterprise_connectors::DeviceTrustResponse service_response;
+  service_response.challenge_response = "late_payload";
+  std::move(saved_callback).Run(service_response);
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(response_count, 0);
+}
+
+// Verifies that a same-document navigation preserves pending page replies,
+// allowing the eventual service response to resolve the callback.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseSameDocumentNavigationPreservesReply) {
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  ON_CALL(*mock_service(), Watches(testing::_))
+      .WillByDefault(testing::Return(levels));
+  enterprise_connectors::DeviceTrustService::DeviceTrustCallback saved_callback;
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, levels, testing::_))
+      .WillOnce(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { saved_callback = std::move(callback); });
+  AttestationResult response;
+  int response_count = 0;
+  helper()->BuildChallengeResponse(
+      url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl), "challenge",
+      CaptureResponseCallback(&response, &response_count));
+  EXPECT_TRUE(saved_callback);
+  EXPECT_EQ(response_count, 0);
+  // A same-document navigation occurs.
+  web::FakeNavigationContext context;
+  context.SetWebState(web_state_.get());
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(true);
+  web_state_->OnNavigationFinished(&context);
+  EXPECT_EQ(response_count, 0);
+  // Service response arrives and resolves the preserved page reply.
+  enterprise_connectors::DeviceTrustResponse service_response;
+  service_response.challenge_response = "success_payload";
+  std::move(saved_callback).Run(service_response);
+  EXPECT_EQ(response_count, 1);
+  EXPECT_FALSE(response.error.has_value());
+  EXPECT_EQ(response.challenge_response, "success_payload");
+}
+
+// Verifies that an uncommitted navigation preserves pending page replies,
+// allowing the eventual service response to resolve the callback.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseUncommittedNavigationPreservesReply) {
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  ON_CALL(*mock_service(), Watches(testing::_))
+      .WillByDefault(testing::Return(levels));
+  enterprise_connectors::DeviceTrustService::DeviceTrustCallback saved_callback;
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, levels, testing::_))
+      .WillOnce(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { saved_callback = std::move(callback); });
+  AttestationResult response;
+  int response_count = 0;
+  helper()->BuildChallengeResponse(
+      url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl), "challenge",
+      CaptureResponseCallback(&response, &response_count));
+  EXPECT_TRUE(saved_callback);
+  EXPECT_EQ(response_count, 0);
+  // An uncommitted navigation occurs.
+  web::FakeNavigationContext context;
+  context.SetWebState(web_state_.get());
+  context.SetHasCommitted(false);
+  context.SetIsSameDocument(false);
+  web_state_->OnNavigationFinished(&context);
+  EXPECT_EQ(response_count, 0);
+  // Service response arrives and resolves the preserved page reply.
+  enterprise_connectors::DeviceTrustResponse service_response;
+  service_response.challenge_response = "success_payload";
+  std::move(saved_callback).Run(service_response);
+  EXPECT_EQ(response_count, 1);
+  EXPECT_FALSE(response.error.has_value());
+  EXPECT_EQ(response.challenge_response, "success_payload");
+}
+
+// Verifies that after a committed cross-document navigation clears pending
+// replies, a new request on the new document is accepted and can reach
+// DeviceTrustService.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       BuildChallengeResponseAfterNavigationNewRequestAccepted) {
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  ON_CALL(*mock_service(), Watches(testing::_))
+      .WillByDefault(testing::Return(levels));
+  // Fill pending requests up to the limit.
+  std::vector<enterprise_connectors::DeviceTrustService::DeviceTrustCallback>
+      callbacks;
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(testing::_, levels, testing::_))
+      .Times(DeviceTrustChallengeTabHelper::kMaxPendingRequests)
+      .WillRepeatedly(
+          [&](const std::string&,
+              const std::set<enterprise_connectors::DTCPolicyLevel>&,
+              enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                  callback) { callbacks.push_back(std::move(callback)); });
+  std::vector<AttestationResult> old_responses(
+      DeviceTrustChallengeTabHelper::kMaxPendingRequests);
+  for (size_t i = 0; i < DeviceTrustChallengeTabHelper::kMaxPendingRequests;
+       ++i) {
+    helper()->BuildChallengeResponse(
+        url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl),
+        "old_challenge", CaptureResponseCallback(&old_responses[i]));
+  }
+  EXPECT_EQ(callbacks.size(),
+            DeviceTrustChallengeTabHelper::kMaxPendingRequests);
+  // Committed cross-document navigation occurs.
+  web::FakeNavigationContext context;
+  context.SetWebState(web_state_.get());
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_->OnNavigationFinished(&context);
+  // A new request on the new document is accepted and reaches the service.
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse("new_challenge", levels, testing::_))
+      .WillOnce(
+          [](const std::string&,
+             const std::set<enterprise_connectors::DTCPolicyLevel>&,
+             enterprise_connectors::DeviceTrustService::DeviceTrustCallback
+                 callback) {
+            enterprise_connectors::DeviceTrustResponse response;
+            response.challenge_response = "new_success_payload";
+            std::move(callback).Run(response);
+          });
+  AttestationResult new_response;
+  int new_count = 0;
+  helper()->BuildChallengeResponse(
+      url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl),
+      "new_challenge", CaptureResponseCallback(&new_response, &new_count));
+  EXPECT_EQ(new_count, 1);
+  EXPECT_FALSE(new_response.error.has_value());
+  EXPECT_EQ(new_response.challenge_response, "new_success_payload");
+  // Running old callbacks from the previous document produces no replies.
+  enterprise_connectors::DeviceTrustResponse old_late_response;
+  old_late_response.challenge_response = "old_late_payload";
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(old_late_response);
+  }
+  for (size_t i = 0; i < DeviceTrustChallengeTabHelper::kMaxPendingRequests;
+       ++i) {
+    EXPECT_TRUE(old_responses[i].challenge_response.empty());
+  }
 }
 
 }  // namespace

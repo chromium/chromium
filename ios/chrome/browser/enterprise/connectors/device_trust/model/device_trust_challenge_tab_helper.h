@@ -34,6 +34,7 @@ class DeviceTrustService;
 }  // namespace enterprise_connectors
 
 namespace web {
+class NavigationContext;
 class WebFrame;
 }  // namespace web
 
@@ -80,6 +81,8 @@ class DeviceTrustChallengeTabHelper
                                web::WebFrame* web_frame) override;
 
   // web::WebStateObserver:
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:

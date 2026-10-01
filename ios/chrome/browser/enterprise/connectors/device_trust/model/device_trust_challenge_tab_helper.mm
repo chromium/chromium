@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -166,7 +167,8 @@ void DeviceTrustChallengeTabHelper::OnChallengeResponseReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto pending_request = TakePendingRequest(request_id);
   if (!pending_request) {
-    // Request was already taken (e.g. timed out). Ignore late response.
+    // Request was already taken (e.g. timed out or dropped on navigation).
+    // Ignore late response.
     return;
   }
 
@@ -236,6 +238,25 @@ void DeviceTrustChallengeTabHelper::MaybeSetupDeviceTrustAPI(
   enterprise_connectors::LogAttestationFunnelStep(
       enterprise_connectors::DTAttestationFunnelStep::kAttestationFlowStarted);
   DeviceTrustJavaScriptFeature::GetInstance()->SetupDeviceTrustAPI(web_frame);
+}
+
+void DeviceTrustChallengeTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!navigation_context->HasCommitted() ||
+      navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  // A committed cross-document navigation occurred. Invalidate in-flight
+  // service callbacks for the old document and drop pending page replies and
+  // their timers. Subsequent requests will obtain fresh weak pointers.
+  weak_factory_.InvalidateWeakPtrs();
+  pending_requests_.clear();
+
+  // TODO(crbug.com/560094713): Track or cancel underlying service-level
+  // operations across navigations when cancellation support is available.
 }
 
 void DeviceTrustChallengeTabHelper::WebStateDestroyed(
