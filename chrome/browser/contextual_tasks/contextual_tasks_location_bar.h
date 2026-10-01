@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/location_bar_stub.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
@@ -62,9 +63,9 @@ class ContextualTasksLocationBar : public LocationBarStub,
   }
 
   // LocationBar overrides:
-  // Returns the side panel's active content page, i.e. the page that
-  // permissions apply to. This is swapped whenever the active task changes, so
-  // it is resolved on every call rather than cached.
+  // Returns the `WebContents` hosting the currently active task's guest web
+  // content in the side panel (i.e. the page that permissions apply to).
+  // Updated via `Update()` when the active task changes.
   content::WebContents* GetWebContents() override;
   BrowserWindowInterface* GetBrowser() override;
   bool IsEditingOrEmpty() const override;
@@ -79,16 +80,17 @@ class ContextualTasksLocationBar : public LocationBarStub,
   PermissionDashboardController* GetPermissionDashboardController() override;
   void OnChanged() override;
   void UpdateContentSettingsIcons() override;
+  void Update(content::WebContents* contents) override;
 
   // ContentSettingImageViewDelegate overrides:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
-
-  // Returns the side panel's WebUI toolbar page, which hosts the chip DOM
-  // elements. This is a different page from `GetWebContents()` and is only used
-  // for `ui::TrackedElement` lookups. Not a LocationBar override.
+  // Returns the `WebContents` of the side panel's WebUI toolbar.
+  // Unlike `GetWebContents()`, this is shared across all tasks
+  // per window and is used for `ui::TrackedElement` anchor lookups.
+  // Not a LocationBar override.
   content::WebContents* GetToolbarWebContents() const;
 
  private:
@@ -99,6 +101,10 @@ class ContextualTasksLocationBar : public LocationBarStub,
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   base::RepeatingClosure state_changed_callback_;
+
+  // The web contents of the currently active task in the side panel, updated
+  // via `Update()` when switching tasks.
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Owns the `ContentSettingImageModel`s that drive the indicator chip.
   // Declared before `permission_dashboard_controller_` so that it is destroyed

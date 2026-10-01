@@ -59,8 +59,7 @@ ContextualTasksLocationBar::GetCoordinator() const {
 }
 
 content::WebContents* ContextualTasksLocationBar::GetWebContents() {
-  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
-  return coordinator ? coordinator->GetActiveWebContents() : nullptr;
+  return web_contents_.get();
 }
 
 content::WebContents* ContextualTasksLocationBar::GetToolbarWebContents()
@@ -146,13 +145,31 @@ void ContextualTasksLocationBar::UpdateContentSettingsIcons() {
   }
 }
 
+void ContextualTasksLocationBar::Update(content::WebContents* contents) {
+  // Reset permission chip if it is there and then update chips/dashboard.
+  if (web_contents_.get() != contents) {
+    if (auto* chip_controller = GetChipController()) {
+      chip_controller->ResetPermissionPromptChip();
+    }
+    web_contents_ = contents ? contents->GetWeakPtr() : nullptr;
+  }
+  // Re-evaluate the activity indicator models (camera/mic/sensors) for the
+  // new `web_contents_` and push the result into the permission dashboard.
+  // `UpdatePermissionDashboard` gets web contents from location bar
+  // dynamically, so this must be called after web contents are set in location
+  // bar.
+  content_setting_image_control_.UpdatePermissionDashboard(
+      permission_dashboard_controller_.get());
+  OnChanged();
+}
+
 bool ContextualTasksLocationBar::ShouldHideContentSettingImage() {
   return false;
 }
 
 content::WebContents*
 ContextualTasksLocationBar::GetContentSettingWebContents() {
-  return nullptr;
+  return GetWebContents();
 }
 
 ContentSettingBubbleModelDelegate*

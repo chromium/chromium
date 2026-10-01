@@ -1049,12 +1049,20 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
   }
 
   content::WebContents* web_contents = GetPanelWebContentsForActiveTab();
-  if (web_contents) {
-    contextual_tasks_panel_host_->SetWebContents(web_contents);
-  }
 
   bool contents_changed = prev_web_contents != web_contents;
   if (contents_changed) {
+    // The toolbar UI itself and location bar class are shared across tasks.
+    // Update the single location bar and permission controller to point to
+    // `web_contents` (OR clear the toolbar if `web_contents` is null) and push
+    // the updated state to the WebUI. This must run before `SetWebContents()`
+    // to have the correct web contents, as `SetWebContents()`
+    // synchronously marks `web_contents` visible and may trigger
+    // `PermissionRequestManager` to query `location_bar_->GetWebContents()`.
+    if (permission_controller_) {
+      permission_controller_->Update(web_contents);
+    }
+    contextual_tasks_panel_host_->SetWebContents(web_contents);
     NotifyExpandToFullTabStateChanged();
   }
 
@@ -1261,6 +1269,9 @@ void ContextualTasksSidePanelCoordinator::MaybeDetachWebContents(
     content::WebContents* web_contents) {
   if (web_contents == GetActiveWebContents()) {
     contextual_tasks_panel_host_->SetWebContents(nullptr);
+    if (permission_controller_) {
+      permission_controller_->Update(nullptr);
+    }
   }
 }
 

@@ -49,6 +49,11 @@ class ContextualTasksPermissionController
   // from the side panel (e.g. moved to a full browser tab).
   void UnregisterWebContents(content::WebContents* web_contents);
 
+  // Updates the active task `WebContents` for the side panel's location bar,
+  // refreshes content setting models, and pushes the updated state to the
+  // toolbar WebUI. Passing `nullptr` clears the toolbar.
+  void Update(content::WebContents* web_contents);
+
   // permissions::PermissionRequestManager::Observer:
   void OnRequestsFinalized() override;
   void OnPromptRemoved() override;

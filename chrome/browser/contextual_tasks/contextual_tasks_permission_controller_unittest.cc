@@ -33,6 +33,7 @@ class ContextualTasksPermissionControllerTest
     controller_ = std::make_unique<ContextualTasksPermissionController>(
         &mock_browser_window_);
     controller_->RegisterWebContents(web_contents());
+    controller_->Update(web_contents());
   }
 
   void TearDown() override {
@@ -56,6 +57,7 @@ TEST_F(ContextualTasksPermissionControllerTest,
   ASSERT_TRUE(location_bar);
   EXPECT_EQ(location_bar::GetLocationBarForWebContents(web_contents()),
             location_bar);
+  EXPECT_EQ(location_bar->GetWebContents(), web_contents());
 
   std::unique_ptr<content::WebContents> second_web_contents =
       CreateTestWebContents();
@@ -64,6 +66,15 @@ TEST_F(ContextualTasksPermissionControllerTest,
       location_bar::GetLocationBarForWebContents(second_web_contents.get()),
       location_bar);
 
+  // Switching active task updates the single location bar's WebContents.
+  controller()->Update(second_web_contents.get());
+  EXPECT_EQ(location_bar->GetWebContents(), second_web_contents.get());
+
+  // Passing nullptr clears the active WebContents on the location bar.
+  controller()->Update(nullptr);
+  EXPECT_EQ(location_bar->GetWebContents(), nullptr);
+
+  // Unregistering removes the override.
   controller()->UnregisterWebContents(second_web_contents.get());
   EXPECT_EQ(
       location_bar::GetLocationBarForWebContents(second_web_contents.get()),
