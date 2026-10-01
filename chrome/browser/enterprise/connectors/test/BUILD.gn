@@ -39,6 +39,7 @@ source_set("test_support") {
       "fake_clipboard_request_handler.h",
       "fake_content_analysis_delegate.h",
       "fake_files_request_handler.h",
+      "pending_binary_upload_service.h",
     ]
 
     sources += [
@@ -47,11 +48,13 @@ source_set("test_support") {
       "fake_clipboard_request_handler.cc",
       "fake_content_analysis_delegate.cc",
       "fake_files_request_handler.cc",
+      "pending_binary_upload_service.cc",
     ]
 
     public_deps += [
       "//chrome/browser/safe_browsing",
       "//chrome/test:test_support_ui",
+      "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/policy/core/common:common_constants",
       "//components/policy/core/common:test_support",
       "//components/policy/proto",
@@ -64,7 +67,7 @@ source_set("test_support") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
-      "//components/enterprise/connectors/core:cloud_content_scanning",
+      "//components/keyed_service/core",
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/prefs",

@@ -342,6 +342,7 @@ source_set("enterprise") {
       "connectors/analysis/copy_warning_delegate_tracker.h",
       "connectors/analysis/files_request_handler.h",
       "connectors/analysis/network_request_content_analysis_info.h",
+      "connectors/analysis/network_request_proxying_url_loader_factory.h",
       "connectors/analysis/page_print_analysis_request.h",
       "connectors/analysis/page_print_request_handler.h",
     ]
@@ -757,6 +758,7 @@ source_set("impl") {
       "connectors/analysis/copy_warning_delegate_tracker.cc",
       "connectors/analysis/files_request_handler.cc",
       "connectors/analysis/network_request_content_analysis_info.cc",
+      "connectors/analysis/network_request_proxying_url_loader_factory.cc",
       "connectors/analysis/page_print_analysis_request.cc",
       "connectors/analysis/page_print_request_handler.cc",
     ]
