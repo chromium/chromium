@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
@@ -196,6 +195,8 @@ class Invoker;
 template <size_t... indices, typename... ArgTypes>
 class Invoker<std::index_sequence<indices...>, ArgTypes...>
     : public ArgumentHolder<indices, ArgTypes>... {
+  CPPGC_STACK_ALLOCATED();
+
  public:
   // Invoker<> inherits from ArgumentHolder<> for each argument.
   // C++ has always been strict about the class initialization order,
@@ -229,7 +230,7 @@ class Invoker<std::index_sequence<indices...>, ArgTypes...>
     return arg1 && And(args...);
   }
 
-  raw_ptr<Arguments> args_;
+  Arguments* args_;
 };
 
 // DispatchToCallback converts all the JavaScript arguments to C++ types and
