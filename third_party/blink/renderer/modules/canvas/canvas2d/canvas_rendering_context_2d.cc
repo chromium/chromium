@@ -778,15 +778,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
         GetHibernationHandler()->GetImage());
   }
 
-  if (!IsResourceProviderValid()) {
-    return nullptr;
-  }
-
-  FlushCanvas(FlushReason::kOther);
-  if (shared_image_provider_) {
-    return shared_image_provider_->Snapshot();
-  }
-  return bitmap_provider_->Snapshot();
+  return PaintRenderingResultsToSnapshot(kBackBuffer);
 }
 
 ImageData* CanvasRenderingContext2D::getImageDataInternal(

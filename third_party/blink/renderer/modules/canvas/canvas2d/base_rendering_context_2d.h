@@ -346,6 +346,8 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  bool clear_frame,
                                  FlushReason reason) {}
 
+  scoped_refptr<StaticBitmapImage> Snapshot() const;
+
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;

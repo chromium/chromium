@@ -191,6 +191,13 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   return base::ByteSize();
 }
 
+scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() const {
+  if (shared_image_provider_) {
+    return shared_image_provider_->Snapshot();
+  }
+  return bitmap_provider_->Snapshot();
+}
+
 scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
@@ -198,10 +205,7 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
   FlushCanvas(FlushReason::kOther);
-  if (shared_image_provider_) {
-    return shared_image_provider_->Snapshot();
-  }
-  return bitmap_provider_->Snapshot();
+  return Snapshot();
 }
 
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
