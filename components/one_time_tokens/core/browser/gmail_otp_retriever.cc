@@ -232,12 +232,11 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     const OneTimeToken& matched_token = cached_tokens.at(index);
     if (!best_candidate_.has_value() ||
         matched_token.email_received_timestamp().value_or(base::Time()) >=
-            best_candidate_->email_received_timestamp) {
+            best_candidate_->token.email_received_timestamp().value_or(
+                base::Time())) {
       best_candidate_ = Candidate{
-          .otp = matched_token.value(),
+          .token = matched_token,
           .source = Source::kCache,
-          .email_received_timestamp =
-              matched_token.email_received_timestamp().value_or(base::Time()),
       };
     }
     MaybeCompleteOrWaitForPendingRequests();
@@ -253,8 +252,9 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     std::optional<base::Time> next_email_received_timestamp =
         cached_tokens.at(index + 1).email_received_timestamp();
     if (!best_candidate_.has_value() ||
-        next_email_received_timestamp.value_or(base::Time()) >
-            best_candidate_->email_received_timestamp) {
+        next_email_received_timestamp.value_or(base::Time()) >=
+            best_candidate_->token.email_received_timestamp().value_or(
+                base::Time())) {
       CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
     }
   }
@@ -307,12 +307,11 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
     RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
     if (!best_candidate_.has_value() ||
         token.email_received_timestamp().value_or(base::Time()) >=
-            best_candidate_->email_received_timestamp) {
+            best_candidate_->token.email_received_timestamp().value_or(
+                base::Time())) {
       best_candidate_ = Candidate{
-          .otp = token.value(),
+          .token = std::move(token),
           .source = Source::kReceived,
-          .email_received_timestamp =
-              token.email_received_timestamp().value_or(base::Time()),
       };
     }
   } else {
@@ -355,7 +354,7 @@ void GmailOtpRetriever::MaybeCompleteOrWaitForPendingRequests() {
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(retrieve_otp_callback_)
         .Run(Result{
-            .otp = std::move(best_candidate_->otp),
+            .token = std::move(best_candidate_->token),
             .source = best_candidate_->source,
         });
     return;

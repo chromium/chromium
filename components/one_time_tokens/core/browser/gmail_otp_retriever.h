@@ -54,9 +54,9 @@ class GmailOtpRetriever {
     kReceived,
   };
 
-  // Holds the retrieved OTP value and its source (cache vs. live subscription).
+  // Holds the retrieved token and its source (cache vs. live subscription).
   struct Result {
-    std::string otp;
+    OneTimeToken token;
     Source source;
   };
 
@@ -83,9 +83,8 @@ class GmailOtpRetriever {
 
  private:
   struct Candidate {
-    std::string otp;
+    OneTimeToken token;
     Source source;
-    base::Time email_received_timestamp;
   };
 
   GmailOtpRetriever(GmailOtpBackend& backend,

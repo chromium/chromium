@@ -73,7 +73,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromCache) {
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 
   histogram_tester.ExpectTotalCount(
@@ -110,7 +110,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
                    "sender@example.com"));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectTotalCount(
@@ -157,7 +157,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_Superseded) {
                    "sender@example.com"));
 
   ASSERT_TRUE(future2.Get().has_value());
-  EXPECT_EQ(future2.Get()->otp, "123456");
+  EXPECT_EQ(future2.Get()->token.value(), "123456");
   EXPECT_FALSE(future1.IsReady());
 }
 
@@ -192,7 +192,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwExactMatch) {
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -223,7 +223,7 @@ TEST_F(GmailOtpRetrieverTest,
       /*is_login_flow=*/true, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -254,7 +254,7 @@ TEST_F(GmailOtpRetrieverTest,
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -286,7 +286,7 @@ TEST_F(
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -319,7 +319,7 @@ TEST_F(
                    "sender@example.com"));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectUniqueSample(
@@ -352,7 +352,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -381,7 +381,7 @@ TEST_F(GmailOtpRetrieverTest,
       /*is_login_flow=*/true, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kOtp);
+  EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType."
@@ -414,7 +414,7 @@ TEST_F(GmailOtpRetrieverTest,
                    "sender@sub.example.com"));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kPslOtp);
+  EXPECT_EQ(future.Get()->token.value(), kPslOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectUniqueSample(
@@ -459,7 +459,7 @@ TEST_F(GmailOtpRetrieverTest,
                      base::Unretained(&gmail_otp_backend())));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, "111222");
+  EXPECT_EQ(future.Get()->token.value(), "111222");
 
   histogram_tester.ExpectUniqueSample(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
@@ -505,7 +505,7 @@ TEST_F(GmailOtpRetrieverTest,
       /*is_login_flow=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kRecentGmailOtp);
+  EXPECT_EQ(future.Get()->token.value(), kRecentGmailOtp);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -558,7 +558,7 @@ TEST_F(
 
   // The match succeeded despite the timeout, we expect to get the token!
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->token.value(), "111111");
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 }
 
@@ -587,7 +587,7 @@ TEST_F(GmailOtpRetrieverTest,
   // The match succeeded after the timeout fired, and it was picked up
   // successfully.
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->token.value(), "111111");
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 
@@ -651,7 +651,7 @@ TEST_F(
   // The match succeeded despite the subscription error, the token should
   // be returned and not the error.
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->token.value(), "111111");
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 }
 
@@ -824,7 +824,7 @@ TEST_F(
                    "sender@example.com", now_time));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kReceivedOtp);
+  EXPECT_EQ(future.Get()->token.value(), kReceivedOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 
@@ -856,7 +856,7 @@ TEST_F(
       OneTimeTokenType::kGmail, kUnrelatedOtp, now, "sender@unrelated.com"));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->token.value(), kCachedOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 }
 
@@ -888,7 +888,7 @@ TEST_F(
 
   // Should fall back to the cached match instead of failing.
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->token.value(), kCachedOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 }
 
@@ -918,7 +918,7 @@ TEST_F(
 
   // Should fall back to the cached candidate.
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->token.value(), kCachedOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 }
 
@@ -955,7 +955,7 @@ TEST_F(GmailOtpRetrieverTest,
                    "sender@example.com", now_time));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kNewerOtp);
+  EXPECT_EQ(future.Get()->token.value(), kNewerOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 
@@ -991,7 +991,7 @@ TEST_F(
                    "sender@example.com", now_time - base::Seconds(30)));
 
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, kNewerEmailOtp);
+  EXPECT_EQ(future.Get()->token.value(), kNewerEmailOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 
@@ -1052,7 +1052,7 @@ TEST_F(
   // backend requests.
   ASSERT_TRUE(future.IsReady());
   ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->token.value(), "111111");
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 

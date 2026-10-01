@@ -410,7 +410,7 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(
         kSuccessReceivedMatchFound);
   }
-  std::move(retrieve_otp_callback_).Run(std::move(result->otp));
+  std::move(retrieve_otp_callback_).Run(std::move(result->token.value()));
 }
 
 void ActorOneTimeTokenFillingServiceImpl::FillOtp(
