@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterC
 
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +36,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,8 +53,6 @@ public class HistoryAdapterTest {
 
     @Mock private MoreProgressButton mMockButton;
     @Mock private HistoryContentManager mContentManager;
-    @Mock private ChipView mAppFilterChip;
-    @Mock private TextView mTextView;
     @Mock private SigninPromoCoordinator mHistorySyncPromoCoordinator;
     @Mock private RecyclerView mRecyclerView;
     @Mock private ViewTreeObserver mViewTreeObserver;
@@ -77,7 +73,6 @@ public class HistoryAdapterTest {
                         /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
-        doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
     }
 
     private boolean showSourceApp() {
@@ -139,7 +134,6 @@ public class HistoryAdapterTest {
 
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
-        mAdapter.setAppFilterButtonForTest(mAppFilterChip);
         Assert.assertTrue("Source app should be on", showSourceApp());
         Assert.assertEquals("App id should be null", null, getAppId());
 
@@ -180,8 +174,6 @@ public class HistoryAdapterTest {
                         /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
-        mAdapter.setHostFilterButtonForTest(mAppFilterChip);
-        mAdapter.setClientFilterButtonForTest(mAppFilterChip);
 
         mAdapter.onSearchStart();
         Assert.assertNull(mAdapter.getHostNameForTest());

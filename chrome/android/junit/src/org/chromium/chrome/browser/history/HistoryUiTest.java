@@ -635,9 +635,11 @@ public class HistoryUiTest {
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         performMenuAction(R.id.search_menu_id);
         Assert.assertTrue(mAdapter.hasListHeader());
-        Assert.assertEquals(View.VISIBLE, mAdapter.getHostFilterButtonForTest().getVisibility());
-        Assert.assertTrue(mAdapter.getHostFilterButtonForTest().isEnabled());
-        Assert.assertEquals(View.GONE, mAdapter.getAppFilterButtonForTest().getVisibility());
+        HistoryFilterChip hostFilter = mContentManager.getHostFilterForTesting();
+        HistoryFilterChip appFilter = mContentManager.getAppFilterForTesting();
+        Assert.assertEquals(View.VISIBLE, hostFilter.getChipViewForTesting().getVisibility());
+        Assert.assertTrue(hostFilter.getChipViewForTesting().isEnabled());
+        Assert.assertEquals(View.GONE, appFilter.getChipViewForTesting().getVisibility());
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
@@ -658,30 +660,38 @@ public class HistoryUiTest {
         mAdapter.onQueryAppsComplete(result);
         assertFalse(isAppFilterButtonEnabled());
 
-        // Verify the button becomes enabled if the app result is non-empty.
+        // Verify the button remains disabled with only 1 valid app, and becomes enabled with 2.
         final String app1 = "org.chromium.chrome.Ernie";
         final String app2 = "org.chromium.chrome.Bert";
+        final String app3 = "org.chromium.chrome.CookieMonster";
         result.add(app1);
         result.add(app2);
         when(mPackageManager.getApplicationInfo(eq(app1), anyInt())).thenReturn(mPackageAppInfo);
         when(mPackageManager.getApplicationInfo(eq(app2), anyInt()))
                 .thenThrow(NameNotFoundException.class);
         mAdapter.onQueryAppsComplete(result);
+        assertFalse(isAppFilterButtonEnabled());
+
+        result.add(app3);
+        when(mPackageManager.getApplicationInfo(eq(app3), anyInt())).thenReturn(mPackageAppInfo);
+        mAdapter.onQueryAppsComplete(result);
         Assert.assertTrue(isAppFilterButtonEnabled());
     }
 
     private boolean isAppFilterButtonEnabled() {
+        var chipView = mContentManager.getAppFilterForTesting().getChipViewForTesting();
         return mAdapter.hasListHeader()
-                && mAdapter.getAppFilterButtonForTest().getVisibility() == View.VISIBLE
-                && mAdapter.getAppFilterButtonForTest().isEnabled();
+                && chipView.getVisibility() == View.VISIBLE
+                && chipView.isEnabled();
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
     public void testSearch_AppFilterSheet() {
+        HistoryFilterChip appFilter = mContentManager.getAppFilterForTesting();
         mContentManager.setPackageManagerForTesting(mPackageManager);
-        mContentManager.setAppFilterSheetForTesting(mAppFilterSheet);
+        appFilter.setFilterSheetForTesting(mAppFilterSheet);
 
         performMenuAction(R.id.search_menu_id);
 
@@ -692,49 +702,50 @@ public class HistoryUiTest {
         result.add(appId2);
         mAdapter.onQueryAppsComplete(result);
 
-        mContentManager.onAppFilterClicked();
+        appFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
 
         // Verify ContentManager is updated with the selected app info.
         FilterItem selected = new FilterItem("Ernie", null, appId1);
-        mContentManager.onAppUpdated(selected);
+        appFilter.onItemSelected(selected);
         Assert.assertEquals(
                 "The expected app 'Ernie' was not chosen",
-                mContentManager.getAppInfoForTesting(),
+                appFilter.getSelectedItemForTesting(),
                 selected);
 
         FilterItem selected2 = new FilterItem("Bert", null, appId2);
-        mContentManager.onAppUpdated(selected2);
+        appFilter.onItemSelected(selected2);
         Assert.assertEquals(
                 "The expected app 'Bert' was not chosen",
-                mContentManager.getAppInfoForTesting(),
+                appFilter.getSelectedItemForTesting(),
                 selected2);
 
         // Revert to full history.
-        mContentManager.onAppUpdated(null);
+        appFilter.onItemSelected(null);
         Assert.assertEquals(
                 "The history was not reverted to full",
-                mContentManager.getAppInfoForTesting(),
+                appFilter.getSelectedItemForTesting(),
                 null);
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
     @Test
     public void testSearch_HostFilterSheet() {
-        mContentManager.setHostFilterSheetForTesting(mAppFilterSheet);
+        HistoryFilterChip hostFilter = mContentManager.getHostFilterForTesting();
+        hostFilter.setFilterSheetForTesting(mAppFilterSheet);
 
         performMenuAction(R.id.search_menu_id);
 
-        mContentManager.onHostFilterClicked();
+        hostFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
 
         FilterItem selectedHost = new FilterItem("www.google.com", null, "www.google.com");
-        mContentManager.onHostUpdated(selectedHost);
-        Assert.assertEquals(selectedHost, mContentManager.getHostInfoForTesting());
+        hostFilter.onItemSelected(selectedHost);
+        Assert.assertEquals(selectedHost, hostFilter.getSelectedItemForTesting());
         Assert.assertEquals("www.google.com", mAdapter.getHostNameForTest());
 
-        mContentManager.onHostUpdated(null);
-        Assert.assertNull(mContentManager.getHostInfoForTesting());
+        hostFilter.onItemSelected(null);
+        Assert.assertNull(hostFilter.getSelectedItemForTesting());
         Assert.assertNull(mAdapter.getHostNameForTest());
     }
 
@@ -809,13 +820,14 @@ public class HistoryUiTest {
         // Repeated queries should not overwrite the host filter list.
         mContentManager.getAdapter().search("NonExistentQuery");
 
-        List<FilterItem> hosts = mContentManager.getHostInfoListForTests();
+        HistoryFilterChip hostFilter = mContentManager.getHostFilterForTesting();
+        List<FilterItem> hosts = hostFilter.getItemsForTesting();
         Assert.assertEquals(2, hosts.size());
         Assert.assertEquals("www.example.com", hosts.get(0).getId());
         Assert.assertEquals("www.example.com", hosts.get(0).label.toString());
         Assert.assertEquals("news.other.org", hosts.get(1).getId());
         Assert.assertEquals("news.other.org", hosts.get(1).label.toString());
-        Assert.assertTrue(mContentManager.hasHostFilterList());
+        Assert.assertTrue(hostFilter.isVisible());
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN)
@@ -849,14 +861,15 @@ public class HistoryUiTest {
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         performMenuAction(R.id.search_menu_id);
 
-        Assert.assertFalse(mContentManager.hasHostFilterList());
+        Assert.assertFalse(mContentManager.getHostFilterForTesting().isVisible());
         Assert.assertFalse(mAdapter.hasListHeader());
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
     @Test
     public void testSearch_ClientFilterSheet() {
-        mContentManager.setClientFilterSheetForTesting(mAppFilterSheet);
+        HistoryFilterChip clientFilter = mContentManager.getClientFilterForTesting();
+        clientFilter.setFilterSheetForTesting(mAppFilterSheet);
 
         performMenuAction(R.id.search_menu_id);
 
@@ -865,43 +878,45 @@ public class HistoryUiTest {
         clients.add(new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook"));
         mAdapter.onQueryClientsComplete(clients);
 
-        mContentManager.onClientFilterClicked();
+        clientFilter.getChipViewForTesting().performClick();
         verify(mAppFilterSheet).openSheet(eq(null));
 
         // Selecting a client filters by all of its client IDs.
         FilterItem selectedClient =
                 new FilterItem(List.of("client_1", "client_1b"), null, "Pixel 8");
-        mContentManager.onClientUpdated(selectedClient);
-        Assert.assertEquals(selectedClient, mContentManager.getClientInfoForTesting());
+        clientFilter.onItemSelected(selectedClient);
+        Assert.assertEquals(selectedClient, clientFilter.getSelectedItemForTesting());
         Assert.assertEquals(List.of("client_1", "client_1b"), mAdapter.getClientIdsForTest());
 
-        mContentManager.onClientUpdated(null);
-        Assert.assertNull(mContentManager.getClientInfoForTesting());
+        clientFilter.onItemSelected(null);
+        Assert.assertNull(clientFilter.getSelectedItemForTesting());
         Assert.assertTrue(mAdapter.getClientIdsForTest().isEmpty());
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
     @Test
     public void testSearch_ClientFilterHiddenWithSingleClient() {
+        HistoryFilterChip clientFilter = mContentManager.getClientFilterForTesting();
         performMenuAction(R.id.search_menu_id);
 
         mAdapter.onQueryClientsComplete(
                 List.of(new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8")));
-        Assert.assertFalse(mContentManager.hasClientFilterList());
-        Assert.assertEquals(View.GONE, mAdapter.getClientFilterButtonForTest().getVisibility());
+        Assert.assertFalse(clientFilter.isVisible());
+        Assert.assertEquals(View.GONE, clientFilter.getChipViewForTesting().getVisibility());
 
         mAdapter.onQueryClientsComplete(
                 List.of(
                         new HistoryProvider.ClientInfo(List.of("client_1"), "Pixel 8"),
                         new HistoryProvider.ClientInfo(List.of("client_2"), "Chromebook")));
-        Assert.assertTrue(mContentManager.hasClientFilterList());
-        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+        Assert.assertTrue(clientFilter.isVisible());
+        Assert.assertEquals(View.VISIBLE, clientFilter.getChipViewForTesting().getVisibility());
     }
 
     @EnableFeatures(ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE)
     @Test
     public void testSearch_ClientFilterVisibleWithEmptySearchResult() {
-        mContentManager.setClientFilterSheetForTesting(mAppFilterSheet);
+        HistoryFilterChip clientFilter = mContentManager.getClientFilterForTesting();
+        clientFilter.setFilterSheetForTesting(mAppFilterSheet);
         performMenuAction(R.id.search_menu_id);
         mAdapter.onQueryClientsComplete(
                 List.of(
@@ -911,13 +926,13 @@ public class HistoryUiTest {
         // The client list comes from the synced devices, not from the history results, so a
         // search with zero results doesn't affect the client filter with or without a selection.
         mAdapter.onQueryHistoryComplete(new ArrayList<>(), false);
-        Assert.assertTrue(mContentManager.hasClientFilterList());
-        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+        Assert.assertTrue(clientFilter.isVisible());
+        Assert.assertEquals(View.VISIBLE, clientFilter.getChipViewForTesting().getVisibility());
 
-        mContentManager.onClientUpdated(new FilterItem(List.of("client_1"), null, "Pixel 8"));
+        clientFilter.onItemSelected(new FilterItem(List.of("client_1"), null, "Pixel 8"));
         mAdapter.onQueryHistoryComplete(new ArrayList<>(), false);
-        Assert.assertTrue(mContentManager.hasClientFilterList());
-        Assert.assertEquals(View.VISIBLE, mAdapter.getClientFilterButtonForTest().getVisibility());
+        Assert.assertTrue(clientFilter.isVisible());
+        Assert.assertEquals(View.VISIBLE, clientFilter.getChipViewForTesting().getVisibility());
         Assert.assertEquals(List.of("client_1"), mAdapter.getClientIdsForTest());
     }
 

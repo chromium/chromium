@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -76,9 +75,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private @Nullable HeaderItem mHistorySyncPromoHeaderItem;
     private @Nullable HeaderItem mFilterChipsHeaderItem;
     private @Nullable HeaderItem mFindsPromoHeaderItem;
-    private ChipView mAppFilterChip;
-    private ChipView mHostFilterChip;
-    private ChipView mClientFilterChip;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -316,9 +312,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         // While the selection is active, we temporarily disable the filter buttons.
-        if (mManager.showAppFilter()) mAppFilterChip.setEnabled(!active);
-        if (mManager.showHostFilter()) mHostFilterChip.setEnabled(!active);
-        if (mManager.showClientFilter()) mClientFilterChip.setEnabled(!active);
+        mManager.setFilterChipsEnabled(!active);
 
         int visibility = mManager.getRemoveItemButtonVisibility();
         if (active) {
@@ -388,7 +382,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         boolean hasVisibleContent = !items.isEmpty() || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && hasVisibleContent && !mIsSearching)
-                || (mIsSearching && mManager.showFilterChips())
+                || mIsSearching
                 || mIsLargeFormFactorDevice) {
             setHeaders();
             mAreHeadersInitialized = true;
@@ -587,29 +581,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return viewGroup;
     }
 
-    @EnsuresNonNull({"mAppFilterChip", "mHostFilterChip", "mClientFilterChip"})
     private ViewGroup getFilterChipsContainer(@Nullable ViewGroup parent) {
         ViewGroup historyFilterChipsContainer =
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(R.layout.history_filter_chips, parent, true);
-        mAppFilterChip = historyFilterChipsContainer.findViewById(R.id.app_history_filter_chip);
-        mAppFilterChip.setOnClickListener(_ -> mManager.onAppFilterClicked());
-        mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
-        mAppFilterChip.addDropdownIcon();
-
-        mHostFilterChip = historyFilterChipsContainer.findViewById(R.id.host_history_filter_chip);
-        mHostFilterChip.setOnClickListener(_ -> mManager.onHostFilterClicked());
-        mHostFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_host);
-        mHostFilterChip.addDropdownIcon();
-
-        mClientFilterChip =
-                historyFilterChipsContainer.findViewById(R.id.client_history_filter_chip);
-        mClientFilterChip.setOnClickListener(_ -> mManager.onClientFilterClicked());
-        mClientFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_client);
-        mClientFilterChip.addDropdownIcon();
-
-        updateFilterChipsVisibility();
+        mManager.initializeFilterChips(historyFilterChipsContainer);
         return historyFilterChipsContainer;
     }
 
@@ -623,22 +600,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     void updateAppFilter(@Nullable FilterItem appInfo) {
         setAppId(appInfo == null ? null : appInfo.getId());
         mShowSourceApp = appInfo == null && mManager.showAppFilter();
-        updateFilterChip(mAppFilterChip, appInfo, R.string.history_filter_by_app);
         search(mQueryText);
-    }
-
-    void resetAppFilterChip() {
-        updateFilterChip(mAppFilterChip, null, R.string.history_filter_by_app);
     }
 
     void updateHostFilter(@Nullable FilterItem hostInfo) {
         setHostName(hostInfo == null ? null : hostInfo.getId());
-        updateFilterChip(mHostFilterChip, hostInfo, R.string.history_filter_by_host);
         search(mQueryText);
-    }
-
-    void resetHostFilterChip() {
-        updateFilterChip(mHostFilterChip, null, R.string.history_filter_by_host);
     }
 
     /**
@@ -649,40 +616,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      */
     void updateClientFilter(@Nullable FilterItem clientInfo) {
         setClientIds(clientInfo == null ? Collections.emptyList() : clientInfo.getIds());
-        updateFilterChip(mClientFilterChip, clientInfo, R.string.history_filter_by_client);
         search(mQueryText);
-    }
-
-    void resetClientFilterChip() {
-        updateFilterChip(mClientFilterChip, null, R.string.history_filter_by_client);
-    }
-
-    private static void updateFilterChip(
-            ChipView chip, @Nullable FilterItem item, @StringRes int defaultTextId) {
-        if (item == null) {
-            chip.getPrimaryTextView().setText(defaultTextId);
-            chip.setSelected(false);
-            chip.setIcon(ChipView.INVALID_ICON_ID, false);
-        } else {
-            chip.getPrimaryTextView().setText(item.label);
-            chip.setSelected(true);
-            chip.setIcon(R.drawable.ic_check_googblue_24dp, true);
-        }
-    }
-
-    private void updateFilterChipsVisibility() {
-        boolean showAppChip =
-                mManager.showAppFilter() && (mManager.hasAppFilterList() || mAppId != null);
-        mAppFilterChip.setVisibility(showAppChip ? View.VISIBLE : View.GONE);
-
-        boolean showHostChip =
-                mManager.showHostFilter() && (mManager.hasHostFilterList() || mHostName != null);
-        mHostFilterChip.setVisibility(showHostChip ? View.VISIBLE : View.GONE);
-
-        boolean showClientChip =
-                mManager.showClientFilter()
-                        && (mManager.hasClientFilterList() || !mClientIds.isEmpty());
-        mClientFilterChip.setVisibility(showClientChip ? View.VISIBLE : View.GONE);
     }
 
     private View getFindsPromoContainer() {
@@ -781,8 +715,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mIsSearching) {
             // Query for apps could be still pending. |setHeaders()| will be invoked
             // again when the query is completed in order to set the header accordingly.
-            if (mManager.showFilterChips() && mManager.hasFilterList()) {
-                updateFilterChipsVisibility();
+            if (mManager.hasFilterList()) {
                 args.add(mFilterChipsHeaderItem);
             }
         } else {
@@ -808,8 +741,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** For LFF devices w/ physical keyboard attached, there's only search mode. */
     private void setLFFHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
-        if (mManager.showFilterChips() && mManager.hasFilterList()) {
-            updateFilterChipsVisibility();
+        if (mManager.hasFilterList()) {
             args.add(mFilterChipsHeaderItem);
         }
         if (isNormalContentAvailable()) {
@@ -1004,30 +936,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     MoreProgressButton getMoreProgressButtonForTest() {
         return mMoreProgressButton;
-    }
-
-    ChipView getAppFilterButtonForTest() {
-        return mAppFilterChip;
-    }
-
-    void setAppFilterButtonForTest(ChipView appFilterChip) {
-        mAppFilterChip = appFilterChip;
-    }
-
-    ChipView getHostFilterButtonForTest() {
-        return mHostFilterChip;
-    }
-
-    void setHostFilterButtonForTest(ChipView hostFilterChip) {
-        mHostFilterChip = hostFilterChip;
-    }
-
-    ChipView getClientFilterButtonForTest() {
-        return mClientFilterChip;
-    }
-
-    void setClientFilterButtonForTest(ChipView clientFilterChip) {
-        mClientFilterChip = clientFilterChip;
     }
 
     boolean showSourceAppForTest() {

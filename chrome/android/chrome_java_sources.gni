@@ -768,6 +768,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
   "java/src/org/chromium/chrome/browser/history/HistoryDesktopNavigationCoordinator.java",
   "java/src/org/chromium/chrome/browser/history/HistoryDesktopNavigationMediator.java",
+  "java/src/org/chromium/chrome/browser/history/HistoryFilterChip.java",
   "java/src/org/chromium/chrome/browser/history/HistoryItem.java",
   "java/src/org/chromium/chrome/browser/history/HistoryItemView.java",
   "java/src/org/chromium/chrome/browser/history/HistoryManager.java",

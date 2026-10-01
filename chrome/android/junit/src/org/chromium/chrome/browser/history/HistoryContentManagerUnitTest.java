@@ -214,17 +214,26 @@ public class HistoryContentManagerUnitTest {
         assertFalse(pageInfoContentManager.showAppFilter());
         assertFalse(pageInfoContentManager.showHostFilter());
         assertFalse(pageInfoContentManager.showClientFilter());
-        assertFalse(pageInfoContentManager.showFilterChips());
+        assertFalse(pageInfoContentManager.hasFilterList());
         assertEquals("www.example.com", pageInfoContentManager.getAdapter().getHostNameForTest());
         assertFalse(pageInfoContentManager.getAdapter().hasListHeader());
         assertEquals(
                 View.GONE,
-                pageInfoContentManager.getAdapter().getAppFilterButtonForTest().getVisibility());
+                pageInfoContentManager
+                        .getAppFilterForTesting()
+                        .getChipViewForTesting()
+                        .getVisibility());
         assertEquals(
                 View.GONE,
-                pageInfoContentManager.getAdapter().getHostFilterButtonForTest().getVisibility());
+                pageInfoContentManager
+                        .getHostFilterForTesting()
+                        .getChipViewForTesting()
+                        .getVisibility());
         assertEquals(
                 View.GONE,
-                pageInfoContentManager.getAdapter().getClientFilterButtonForTest().getVisibility());
+                pageInfoContentManager
+                        .getClientFilterForTesting()
+                        .getChipViewForTesting()
+                        .getVisibility());
     }
 }

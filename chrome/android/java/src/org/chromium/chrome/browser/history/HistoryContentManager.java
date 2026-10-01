@@ -23,8 +23,8 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,7 +77,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -141,12 +140,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final HistoryUmaRecorder mUmaRecorder;
     private final @Nullable String mHostName;
     private final @Nullable Runnable mHideSoftKeyboard;
+
     private final boolean mShowAppFilter;
     private final boolean mShowHostFilter;
     private final boolean mShowClientFilter;
-    private final List<FilterItem> mAppInfoList = new ArrayList<>();
-    private final List<FilterItem> mHostInfoList = new ArrayList<>();
-    private final List<FilterItem> mClientInfoList = new ArrayList<>();
+
+    private final HistoryFilterChip mAppFilter;
+    private final HistoryFilterChip mHostFilter;
+    private final HistoryFilterChip mClientFilter;
+    private final List<HistoryFilterChip> mFilterChips;
+    private boolean mHostInfoListInitialized;
+
     private final @Nullable Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
@@ -161,12 +165,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mLaunchedForApp;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final @Nullable String mAppId;
-    private @Nullable FilterSheetCoordinator mAppFilterSheet;
-    private @Nullable FilterItem mCurrentApp;
-    private @Nullable FilterSheetCoordinator mHostFilterSheet;
-    private @Nullable FilterItem mCurrentHost;
-    private @Nullable FilterSheetCoordinator mClientFilterSheet;
-    private @Nullable FilterItem mCurrentClient;
 
     private long mAppQueryStartMs;
     private final AsyncTabLauncher mRegularAsyncTabLauncher;
@@ -434,6 +432,29 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         snackbarManager,
                         mProfile.isOffTheRecord() ? null : mProfile);
 
+        mAppFilter =
+                new HistoryFilterChip(
+                        R.id.app_history_filter_chip,
+                        R.string.history_filter_by_app,
+                        showAppFilter(),
+                        mHistoryAdapter::updateAppFilter,
+                        mUmaRecorder::recordAppFilterSheetOpened);
+        mHostFilter =
+                new HistoryFilterChip(
+                        R.id.host_history_filter_chip,
+                        R.string.history_filter_by_host,
+                        showHostFilter(),
+                        mHistoryAdapter::updateHostFilter,
+                        /* onSheetOpened= */ null);
+        mClientFilter =
+                new HistoryFilterChip(
+                        R.id.client_history_filter_chip,
+                        R.string.history_filter_by_client,
+                        showClientFilter(),
+                        mHistoryAdapter::updateClientFilter,
+                        /* onSheetOpened= */ null);
+        mFilterChips = List.of(mAppFilter, mHostFilter, mClientFilter);
+
         // Create a recycler view.
         mRecyclerView =
                 new RecyclerView(new ContextThemeWrapper(mActivity, R.style.VerticalRecyclerView));
@@ -532,20 +553,19 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param appIds List of app IDs found from the history database.
      */
     private void buildAppInfoList(List<String> appIds) {
-        mAppInfoList.clear();
+        List<FilterItem> appInfoList = new ArrayList<>();
         for (String appId : appIds) {
             FilterItem appInfo = mAppInfoCache.get(appId);
             // Filter out the app whose info cannot be found. TODO: Consider keeping it with
             // a default app.
-            if (appInfo.isValid()) mAppInfoList.add(appInfo);
+            if (appInfo.isValid()) appInfoList.add(appInfo);
         }
-        if (mAppFilterSheet != null) {
-            mAppFilterSheet.updateItems(mAppInfoList);
-        }
+        mAppFilter.setItems(appInfoList);
     }
 
     void maybeUpdateHostInfoList(List<HistoryItem> items) {
-        if (!showHostFilter() || !mHostInfoList.isEmpty()) return;
+        if (!showHostFilter() || mHostInfoListInitialized) return;
+        mHostInfoListInitialized = true;
         // TODO(b/558644507): Load the real favicon for each host instead of a generic
         // globe icon, similar to how HistoryItemView uses FaviconHelper/RoundedIconGenerator. The
         // items need to be updated again once the favicons are fetched asynchronously.
@@ -553,19 +573,18 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // TODO(b/558644507): The host filter list logic should be shared across
         // platforms.
         Set<String> seenHosts = new HashSet<>();
+        List<FilterItem> hostInfoList = new ArrayList<>();
         for (HistoryItem item : items) {
             String host = item.getUrl().getHost();
             if (!TextUtils.isEmpty(host) && seenHosts.add(host)) {
-                mHostInfoList.add(new FilterItem(host, icon, host));
+                hostInfoList.add(new FilterItem(host, icon, host));
             }
         }
-        if (mHostFilterSheet != null) {
-            mHostFilterSheet.updateItems(mHostInfoList);
-        }
+        mHostFilter.setItems(hostInfoList);
     }
 
     private void buildClientInfoList(List<HistoryProvider.ClientInfo> clients) {
-        mClientInfoList.clear();
+        List<FilterItem> clientInfoList = new ArrayList<>();
         Drawable icon = AppCompatResources.getDrawable(mActivity, R.drawable.devices_black_24dp);
         for (HistoryProvider.ClientInfo client : clients) {
             if (client.clientIds != null && !client.clientIds.isEmpty()) {
@@ -575,16 +594,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         (client.name != null && !client.name.isEmpty())
                                 ? client.name
                                 : client.clientIds.get(0);
-                mClientInfoList.add(new FilterItem(client.clientIds, icon, label));
+                clientInfoList.add(new FilterItem(client.clientIds, icon, label));
             }
         }
-        if (mClientFilterSheet != null) {
-            mClientFilterSheet.updateItems(mClientInfoList);
-        }
-    }
-
-    List<FilterItem> getHostInfoListForTests() {
-        return mHostInfoList;
+        mClientFilter.setItems(clientInfoList);
     }
 
     /**
@@ -592,25 +605,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     not completed or the result indeed is empty.
      */
     boolean hasFilterList() {
-        return (showAppFilter() && hasAppFilterList())
-                || (showHostFilter() && hasHostFilterList())
-                || (showClientFilter() && hasClientFilterList());
-    }
-
-    boolean hasAppFilterList() {
-        return !mAppInfoList.isEmpty();
-    }
-
-    boolean hasHostFilterList() {
-        return mHostInfoList.size() >= 2;
-    }
-
-    /**
-     * @return Whether the client filter should be offered. Filtering by device is only useful if
-     *     there are at least two known devices.
-     */
-    boolean hasClientFilterList() {
-        return mClientInfoList.size() >= 2;
+        for (HistoryFilterChip chip : mFilterChips) {
+            if (chip.isVisible()) return true;
+        }
+        return false;
     }
 
     /**
@@ -757,13 +755,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         return ChromeFeatureList.sBrowsingHistoryFilterByDevice.isEnabled() && mShowClientFilter;
     }
 
-    /**
-     * @return True if history page needs to show filter chips UI.
-     */
-    boolean showFilterChips() {
-        return showAppFilter() || showHostFilter() || showClientFilter();
-    }
-
     /** returns whether the info header will be available for user upon request. */
     boolean isInfoHeaderAvailable() {
         // Info header becomes available when history was launched for app-specific mode
@@ -905,10 +896,16 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mObserver.onItemRemoved(item);
     }
 
-    void maybeResetFilterChips() {
-        mHistoryAdapter.resetAppFilterChip();
-        mHistoryAdapter.resetHostFilterChip();
-        mHistoryAdapter.resetClientFilterChip();
+    void initializeFilterChips(ViewGroup container) {
+        for (HistoryFilterChip chip : mFilterChips) {
+            chip.bindView(container, mActivity, mBottomSheetControllerSupplier, mHideSoftKeyboard);
+        }
+    }
+
+    void setFilterChipsEnabled(boolean enabled) {
+        for (HistoryFilterChip chip : mFilterChips) {
+            chip.setChipEnabled(enabled);
+        }
     }
 
     /**
@@ -922,9 +919,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Called when a search is ended. */
     public void onEndSearch() {
-        mCurrentApp = null;
-        mCurrentHost = null;
-        mCurrentClient = null;
+        for (HistoryFilterChip chip : mFilterChips) {
+            chip.reset();
+        }
         mHistoryAdapter.onEndSearch();
     }
 
@@ -962,84 +959,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     /** Called after a user clicks the open full Chrome history button. */
     void onOpenFullChromeHistoryClicked() {
         mObserver.onOpenFullChromeHistoryClicked();
-    }
-
-    /** Called after a user clicks the filter by app button. */
-    void onAppFilterClicked() {
-        // Search mode starts with the soft keyboard open. Hide it first for the sheet
-        // to appear at the bottom as expected.
-        assumeNonNull(mHideSoftKeyboard).run();
-        if (mAppFilterSheet == null) {
-            assert mBottomSheetControllerSupplier != null;
-            mAppFilterSheet =
-                    new FilterSheetCoordinator(
-                            mActivity,
-                            mActivity.getWindow().getDecorView(),
-                            mBottomSheetControllerSupplier.get(),
-                            this::onAppUpdated,
-                            mAppInfoList,
-                            R.string.history_filter_by_app);
-        }
-        mAppFilterSheet.openSheet(mCurrentApp);
-        mUmaRecorder.recordAppFilterSheetOpened();
-    }
-
-    /** Callback from app filter sheet, with the newly chosen app to filter. */
-    @VisibleForTesting
-    void onAppUpdated(@Nullable FilterItem appInfo) {
-        if (Objects.equals(mCurrentApp, appInfo)) return;
-        mCurrentApp = appInfo;
-        getAdapter().updateAppFilter(mCurrentApp);
-    }
-
-    /** Called after a user clicks the filter by host button. */
-    void onHostFilterClicked() {
-        assumeNonNull(mHideSoftKeyboard).run();
-        if (mHostFilterSheet == null) {
-            assert mBottomSheetControllerSupplier != null;
-            mHostFilterSheet =
-                    new FilterSheetCoordinator(
-                            mActivity,
-                            mActivity.getWindow().getDecorView(),
-                            mBottomSheetControllerSupplier.get(),
-                            this::onHostUpdated,
-                            mHostInfoList,
-                            R.string.history_filter_by_host);
-        }
-        mHostFilterSheet.openSheet(mCurrentHost);
-    }
-
-    /** Callback from host filter sheet, with the newly chosen host to filter. */
-    @VisibleForTesting
-    void onHostUpdated(@Nullable FilterItem hostInfo) {
-        if (Objects.equals(mCurrentHost, hostInfo)) return;
-        mCurrentHost = hostInfo;
-        getAdapter().updateHostFilter(mCurrentHost);
-    }
-
-    /** Called after a user clicks the filter by client button. */
-    void onClientFilterClicked() {
-        assumeNonNull(mHideSoftKeyboard).run();
-        if (mClientFilterSheet == null) {
-            assert mBottomSheetControllerSupplier != null;
-            mClientFilterSheet =
-                    new FilterSheetCoordinator(
-                            mActivity,
-                            mActivity.getWindow().getDecorView(),
-                            mBottomSheetControllerSupplier.get(),
-                            this::onClientUpdated,
-                            mClientInfoList,
-                            R.string.history_filter_by_client);
-        }
-        mClientFilterSheet.openSheet(mCurrentClient);
-    }
-
-    /** Callback from client filter sheet, with the newly chosen client to filter. */
-    @VisibleForTesting
-    void onClientUpdated(@Nullable FilterItem clientInfo) {
-        if (Objects.equals(mCurrentClient, clientInfo)) return;
-        mCurrentClient = clientInfo;
-        getAdapter().updateClientFilter(mCurrentClient);
     }
 
     /** Removes the list header. */
@@ -1153,27 +1072,15 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mAppInfoCache.setPackageManagerForTesting(packageManager); // IN-TEST
     }
 
-    void setAppFilterSheetForTesting(FilterSheetCoordinator appFilterSheet) {
-        mAppFilterSheet = appFilterSheet;
+    HistoryFilterChip getAppFilterForTesting() {
+        return mAppFilter;
     }
 
-    @Nullable FilterItem getAppInfoForTesting() {
-        return mCurrentApp;
+    HistoryFilterChip getHostFilterForTesting() {
+        return mHostFilter;
     }
 
-    void setHostFilterSheetForTesting(FilterSheetCoordinator hostFilterSheet) {
-        mHostFilterSheet = hostFilterSheet;
-    }
-
-    @Nullable FilterItem getHostInfoForTesting() {
-        return mCurrentHost;
-    }
-
-    void setClientFilterSheetForTesting(FilterSheetCoordinator clientFilterSheet) {
-        mClientFilterSheet = clientFilterSheet;
-    }
-
-    @Nullable FilterItem getClientInfoForTesting() {
-        return mCurrentClient;
+    HistoryFilterChip getClientFilterForTesting() {
+        return mClientFilter;
     }
 }
