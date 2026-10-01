@@ -200,6 +200,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Wait until a form is cached in the AutofillManager.
 + (BOOL)waitForFormToBeCachedInMainFrame;
 
+// Sets the network connection type to offline (CONNECTION_NONE) or resets it.
++ (void)setNetworkConnectionOffline:(BOOL)offline;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_

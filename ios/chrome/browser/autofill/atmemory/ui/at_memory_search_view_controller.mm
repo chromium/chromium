@@ -158,7 +158,7 @@ enum class ItemIdentifier {
   _searchController.automaticallyShowsCancelButton = NO;
   _searchController.searchResultsUpdater = self;
   _searchController.searchBar.delegate = self;
-  _searchController.searchBar.accessibilityIdentifier =
+  _searchController.searchBar.searchTextField.accessibilityIdentifier =
       kAtMemorySearchBarAccessibilityIdentifier;
 
   self.definesPresentationContext = YES;

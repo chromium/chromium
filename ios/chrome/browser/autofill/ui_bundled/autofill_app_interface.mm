@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/singleton.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -56,6 +57,7 @@
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/mock_network_change_notifier.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
 
@@ -871,6 +873,14 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
                                                               main_frame);
 }
 
+std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>&
+GetScopedMockNetworkChangeNotifier() {
+  static base::NoDestructor<
+      std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>>
+      notifier;
+  return *notifier;
+}
+
 }  // namespace
 
 + (BOOL)isFormCachedInMainFrame {
@@ -895,6 +905,21 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
   };
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, condition);
+}
+
++ (void)setNetworkConnectionOffline:(BOOL)offline {
+  std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>& notifier =
+      GetScopedMockNetworkChangeNotifier();
+  if (!offline) {
+    notifier.reset();
+    return;
+  }
+
+  if (!notifier) {
+    notifier = std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  }
+  notifier->mock_network_change_notifier()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
 }
 
 @end

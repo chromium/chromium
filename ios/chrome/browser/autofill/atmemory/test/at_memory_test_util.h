@@ -25,6 +25,18 @@
 // Gemini").
 + (id<GREYMatcher>)searchPromptCell;
 
+// Returns a matcher for the search prompt cell displaying `query`.
++ (id<GREYMatcher>)searchPromptCellWithQuery:(NSString*)query;
+
+// Returns a matcher for the "No Data" error cell.
++ (id<GREYMatcher>)noDataCell;
+
+// Returns a matcher for the "No Connection" error cell.
++ (id<GREYMatcher>)noConnectionCell;
+
+// Returns a matcher for the image displayed in the zero-state empty view.
++ (id<GREYMatcher>)emptyStateImage;
+
 // Returns a matcher for a search result cell matching the given subtitle text.
 + (id<GREYMatcher>)searchResultCellWithSubtitle:(NSString*)subtitle;
 

@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/autofill/atmemory/test/at_memory_test_util.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation AtMemoryTestUtil
 
@@ -16,7 +18,9 @@
 }
 
 + (id<GREYMatcher>)searchBar {
-  return grey_accessibilityID(kAtMemorySearchBarAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kAtMemorySearchBarAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)closeButton {
@@ -27,6 +31,35 @@
   return grey_allOf(grey_kindOfClassName(@"UITableViewCell"),
                     grey_descendant(grey_accessibilityLabel(
                         @"Find and fill this with Gemini")),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)searchPromptCellWithQuery:(NSString*)query {
+  NSString* expectedLabel = [NSString
+      stringWithFormat:@"%@, %@", query,
+                       l10n_util::GetNSString(
+                           IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE)];
+  return grey_allOf(
+      grey_accessibilityID(kAtMemorySearchCellAccessibilityIdentifier),
+      grey_accessibilityLabel(expectedLabel), grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)noDataCell {
+  return grey_allOf(
+      grey_accessibilityID(kAtMemoryNoDataCellAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)noConnectionCell {
+  return grey_allOf(
+      grey_accessibilityID(kAtMemoryNoConnectionCellAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)emptyStateImage {
+  return grey_allOf(grey_kindOfClass([UIImageView class]),
+                    grey_ancestor(grey_accessibilityID(
+                        kAtMemoryEmptyViewAccessibilityIdentifier)),
                     grey_sufficientlyVisible(), nil);
 }
 

@@ -224,6 +224,7 @@ source_set("eg_app_support+eg2") {
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//net:test_support",
     "//services/network:test_support",
   ]
 }
