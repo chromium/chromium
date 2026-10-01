@@ -1065,6 +1065,13 @@ bool IsAiSubscriptionAvatarRingIOSEnabled() {
   return base::FeatureList::IsEnabled(kAiSubscriptionAvatarRingIOS);
 }
 
+BASE_FEATURE(kAiSubscriptionAvatarRingFollowupIOS,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAiSubscriptionAvatarRingFollowupIOSEnabled() {
+  return base::FeatureList::IsEnabled(kAiSubscriptionAvatarRingFollowupIOS);
+}
+
 BASE_FEATURE(kInfobarBannerRevamp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsInfobarBannerRevampEnabled() {

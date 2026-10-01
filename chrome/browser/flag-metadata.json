@@ -99,14 +99,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "ai-avatar-ring-ios",
-    "owners": [
-      "arthurmilchior@google.com",
-      "chrome-signin-mobile-team@google.com"
-    ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "ai-hub-new-badge",
     "owners": [
       "joemerramos@google.com",
@@ -136,6 +128,22 @@
       "//chrome/browser/ui/webui/ai_overlay_dialog/OWNERS"
     ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "ai-subscription-avatar-followup-ios",
+    "owners": [
+      "arthurmilchior@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 175
+  },
+  {
+    "name": "ai-subscription-avatar-ring-ios",
+    "owners": [
+      "arthurmilchior@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 170
   },
   {
     "name": "aim-3p-entrypoint",

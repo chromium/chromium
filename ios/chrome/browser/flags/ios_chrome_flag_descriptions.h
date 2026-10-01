@@ -48,9 +48,16 @@ inline constexpr char kActorServiceLoggingName[] = "ActorServiceLogging";
 inline constexpr char kActorServiceLoggingDescription[] =
     "Enables Actor logging, which is for debugging only.";
 
-inline constexpr char kAiAvatarRingIosName[] = "AiAvatarRing";
-inline constexpr char kAiAvatarRingIosDescription[] =
-    "Display a ring around the avatar if the primary account has a AI Tier";
+inline constexpr char kAiSubscriptionAvatarRingFollowupIosName[] =
+    "AiAvatarFollowupRing";
+inline constexpr char kAiSubscriptionAvatarRingFollowupIosDescription[] =
+    "Display a ring around the avatar in the Overflow Menu, Settings and "
+    "Manage Accounts views if the primary account has a AI Tier";
+
+inline constexpr char kAiSubscriptionAvatarRingIosName[] = "AiAvatarRing";
+inline constexpr char kAiSubscriptionAvatarRingIosDescription[] =
+    "Display a ring around the avatar in the NTP and Account Menu if the "
+    "primary account has a AI Tier";
 
 inline constexpr char kAimButtonRefactorName[] = "AIM Button Refactor";
 inline constexpr char kAimButtonRefactorDescription[] =

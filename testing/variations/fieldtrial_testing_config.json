@@ -411,6 +411,21 @@
             ]
         }
     ],
+    "AiSubscriptionAvatarRingFollowupIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiSubscriptionAvatarRingFollowupIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "AiSubscriptionAvatarRingIOS": [
         {
             "platforms": [
