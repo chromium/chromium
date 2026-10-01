@@ -953,6 +953,9 @@
 // - external/xnnpack+/src/qu8-igemm/gen/qu8-igemm-3x4c8-minmax-fp32-sse41-ld64.c
 // - external/xnnpack+/src/qu8-igemm/gen/qu8-igemm-3x8c8-minmax-fp32-avx2.c
 // - external/xnnpack+/src/qu8-igemm/gen/qu8-igemm-7x16c8-minmax-fp32-avx512skx-prfm.c
+// - external/xnnpack+/src/qu8-packw/gen/qu8-packw-x16c8-gemm-goi-avx2-madd.c
+// - external/xnnpack+/src/qu8-packw/gen/qu8-packw-x16c8-gemm-goi-avx256vnni.c
+// - external/xnnpack+/src/qu8-packw/gen/qu8-packw-x8c8-gemm-goi-avx2-madd.c
 // - external/xnnpack+/src/qu8-rdsum/gen/qu8-rdsum-7p7x-ssse3-u64.c
 // - external/xnnpack+/src/qu8-rdsum/gen/qu8-rdsum-scalar.c
 // - external/xnnpack+/src/qu8-rsum/gen/qu8-rsum-avx2-u64-acc2.c
@@ -1118,10 +1121,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  249, 103,  94,  87,  16,  67,  99, 164,
-   20, 116, 240, 195, 247, 102,  39, 213,
-  107, 118, 153, 121, 227, 245,  25, 246,
-  239, 143,  62,  79, 248,  92,  65,  24
+   96,  95, 129,  99,   4, 155, 209, 192,
+  239, 163, 109, 115, 120,  12, 143, 250,
+  124,  25, 200, 134, 208,  97, 134, 202,
+  212, 230, 223, 180, 227, 206, 174,  55
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
