@@ -105,9 +105,11 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
   - [`browser/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser)
     - [`crowdsourcing/autofill_crowdsourcing_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h)
     - [`crowdsourcing/votes_uploader.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/crowdsourcing/votes_uploader.h)
+    - [`data_manager/autofill_ai/entity_data_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h)
     - [`data_manager/personal_data_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_manager/personal_data_manager.h)
       - [`data_manager/addresses/address_data_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_manager/addresses/address_data_manager.h) (owned by `PersonalDataManager`)
       - [`data_manager/payments/payments_data_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_manager/payments/payments_data_manager.h) (owned by `PersonalDataManager`)
+    - [`data_manager/valuables/valuables_data_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h)
     - [`data_model/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model)
       - [`addresses/autofill_profile.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/addresses/autofill_profile.h)
       - [`payments/credit_card.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/payments/credit_card.h)
@@ -204,19 +206,35 @@ may sacrifice a little bit of correctness in favor of simplicity.
     * Implements `AutofillClient` interface.
     * Has siblings `AndroidAutofillClient`, `ChromeAutofillClientIOS` and
       `WebViewAutofillClientIOS`.
-  * `PersonalDataManager` and `PaymentsDataManager`
+  * `PersonalDataManager`
     * One instance per `BrowserContext` (Chrome profile). In incognito mode, the
       original profile's instance is used. This enables filling even in
       incognito mode. Imports are disabled in incognito mode by the
       `BrowserAutofillManager`.
+    * Owns `AddressDataManager` and `PaymentsDataManager`.
     * Responsibilities:
-      * Reading/writing/updating AutofillProfiles and payment information from
-        `AddressAutofillTable` and `PaymentsAutofillTable` - an SQLite database used to persist data across browser shutdown.
-      * Keeps a copy of `AddressAutofillTable` and `PaymentsAutofillTable`'s data in memory,
-        making them available to the rest of Autofill.
-      * Modifications triggered through the `PersonalDataManager` generally
-        happen asynchronously. For details, see
+      * Reading/writing/updating `AutofillProfile`s (`AddressDataManager`) and
+        payment information (`PaymentsDataManager`) from `AddressAutofillTable`
+        and `PaymentsAutofillTable` - an SQLite database used to persist data
+        across browser shutdown.
+      * Each keeps a copy of its table's data in memory, making it available
+        to the rest of Autofill.
+      * Modifications triggered through the `AddressDataManager` and
+        `PaymentsDataManager` generally happen asynchronously. For details, see
         [go/pdm-autofill-table-interface](http://go/pdm-autofill-table-interface).
+  * `EntityDataManager` and `ValuablesDataManager`
+    * One `KeyedService` instance per `BrowserContext`. In incognito mode, the
+      original profile's instance is used.
+    * Not owned by `PersonalDataManager` despite the naming. Reached via
+      `AutofillClient::GetEntityDataManager()` and
+      `AutofillClient::GetValuablesDataManager()`, which may return null.
+    * Responsibilities:
+      * `EntityDataManager` loads and modifies `EntityInstance`s for
+        Autofill AI from `EntityTable` (modifications are asynchronous).
+      * `ValuablesDataManager` loads non-payments Google Wallet data such as
+        loyalty cards from `ValuablesTable`.
+      * Each keeps a copy of its table's data in memory, making it available
+        to the rest of Autofill.
 
 ## What's the difference between Autofill and Autocomplete?
 
