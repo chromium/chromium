@@ -316,13 +316,13 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
 // Horizontal tab strip state with tray.
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, OpenClosePanelHorizontalTabs) {
-  RunTestSequence(SetVerticalTabsEnabled(false), CheckControllerState(false),
-                  OpenOrganizerPanel(), CheckControllerState(true),
-                  ExpectPanelLocation(OrganizerPanelLocation::kOrganizerTray),
-                  CheckPanelVisuals(organizer_panel::kOrganizerPanelMinWidth,
-                                    /*should_have_rounded_corners=*/true),
-                  WaitForPanelLoad(), CloseOrganizerPanel(),
-                  CheckControllerState(false));
+  RunTestSequence(
+      SetVerticalTabsEnabled(false), CheckControllerState(false),
+      OpenOrganizerPanel(), CheckControllerState(true),
+      ExpectPanelLocation(OrganizerPanelLocation::kOrganizerTray),
+      CheckPanelVisuals(organizer_panel::kOrganizerPanelDefaultWidth,
+                        /*should_have_rounded_corners=*/true),
+      WaitForPanelLoad(), CloseOrganizerPanel(), CheckControllerState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,

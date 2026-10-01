@@ -826,7 +826,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   bool needs_exclusion = true;
   const HorizontalLayout& horizontal_layout = layout_data_->horizontal_layout;
 
-  const int target_organizer_width = organizer_panel::kOrganizerPanelMinWidth;
+  const int target_organizer_width =
+      layout_data_->tab_strip_type == TabStripType::kHorizontal
+          ? organizer_panel::kOrganizerPanelDefaultWidth
+          : organizer_panel::kOrganizerPanelMinWidth;
   if (IsParentedTo(views().organizer_tray, views().browser_view)) {
     const bool show_organizer_tray =
         layout_data_->organizer_panel_animation.location ==

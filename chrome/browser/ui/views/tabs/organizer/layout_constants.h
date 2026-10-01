@@ -15,6 +15,9 @@ namespace organizer_panel {
 inline constexpr int kOrganizerPanelMinWidth =
     tabs::kVerticalTabStripDefaultUncollapsedWidth;
 
+// Default width of the organizer panel (used in horizontal tabs mode).
+inline constexpr int kOrganizerPanelDefaultWidth = 320;
+
 // Min amount larger the organizer panel should be than an uncollapsed vertical
 // tab strip.
 inline constexpr int kOrganizerPanelMinOverlap = 20;
