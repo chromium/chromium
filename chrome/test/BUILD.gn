@@ -8815,6 +8815,8 @@ if (!is_android && !is_chromeos_device) {
       sources += [
         "../browser/ui/views/frame/browser_native_widget_mac_interactive_uitest.mm",
         "../browser/ui/views/frame/immersive_mode_controller_mac_interactive_uitest.mm",
+        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.h",
+        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.mm",
         "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
       ]
 

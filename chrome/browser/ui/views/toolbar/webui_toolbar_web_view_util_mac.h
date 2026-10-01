@@ -24,7 +24,9 @@ class WebUIToolbarControlDelegate;
 //  what to do with them. This is set up as a fallback handler to receive these,
 //  and forward them on further till the WebView. It also reconstructs
 //  double- (and triple-) clicks, since they might get broken by the coordinate
-//  change of the popup showing.
+//  change of the popup showing. Events are dispatched to the WebView's
+//  NSView (RenderWidgetHostViewCocoa), so that they take the same path as
+//  events AppKit delivers to it directly.
 class WebUIToolbarEventForwarder : public ui::EventHandler {
  public:
   WebUIToolbarEventForwarder(WebUIToolbarControlDelegate& control_delegate,

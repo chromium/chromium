@@ -4,16 +4,20 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_util_mac.h"
 
+#import <AppKit/AppKit.h>
+
+#include <optional>
+
 #include "base/containers/adapters.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/events/blink/web_input_event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
@@ -24,6 +28,99 @@ namespace {
 std::unique_ptr<ui::MouseEvent> CloneMouseEvent(
     const ui::MouseEvent* mouse_event) {
   return base::WrapUnique(mouse_event->Clone().release()->AsMouseEvent());
+}
+
+// Delivers `event`, which AppKit delivered to another window (e.g. the omnibox
+// popup), to `view` as if AppKit had delivered it to `view` directly. The
+// native event is re-created in `view`'s window, keeping its modifiers and
+// click count, unless `click_count` is given. Does nothing if `event` has no
+// native event or `view` is not in a window.
+void DispatchMouseEventToNativeView(const ui::MouseEvent& event,
+                                    std::optional<int> click_count,
+                                    NSView* view) {
+  if (!event.HasNativeEvent()) {
+    return;
+  }
+  NSEvent* ns_event = event.native_event().Get();
+  NSWindow* target_window = view.window;
+  NSWindow* source_window = ns_event.window;
+  if (!target_window || !source_window) {
+    return;
+  }
+  const NSPoint location_in_screen =
+      [source_window convertPointToScreen:ns_event.locationInWindow];
+  const NSPoint location_in_window =
+      [target_window convertPointFromScreen:location_in_screen];
+
+  // RootView synthesizes mouse entered/exited events by copying the current
+  // mouse move, so their native event is the move. Re-create them as native
+  // entered/exited events.
+  if (event.type() == ui::EventType::kMouseEntered ||
+      event.type() == ui::EventType::kMouseExited) {
+    const bool entered = event.type() == ui::EventType::kMouseEntered;
+    NSEvent* enter_exit_event =
+        [NSEvent enterExitEventWithType:entered ? NSEventTypeMouseEntered
+                                                : NSEventTypeMouseExited
+                               location:location_in_window
+                          modifierFlags:ns_event.modifierFlags
+                              timestamp:ns_event.timestamp
+                           windowNumber:target_window.windowNumber
+                                context:nil
+                            eventNumber:0
+                         trackingNumber:0
+                               userData:nil];
+    if (entered) {
+      [view mouseEntered:enter_exit_event];
+    } else {
+      [view mouseExited:enter_exit_event];
+    }
+    return;
+  }
+
+  NSEvent* mouse_event =
+      [NSEvent mouseEventWithType:ns_event.type
+                         location:location_in_window
+                    modifierFlags:ns_event.modifierFlags
+                        timestamp:ns_event.timestamp
+                     windowNumber:target_window.windowNumber
+                          context:nil
+                      eventNumber:ns_event.eventNumber
+                       clickCount:click_count.value_or(ns_event.clickCount)
+                         pressure:ns_event.pressure];
+  switch (mouse_event.type) {
+    case NSEventTypeLeftMouseDown:
+      [view mouseDown:mouse_event];
+      break;
+    case NSEventTypeRightMouseDown:
+      [view rightMouseDown:mouse_event];
+      break;
+    case NSEventTypeOtherMouseDown:
+      [view otherMouseDown:mouse_event];
+      break;
+    case NSEventTypeLeftMouseUp:
+      [view mouseUp:mouse_event];
+      break;
+    case NSEventTypeRightMouseUp:
+      [view rightMouseUp:mouse_event];
+      break;
+    case NSEventTypeOtherMouseUp:
+      [view otherMouseUp:mouse_event];
+      break;
+    case NSEventTypeLeftMouseDragged:
+      [view mouseDragged:mouse_event];
+      break;
+    case NSEventTypeRightMouseDragged:
+      [view rightMouseDragged:mouse_event];
+      break;
+    case NSEventTypeOtherMouseDragged:
+      [view otherMouseDragged:mouse_event];
+      break;
+    case NSEventTypeMouseMoved:
+      [view mouseMoved:mouse_event];
+      break;
+    default:
+      break;
+  }
 }
 
 }  // namespace
@@ -122,8 +219,6 @@ void WebUIToolbarEventForwarder::OnMouseEvent(ui::MouseEvent* event) {
   if (!HaveOpenOmniboxPopup()) {
     return;
   }
-  content::RenderWidgetHost* target =
-      web_view_->GetWebContents()->GetRenderViewHost()->GetWidget();
   if (event->type() == ui::EventType::kMousewheel) {
     // We purposefully don't forward wheel events. They need special phase
     // handling and it doesn't seem like we actually do anything with them.
@@ -170,11 +265,18 @@ void WebUIToolbarEventForwarder::OnMouseEvent(ui::MouseEvent* event) {
     // prevent the normal ways of this happening.
     web_view_->RequestFocus();
   }
-  blink::WebMouseEvent blink_event = ui::MakeWebMouseEvent(*event);
-  if (adjusted_click_count) {
-    blink_event.click_count = *adjusted_click_count;
+
+  // Dispatch to the NSView, so that the event takes the same path as events
+  // AppKit delivers to it directly. That path includes AppKit-level state that
+  // RenderWidgetHost::ForwardMouseEvent() would skip, e.g. keeping the first
+  // responder in sync with the key tracking window in fullscreen
+  // (crbug.com/563226016) and update cursor on mouse move
+  // (crbug.com/430116472).
+  if (content::RenderWidgetHostView* view =
+          web_view_->GetWebContents()->GetRenderWidgetHostView()) {
+    DispatchMouseEventToNativeView(*event, adjusted_click_count,
+                                   view->GetNativeView().GetNativeNSView());
   }
-  target->ForwardMouseEvent(std::move(blink_event));
 }
 
 void WebUIToolbarEventForwarder::AddedToWidget() {

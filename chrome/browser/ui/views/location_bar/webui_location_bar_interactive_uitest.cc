@@ -43,6 +43,7 @@
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,6 +66,13 @@
 #include "ui/views/mouse_constants.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/functional/bind.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/views/widget/widget.h"
+#endif
 
 namespace {
 
@@ -2057,6 +2065,96 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, PasteSanitizesText) {
       InAnyContext(SendAccelerator(InputWebContents(), paste_accel)),
       WaitTillOmniboxViewText("alert(1) hello world"));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Regression test for crbug.com/563226016. In macOS fullscreen, the WebUI
+// toolbar is hosted in the NSToolbarFullScreenWindow, which shares its first
+// responder with the browser window. If AppKit changes the browser window's
+// first responder without updating the fullscreen window, clicking the omnibox
+// synchronizes the first responder state. Then, the Omnibox should receive the
+// keyboard events.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       FullscreenFirstResponderDivergenceRecovers) {
+  if (mode() == Mode::kFull) {
+    GTEST_SKIP() << "In full mode, the omnibox click focuses the popup web "
+                    "view rather than the toolbar web view.";
+  }
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kToolbarHasFocus);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kClickProcessed);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTypedTextReceived);
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      PollState(kToolbarHasFocus,
+                [this]() {
+                  return GetToolbarWebView()
+                      ->GetWebContents()
+                      ->GetRenderWidgetHostView()
+                      ->HasFocus();
+                }),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(),
+      WaitForState(kToolbarHasFocus, true),
+      StopObservingState(kToolbarHasFocus),
+      // Open the omnibox popup. It covers the omnibox, so the click below is
+      // received by the popup and forwarded to the toolbar.
+      EnterText(u"input"), WaitForPopupShow(), Do([this]() {
+        // Make the tab contents the browser window's first responder behind
+        // the toolbar's back.
+        ASSERT_TRUE(
+            webui_location_bar_test::SetWindowFirstResponderWithoutResigning(
+                browser()
+                    ->GetTabStripModel()
+                    ->GetActiveWebContents()
+                    ->GetRenderWidgetHostView()
+                    ->GetNativeView()));
+      }),
+      InAnyContext(
+          EnsurePresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      MoveMouseTo(kOmniboxElementId),
+      WithElement(
+          kBrowserViewElementId,
+          [](ui::TrackedElement* browser_view) {
+            // While the popup is open, real clicks on the omnibox land on the
+            // popup window and are forwarded to the toolbar. ui_controls picks
+            // the target window with +[NSWindow windowNumberAtPoint:], which
+            // skips the popup's transparent cutout, so send the click to the
+            // popup's window directly.
+            ui::TrackedElement* popup =
+                ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                    OmniboxPopupPresenterBase::kRoundedResultsFrame);
+            ASSERT_TRUE(popup);
+            ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+                ui_controls::LEFT, ui_controls::UP | ui_controls::DOWN,
+                base::BindOnce(
+                    [](ui::TrackedElement* el) {
+                      ui::ElementTracker::GetFrameworkDelegate()
+                          ->NotifyCustomEvent(el, kClickProcessed);
+                    },
+                    browser_view),
+                ui_controls::kNoAccelerator,
+                popup->AsA<views::TrackedElementViews>()
+                    ->view()
+                    ->GetWidget()
+                    ->GetNativeWindow()));
+          }),
+      // ui_controls sends key events synchronously but posts mouse events, so
+      // wait for the click before typing.
+      WaitForEvent(kBrowserViewElementId, kClickProcessed),
+      InAnyContext(SendKeyPress(kBrowserViewElementId, ui::VKEY_Z)),
+      // Where the click leaves the caret is not important, so only check that
+      // the typed character reached the omnibox.
+      WaitForStateChange(kWebUIToolbarId, [] {
+        WebContentsInteractionTestUtil::StateChange typed;
+        typed.event = kTypedTextReceived;
+        typed.where = kOmniboxInputDeepQuery;
+        typed.test_function = "(el) => el.value.includes('z')";
+        return typed;
+      }()));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 // The test fixture sets up ui_test_utils::BringBrowserWindowToFront to run

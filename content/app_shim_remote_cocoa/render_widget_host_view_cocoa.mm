@@ -1083,6 +1083,17 @@ static NSWindow* __weak _deferredResignKeyWindow;
     [self.window makeFirstResponder:self];
   }
 
+  // In fullscreen, AppKit skips -makeFirstResponder: on a click when this view
+  // is already the first responder of its window, even if the key tracking
+  // window's first responder is another view. Key events would then keep
+  // going to that other view, so synchronize the key tracking window here.
+  // See crbug.com/563226016.
+  if (theEvent.type == NSEventTypeLeftMouseDown &&
+      [self.window firstResponder] == self &&
+      [[self keyTrackingWindow] firstResponder] != self) {
+    [self synchronizeFirstResponderWithKeyTrackingWindow:YES];
+  }
+
   if (_responderDelegate &&
       [_responderDelegate respondsToSelector:@selector(handleEvent:)]) {
     BOOL handled = [_responderDelegate handleEvent:theEvent];
