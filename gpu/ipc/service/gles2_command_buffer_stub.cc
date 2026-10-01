@@ -79,7 +79,15 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   const auto& attribs = *init_params.attribs->get_gles();
 
-#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
+  if (attribs.context_type == CONTEXT_TYPE_OPENGLES2 &&
+      channel_->client_type() != viz::mojom::GpuClientType::kBrowser &&
+      channel_->client_type() != viz::mojom::GpuClientType::kXR) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: CONTEXT_TYPE_OPENGLES2 is not "
+                  "allowed";
+    return gpu::ContextResult::kFatalFailure;
+  }
+#else
   if (attribs.context_type == CONTEXT_TYPE_OPENGLES2 &&
       channel_->client_type() != viz::mojom::GpuClientType::kBrowser) {
     LOG(ERROR) << "ContextResult::kFatalFailure: CONTEXT_TYPE_OPENGLES2 is not "
