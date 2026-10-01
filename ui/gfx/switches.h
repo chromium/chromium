@@ -38,6 +38,12 @@ GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHdrAgtmParseOldSyntax);
 // Used as a killswitch in case an issue is discovered with the implementation.
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kTransparentIconWorkaround);
 
+// When enabled, HarfBuzz uses SkTypeface::copyTableData to load font tables.
+// On platforms that support zero-copy table access (DirectWrite on Windows,
+// CoreText on macOS), this avoids allocating a buffer and copying the table
+// data.
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHarfBuzzZeroCopyFontTable);
+
 }  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_

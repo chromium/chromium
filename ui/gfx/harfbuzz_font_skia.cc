@@ -13,13 +13,17 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/lru_cache.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/switches.h"
 
 namespace gfx {
 
@@ -217,6 +221,31 @@ FontFuncs& GetFontFuncs() {
 // Returns the raw data of the font table |tag|.
 hb_blob_t* GetFontTable(hb_face_t* face, hb_tag_t tag, void* user_data) {
   SkTypeface* typeface = reinterpret_cast<SkTypeface*>(user_data);
+
+  if (base::FeatureList::IsEnabled(features::kHarfBuzzZeroCopyFontTable)) {
+    // Use SkTypeface::copyTableData rather than getTableData. On platforms like
+    // Windows (DirectWrite) and macOS (CoreText), copyTableData returns an
+    // SkData that wraps the underlying memory-mapped font table directly
+    // without copying. Using getTableData requires allocating a buffer and
+    // copying the entire table via memcpy, which causes UI-thread jank by
+    // triggering synchronous page faults / disk I/O for large font tables
+    // (e.g. fallback fonts).
+    sk_sp<SkData> table = typeface->copyTableData(tag);
+    if (!table) {
+      return nullptr;
+    }
+
+    // Wrap the table data in a read-only HarfBuzz blob. HarfBuzz will only read
+    // the specific pages/records it needs during shaping. When the blob is
+    // destroyed, the custom callback releases the SkData ref (which in turn
+    // calls IDWriteFontFace::ReleaseFontTable on Windows).
+    const char* buffer = reinterpret_cast<const char*>(table->data());
+    const size_t size = table->size();
+    return hb_blob_create(
+        buffer, base::checked_cast<unsigned int>(size), HB_MEMORY_MODE_READONLY,
+        table.release(),
+        [](void* ctx) { SkSafeUnref(static_cast<SkData*>(ctx)); });
+  }
 
   auto buffer = base::HeapArray<char>::Uninit(typeface->getTableSize(tag));
   // If the buffer has no data, then `getTableSize` produced a size of 0, and
