@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 
 import org.junit.After;
@@ -24,9 +27,14 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.actor.ActorMetrics.ActorNotificationPermissionState;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +50,7 @@ public class ActorMetricsTest {
     @Mock private Profile mProfile;
     @Mock private Profile mOriginalProfile;
     @Mock private ActorKeyedService mActorService;
+    @Mock private NotificationManagerProxy mNotificationManagerProxy;
 
     private ActorMetrics mActorMetrics;
 
@@ -51,6 +60,8 @@ public class ActorMetricsTest {
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mOriginalProfile);
         ActorKeyedServiceFactory.setForTesting(mActorService);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         ActorMetrics.resetForTesting();
         mActorMetrics = ActorMetrics.getInstance();
     }
@@ -58,6 +69,7 @@ public class ActorMetricsTest {
     @After
     public void tearDown() {
         ActorMetrics.resetForTesting();
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test
@@ -436,5 +448,139 @@ public class ActorMetricsTest {
 
         ActorMetrics.recordOmniboxFocus(otrTab);
         focusWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordNotificationPermissionState() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Actor.Notification.PermissionState",
+                                ActorNotificationPermissionState.ENABLED,
+                                ActorNotificationPermissionState.CHANNEL_DISABLED,
+                                ActorNotificationPermissionState.OS_DISABLED)
+                        .build();
+
+        ActorMetrics.recordNotificationPermissionState(ActorNotificationPermissionState.ENABLED);
+        ActorMetrics.recordNotificationPermissionState(
+                ActorNotificationPermissionState.CHANNEL_DISABLED);
+        ActorMetrics.recordNotificationPermissionState(
+                ActorNotificationPermissionState.OS_DISABLED);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStarted_RecordsNotificationPermissionStateOnce_Enabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationChannel enabledChannel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR,
+                        "Actor",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+        when(mNotificationManagerProxy.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(enabledChannel);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.PermissionState",
+                        ActorNotificationPermissionState.ENABLED);
+
+        int taskId = 601;
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.CREATED);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.REFLECTING);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStarted_RecordsNotificationPermissionStateOnce_OsDisabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.PermissionState",
+                        ActorNotificationPermissionState.OS_DISABLED);
+
+        int taskId = 602;
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.CREATED);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStarted_RecordsNotificationPermissionStateOnce_ChannelDisabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationChannel blockedChannel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR,
+                        "Actor",
+                        NotificationManager.IMPORTANCE_NONE);
+        when(mNotificationManagerProxy.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(blockedChannel);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.PermissionState",
+                        ActorNotificationPermissionState.CHANNEL_DISABLED);
+
+        int taskId = 603;
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.CREATED);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testGetActorNotificationPermissionState_OsDisabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        assertEquals(
+                ActorNotificationPermissionState.OS_DISABLED,
+                ActorUtils.getActorNotificationPermissionState());
+        assertFalse(ActorUtils.areActorNotificationsEnabled());
+    }
+
+    @Test
+    public void testGetActorNotificationPermissionState_ChannelDisabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationChannel blockedChannel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR,
+                        "Actor",
+                        NotificationManager.IMPORTANCE_NONE);
+        when(mNotificationManagerProxy.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(blockedChannel);
+
+        assertEquals(
+                ActorNotificationPermissionState.CHANNEL_DISABLED,
+                ActorUtils.getActorNotificationPermissionState());
+        assertFalse(ActorUtils.areActorNotificationsEnabled());
+    }
+
+    @Test
+    public void testGetActorNotificationPermissionState_Enabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationChannel enabledChannel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR,
+                        "Actor",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+        when(mNotificationManagerProxy.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(enabledChannel);
+
+        assertEquals(
+                ActorNotificationPermissionState.ENABLED,
+                ActorUtils.getActorNotificationPermissionState());
+        assertTrue(ActorUtils.areActorNotificationsEnabled());
     }
 }

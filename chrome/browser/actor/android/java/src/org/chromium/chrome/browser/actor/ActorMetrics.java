@@ -82,6 +82,23 @@ public class ActorMetrics implements ActorKeyedService.Observer {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorPipUserInteraction)
 
+    // LINT.IfChange(ActorNotificationPermissionState)
+
+    @IntDef({
+        ActorNotificationPermissionState.ENABLED,
+        ActorNotificationPermissionState.CHANNEL_DISABLED,
+        ActorNotificationPermissionState.OS_DISABLED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActorNotificationPermissionState {
+        int ENABLED = 0;
+        int CHANNEL_DISABLED = 1;
+        int OS_DISABLED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorNotificationPermissionState)
+
     @IntDef({
         ActorPauseResumeSource.PIP,
     })
@@ -185,6 +202,15 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public static void recordPipUserInteraction(@ActorPipUserInteraction int interaction) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Actor.Pip.UserInteractions", interaction, ActorPipUserInteraction.NUM_ENTRIES);
+    }
+
+    /** Records the notification permission state when an Actor task starts. */
+    public static void recordNotificationPermissionState(
+            @ActorNotificationPermissionState int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Actor.Notification.PermissionState",
+                state,
+                ActorNotificationPermissionState.NUM_ENTRIES);
     }
 
     /**
@@ -297,6 +323,9 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
         LatencyTracker tracker = mTrackers.get(taskId);
         if (tracker == null) {
+            if (!ActorUtils.isCompletedState(newState)) {
+                recordNotificationPermissionState(ActorUtils.getActorNotificationPermissionState());
+            }
             tracker = new LatencyTracker(newState, mCurrentGlobalMode);
             mTrackers.put(taskId, tracker);
         } else {
