@@ -16,12 +16,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
@@ -29,6 +31,7 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/time/time.h"
 #include "storage/browser/blob/blob_storage_constants.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class TaskRunner;
@@ -82,7 +85,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   struct MemoryAllocation {
     MemoryAllocation(base::WeakPtr<BlobMemoryController> controller,
                      uint64_t item_id,
-                     size_t length);
+                     size_t length,
+                     scoped_refptr<base::RefCountedString> creator_identity);
 
     MemoryAllocation(const MemoryAllocation&) = delete;
     MemoryAllocation& operator=(const MemoryAllocation&) = delete;
@@ -97,6 +101,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
     base::WeakPtr<BlobMemoryController> controller_;
     uint64_t item_id_;
     size_t length_;
+    const scoped_refptr<base::RefCountedString> creator_identity_;
   };
 
   class QuotaAllocationTask {
@@ -169,8 +174,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   void NotifyMemoryItemsUsed(
       const std::vector<scoped_refptr<ShareableBlobDataItem>>& items);
 
+  struct COMPONENT_EXPORT(STORAGE_BROWSER) CreatorIdentityHash {
+    size_t operator()(const scoped_refptr<base::RefCountedString>& s) const;
+  };
+
+  struct COMPONENT_EXPORT(STORAGE_BROWSER) CreatorIdentityEq {
+    bool operator()(const scoped_refptr<base::RefCountedString>& a,
+                    const scoped_refptr<base::RefCountedString>& b) const;
+  };
+
+  using MemoryUsageByCreatorIdentityMap =
+      absl::flat_hash_map<scoped_refptr<base::RefCountedString>,
+                          base::ByteSize,
+                          CreatorIdentityHash,
+                          CreatorIdentityEq>;
+
   size_t memory_usage() const { return blob_memory_used_; }
   uint64_t disk_usage() const { return disk_used_; }
+  const MemoryUsageByCreatorIdentityMap& memory_usage_by_creator_identity()
+      const {
+    return memory_usage_by_creator_identity_;
+  }
 
   base::WeakPtr<BlobMemoryController> GetWeakPtr();
 
@@ -256,10 +280,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   void OnUpdateMemoryLimit() override;
   void OnReleaseMemory() override;
 
+  // Called when `total_bytes` of memory quota is granted for `items`.
+  // Transitions items to QUOTA_GRANTED, attaches a MemoryAllocation handle,
+  // and increments memory usage (both total and per-creator).
   void GrantMemoryAllocations(
       std::vector<scoped_refptr<ShareableBlobDataItem>>* items,
       size_t total_bytes);
-  void RevokeMemoryAllocation(uint64_t item_id, size_t length);
+
+  // Called by ~MemoryAllocation when an in-memory item is deleted or evicted.
+  // Decrements memory usage (both total and per-creator), removes the item
+  // from the populated memory cache, and triggers pending quota requests.
+  void RevokeMemoryAllocation(
+      uint64_t item_id,
+      size_t length,
+      scoped_refptr<base::RefCountedString> creator_identity);
 
   // This is registered as a callback for file deletions on the file reference
   // of our paging files. We decrement the disk space used.
@@ -288,6 +322,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   // This is the amount of memory we're using for blobs in RAM, including the
   // in_flight_memory_used_.
   size_t blob_memory_used_ = 0;
+  // Tracks in-memory blob bytes grouped by creator identity (nullptr
+  // represents browser-internal blobs). Maintained via RAII in
+  // MemoryAllocation so allocations, stream shrinking, disk eviction, and
+  // destruction stay accurately accounted for.
+  MemoryUsageByCreatorIdentityMap memory_usage_by_creator_identity_;
   // This is memory we're temporarily using while we try to write blob items to
   // disk.
   size_t in_flight_memory_used_ = 0;

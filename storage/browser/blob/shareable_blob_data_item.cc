@@ -18,9 +18,12 @@ uint64_t GetAndIncrementItemId() {
 
 ShareableBlobDataItem::ShareableBlobDataItem(
     scoped_refptr<BlobDataItem> item,
-    ShareableBlobDataItem::State state)
-    : item_id_(GetAndIncrementItemId()), state_(state), item_(std::move(item)) {
-}
+    ShareableBlobDataItem::State state,
+    scoped_refptr<base::RefCountedString> creator_identity)
+    : item_id_(GetAndIncrementItemId()),
+      state_(state),
+      item_(std::move(item)),
+      creator_identity_(std::move(creator_identity)) {}
 
 ShareableBlobDataItem::~ShareableBlobDataItem() = default;
 

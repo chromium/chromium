@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <string_view>
 
 #include "base/byte_size.h"
 #include "base/check.h"
@@ -326,15 +327,43 @@ FileCreationInfo::~FileCreationInfo() {
 FileCreationInfo::FileCreationInfo(FileCreationInfo&&) = default;
 FileCreationInfo& FileCreationInfo::operator=(FileCreationInfo&&) = default;
 
+size_t BlobMemoryController::CreatorIdentityHash::operator()(
+    const scoped_refptr<base::RefCountedString>& s) const {
+  return std::hash<std::string_view>{}(s ? std::string_view(s->as_string())
+                                         : std::string_view());
+}
+
+bool BlobMemoryController::CreatorIdentityEq::operator()(
+    const scoped_refptr<base::RefCountedString>& a,
+    const scoped_refptr<base::RefCountedString>& b) const {
+  if (a == b) {
+    return true;
+  }
+  std::string_view sa =
+      a ? std::string_view(a->as_string()) : std::string_view();
+  std::string_view sb =
+      b ? std::string_view(b->as_string()) : std::string_view();
+  return sa == sb;
+}
+
 MemoryAllocation::MemoryAllocation(
     base::WeakPtr<BlobMemoryController> controller,
     uint64_t item_id,
-    size_t length)
-    : controller_(std::move(controller)), item_id_(item_id), length_(length) {}
+    size_t length,
+    scoped_refptr<base::RefCountedString> creator_identity)
+    : controller_(std::move(controller)),
+      item_id_(item_id),
+      length_(length),
+      creator_identity_(std::move(creator_identity)) {
+  CHECK(controller_);
+  controller_->memory_usage_by_creator_identity_[creator_identity_] +=
+      base::ByteSize(length_);
+}
 
 MemoryAllocation::~MemoryAllocation() {
-  if (controller_)
-    controller_->RevokeMemoryAllocation(item_id_, length_);
+  if (controller_) {
+    controller_->RevokeMemoryAllocation(item_id_, length_, creator_identity_);
+  }
 }
 
 BlobMemoryController::QuotaAllocationTask::~QuotaAllocationTask() = default;
@@ -716,7 +745,8 @@ void BlobMemoryController::ShrinkMemoryAllocation(ShareableBlobDataItem* item) {
   blob_memory_used_ += item->item()->length();
   item->set_memory_allocation(std::make_unique<MemoryAllocation>(
       weak_factory_.GetWeakPtr(), item->item_id(),
-      base::checked_cast<size_t>(item->item()->length())));
+      base::checked_cast<size_t>(item->item()->length()),
+      item->creator_identity()));
   MaybeGrantPendingMemoryRequests();
 }
 
@@ -1119,14 +1149,29 @@ void BlobMemoryController::GrantMemoryAllocations(
     item->set_state(ShareableBlobDataItem::QUOTA_GRANTED);
     item->set_memory_allocation(std::make_unique<MemoryAllocation>(
         weak_factory_.GetWeakPtr(), item->item_id(),
-        base::checked_cast<size_t>(item->item()->length())));
+        base::checked_cast<size_t>(item->item()->length()),
+        item->creator_identity()));
   }
 }
 
-void BlobMemoryController::RevokeMemoryAllocation(uint64_t item_id,
-                                                  size_t length) {
+void BlobMemoryController::RevokeMemoryAllocation(
+    uint64_t item_id,
+    size_t length,
+    scoped_refptr<base::RefCountedString> creator_identity) {
   DCHECK_LE(length, blob_memory_used_);
   blob_memory_used_ -= length;
+
+  auto it = memory_usage_by_creator_identity_.find(creator_identity);
+  if (it != memory_usage_by_creator_identity_.end()) {
+    base::ByteSize byte_length(length);
+    if (byte_length > it->second) {
+      NOTREACHED();
+    } else if (byte_length == it->second) {
+      memory_usage_by_creator_identity_.erase(it);
+    } else {
+      it->second -= byte_length;
+    }
+  }
 
   auto iterator = populated_memory_items_.Get(item_id);
   if (iterator != populated_memory_items_.end()) {

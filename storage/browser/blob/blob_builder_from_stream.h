@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/memory/ref_counted_memory.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -51,11 +52,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
       base::OnceCallback<void(BlobBuilderFromStream*,
                               std::unique_ptr<BlobDataHandle>)>;
 
-  BlobBuilderFromStream(
-      base::WeakPtr<BlobStorageContext> context,
-      std::string content_type,
-      std::string content_disposition,
-      ResultCallback callback);
+  BlobBuilderFromStream(base::WeakPtr<BlobStorageContext> context,
+                        std::string content_type,
+                        std::string content_disposition,
+                        ResultCallback callback,
+                        scoped_refptr<base::RefCountedString> creator_identity);
   ~BlobBuilderFromStream();
 
   // This may call |callback| synchronously when |length_hint| is larger than
@@ -158,6 +159,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobBuilderFromStream {
 
   std::string content_type_;
   std::string content_disposition_;
+
+  // Identity of the blob creator. Used for tracking memory usage per creator.
+  const scoped_refptr<base::RefCountedString> creator_identity_;
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> items_;
   uint64_t current_total_size_ = 0;

@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -20,10 +21,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -878,6 +881,95 @@ TEST_F(BlobStorageContextTest, NegativeSlice) {
   EXPECT_TRUE(handle2->IsBroken());
   EXPECT_EQ(BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS,
             handle2->GetBlobStatus());
+}
+
+TEST_F(BlobStorageContextTest, MemoryUsageByCreatorIdentity) {
+  auto creator1 =
+      base::MakeRefCounted<base::RefCountedString>("https://example.com/");
+  auto builder1 = std::make_unique<BlobDataBuilder>("blob1");
+  builder1->set_creator_identity(creator1);
+  builder1->AppendData("0123456789");  // 10 bytes
+  std::unique_ptr<BlobDataHandle> handle1 =
+      context_->AddFinishedBlob(std::move(builder1));
+
+  // Distinct RefCountedString instance with the same internal string value.
+  auto creator1_dup =
+      base::MakeRefCounted<base::RefCountedString>("https://example.com/");
+  auto builder1_dup = std::make_unique<BlobDataBuilder>("blob1_dup");
+  builder1_dup->set_creator_identity(creator1_dup);
+  builder1_dup->AppendData("abcde");  // 5 bytes
+  std::unique_ptr<BlobDataHandle> handle1_dup =
+      context_->AddFinishedBlob(std::move(builder1_dup));
+
+  auto creator2 =
+      base::MakeRefCounted<base::RefCountedString>("https://google.com/");
+  auto builder2 = std::make_unique<BlobDataBuilder>("blob2");
+  builder2->set_creator_identity(creator2);
+  builder2->AppendData("0123456789abcdef");  // 16 bytes
+  std::unique_ptr<BlobDataHandle> handle2 =
+      context_->AddFinishedBlob(std::move(builder2));
+
+  auto builder3 = std::make_unique<BlobDataBuilder>("blob3");
+  // Null creator identity (Unknown Creator)
+  builder3->AppendData("0123");  // 4 bytes
+  std::unique_ptr<BlobDataHandle> handle3 =
+      context_->AddFinishedBlob(std::move(builder3));
+
+  const auto& by_creator =
+      context_->memory_controller().memory_usage_by_creator_identity();
+  EXPECT_EQ(3u, by_creator.size());
+  EXPECT_EQ(base::ByteSize(15u), by_creator.at(creator1));
+  EXPECT_EQ(base::ByteSize(15u), by_creator.at(creator1_dup));
+  EXPECT_EQ(base::ByteSize(16u), by_creator.at(creator2));
+  EXPECT_EQ(base::ByteSize(4u), by_creator.at(nullptr));
+
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground};
+  base::trace_event::ProcessMemoryDump pmd(dump_args);
+  EXPECT_TRUE(
+      static_cast<base::trace_event::MemoryDumpProvider*>(context_.get())
+          ->OnMemoryDump(dump_args, &pmd));
+
+  std::string dump_name =
+      base::StringPrintf("site_storage/blob_storage/0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(context_.get()));
+  auto* mad = pmd.GetAllocatorDump(dump_name);
+  ASSERT_NE(nullptr, mad);
+
+  bool found_example = false;
+  bool found_google = false;
+  bool found_unknown = false;
+  for (const auto& entry : mad->entries()) {
+    if (entry.name == "creator_identity:https://example.com/") {
+      EXPECT_EQ(15u, entry.value_uint64);
+      found_example = true;
+    } else if (entry.name == "creator_identity:https://google.com/") {
+      EXPECT_EQ(16u, entry.value_uint64);
+      found_google = true;
+    } else if (entry.name == "creator_identity:Unknown Creator") {
+      EXPECT_EQ(4u, entry.value_uint64);
+      found_unknown = true;
+    }
+  }
+  EXPECT_TRUE(found_example);
+  EXPECT_TRUE(found_google);
+  EXPECT_TRUE(found_unknown);
+
+  handle1.reset();
+  EXPECT_EQ(base::ByteSize(5u), by_creator.at(creator1));
+  handle1_dup.reset();
+  EXPECT_EQ(
+      2u,
+      context_->memory_controller().memory_usage_by_creator_identity().size());
+  EXPECT_FALSE(
+      context_->memory_controller().memory_usage_by_creator_identity().contains(
+          creator1));
+
+  handle2.reset();
+  handle3.reset();
+  EXPECT_TRUE(
+      context_->memory_controller().memory_usage_by_creator_identity().empty());
+  EXPECT_EQ(0u, context_->memory_controller().memory_usage());
 }
 
 // TODO(michaeln): tests for the deprecated url stuff

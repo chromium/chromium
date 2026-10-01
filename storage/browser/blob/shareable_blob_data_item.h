@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "storage/browser/blob/blob_memory_controller.h"
 
 namespace storage {
@@ -40,7 +41,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableBlobDataItem
     POPULATED_WITHOUT_QUOTA
   };
 
-  ShareableBlobDataItem(scoped_refptr<BlobDataItem> item, State state);
+  ShareableBlobDataItem(scoped_refptr<BlobDataItem> item,
+                        State state,
+                        scoped_refptr<base::RefCountedString> creator_identity);
 
   ShareableBlobDataItem(const ShareableBlobDataItem&) = delete;
   ShareableBlobDataItem& operator=(const ShareableBlobDataItem&) = delete;
@@ -53,6 +56,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableBlobDataItem
   // construction. It is used to keep track of this item in an LRU data
   // structure for eviction to disk.
   uint64_t item_id() const { return item_id_; }
+
+  const scoped_refptr<base::RefCountedString>& creator_identity() const {
+    return creator_identity_;
+  }
 
   State state() const { return state_; }
   void set_state(State state) { state_ = state; }
@@ -87,6 +94,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableBlobDataItem
   const uint64_t item_id_;
   State state_;
   scoped_refptr<BlobDataItem> item_;
+  const scoped_refptr<base::RefCountedString> creator_identity_;
   std::unique_ptr<BlobMemoryController::MemoryAllocation> memory_allocation_;
 };
 

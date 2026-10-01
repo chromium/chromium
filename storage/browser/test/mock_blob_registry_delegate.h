@@ -17,6 +17,7 @@ class MockBlobRegistryDelegate final : public BlobRegistryImpl::Delegate {
 
   bool CanReadFile(const base::FilePath& file) override;
   bool CanAccessDataForOrigin(const url::Origin& origin) override;
+  scoped_refptr<base::RefCountedString> GetCreatorIdentity() override;
 
   bool can_read_file_result = true;
   bool can_access_data_for_origin = true;

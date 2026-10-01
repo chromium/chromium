@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -105,7 +106,8 @@ class BlobBuilderFromStreamTestWithDelayedLimits
           finished_builder = result_builder;
           result = std::move(blob);
           loop.Quit();
-        }));
+        }),
+        /*creator_identity=*/nullptr);
     builder.Start(length_hint, std::move(consumer_handle),
                   mojo::NullAssociatedRemote());
 
@@ -211,7 +213,8 @@ TEST_P(BlobBuilderFromStreamTest, CallbackCalledOnAbortBeforeDeletion) {
         EXPECT_EQ(builder_ptr, result_builder);
         EXPECT_FALSE(blob);
         loop.Quit();
-      }));
+      }),
+      /*creator_identity=*/nullptr);
   builder_ptr = builder.get();
   builder->Start(GetLengthHint(16), std::move(consumer_handle),
                  mojo::NullAssociatedRemote());
@@ -381,7 +384,8 @@ TEST_F(BlobBuilderFromStreamTest, HintTooLargeForQuota) {
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
             loop.Quit();
-          }));
+          }),
+      /*creator_identity=*/nullptr);
   builder.Start(kLengthHint, std::move(consumer_handle),
                 mojo::NullAssociatedRemote());
   producer_handle.reset();
@@ -408,7 +412,8 @@ TEST_F(BlobBuilderFromStreamTest, HintTooLargeForQuotaAndNoDisk) {
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
             loop.Quit();
-          }));
+          }),
+      /*creator_identity=*/nullptr);
   builder.Start(kLengthHint, std::move(consumer_handle),
                 mojo::NullAssociatedRemote());
   producer_handle.reset();
@@ -441,7 +446,8 @@ TEST_P(BlobBuilderFromStreamTest, ProgressEvents) {
           [&](BlobBuilderFromStream*, std::unique_ptr<BlobDataHandle> blob) {
             result = std::move(blob);
             loop.Quit();
-          }));
+          }),
+      /*creator_identity=*/nullptr);
   builder.Start(GetLengthHint(kData.size()), std::move(consumer_handle),
                 progress_client_remote.Unbind());
   mojo::BlockingCopyFromString(kData, producer_handle);
@@ -479,7 +485,8 @@ TEST_F(BlobBuilderFromStreamTestWithDelayedLimits, LargeStream) {
                                      std::unique_ptr<BlobDataHandle> blob) {
         result = std::move(blob);
         loop.Quit();
-      }));
+      }),
+      /*creator_identity=*/nullptr);
   builder.Start(kData.size(), std::move(consumer_handle),
                 mojo::NullAssociatedRemote());
 

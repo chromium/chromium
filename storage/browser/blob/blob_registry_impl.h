@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted_memory.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -31,13 +32,17 @@ class BlobStorageContext;
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     : public blink::mojom::BlobRegistry {
  public:
-  // Per binding delegate, used for security checks for requests coming in on
-  // specific bindings/from specific processes.
+  // Per binding delegate, used for security checks and creator identity
+  // attribution for requests coming in on specific bindings/from specific
+  // processes.
   class Delegate {
    public:
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
+    // Returns an opaque string identifying the creator of blobs registered
+    // through this delegate (e.g. process lock URL of the renderer process).
+    virtual scoped_refptr<base::RefCountedString> GetCreatorIdentity() = 0;
   };
 
   explicit BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context);

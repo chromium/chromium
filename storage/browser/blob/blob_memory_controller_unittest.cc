@@ -82,7 +82,8 @@ class BlobMemoryControllerTest : public testing::Test {
     std::vector<scoped_refptr<ShareableBlobDataItem>> result;
     for (const auto& item : builder.items()) {
       result.push_back(base::MakeRefCounted<ShareableBlobDataItem>(
-          item->item(), ShareableBlobDataItem::QUOTA_NEEDED));
+          item->item(), ShareableBlobDataItem::QUOTA_NEEDED,
+          /*creator_identity=*/nullptr));
     }
     return result;
   }

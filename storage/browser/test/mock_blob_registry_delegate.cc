@@ -19,4 +19,9 @@ bool MockBlobRegistryDelegate::CanAccessDataForOrigin(
   return can_access_data_for_origin;
 }
 
+scoped_refptr<base::RefCountedString>
+MockBlobRegistryDelegate::GetCreatorIdentity() {
+  return nullptr;
+}
+
 }  // namespace storage

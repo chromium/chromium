@@ -25,6 +25,11 @@
 
 namespace storage {
 
+scoped_refptr<base::RefCountedString>
+BlobRegistryImpl::Delegate::GetCreatorIdentity() {
+  return nullptr;
+}
+
 namespace {
 
 using MemoryStrategy = BlobMemoryController::Strategy;
@@ -60,6 +65,7 @@ class BlobRegistryImpl::BlobUnderConstruction {
                         const std::string& uuid,
                         const std::string& content_type,
                         const std::string& content_disposition,
+                        scoped_refptr<base::RefCountedString> creator_identity,
                         std::vector<ElementEntry> elements,
                         mojo::ReportBadMessageCallback bad_message_callback)
       : blob_registry_(blob_registry),
@@ -69,6 +75,7 @@ class BlobRegistryImpl::BlobUnderConstruction {
         bad_message_callback_(std::move(bad_message_callback)) {
     builder_->set_content_type(content_type);
     builder_->set_content_disposition(content_disposition);
+    builder_->set_creator_identity(std::move(creator_identity));
   }
 
   // Call this after constructing to kick of fetching of UUIDs of blobs
@@ -552,8 +559,12 @@ void BlobRegistryImpl::Register(
     element_entries.push_back(std::move(entry));
   }
 
+  scoped_refptr<base::RefCountedString> creator_identity =
+      delegate->GetCreatorIdentity();
+
   blobs_under_construction_[uuid] = std::make_unique<BlobUnderConstruction>(
-      this, uuid, content_type, content_disposition, std::move(element_entries),
+      this, uuid, content_type, content_disposition,
+      std::move(creator_identity), std::move(element_entries),
       receivers_.GetBadMessageCallback());
 
   std::unique_ptr<BlobDataHandle> handle = context_->AddFutureBlob(
@@ -579,11 +590,19 @@ void BlobRegistryImpl::RegisterFromStream(
     return;
   }
 
+  Delegate* delegate = receivers_.current_context().get();
+  // Each receiver in `receivers_` is associated with a non-null Delegate when
+  // bound in `Bind()`.
+  CHECK(delegate);
+  scoped_refptr<base::RefCountedString> creator_identity =
+      delegate->GetCreatorIdentity();
+
   std::unique_ptr<BlobBuilderFromStream> blob_builder =
       std::make_unique<BlobBuilderFromStream>(
           context_, content_type, content_disposition,
           base::BindOnce(&BlobRegistryImpl::StreamingBlobDone,
-                         base::Unretained(this), std::move(callback)));
+                         base::Unretained(this), std::move(callback)),
+          std::move(creator_identity));
   BlobBuilderFromStream* blob_builder_ptr = blob_builder.get();
   blobs_being_streamed_.insert(std::move(blob_builder));
   blob_builder_ptr->Start(expected_length, std::move(data),

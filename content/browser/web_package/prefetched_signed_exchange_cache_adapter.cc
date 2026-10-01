@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache_adapter.h"
 
+#include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -121,13 +123,18 @@ PrefetchedSignedExchangeCacheAdapter::CreateBlobBuilderFromStream(
     uint64_t length_hint,
     BrowserContext::BlobContextGetter blob_context_getter) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
+  static base::NoDestructor<scoped_refptr<base::RefCountedString>>
+      kPrefetchedSignedExchangeIdentity(
+          base::MakeRefCounted<base::RefCountedString>(
+              "Prefetched Signed Exchange"));
   auto blob_builder_from_stream =
       std::make_unique<storage::BlobBuilderFromStream>(
           blob_context_getter.Run(), "" /* content_type */,
           "" /* content_disposition */,
           base::BindOnce(
               &PrefetchedSignedExchangeCacheAdapter::StreamingBlobDoneOnIO,
-              std::move(adapter)));
+              std::move(adapter)),
+          *kPrefetchedSignedExchangeIdentity);
 
   blob_builder_from_stream->Start(
       length_hint, std::move(body),

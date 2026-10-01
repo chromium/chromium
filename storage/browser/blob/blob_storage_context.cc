@@ -5,6 +5,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 
 #include <inttypes.h>
+
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -20,6 +21,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -665,6 +668,20 @@ bool BlobStorageContext::OnMemoryDump(
   mad->AddScalar("blob_count",
                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                  blob_count());
+  // Emit per-creator memory usage as scalar attributes. Perfetto's
+  // GraphProcessor::AggregateNumericsRecursively automatically aggregates these
+  // scalar entries into the parent "site_storage/blob_storage" dump node.
+  for (const auto& [creator_identity, bytes] :
+       memory_controller().memory_usage_by_creator_identity()) {
+    CHECK(bytes.is_positive());
+    std::string_view creator_label =
+        (!creator_identity || creator_identity->as_string().empty())
+            ? "Unknown Creator"
+            : std::string_view(creator_identity->as_string());
+    mad->AddScalar(base::StrCat({"creator_identity:", creator_label}).c_str(),
+                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                   bytes.InBytes());
+  }
   if (system_allocator_name)
     pmd->AddSuballocation(mad->guid(), system_allocator_name);
   return true;

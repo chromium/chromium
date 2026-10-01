@@ -190,6 +190,8 @@ void PopulateBrowserMetrics(GlobalMemoryDumpPtr& global_dump,
   pmd->process_type = ProcessType::BROWSER;
   SetAllocatorDumpMetric(pmd, "malloc", "effective_size",
                          metrics_mb["Malloc"] * 1024 * 1024);
+  SetAllocatorDumpMetric(pmd, "site_storage/blob_storage", "effective_size",
+                         metrics_mb["SiteStorage.BlobStorage"] * 1024 * 1024);
   // These three categories are required for total gpu memory, but do not
   // have a UKM value set for them, so don't appear in metrics_mb.
   SetAllocatorDumpMetric(pmd, "gpu/gl", "effective_size",
@@ -210,6 +212,7 @@ MetricMap GetExpectedBrowserMetrics() {
       {"Malloc", 20},
       {"PrivateMemoryFootprint", 30},
       {"SharedMemoryFootprint", 35},
+      {"SiteStorage.BlobStorage", 15},
       {"Uptime", 42},
       {"GpuMemory", kGpuTotalMemory * 1024 * 1024},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

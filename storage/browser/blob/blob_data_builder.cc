@@ -101,7 +101,7 @@ void BlobDataBuilder::AppendData(base::span<const uint8_t> data) {
     return;
   auto item = BlobDataItem::CreateBytes(data);
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::QUOTA_NEEDED);
+      std::move(item), ShareableBlobDataItem::QUOTA_NEEDED, creator_identity_);
   // Even though we already prepopulate this data, we treat it as needing
   // transport anyway since we do need to allocate memory quota.
   pending_transport_items_.push_back(shareable_item);
@@ -117,7 +117,7 @@ BlobDataBuilder::FutureData BlobDataBuilder::AppendFutureData(size_t length) {
   CHECK_NE(length, 0u);
   auto item = BlobDataItem::CreateBytesDescription(length);
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      item, ShareableBlobDataItem::QUOTA_NEEDED);
+      item, ShareableBlobDataItem::QUOTA_NEEDED, creator_identity_);
   pending_transport_items_.push_back(shareable_item);
   items_.push_back(std::move(shareable_item));
 
@@ -138,7 +138,7 @@ BlobDataBuilder::FutureFile BlobDataBuilder::AppendFutureFile(
   auto item = BlobDataItem::CreateFutureFile(offset, length, file_id);
 
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      item, ShareableBlobDataItem::QUOTA_NEEDED);
+      item, ShareableBlobDataItem::QUOTA_NEEDED, creator_identity_);
   pending_transport_items_.push_back(shareable_item);
   items_.push_back(std::move(shareable_item));
 
@@ -162,7 +162,8 @@ void BlobDataBuilder::AppendFile(
   DCHECK(!item->IsFutureFileItem()) << file_path.value();
 
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA);
+      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA,
+      creator_identity_);
   items_.push_back(std::move(shareable_item));
 
   total_size_ += length;
@@ -237,7 +238,7 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
             source_item->path(), source_item->offset() + offset, length,
             source_item->expected_modification_time(), source_item->file_ref_,
             source_item->file_access_),
-        ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA));
+        ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA, creator_identity_));
     return;
   }
 
@@ -329,7 +330,8 @@ void BlobDataBuilder::SliceBlob(const BlobEntry* source,
       }
     }
 
-    items_.push_back(new ShareableBlobDataItem(std::move(data_item), state));
+    items_.push_back(base::MakeRefCounted<ShareableBlobDataItem>(
+        std::move(data_item), state, creator_identity_));
     if (need_copy) {
       copies_.push_back(
           ItemCopyEntry(source_items[item_index], item_offset, items_.back()));
@@ -357,7 +359,8 @@ void BlobDataBuilder::AppendFileSystemFile(
       std::move(file_system_context), std::move(file_access));
 
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA);
+      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA,
+      creator_identity_);
   items_.push_back(std::move(shareable_item));
 
   total_size_ += length;
@@ -374,7 +377,8 @@ void BlobDataBuilder::AppendReadableDataHandle(
 
   total_size_ += item->length();
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA);
+      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA,
+      creator_identity_);
   items_.push_back(std::move(shareable_item));
 }
 
@@ -385,7 +389,8 @@ void BlobDataBuilder::AppendMojoDataItem(mojom::BlobDataItemPtr item_ptr) {
 
   total_size_ += item->length();
   auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA);
+      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA,
+      creator_identity_);
   items_.push_back(std::move(shareable_item));
 }
 
