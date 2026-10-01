@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace page_load_metrics {
@@ -26,6 +27,22 @@ std::optional<NavigationInitiator> GetNavigationInitiator(
   }
 
   return holder->initiator();
+}
+
+int64_t GetAttachedNavigationInitiatorId(
+    content::NavigationHandle& navigation_handle) {
+  if (std::optional<NavigationInitiator> initiator =
+          GetNavigationInitiator(navigation_handle)) {
+    return initiator->id();
+  }
+
+  NavigationHandleUserData* user_data =
+      NavigationHandleUserData::GetForNavigationHandle(navigation_handle);
+  if (!user_data) {
+    return navigation_initiator::kOther.id();
+  }
+
+  return user_data->navigation_type();
 }
 
 }  // namespace page_load_metrics

@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_CHROME_INITIATOR_LOCATION_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_CHROME_INITIATOR_LOCATION_H_
 
+#include <optional>
+#include <string>
+
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 
 namespace content {
 class NavigationHandle;
-}
+}  // namespace content
 
 // TODO(https://crbug.com/517725655): ChromeInitiatorLocation is currently using
 // `int16_t` type as the short term plan, for long term plan resolving the type
@@ -68,6 +71,19 @@ inline ChromeInitiatorLocation GetChromeInitiatorLocation(
 
 std::string StringifyChromeInitiatorLocation(
     ChromeInitiatorLocation initiator_location);
+
+// Returns the `ChromeInitiatorLocation` that the trigger of
+// `navigation_handle` attached, if any.
+//
+// This consults `page_load_metrics::NavigationInitiatorHolder` first and falls
+// back to the legacy `page_load_metrics::NavigationHandleUserData`, so that
+// the triggers can be migrated one by one.
+//
+// TODO(https://crbug.com/517725655): Remove this and use
+// `page_load_metrics::GetNavigationInitiator()` once all the triggers are
+// migrated and `ChromeInitiatorLocation` is removed.
+std::optional<ChromeInitiatorLocation> GetAttachedChromeInitiatorLocation(
+    content::NavigationHandle& navigation_handle);
 
 void AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle);

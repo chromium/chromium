@@ -4,14 +4,11 @@
 
 #include "chrome/browser/page_load_metrics/observers/new_tab_page_initiated_page_load_metrics_observer.h"
 
-#include <algorithm>
 
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/search/search.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace {
 
@@ -68,17 +65,12 @@ void NewTabPageInitiatedPageLoadMetricsObserver::DidActivatePrerenderedPage(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NewTabPageInitiatedPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  // NavigationHandleUserData is set to be
-  // page_load_metrics::NavigationHandleUserData::InitiatorLocation::kNewTabPage
-  // for all NewTabPage triggered prerender and non-prerender navigation. The
-  // value is checked here to keep on monitoring only NewTabPage triggered
-  // cases.
-  auto* navigation_userdata =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
-  if (navigation_userdata &&
-      navigation_userdata->navigation_type() ==
-          GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage)) {
+  // The navigation initiator is set to be
+  // `chrome_navigation_initiator::kNewTabPage` for all NewTabPage triggered
+  // prerender and non-prerender navigation. The value is checked here to keep
+  // on monitoring only NewTabPage triggered cases.
+  if (GetAttachedChromeInitiatorLocation(*navigation_handle) ==
+      ChromeInitiatorLocation::kNewTabPage) {
     return CONTINUE_OBSERVING;
   }
 

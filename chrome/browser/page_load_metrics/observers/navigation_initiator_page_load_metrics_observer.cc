@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/google/core/common/google_util.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
@@ -20,9 +19,6 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   // `Navigation.InitiatorType.SRP` and `PreloadServingMetrics.*.SRP` are
   // comparable.
   bool is_srp = google_util::IsGoogleSearchUrl(navigation_handle.GetURL());
-  auto* navigation_handle_user_data =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          navigation_handle);
   const ChromeInitiatorLocation initiator_location = [&]() {
     // Back/forward navigation and BFCache restore must be checked before reload
     // because back/forward navigations to an entry that was previously reloaded
@@ -47,9 +43,12 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
     if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD)) {
       return ChromeInitiatorLocation::kReload;
     }
-    if (navigation_handle_user_data) {
-      return GetChromeInitiatorLocation(
-          navigation_handle_user_data->navigation_type());
+    // Note: The lookup of the initiator must be done here, not at the
+    // beginning of this lambda, to keep the precedence of
+    // `ui::PageTransition` above.
+    if (std::optional<ChromeInitiatorLocation> attached =
+            GetAttachedChromeInitiatorLocation(navigation_handle)) {
+      return *attached;
     }
     if (navigation_handle.IsRendererInitiated() &&
         navigation_handle.HasUserGesture()) {

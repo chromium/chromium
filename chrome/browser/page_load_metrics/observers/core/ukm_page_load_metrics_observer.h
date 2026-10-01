@@ -12,24 +12,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/base/load_timing_info.h"
 #include "net/http/http_connection_info.h"
 #include "net/nqe/effective_connection_type.h"
-#include "services/metrics/public/cpp/ukm_source.h"
-#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace network {
 class NetworkQualityTracker;
-}
+}  // namespace network
 
 namespace ukm {
 namespace builders {
@@ -369,11 +367,10 @@ class UkmPageLoadMetricsObserver
   // battery being recharged above 20%.
   bool refresh_rate_throttled_ = false;
 
-  // The type of initiator starts the navigation, for more details, please refer
-  // to `page_load_metrics::NavigationHandleUserData::InitiatorLocation`.
-  page_load_metrics::NavigationHandleUserData::InitiatorLocation
-      navigation_trigger_type_ =
-          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther;
+  // The id of the `page_load_metrics::NavigationInitiator` of the navigation,
+  // i.e. who triggered the navigation.
+  int64_t navigation_initiator_id_ =
+      page_load_metrics::navigation_initiator::kOther.id();
 
   // Counts the soft navigations since the beginning of the page load.
   int64_t soft_navigation_count_ = 0;

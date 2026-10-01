@@ -354,14 +354,8 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
         response_headers->HasHeaderValue("cache-control", "no-store");
   }
 
-  navigation_trigger_type_ =
-      page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther;
-  auto* navigation_userdata =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
-  if (navigation_userdata) {
-    navigation_trigger_type_ = navigation_userdata->navigation_type();
-  }
+  navigation_initiator_id_ =
+      page_load_metrics::GetAttachedNavigationInitiatorId(*navigation_handle);
 
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();
@@ -1516,8 +1510,7 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
   builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
 
-  builder.SetNavigation_InitiatorLocation(
-      static_cast<int64_t>(navigation_trigger_type_));
+  builder.SetNavigation_InitiatorLocation(navigation_initiator_id_);
 
   // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
   // to int64_t.

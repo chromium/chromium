@@ -5,13 +5,12 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -161,21 +160,13 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
         main_frame_resource_has_no_store_.value() ? 1 : 0);
   }
 
-  auto prerender_trigger_type =
-      page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther;
-  auto* navigation_userdata =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
-  if (navigation_userdata) {
-    prerender_trigger_type = navigation_userdata->navigation_type();
-  }
-
   builder.SetWasPrerendered(true)
       .SetTiming_NavigationToActivation(
           navigation_to_activation_time_.value().InMilliseconds())
       .SetNavigation_PageTransition(navigation_handle->GetPageTransition())
       .SetNavigation_InitiatorLocation(
-          static_cast<int>(prerender_trigger_type));
+          page_load_metrics::GetAttachedNavigationInitiatorId(
+              *navigation_handle));
   builder.Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramBoolean(AppendSuffix(internal::kHistogramHostReused),

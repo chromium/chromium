@@ -132,6 +132,16 @@ class NavigationInitiatorHolder
 std::optional<NavigationInitiator> GetNavigationInitiator(
     content::NavigationHandle& navigation_handle);
 
+// Returns the id of the initiator of `navigation_handle`, falling back
+// to the legacy `NavigationHandleUserData` and then to
+// `navigation_initiator::kOther`.
+//
+// TODO(https://crbug.com/517725655): Remove this and use
+// `GetNavigationInitiator()` once all the triggers are migrated to
+// `NavigationInitiatorHolder`.
+int64_t GetAttachedNavigationInitiatorId(
+    content::NavigationHandle& navigation_handle);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_NAVIGATION_INITIATOR_H_

@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
@@ -136,6 +137,15 @@ std::string GetNavigationInitiatorString(
     return "Reload";
   }
 
+  // Note: The lookup of the initiator must be done here, not at the beginning
+  // of this function, to keep the precedence of `ui::PageTransition` above.
+  if (std::optional<page_load_metrics::NavigationInitiator> initiator =
+          page_load_metrics::GetNavigationInitiator(navigation_handle)) {
+    return std::string(initiator->name());
+  }
+
+  // TODO(https://crbug.com/517725655): Remove this legacy path once all the
+  // triggers are migrated to `NavigationInitiatorHolder`.
   auto* user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           navigation_handle);

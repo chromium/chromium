@@ -4,8 +4,48 @@
 
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 
+#include "base/notreached.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "content/public/browser/navigation_handle.h"
+
+namespace {
+
+// TODO(https://crbug.com/517725655): Remove this with
+// `GetAttachedChromeInitiatorLocation()`.
+ChromeInitiatorLocation ToChromeInitiatorLocation(
+    const page_load_metrics::NavigationInitiator& initiator) {
+  if (initiator == chrome_navigation_initiator::kBookmarkBar) {
+    return ChromeInitiatorLocation::kBookmarkBar;
+  }
+
+  if (initiator == chrome_navigation_initiator::kNewTabPage) {
+    return ChromeInitiatorLocation::kNewTabPage;
+  }
+
+  if (initiator == chrome_navigation_initiator::kOmniboxDirectUrlInput) {
+    return ChromeInitiatorLocation::kOmniboxDirectUrlInput;
+  }
+
+  if (initiator == chrome_navigation_initiator::kOmniboxDefaultSearchEngine) {
+    return ChromeInitiatorLocation::kOmniboxDefaultSearchEngine;
+  }
+
+  if (initiator == chrome_navigation_initiator::kContextMenuSearch) {
+    return ChromeInitiatorLocation::kContextMenuSearch;
+  }
+
+  if (initiator == chrome_navigation_initiator::kContextMenuOpenLink) {
+    return ChromeInitiatorLocation::kContextMenuOpenLink;
+  }
+
+  // Only the initiators in `chrome_navigation_initiator` are attached to a
+  // `NavigationHandle`. The others are derived from `ui::PageTransition`.
+  NOTREACHED();
+}
+
+}  // namespace
 
 std::string StringifyChromeInitiatorLocation(
     ChromeInitiatorLocation initiator_location) {
@@ -36,6 +76,23 @@ std::string StringifyChromeInitiatorLocation(
       return "Other";
   }
   NOTREACHED();
+}
+
+std::optional<ChromeInitiatorLocation> GetAttachedChromeInitiatorLocation(
+    content::NavigationHandle& navigation_handle) {
+  if (std::optional<page_load_metrics::NavigationInitiator> initiator =
+          page_load_metrics::GetNavigationInitiator(navigation_handle)) {
+    return ToChromeInitiatorLocation(*initiator);
+  }
+
+  page_load_metrics::NavigationHandleUserData* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          navigation_handle);
+  if (!user_data) {
+    return std::nullopt;
+  }
+
+  return GetChromeInitiatorLocation(user_data->navigation_type());
 }
 
 void AttachNewTabPageNavigationHandleUserData(
