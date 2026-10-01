@@ -760,33 +760,83 @@ TEST_F(ContextualCueingCapTrackerServiceTest, ForceUiTypeFinchFlags) {
 }
 
 TEST_F(ContextualCueingCapTrackerServiceTest,
-       IgnoreContextualCueingThresholdsFlagBypassesAllCapsAndForcesMessageUi) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kPageActionMenu, {}},
-       {kGeminiContextualSuggestionsCues,
-        {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}}},
-      {});
-
-  ContextualCueingCapTrackerService service;
+       IgnoreContextualCueingThresholdsFlagBypassesCapsAndCoexistsWithUiMode) {
   const GURL url("https://example.com");
   const auto kEdu = page_content_annotations::CategoryType::kEducation;
   const auto kShop = page_content_annotations::CategoryType::kShopping;
 
-  EXPECT_TRUE(service.config().disable_frequency_capping_and_backoff);
-  EXPECT_TRUE(service.config().force_message_ui_only);
+  // 1. Default / Infobar Then Omnibox Chip UI mode with thresholds ignored:
+  // bypasses frequency caps and cooldowns, while following Message -> Omnibox
+  // Chip UI progression.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}},
+         {kGeminiContextualSuggestionsCues,
+          {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}}},
+        {});
 
-  // Even after repeated impressions, ignores, and explicit dismissals on the
-  // same origin without page navigations or time advancing, CanShowNudge
-  // succeeds and GetCueUiTypeForCategory always returns kMessage.
-  for (int i = 0; i < 10; ++i) {
+    ContextualCueingCapTrackerService service;
+    EXPECT_TRUE(service.config().disable_frequency_capping_and_backoff);
+    EXPECT_FALSE(service.config().force_message_ui_only);
+    EXPECT_FALSE(service.config().force_omnibox_chip_ui_only);
+
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kMessage);
     EXPECT_EQ(service.CanShowNudge(url), ContextualCueingDecision::kSuccess);
+
+    // Dismissing switches Education to Omnibox Chip while still allowing nudges
+    // without cooldown.
+    service.RecordCueShown(url, kEdu);
+    service.RecordCueDismissed(url, kEdu);
+    EXPECT_EQ(service.CanShowNudge(url), ContextualCueingDecision::kSuccess);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kOmniboxChip);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+              ContextualCueUiType::kMessage);
+  }
+
+  // 2. Infobar Only UI mode with thresholds ignored: forces kMessage even after
+  // dismissals.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}},
+         {kGeminiContextualSuggestionsCues,
+          {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}},
+         {kGeminiContextualSuggestionsCuesUiMode,
+          {{kGeminiContextualSuggestionsCuesUiModeParam, "infobar_only"}}}},
+        {});
+
+    ContextualCueingCapTrackerService service;
+    EXPECT_TRUE(service.config().disable_frequency_capping_and_backoff);
+    EXPECT_TRUE(service.config().force_message_ui_only);
+
     service.RecordCueShown(url, kEdu);
     service.RecordCueDismissed(url, kEdu);
     EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
               ContextualCueUiType::kMessage);
-    EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
-              ContextualCueUiType::kMessage);
+  }
+
+  // 3. Omnibox Chip Only UI mode with thresholds ignored: forces kOmniboxChip
+  // from the start.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}},
+         {kGeminiContextualSuggestionsCues,
+          {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}},
+         {kGeminiContextualSuggestionsCuesUiMode,
+          {{kGeminiContextualSuggestionsCuesUiModeParam,
+            "omnibox_chip_only"}}}},
+        {});
+
+    ContextualCueingCapTrackerService service;
+    EXPECT_TRUE(service.config().disable_frequency_capping_and_backoff);
+    EXPECT_TRUE(service.config().force_omnibox_chip_ui_only);
+
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kOmniboxChip);
   }
 }
 

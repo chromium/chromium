@@ -886,6 +886,12 @@ inline constexpr char kGeminiContextualSuggestionsCuesName[] =
 inline constexpr char kGeminiContextualSuggestionsCuesDescription[] =
     "Enables Gemini contextual suggestions cues framework.";
 
+inline constexpr char kGeminiContextualSuggestionsCuesUiModeName[] =
+    "Gemini Contextual Suggestions Cues UI Mode";
+inline constexpr char kGeminiContextualSuggestionsCuesUiModeDescription[] =
+    "Selects the UI presentation mode for Gemini contextual suggestions cues "
+    "(Infobar Then Omnibox Chip, Infobar Only, or Omnibox Chip Only).";
+
 inline constexpr char kGeminiCoordinatorTeardownFixName[] =
     "Gemini Coordinator Teardown Fix";
 inline constexpr char kGeminiCoordinatorTeardownFixDescription[] =

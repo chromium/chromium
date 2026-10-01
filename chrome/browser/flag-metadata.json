@@ -5454,6 +5454,11 @@
     "expiry_milestone": 172
   },
   {
+    "name": "gemini-contextual-suggestions-cues-ui-mode",
+    "owners": [ "kanouche@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 172
+  },
+  {
     "name": "gemini-coordinator-teardown-fix",
     "owners": [
       "yasamans@google.com",

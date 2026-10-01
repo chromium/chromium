@@ -53,8 +53,11 @@ ContextualCueingCapTrackerService::Config::Config()
           IsIgnoreContextualCueingThresholdsEnabled()),
       max_consecutive_message_ignores(kMaxConsecutiveMessageIgnores.Get()),
       force_message_ui_only(kForceMessageUiOnly.Get() ||
-                            IsIgnoreContextualCueingThresholdsEnabled()),
-      force_omnibox_chip_ui_only(kForceOmniboxChipUiOnly.Get()) {}
+                            GetContextualCueUiMode() ==
+                                ContextualCueUiMode::kInfobarOnly),
+      force_omnibox_chip_ui_only(kForceOmniboxChipUiOnly.Get() ||
+                                 GetContextualCueUiMode() ==
+                                     ContextualCueUiMode::kOmniboxChipOnly) {}
 ContextualCueingCapTrackerService::Config::~Config() = default;
 ContextualCueingCapTrackerService::Config::Config(const Config&) = default;
 ContextualCueingCapTrackerService::Config&

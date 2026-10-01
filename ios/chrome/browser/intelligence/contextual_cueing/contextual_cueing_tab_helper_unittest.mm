@@ -1521,12 +1521,13 @@ TEST_F(ContextualCueingTabHelperTest,
   EXPECT_TRUE(tab_helper->RecordCueShown());
   tab_helper->RecordCueDismissed();
 
-  // Even after dismissal, Message UI is still forced.
+  // After dismissal in default UI mode, the vertical transitions to
+  // Omnibox Chip UI.
   EXPECT_EQ(
       ContextualCueingCapTrackerServiceFactory::GetForProfile(profile_.get())
           ->GetCueUiTypeForCategory(
               page_content_annotations::CategoryType::kShopping),
-      ContextualCueUiType::kMessage);
+      ContextualCueUiType::kOmniboxChip);
 }
 
 // Test that model execution uses `ModelExecutionServiceType::kPrivateAi` by

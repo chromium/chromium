@@ -1300,6 +1300,28 @@ const FeatureEntry::FeatureVariation
         {"with thresholds ignored",
          kGeminiContextualSuggestionsCuesIgnoreThresholds, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesUiModeInfobarThenChip[] = {
+        {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
+         "infobar_then_chip"}};
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesUiModeInfobarOnly[] = {
+        {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
+         "infobar_only"}};
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesUiModeOmniboxChipOnly[] = {
+        {contextual_cueing::kGeminiContextualSuggestionsCuesUiModeParam,
+         "omnibox_chip_only"}};
+
+const FeatureEntry::FeatureVariation
+    kGeminiContextualSuggestionsCuesUiModeVariations[] = {
+        {"Infobar Then Omnibox Chip",
+         kGeminiContextualSuggestionsCuesUiModeInfobarThenChip, nullptr},
+        {"Infobar Only", kGeminiContextualSuggestionsCuesUiModeInfobarOnly,
+         nullptr},
+        {"Omnibox Chip Only",
+         kGeminiContextualSuggestionsCuesUiModeOmniboxChipOnly, nullptr}};
+
 constexpr FeatureEntry::FeatureParam kClientSideDetectionWithoutEnforcement[] =
     {{"CsdEnforceIos", "false"}};
 constexpr FeatureEntry::FeatureParam kClientSideDetectionWithEnforcement[] = {
@@ -2617,6 +2639,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          contextual_cueing::kGeminiContextualSuggestionsCues,
          kGeminiContextualSuggestionsCuesVariations,
          "GeminiContextualSuggestionsCues")},
+    {"gemini-contextual-suggestions-cues-ui-mode",
+     flag_descriptions::kGeminiContextualSuggestionsCuesUiModeName,
+     flag_descriptions::kGeminiContextualSuggestionsCuesUiModeDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_cueing::kGeminiContextualSuggestionsCuesUiMode,
+         kGeminiContextualSuggestionsCuesUiModeVariations,
+         "GeminiContextualSuggestionsCuesUiMode")},
     {"page-classification", flag_descriptions::kPageClassificationName,
      flag_descriptions::kPageClassificationDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kPageClassification,

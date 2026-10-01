@@ -68,6 +68,31 @@ bool IsIgnoreContextualCueingThresholdsEnabled() {
          kGeminiContextualSuggestionsCuesIgnoreThresholds.Get();
 }
 
+BASE_FEATURE(kGeminiContextualSuggestionsCuesUiMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kGeminiContextualSuggestionsCuesUiModeParam[] = "ui_mode";
+
+constexpr base::FeatureParam<ContextualCueUiMode>::Option
+    kGeminiContextualSuggestionsCuesUiModeOptions[] = {
+        {ContextualCueUiMode::kInfobarThenChip, "infobar_then_chip"},
+        {ContextualCueUiMode::kInfobarOnly, "infobar_only"},
+        {ContextualCueUiMode::kOmniboxChipOnly, "omnibox_chip_only"}};
+
+constexpr base::FeatureParam<ContextualCueUiMode>
+    kGeminiContextualSuggestionsCuesUiModeOption{
+        &kGeminiContextualSuggestionsCuesUiMode,
+        kGeminiContextualSuggestionsCuesUiModeParam,
+        ContextualCueUiMode::kInfobarThenChip,
+        &kGeminiContextualSuggestionsCuesUiModeOptions};
+
+ContextualCueUiMode GetContextualCueUiMode() {
+  if (base::FeatureList::IsEnabled(kGeminiContextualSuggestionsCuesUiMode)) {
+    return kGeminiContextualSuggestionsCuesUiModeOption.Get();
+  }
+  return ContextualCueUiMode::kInfobarThenChip;
+}
+
 bool IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled() {
   if (IsIgnoreContextualCueingThresholdsEnabled()) {
     return true;
