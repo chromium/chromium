@@ -12752,6 +12752,25 @@
             ]
         }
     ],
+    "NtpMostVisitedHighDpiFavicons": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpMostVisitedHighDpiFavicons"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpNextScaledAIMerch": [
         {
             "platforms": [
