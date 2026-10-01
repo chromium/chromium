@@ -41,26 +41,6 @@ class LogRouter;
 // profile.
 class AtMemoryQueryService : public KeyedService {
  public:
-  // LINT.IfChange(SpiiRetrievalFailureReason)
-  // Reasons for unmasking or authentication failure when retrieving PII.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SpiiRetrievalFailureReason {
-    // There is no network connection.
-    kNoConnection = 0,
-    // Biometric/screen-lock authentication failed or was cancelled.
-    kReauthFailed = 1,
-    // Another authentication request is already in progress.
-    kReauthInProgress = 2,
-    // The request to the `PersonalContextService` failed.
-    kFetchFailed = 3,
-    // The server response could not be parsed.
-    kParseFailed = 4,
-    kMaxValue = kParseFailed
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemorySpiiRetrievalFailureReason)
-
   AtMemoryQueryService(
       std::unique_ptr<AutofillDataProvider> data_provider,
       personal_context::PersonalContextService* personal_context_service,
