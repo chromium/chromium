@@ -107,6 +107,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -158,6 +159,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
+#include "components/search/search.h"
 #include "components/skills/features.h"
 #include "content/public/browser/navigation_controller.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1064,6 +1066,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #endif
 
   webapps::PreRedirectionURLObserver::CreateForWebContents(tab.GetContents());
+
+  if (search::IsInstantExtendedAPIEnabled()) {
+    search_tab_helper_ = GetUserDataFactory().CreateInstance<SearchTabHelper>(
+        tab, tab, tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1484,6 +1491,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 #endif
 
   webapps::PreRedirectionURLObserver::CreateForWebContents(new_contents);
+
+  if (search_tab_helper_) {
+    search_tab_helper_.reset();
+    search_tab_helper_ = GetUserDataFactory().CreateInstance<SearchTabHelper>(
+        *tab, *tab, new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*

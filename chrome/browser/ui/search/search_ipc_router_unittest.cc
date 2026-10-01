@@ -22,6 +22,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/mock_embedded_search_client.h"
@@ -31,6 +32,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -102,7 +104,10 @@ class SearchIPCRouterTest : public ChromeRenderViewHostTestHarness {
     content::WebContentsTester::For(web_contents())
         ->NavigateAndCommit(GURL("chrome://blank"));
 
-    SearchTabHelper::CreateForWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_);
+    search_tab_helper_ =
+        std::make_unique<SearchTabHelper>(mock_tab_, web_contents());
     GetSearchTabHelper(web_contents())->OnTabActivated();
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -121,6 +126,11 @@ class SearchIPCRouterTest : public ChromeRenderViewHostTestHarness {
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void TearDown() override {
+    search_tab_helper_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   SearchTabHelper* GetSearchTabHelper(content::WebContents* web_contents) {
@@ -179,6 +189,8 @@ class SearchIPCRouterTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<SearchTabHelper> search_tab_helper_;
   MockSearchIPCRouterDelegate delegate_;
   MockEmbeddedSearchClient mock_embedded_search_client_;
 };

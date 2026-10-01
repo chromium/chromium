@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -1491,6 +1492,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
   // This should have created a new dev tools browser.
   ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                     ->GetSize());
+  EXPECT_NE(nullptr,
+            SearchTabHelper::FromWebContents(devtools_main_web_contents));
 
   // Re-attach the dev tools window. This resets its Browser*.
   ui_test_utils::BrowserDestroyedObserver observer(
@@ -1502,14 +1505,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
   ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                     ->GetSize());
 
-  // Do something that will make SearchTabHelper access its OmniboxView. This
-  // should not crash, even though the Browser association and thus the
-  // OmniboxView* has changed, and the old OmniboxView has been deleted.
-  SearchTabHelper* search_tab_helper =
-      SearchTabHelper::FromWebContents(devtools_main_web_contents);
-  SearchIPCRouter::Delegate* search_ipc_router_delegate =
-      static_cast<SearchIPCRouter::Delegate*>(search_tab_helper);
-  search_ipc_router_delegate->FocusOmnibox(OMNIBOX_FOCUS_INVISIBLE);
+  // Once re-docked, `devtools_main_web_contents` is no longer in a
+  // TabStripModel, so its tab-scoped SearchTabHelper has been destroyed.
+  // Accessing its OmniboxView should also not crash after the old Browser and
+  // OmniboxView have been deleted.
+  EXPECT_EQ(nullptr,
+            SearchTabHelper::FromWebContents(devtools_main_web_contents));
+  search::FocusOmnibox(true, devtools_main_web_contents);
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }

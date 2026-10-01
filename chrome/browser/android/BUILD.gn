@@ -228,7 +228,10 @@ source_set("tabs_impl") {
     "//ui/base",
   ]
   if (enable_webui_ntp) {
-    deps += [ "//chrome/browser/ui/customize_chrome:customize_chrome_base" ]
+    deps += [
+      "//chrome/browser/ui/customize_chrome:customize_chrome_base",
+      "//chrome/browser/ui/search",
+    ]
   }
   if (enable_extensions_core) {
     deps += [

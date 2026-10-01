@@ -101,6 +101,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/payments/core/features.h"
 #include "components/search/ntp_features.h"
+#include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -118,6 +119,7 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/customize_chrome/side_panel_controller_android.h"
+#include "chrome/browser/ui/search/search_tab_helper.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -286,6 +288,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid)) {
     customize_chrome_side_panel_controller_ =
         std::make_unique<customize_chrome::SidePanelControllerAndroid>(*tab);
+  }
+  if (search::IsInstantExtendedAPIEnabled()) {
+    search_tab_helper_ = GetUserDataFactory().CreateInstance<SearchTabHelper>(
+        *tab, *tab, web_contents);
   }
 #endif
 

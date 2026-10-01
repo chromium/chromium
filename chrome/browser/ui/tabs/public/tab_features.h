@@ -86,6 +86,7 @@ class SadTabHelper;
 class SearchEngineChoiceTabHelper;
 class SearchEngineTabHelper;
 class SearchPromotionNavigationObserver;
+class SearchTabHelper;
 class SecurityStateEventObserver;
 class SharedHighlightingPromo;
 class SidePanelRegistry;
@@ -965,6 +966,8 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
 #endif
+
+  std::unique_ptr<SearchTabHelper> search_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

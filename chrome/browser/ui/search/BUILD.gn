@@ -40,6 +40,7 @@ source_set("search") {
       "//chrome/common/search:mojo_bindings",
       "//components/omnibox/common",
       "//mojo/public/cpp/bindings",
+      "//ui/base/unowned_user_data",
     ]
     if (!is_android) {
       public_deps += [
@@ -85,6 +86,7 @@ source_set("impl") {
       "//components/feature_engagement/public:feature_constants",
       "//components/navigation_metrics",
       "//components/profile_metrics",
+      "//components/tabs:public",
       "//components/vector_icons",
       "//content/public/browser",
     ]
@@ -233,6 +235,7 @@ if (!is_android) {
       "//components/omnibox/common",
       "//components/search",
       "//components/search_engines",
+      "//components/tabs:test_support",
       "//content/public/browser",
       "//content/test:test_support",
       "//ipc",

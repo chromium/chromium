@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -21,7 +22,7 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -36,6 +37,10 @@ namespace gfx {
 class Image;
 }
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 class GURL;
 class InstantService;
 class Profile;
@@ -45,7 +50,6 @@ class SkBitmap;
 // This is the browser-side, per-tab implementation of the embeddedSearch API
 // (see https://www.chromium.org/embeddedsearch).
 class SearchTabHelper : public content::WebContentsObserver,
-                        public content::WebContentsUserData<SearchTabHelper>,
                         public InstantServiceObserver,
                         public SearchIPCRouter::Delegate
 // TODO(b/565031232): Support OmniboxTabHelper for SearchTabHelper on Android.
@@ -57,10 +61,16 @@ class SearchTabHelper : public content::WebContentsObserver,
 #endif
 {
  public:
+  DECLARE_USER_DATA(SearchTabHelper);
+
+  SearchTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
   SearchTabHelper(const SearchTabHelper&) = delete;
   SearchTabHelper& operator=(const SearchTabHelper&) = delete;
 
   ~SearchTabHelper() override;
+
+  static SearchTabHelper* From(tabs::TabInterface* tab);
+  static SearchTabHelper* FromWebContents(content::WebContents* web_contents);
 
   static void BindEmbeddedSearchConnecter(
       mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
@@ -76,10 +86,7 @@ class SearchTabHelper : public content::WebContentsObserver,
   SearchIPCRouter& ipc_router_for_testing() { return ipc_router_; }
 
  private:
-  friend class content::WebContentsUserData<SearchTabHelper>;
   friend class SearchIPCRouterTest;
-
-  explicit SearchTabHelper(content::WebContents* web_contents);
 
   // Overridden from contents::WebContentsObserver:
   void DidStartNavigation(
@@ -133,7 +140,8 @@ class SearchTabHelper : public content::WebContentsObserver,
 
   bool is_setting_title_ = false;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  ui::ScopedUnownedUserData<SearchTabHelper> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<SearchTabHelper> weak_factory_{this};
 };

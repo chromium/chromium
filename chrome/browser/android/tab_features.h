@@ -145,6 +145,7 @@ class SupervisedUserNavigationObserver;
 class TabContextDecryptionTokenTabHelper;
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
+class SearchTabHelper;
 namespace customize_chrome {
 class SidePanelController;
 }  // namespace customize_chrome
@@ -228,6 +229,7 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
+  std::unique_ptr<SearchTabHelper> search_tab_helper_;
 #endif
   std::unique_ptr<tabs::PageContextEligibilityHelper>
       page_context_eligibility_helper_;

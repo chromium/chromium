@@ -27,8 +27,6 @@ class SearchIPCRouterPolicyBrowserTest : public InProcessBrowserTest {
         browser(), GURL("chrome://blank"),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-    SearchTabHelper::CreateForWebContents(web_contents());
   }
 
   content::WebContents* web_contents() {

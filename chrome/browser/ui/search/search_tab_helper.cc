@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -24,6 +25,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -93,13 +95,16 @@ void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
 
 }  // namespace
 
-SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
+DEFINE_USER_DATA(SearchTabHelper);
+
+SearchTabHelper::SearchTabHelper(tabs::TabInterface& tab,
+                                 content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      content::WebContentsUserData<SearchTabHelper>(*web_contents),
       ipc_router_(web_contents,
                   this,
                   std::make_unique<SearchIPCRouterPolicyImpl>(web_contents)),
-      instant_service_(nullptr) {
+      instant_service_(nullptr),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   DCHECK(search::IsInstantExtendedAPIEnabled());
 
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
@@ -111,6 +116,18 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
   OmniboxTabHelper::CreateForWebContents(web_contents, profile());
   OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
 #endif
+
+  tab_subscriptions_.push_back(tab.RegisterDidActivate(
+      base::BindRepeating([](SearchTabHelper* self,
+                             tabs::TabInterface*) { self->OnTabActivated(); },
+                          base::Unretained(this))));
+  tab_subscriptions_.push_back(tab.RegisterWillDeactivate(
+      base::BindRepeating([](SearchTabHelper* self,
+                             tabs::TabInterface*) { self->OnTabDeactivated(); },
+                          base::Unretained(this))));
+  if (tab.IsActivated()) {
+    OnTabActivated();
+  }
 }
 
 SearchTabHelper::~SearchTabHelper() {
@@ -118,10 +135,25 @@ SearchTabHelper::~SearchTabHelper() {
     instant_service_->RemoveObserver(this);
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* helper = OmniboxTabHelper::FromWebContents(&GetWebContents())) {
-    helper->RemoveObserver(this);
+  if (web_contents()) {
+    if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents())) {
+      helper->RemoveObserver(this);
+    }
   }
 #endif
+}
+
+// static
+SearchTabHelper* SearchTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+SearchTabHelper* SearchTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
 }
 
 void SearchTabHelper::BindEmbeddedSearchConnecter(
@@ -286,5 +318,3 @@ bool SearchTabHelper::IsInputInProgress() const {
   return false;
 #endif
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

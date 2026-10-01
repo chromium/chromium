@@ -178,10 +178,6 @@
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #endif
 
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
-#include "chrome/browser/ui/search/search_tab_helper.h"
-#endif
-
 using content::WebContents;
 
 namespace {
@@ -485,12 +481,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
-  if (search::IsInstantExtendedAPIEnabled()) {
-    SearchTabHelper::CreateForWebContents(web_contents);
-  }
-#endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
   // NOT for "if enabled"; put those in section 1.
