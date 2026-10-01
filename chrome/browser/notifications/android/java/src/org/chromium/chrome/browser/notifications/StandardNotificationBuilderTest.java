@@ -280,10 +280,12 @@ public class StandardNotificationBuilderTest {
         int expectedHeight = Math.round((float) expectedWidth * height / width);
 
         // The image should have been scaled down maintaining aspect ratio (2:1).
-        // On Android 14+ (API >= 34), EXTRA_PICTURE preserves the exact dimensions.
-        // On older versions (found through trial and error) Android's notification pipeline may
-        // scale it down further, so check that it's smaller and maintains the aspect ratio.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // On Android 14 to 16 (API 34 to 36), EXTRA_PICTURE preserves the exact dimensions.
+        // On older versions (found through trial and error), and from API 37, whose big picture
+        // size limits are smaller, Android's notification pipeline may scale it down further, so
+        // check that it's smaller and maintains the aspect ratio.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.BAKLAVA) {
             Assert.assertEquals(expectedWidth, picture.getWidth());
             Assert.assertEquals(expectedHeight, picture.getHeight());
         } else {
