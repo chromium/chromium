@@ -443,6 +443,7 @@ optimization_guide_cq_settings = try_.cq_settings(
         "components/on_device_translation/.+",
         "components/optimization_guide/.+",
         "services/on_device_model/.+",
+        "testing/buildbot/internal.optimization_guide.json",
         "third_party/blink/web_tests/external/wpt/ai/.+",
         "third_party/blink/web_tests/AIExpectations.*",
     ],
