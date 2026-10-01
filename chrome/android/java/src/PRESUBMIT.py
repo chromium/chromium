@@ -17,20 +17,16 @@ This presubmit checks for the following:
 import re
 
 NEW_NOTIFICATION_BUILDER_RE = re.compile(
-  r'\bnew\sNotification(Compat)?\.Builder\b'
-)
+    r'\bnew\sNotification(Compat)?\.Builder\b')
 
 IMPORT_APP_COMPAT_ALERTDIALOG_RE = re.compile(
-  r'\bimport\sandroid\.support\.v7\.app\.AlertDialog;'
-)
+    r'\bimport\sandroid\.support\.v7\.app\.AlertDialog;')
 
 NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE = re.compile(
-  r'\bnew\s+(UiUtils\s*\.)?CompatibleAlertDialogBuilder\b'
-)
+    r'\bnew\s+(UiUtils\s*\.)?CompatibleAlertDialogBuilder\b')
 
 SPLIT_COMPAT_UTILS_IMPL_NAME_RE = re.compile(
-  r'\bBundleUtils\.getIdentifierName\(\s*[^\s"]'
-)
+    r'\bBundleUtils\.getIdentifierName\(\s*[^\s"]')
 
 COMMENT_RE = re.compile(r'^\s*(//|/\*|\*)')
 
@@ -57,8 +53,8 @@ def _CommonChecks(input_api, output_api):
 
 def _CheckNotificationConstructors(input_api, output_api):
   files_to_skip = (
-    'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-    'ChromeNotificationWrapperBuilder.java',
+      'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
+      'ChromeNotificationWrapperBuilder.java',
   )
   error_msg = '''
   Android Notification Construction Check failed:
@@ -71,25 +67,24 @@ def _CheckNotificationConstructors(input_api, output_api):
 
   See https://crbug.com/40500223 for more information.
   '''
-  return _CheckReIgnoreComment(
-    input_api, output_api, error_msg, files_to_skip, NEW_NOTIFICATION_BUILDER_RE
-  )
+  return _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
+                               NEW_NOTIFICATION_BUILDER_RE)
 
 
 def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
   files_to_skip = (
-    BROWSER_ROOT + 'autofill/keyboard_accessory/'
-    'AutofillKeyboardAccessoryBridge.java',
-    BROWSER_ROOT + 'dom_distiller/DistilledPagePrefsView.java',
-    BROWSER_ROOT + 'dom_distiller/DomDistillerUIUtils.java',
-    BROWSER_ROOT + 'download/DownloadController.java',
-    BROWSER_ROOT + 'externalnav/ExternalNavigationDelegateImpl.java',
-    BROWSER_ROOT + 'payments/AndroidPaymentApp.java',
-    BROWSER_ROOT + 'permissions/AndroidPermissionRequester.java',
-    BROWSER_ROOT + 'share/ShareDelegateImpl.java',
-    BROWSER_ROOT + 'util/AccessibilityUtil.java',
-    BROWSER_ROOT + 'webapps/AddToHomescreenDialog.java',
-    BROWSER_ROOT + 'webapps/WebappOfflineDialog.java',
+      BROWSER_ROOT + 'autofill/keyboard_accessory/'
+                     'AutofillKeyboardAccessoryBridge.java',
+      BROWSER_ROOT + 'dom_distiller/DistilledPagePrefsView.java',
+      BROWSER_ROOT + 'dom_distiller/DomDistillerUIUtils.java',
+      BROWSER_ROOT + 'download/DownloadController.java',
+      BROWSER_ROOT + 'externalnav/ExternalNavigationDelegateImpl.java',
+      BROWSER_ROOT + 'payments/AndroidPaymentApp.java',
+      BROWSER_ROOT + 'permissions/AndroidPermissionRequester.java',
+      BROWSER_ROOT + 'share/ShareDelegateImpl.java',
+      BROWSER_ROOT + 'util/AccessibilityUtil.java',
+      BROWSER_ROOT + 'webapps/AddToHomescreenDialog.java',
+      BROWSER_ROOT + 'webapps/WebappOfflineDialog.java',
   )
   error_msg = '''
   Android Use of CompatibleAlertDialogBuilder Check failed:
@@ -103,13 +98,8 @@ def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
   If you are in doubt, contact
   //src/chrome/android/java/src/org/chromium/chrome/browser/vr/VR_JAVA_OWNERS
   '''
-  return _CheckReIgnoreComment(
-    input_api,
-    output_api,
-    error_msg,
-    files_to_skip,
-    NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE,
-  )
+  return _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
+                               NEW_COMPATIBLE_ALERTDIALOG_BUILDER_RE)
 
 
 def _CheckBundleUtilsIdentifierName(input_api, output_api):
@@ -118,37 +108,29 @@ def _CheckBundleUtilsIdentifierName(input_api, output_api):
   BundleUtils.getIdentifierName() must be called with a String literal,
   otherwise R8 may not correctly obfuscate the class name passed in.
   '''
-  return _CheckReIgnoreComment(
-    input_api, output_api, error_msg, [], SPLIT_COMPAT_UTILS_IMPL_NAME_RE
-  )
+  return _CheckReIgnoreComment(input_api, output_api, error_msg, [],
+                               SPLIT_COMPAT_UTILS_IMPL_NAME_RE)
 
 
-def _CheckReIgnoreComment(
-  input_api,
-  output_api,
-  error_msg,
-  files_to_skip,
-  regular_expression,
-  error_files=None,
-):
+def _CheckReIgnoreComment(input_api, output_api, error_msg, files_to_skip,
+                          regular_expression, error_files=None):
 
   def CheckLine(current_file, line_number, line, problems, error_files):
     """Returns a boolean whether the line contains an error."""
-    if regular_expression.search(line) and not COMMENT_RE.search(line):
+    if (regular_expression.search(line) and not COMMENT_RE.search(line)):
       if error_files is not None:
         error_files.append(current_file)
       problems.append(
-        '  %s:%d\n    \t%s'
-        % (current_file.LocalPath(), line_number, line.strip())
-      )
+          '  %s:%d\n    \t%s' %
+          (current_file.LocalPath(), line_number, line.strip()))
       return True
     return False
 
   problems = []
   sources = lambda x: input_api.FilterSourceFile(
-    x, files_to_check=(r'.*\.java$',), files_to_skip=files_to_skip
-  )
-  for f in input_api.AffectedFiles(include_deletes=False, file_filter=sources):
+      x, files_to_check=(r'.*\.java$',), files_to_skip=files_to_skip)
+  for f in input_api.AffectedFiles(include_deletes=False,
+                                   file_filter=sources):
     previous_line = ''
     for line_number, line in enumerate(f.NewContents(), start=1):
       if not CheckLine(f, line_number, line, problems, error_files):

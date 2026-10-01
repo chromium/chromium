@@ -19,8 +19,8 @@ from typing import Dict, List, Optional
 TEST_FILE = "chrome/browser/glic/host/glic_start_benchmark_browsertest.cc"
 
 ALL_MODES = [
-  "Webview",
-  "NoWebview",
+    "Webview",
+    "NoWebview",
 ]
 
 
@@ -28,11 +28,11 @@ def run_command(cmd: List[str], verbose: bool = False) -> str:
   """Runs a shell command, optionally printing output live, and returns
   stdout."""
   proc = subprocess.Popen(
-    cmd,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT,
-    text=True,
-    bufsize=1,
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      text=True,
+      bufsize=1,
   )
   lines = []
   for line in proc.stdout:
@@ -44,8 +44,8 @@ def run_command(cmd: List[str], verbose: bool = False) -> str:
   proc.wait()
   if proc.returncode != 0:
     print(
-      f"Error: Command failed with code {proc.returncode}: {' '.join(cmd)}",
-      file=sys.stderr,
+        f"Error: Command failed with code {proc.returncode}: {' '.join(cmd)}",
+        file=sys.stderr,
     )
   return "".join(lines)
 
@@ -53,29 +53,29 @@ def run_command(cmd: List[str], verbose: bool = False) -> str:
 def parse_results(output: str, mode: str) -> Dict:
   """Parses benchmark metrics from test output."""
   result = {
-    "mode": mode,
-    "iterations": 0,
-    "mean_ms": None,
-    "stddev_ms": None,
-    "min_ms": None,
-    "max_ms": None,
-    "decompress_ms": None,
-    "script_start_ms": None,
-    "client_init_ms": None,
-    "panel_opened_ms": None,
-    "iteration_times": [],
+      "mode": mode,
+      "iterations": 0,
+      "mean_ms": None,
+      "stddev_ms": None,
+      "min_ms": None,
+      "max_ms": None,
+      "decompress_ms": None,
+      "script_start_ms": None,
+      "client_init_ms": None,
+      "panel_opened_ms": None,
+      "iteration_times": [],
   }
 
   # Parse individual iteration timings
   iter_re = re.compile(
-    r"\["
-    + re.escape(mode)
-    + r"\] Iteration (\d+)/(\d+): total_init=([\d\.]+) ms"
-    + r"(?:, decompress=([\d\.]+) ms)?"
-    + r"(?:, script_start=([\d\.]+) ms)?"
-    + r"(?:, bootstrap_received=([\d\.]+) ms)?"
-    + r"(?:, client_init=([\d\.]+) ms)?"
-    + r"(?:, panel_opened=([\d\.]+) ms)?"
+      r"\["
+      + re.escape(mode)
+      + r"\] Iteration (\d+)/(\d+): total_init=([\d\.]+) ms"
+      + r"(?:, decompress=([\d\.]+) ms)?"
+      + r"(?:, script_start=([\d\.]+) ms)?"
+      + r"(?:, bootstrap_received=([\d\.]+) ms)?"
+      + r"(?:, client_init=([\d\.]+) ms)?"
+      + r"(?:, panel_opened=([\d\.]+) ms)?"
   )
   for m in iter_re.finditer(output):
     init_ms = float(m.group(3))
@@ -84,8 +84,7 @@ def parse_results(output: str, mode: str) -> Dict:
     bootstrap_received = float(m.group(6)) if m.group(6) else 0.0
     client_init = float(m.group(7)) if m.group(7) else 0.0
     panel_opened = float(m.group(8)) if m.group(8) else 0.0
-    result["iteration_times"].append(
-      {
+    result["iteration_times"].append({
         "iteration": int(m.group(1)),
         "init_ms": init_ms,
         "decompress_ms": decompress_ms,
@@ -93,76 +92,75 @@ def parse_results(output: str, mode: str) -> Dict:
         "bootstrap_received_ms": bootstrap_received,
         "client_init_ms": client_init,
         "panel_opened_ms": panel_opened,
-      }
-    )
+    })
 
   result["iterations"] = len(result["iteration_times"])
 
   # Parse final RESULTS block
   mean_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean init time:\s+([\d\.]+)\s+ms\s+\(stddev:\s+([\d\.]+)\s+ms\)",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean init time:\s+([\d\.]+)\s+ms\s+\(stddev:\s+([\d\.]+)\s+ms\)",
+      output,
+      re.DOTALL,
   )
   if mean_m:
     result["mean_ms"] = float(mean_m.group(1))
     result["stddev_ms"] = float(mean_m.group(2))
 
   minmax_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Min / Max:\s+([\d\.]+)\s+ms\s+/\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Min / Max:\s+([\d\.]+)\s+ms\s+/\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   if minmax_m:
     result["min_ms"] = float(minmax_m.group(1))
     result["max_ms"] = float(minmax_m.group(2))
 
   decomp_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean decompress:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean decompress:\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   result["decompress_ms"] = float(decomp_m.group(1)) if decomp_m else 0.0
 
   script_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean script start:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean script start:\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   result["script_start_ms"] = float(script_m.group(1)) if script_m else 0.0
 
   boot_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean bootstrap received:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean bootstrap received:\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   result["bootstrap_received_ms"] = float(boot_m.group(1)) if boot_m else 0.0
 
   client_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean client initialized:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean client initialized:\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   result["client_init_ms"] = float(client_m.group(1)) if client_m else 0.0
 
   panel_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean panel opened:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
+      r"RESULTS for "
+      + re.escape(mode)
+      + r":.*?Mean panel opened:\s+([\d\.]+)\s+ms",
+      output,
+      re.DOTALL,
   )
   result["panel_opened_ms"] = float(panel_m.group(1)) if panel_m else 0.0
 
@@ -171,56 +169,56 @@ def parse_results(output: str, mode: str) -> Dict:
 
 def main():
   parser = argparse.ArgumentParser(
-    description=(
-      "Run Glic initialization benchmark and report comparative latency."
-    )
+      description=(
+          "Run Glic initialization benchmark and report comparative latency."
+      )
   )
   parser.add_argument(
-    "-n",
-    "--iterations",
-    type=int,
-    default=25,
-    help="Number of iterations per mode (default: 25)",
+      "-n",
+      "--iterations",
+      type=int,
+      default=25,
+      help="Number of iterations per mode (default: 25)",
   )
   parser.add_argument(
-    "-v",
-    "--verbose",
-    action="store_true",
-    help="Show iteration progress as tests run",
+      "-v",
+      "--verbose",
+      action="store_true",
+      help="Show iteration progress as tests run",
   )
   args = parser.parse_args()
 
   print(
-    f"=== Running Glic Initialization Benchmark "
-    f"({len(ALL_MODES)} modes, {args.iterations} iterations each) ==="
+      f"=== Running Glic Initialization Benchmark "
+      f"({len(ALL_MODES)} modes, {args.iterations} iterations each) ==="
   )
 
   results = []
   for mode in ALL_MODES:
     print(f"\n[{mode}] Running {args.iterations} iterations...", flush=True)
     cmd = [
-      "cr",
-      "test",
-      TEST_FILE,
-      "-f",
-      f"*{mode}*",
-      "--test-launcher-print-test-stdio=always",
-      f"--glic-benchmark-iterations={args.iterations}",
+        "cr",
+        "test",
+        TEST_FILE,
+        "-f",
+        f"*{mode}*",
+        "--test-launcher-print-test-stdio=always",
+        f"--glic-benchmark-iterations={args.iterations}",
     ]
     output = run_command(cmd, verbose=args.verbose)
     res = parse_results(output, mode)
     results.append(res)
     if res["mean_ms"] is not None:
       decomp_str = (
-        f", decompress={res['decompress_ms']:.1f}ms"
-        if res["decompress_ms"]
-        else ""
+          f", decompress={res['decompress_ms']:.1f}ms"
+          if res["decompress_ms"]
+          else ""
       )
       print(
-        f"  Done: Mean={res['mean_ms']:.2f}ms"
-        f" (stddev={res['stddev_ms']:.2f}ms),"
-        f" Min={res['min_ms']:.1f}ms,"
-        f" Max={res['max_ms']:.1f}ms{decomp_str}"
+          f"  Done: Mean={res['mean_ms']:.2f}ms"
+          f" (stddev={res['stddev_ms']:.2f}ms),"
+          f" Min={res['min_ms']:.1f}ms,"
+          f" Max={res['max_ms']:.1f}ms{decomp_str}"
       )
     else:
       print(f"  Warning: Could not parse results for {mode}")
@@ -237,13 +235,13 @@ def main():
   print(f"{'BENCHMARK RESULTS':^104}")
   print("=" * 104)
   header = (
-    f"| {'Configuration':<25} | {'Mean (ms)':<10} | {'StdDev':<8} |"
-    f" {'Min / Max (ms)':<18} | {'Decompress':<11} |"
-    f" {'Delta vs Baseline':<18} |"
+      f"| {'Configuration':<25} | {'Mean (ms)':<10} | {'StdDev':<8} |"
+      f" {'Min / Max (ms)':<18} | {'Decompress':<11} |"
+      f" {'Delta vs Baseline':<18} |"
   )
   separator = (
-    f"|:{'-' * 25}-|-{'-' * 10}:|-{'-' * 8}:|-{'-' * 18}:"
-    f"|-{'-' * 11}:|-{'-' * 18}:|"
+      f"|:{'-'*25}-|-{'-'*10}:|-{'-'*8}:|-{'-'*18}:"
+      f"|-{'-'*11}:|-{'-'*18}:|"
   )
   print(header)
   print(separator)
@@ -252,15 +250,17 @@ def main():
     mode = r["mode"]
     mean_str = f"{r['mean_ms']:.2f}" if r["mean_ms"] is not None else "N/A"
     stddev_str = (
-      f"{r['stddev_ms']:.2f}" if r["stddev_ms"] is not None else "N/A"
+        f"{r['stddev_ms']:.2f}" if r["stddev_ms"] is not None else "N/A"
     )
     minmax_str = (
-      f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
-      if r["min_ms"] is not None
-      else "N/A"
+        f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
+        if r["min_ms"] is not None
+        else "N/A"
     )
     decomp_str = (
-      f"{r['decompress_ms']:.2f} ms" if r.get("decompress_ms") else "N/A"
+        f"{r['decompress_ms']:.2f} ms"
+        if r.get("decompress_ms")
+        else "N/A"
     )
 
     delta_str = "-"
@@ -275,8 +275,8 @@ def main():
         delta_str = f"+{delta:.1f} ms (+{pct:.1f}%)"
 
     print(
-      f"| {mode:<25} | {mean_str:>10} | {stddev_str:>8} |"
-      f" {minmax_str:>18} | {decomp_str:>11} | {delta_str:>18} |"
+        f"| {mode:<25} | {mean_str:>10} | {stddev_str:>8} |"
+        f" {minmax_str:>18} | {decomp_str:>11} | {delta_str:>18} |"
     )
 
   print("=" * 104)
@@ -288,13 +288,13 @@ def main():
     print(f"{'CLIENT LIFECYCLE MILESTONES (performance.mark)':^125}")
     print("=" * 125)
     m_header = (
-      f"| {'Configuration':<24} | {'Script Start':<12} | {'Boot Recv':<12} |"
-      f" {'Client Init':<12} | {'Script->Boot':<12} | {'Boot->Init':<12} |"
-      f" {'Total Client':<14} |"
+        f"| {'Configuration':<24} | {'Script Start':<12} | {'Boot Recv':<12} |"
+        f" {'Client Init':<12} | {'Script->Boot':<12} | {'Boot->Init':<12} |"
+        f" {'Total Client':<14} |"
     )
     m_sep = (
-      f"|:{'-' * 24}-|-{'-' * 12}:|-{'-' * 12}:|-{'-' * 12}:"
-      f"|-{'-' * 12}:|-{'-' * 12}:|-{'-' * 14}:|"
+        f"|:{'-'*24}-|-{'-'*12}:|-{'-'*12}:|-{'-'*12}:"
+        f"|-{'-'*12}:|-{'-'*12}:|-{'-'*14}:|"
     )
     print(m_header)
     print(m_sep)
@@ -316,11 +316,12 @@ def main():
       else:
         tot_client = "N/A"
       print(
-        f"| {mode:<24} | {ss_str:>12} | {br_str:>12} | {ci_str:>12} |"
-        f" {s_to_b:>12} | {b_to_i:>12} | {tot_client:>14} |"
+          f"| {mode:<24} | {ss_str:>12} | {br_str:>12} | {ci_str:>12} |"
+          f" {s_to_b:>12} | {b_to_i:>12} | {tot_client:>14} |"
       )
     print("=" * 125 + "\n")
 
 
 if __name__ == "__main__":
   main()
+

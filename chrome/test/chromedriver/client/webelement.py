@@ -7,7 +7,6 @@ from command_executor import Command
 
 class WebElement(object):
   """Represents an HTML element."""
-
   def __init__(self, chromedriver, id_):
     self._chromedriver = chromedriver
     self._id = id_
@@ -20,13 +19,11 @@ class WebElement(object):
 
   def FindElement(self, strategy, target):
     return self._Execute(
-      Command.FIND_CHILD_ELEMENT, {'using': strategy, 'value': target}
-    )
+        Command.FIND_CHILD_ELEMENT, {'using': strategy, 'value': target})
 
   def FindElements(self, strategy, target):
     return self._Execute(
-      Command.FIND_CHILD_ELEMENTS, {'using': strategy, 'value': target}
-    )
+        Command.FIND_CHILD_ELEMENTS, {'using': strategy, 'value': target})
 
   def GetElementShadowRoot(self):
     return self._Execute(Command.GET_ELEMENT_SHADOW_ROOT)
@@ -37,10 +34,10 @@ class WebElement(object):
   def GetTagName(self):
     return self._Execute(Command.GET_ELEMENT_TAG_NAME)
 
-  def GetAttribute(self, name):
+  def GetAttribute(self,name):
     return self._Execute(Command.GET_ELEMENT_ATTRIBUTE, {'name': name})
 
-  def GetProperty(self, name):
+  def GetProperty(self,name):
     return self._Execute(Command.GET_ELEMENT_PROPERTY, {'name': name})
 
   def GetComputedLabel(self):

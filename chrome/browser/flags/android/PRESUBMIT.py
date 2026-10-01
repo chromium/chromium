@@ -4,10 +4,7 @@
 
 """Presubmit script for Chrome Android feature flag code."""
 
-
-def CheckChromeFeatureIsSorted(
-  input_api, output_api, file_path, name, start_pattern, end_pattern
-):
+def CheckChromeFeatureIsSorted(input_api, output_api, file_path, name, start_pattern, end_pattern):
   """
   Checks that the section of code within `start_pattern` and `end_pattern`
   inside the `file_path` file is sorted alphabetically.
@@ -58,16 +55,16 @@ def CheckChromeFeatureIsSorted(
   for i, original in enumerate(feature_lines):
     if original != sorted_feature_names[i]:
       error_detail = (
-        "The list is not sorted alphabetically.\n"
-        f"  - The first out-of-order item is: '{original}'\n"
-        f"  - The expected item was:          '{sorted_feature_names[i]}'"
+          "The list is not sorted alphabetically.\n"
+          f"  - The first out-of-order item is: '{original}'\n"
+          f"  - The expected item was:          '{sorted_feature_names[i]}'"
       )
       break
 
   error_message = (
-    f"The `{name}` values in {file_path} must be sorted "
-    f"alphabetically.\n\n{error_detail}\n\nPlease sort the list to "
-    "fix this error."
+      f"The `{name}` values in {file_path} must be sorted "
+      f"alphabetically.\n\n{error_detail}\n\nPlease sort the list to "
+      "fix this error."
   )
 
   # We want this to be an error because it is an easy fix, and this list has
@@ -79,39 +76,27 @@ def CheckChangeOnCommit(input_api, output_api):
   results = []
 
   # Check that the array of exported features is in order.
-  results.extend(
-    CheckChromeFeatureIsSorted(
-      input_api,
-      output_api,
-      'chrome/browser/flags/android/chrome_feature_list.cc',
-      'kFeaturesExposedToJava',
-      '// FEATURE_EXPORT_LIST_START',
-      '// FEATURE_EXPORT_LIST_END',
-    )
+  results.extend(CheckChromeFeatureIsSorted(
+    input_api,
+    output_api,
+    'chrome/browser/flags/android/chrome_feature_list.cc',
+    'kFeaturesExposedToJava',
+    '// FEATURE_EXPORT_LIST_START',
+    '// FEATURE_EXPORT_LIST_END')
   )
 
   # Check that all feature definitions are in order.
-  results.extend(
-    CheckChromeFeatureIsSorted(
-      input_api,
-      output_api,
-      'chrome/browser/flags/android/chrome_feature_list.cc',
-      'BASE_FEATURE',
-      '// BASE_FEATURE_START',
-      '// BASE_FEATURE_END',
-    )
-  )
+  results.extend(CheckChromeFeatureIsSorted(input_api, output_api,
+    'chrome/browser/flags/android/chrome_feature_list.cc',
+    'BASE_FEATURE',
+    '// BASE_FEATURE_START',
+    '// BASE_FEATURE_END'))
 
   # Check that all feature declarations are in order.
-  results.extend(
-    CheckChromeFeatureIsSorted(
-      input_api,
-      output_api,
-      'chrome/browser/flags/android/chrome_feature_list.h',
-      'BASE_DECLARE_FEATURE',
-      '// BASE_DECLARE_FEATURE_START',
-      '// BASE_DECLARE_FEATURE_END',
-    )
-  )
+  results.extend(CheckChromeFeatureIsSorted(input_api, output_api,
+    'chrome/browser/flags/android/chrome_feature_list.h',
+    'BASE_DECLARE_FEATURE',
+    '// BASE_DECLARE_FEATURE_START',
+    '// BASE_DECLARE_FEATURE_END'))
 
   return results

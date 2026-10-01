@@ -73,7 +73,6 @@ class _BaseServer(http.server.HTTPServer):
       server_cert_and_key_path: path to a PEM file containing the cert and key.
                                 if it is None, start the server as an HTTP one.
     """
-
     class _Handler(http.server.BaseHTTPRequestHandler):
       """Internal handler that just asks the server to handle the request."""
 
@@ -94,21 +93,21 @@ class _BaseServer(http.server.HTTPServer):
         try:
           http.server.BaseHTTPRequestHandler.handle(self)
         except:
-          pass  # Ignore socket errors.
+          pass # Ignore socket errors.
 
       def finish(self):
         try:
           http.server.BaseHTTPRequestHandler.finish(self)
         except:
-          pass  # Ignore socket errors.
+          pass # Ignore socket errors.
 
-    http.server.HTTPServer.__init__(self, ('127.0.0.1', 0), _Handler)
+    http.server.HTTPServer.__init__(self, ('127.0.0.1', 0), \
+      _Handler)
 
     if server_cert_and_key_path is not None:
       self._is_https_enabled = True
       self.socket = ssl.wrap_socket(
-        self.socket, certfile=server_cert_and_key_path, server_side=True
-      )
+          self.socket, certfile=server_cert_and_key_path, server_side=True)
     else:
       self._is_https_enabled = False
 
@@ -126,7 +125,6 @@ class _BaseServer(http.server.HTTPServer):
 
 class _ThreadingServer(socketserver.ThreadingMixIn, _BaseServer):
   """_BaseServer enhanced to handle multiple requests simultaneously"""
-
   pass
 
 
@@ -177,7 +175,8 @@ class WebServer(object):
       self._path_maps_lock.release()
 
     # Serve from file.
-    path = os.path.normpath(os.path.join(self._root_dir, *path.split('/')))
+    path = os.path.normpath(
+        os.path.join(self._root_dir, *path.split('/')))
     if not path.startswith(self._root_dir):
       responder.SendError(403)
       return
@@ -202,6 +201,7 @@ class WebServer(object):
         self._path_callback_map[path] = func
     finally:
       self._path_maps_lock.release()
+
 
   def GetUrl(self, host=None):
     """Returns the base URL of the server."""
@@ -248,10 +248,8 @@ class SyncWebServer(object):
 
   def RespondWithContent(self, content):
     """Blocks until request comes in, then handles it with the given content."""
-
     def SendContent(responder):
       responder.SendResponse({}, content)
-
     self.Respond(SendContent)
 
   def GetUrl(self, host=None):

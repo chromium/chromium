@@ -15,18 +15,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-def test_load_simple_url(
-  driver_factory: drivers.DriverFactory,
-  local_http_server: HTTPServer,
-  seed_locator: fixtures.SeedLocator,
-  test_options: test_options.TestOptions,
-  add_tag: fixtures.result_sink.AddTag,
-  add_features: fixtures.features.AddFeatures,
-):
-  url = f'http://localhost:{local_http_server.server_port}'
+def test_load_simple_url(driver_factory: drivers.DriverFactory,
+                         local_http_server: HTTPServer,
+                         seed_locator: fixtures.SeedLocator,
+                         test_options: test_options.TestOptions,
+                         add_tag: fixtures.result_sink.AddTag,
+                         add_features: fixtures.features.AddFeatures):
+  url = (f'http://localhost:{local_http_server.server_port}')
   with driver_factory.create_driver(
-    seed_file=seed_locator.get_seed()
-  ) as driver:
+    seed_file=seed_locator.get_seed()) as driver:
     versions = driver.execute_cdp_cmd(cmd='Browser.getVersion', cmd_args={})
     # https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion
     # expecting { 'product': 'Chrome/120.0.6090.0' }
@@ -37,8 +34,7 @@ def test_load_simple_url(
       driver.set_window_size(800, 600)
     driver.get(url)
     WebDriverWait(driver, 5).until(
-      EC.presence_of_element_located((By.TAG_NAME, 'body'))
-    )
+      EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
     # log features
     features = DriverUtil(driver, test_options).get_features()
@@ -48,30 +44,26 @@ def test_load_simple_url(
 # This test requires machine to be allowlisted in the Skia Gold service.
 # In general, only tests running on official builders are allowed to upload
 # images. In most cases local runs will fail.
-def test_basic_rendering(
-  driver_factory: drivers.DriverFactory,
-  local_http_server: HTTPServer,
-  seed_locator: fixtures.SeedLocator,
-  test_options: test_options.TestOptions,
-  skia_gold_util: fixtures.VariationsSkiaGoldUtil,
-  add_features: fixtures.features.AddFeatures,
-):
-  url = f'http://localhost:{local_http_server.server_port}'
+def test_basic_rendering(driver_factory: drivers.DriverFactory,
+                         local_http_server: HTTPServer,
+                         seed_locator: fixtures.SeedLocator,
+                         test_options: test_options.TestOptions,
+                         skia_gold_util: fixtures.VariationsSkiaGoldUtil,
+                         add_features: fixtures.features.AddFeatures):
+  url = (f'http://localhost:{local_http_server.server_port}')
   with driver_factory.create_driver(
-    seed_file=seed_locator.get_seed()
-  ) as driver:
+    seed_file=seed_locator.get_seed()) as driver:
     # Window bounds cannot be changed on Android / WebView.
     if test_options.platform not in ('android', 'webview', 'android_webview'):
       driver.set_window_size(800, 600)
     driver.get(url)
     driver_factory.wait_for_screenshot()
     WebDriverWait(driver, 5).until(
-      EC.presence_of_element_located((By.TAG_NAME, 'body'))
-    )
+      EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
     status, error_msg = skia_gold_util.compare(
-      name='body', png_data=driver.get_screenshot_as_png()
-    )
+      name='body',
+      png_data=driver.get_screenshot_as_png())
 
     assert status == 0, error_msg
 
@@ -80,22 +72,19 @@ def test_basic_rendering(
     add_features(features)
 
 
-def test_load_crash_seed(
-  driver_factory: drivers.DriverFactory,
-  local_http_server: HTTPServer,
-  seed_locator: fixtures.SeedLocator,
-):
-  url = f'http://localhost:{local_http_server.server_port}'
+def test_load_crash_seed(driver_factory: drivers.DriverFactory,
+                         local_http_server: HTTPServer,
+                         seed_locator: fixtures.SeedLocator):
+  url = (f'http://localhost:{local_http_server.server_port}')
   # Launch Chrome normally.
   with driver_factory.create_driver() as driver:
     driver.get(url)
     WebDriverWait(driver, 5).until(
-      EC.presence_of_element_located((By.TAG_NAME, 'body'))
-    )
+      EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
   # Launch again with bad seed, expecting a crash.
   with pytest.raises(WebDriverException):
     with driver_factory.create_driver(
       seed_file=seed_locator.get_seed(fixtures.SeedName.CRASH)
-    ) as driver:
+      ) as driver:
       driver.get(url)

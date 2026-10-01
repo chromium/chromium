@@ -10,7 +10,7 @@ import shutil
 import sys
 import tarfile
 import tempfile
-from typing import List, Optional
+from typing import List,Optional
 
 # A python script that unpacks the supplied tar archive by:
 # 1. Extracting the tar into a temporary directory
@@ -32,21 +32,21 @@ from typing import List, Optional
 # CQ builds all targets, then triggers the same build again and asserts that
 # it was a no-op. Without this indirect extraction, we'd fail the CQ every time.
 
-
 def main(argv: Optional[List[str]] = None) -> Optional[int]:
   parser = optparse.OptionParser(description=__doc__)
   parser.usage = '%prog [options] <tar-file_path>'
   parser.add_option(
-    '--dest-dir',
-    action='store',
-    metavar='DEST_DIR',
-    help='Destination directory for extracted files.',
-  )
+      '--dest-dir',
+      action='store',
+      metavar='DEST_DIR',
+      help='Destination directory for extracted files.')
   options, args = parser.parse_args()
   if len(args) < 1 or not options.dest_dir:
-    print('Expected --dest-dir and the tar archive to unpack.', file=sys.stderr)
-    print(str(args))
-    sys.exit(1)
+      print(
+          'Expected --dest-dir and the tar archive to unpack.',
+          file=sys.stderr)
+      print(str(args))
+      sys.exit(1)
 
   tarArchive = args[0]
   outputFiles = args[1].split(',')
@@ -70,6 +70,5 @@ def main(argv: Optional[List[str]] = None) -> Optional[int]:
       destination = os.path.join(destDir, file)
       shutil.copyfile(source, destination)
 
-
 if __name__ == "__main__":
-  sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))

@@ -25,11 +25,10 @@ def BuildPKeyToNameMapping():
   # The pscon module contains a number of well-known PKey values. Scan through
   # the module picking out anything that looks plausibly like a PROPERTYKEY (a
   # tuple of a PyIID and an int), and map it to its name in the module.
-  return {
-    item: name
-    for (name, item) in pscon.__dict__.items()
-    if (isinstance(item, tuple) and len(item) == 2 and isinstance(item[1], int))
-  }
+  return {item: name for (name, item) in pscon.__dict__.items() if (
+             isinstance(item, tuple) and
+             len(item) == 2 and
+             isinstance(item[1], int))}
 
 
 def PrintShortcutProperties(shortcut_path, dump_all):
@@ -60,12 +59,10 @@ def PrintShortcutProperties(shortcut_path, dump_all):
 
 def main():
   usage = 'usage: %prog [options] "C:\\Path\\To\\My Shortcut.lnk"'
-  parser = optparse.OptionParser(
-    usage, description="Dumps a shortcut's  properties."
-  )
-  parser.add_option(
-    '-a', '--dump-all', action='store_true', dest='dump_all', default=False
-  )
+  parser = optparse.OptionParser(usage,
+                                 description="Dumps a shortcut's  properties.")
+  parser.add_option('-a', '--dump-all', action='store_true', dest='dump_all',
+                    default=False)
   options, args = parser.parse_args()
 
   if len(args) != 1:

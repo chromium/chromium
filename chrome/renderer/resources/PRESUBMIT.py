@@ -8,7 +8,6 @@ PRESUBMIT_VERSION = '2.0.0'
 def _ImportWebDevStyle(input_api):
   try:
     import sys
-
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
@@ -21,3 +20,4 @@ def _ImportWebDevStyle(input_api):
 def CheckWebDevStyle(input_api, output_api):
   presubmit_support = _ImportWebDevStyle(input_api)
   return presubmit_support.CheckStyle(input_api, output_api)
+

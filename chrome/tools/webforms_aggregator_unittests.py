@@ -22,7 +22,6 @@ logger.setLevel(logging.INFO)
 
 class WebformsAggregatorTest(unittest.TestCase):
   """Unit tests for the webforms_aggregator module."""
-
   PORT1 = 8002
   PORT2 = 8003
 
@@ -123,7 +122,8 @@ class WebformsAggregatorTest(unittest.TestCase):
   """
 
   def CreateMockSiteOne(self):
-    """Site One has a registration form."""
+    """Site One has a registration form.
+    """
     self.files['site1_home'] = 'site1_index.html'
     self.files['site1_page1'] = 'site1_page1.html'
     self.files['site1_page2'] = 'site1_page2.html'
@@ -133,58 +133,36 @@ class WebformsAggregatorTest(unittest.TestCase):
 
     file_content = {}
     file_content[self.files['site1_home']] = self.HOME_CONTENT % (
-      'Site One home page',
-      'Welcome to site one. It has a reg page!',
-      self.files['site1_page1'],
-      self.files['site1_page2'],
-      self.files['site1_page3'],
-      self.files['site1_signin'],
-    )
+          'Site One home page', 'Welcome to site one. It has a reg page!',
+          self.files['site1_page1'], self.files['site1_page2'],
+          self.files['site1_page3'], self.files['site1_signin'])
 
     file_content[self.files['site1_page1']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site One page 1',
-      'Page 1!',
-      'This is a useless page. It does almost nothing.',
-      self.files['site1_page2'],
-      'page 2',
-      self.files['site1_page3'],
-      'page 3',
-      self.files['site1_home'],
-    )
+        'Site One page 1',
+        'Page 1!', 'This is a useless page. It does almost nothing.',
+        self.files['site1_page2'], 'page 2', self.files['site1_page3'],
+        'page 3', self.files['site1_home'])
 
     file_content[self.files['site1_page2']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site One page 2',
-      'Page 2!',
-      'This is another useless page. It does almost what the page 1 does.',
-      self.files['site1_page1'],
-      'page 1',
-      self.files['site1_page3'],
-      'page 3',
-      self.files['site1_home'],
-    )
+        'Site One page 2', 'Page 2!',
+        'This is another useless page. It does almost what the page 1 does.',
+        self.files['site1_page1'], 'page 1', self.files['site1_page3'],
+        'page 3', self.files['site1_home'])
 
     file_content[self.files['site1_page3']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site One page 3',
-      'Page 3!',
-      "This is the last useless page. It doesn't do anything useful at all.",
-      self.files['site1_page1'],
-      'page 1',
-      self.files['site1_page2'],
-      'page 2',
-      self.files['site1_home'],
-    )
+        'Site One page 3', 'Page 3!',
+        "This is the last useless page. It doesn't do anything useful at all.",
+        self.files['site1_page1'], 'page 1', self.files['site1_page2'],
+        'page 2', self.files['site1_home'])
 
     file_content[self.files['site1_signin']] = self.SIGNIN_CONTENT % (
-      'Site One signin',
-      'If you don\'t have a user account click <a href="%s">here</a>.'
-      % self.files['site1_reg'],
-      self.files['site1_home'],
-    )
+        'Site One signin',
+        'If you don\'t have a user account click <a href="%s">here</a>.' \
+            % self.files['site1_reg'],
+        self.files['site1_home'])
 
     file_content[self.files['site1_reg']] = self.REG_CONTENT % (
-      'Site One signin',
-      self.files['site1_home'],
-    )
+        'Site One signin', self.files['site1_home'])
 
     for filename, content in file_content.iteritems():
       f = open(filename, 'w')
@@ -194,7 +172,7 @@ class WebformsAggregatorTest(unittest.TestCase):
         f.close()
 
   def CreateMockSiteTwo(self):
-    """Site Two has no registration page."""
+    """ Site Two has no registration page."""
 
     self.files['site2_home'] = 'site2_index.html'
     self.files['site2_page1'] = 'site2_page1.html'
@@ -204,52 +182,31 @@ class WebformsAggregatorTest(unittest.TestCase):
 
     file_content = {}
     file_content[self.files['site2_home']] = self.HOME_CONTENT % (
-      'Site Two home page',
-      'Welcome to site two. It has no reg page!',
-      self.files['site2_page1'],
-      self.files['site2_page2'],
-      self.files['site2_page3'],
-      self.files['site2_signin'],
-    )
+          'Site Two home page', 'Welcome to site two. It has no reg page!',
+          self.files['site2_page1'], self.files['site2_page2'],
+          self.files['site2_page3'], self.files['site2_signin'])
 
     file_content[self.files['site2_page1']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site Two page 1',
-      'Page 1!',
-      'This is a useless page. It does almost nothing.',
-      self.files['site2_page2'],
-      'page 2',
-      self.files['site2_page3'],
-      'page 3',
-      self.files['site2_home'],
-    )
+        'Site Two page 1',
+        'Page 1!', 'This is a useless page. It does almost nothing.',
+        self.files['site2_page2'], 'page 2', self.files['site2_page3'],
+        'page 3', self.files['site2_home'])
 
     file_content[self.files['site2_page2']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site Two page 2',
-      'Page 2!',
-      'This is another useless page. It does almost what the page 1 does.',
-      self.files['site2_page1'],
-      'page 1',
-      self.files['site2_page3'],
-      'page 3',
-      self.files['site2_home'],
-    )
+        'Site Two page 2', 'Page 2!',
+        'This is another useless page. It does almost what the page 1 does.',
+        self.files['site2_page1'], 'page 1', self.files['site2_page3'],
+        'page 3', self.files['site2_home'])
 
     file_content[self.files['site2_page3']] = self.SIMPLE_PAGE_CONTENT % (
-      'Site Two page 3',
-      'Page 3!',
-      "This is the last useless page. It doesn't do anything useful at all.",
-      self.files['site2_page1'],
-      'page 1',
-      self.files['site2_page2'],
-      'page 2',
-      self.files['site2_home'],
-    )
+        'Site Two page 3', 'Page 3!',
+        "This is the last useless page. It doesn't do anything useful at all.",
+        self.files['site2_page1'], 'page 1', self.files['site2_page2'],
+        'page 2', self.files['site2_home'])
 
     file_content[self.files['site2_signin']] = self.SIGNIN_CONTENT % (
-      'Site Two signin',
-      'You cannot register online with this site.',
-      self.files['site2_home'],
-    )
+        'Site Two signin', 'You cannot register online with this site.',
+        self.files['site2_home'])
 
     for filename, content in file_content.iteritems():
       f = open(filename, 'w')
@@ -268,15 +225,11 @@ class WebformsAggregatorTest(unittest.TestCase):
     self.CreateMockSiteOne()
     self.CreateMockSiteTwo()
     self.files['cookie'] = 'test.cookie'
-    self.url1 = 'http://localhost:%s/%s' % (
-      self.PORT1,
-      self.files['site1_home'],
-    )
-    self.url2 = 'http://localhost:%s/%s' % (
-      self.PORT2,
-      self.files['site2_home'],
-    )
-    self.domain1 = 'localhost:%s' % self.PORT1
+    self.url1 = 'http://localhost:%s/%s' % (self.PORT1,
+                                            self.files['site1_home'])
+    self.url2 = 'http://localhost:%s/%s' % (self.PORT2,
+                                            self.files['site2_home'])
+    self.domain1 = 'localhost:%s' %self.PORT1
     self.files['url'] = 'urls.txt'
     url_file_handler = open(self.files['url'], 'w')
     try:
@@ -291,15 +244,13 @@ class WebformsAggregatorTest(unittest.TestCase):
     command_line = 'python -u -m SimpleHTTPServer %s' % self.PORT1
     args = command_line.split()
     self.server1 = subprocess.Popen(
-      args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     self.server1.stdout.readline()  # Needed in order for the server to start up
 
     command_line = 'python -u -m SimpleHTTPServer %s' % self.PORT2
     args = command_line.split()
     self.server2 = subprocess.Popen(
-      args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     self.server2.stdout.readline()  # Needed in order for the server to start up
 
   def tearDown(self):
@@ -314,38 +265,34 @@ class WebformsAggregatorTest(unittest.TestCase):
 
   def testRetrieverDownloadsPage(self):
     """Verify the retriever can download a page."""
-    r = webforms_aggregator.Retriever(
-      self.url1, self.domain1, self.files['cookie']
-    )
-    self.assertTrue(
-      r.Download(), msg='Retriever could not download "%s"' % self.url1
-    )
+    r = webforms_aggregator.Retriever(self.url1, self.domain1,
+                                      self.files['cookie'])
+    self.assertTrue(r.Download(),
+                msg='Retriever could not download "%s"' % self.url1)
 
   def testCrawlerFindsRegPageFromUrl(self):
     """Verify that the crawler is able to find a reg page from the given URL."""
     c = webforms_aggregator.Crawler(self.url1)
     self.assertTrue(
-      c.Run(), msg='Crawler could not find the reg page of "%s"' % self.url1
-    )
+        c.Run(), msg='Crawler could not find the reg page of "%s"' % self.url1)
 
   def testCrawlerCannotFindNonExistentRegPageFromUrl(self):
     """Verify that the crawler won't find a non existent reg page
     from the given URL."""
     c = webforms_aggregator.Crawler(self.url2)
     self.assertFalse(
-      c.Run(), msg='Crawler found a non existent reg page of "%s"' % self.url1
-    )
+        c.Run(),
+        msg='Crawler found a non existent reg page of "%s"' % self.url1)
 
   def testThreadedCrawlerFindsRegPageFromUrlsFile(self):
     """Verify the threaded crawler finds reg page from a file of URLs."""
     c = webforms_aggregator.ThreadedCrawler(self.files['url'])
     self.assertNotEqual(
-      c.Run(),
-      -1,
-      msg='Threaded crawler could not find the reg page from the URLs file',
-    )
+        c.Run(), -1,
+        msg='Threaded crawler could not find the reg page from the URLs file')
 
 
 if __name__ == '__main__':
-  suite = unittest.TestLoader().loadTestsFromTestCase(WebformsAggregatorTest)
+  suite = unittest.TestLoader().loadTestsFromTestCase(
+      WebformsAggregatorTest)
   unittest.TextTestRunner(verbosity=2).run(suite)

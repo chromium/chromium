@@ -33,7 +33,6 @@ file_footer = """    }
 } // namespace policy
 """
 
-
 def main():
   parser = OptionParser(usage=__doc__)
   (opts, args) = parser.parse_args()
@@ -48,31 +47,24 @@ def main():
   # which might be already loaded due to Google App Engine
   # TODO(crbug.com/41344096): find better solution how to import protobuf.
   import google.protobuf
-
   # Python 3 doesn't expose a global `reload`.
   if sys.version_info.major == 2:
     reload(google)
     reload(google.protobuf)
   else:
     import importlib
-
     importlib.reload(google)
     importlib.reload(google.protobuf)
   from chrome_device_policy_pb2 import ChromeDeviceSettingsProto
-
   with open(off_hours_cleaner_path, 'wt') as file:
-    file.write(file_header)
+    file.write(file_header);
     for field in ChromeDeviceSettingsProto.DESCRIPTOR.fields:
-      file.write(
-        '      case {proto_tag}:\n'
-        '        policies->clear_{name}();\n'
-        '        break;\n'.format(
-          proto_tag=field.number, name=field.name.lower()
-        )
-      )
-    file.write(file_footer)
+      file.write('      case {proto_tag}:\n'
+                 '        policies->clear_{name}();\n'
+                 '        break;\n'
+                 .format(proto_tag=field.number, name=field.name.lower()))
+    file.write(file_footer);
   return 0
-
 
 if __name__ == '__main__':
   sys.exit(main())

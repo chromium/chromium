@@ -25,7 +25,6 @@ DEFAULT_WAIT_TIMEOUT_SECONDS = 60
 DEFAULT_WAIT_INTERVAL_SECONDS = 1
 DRIVER_CREATION_RETRY_COUNT = 3
 
-
 @attr.attrs()
 class DriverFactory:
   """The factory to create webdriver for the pre-defined environment"""
@@ -81,22 +80,19 @@ class DriverFactory:
     """The Service to start Chrome."""
     self._driver_session_counter += 1
     driver_log = os.path.join(
-      self.get_driver_session_folder(self.driver_session_counter), 'driver.log'
-    )
-    service_args = [
+      self.get_driver_session_folder(self.driver_session_counter),
+      'driver.log')
+    service_args=[
       # Skipping Chrome version check, this allows chromdriver to communicate
       # with Chrome of more than two versions older.
       '--disable-build-check',
       '--enable-chrome-logs',
-      f'--log-path={driver_log}',
-    ]
+      f'--log-path={driver_log}']
     return ChromeService(self.chromedriver_path, service_args=service_args)
 
-  def wait_for_window(
-    self,
-    driver: webdriver.Remote,
-    timeout: float = DEFAULT_WAIT_TIMEOUT_SECONDS,
-  ):
+  def wait_for_window(self,
+                      driver: webdriver.Remote,
+                      timeout: float = DEFAULT_WAIT_TIMEOUT_SECONDS):
     """Waits for the window handle to be available."""
     start_time = time.time()
     while time.time() - start_time <= timeout:
@@ -122,11 +118,10 @@ class DriverFactory:
     return
 
   @contextmanager
-  def create_driver(
-    self,
-    seed_file: Optional[str] = None,
-    options: Optional[webdriver.ChromeOptions] = None,
-  ) -> webdriver.Remote:
+  def create_driver(self,
+                    seed_file: Optional[str] = None,
+                    options: Optional[webdriver.ChromeOptions] = None
+    ) -> webdriver.Remote:
     """Creates a webdriver.
 
     Args:

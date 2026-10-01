@@ -21,29 +21,28 @@ This requirement is needed to upload the resources to the Google storage
 build bucket.
 """
 
+
 CURRENT_VERSION_VARIABLE = 'current_shell_apk_version'
 CURRENT_VERSION_LOCAL_PATH = 'shell_apk/current_version/current_version.gni'
 
 REQUEST_UPDATE_FOR_VERSION_VARIABLE = 'request_update_for_shell_apk_version'
 REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH = (
-  'shell_apk/request_update_for_version.gni'
-)
+    'shell_apk/request_update_for_version.gni')
 
 TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS = [
-  'libs/common/src/',
-  'libs/common/res_splash/',
-  'shell_apk/AndroidManifest.xml',
-  'shell_apk/res/',
-  'shell_apk/res_template',
-  'shell_apk/src/',
+    'libs/common/src/',
+    'libs/common/res_splash/',
+    'shell_apk/AndroidManifest.xml',
+    'shell_apk/res/',
+    'shell_apk/res_template',
+    'shell_apk/src/',
 ]
 
 RES_DIR_LOCAL_PATHS = [
-  'shell_apk/res',
-  'shell_apk/res_template',
-  'libs/common/res_splash',
+    'shell_apk/res',
+    'shell_apk/res_template',
+    'libs/common/res_splash'
 ]
-
 
 def _DoChangedContentsContain(changed_contents, key):
   for _, line in changed_contents:
@@ -65,13 +64,12 @@ def _FindFileNamesInDirectory(input_api, dir_path, search_file_names):
   return matches
 
 
-def _CheckVersionVariableChanged(
-  input_api, version_file_local_path, variable_name
-):
+def _CheckVersionVariableChanged(input_api, version_file_local_path,
+                                 variable_name):
   for f in input_api.AffectedFiles():
     local_path = input_api.os_path.relpath(
-      f.AbsoluteLocalPath(), input_api.PresubmitLocalPath()
-    ).replace('\\', '/')
+        f.AbsoluteLocalPath(),
+        input_api.PresubmitLocalPath()).replace('\\', '/')
     if local_path == version_file_local_path:
       return _DoChangedContentsContain(f.ChangedContents(), variable_name)
 
@@ -83,23 +81,17 @@ def _CheckChromeUpdateTriggerRule(input_api, output_api):
   Check that if |request_update_for_shell_apk_version| is updated it is the
   only change in the CL.
   """
-  if _CheckVersionVariableChanged(
-    input_api,
-    REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
-    REQUEST_UPDATE_FOR_VERSION_VARIABLE,
-  ):
-    if (
-      len(input_api.AffectedFiles()) != 1
-      or len(input_api.AffectedFiles()[0].ChangedContents()) != 1
-    ):
+  if _CheckVersionVariableChanged(input_api,
+                                  REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
+                                  REQUEST_UPDATE_FOR_VERSION_VARIABLE):
+    if (len(input_api.AffectedFiles()) != 1 or
+        len(input_api.AffectedFiles()[0].ChangedContents()) != 1):
       return [
         output_api.PresubmitError(
-          '{} in {} must be updated in a standalone CL.'.format(
-            REQUEST_UPDATE_FOR_VERSION_VARIABLE,
-            REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
-          )
-        )
-      ]
+            '{} in {} must be updated in a standalone CL.'.format(
+                REQUEST_UPDATE_FOR_VERSION_VARIABLE,
+                REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH))
+        ]
   return []
 
 
@@ -112,8 +104,8 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   for f in input_api.AffectedFiles():
     if f.ChangedContents():
       local_path = input_api.os_path.relpath(
-        f.AbsoluteLocalPath(), input_api.PresubmitLocalPath()
-      ).replace('\\', '/')
+          f.AbsoluteLocalPath(),
+          input_api.PresubmitLocalPath()).replace('\\', '/')
       for trigger_local_path in TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS:
         if local_path.startswith(trigger_local_path):
           files_requiring_version_increase.append(local_path)
@@ -121,17 +113,12 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   if not files_requiring_version_increase:
     return []
 
-  if not _CheckVersionVariableChanged(
-    input_api, CURRENT_VERSION_LOCAL_PATH, CURRENT_VERSION_VARIABLE
-  ):
-    return [
-      output_api.PresubmitError(
+  if not _CheckVersionVariableChanged(input_api, CURRENT_VERSION_LOCAL_PATH,
+                                      CURRENT_VERSION_VARIABLE):
+    return [output_api.PresubmitError(
         '{} in {} needs to updated due to changes in:'.format(
-          CURRENT_VERSION_VARIABLE, CURRENT_VERSION_LOCAL_PATH
-        ),
-        items=files_requiring_version_increase,
-      )
-    ]
+            CURRENT_VERSION_VARIABLE, CURRENT_VERSION_LOCAL_PATH),
+        items=files_requiring_version_increase)]
 
   return []
 
@@ -146,14 +133,13 @@ def _CheckNoOverlappingFileNamesInResourceDirsRule(input_api, output_api):
   res_dir_file_names_map = {}
   for f in input_api.AffectedFiles():
     local_path = input_api.os_path.relpath(
-      f.AbsoluteLocalPath(), input_api.PresubmitLocalPath()
-    ).replace('\\', '/')
+        f.AbsoluteLocalPath(),
+        input_api.PresubmitLocalPath()).replace('\\', '/')
     for res_dir_local_path in RES_DIR_LOCAL_PATHS:
       if local_path.startswith(res_dir_local_path):
         file_name = input_api.os_path.basename(local_path)
         res_dir_file_names_map.setdefault(res_dir_local_path, set()).add(
-          file_name
-        )
+            file_name)
         break
 
   if len(res_dir_file_names_map) == 0:
@@ -166,32 +152,26 @@ def _CheckNoOverlappingFileNamesInResourceDirsRule(input_api, output_api):
         continue
 
       # Check for affected files with identical name in |other_res_dir|.
-      overlapping_file_names |= file_names & other_file_names
+      overlapping_file_names |= (file_names & other_file_names)
 
       # Check for existing files with identical name in |other_res_dir|.
       overlapping_file_names.update(
-        _FindFileNamesInDirectory(input_api, other_res_dir, file_names)
-      )
+          _FindFileNamesInDirectory(input_api, other_res_dir, file_names))
 
   if len(overlapping_file_names) > 0:
-    error_msg = (
-      'Resources in different top level res/ directories {} should '
-      'have different names:'
-    ).format(RES_DIR_LOCAL_PATHS)
-    return [
-      output_api.PresubmitError(error_msg, items=list(overlapping_file_names))
-    ]
+    error_msg = ('Resources in different top level res/ directories {} should '
+                 'have different names:').format(RES_DIR_LOCAL_PATHS)
+    return [output_api.PresubmitError(error_msg,
+                                      items=list(overlapping_file_names))]
   return []
-
 
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   result = []
   result.extend(_CheckChromeUpdateTriggerRule(input_api, output_api))
   result.extend(_CheckCurrentVersionIncreaseRule(input_api, output_api))
-  result.extend(
-    _CheckNoOverlappingFileNamesInResourceDirsRule(input_api, output_api)
-  )
+  result.extend(_CheckNoOverlappingFileNamesInResourceDirsRule(input_api,
+                                                               output_api))
 
   return result
 

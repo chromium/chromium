@@ -72,7 +72,8 @@ def Is64Bit():
 
 
 def GetAbsolutePathOfUserPath(user_path):
-  """Expand the given |user_path| (like "~/file") and return its absolute path."""
+  """Expand the given |user_path| (like "~/file") and return its absolute path.
+  """
   if user_path is None:
     return None
   return os.path.abspath(os.path.expanduser(user_path))
@@ -182,7 +183,7 @@ def RunCommand(cmd, cwd=None, fileName=None):
   sys.stdout.flush()
   if fileName is not None:
     with open(fileName, "wb", encoding='utf-8') as out:
-      process = subprocess.Popen(cmd, cwd=cwd, stdout=out, stderr=out)
+      process = subprocess.Popen(cmd, cwd=cwd,stdout=out,stderr=out)
   else:
     process = subprocess.Popen(cmd, cwd=cwd)
   process.wait()
@@ -259,18 +260,21 @@ def WriteResultToJSONFile(test_suites, results, json_path):
     json_path: desired path to JSON file of result.
   """
   output = {
-    'interrupted': False,
-    'num_failures_by_type': {},
-    'path_delimiter': '.',
-    'seconds_since_epoch': time.time(),
-    'tests': {},
-    'version': 3,
+      'interrupted': False,
+      'num_failures_by_type': {},
+      'path_delimiter': '.',
+      'seconds_since_epoch': time.time(),
+      'tests': {},
+      'version': 3,
   }
 
   def initialize(test_suite):
     for test_name in test_suite:
       if test_name not in output['tests']:
-        output['tests'][test_name] = {'expected': 'PASS', 'actual': []}
+        output['tests'][test_name] = {
+            'expected': 'PASS',
+            'actual': []
+        }
 
   for test_suite in test_suites:
     initialize(test_suite)
@@ -284,8 +288,8 @@ def WriteResultToJSONFile(test_suites, results, json_path):
       if test_name not in fail:
         success.append(test_name)
     return {
-      'success': success,
-      'fail': fail,
+        'success': success,
+        'fail': fail,
     }
 
   for test_suite, result in zip(test_suites, results):
@@ -313,15 +317,15 @@ def WriteResultToJSONFile(test_suites, results, json_path):
 def TryUploadingResultToResultSink(results):
   def _create_test_id_struct_dict(test_id):
     struct_test_dict = {
-      'coarseName': None,
-      'fineName': None,
-      'caseNameComponents': None,
+        'coarseName': None,
+        'fineName': None,
+        'caseNameComponents': None,
     }
 
     test_split = test_id.rsplit('.', 2)
     if len(test_split) == 3:
-      struct_test_dict['coarseName'] = test_split[0]
-      struct_test_dict['fineName'] = test_split[1]
+      struct_test_dict['coarseName'] =  test_split[0]
+      struct_test_dict['fineName'] =  test_split[1]
       struct_test_dict['caseNameComponents'] = [test_split[2]]
 
     return struct_test_dict
@@ -329,27 +333,24 @@ def TryUploadingResultToResultSink(results):
   def parse(result):
     test_results = []
     for test_case in result.successes:
-      test_results.append(
-        {
+      test_results.append({
           'testId': test_case.id(),
           'expected': True,
           'status': 'PASS',
           'testIdStructured': _create_test_id_struct_dict(test_case.id()),
           'testMetadata': {
-            'name': test_case.id(),
+              'name': test_case.id(),
           },
           'tags': [
-            {
-              'key': 'test_name',
-              'value': test_case.id(),
-            },
+              {
+                  'key': 'test_name',
+                  'value': test_case.id(),
+              },
           ],
-        }
-      )
+      })
 
-    for test_case, stack_trace in result.failures + result.errors:
-      test_results.append(
-        {
+    for (test_case, stack_trace) in result.failures + result.errors:
+      test_results.append({
           'testId': test_case.id(),
           'expected': False,
           'status': 'FAIL',
@@ -358,29 +359,28 @@ def TryUploadingResultToResultSink(results):
           'summaryHtml': '<p><text-artifact artifact-id="stack_trace"></p>',
           'testIdStructured': _create_test_id_struct_dict(test_case.id()),
           'testMetadata': {
-            'name': test_case.id(),
+              'name': test_case.id(),
           },
           'tags': [
-            {
-              'key': 'test_name',
-              'value': test_case.id(),
-            },
+              {
+                  'key': 'test_name',
+                  'value': test_case.id(),
+              },
           ],
           # A map of artifacts. The keys are artifact ids which uniquely
           # identify an artifact within the test result.
           'artifacts': {
-            'stack_trace': {
-              'contents': base64.b64encode(stack_trace.encode()).decode(),
-            },
+               'stack_trace': {
+                    'contents': base64.b64encode(stack_trace.encode()).decode(),
+               },
           },
-        }
-      )
+      })
     return test_results
 
   def getResultSinkTestResults(results):
     test_results = []
     for r in results:
-      test_results.extend(parse(r))
+        test_results.extend(parse(r))
     return test_results
 
   try:
@@ -392,13 +392,12 @@ def TryUploadingResultToResultSink(results):
   test_results = getResultSinkTestResults(results)
   # Uploads all test results at once.
   res = requests.post(
-    url='http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults'
-    % sink['address'],
+    url='http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % sink['address'],
     headers={
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'ResultSink %s' % sink['auth_token'],
     },
-    data=json.dumps({'testResults': test_results}),
+    data=json.dumps({'testResults': test_results})
   )
   res.raise_for_status()

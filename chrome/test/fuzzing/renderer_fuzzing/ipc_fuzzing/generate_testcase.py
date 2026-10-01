@@ -95,7 +95,7 @@ def strip_end(text: str, suffix: str) -> str:
       the input string with suffix removed if present.
   """
   if suffix and text.endswith(suffix):
-    return text[: -len(suffix)]
+    return text[:-len(suffix)]
   return text
 
 
@@ -135,17 +135,15 @@ def is_defined_in_module(qualified_name: str, interface: ast.Mojom) -> bool:
   if not interface.definition_list:
     return False
   for definition in interface.definition_list:
-    if (
-      isinstance(definition, ast.Interface)
-      and str(definition.mojom_name) == name
-    ):
+    if (isinstance(definition, ast.Interface) and
+        str(definition.mojom_name) == name):
       return True
   return False
 
 
-def find_matching_interface(
-  qualified_name: str, modules: typing.List[ast.Mojom]
-) -> str:
+
+def find_matching_interface(qualified_name: str,
+                            modules: typing.List[ast.Mojom]) -> str:
   """Finds the correct mojom file for the given interface. The interface name
   must be qualified.
 
@@ -163,9 +161,9 @@ def find_matching_interface(
   return None
 
 
-def ensure_interface_deps_complete(
-  interfaces: typing.List[str], modules: typing.List[ast.Mojom], build_dir: str
-):
+def ensure_interface_deps_complete(interfaces: typing.List[str],
+                                   modules: typing.List[ast.Mojom],
+                                   build_dir: str):
   """Ensures that all the interfaces can be fetched from the parsed mojom
   modules.
 
@@ -182,18 +180,17 @@ def ensure_interface_deps_complete(
     if not res:
       missing_interfaces.append(interface)
   if len(missing_interfaces) != 0:
-    raise Exception(
-      'Missing browser exposed targets for the following '
-      'interfaces:\n'
-      f'{missing_interfaces}\n'
-      'Please add the corresponding targets to '
-      '`//chrome/browser_exposed_mojom_targets.gni`.'
-    )
+    raise Exception('Missing browser exposed targets for the following '
+                    'interfaces:\n'
+                    f'{missing_interfaces}\n'
+                    'Please add the corresponding targets to '
+                    '`//chrome/browser_exposed_mojom_targets.gni`.')
 
 
-def handle_interfaces(
-  interfaces, mojom_files: typing.List[ast.Mojom], source_path: str, output
-):
+def handle_interfaces(interfaces,
+                      mojom_files: typing.List[ast.Mojom],
+                      source_path: str,
+                      output):
   """Finds the mojom files for the given interfaces and append the formatted
   result to the output list.
 
@@ -208,7 +205,9 @@ def handle_interfaces(
     interface_type = interface['type']
     path = pathlib.Path(find_matching_interface(qualified_name, mojom_files))
     path = path.relative_to(source_path)
-    output.append([f"//{path}", qualified_name, interface_type])
+    output.append([
+      f"//{path}", qualified_name, interface_type
+    ])
 
 
 def filter_data(data):
@@ -219,25 +218,20 @@ def filter_data(data):
   Args:
       data: the JSON data.
   """
-  is_not_associated = lambda x: x['type'] != 'AssociatedRemote'
-  is_associated = lambda x: x['type'] == 'AssociatedRemote'
-  data['associated_interfaces'] = list(
-    filter(is_associated, data['context_interfaces'])
-  )
-  data['context_interfaces'] = list(
-    filter(is_not_associated, data['context_interfaces'])
-  )
-  data['process_interfaces'] = list(
-    filter(is_not_associated, data['process_interfaces'])
-  )
+  is_not_associated = lambda x : x['type'] != 'AssociatedRemote'
+  is_associated = lambda x : x['type'] == 'AssociatedRemote'
+  data['associated_interfaces'] = list(filter(is_associated,
+                                              data['context_interfaces']))
+  data['context_interfaces'] = list(filter(is_not_associated,
+                                           data['context_interfaces']))
+  data['process_interfaces'] = list(filter(is_not_associated,
+                                           data['process_interfaces']))
   ctx_interfaces = [s['qualified_name'] for s in data['context_interfaces']]
   data_filter = lambda x: x['qualified_name'] not in ctx_interfaces
-  data['process_interfaces'] = list(
-    filter(data_filter, data['process_interfaces'])
-  )
-  data['associated_interfaces'] = list(
-    filter(data_filter, data['associated_interfaces'])
-  )
+  data['process_interfaces'] = list(filter(data_filter,
+                                           data['process_interfaces']))
+  data['associated_interfaces'] = list(filter(data_filter,
+                                              data['associated_interfaces']))
 
 
 def run_ipc_dumper(dumper_path: str, out_file: str):
@@ -260,27 +254,23 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
   # reduce overhead and prevent the test launcher from killing the dumper if
   # it takes more than 45 seconds (not unheard of in some configurations).
   args = [
-    XVFB_PATH,
-    os.path.abspath(dumper_path),
-    '--single-process-tests',
+      XVFB_PATH,
+      os.path.abspath(dumper_path),
+      '--single-process-tests',
   ]
   try:
     subprocess.run(args, capture_output=True, env=env, check=True)
   except subprocess.CalledProcessError as e:
-    raise Exception(
-      f'Command {args} failed (ret {e.returncode}) with:'
-      f'{e.output.decode(sys.getfilesystemencoding())}'
-      f'{e.stderr.decode(sys.getfilesystemencoding())}'
-    )
+    raise Exception(f'Command {args} failed (ret {e.returncode}) with:'
+                    f'{e.output.decode(sys.getfilesystemencoding())}'
+                    f'{e.stderr.decode(sys.getfilesystemencoding())}')
 
 
-def generate_interfaces(
-  ipc_interfaces_dumper: str,
-  interfaces_f: str,
-  gen_dir: str,
-  metadata_file: str,
-  depfile: str,
-):
+def generate_interfaces(ipc_interfaces_dumper: str,
+                        interfaces_f: str,
+                        gen_dir: str,
+                        metadata_file: str,
+                        depfile: str):
   """Generates the appropriate interfaces file given the output of the
   `ipc_interfaces_dumper`.
 
@@ -296,56 +286,46 @@ def generate_interfaces(
   for interface in interfaces:
     with open(interface, 'r', encoding="utf-8") as f:
       parsed_interfaces.append(mojom_parser.Parse(f.read(), interface))
-  output = {
-    'context_interfaces': [],
-    'process_interfaces': [],
-    'associated_interfaces': [],
-  }
+  output = {'context_interfaces': [],
+            'process_interfaces': [],
+            'associated_interfaces': []}
   with tempfile.NamedTemporaryFile() as input_file:
     run_ipc_dumper(ipc_interfaces_dumper, input_file.name)
     with open(input_file.name, 'r') as in_f:
       data = json.load(in_f)
       filter_data(data)
-      all_interfaces = (
-        data['context_interfaces']
-        + data['process_interfaces']
-        + data['associated_interfaces']
-      )
+      all_interfaces = data['context_interfaces'] +\
+                       data['process_interfaces'] +\
+                       data['associated_interfaces']
       qualified_names = [e['qualified_name'] for e in all_interfaces]
-      ensure_interface_deps_complete(
-        qualified_names, parsed_interfaces, os.path.join(gen_dir, os.pardir)
-      )
-      handle_interfaces(
-        data['context_interfaces'],
-        parsed_interfaces,
-        SOURCE_DIR,
-        output['context_interfaces'],
-      )
-      handle_interfaces(
-        data['process_interfaces'],
-        parsed_interfaces,
-        SOURCE_DIR,
-        output['process_interfaces'],
-      )
-      handle_interfaces(
-        data['associated_interfaces'],
-        parsed_interfaces,
-        SOURCE_DIR,
-        output['associated_interfaces'],
-      )
+      ensure_interface_deps_complete(qualified_names,
+                                     parsed_interfaces,
+                                     os.path.join(gen_dir, os.pardir))
+      handle_interfaces(data['context_interfaces'],
+                        parsed_interfaces,
+                        SOURCE_DIR,
+                        output['context_interfaces'])
+      handle_interfaces(data['process_interfaces'],
+                        parsed_interfaces,
+                        SOURCE_DIR,
+                        output['process_interfaces'])
+      handle_interfaces(data['associated_interfaces'],
+                        parsed_interfaces,
+                        SOURCE_DIR,
+                        output['associated_interfaces'])
 
   # MojoLPMGenerator expects a particular format for generating MojoLPM
   # boilerplate. This part will generate the expected format and rebase the
   # mojom module paths in order for MojoLPMGenerator to be able to find them.
   output['interfaces'] = []
-  for interface in (
-    output['context_interfaces']
-    + output['process_interfaces']
-    + output['associated_interfaces']
-  ):
+  for interface in output['context_interfaces'] +\
+                   output['process_interfaces'] +\
+                   output['associated_interfaces']:
     path = interface[0]
     path = os.path.join(gen_dir, path.lstrip('/')) + '-module'
-    output['interfaces'].append([path, interface[1], interface[2]])
+    output['interfaces'].append([
+      path, interface[1], interface[2]
+    ])
   with action_helpers.atomic_output(interfaces_f, mode="w") as f:
     json.dump(output, f)
 
@@ -354,9 +334,9 @@ def generate_interfaces(
   all_interfaces = output['context_interfaces'] + output['process_interfaces']
   paths = [i[0].lstrip('//') for i in all_interfaces]
   paths = [pathlib.Path(os.path.join(SOURCE_DIR, p)) for p in paths]
-  action_helpers.write_depfile(
-    depfile, interfaces_f, [os.path.relpath(p) for p in paths]
-  )
+  action_helpers.write_depfile(depfile,
+                               interfaces_f,
+                               [os.path.relpath(p) for p in paths])
 
 
 def split_interface_name(interface: str):
@@ -382,7 +362,6 @@ def split_interface_name(interface: str):
     "name": components[-1],
     "namespace": "::".join(components[:-1]),
   }
-
 
 def snake_to_camel_case(snake_str: str) -> str:
   """Snake case to camel case conversion.
@@ -413,9 +392,10 @@ def camel_to_snake_case(name: str) -> str:
   return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
-def generate_testcase(
-  interfaces_f: str, fuzzer_dir: str, fuzzer_name: str, testcase_f: str
-):
+def generate_testcase(interfaces_f: str,
+                      fuzzer_dir: str,
+                      fuzzer_name: str,
+                      testcase_f: str):
   """Generates the testcase file given the interface list and the
   MojoLPMGenerator fuzzer name.
 
@@ -426,7 +406,8 @@ def generate_testcase(
       testcase_f: the output path to the testcase .h file.
   """
   template_dir = os.path.dirname(os.path.abspath(__file__))
-  environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+  environment = jinja2.Environment(loader=jinja2.FileSystemLoader(
+      template_dir))
   template = environment.get_template('testcase.h.tmpl')
   fuzzer_path = os.path.join(fuzzer_dir, fuzzer_name)
   fuzzer_name = snake_to_camel_case(fuzzer_name)
@@ -450,63 +431,59 @@ def generate_testcase(
 
 def main():
   parser = argparse.ArgumentParser(
-    description='Generate an IPC fuzzer based on MojoLPM Generator.'
-  )
+      description='Generate an IPC fuzzer based on MojoLPM Generator.')
   parser.add_argument(
-    '-p',
-    '--path',
-    required=True,
-    help="The path to ipc_interfaces_dumper binary.",
-  )
+      '-p',
+      '--path',
+      required=True,
+      help="The path to ipc_interfaces_dumper binary.")
   parser.add_argument(
-    '-d',
-    '--fuzzer_dir',
-    required=True,
-    help="The directory in which the MojoLPMGenerator fuzzer is generated.",
-  )
+      '-d',
+      '--fuzzer_dir',
+      required=True,
+      help="The directory in which the MojoLPMGenerator fuzzer is generated.")
   parser.add_argument(
-    '-n',
-    '--name',
-    required=True,
-    help="""The name of the MojoLPMGenerator fuzzing target.
-      This will used to deduce the name of the generated MojoLPM testcase.""",
-  )
+      '-n',
+      '--name',
+      required=True,
+      help="""The name of the MojoLPMGenerator fuzzing target.
+      This will used to deduce the name of the generated MojoLPM testcase.""")
   parser.add_argument(
-    '-t',
-    '--testcase-output-path',
-    required=True,
-    help="The path where the testcase file will be written to.",
-  )
+      '-t',
+      '--testcase-output-path',
+      required=True,
+      help="The path where the testcase file will be written to.")
   parser.add_argument(
-    '-i',
-    '--interface-output-path',
-    required=True,
-    help="The path where the interface file will be written to.",
-  )
+      '-i',
+      '--interface-output-path',
+      required=True,
+      help="The path where the interface file will be written to.")
   parser.add_argument(
-    '-r', '--root-gen-dir', required=True, help="The path to the root gen dir."
-  )
+      '-r',
+      '--root-gen-dir',
+      required=True,
+      help="The path to the root gen dir.")
   parser.add_argument(
-    '-m', '--metadata-file', required=True, help="Path to the metadata file."
-  )
+      '-m',
+      '--metadata-file',
+      required=True,
+      help="Path to the metadata file.")
   parser.add_argument(
-    '-f', '--depfile', required=True, help="The path to the depfile."
-  )
+      '-f',
+      '--depfile',
+      required=True,
+      help="The path to the depfile.")
 
   args = parser.parse_args()
-  generate_interfaces(
-    args.path,
-    args.interface_output_path,
-    args.root_gen_dir,
-    args.metadata_file,
-    args.depfile,
-  )
-  generate_testcase(
-    args.interface_output_path,
-    args.fuzzer_dir,
-    args.name,
-    args.testcase_output_path,
-  )
+  generate_interfaces(args.path,
+                      args.interface_output_path,
+                      args.root_gen_dir,
+                      args.metadata_file,
+                      args.depfile)
+  generate_testcase(args.interface_output_path,
+                    args.fuzzer_dir,
+                    args.name,
+                    args.testcase_output_path)
 
 
 if __name__ == "__main__":

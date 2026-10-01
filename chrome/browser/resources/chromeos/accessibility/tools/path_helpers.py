@@ -1,14 +1,14 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-'''Helpers for paths in accessibility.'''
+'''Helpers for paths in accessibility.
+'''
 
 import os
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _CHROME_SOURCE_DIR = os.path.normpath(
-  os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6)
-)
+    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
 
 
 def AccessibilityPath(path='.'):

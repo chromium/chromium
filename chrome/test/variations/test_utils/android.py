@@ -1,7 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Android module to prepare APKs and emulators to run webdriver-based tests."""
+"""Android module to prepare APKs and emulators to run webdriver-based tests.
+"""
 
 import re
 import os
@@ -28,8 +29,7 @@ from devil.android.sdk import adb_wrapper
 from pylib.local.emulator import avd
 
 _INSTALLER_SCRIPT_PY = os.path.join(
-  SRC_DIR, 'clank', 'bin', 'utils', 'installer_script_wrapper.py'
-)
+  SRC_DIR, 'clank', 'bin', 'utils', 'installer_script_wrapper.py')
 
 
 def _package_name(channel: str):
@@ -46,15 +46,13 @@ def _is_require_signed(channel: str) -> bool:
   return channel == 'stable'
 
 
-def _installer_args(
-  product: str, channel: str, device: device_utils.DeviceUtils
-) -> List[str]:
+def _installer_args(product: str,
+                    channel: str,
+                    device: device_utils.DeviceUtils) -> List[str]:
   """Returns the command to install `product` from the release bucket."""
   args = [
-    _INSTALLER_SCRIPT_PY,
-    f'--product={product}',
-    f'--channel={channel}',
-    f'--serial={device.serial}',
+    _INSTALLER_SCRIPT_PY, f'--product={product}',
+    f'--channel={channel}', f'--serial={device.serial}',
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
     f'--gsutil={find_gsutil_cmd()}',
   ]
@@ -77,8 +75,9 @@ def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
 
 
 def install_webview(
-  channel: str, device: device_utils.DeviceUtils
-) -> packaging.version.Version:
+  channel: str,
+  device: device_utils.DeviceUtils
+  ) -> packaging.version.Version:
   """Installs Webview to the device and returns the installed version."""
   args = _installer_args('webview', channel, device)
   try:
@@ -88,18 +87,16 @@ def install_webview(
     raise RuntimeError('Webview installation failed.')
 
   version_regex = r'\s*Preferred WebView package[^:]*[^\d]*([^\)]+)'
-  version_output = device.RunShellCommand(['dumpsys', 'webviewupdate'])
+  version_output = device.RunShellCommand(['dumpsys' ,'webviewupdate'])
   version = [
     m.group(1)
-    for line in version_output
-    if (m := re.match(version_regex, line))
+    for line in version_output if (m := re.match(version_regex, line))
   ]
   return packaging.version.parse(version[0]) if version else None
 
 
-def _forward_port(
-  device: device_utils.DeviceUtils, ports: Optional[List[int]] = None
-):
+def _forward_port(device: device_utils.DeviceUtils,
+                  ports: Optional[List[int]] = None):
   # Ideally, we would dynamically allocate ports from the device, and
   # remember the mapping here, it requires how the client redirects ports.
   # Since we currently only allocate ports from a user space whose value is
@@ -110,15 +107,16 @@ def _forward_port(
     forwarder.Forwarder.Map([(port, port) for port in ports], device)
 
 
-def launch_emulator(
-  avd_config: str, emulator_window: bool, ports: Optional[List[int]] = None
-) -> avd._AvdInstance:
+def launch_emulator(avd_config: str,
+                    emulator_window: bool,
+                    ports: Optional[List[int]] = None) -> avd._AvdInstance:
   """Launches the emulator and forwards ports from device to host."""
   avd_config = avd.AvdConfig(avd_config)
   avd_config.Install()
 
   instance = avd_config.CreateInstance()
-  instance.Start(writable_system=True, window=emulator_window)
+  instance.Start(writable_system=True,
+                 window=emulator_window)
 
   _forward_port(instance.device, ports)
 

@@ -35,7 +35,7 @@ import pefile
 
 
 def from_utf16(data, start, length):
-  return data[start : start + length].decode("utf-16-le")
+  return data[start:start + length].decode("utf-16-le")
 
 
 class StructHelper(ctypes.Structure):
@@ -51,7 +51,7 @@ class ApiSetNamespaceEntryV6(StructHelper):
     ('NameLength', ctypes.c_uint32),
     ('HashedLength', ctypes.c_uint32),
     ('ValueOffset', ctypes.c_uint32),
-    ('ValueCount', ctypes.c_uint32),
+    ('ValueCount', ctypes.c_uint32)
   ]
 
 
@@ -63,7 +63,7 @@ class ApiSetNamespaceV6(StructHelper):
     ('Count', ctypes.c_uint32),
     ('EntryOffset', ctypes.c_uint32),
     ('HashOffset', ctypes.c_uint32),
-    ('HashFactor', ctypes.c_uint32),
+    ('HashFactor', ctypes.c_uint32)
   ]
 
 
@@ -83,8 +83,7 @@ class ApiSetSchemaV6:
   def _load_apisets(self, offset, count):
     for _ in range(count):
       entry = ApiSetNamespaceEntryV6(
-        self._data[offset : offset + ctypes.sizeof(ApiSetNamespaceEntryV6)]
-      )
+        self._data[offset:offset + ctypes.sizeof(ApiSetNamespaceEntryV6)])
       entry_name = from_utf16(self._data, entry.NameOffset, entry.NameLength)
       self._apisets.append(entry_name)
       offset += ctypes.sizeof(ApiSetNamespaceEntryV6)
@@ -120,25 +119,22 @@ def read_apiset_section(filename):
 # apiset_name: api-ms-win-core-synch-l1-2-0.dll
 #  -> (api-ms-win-core-synch-l1-2, 0)
 def apiset_dll_to_version(apiset_name):
-  last_dash = apiset_name.rindex('-')
-  apiset_maj_min = apiset_name[0:last_dash]
-  apiset_subversion = apiset_name[last_dash + 1 :]
-  return (apiset_maj_min, apiset_subversion)
+   last_dash = apiset_name.rindex('-')
+   apiset_maj_min = apiset_name[0:last_dash]
+   apiset_subversion = apiset_name[last_dash+1:]
+   return (apiset_maj_min, apiset_subversion)
 
 
 def main():
   parser = argparse.ArgumentParser(
-    description=__doc__, formatter_class=argparse.RawTextHelpFormatter
-  )
-  parser.add_argument(
-    '--dll', metavar='FILE_NAME', help='Dll with a .apiset section'
-  )
-  parser.add_argument(
-    '--out-file',
-    default='apisets.inc',
-    metavar='FILE_NAME',
-    help='path to write .inc file to',
-  )
+      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument('--dll',
+                      metavar='FILE_NAME',
+                      help='Dll with a .apiset section')
+  parser.add_argument('--out-file',
+                      default='apisets.inc',
+                      metavar='FILE_NAME',
+                      help='path to write .inc file to')
   args, _ = parser.parse_known_args()
 
   shasum = hashlib.sha256(open(args.dll, 'rb').read()).hexdigest()
@@ -151,11 +147,11 @@ def main():
   apiset_entries = [apiset_dll_to_version(s) for s in apiset_names]
 
   with open(args.out_file, 'w', encoding='utf8') as f:
-    f.write(f'// Generated from {dll_basename}\n')
-    f.write(f'// FileVersion: {dll_version}\n')
-    f.write(f'// sha256: {shasum}\n')
-    f.write(',\n'.join([f'{{"{e[0]}", {e[1]}}}' for e in apiset_entries]))
-    f.write('\n')
+     f.write(f'// Generated from {dll_basename}\n')
+     f.write(f'// FileVersion: {dll_version}\n')
+     f.write(f'// sha256: {shasum}\n')
+     f.write(',\n'.join([f'{{"{e[0]}", {e[1]}}}' for e in apiset_entries]))
+     f.write('\n')
 
 
 if __name__ == '__main__':

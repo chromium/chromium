@@ -22,12 +22,8 @@ import cpp_source
 def main():
   parser = optparse.OptionParser()
   parser.add_option(
-    '',
-    '--directory',
-    type='string',
-    default='.',
-    help='Path to directory where the cc/h js file should be created',
-  )
+      '', '--directory', type='string', default='.',
+      help='Path to directory where the cc/h js file should be created')
   options, args = parser.parse_args()
 
   global_string_map = {}
@@ -38,17 +34,11 @@ def main():
     with open(js_file, 'r', encoding='utf-8') as f:
       contents = f.read()
     script = 'function() { %s; return %s.apply(null, arguments) }' % (
-      contents,
-      func_name,
-    )
+        contents, func_name)
     global_string_map[script_name] = script
 
-  cpp_source.WriteSource(
-    'js',
-    'chrome/test/chromedriver/chrome',
-    options.directory,
-    global_string_map,
-  )
+  cpp_source.WriteSource('js', 'chrome/test/chromedriver/chrome',
+                         options.directory, global_string_map)
 
 
 if __name__ == '__main__':

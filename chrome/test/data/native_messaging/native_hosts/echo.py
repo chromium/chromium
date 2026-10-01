@@ -15,7 +15,6 @@ import sys
 import struct
 import time
 
-
 def WriteMessage(message):
   try:
     sys.stdout.buffer.write(struct.pack("I", len(message)))
@@ -31,15 +30,12 @@ def ParseArgs():
   parser.add_argument('--parent-window', type=int)
   parser.add_argument('--reconnect-command')
   parser.add_argument('--native-messaging-connect-id')
-  parser.add_argument(
-    '--extension-not-installed', action='store_true', default=False
-  )
-  parser.add_argument(
-    '--invalid-connect-id', action='store_true', default=False
-  )
+  parser.add_argument('--extension-not-installed', action='store_true',
+                      default=False)
+  parser.add_argument('--invalid-connect-id', action='store_true',
+                      default=False)
   parser.add_argument('origin')
   return parser.parse_args()
-
 
 def Main():
   message_number = 0
@@ -49,8 +45,7 @@ def Main():
 
   if sys.argv[1] != args.origin:
     sys.stderr.write(
-      "URL of the calling application is not specified as the first arg.\n"
-    )
+        "URL of the calling application is not specified as the first arg.\n")
     return 1
 
   if args.extension_not_installed:
@@ -82,16 +77,12 @@ def Main():
   # Verify that --parent-window parameter is correct.
   if platform.system() == 'Windows' and args.parent_window:
     import win32gui
-
     if not win32gui.IsWindow(args.parent_window):
       sys.stderr.write('Invalid --parent-window.\n')
       return 1
 
-  reconnect_args = (
-    json.loads(base64.b64decode(args.reconnect_command.encode()))
-    if args.reconnect_command
-    else None
-  )
+  reconnect_args = json.loads(base64.b64decode(
+      args.reconnect_command.encode())) if args.reconnect_command else None
 
   while 1:
     # Read the message type (first 4 bytes).
@@ -132,19 +123,13 @@ def Main():
     if send_invalid_response:
       message = '{'.encode('utf-8')
     else:
-      message = json.dumps(
-        {
-          'id': message_number,
-          'echo': text,
-          'caller_url': caller_url,
-          'args': reconnect_args,
-          'connect_id': args.native_messaging_connect_id,
-        }
-      ).encode('utf-8')
+      message = json.dumps({
+          'id': message_number, 'echo': text, 'caller_url': caller_url,
+          'args': reconnect_args, 'connect_id': args.native_messaging_connect_id,
+      }).encode('utf-8')
 
     if not WriteMessage(message):
       break
-
 
 if __name__ == '__main__':
   sys.exit(Main())

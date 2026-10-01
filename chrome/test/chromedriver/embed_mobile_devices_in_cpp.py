@@ -26,23 +26,15 @@ _EMULATED_DEVICES_IF = '/* DEVICE-LIST-IF-JS */'
 _EMULATED_DEVICES_ELSE = '/* DEVICE-LIST-ELSE'
 _EMULATED_DEVICES_ENDIF = 'DEVICE-LIST-END-IF */'
 
-
 def main():
   parser = optparse.OptionParser()
   parser.add_option(
-    '',
-    '--version-file',
-    type='string',
-    default=os.path.join(chrome_paths.GetSrc(), 'chrome', 'VERSION'),
-    help='Path to Chrome version file',
-  )
+      '', '--version-file', type='string',
+      default=os.path.join(chrome_paths.GetSrc(), 'chrome', 'VERSION'),
+      help='Path to Chrome version file')
   parser.add_option(
-    '',
-    '--directory',
-    type='string',
-    default='.',
-    help='Path to directory where the cc/h files should be created',
-  )
+      '', '--directory', type='string', default='.',
+      help='Path to directory where the cc/h files should be created')
   options, args = parser.parse_args()
 
   # The device userAgent string may contain '%s', which should be replaced with
@@ -88,10 +80,8 @@ def main():
       if endif_position == -1:
         print('Could not find list of emulatedDevices in %s' % file_name)
         return 1
-      list_string = (
-        list_string[0:endif_position]
-        + list_string[endif_position + len(_EMULATED_DEVICES_ENDIF) : :]
-      )
+      list_string = list_string[0:endif_position] + \
+          list_string[endif_position + len(_EMULATED_DEVICES_ENDIF)::]
 
       if_position = list_string.find(_EMULATED_DEVICES_IF)
 
@@ -124,29 +114,26 @@ def main():
           'touch': 'touch' in device['capabilities'],
           'mobile': 'mobile' in device['capabilities'],
         },
-        'type': device['type'],
+        'type': device['type']
       }
       if 'user-agent-metadata' in device:
         client_hints = device['user-agent-metadata']
         mobile_emulation['clientHints'] = {
-          'architecture': client_hints['architecture'],
-          'bitness': '',
-          'platform': client_hints['platform'],
-          'platformVersion': client_hints['platformVersion'],
-          'model': client_hints['model'],
-          'mobile': client_hints['mobile'],
-          'wow64': False,
+            'architecture': client_hints['architecture'],
+            'bitness': '',
+            'platform': client_hints['platform'],
+            'platformVersion': client_hints['platformVersion'],
+            'model': client_hints['model'],
+            'mobile': client_hints['mobile'],
+            'wow64': False,
         }
       devices[title] = mobile_emulation
 
   output_dir = 'chrome/test/chromedriver/chrome'
-  cpp_source.WriteSource(
-    'mobile_device_list',
-    output_dir,
-    options.directory,
-    {'kMobileDevices': json.dumps(devices)},
-  )
-
+  cpp_source.WriteSource('mobile_device_list',
+                         output_dir,
+                         options.directory,
+                         {'kMobileDevices': json.dumps(devices)})
 
 if __name__ == '__main__':
   sys.exit(main())

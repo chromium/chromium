@@ -17,57 +17,55 @@ _TAB_FEATURES_CC = 'tab_features.cc'
 # justified in the CL description and reviewed by chrome/browser/ui/tabs
 # OWNERS.
 _ALLOWED_CREATE_FOR_CALLS = (
-  # BookmarkTabHelper is also attached to non-tab WebContents in
-  # extensions::BookmarkManagerPrivateDragEventRouter, so the WebContents
-  # must own it.
-  'BookmarkTabHelper::CreateForWebContents',
-  # CaptivePortalTabHelper lives in //components/captive_portal/content and
-  # is also attached to non-tab GuestView WebContents in
-  # ChromeGuestViewManagerDelegate, so the WebContents must own it.
-  'captive_portal::CaptivePortalTabHelper::CreateForWebContents',
-  # DlpContentTabHelper is also attached to non-tab Chrome App window
-  # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
-  # by DlpContentManager, so the WebContents must own it.
-  'policy::DlpContentTabHelper::MaybeCreateForWebContents',
-  # The task manager tag is looked up from WebContents user data by
-  # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
-  # also attached to non-tab WebContents (e.g. payment handler WebViews) and
-  # to Android tabs, so the WebContents must own it.
-  'task_manager::WebContentsTags::CreateForTabContents',
-  # PreRedirectionURLObserver lives in //components/webapps and is also
-  # attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
-  # for background web-app installation, so the WebContents must own it.
-  'webapps::PreRedirectionURLObserver::CreateForWebContents',
+    # BookmarkTabHelper is also attached to non-tab WebContents in
+    # extensions::BookmarkManagerPrivateDragEventRouter, so the WebContents
+    # must own it.
+    'BookmarkTabHelper::CreateForWebContents',
+    # CaptivePortalTabHelper lives in //components/captive_portal/content and
+    # is also attached to non-tab GuestView WebContents in
+    # ChromeGuestViewManagerDelegate, so the WebContents must own it.
+    'captive_portal::CaptivePortalTabHelper::CreateForWebContents',
+    # DlpContentTabHelper is also attached to non-tab Chrome App window
+    # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
+    # by DlpContentManager, so the WebContents must own it.
+    'policy::DlpContentTabHelper::MaybeCreateForWebContents',
+    # The task manager tag is looked up from WebContents user data by
+    # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
+    # also attached to non-tab WebContents (e.g. payment handler WebViews) and
+    # to Android tabs, so the WebContents must own it.
+    'task_manager::WebContentsTags::CreateForTabContents',
+    # PreRedirectionURLObserver lives in //components/webapps and is also
+    # attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
+    # for background web-app installation, so the WebContents must own it.
+    'webapps::PreRedirectionURLObserver::CreateForWebContents',
 )
 
 
 def CheckNoCreateForInTabFeatures(input_api, output_api):
-  """Prevents SupportsUserData-style CreateFor* calls in tab_features.cc.
+    """Prevents SupportsUserData-style CreateFor* calls in tab_features.cc.
 
-  Tab-scoped features must be owned directly by TabFeatures as a
-  std::unique_ptr member instead of attaching themselves to the
-  WebContents via SupportsUserData. The only exceptions are the
-  explicitly allowlisted helpers above, which must support non-tab
-  WebContents as well.
-  """
-  results = []
-  for f in input_api.AffectedFiles():
-    if input_api.os_path.basename(f.LocalPath()) != _TAB_FEATURES_CC:
-      continue
-    for line_num, line in enumerate(f.NewContents(), start=1):
-      if 'CreateFor' not in line:
-        continue
-      if any(allowed in line for allowed in _ALLOWED_CREATE_FOR_CALLS):
-        continue
-      results.append(
-        output_api.PresubmitError(
-          '%s:%d: "CreateFor" indicates the SupportsUserData '
-          'anti-pattern. Tab-scoped features must be owned by '
-          'TabFeatures as a std::unique_ptr member instead. If '
-          'the helper must also support non-tab WebContents, add '
-          'it to _ALLOWED_CREATE_FOR_CALLS in '
-          'chrome/browser/ui/tabs/PRESUBMIT.py with justification.'
-          % (f.LocalPath(), line_num)
-        )
-      )
-  return results
+    Tab-scoped features must be owned directly by TabFeatures as a
+    std::unique_ptr member instead of attaching themselves to the
+    WebContents via SupportsUserData. The only exceptions are the
+    explicitly allowlisted helpers above, which must support non-tab
+    WebContents as well.
+    """
+    results = []
+    for f in input_api.AffectedFiles():
+        if input_api.os_path.basename(f.LocalPath()) != _TAB_FEATURES_CC:
+            continue
+        for line_num, line in enumerate(f.NewContents(), start=1):
+            if 'CreateFor' not in line:
+                continue
+            if any(allowed in line for allowed in _ALLOWED_CREATE_FOR_CALLS):
+                continue
+            results.append(
+                output_api.PresubmitError(
+                    '%s:%d: "CreateFor" indicates the SupportsUserData '
+                    'anti-pattern. Tab-scoped features must be owned by '
+                    'TabFeatures as a std::unique_ptr member instead. If '
+                    'the helper must also support non-tab WebContents, add '
+                    'it to _ALLOWED_CREATE_FOR_CALLS in '
+                    'chrome/browser/ui/tabs/PRESUBMIT.py with justification.'
+                    % (f.LocalPath(), line_num)))
+    return results

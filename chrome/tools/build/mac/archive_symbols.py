@@ -8,7 +8,6 @@ import sys
 
 # This script creates a BZ2-compressed TAR file for archiving Chrome symbols.
 
-
 def Main(args):
   if len(args) < 2:
     print >> sys.stderr, "Usage: python archive_symbols.py file.tar.bz2 file..."

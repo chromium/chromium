@@ -28,9 +28,8 @@ def parse_order_file(filename):
   symbols = [strip_comments.sub('', line).strip() for line in open(filename)]
   symbols = list(filter(None, symbols))
   if has_duplicates(symbols):
-    print(
-      'order file "%s" contains duplicate symbols' % filename, file=sys.stderr
-    )
+    print('order file "%s" contains duplicate symbols' % filename,
+          file=sys.stderr)
     sys.exit(1)
   return symbols
 
@@ -38,10 +37,8 @@ def parse_order_file(filename):
 def check_symbol_table(binary, allowed_symbols, nm, symbol_file):
   actual_symbols = subprocess.check_output([nm, '-jUng', binary]).decode('utf8')
   actual_symbols = [s.rstrip() for s in actual_symbols.splitlines()]
-
   def print_syms(syms):
     print('\n'.join(['  ' + s for s in syms]), file=sys.stderr)
-
   try:
     # Check that actual_symbols is a sublist of allowed_symbols.
     # Every exported symbol must be in allowed_symbols, and the order of the
@@ -51,11 +48,9 @@ def check_symbol_table(binary, allowed_symbols, nm, symbol_file):
     # fine. Order matters, so can't use set().
     symbol_indices = [allowed_symbols.index(s) for s in actual_symbols]
     if symbol_indices != sorted(symbol_indices):
-      print(
-        '"%s" exports symbols in order different from order file %s'
-        % (binary, symbol_file),
-        file=sys.stderr,
-      )
+      print('"%s" exports symbols in order different from order file %s' %
+            (binary, symbol_file),
+            file=sys.stderr)
       print('actual order:', file=sys.stderr)
       print_syms(actual_symbols)
       print('expected order:', file=sys.stderr)
@@ -73,24 +68,18 @@ def check_symbol_table(binary, allowed_symbols, nm, symbol_file):
 
 def main():
   parser = argparse.ArgumentParser(
-    description='Check order of exported symbols of a given binary.'
-  )
-  parser.add_argument(
-    '--stamp', required=True, help='Touch this stamp file on success.'
-  )
+    description='Check order of exported symbols of a given binary.')
+  parser.add_argument('--stamp', required=True,
+    help='Touch this stamp file on success.')
   parser.add_argument('--binary', required=True, help='Check this binary.')
   parser.add_argument('--nm-path', required=True, help='Path to nm')
-  parser.add_argument(
-    '--symbol-file',
-    required=True,
-    help='Order file listing expected public symbols.',
-  )
+  parser.add_argument('--symbol-file', required=True,
+    help='Order file listing expected public symbols.')
   args = parser.parse_args()
 
   allowed_symbols = parse_order_file(args.symbol_file)
   check_symbol_table(
-    args.binary, allowed_symbols, args.nm_path, args.symbol_file
-  )
+      args.binary, allowed_symbols, args.nm_path, args.symbol_file)
   # TODO(thakis): Also verify global symbols in the binary's export trie.
 
   open(args.stamp, 'w').close()  # Update mtime on stamp file.

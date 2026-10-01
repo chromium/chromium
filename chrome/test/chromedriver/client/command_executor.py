@@ -12,9 +12,7 @@ _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
 sys.path.insert(1, _PARENT_DIR)
 import util
-
 sys.path.remove(_PARENT_DIR)
-
 
 class _Method(object):
   GET = 'GET'
@@ -46,9 +44,7 @@ class Command(object):
   GET_PAGE_SOURCE = (_Method.GET, '/session/:sessionId/source')
   SCREENSHOT = (_Method.GET, '/session/:sessionId/screenshot')
   ELEMENT_SCREENSHOT = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/screenshot',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/screenshot')
   FULL_PAGE_SCREENSHOT = (_Method.GET, '/session/:sessionId/screenshot/full')
   PRINT = (_Method.POST, '/session/:sessionId/print')
   SET_BROWSER_VISIBLE = (_Method.POST, '/session/:sessionId/visible')
@@ -58,9 +54,7 @@ class Command(object):
   GET_ACTIVE_ELEMENT = (_Method.GET, '/session/:sessionId/element/active')
   FIND_CHILD_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/element')
   FIND_CHILD_ELEMENTS = (
-    _Method.POST,
-    '/session/:sessionId/element/:id/elements',
-  )
+      _Method.POST, '/session/:sessionId/element/:id/elements')
   CLICK_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/click')
   CLEAR_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/clear')
   SUBMIT_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/submit')
@@ -70,56 +64,33 @@ class Command(object):
   GET_ELEMENT_VALUE = (_Method.GET, '/session/:sessionId/element/:id/value')
   GET_ELEMENT_TAG_NAME = (_Method.GET, '/session/:sessionId/element/:id/name')
   IS_ELEMENT_SELECTED = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/selected',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/selected')
   IS_ELEMENT_ENABLED = (_Method.GET, '/session/:sessionId/element/:id/enabled')
   IS_ELEMENT_DISPLAYED = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/displayed',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/displayed')
   GET_ELEMENT_LOCATION = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/location',
-  )
-  GET_ELEMENT_RECT = (_Method.GET, '/session/:sessionId/element/:id/rect')
+      _Method.GET, '/session/:sessionId/element/:id/location')
+  GET_ELEMENT_RECT = (
+      _Method.GET, '/session/:sessionId/element/:id/rect')
   GET_ELEMENT_LOCATION_ONCE_SCROLLED_INTO_VIEW = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/location_in_view',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/location_in_view')
   GET_ELEMENT_SIZE = (_Method.GET, '/session/:sessionId/element/:id/size')
   GET_ELEMENT_ATTRIBUTE = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/attribute/:name',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/attribute/:name')
   GET_ELEMENT_PROPERTY = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/property/:name',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/property/:name')
   GET_ELEMENT_COMPUTED_LABEL = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/computedlabel',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/computedlabel')
   GET_ELEMENT_COMPUTED_ROLE = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/computedrole',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/computedrole')
   GET_ELEMENT_SHADOW_ROOT = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/shadow',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/shadow')
   FIND_ELEMENT_FROM_SHADOW_ROOT = (
-    _Method.POST,
-    '/session/:sessionId/shadow/:id/element',
-  )
+      _Method.POST, '/session/:sessionId/shadow/:id/element')
   FIND_ELEMENTS_FROM_SHADOW_ROOT = (
-    _Method.POST,
-    '/session/:sessionId/shadow/:id/elements',
-  )
+      _Method.POST, '/session/:sessionId/shadow/:id/elements')
   ELEMENT_EQUALS = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/equals/:other',
-  )
+      _Method.GET, '/session/:sessionId/element/:id/equals/:other')
   GET_COOKIES = (_Method.GET, '/session/:sessionId/cookie')
   GET_NAMED_COOKIE = (_Method.GET, '/session/:sessionId/cookie/:name')
   ADD_COOKIE = (_Method.POST, '/session/:sessionId/cookie')
@@ -130,104 +101,75 @@ class Command(object):
   SWITCH_TO_WINDOW = (_Method.POST, '/session/:sessionId/window')
   GET_WINDOW_RECT = (_Method.GET, '/session/:sessionId/window/rect')
   GET_WINDOW_SIZE = (
-    _Method.GET,
-    '/session/:sessionId/window/:windowHandle/size',
-  )
-  NEW_WINDOW = (_Method.POST, '/session/:sessionId/window/new')
+      _Method.GET, '/session/:sessionId/window/:windowHandle/size')
+  NEW_WINDOW = (
+      _Method.POST, '/session/:sessionId/window/new')
   GET_WINDOW_POSITION = (
-    _Method.GET,
-    '/session/:sessionId/window/:windowHandle/position',
-  )
+      _Method.GET, '/session/:sessionId/window/:windowHandle/position')
   SET_WINDOW_SIZE = (
-    _Method.POST,
-    '/session/:sessionId/window/:windowHandle/size',
-  )
+      _Method.POST, '/session/:sessionId/window/:windowHandle/size')
   SET_WINDOW_POSITION = (
-    _Method.POST,
-    '/session/:sessionId/window/:windowHandle/position',
-  )
-  SET_WINDOW_RECT = (_Method.POST, '/session/:sessionId/window/rect')
-  MAXIMIZE_WINDOW = (_Method.POST, '/session/:sessionId/window/maximize')
-  MINIMIZE_WINDOW = (_Method.POST, '/session/:sessionId/window/minimize')
-  FULLSCREEN_WINDOW = (_Method.POST, '/session/:sessionId/window/fullscreen')
-  SET_DEVICE_POSTURE = (_Method.POST, '/session/:sessionId/deviceposture')
-  CLEAR_DEVICE_POSTURE = (_Method.DELETE, '/session/:sessionId/deviceposture')
-  SET_DISPLAY_FEATURES = (_Method.POST, '/session/:sessionId/displayfeatures')
+      _Method.POST, '/session/:sessionId/window/:windowHandle/position')
+  SET_WINDOW_RECT = (
+      _Method.POST, '/session/:sessionId/window/rect')
+  MAXIMIZE_WINDOW = (
+      _Method.POST, '/session/:sessionId/window/maximize')
+  MINIMIZE_WINDOW = (
+      _Method.POST, '/session/:sessionId/window/minimize')
+  FULLSCREEN_WINDOW = (
+      _Method.POST, '/session/:sessionId/window/fullscreen')
+  SET_DEVICE_POSTURE = (
+      _Method.POST, '/session/:sessionId/deviceposture')
+  CLEAR_DEVICE_POSTURE = (
+      _Method.DELETE, '/session/:sessionId/deviceposture')
+  SET_DISPLAY_FEATURES = (
+      _Method.POST, '/session/:sessionId/displayfeatures')
   CLEAR_DISPLAY_FEATURES = (
-    _Method.DELETE,
-    '/session/:sessionId/displayfeatures',
-  )
+      _Method.DELETE, '/session/:sessionId/displayfeatures')
   CLOSE = (_Method.DELETE, '/session/:sessionId/window')
   DRAG_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/drag')
   GET_ELEMENT_VALUE_OF_CSS_PROPERTY = (
-    _Method.GET,
-    '/session/:sessionId/element/:id/css/:propertyName',
-  )
-  IMPLICITLY_WAIT = (_Method.POST, '/session/:sessionId/timeouts/implicit_wait')
+      _Method.GET, '/session/:sessionId/element/:id/css/:propertyName')
+  IMPLICITLY_WAIT = (
+      _Method.POST, '/session/:sessionId/timeouts/implicit_wait')
   SET_SCRIPT_TIMEOUT = (
-    _Method.POST,
-    '/session/:sessionId/timeouts/async_script',
-  )
+      _Method.POST, '/session/:sessionId/timeouts/async_script')
   SET_TIMEOUTS = (_Method.POST, '/session/:sessionId/timeouts')
   GET_TIMEOUTS = (_Method.GET, '/session/:sessionId/timeouts')
   EXECUTE_SQL = (_Method.POST, '/session/:sessionId/execute_sql')
   GET_LOCATION = (_Method.GET, '/session/:sessionId/location')
   SET_LOCATION = (_Method.POST, '/session/:sessionId/location')
   GET_NETWORK_CONNECTION = (
-    _Method.GET,
-    '/session/:sessionId/network_connection',
-  )
+     _Method.GET, '/session/:sessionId/network_connection')
   GET_NETWORK_CONDITIONS = (
-    _Method.GET,
-    '/session/:sessionId/chromium/network_conditions',
-  )
+      _Method.GET, '/session/:sessionId/chromium/network_conditions')
   SET_NETWORK_CONDITIONS = (
-    _Method.POST,
-    '/session/:sessionId/chromium/network_conditions',
-  )
+      _Method.POST, '/session/:sessionId/chromium/network_conditions')
   DELETE_NETWORK_CONDITIONS = (
-    _Method.DELETE,
-    '/session/:sessionId/chromium/network_conditions',
-  )
+      _Method.DELETE, '/session/:sessionId/chromium/network_conditions')
   GET_STATUS = (_Method.GET, '/session/:sessionId/application_cache/status')
   IS_BROWSER_ONLINE = (_Method.GET, '/session/:sessionId/browser_connection')
   SET_BROWSER_ONLINE = (_Method.POST, '/session/:sessionId/browser_connection')
   GET_LOCAL_STORAGE_ITEM = (
-    _Method.GET,
-    '/session/:sessionId/local_storage/key/:key',
-  )
+      _Method.GET, '/session/:sessionId/local_storage/key/:key')
   REMOVE_LOCAL_STORAGE_ITEM = (
-    _Method.DELETE,
-    '/session/:sessionId/local_storage/key/:key',
-  )
+      _Method.DELETE, '/session/:sessionId/local_storage/key/:key')
   GET_LOCAL_STORAGE_KEYS = (_Method.GET, '/session/:sessionId/local_storage')
   SET_LOCAL_STORAGE_ITEM = (_Method.POST, '/session/:sessionId/local_storage')
   CLEAR_LOCAL_STORAGE = (_Method.DELETE, '/session/:sessionId/local_storage')
   GET_LOCAL_STORAGE_SIZE = (
-    _Method.GET,
-    '/session/:sessionId/local_storage/size',
-  )
+      _Method.GET, '/session/:sessionId/local_storage/size')
   GET_SESSION_STORAGE_ITEM = (
-    _Method.GET,
-    '/session/:sessionId/session_storage/key/:key',
-  )
+      _Method.GET, '/session/:sessionId/session_storage/key/:key')
   REMOVE_SESSION_STORAGE_ITEM = (
-    _Method.DELETE,
-    '/session/:sessionId/session_storage/key/:key',
-  )
+      _Method.DELETE, '/session/:sessionId/session_storage/key/:key')
   GET_SESSION_STORAGE_KEY = (_Method.GET, '/session/:sessionId/session_storage')
   SET_SESSION_STORAGE_ITEM = (
-    _Method.POST,
-    '/session/:sessionId/session_storage',
-  )
+      _Method.POST, '/session/:sessionId/session_storage')
   CLEAR_SESSION_STORAGE = (
-    _Method.DELETE,
-    '/session/:sessionId/session_storage',
-  )
+      _Method.DELETE, '/session/:sessionId/session_storage')
   GET_SESSION_STORAGE_SIZE = (
-    _Method.GET,
-    '/session/:sessionId/session_storage/size',
-  )
+      _Method.GET, '/session/:sessionId/session_storage/size')
   MOUSE_CLICK = (_Method.POST, '/session/:sessionId/click')
   MOUSE_DOUBLE_CLICK = (_Method.POST, '/session/:sessionId/doubleclick')
   MOUSE_BUTTON_DOWN = (_Method.POST, '/session/:sessionId/buttondown')
@@ -249,109 +191,96 @@ class Command(object):
   GET_SESSION_LOGS = (_Method.POST, '/logs')
   STATUS = (_Method.GET, '/status')
   SET_NETWORK_CONNECTION = (
-    _Method.POST,
-    '/session/:sessionId/network_connection',
-  )
+      _Method.POST, '/session/:sessionId/network_connection')
   SEND_COMMAND_AND_GET_RESULT = (
-    _Method.POST,
-    '/session/:sessionId/chromium/send_command_and_get_result',
-  )
+      _Method.POST, '/session/:sessionId/chromium/send_command_and_get_result')
   GENERATE_TEST_REPORT = (
-    _Method.POST,
-    '/session/:sessionId/reporting/generate_test_report',
-  )
+      _Method.POST, '/session/:sessionId/reporting/generate_test_report')
   SET_TIME_ZONE = (_Method.POST, '/session/:sessionId/time_zone')
   ADD_VIRTUAL_AUTHENTICATOR = (
-    _Method.POST,
-    '/session/:sessionId/webauthn/authenticator',
-  )
+      _Method.POST, '/session/:sessionId/webauthn/authenticator')
   REMOVE_VIRTUAL_AUTHENTICATOR = (
-    _Method.DELETE,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId',
-  )
+      _Method.DELETE,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId')
   ADD_CREDENTIAL = (
-    _Method.POST,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/credential',
-  )
+      _Method.POST,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credential')
   GET_CREDENTIALS = (
-    _Method.GET,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials',
-  )
+      _Method.GET,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials')
   REMOVE_CREDENTIAL = (
-    _Method.DELETE,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials/'
-    ':credentialId',
-  )
+      _Method.DELETE,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials/'
+      ':credentialId')
   REMOVE_ALL_CREDENTIALS = (
-    _Method.DELETE,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials',
-  )
+      _Method.DELETE,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials')
   SET_USER_VERIFIED = (
-    _Method.POST,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/uv',
-  )
+      _Method.POST,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/uv')
   SET_CREDENTIAL_PROPERTIES = (
-    _Method.POST,
-    '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials/'
-    ':credentialId/props',
-  )
+      _Method.POST,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials/'
+      ':credentialId/props')
   SET_SPC_TRANSACTION_MODE = (
-    _Method.POST,
-    '/session/:sessionId/secure-payment-confirmation/set-mode',
-  )
+      _Method.POST,
+      '/session/:sessionId/secure-payment-confirmation/set-mode')
   SET_RPH_REGISTRATION_MODE = (
-    _Method.POST,
-    '/session/:sessionId/custom-handlers/set-mode',
-  )
-  CREATE_VIRTUAL_SENSOR = (_Method.POST, '/session/:sessionId/sensor')
-  UPDATE_VIRTUAL_SENSOR = (_Method.POST, '/session/:sessionId/sensor/:type')
-  REMOVE_VIRTUAL_SENSOR = (_Method.DELETE, '/session/:sessionId/sensor/:type')
+      _Method.POST,
+      '/session/:sessionId/custom-handlers/set-mode')
+  CREATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor')
+  UPDATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor/:type')
+  REMOVE_VIRTUAL_SENSOR = (
+      _Method.DELETE, '/session/:sessionId/sensor/:type')
   GET_VIRTUAL_SENSOR_INFORMATION = (
-    _Method.GET,
-    '/session/:sessionId/sensor/:type',
-  )
-  SET_PERMISSION = (_Method.POST, '/session/:sessionId/permissions')
-  GET_CAST_SINKS = (_Method.GET, '/session/:sessionId/:vendorId/cast/get_sinks')
-  CANCEL_FEDCM_DIALOG = (_Method.POST, '/session/:sessionId/fedcm/canceldialog')
-  SELECT_ACCOUNT = (_Method.POST, '/session/:sessionId/fedcm/selectaccount')
+      _Method.GET, '/session/:sessionId/sensor/:type')
+  SET_PERMISSION = (
+      _Method.POST, '/session/:sessionId/permissions')
+  GET_CAST_SINKS = (
+      _Method.GET,
+      '/session/:sessionId/:vendorId/cast/get_sinks')
+  CANCEL_FEDCM_DIALOG = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/canceldialog')
+  SELECT_ACCOUNT = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/selectaccount')
   CLICK_FEDCM_DIALOG_BUTTON = (
-    _Method.POST,
-    '/session/:sessionId/fedcm/clickdialogbutton',
-  )
-  GET_ACCOUNTS = (_Method.GET, '/session/:sessionId/fedcm/accountlist')
-  GET_FEDCM_TITLE = (_Method.GET, '/session/:sessionId/fedcm/gettitle')
-  GET_DIALOG_TYPE = (_Method.GET, '/session/:sessionId/fedcm/getdialogtype')
+      _Method.POST,
+      '/session/:sessionId/fedcm/clickdialogbutton')
+  GET_ACCOUNTS = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/accountlist')
+  GET_FEDCM_TITLE = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/gettitle')
+  GET_DIALOG_TYPE = (
+      _Method.GET,
+      '/session/:sessionId/fedcm/getdialogtype')
   SET_DELAY_ENABLED = (
-    _Method.POST,
-    '/session/:sessionId/fedcm/setdelayenabled',
-  )
-  RESET_COOLDOWN = (_Method.POST, '/session/:sessionId/fedcm/resetcooldown')
+      _Method.POST,
+      '/session/:sessionId/fedcm/setdelayenabled')
+  RESET_COOLDOWN = (
+      _Method.POST,
+      '/session/:sessionId/fedcm/resetcooldown')
   RUN_BOUNCE_TRACKING_MITIGATIONS = (
-    _Method.DELETE,
-    '/session/:sessionId/storage/run_bounce_tracking_mitigations',
-  )
+        _Method.DELETE,
+        '/session/:sessionId/storage/run_bounce_tracking_mitigations')
   CREATE_VIRTUAL_PRESSURE_SOURCE = (
-    _Method.POST,
-    '/session/:sessionId/pressuresource',
-  )
+      _Method.POST, '/session/:sessionId/pressuresource')
   UPDATE_VIRTUAL_PRESSURE_SOURCE = (
-    _Method.POST,
-    '/session/:sessionId/pressuresource/:type',
-  )
+      _Method.POST, '/session/:sessionId/pressuresource/:type')
   REMOVE_VIRTUAL_PRESSURE_SOURCE = (
-    _Method.DELETE,
-    '/session/:sessionId/pressuresource/:type',
-  )
+      _Method.DELETE, '/session/:sessionId/pressuresource/:type')
   SET_PROTECTED_AUDIENCE_KANONYMITY = (
-    _Method.POST,
-    '/session/:sessionId/protected_audience/set_k_anonymity',
-  )
+      _Method.POST, '/session/:sessionId/protected_audience/set_k_anonymity')
   GET_GLOBAL_PRIVACY_CONTROL = (_Method.GET, '/session/:sessionId/privacy')
   SET_GLOBAL_PRIVACY_CONTROL = (_Method.POST, '/session/:sessionId/privacy')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')
-
 
 class CommandExecutor(object):
   def __init__(self, server_url, http_timeout=None):
@@ -362,8 +291,7 @@ class CommandExecutor(object):
     if http_timeout is not None:
       self._http_timeout = http_timeout
     self._http_client = http.client.HTTPConnection(
-      parsed_url.hostname, parsed_url.port, timeout=self._http_timeout
-    )
+      parsed_url.hostname, parsed_url.port, timeout=self._http_timeout)
 
   @staticmethod
   def CreatePath(template_url_path, params):

@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 import logging
-import pyauto_functional  # has to be imported before pyauto
+import pyauto_functional # has to be imported before pyauto
 import pyauto
 import sys
 
@@ -21,11 +21,11 @@ if __name__ == '__main__':
   pyuitest = pyauto.PyUITest()
   pyuitest.setUp()
   driver = pyuitest.NewWebDriver(port=VM_CHROMEDRIVER_PORT)
-  logging.info('WebDriver is listening on port %d.' % VM_CHROMEDRIVER_PORT)
+  logging.info('WebDriver is listening on port %d.'
+               % VM_CHROMEDRIVER_PORT)
   logging.info('Machine prepared for VM snapshot.')
-  raw_input(
-    'Please snapshot the VM and hit ENTER when done to terminate this script.'
-  )
+  raw_input('Please snapshot the VM and hit ENTER when done to '
+            'terminate this script.')
   pyuitest.tearDown()
   del pyuitest
   del pyauto_suite

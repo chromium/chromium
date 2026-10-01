@@ -10,8 +10,7 @@ import unittest
 
 
 _BaseTextTestResult = getattr(
-  unittest, '_TextTestResult', unittest.TextTestResult
-)
+    unittest, '_TextTestResult', unittest.TextTestResult)
 
 
 class _TextTestResult(_BaseTextTestResult):
@@ -25,17 +24,14 @@ class _TextTestResult(_BaseTextTestResult):
   [ RUN        ] autofill.AutofillTest.testFillProfileCrazyCharacters: "Test."
   [         OK ] autofill.AutofillTest.testFillProfileCrazyCharacters
   """
-
   def __init__(self, stream, descriptions, verbosity):
     super(_TextTestResult, self).__init__(stream, descriptions, verbosity)
     self._fails = set()
 
   def _GetTestURI(self, test):
-    return '%s.%s.%s' % (
-      test.__class__.__module__,
-      test.__class__.__name__,
-      test._testMethodName,
-    )
+    return '%s.%s.%s' % (test.__class__.__module__,
+                         test.__class__.__name__,
+                         test._testMethodName)
 
   def getDescription(self, test):
     return '%s: "%s"' % (self._GetTestURI(test), test.shortDescription())
@@ -69,9 +65,8 @@ class TextTestRunner(unittest.TextTestRunner):
   """
 
   def __init__(self, verbosity=1):
-    unittest.TextTestRunner.__init__(
-      self, stream=sys.stderr, verbosity=verbosity
-    )
+    unittest.TextTestRunner.__init__(self, stream=sys.stderr,
+                                     verbosity=verbosity)
 
   def _makeResult(self):
     return _TextTestResult(self.stream, self.descriptions, self.verbosity)
@@ -95,9 +90,9 @@ def GetTestNamesFromSuite(suite):
 
 def GetTestName(test):
   """Gets the test name of the given unittest test."""
-  return '.'.join(
-    [test.__class__.__module__, test.__class__.__name__, test._testMethodName]
-  )
+  return '.'.join([test.__class__.__module__,
+                   test.__class__.__name__,
+                   test._testMethodName])
 
 
 def FilterTestSuite(suite, gtest_filter):
@@ -140,10 +135,10 @@ def FilterTests(all_tests, gtest_filter):
 
 
 class AddSuccessTextTestResult(unittest.runner.TextTestResult):
+
   def __init__(self, stream, descriptions, verbosity):
     super(AddSuccessTextTestResult, self).__init__(
-      stream, descriptions, verbosity
-    )
+            stream, descriptions, verbosity)
     self.successes = []
 
   def addSuccess(self, test):

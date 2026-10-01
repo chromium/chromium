@@ -27,12 +27,12 @@ def _install_cipd_packages(packages):
       logging.info(f'Adding package {package_name} {version}')
 
   ensure_cmd = [
-    'cipd',
-    'ensure',
-    '-ensure-file',
-    ensure_path,
-    '-root',
-    CIPD_ROOT,
+      'cipd',
+      'ensure',
+      '-ensure-file',
+      ensure_path,
+      '-root',
+      CIPD_ROOT,
   ]
   subprocess.check_call(ensure_cmd)
 
@@ -45,30 +45,24 @@ def _cas_ui_url(instance, digest):
 
 
 def pytest_addoption(parser):
-  parser.addoption(
-    '--cipd-packages',
-    dest='cipd_packages',
-    help='A string containing the list of CIPD packages to '
-    'install. Each package is defined as name=version and '
-    'separated by ",".',
-  )
+  parser.addoption('--cipd-packages',
+                   dest='cipd_packages',
+                   help='A string containing the list of CIPD packages to '
+                   'install. Each package is defined as name=version and '
+                   'separated by ",".')
 
-  parser.addoption(
-    '--cas-digests',
-    dest='cas_digests',
-    help='A string containing the list of CAS hashes to '
-    'download. Each hash is defined as instance=hash and '
-    'separated by ",".',
-  )
+  parser.addoption('--cas-digests',
+                   dest='cas_digests',
+                   help='A string containing the list of CAS hashes to '
+                   'download. Each hash is defined as instance=hash and '
+                   'separated by ",".')
 
-  parser.addoption(
-    '--cas-out-dir',
-    default=test_utils.SRC_DIR,
-    dest='cas_out_dir',
-    help='The path to the output dir where the CAS digests are '
-    'being downloaded to. Defaults to the root folder where '
-    'the chromium source is checked out.',
-  )
+  parser.addoption('--cas-out-dir',
+                   default=test_utils.SRC_DIR,
+                   dest='cas_out_dir',
+                   help='The path to the output dir where the CAS digests are '
+                   'being downloaded to. Defaults to the root folder where '
+                   'the chromium source is checked out.')
 
 
 @pytest.fixture(scope="session")
@@ -77,8 +71,7 @@ def cipd_root(pytestconfig) -> str:
   cipd_packages = pytestconfig.getoption('cipd_packages')
   if cipd_packages:
     _install_cipd_packages(
-      [tuple(each.split('=')) for each in cipd_packages.split(',')]
-    )
+      [tuple(each.split('=')) for each in cipd_packages.split(',')])
   return CIPD_ROOT
 
 
@@ -101,18 +94,10 @@ def cas_digests(pytestconfig, cipd_root) -> Optional[str]:
   for digest in digests.split(','):
     instance_name, digest_hash = digest.split('=')
     cas_cmd = [
-      cas_bin,
-      'download',
-      '-cas-instance',
-      instance_name,
-      '-digest',
-      digest_hash,
-      '-dir',
-      cas_output,
-    ]
+      cas_bin, 'download', '-cas-instance', instance_name,
+      '-digest', digest_hash, '-dir', cas_output]
     logging.info('%s', ' '.join(cas_cmd))
     subprocess.check_call(cas_cmd)
-    logging.info(
-      'downloading cas digest: %s', _cas_ui_url(instance_name, digest_hash)
-    )
+    logging.info('downloading cas digest: %s', _cas_ui_url(instance_name,
+                                                           digest_hash))
   return cas_output

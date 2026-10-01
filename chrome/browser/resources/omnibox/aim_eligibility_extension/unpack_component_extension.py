@@ -3,7 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Helper script to unpack component extension resources from a .grd file."""
+"""Helper script to unpack component extension resources from a .grd file.
+"""
 
 import argparse
 import os
@@ -36,31 +37,20 @@ def parse_grd_includes(grd_path, visited_grd_files):
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument(
-    '--in-grd', required=True, help='Path to the input .grd file'
-  )
-  parser.add_argument('--out-folder', required=True, help='Destination folder')
-  parser.add_argument(
-    '--root-gen-dir',
-    required=True,
-    help='Path to root_gen_dir relative to current dir',
-  )
-  parser.add_argument(
-    '--root-src-dir',
-    required=True,
-    help='Path to root_src_dir relative to current dir',
-  )
-  parser.add_argument(
-    '--grd-resource-path-prefix',
-    default='',
-    help='Resource path prefix to strip from destination',
-  )
-  parser.add_argument(
-    '--depfile', required=True, help='Path to Ninja depfile to write'
-  )
-  parser.add_argument(
-    '--stamp', required=True, help='Target output path for the depfile rule'
-  )
+  parser.add_argument('--in-grd', required=True,
+                      help='Path to the input .grd file')
+  parser.add_argument('--out-folder', required=True,
+                      help='Destination folder')
+  parser.add_argument('--root-gen-dir', required=True,
+                      help='Path to root_gen_dir relative to current dir')
+  parser.add_argument('--root-src-dir', required=True,
+                      help='Path to root_src_dir relative to current dir')
+  parser.add_argument('--grd-resource-path-prefix', default='',
+                      help='Resource path prefix to strip from destination')
+  parser.add_argument('--depfile', required=True,
+                      help='Path to Ninja depfile to write')
+  parser.add_argument('--stamp', required=True,
+                      help='Target output path for the depfile rule')
   args = parser.parse_args()
 
   os.makedirs(args.out_folder, exist_ok=True)
@@ -74,16 +64,15 @@ def main():
   current_files = set()
 
   for src_template, resource_path in parse_grd_includes(
-    args.in_grd, visited_grd_files
-  ):
-    src_path = src_template.replace(
-      '${root_gen_dir}', args.root_gen_dir
-    ).replace('${root_src_dir}', args.root_src_dir)
+      args.in_grd, visited_grd_files):
+    src_path = (src_template
+                .replace('${root_gen_dir}', args.root_gen_dir)
+                .replace('${root_src_dir}', args.root_src_dir))
     dep_files.append(src_path)
 
     dst_rel_path = resource_path
     if prefix and dst_rel_path.startswith(prefix):
-      dst_rel_path = dst_rel_path[len(prefix) :]
+      dst_rel_path = dst_rel_path[len(prefix):]
 
     dst_path = os.path.join(args.out_folder, dst_rel_path)
     os.makedirs(os.path.dirname(dst_path), exist_ok=True)

@@ -22,14 +22,12 @@ USE_PYTHON_3 = f'This script will only run under python3.'
 
 # e.g. '  Section contains the following exports for CRYPT32.dll'
 RE_NEWMOD = re.compile(
-  r'Section contains the following exports for (?P<dll>\w+\.(?i:dll|drv))'
-)
+  r'Section contains the following exports for (?P<dll>\w+\.(?i:dll|drv))')
 # e.g. '       1020    0 00088A30 CertAddCRLContextToStore'
 #                        ^ can be blank
 RE_EXPORT = re.compile(r'^\s+\d+\s+[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)')
 # apiset line in apisets.inc (see generate_supported_apisets.py)
 RE_APISET = re.compile(r'^{"(?P<apiset>[^"]+)",\s*(?P<version>\d+)},')
-
 
 def parse_file(f):
   """Naive parser for dumpbin output.
@@ -67,7 +65,7 @@ def generate_inc(input_file):
   """
   # const DetailedImports kVariable = {
   mods = parse_file(open(input_file, 'r', encoding='utf-8'))
-  module_entries = []
+  module_entries = [];
   for module, functions in mods.items():
     joined_functions = ',\n'.join([f'  "{fn}"' for fn in functions])
     module_line = f' {{"{module}", {{{joined_functions}}}}}'
@@ -78,12 +76,12 @@ def generate_inc(input_file):
 
 
 def maybe_read(filename):
-  """Read existing file so that we don't write it again if it hasn't changed"""
+  """ Read existing file so that we don't write it again if it hasn't changed"""
   if not os.path.isfile(filename):
-    return None
+    return None;
   try:
     with open(filename, 'r', encoding='utf-8') as f:
-      return f.read()
+      return f.read();
   except Exception:
     return None
 
@@ -118,34 +116,26 @@ def write_json(exports_file, apisets_file, output):
     "apisets": apisets,
   }
   with open(output, 'w', encoding='utf-8', newline='') as f:
-    json.dump(result, f, indent=2)
+      json.dump(result, f, indent=2)
 
 
 def main():
   parser = argparse.ArgumentParser(
-    description=__doc__, formatter_class=argparse.RawTextHelpFormatter
-  )
-  parser.add_argument(
-    '--exports-file',
-    default="chrome/test/delayload/supported_imports.txt",
-    metavar='FILE_NAME',
-    help='output of dumpbin /exports *.dll',
-  )
-  parser.add_argument(
-    '--apisets-file',
-    default="chrome/test/delayload/apisets.inc",
-    metavar='FILE_NAME',
-    help='[optional] output of generate_supported_apisets.py',
-  )
-  parser.add_argument(
-    '--out-file',
-    default='gen/chrome/test/delayload/supported_imports.inc',
-    metavar='FILE_NAME',
-    help='path to write .inc or .json file, within out-dir',
-  )
-  parser.add_argument(
-    '--json', action='store_true', help='output json instead of .inc'
-  )
+      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument('--exports-file',
+                      default="chrome/test/delayload/supported_imports.txt",
+                      metavar='FILE_NAME',
+                      help='output of dumpbin /exports *.dll')
+  parser.add_argument('--apisets-file',
+                      default="chrome/test/delayload/apisets.inc",
+                      metavar='FILE_NAME',
+                      help='[optional] output of generate_supported_apisets.py')
+  parser.add_argument('--out-file',
+                      default='gen/chrome/test/delayload/supported_imports.inc',
+                      metavar='FILE_NAME',
+                      help='path to write .inc or .json file, within out-dir')
+  parser.add_argument('--json', action='store_true',
+                      help='output json instead of .inc')
   args, _extras = parser.parse_known_args()
   if args.json:
     # Used to export Chrome's data for other build systems.

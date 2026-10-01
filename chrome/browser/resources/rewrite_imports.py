@@ -18,18 +18,17 @@ import sys
 
 def main():
   parser = argparse.ArgumentParser(
-    description='Rewrites scheme-relative imports (e.g. "//resources/") to '
-    'absolute "chrome://resources/" imports. This is typically '
-    'needed for component extensions that use Mojo JS bindings, '
-    'as scheme-relative imports would otherwise resolve relative '
-    'to the extension\'s origin (chrome-extension://) instead of '
-    'the WebUI shared resources.'
-  )
+      description='Rewrites scheme-relative imports (e.g. "//resources/") to '
+                  'absolute "chrome://resources/" imports. This is typically '
+                  'needed for component extensions that use Mojo JS bindings, '
+                  'as scheme-relative imports would otherwise resolve relative '
+                  'to the extension\'s origin (chrome-extension://) instead of '
+                  'the WebUI shared resources.')
   parser.add_argument(
-    'files',
-    nargs='+',
-    help='Pairs of input and output files: '
-    '<input1> <output1> <input2> <output2> ...',
+      'files',
+      nargs='+',
+      help='Pairs of input and output files: '
+           '<input1> <output1> <input2> <output2> ...'
   )
   args = parser.parse_args()
 
