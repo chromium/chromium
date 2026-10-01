@@ -2874,7 +2874,15 @@ crbug.com/471016766 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreama
 crbug.com/471016766 [ Win ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/471016766 [ Linux ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Failure Pass Timeout ]
 [ Mac ] external/wpt/html/browsers/history/the-location-interface/location-ancestor-origins.sub.html [ Pass Timeout ]
-crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
+# Android API-35 passes contexts.py; leave it unsuppressed to catch regressions.
+# Linux can time out, so accept Pass/Timeout there. Other platforms retain
+# their prior Crash/Failure/Timeout allowances pending updated results.
+crbug.com/469618144 [ Fuchsia ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
+crbug.com/469618144 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Pass Timeout ]
+crbug.com/469618144 [ Mac ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
+crbug.com/469618144 [ Webview ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
+crbug.com/469618144 [ Win ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
+crbug.com/469618144 [ iOS26-simulator ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/contexts.py [ Crash Failure Timeout ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure ]
 crbug.com/469481567 external/wpt/css/css-text-decor/text-decoration-thickness-length-rounding-002.html [ Failure ]
 crbug.com/469467862 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-002.html [ Pass Timeout ]
