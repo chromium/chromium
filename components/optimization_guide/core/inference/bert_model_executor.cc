@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/inference/bert_model_executor.h"
 
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -48,9 +49,16 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
   return *status_or_result;
 }
 
+BertModelExecutor::BuildModelExecutionTaskCallback
+BertModelExecutor::GetBuildModelExecutionTaskCallback() {
+  return base::BindRepeating(&BertModelExecutor::BuildModelExecutionTask,
+                             num_threads_);
+}
+
 base::expected<std::unique_ptr<BertModelExecutor::ModelExecutionTask>,
                ExecutionStatus>
-BertModelExecutor::BuildModelExecutionTask(base::File& model_file) {
+BertModelExecutor::BuildModelExecutionTask(int num_threads,
+                                           base::File& model_file) {
   tflite::task::text::BertNLClassifierOptions options;
   auto* mutable_file_descriptor_meta = options.mutable_base_options()
                                            ->mutable_model_file()
@@ -65,7 +73,7 @@ BertModelExecutor::BuildModelExecutionTask(base::File& model_file) {
       ->mutable_compute_settings()
       ->mutable_tflite_settings()
       ->mutable_cpu_settings()
-      ->set_num_threads(num_threads_);
+      ->set_num_threads(num_threads);
   auto maybe_nl_classifier =
       tflite::task::text::BertNLClassifier::CreateFromOptions(
           std::move(options), std::make_unique<TFLiteOpResolver>());

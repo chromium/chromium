@@ -35,12 +35,15 @@ class MediapipeTextModelExecutor
       TextClassifier* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;
-  base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
-  BuildModelExecutionTask(base::File& model_file) override;
+  BuildModelExecutionTaskCallback GetBuildModelExecutionTaskCallback() override;
 
   MediapipeTextModelExecutor(const MediapipeTextModelExecutor&) = delete;
   MediapipeTextModelExecutor& operator=(const MediapipeTextModelExecutor&) =
       delete;
+
+ private:
+  static base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
+  BuildModelExecutionTask(base::File& model_file);
 };
 
 }  // namespace optimization_guide

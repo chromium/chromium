@@ -317,11 +317,17 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       ExecutionStatus* out_status,
       InputType args) = 0;
 
-  // Builds a model execution task using |model_file|. On error, the returned
-  // `ExecutionStatus` will never be `ExecutionStatus::kSuccess`.
-  virtual base::expected<std::unique_ptr<ModelExecutionTaskType>,
-                         ExecutionStatus>
-  BuildModelExecutionTask(base::File& model_file) = 0;
+  using BuildModelExecutionTaskCallback = base::RepeatingCallback<
+      base::expected<std::unique_ptr<ModelExecutionTaskType>, ExecutionStatus>(
+          base::File& model_file)>;
+
+  // Returns a callback that builds a model execution task using `model_file`.
+  // On error, the returned `ExecutionStatus` will never be
+  // `ExecutionStatus::kSuccess`. The callback may run on any sequence
+  // (including the model loading sequence), so it must not reference `this`
+  // or any other state that is not safe to access from another sequence.
+  virtual BuildModelExecutionTaskCallback
+  GetBuildModelExecutionTaskCallback() = 0;
 
  private:
   using FileDeleteOnTaskRunner =
@@ -411,7 +417,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     }
     model_fb_ = std::move(*model_fb);
 
-    auto build_result = BuildModelExecutionTask(*model_fb_);
+    auto build_result = GetBuildModelExecutionTaskCallback().Run(*model_fb_);
     if (build_result.has_value()) {
       loaded_model_ = std::move(build_result.value());
     }

@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/inference/execution_status.h"
@@ -33,20 +34,21 @@ template <class OutputType, class... InputTypes>
 class GenericModelExecutionTask
     : public tflite::task::core::BaseTaskApi<OutputType, InputTypes...> {
  public:
-  GenericModelExecutionTask(
-      std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine,
-      InferenceDelegate<OutputType, InputTypes...>* delegate)
+  explicit GenericModelExecutionTask(
+      std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine)
       : tflite::task::core::BaseTaskApi<OutputType, InputTypes...>(
-            std::move(tflite_engine)),
-        delegate_(delegate) {
-    DCHECK(delegate_);
-  }
+            std::move(tflite_engine)) {}
   ~GenericModelExecutionTask() override = default;
 
   // Executes the model using |args| and returns the output if the model was
   // executed successfully.
-  std::optional<OutputType> Execute(ExecutionStatus* out_status,
-                                    InputTypes... args) {
+  std::optional<OutputType> Execute(
+      InferenceDelegate<OutputType, InputTypes...>* delegate,
+      ExecutionStatus* out_status,
+      InputTypes... args) {
+    CHECK(delegate);
+    base::AutoReset<raw_ptr<InferenceDelegate<OutputType, InputTypes...>>>
+        reset_delegate(&delegate_, delegate);
     tflite::support::StatusOr<OutputType> maybe_output = this->Infer(args...);
     if (absl::IsCancelled(maybe_output.status())) {
       *out_status = ExecutionStatus::kErrorCancelled;
@@ -92,7 +94,7 @@ class GenericModelExecutionTask
   }
 
  private:
-  // Guaranteed to outlive this.
+  // Non-null only during `Execute()`.
   raw_ptr<InferenceDelegate<OutputType, InputTypes...>> delegate_;
 };
 

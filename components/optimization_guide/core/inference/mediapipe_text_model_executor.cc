@@ -10,6 +10,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
 namespace optimization_guide {
@@ -51,6 +52,12 @@ std::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
 
   *out_status = ExecutionStatus::kSuccess;
   return status_or_result->classifications.at(0).categories;
+}
+
+MediapipeTextModelExecutor::BuildModelExecutionTaskCallback
+MediapipeTextModelExecutor::GetBuildModelExecutionTaskCallback() {
+  return base::BindRepeating(
+      &MediapipeTextModelExecutor::BuildModelExecutionTask);
 }
 
 base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>

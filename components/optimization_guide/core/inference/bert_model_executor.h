@@ -27,10 +27,12 @@ class BertModelExecutor
       ModelExecutionTask* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;
-  base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
-  BuildModelExecutionTask(base::File& model_file) override;
+  BuildModelExecutionTaskCallback GetBuildModelExecutionTaskCallback() override;
 
  private:
+  static base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
+  BuildModelExecutionTask(int num_threads, base::File& model_file);
+
   const proto::OptimizationTarget optimization_target_;
 
   // -1 tells TFLite to use its own default number of threads.

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_INFERENCE_BASE_MODEL_EXECUTOR_H_
 
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -56,11 +57,28 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
                                     InputType input) override {
     return static_cast<GenericModelExecutionTask<OutputType, InputType>*>(
                execution_task)
-        ->Execute(out_status, input);
+        ->Execute(this, out_status, input);
   }
 
-  base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
-  BuildModelExecutionTask(base::File& model_file) override {
+  using BuildModelExecutionTaskCallback =
+      typename TFLiteModelExecutor<OutputType,
+                                   InputType>::BuildModelExecutionTaskCallback;
+
+  BuildModelExecutionTaskCallback GetBuildModelExecutionTaskCallback()
+      override {
+    return base::BindRepeating(&BaseModelExecutor::BuildModelExecutionTask,
+                               num_threads_);
+  }
+
+  // InferenceDelegate:
+  bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                  InputType input) override = 0;
+  std::optional<OutputType> Postprocess(
+      const std::vector<const TfLiteTensor*>& output_tensors) override = 0;
+
+ private:
+  static base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
+  BuildModelExecutionTask(int num_threads, base::File& model_file) {
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine =
         std::make_unique<tflite::task::core::TfLiteEngine>(
             std::make_unique<TFLiteOpResolver>());
@@ -80,7 +98,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
     auto compute_settings = tflite::proto::ComputeSettings();
     compute_settings.mutable_tflite_settings()
         ->mutable_cpu_settings()
-        ->set_num_threads(num_threads_);
+        ->set_num_threads(num_threads);
     absl::Status interpreter_status =
         tflite_engine->InitInterpreter(compute_settings);
     if (!interpreter_status.ok()) {
@@ -90,16 +108,9 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputType>,
     }
 
     return std::make_unique<GenericModelExecutionTask<OutputType, InputType>>(
-        std::move(tflite_engine), this);
+        std::move(tflite_engine));
   }
 
-  // InferenceDelegate:
-  bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  InputType input) override = 0;
-  std::optional<OutputType> Postprocess(
-      const std::vector<const TfLiteTensor*>& output_tensors) override = 0;
-
- private:
   // -1 tells TFLite to use its own default number of threads.
   int num_threads_ = -1;
 };
