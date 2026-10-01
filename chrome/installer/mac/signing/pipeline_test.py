@@ -69,7 +69,7 @@ updater requirement is '@UPDATER_REQUIREMENT@'"""
     raise
 
 
-def _get_adjacent_item(l, o):
+def _get_adjacent_item(l, o):  # noqa: E741
     """Finds object |o| in collection |l| and returns the item at its index
     plus 1.
     """

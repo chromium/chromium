@@ -107,7 +107,7 @@ def main(argv):
     FLAGS([''] + FLAGS.test_arg)
 
   success = False
-  should_write_logs = FLAGS.error_logs_dir != None
+  should_write_logs = FLAGS.error_logs_dir != None  # noqa: E711
   try:
     if FLAGS.deploy:
       c.DeployNewEnvironment()

@@ -13,14 +13,12 @@ from absl import logging
 from histogram.util import poll_histogram
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import test_util
 from test_util import fetch_policies
 from test_util import getElementFromShadowRoot
-from test_util import getElementsFromShadowRoot
 from test_util import shutdown_chrome
 
 

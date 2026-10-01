@@ -6,7 +6,6 @@
 from io import StringIO
 import os
 import sys
-from typing import Dict
 import unittest
 import tempfile
 

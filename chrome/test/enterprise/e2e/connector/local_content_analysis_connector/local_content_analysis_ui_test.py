@@ -11,7 +11,6 @@ from selenium.webdriver.common.keys import Keys
 import pyperclip
 
 from test_util import create_chrome_webdriver
-from test_util import getElementFromShadowRoot
 
 FLAGS = flags.FLAGS
 

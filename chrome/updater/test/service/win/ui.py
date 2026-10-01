@@ -13,7 +13,6 @@ import win32com.client
 import win32con
 import win32gui
 import win32process
-import winerror
 
 
 class _MessageQueueAttacher(object):
@@ -145,9 +144,11 @@ def FindWindow(title, class_name, parent=0, child_after=0):
             int(parent), int(child_after), class_name, title
         )
     except win32gui.error as err:
-        if err[0] == winrror.ERROR_INVALID_WINDOW_HANDLE:  # Could be closed.
+        if (
+            err[0] == winrror.ERROR_INVALID_WINDOW_HANDLE  # noqa: F821
+        ):  # Could be closed.
             pass
-        elif err[0] != winrror.ERROR_FILE_NOT_FOUND:
+        elif err[0] != winrror.ERROR_FILE_NOT_FOUND:  # noqa: F821
             raise err
     if hwnd:
         win32gui.FlashWindow(hwnd, True)

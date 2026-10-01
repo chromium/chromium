@@ -6,7 +6,6 @@
 
 import base64
 import http.server
-import json
 import ssl
 
 from absl import app, flags

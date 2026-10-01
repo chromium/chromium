@@ -37,7 +37,7 @@ class MergelistTest(ChromeEnterpriseTestCase):
 
   def enroll_in_cbcm(self):
     token = FLAGS.enrollmentToken
-    if token == None:
+    if token == None:  # noqa: E711
       path = "gs://%s/secrets/mergelist_enrollmentToken" % self.gsbucket
       cmd = r'gsutil cat ' + path
       token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()

@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
 import os
 import pathlib
 import sys
@@ -38,7 +37,7 @@ def main() -> None:
 
     output_dir = pathlib.Path(args.output_dir)
     script_dir = pathlib.Path(__file__).parent.absolute()
-    common_dir = script_dir.parent / "common"
+    common_dir = script_dir.parent / "common"  # noqa: F841
 
     repo_package_version, repo_package_timestamp = get_repo_package_info(
         script_dir

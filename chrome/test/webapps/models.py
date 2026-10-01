@@ -222,7 +222,7 @@ class ActionNode:
 
     def add_child(self, child: 'ActionNode'):
         assert child is not self
-        assert not child.action.name in self.children
+        assert child.action.name not in self.children
         self.children[child.action.name] = child
 
     def add_state_check_action(self, action: Action):

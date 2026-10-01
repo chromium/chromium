@@ -2,4 +2,4 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .enterprise_cws.managed_browser_enterprise_cws import *
+from .enterprise_cws.managed_browser_enterprise_cws import *  # noqa: F403

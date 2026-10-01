@@ -36,7 +36,6 @@ from datetime import date
 import hashlib
 import argparse
 import os
-import shutil
 import subprocess
 
 _GOOGLE_UPDATE_NAMESPACE_GUID = 'BE19B3E4502845af8B3E67A99FCDCFB1'

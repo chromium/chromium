@@ -14,7 +14,6 @@ import socketserver
 import time
 import subprocess
 import sys
-import json
 
 _HERE_PATH = os.path.dirname(__file__)
 _SRC_PATH = os.path.normpath(
@@ -22,9 +21,9 @@ _SRC_PATH = os.path.normpath(
 )
 sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'protobuf', 'python'))
 
-from google.protobuf.message import DecodeError
-from google.protobuf import json_format
-from google.protobuf import text_format
+from google.protobuf.message import DecodeError  # noqa: E402
+from google.protobuf import json_format  # noqa: E402
+from google.protobuf import text_format  # noqa: E402
 
 
 def build(outdir: str):
@@ -138,7 +137,7 @@ def main():
         try:
             build(args.outdir)
             print("Test client build done.")
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             print("Test client build error; check build output above.")
             sys.exit(1)
 

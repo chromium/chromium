@@ -20,9 +20,9 @@ if TYP_DIR not in sys.path:
     sys.path.insert(0, TYP_DIR)
 del SRC_DIR, TYP_DIR
 
-import typ
+import typ  # noqa: E402
 
-from argument_parser import ArgumentParser
+from argument_parser import ArgumentParser  # noqa: E402
 
 
 def _prepare_env_for_subprocesses(parser, args):

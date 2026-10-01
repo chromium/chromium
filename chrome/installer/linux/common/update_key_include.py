@@ -4,10 +4,8 @@
 # found in the LICENSE file.
 
 import base64
-import hashlib
 import os
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -65,7 +63,7 @@ def main():
 
     # Read current key.include
     with open(key_include_path, "r") as f:
-        content = f.read()
+        content = f.read()  # noqa: F841
 
     # Download latest key
     print(f"Downloading key from {KEY_URL}...")

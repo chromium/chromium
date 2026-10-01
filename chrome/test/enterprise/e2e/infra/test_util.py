@@ -124,13 +124,13 @@ def create_chrome_webdriver(chrome_options=None, incognito=False, prefs=None):
     incognito: Whether or not to launch Chrome in incognito mode.
     prefs: Profile preferences. None for defaults.
   """
-  if chrome_options == None:
+  if chrome_options == None:  # noqa: E711
     chrome_options = Options()
 
   if incognito:
     chrome_options.add_argument('incognito')
 
-  if prefs != None:
+  if prefs != None:  # noqa: E711
     chrome_options.add_experimental_option("prefs", prefs)
 
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"

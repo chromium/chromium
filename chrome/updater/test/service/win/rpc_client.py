@@ -5,7 +5,6 @@
 import logging
 import os
 import socket
-import sys
 import xmlrpc.client
 
 _UPDATER_XML_RPC_PORT = 9090

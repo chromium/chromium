@@ -27,8 +27,8 @@ _MAC_ALIAS_PATH = os.path.join(_SRC_ROOT, "third_party/mac_alias/src/src")
 
 sys.path.extend((_DS_STORE_PATH, _MAC_ALIAS_PATH))
 
-from ds_store import DSStore
-from mac_alias import (
+from ds_store import DSStore  # noqa: E402
+from mac_alias import (  # noqa: E402
     Alias,
     TargetInfo,
     VolumeInfo,
@@ -45,11 +45,12 @@ FINDER_BACKGROUND_TYPE_PICTURE = 2
 
 def main(args):
     parser = argparse.ArgumentParser(
-        description="Generate .DS_Store file for macOS DMG installers")
+        description="Generate .DS_Store file for macOS DMG installers"
+    )
     parser.add_argument("output", help="Path to output .DS_Store file")
-    parser.add_argument("--volume-name",
-                        required=True,
-                        help="Volume name of the DMG")
+    parser.add_argument(
+        "--volume-name", required=True, help="Volume name of the DMG"
+    )
     parser.add_argument(
         "--app-name",
         required=True,
@@ -80,13 +81,9 @@ def main(args):
 
     # Construct the Alias record for the background image.
     # Use a fixed creation date to ensure that the output is deterministic.
-    reproducible_date = datetime.datetime(2000,
-                                          5,
-                                          7,
-                                          21,
-                                          10,
-                                          0,
-                                          tzinfo=datetime.timezone.utc)
+    reproducible_date = datetime.datetime(
+        2000, 5, 7, 21, 10, 0, tzinfo=datetime.timezone.utc
+    )
 
     volume = VolumeInfo(
         name=args.volume_name,
@@ -113,15 +110,18 @@ def main(args):
         posix_path=args.background_image,
         carbon_path=(
             f"{args.volume_name}:{bg_parent.lstrip('/').replace('/', ':')}:"
-            f"{bg_filename}"),
+            f"{bg_filename}"
+        ),
     )
 
     alias = Alias(volume=volume, target=target)
     alias_bytes = alias.to_bytes()
 
     # Construct the DSStore file.
-    bounds_string = (f"{{{{{args.window_x}, {args.window_y}}},"
-                     f"{{{args.window_width}, {args.window_height}}}}}")
+    bounds_string = (
+        f"{{{{{args.window_x}, {args.window_y}}},"
+        f"{{{args.window_width}, {args.window_height}}}}}"
+    )
 
     bwsp = {
         "ShowStatusBar": False,

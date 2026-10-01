@@ -325,7 +325,7 @@ def main():
         if arg.startswith('--api-file-path='):
             glic_api_path = arg.split('=')[1]
         if arg.startswith('--debug'):
-            DEBUG = True
+            DEBUG = True  # noqa: F841
     errors = []
 
     # Read new files from disk

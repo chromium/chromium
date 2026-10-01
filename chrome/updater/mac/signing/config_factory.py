@@ -16,7 +16,7 @@ def get_invoker_class():
         from signing.internal_invoker import Invoker
 
         return Invoker
-    except ImportError as e:
+    except ImportError:
         pass
 
     from signing.standard_invoker import Invoker

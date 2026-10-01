@@ -10,7 +10,6 @@ from absl import app, flags
 from pywinauto.application import Application
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 from test_util import create_chrome_webdriver
 from test_util import getElementFromShadowRoot

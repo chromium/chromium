@@ -7,7 +7,6 @@ import logging
 import os
 import shutil
 import subprocess
-import socket
 import sys
 import sysconfig
 import time
@@ -22,7 +21,6 @@ import rpc_client
 _UPDATER_TEST_SERVICE_NAME = 'UpdaterTestService'
 
 # Errors that might be raised when interacting with the service.
-# pylint: disable=undefined-variable
 _ServiceErrors = (
     OSError,
     pywintypes.error,
@@ -30,7 +28,6 @@ _ServiceErrors = (
     win32service.error,
     WindowsError,
 )
-# pylint: enable=undefined-variable
 
 
 def _RunCommand(command, log_error=True):
@@ -116,7 +113,7 @@ def _IsServiceInStatus(status):
                 1
             ]
         )
-    except _ServiceErrors as err:
+    except _ServiceErrors:
         return False
 
 

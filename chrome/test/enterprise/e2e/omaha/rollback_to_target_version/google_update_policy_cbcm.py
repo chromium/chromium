@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os
-import time
 
 import packaging.version
 from chrome_ent_test.infra.core import before_all

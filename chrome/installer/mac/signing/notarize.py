@@ -14,7 +14,7 @@ import plistlib
 import subprocess
 import time
 
-from signing import commands, invoker, logger, model
+from signing import commands, invoker, logger
 
 _LOG_FILE_URL = 'LogFileURL'
 
@@ -62,7 +62,7 @@ class Invoker(invoker.Base):
         output = await commands.run_command_output_async(command)
         try:
             uuid = plistlib.loads(output)['id']
-        except:
+        except:  # noqa: E722
             raise NotarizationError(
                 'xcrun notarytool returned output that could not be parsed: {}'.format(
                     output

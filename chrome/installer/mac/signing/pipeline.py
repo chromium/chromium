@@ -384,7 +384,7 @@ def _package_and_sign_pkg(paths, dist_config):
         root_directory = os.path.join(pkg_paths.work, 'payload')
         commands.make_dir(root_directory)
         app_path = os.path.join(paths.work, dist_config.app_dir)
-        new_app_path = os.path.join(root_directory, dist_config.app_dir)
+        new_app_path = os.path.join(root_directory, dist_config.app_dir)  # noqa: F841
         commands.copy_files(app_path, root_directory)
 
         # The spaces are removed from |dist_config.app_product| for the
@@ -882,7 +882,7 @@ async def _zip_and_notarize(notary_paths, dist_config, dest_dir):
         stderr,
     )
     if exit_code:
-        raise subprocess.CalledProcessError(
+        raise subprocess.CalledProcessError(  # noqa: F821
             exit_code, command, output=stdout, stderr=stderr
         )
     await notarize.submit(zip_file, dist_config)

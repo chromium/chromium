@@ -127,7 +127,7 @@ def version_interval_endpoints_from_exp(op, version):
     if op == '>>' or op == '>':
         return (exclusive_endpoint, open_endpoint)
     if op == '<<' or op == '<':
-        return (open_endpoing, exclusive_endpoint)
+        return (open_endpoing, exclusive_endpoint)  # noqa: F821
     assert op == '='
     return (inclusive_endpoint, inclusive_endpoint)
 
@@ -159,7 +159,7 @@ def parse_dep(dep):
             match.group(2), deb_version.DebVersion(match.group(3))
         )
         return PackageVersionInterval(dep, match.group(1), start, end)
-    print >> sys.stderr, 'Failed to parse ' + dep
+    print >> sys.stderr, 'Failed to parse ' + dep  # noqa: F633
     sys.exit(1)
 
 

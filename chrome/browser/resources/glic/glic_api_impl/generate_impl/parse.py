@@ -30,9 +30,8 @@ if SOURCE_DIR:
         os.path.abspath(os.path.join(SOURCE_DIR, 'mojo/public/tools/mojom'))
     )
 
-from mojom.parse import parser  # type: ignore
-from mojom.parse import ast  # type: ignore
-from mojom.generate import generator  # type: ignore
+from mojom.parse import parser  # type: ignore  # noqa: E402
+from mojom.parse import ast  # type: ignore  # noqa: E402
 
 MOJOM_PRIMITIVE_TYPES = {
     'int8',

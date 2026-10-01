@@ -4,10 +4,6 @@
 //mojo/public/tools/mojom/mojom/__init__.py
 //mojo/public/tools/mojom/mojom/error.py
 //mojo/public/tools/mojom/mojom/fileutil.py
-//mojo/public/tools/mojom/mojom/generate/__init__.py
-//mojo/public/tools/mojom/mojom/generate/generator.py
-//mojo/public/tools/mojom/mojom/generate/module.py
-//mojo/public/tools/mojom/mojom/generate/pack.py
 //mojo/public/tools/mojom/mojom/parse/__init__.py
 //mojo/public/tools/mojom/mojom/parse/ast.py
 //mojo/public/tools/mojom/mojom/parse/lexer.py

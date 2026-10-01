@@ -260,7 +260,7 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
         )
         try:
             RunCommand(command, variable_expander)
-        except:  # pylint: disable=bare-except
+        except:  # noqa: E722
             message = traceback.format_exception(*sys.exc_info())
             message.insert(0, 'Error cleaning up an old install with:\n')
             LOGGER.info(''.join(message))
@@ -487,8 +487,8 @@ def setUpModule():
         shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAM_FILESX86, None, 0)
     )[0]
     _temp_dir_manager = ConfigureTempOnDrive(drive)
-    _temp_dir_manager.__enter__()  # pylint: disable=no-member
-    unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)  # pylint: disable=no-member
+    _temp_dir_manager.__enter__()
+    unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)
 
     # The last state in any test's traversal is the "clean" state, so use it to
     # drive the initial cleanup operation.
@@ -500,7 +500,7 @@ def setUpModule():
             _force_clean, clean_state, InstallerTest._variable_expander
         )
     except:
-        _temp_dir_manager.__exit__(None, None, None)  # pylint: disable=no-member
+        _temp_dir_manager.__exit__(None, None, None)
         _temp_dir_manager = None
         raise
 

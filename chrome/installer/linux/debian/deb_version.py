@@ -122,11 +122,11 @@ class DebVersion:
             return upstream_version_cmp
 
         # Debian revision comparison.
-        if self.debian_revision == None and other.debian_revision == None:
+        if self.debian_revision == None and other.debian_revision == None:  # noqa: E711
             return 0
-        if self.debian_revision == None:
+        if self.debian_revision == None:  # noqa: E711
             return -1
-        if other.debian_revision == None:
+        if other.debian_revision == None:  # noqa: E711
             return 1
         return compare_component(self.debian_revision, other.debian_revision)
 

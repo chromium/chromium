@@ -45,7 +45,7 @@ def main():
     try:
         # Run |cmd|, redirecting stderr to stdout in order for captured errors
         # to be inline with corresponding stdout.
-        output = subprocess.check_output(
+        output = subprocess.check_output(  # noqa: F841
             cmd, stderr=subprocess.STDOUT, encoding='utf-8', text=True
         )
     except subprocess.CalledProcessError as e:

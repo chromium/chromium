@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import json
-import os
 
 from googleapiclient.discovery import build
 from google.oauth2 import service_account

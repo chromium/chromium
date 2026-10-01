@@ -15,7 +15,6 @@ Sample usage:
 
 import argparse
 import logging
-import os
 import sys
 
 import uac

@@ -66,7 +66,10 @@ class WriteCabTest(unittest.TestCase):
             output, StringIO(input_data), 'a.txt', len(input_data), mtime
         )
         if sys.platform == 'win32':
-            import os, shutil, subprocess, tempfile
+            import os
+            import shutil
+            import subprocess
+            import tempfile
 
             temp_dir = tempfile.mkdtemp(suffix='.makecab_test')
             try:

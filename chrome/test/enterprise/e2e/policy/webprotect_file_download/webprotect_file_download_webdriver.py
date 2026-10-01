@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 import os
-import re
 import time
 
-from absl import app, flags
+from absl import app
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pywinauto.application import Application

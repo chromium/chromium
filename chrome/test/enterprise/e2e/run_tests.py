@@ -17,9 +17,9 @@ import traceback
 import warnings
 
 # Import all known tests
-from connector import *
-from omaha import *
-from policy import *
+from connector import *  # noqa: F403
+from omaha import *  # noqa: F403
+from policy import *  # noqa: F403
 
 
 def ParseArgs():
@@ -143,7 +143,7 @@ if __name__ == '__main__':
   logging.debug('Found hosts: %s', hostFiles)
 
   hostProvider = None
-  if args.shared_provider_storage == None:
+  if args.shared_provider_storage == None:  # noqa: E711
     hostProvider = SimpleHostProvider(hostFiles)
   else:
     hostProvider = SharedHostProvider(hostFiles, args.shared_provider_storage)

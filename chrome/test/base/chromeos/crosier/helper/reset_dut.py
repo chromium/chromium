@@ -19,7 +19,6 @@ The logic is referenced from `tast-tests`:
 
 import argparse
 import logging
-import os
 from pathlib import Path
 from typing import Dict, List, Optional
 import subprocess
@@ -139,7 +138,7 @@ def main(argv: Optional[List[str]] = None) -> Optional[int]:
     assert _is_chromeos(), "This script only runs on ChromeOS DUT."
 
     parser = argparse.ArgumentParser(description=__doc__)
-    opts = parser.parse_args(argv)
+    opts = parser.parse_args(argv)  # noqa: F841
 
     logging.basicConfig(level=logging.INFO)
     return reset_system_state_files()

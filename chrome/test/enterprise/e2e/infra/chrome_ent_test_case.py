@@ -10,7 +10,6 @@ import random
 import string
 import subprocess
 import time
-from typing import Sequence
 
 from absl import flags
 from chrome_ent_test.infra.core import EnterpriseTestCase

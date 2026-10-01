@@ -6,7 +6,6 @@ import argparse
 import dataclasses
 import datetime
 import enum
-import glob
 import hashlib
 import logging
 import os

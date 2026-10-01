@@ -9,20 +9,7 @@ for more details about the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
-    if not input_api.HasAffectedFiles(extensions='.py'):
-        return []
-    disabled_warnings = [
-        'anomalous-backslash-in-string',
-        'superfluous-parens',
-        'unspecified-encoding',
-        'unused-import',
-    ]
-    return input_api.canned_checks.RunPylint(
-        input_api,
-        output_api,
-        disabled_warnings=disabled_warnings,
-        version='3.2',
-    )
+    return input_api.canned_checks.RunRuff(input_api, output_api)
 
 
 def CheckChangeOnUpload(input_api, output_api):

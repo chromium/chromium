@@ -4,7 +4,6 @@
 
 from datetime import datetime
 import logging
-import os
 
 from chrome_ent_test.infra.core import before_all
 from chrome_ent_test.infra.core import category

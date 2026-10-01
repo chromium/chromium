@@ -6,9 +6,7 @@ The parts module defines the various binary pieces of the Updater application
 bundle that need to be signed, as well as providing a function to sign them.
 """
 
-import os.path
-
-from signing import commands, signing
+from signing import signing
 from signing.model import CodeSignOptions, CodeSignedProduct, VerifyOptions
 
 

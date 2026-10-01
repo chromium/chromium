@@ -76,7 +76,7 @@ def _Walk(operations, continue_on_error, property_dict, variable_expander):
                     continue
             try:
                 operation(expectation_name, expectation_dict, variable_expander)
-            except:  # pylint: disable=bare-except
+            except:  # noqa: E722
                 if not continue_on_error:
                     raise
                 LOGGER.error(

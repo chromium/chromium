@@ -8,7 +8,6 @@ import pathlib
 import re
 import shutil
 import struct
-import sys
 import hashlib
 import subprocess
 import tempfile

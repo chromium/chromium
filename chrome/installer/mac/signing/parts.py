@@ -319,7 +319,7 @@ def _sanity_check_version_keys(paths, parts):
         commands.PlistContext(app_plist_path) as app_plist,
         commands.PlistContext(framework_plist_path) as framework_plist,
     ):
-        if not 'KSVersion' in app_plist:
+        if 'KSVersion' not in app_plist:
             assert 'com.google.Chrome' not in app_plist['CFBundleIdentifier']
             return
         ks_version = app_plist['KSVersion']

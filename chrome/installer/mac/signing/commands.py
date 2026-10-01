@@ -7,7 +7,6 @@ The commands module wraps operations that have side-effects.
 
 import asyncio
 import os
-import platform
 import plistlib
 import shutil
 import stat

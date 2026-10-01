@@ -4,7 +4,7 @@
 
 import argparse
 
-from signing import config, model, standard_invoker
+from signing import config, standard_invoker
 
 
 class TestConfig(config.CodeSignConfig):

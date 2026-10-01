@@ -19,7 +19,7 @@ def HasSameContent(filename, content):
     try:
         with open(filename, 'rb') as file:
             return file.read() == content
-    except:
+    except:  # noqa: E722
         # Ignore all errors and fall back on a safe bet.
         return False
 
@@ -79,7 +79,7 @@ def main():
                 with open(args.cxxoutfile, 'wb') as f:
                     f.write(p.stdout)
             shutil.copyfile(args.inputfile, args.jsoutfile)
-        except Exception as ex:
+        except Exception:
             if os.path.exists(args.cxxoutfile):
                 os.remove(args.cxxoutfile)
             if os.path.exists(args.jsoutfile):

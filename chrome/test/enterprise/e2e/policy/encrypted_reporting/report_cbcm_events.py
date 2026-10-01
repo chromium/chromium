@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from absl import flags
 
 import logging
 import os
@@ -58,7 +57,7 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     logging.info('server response = %s' % r)
     json_object = r.json()
 
-    if not 'event' in json_object:
+    if 'event' not in json_object:
       return False
 
     event_count = 0

@@ -10,10 +10,7 @@ The resulting strings and files use CRLF as required by gpedit.msc.
 from __future__ import print_function
 
 import codecs
-import filecmp
-import os
 import re
-import sys
 
 MAIN_POLICY_KEY = r'Software\Policies\Google\Update'
 

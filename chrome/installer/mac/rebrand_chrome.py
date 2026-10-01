@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 file=sys.stderr,
             )
             print(
-                f"To use it anyway, overwriting conflicting files, use "
+                "To use it anyway, overwriting conflicting files, use "
                 "--stomp-ok.",
                 file=sys.stderr,
             )

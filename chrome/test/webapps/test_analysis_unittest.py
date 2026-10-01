@@ -182,7 +182,7 @@ class TestAnalysisTest(unittest.TestCase):
             open(
                 supported_actions_filename, "r", encoding="utf-8"
             ) as supported_actions_file,
-            open(enums_filename, "r", encoding="utf-8") as enums,
+            open(enums_filename, "r", encoding="utf-8") as enums,  # noqa: F811
         ):
             supported_actions = read_platform_supported_actions(
                 csv.reader(supported_actions_file, delimiter=',')

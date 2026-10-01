@@ -12,7 +12,7 @@ import argparse
 from io import TextIOWrapper
 import logging
 import os
-from typing import List, Optional, Dict
+from typing import List, Optional
 import csv
 
 from models import ActionNode

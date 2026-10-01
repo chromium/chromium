@@ -115,7 +115,7 @@ def _wait_for_fake_chrome(session_manager_proc):
     # Loop until `fake_chrome` PID is available.
     while True:
         # session_manager can terminate before fake_chrome is started.
-        if session_manager_proc.poll() != None:
+        if session_manager_proc.poll() != None:  # noqa: E711
             return False
 
         process = subprocess.run(
@@ -203,7 +203,7 @@ class SessionManagerRunner(threading.Thread):
 
         stopped = False
         while not self._flag.is_set():
-            if self._session_manager_proc.poll() != None:
+            if self._session_manager_proc.poll() != None:  # noqa: E711
                 stopped = True
                 break
             # Sleep a bit so that it is not a busy loop.

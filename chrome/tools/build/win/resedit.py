@@ -347,7 +347,7 @@ def _ConvertInts(*args):
     """Return args with any all-digit strings converted to ints."""
     results = []
     for arg in args:
-        if isinstance(arg, basestring) and arg.isdigit():
+        if isinstance(arg, basestring) and arg.isdigit():  # noqa: F821
             results.append(int(arg))
         else:
             results.append(arg)

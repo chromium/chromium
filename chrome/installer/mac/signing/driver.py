@@ -7,7 +7,6 @@ The driver module provides the command line interface to the signing module.
 
 import argparse
 import asyncio
-import os
 import subprocess
 
 from signing import config_factory, commands, invoker, logger, model, pipeline

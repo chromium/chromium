@@ -4,11 +4,8 @@
 # found in the LICENSE file.
 
 from io import StringIO
-import os
 import sys
-from typing import Dict
 import unittest
-import tempfile
 
 from generate_framework_tests_and_coverage import main
 

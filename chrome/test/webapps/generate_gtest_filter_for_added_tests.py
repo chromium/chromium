@@ -10,7 +10,6 @@ Usage: python3 chrome/test/webapps/generate_gtest_filter_for_added_tests.py
 
 import argparse
 import subprocess
-import logging
 import os
 import re
 from typing import Dict, List, Set

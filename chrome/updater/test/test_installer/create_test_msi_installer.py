@@ -20,7 +20,6 @@ python3 chrome/updater/test/test_installer/create_test_msi_installer.py
 
 """
 
-import binascii
 from datetime import date
 import argparse
 import filecmp

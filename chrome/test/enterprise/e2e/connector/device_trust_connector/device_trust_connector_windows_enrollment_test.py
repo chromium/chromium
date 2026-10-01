@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from datetime import datetime
 import json
 import logging
 import os
 import re
-import time
 from typing import Any
 
 from chrome_ent_test.infra.core import before_all

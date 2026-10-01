@@ -70,10 +70,10 @@ def _file_type_for_stat(st):
     if stat.S_ISDIR(st.st_mode):
         return 'directory'
 
-    raise Exception('unknown file type for mode 0o%o' % mode)
+    raise Exception('unknown file type for mode 0o%o' % mode)  # noqa: F821
 
 
-def _sole_list_element(l, exception_message):
+def _sole_list_element(l, exception_message):  # noqa: E741
     """Assures that every element in a list is identical.
 
     Args:

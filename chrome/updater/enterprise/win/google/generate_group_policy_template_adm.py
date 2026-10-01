@@ -10,15 +10,10 @@ The resulting strings and files use CRLF as required by gpedit.msc.
 from __future__ import print_function
 
 import codecs
-import filecmp
-import os
-import string
-import sys
 
 HORIZONTAL_RULE = ';%s\n' % ('-' * 78)
 MAIN_POLICY_KEY = r'Software\Policies\Google\Update'
 
-# pylint: disable-msg=C6004
 HEADER = (
     """\
 CLASS MACHINE
@@ -464,8 +459,6 @@ STRINGS_APP_NAME_TEMPLATE = """\
 Cat_$AppLegalId$=$AppName$
 """
 
-# pylint: disable-msg=C6310
-# pylint: disable-msg=C6013
 
 ADM_DOMAIN_REQUIREMENT_EN = """\
 This policy is available only on Windows instances that are joined to a \
@@ -694,13 +687,8 @@ respecting any configured target Channel and target version.\\
     % {"domain_requirement": ADM_DOMAIN_REQUIREMENT_EN}
 )
 
-# pylint: enable-msg=C6013
-# pylint: enable-msg=C6310
-# pylint: enable-msg=C6004
-
 
 def GenerateGroupPolicyTemplate(apps):
-    # pylint: disable-msg=C6114
     """Generates a Group Policy template (ADM format)for the specified apps.
 
     Replaces LF in strings above with CRLF as required by gpedit.msc.
@@ -719,8 +707,6 @@ def GenerateGroupPolicyTemplate(apps):
       String containing the contents of the .ADM file.
     """
 
-    # pylint: enable-msg=C6114
-
     def _CreateLegalIdentifier(input_string):
         """Converts input_string to a legal identifier for ADM files.
 
@@ -734,7 +720,6 @@ def GenerateGroupPolicyTemplate(apps):
           String containing a legal identifier based on input_string.
         """
 
-        # pylint: disable-msg=C6004
         return (
             input_string.replace(' ', '')
             .replace('&', '')
@@ -768,8 +753,6 @@ def GenerateGroupPolicyTemplate(apps):
             .replace('\u00ae', '')  # Registered Trademark (R).
             .replace('\u2122', '')
         )  # Trademark (TM).
-
-        # pylint: enable-msg=C6004
 
     def _WriteTemplateForApp(template, app):
         """Writes the text for the specified app based on the template.
@@ -807,7 +790,6 @@ def GenerateGroupPolicyTemplate(apps):
             force_installs += INSTALL_POLICY_FORCE_INSTALL_USER
             force_installs_explain += FORCE_INSTALLS_USER_EXPLAIN
 
-        # pylint: disable-msg=C6004
         return (
             template.replace('$ForceInstalls$', force_installs)
             .replace('$ForceInstallsExplain$', force_installs_explain)
@@ -817,7 +799,6 @@ def GenerateGroupPolicyTemplate(apps):
             .replace('$AppUpdateExplainExtra$', update_explain_extra)
             .replace('$AppRollbackDisclaimer$', rollback_disclaimer)
         )
-        # pylint: enable-msg=C6004
 
     def _WriteTemplateForAllApps(template, apps):
         """Writes a copy of the template for each of the specified apps.
@@ -866,7 +847,7 @@ def WriteGroupPolicyTemplate(target_path, apps):
             * app ID
             * optional string to append to the auto-update explanation
               - Should start with a space or double new line (\n\n).
-    """  # pylint: disable-msg=C6114
+    """
 
     contents = GenerateGroupPolicyTemplate(apps)
     f = codecs.open(target_path, 'wb', 'utf-16')

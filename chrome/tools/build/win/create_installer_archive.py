@@ -634,7 +634,7 @@ def ParseDLLsFromDeps(build_dir, runtime_deps_file):
     """
     build_dlls = set()
     args = open(runtime_deps_file).read()
-    for l in args.splitlines():
+    for l in args.splitlines():  # noqa: E741
         if os.path.splitext(l)[1] == ".dll":
             build_dlls.add(os.path.join(build_dir, l))
     return build_dlls

@@ -176,9 +176,9 @@ def merge_histograms(
   try:
     hd1.values.add(to_int(hd1.sum_value))
     hd1.values.add(to_int(hd2.sum_value))
-  except e:
+  except e:  # noqa: F821
     logging.warning(
-      f'fail to add {hd1.sum_value}, {hd2.sum_value}. err: {str(e)}'
+      f'fail to add {hd1.sum_value}, {hd2.sum_value}. err: {str(e)}'  # noqa: F821
     )
 
   if not hd2.buckets:
