@@ -306,8 +306,12 @@ bool IsLiquidGlassEffectEnabled();
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 
+// Returns whether the current device is an iPhone Duo device.
+bool IsDuoDevice();
+
 // Convenience method for determining if Pinned Tabs is enabled.
-// The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
+// The Pinned Tabs feature is fully enabled on standard iPhone and disabled
+// on iPad and iPhone Duo.
 bool IsPinnedTabsEnabled();
 
 // Feature flag for caching the ios module ranker.

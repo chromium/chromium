@@ -111,6 +111,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the bottom omnibox steady state feature is enabled.
 - (BOOL)isBottomOmniboxAvailable;
 
+// Returns whether the Pinned Tabs feature is enabled.
+- (BOOL)isPinnedTabsEnabled;
+
 // Returns whether the current layout is showing the bottom omnibox.
 - (BOOL)isCurrentLayoutBottomOmnibox;
 

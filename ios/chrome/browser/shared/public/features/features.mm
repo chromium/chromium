@@ -6,12 +6,14 @@
 
 #import <algorithm>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/containers/fixed_flat_set.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
+#import "base/system/sys_info.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/sync_preferences/features.h"
@@ -322,8 +324,31 @@ BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+namespace {
+
+// Model identifier for the iPhone Duo form factor.
+constexpr std::string_view kDuoModelIdentifier = "iPhone19,4";
+NSString* const kDuoSimulatorModelIdentifier = @"iPhone19,4";
+
+}  // namespace
+
+bool IsDuoDevice() {
+#if TARGET_OS_SIMULATOR
+  NSString* simulator_model =
+      NSProcessInfo.processInfo.environment[@"SIMULATOR_MODEL_IDENTIFIER"];
+  if (simulator_model) {
+    return [simulator_model isEqualToString:kDuoSimulatorModelIdentifier];
+  }
+#endif
+  return base::SysInfo::HardwareModelName() == kDuoModelIdentifier;
+}
+
 bool IsPinnedTabsEnabled() {
-  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+      IsDuoDevice()) {
+    return false;
+  }
+  return true;
 }
 
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
