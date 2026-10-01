@@ -198,6 +198,9 @@ dictionary ParseHTMLUnsafeOptions {
 
     // Scoped Custom Element Registries
     [CallWith=ScriptState] readonly attribute CustomElementRegistry? customElementRegistry;
+
+    [RuntimeEnabled=SequentialFocusPrimitives] Focusable? nextFocusable();
+    [RuntimeEnabled=SequentialFocusPrimitives] Focusable? previousFocusable();
 };
 
 Element includes ParentNode;

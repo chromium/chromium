@@ -132,6 +132,7 @@ class ExceptionState;
 class FloatClipRect;
 class FocusEvent;
 class FocusOptions;
+class Focusable;
 class GetAnimationsOptions;
 class HTMLCanvasElement;
 class HTMLElement;
@@ -1257,6 +1258,11 @@ class CORE_EXPORT Element : public ContainerNode {
   // Element focus function called through IDL (i.e. element.focus() in JS)
   // Delegates to Focus() with focus type set to kScript
   void focusForBindings(const FocusOptions*);
+  // Return the next/previous item in the sequential focus navigation order
+  // (i.e. what Tab/Shift+Tab would move focus to) starting from this element,
+  // without changing focus. Return nullptr at either end of the order.
+  Focusable* nextFocusable();
+  Focusable* previousFocusable();
   // Element focus function called from outside IDL (user focus,
   // accessibility, etc...)
   virtual void Focus(const FocusParams&);

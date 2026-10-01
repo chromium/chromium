@@ -185,6 +185,36 @@ promise_test(async (t) => {
 }, "Focusable refers to a ::scroll-button() across re-creation");
 
 test((t) => {
+  const scroller = document.getElementById("scroller");
+  const item1 = document.getElementById("item1");
+  const item2 = document.getElementById("item2");
+  const marker1 = item1.pseudo("::scroll-marker");
+  const marker2 = item2.pseudo("::scroll-marker");
+  const button = scroller.pseudo("::scroll-button(block-end)");
+  const buttonStyle = getComputedStyle(scroller, "::scroll-button(block-end)");
+  t.add_cleanup(resetFocus);
+
+  // From the last ::scroll-marker, nextFocusable() moves to
+  // ::scroll-button(block-end) and then to the scroller itself.
+  const fButton = marker2.nextFocusable();
+  assert_focusable(fButton, { target: scroller, pseudoElement: button });
+  fButton.focus();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is focused");
+
+  const prevMarker2 = fButton.previousFocusable();
+  assert_focusable(prevMarker2, { target: item2, pseudoElement: marker2 });
+  assert_focusable(prevMarker2.previousFocusable(), { target: item1, pseudoElement: marker1 });
+
+  const fScroller = fButton.nextFocusable();
+  assert_focusable(fScroller, { target: scroller });
+  fScroller.focus();
+  assert_not_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroller is focused instead");
+
+  fScroller.previousFocusable().focus();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is focused again");
+}, "nextFocusable() and previousFocusable() with ::scroll-marker and ::scroll-button()");
+
+test((t) => {
   const shadowHost = document.getElementById("shadow-host");
   const sr = shadowHost.shadowRoot;
   const innerScroller = sr.getElementById("inner-scroller");

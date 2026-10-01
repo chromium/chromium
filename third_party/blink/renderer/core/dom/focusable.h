@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSABLE_H_
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -25,6 +26,9 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   static Focusable* Create(const V8UnionCSSPseudoElementOrElement* target);
   static Focusable* CreateFromElement(Element& element,
                                       const TreeScope& caller_scope);
+  static Focusable* FindAdjacentFocusable(Element& start,
+                                          const TreeScope& caller_scope,
+                                          mojom::blink::FocusType type);
 
   // See the member comments below.
   Focusable(base::PassKey<Focusable>, Element* shadow_host, Element& element);
@@ -42,11 +46,15 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   }
 
   void focus(const FocusOptions* options);
+  Focusable* nextFocusable() const;
+  Focusable* previousFocusable() const;
 
   void Trace(Visitor* visitor) const override;
 
  private:
+  Focusable* FindAdjacentFocusable(mojom::blink::FocusType type) const;
   Element* ResolveFocusTarget() const;
+  const TreeScope* CallerTreeScope() const;
 
   // Set if the focusable item is inside a shadow tree whose inner nodes are not
   // exposed to the caller's TreeScope (i.e. the DocumentOrShadowRoot whose

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>nextFocusable() and previousFocusable() on Element and Focusable</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="basic-scope">
+  <button id="b0-first">First 0</button>
+  <button id="b-disabled" disabled>Disabled</button>
+  <div id="mid-div"><span id="neg-span" tabindex="-1">Neg</span></div>
+  <button id="b2" tabindex="2">Tab 2</button>
+  <input id="date-input" type="date">
+  <button id="b1" tabindex="1">Tab 1</button>
+  <div inert><button id="b-inert">Inert</button></div>
+</div>
+
+<div id="shadow-scope" inert>
+  <button id="sh-before">Before</button>
+  <div id="sh-host">
+    <template shadowrootmode="open">
+      <button id="inner1">Inner 1</button>
+      <button id="inner2">Inner 2</button>
+      <span id="inner-last" tabindex="-1">Inner last</span>
+    </template>
+  </div>
+  <button id="sh-after">After</button>
+</div>
+
+<div id="ua-scope" inert>
+  <button id="ua-before">Before</button>
+  <input id="datetime" type="datetime-local">
+  <button id="ua-after">After</button>
+</div>
+
+<div id="iframe-scope" inert>
+  <button id="if-before">Before Frame</button>
+  <iframe id="frame" srcdoc="<button id='frame-inner'>Inner</button>"></iframe>
+  <button id="if-after">After Frame</button>
+</div>
+
+<script>
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+  assert_not_equals(actual, null);
+  assert_equals(actual.target, target, "target");
+  assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
+  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+}
+
+function collectAllFocusables() {
+  const result = [];
+  let curr = document.documentElement.nextFocusable();
+  while (curr) {
+    result.push(curr);
+    curr = curr.nextFocusable();
+  }
+  return result;
+}
+
+// Makes only `scope` non-inert for the duration of the test.
+function useScope(t, scope) {
+  const basicScope = document.getElementById("basic-scope");
+  basicScope.inert = true;
+  scope.inert = false;
+  t.add_cleanup(() => {
+    basicScope.inert = false;
+    scope.inert = true;
+    document.activeElement?.blur();
+  });
+}
+
+test(() => {
+  const b1 = document.getElementById("b1");
+  const b2 = document.getElementById("b2");
+  const b0First = document.getElementById("b0-first");
+  const dateInput = document.getElementById("date-input");
+  const midDiv = document.getElementById("mid-div");
+
+  assert_equals(document.documentElement.previousFocusable(), null);
+
+  // Expected tab order: b1 (tabindex=1) -> b2 (tabindex=2) -> b0-first -> date-input
+  const forward = collectAllFocusables().map(f => f.target);
+  assert_array_equals(forward, [b1, b2, b0First, dateInput]);
+
+  // Backward traversal from last focusable item to the beginning
+  const backward = [];
+  let curr = new Focusable(dateInput);
+  while (curr) {
+    backward.push(curr.target);
+    curr = curr.previousFocusable();
+  }
+  assert_array_equals(backward, [dateInput, b0First, b2, b1]);
+  assert_equals(b1.previousFocusable(), null);
+
+  // Starting from a non-focusable element in the middle of the DOM searches in tree order
+  assert_focusable(midDiv.nextFocusable(), { target: b2 });
+  assert_focusable(midDiv.previousFocusable(), { target: b0First });
+}, "nextFocusable() and previousFocusable() basic tab order, UA shadow controls, and boundaries");
+
+test((t) => {
+  useScope(t, document.getElementById("shadow-scope"));
+  const shBefore = document.getElementById("sh-before");
+  const shHost = document.getElementById("sh-host");
+  const shAfter = document.getElementById("sh-after");
+  const sr = shHost.shadowRoot;
+
+  // Pure traversal from shBefore steps through inner1 and inner2 (retargeted to shHost)
+  // then shAfter, without changing active focus.
+  const f1 = shBefore.nextFocusable();
+  assert_focusable(f1, { shadowHost: shHost });
+  assert_equals(document.activeFocusable, null);
+
+  const f2 = f1.nextFocusable();
+  assert_focusable(f2, { shadowHost: shHost });
+  assert_equals(document.activeFocusable, null);
+
+  const f3 = f2.nextFocusable();
+  assert_focusable(f3, { target: shAfter });
+  assert_equals(f3.nextFocusable(), null);
+
+  // Backward traversal from shAfter steps back through inner2, inner1, then shBefore
+  const b2 = shAfter.previousFocusable();
+  assert_focusable(b2, { shadowHost: shHost });
+  const b1 = b2.previousFocusable();
+  assert_focusable(b1, { shadowHost: shHost });
+  assert_focusable(b1.previousFocusable(), { target: shBefore });
+
+  // Calling focus() on f1 and f2 focuses the underlying inner shadow elements
+  f1.focus();
+  assert_equals(sr.activeFocusable.target, sr.getElementById("inner1"));
+  f2.focus();
+  assert_equals(sr.activeFocusable.target, sr.getElementById("inner2"));
+}, "nextFocusable() and previousFocusable() across shadow DOM boundaries");
+
+test((t) => {
+  useScope(t, document.getElementById("shadow-scope"));
+  const innerLast = document.getElementById("sh-host").shadowRoot.getElementById("inner-last");
+
+  // Leaves the shadow tree, rather than wrapping around to its first focusable element.
+  assert_focusable(innerLast.nextFocusable(), { target: document.getElementById("sh-after") });
+}, "nextFocusable() from a tabindex=-1 element at the end of a shadow tree");
+
+test((t) => {
+  useScope(t, document.getElementById("ua-scope"));
+  const uaBefore = document.getElementById("ua-before");
+  const datetime = document.getElementById("datetime");
+  const uaAfter = document.getElementById("ua-after");
+
+  // The input's UA shadow tree has several focusable fields (month, day, year, ...),
+  // but they are a single stop, exposed as the input itself.
+  assert_focusable(uaBefore.nextFocusable(), { target: datetime });
+  assert_focusable(new Focusable(datetime).nextFocusable(), { target: uaAfter });
+  assert_focusable(uaAfter.previousFocusable(), { target: datetime });
+  assert_focusable(new Focusable(datetime).previousFocusable(), { target: uaBefore });
+
+  // Same when focus is on one of the fields.
+  datetime.focus();
+  assert_focusable(document.activeFocusable, { target: datetime });
+  assert_focusable(document.activeFocusable.nextFocusable(), { target: uaAfter });
+}, "nextFocusable() and previousFocusable() treat UA shadow controls as a single stop");
+
+promise_test(async (t) => {
+  const iframeScope = document.getElementById("iframe-scope");
+  const frame = document.getElementById("frame");
+  if (!frame.contentDocument || !frame.contentDocument.getElementById("frame-inner")) {
+    await new Promise(resolve => frame.addEventListener("load", resolve, { once: true }));
+  }
+  useScope(t, iframeScope);
+
+  const ifBefore = document.getElementById("if-before");
+  const ifAfter = document.getElementById("if-after");
+
+  // Returns the iframe element itself without descending into its contentDocument
+  const fFrame = ifBefore.nextFocusable();
+  assert_focusable(fFrame, { target: frame });
+  assert_focusable(fFrame.nextFocusable(), { target: ifAfter });
+  assert_focusable(ifAfter.previousFocusable(), { target: frame });
+}, "nextFocusable() and previousFocusable() return the iframe itself without descending into it");
+</script>

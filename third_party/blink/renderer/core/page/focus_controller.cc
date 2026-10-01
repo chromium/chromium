@@ -127,7 +127,10 @@ Element* GetSelectedScrollMarkerFromScrollMarkerGroup(
       return forward ? scroll_marker_group->First()
                      : scroll_marker_group->Last();
     }
-    return scroll_marker_group->Selected();
+    if (Element* selected = scroll_marker_group->Selected()) {
+      return selected;
+    }
+    return scroll_marker_group->First();
   }
   return nullptr;
 }
@@ -316,7 +319,12 @@ Element* GetPreviousForCarouselPseudoInFocusOrder(
   if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(
             current.GetPseudoElement(kPseudoIdScrollMarker))) {
-      if (scroll_marker->IsSelected() &&
+      ScrollMarkerGroupPseudoElement* group =
+          scroll_marker->ScrollMarkerGroup();
+      bool is_selected_or_default =
+          scroll_marker->IsSelected() ||
+          (group && !group->Selected() && group->First() == scroll_marker);
+      if (is_selected_or_default &&
           IsScrollMarkerFromScrollerInTabsMode(*scroll_marker)) {
         return scroll_marker;
       }
@@ -1353,6 +1361,10 @@ Element* ScopedFocusNavigation::NextFocusableElement() {
           return current;
         }
       }
+      // Nothing after `current` in this scope, so let the caller continue
+      // after the scope owner. Falling through would wrap around to the start
+      // of the scope instead.
+      return nullptr;
     } else {
       // First try to find an element with the same tabindex as start that comes
       // after start in the scope.
@@ -1420,6 +1432,8 @@ Element* ScopedFocusNavigation::PreviousFocusableElement() {
         return current;
       }
     }
+    // Nothing before `current` in this scope; see NextFocusableElement().
+    return nullptr;
   } else {
     if (Element* winner = FindElementWithExactTabIndex(
             tab_index, mojom::blink::FocusType::kBackward))
@@ -1640,7 +1654,8 @@ ScopedFocusNavigation GetScopeFor(Element*& owner,
 
 Element* FindFocusableElementAcrossFocusScopesForward(
     ScopedFocusNavigation& scope,
-    FocusController::OwnerMap& owner_map) {
+    FocusController::OwnerMap& owner_map,
+    bool descend_into_frames = true) {
   const Element* current = scope.CurrentElement();
   Element* found = nullptr;
   if (current) {
@@ -1688,13 +1703,17 @@ Element* FindFocusableElementAcrossFocusScopesForward(
       found = FindFocusableElementRecursivelyForward(current_scope, owner_map);
     }
   }
+  if (!descend_into_frames) {
+    return found;
+  }
   return FindFocusableElementDescendingDownIntoFrameDocument(
       mojom::blink::FocusType::kForward, found, owner_map);
 }
 
 Element* FindFocusableElementAcrossFocusScopesBackward(
     ScopedFocusNavigation& scope,
-    FocusController::OwnerMap& owner_map) {
+    FocusController::OwnerMap& owner_map,
+    bool descend_into_frames = true) {
   Element* found = FindFocusableElementRecursivelyBackward(scope, owner_map);
 
   while (found && found->GetOpenPopoverTarget()) {
@@ -1737,6 +1756,9 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
     current_scope = GetScopeFor(owner, owner_map);
     found = FindFocusableElementRecursivelyBackward(current_scope, owner_map);
   }
+  if (!descend_into_frames) {
+    return found;
+  }
   return FindFocusableElementDescendingDownIntoFrameDocument(
       mojom::blink::FocusType::kBackward, found, owner_map);
 }
@@ -1744,10 +1766,13 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
 Element* FindFocusableElementAcrossFocusScopes(
     mojom::blink::FocusType type,
     ScopedFocusNavigation& scope,
-    FocusController::OwnerMap& owner_map) {
+    FocusController::OwnerMap& owner_map,
+    bool descend_into_frames = true) {
   return (type == mojom::blink::FocusType::kForward)
-             ? FindFocusableElementAcrossFocusScopesForward(scope, owner_map)
-             : FindFocusableElementAcrossFocusScopesBackward(scope, owner_map);
+             ? FindFocusableElementAcrossFocusScopesForward(scope, owner_map,
+                                                            descend_into_frames)
+             : FindFocusableElementAcrossFocusScopesBackward(
+                   scope, owner_map, descend_into_frames);
 }
 
 }  // anonymous namespace
@@ -2242,6 +2267,60 @@ Element* FocusController::FindFocusableElementForImeAutofillAndTesting(
   ScopedFocusNavigation scope =
       ScopedFocusNavigation::CreateFor(element, owner_map);
   return FindFocusableElementAcrossFocusScopes(type, scope, owner_map);
+}
+
+Element* FocusController::FindAdjacentFocusableElementFrom(
+    Element& starting_element,
+    mojom::blink::FocusType type) {
+  CHECK(type == mojom::blink::FocusType::kForward ||
+        type == mojom::blink::FocusType::kBackward);
+  Document& document = starting_element.GetDocument();
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+  if (!starting_element.isConnected()) {
+    return nullptr;
+  }
+
+  auto unwrap_ua_shadow_host = [](Element* el) -> Element* {
+    if (!el) {
+      return nullptr;
+    }
+    while (ShadowRoot* shadow_root = el->ContainingShadowRoot()) {
+      if (!shadow_root->IsUserAgent()) {
+        break;
+      }
+      el = el->OwnerShadowHost();
+    }
+    return el;
+  };
+
+  OwnerMap owner_map;
+  if (starting_element == document.documentElement() &&
+      !ShouldVisit(starting_element)) {
+    if (type == mojom::blink::FocusType::kBackward) {
+      return nullptr;
+    }
+    ScopedFocusNavigation scope =
+        ScopedFocusNavigation::CreateForDocument(document, owner_map);
+    return unwrap_ua_shadow_host(
+        FindFocusableElementRecursivelyForward(scope, owner_map));
+  }
+
+  // Frames are returned as a single stop (the frame owner element) rather than
+  // descending into them: the result has to be an element of this document,
+  // and a child frame's document may be cross-origin or even out-of-process.
+  const bool descend_into_frames = false;
+  Element* start_ua_host = unwrap_ua_shadow_host(&starting_element);
+  ScopedFocusNavigation scope =
+      ScopedFocusNavigation::CreateFor(starting_element, owner_map);
+  Element* found = FindFocusableElementAcrossFocusScopes(type, scope, owner_map,
+                                                         descend_into_frames);
+  while (found && unwrap_ua_shadow_host(found) == start_ua_host) {
+    ScopedFocusNavigation next_scope =
+        ScopedFocusNavigation::CreateFor(*found, owner_map);
+    found = FindFocusableElementAcrossFocusScopes(type, next_scope, owner_map,
+                                                  descend_into_frames);
+  }
+  return unwrap_ua_shadow_host(found);
 }
 
 Element* FocusController::NextFocusableElementForIme(

@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/focusable.h"
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
@@ -8503,6 +8504,16 @@ void Element::focusForBindings(const FocusOptions* options) {
     }
   }
   Focus(params);
+}
+
+Focusable* Element::nextFocusable() {
+  return Focusable::FindAdjacentFocusable(*this, GetTreeScope(),
+                                          mojom::blink::FocusType::kForward);
+}
+
+Focusable* Element::previousFocusable() {
+  return Focusable::FindAdjacentFocusable(*this, GetTreeScope(),
+                                          mojom::blink::FocusType::kBackward);
 }
 
 void Element::Focus() {

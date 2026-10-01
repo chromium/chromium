@@ -112,6 +112,8 @@ class CORE_EXPORT FocusController final
   Element* FindFocusableElementForImeAutofillAndTesting(mojom::blink::FocusType,
                                                         Element&,
                                                         OwnerMap&);
+  Element* FindAdjacentFocusableElementFrom(Element& starting_element,
+                                            mojom::blink::FocusType type);
 
   bool SetFocusedElement(Element*, Frame*, const FocusParams&);
   // |setFocusedElement| variant with SelectionBehaviorOnFocus::None,

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/focusable.h"
 
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
@@ -12,6 +13,8 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
@@ -82,6 +85,22 @@ Focusable* Focusable::CreateFromElement(Element& element,
                                          shadow_host, focusable_element);
 }
 
+// static
+Focusable* Focusable::FindAdjacentFocusable(Element& start,
+                                            const TreeScope& caller_scope,
+                                            mojom::blink::FocusType type) {
+  Page* page = start.GetDocument().GetPage();
+  if (!page) {
+    return nullptr;
+  }
+  Element* found =
+      page->GetFocusController().FindAdjacentFocusableElementFrom(start, type);
+  if (!found) {
+    return nullptr;
+  }
+  return CreateFromElement(*found, caller_scope);
+}
+
 Focusable::Focusable(base::PassKey<Focusable>,
                      Element* shadow_host,
                      Element& element)
@@ -130,10 +149,38 @@ Element* Focusable::ResolveFocusTarget() const {
   return element_->isConnected() ? element_.Get() : nullptr;
 }
 
+const TreeScope* Focusable::CallerTreeScope() const {
+  if (shadow_host_) {
+    return &shadow_host_->GetTreeScope();
+  }
+  if (Element* target_element = target()) {
+    return &target_element->GetTreeScope();
+  }
+  return nullptr;
+}
+
 void Focusable::focus(const FocusOptions* options) {
   if (Element* element = ResolveFocusTarget()) {
     element->focusForBindings(options);
   }
+}
+
+Focusable* Focusable::FindAdjacentFocusable(
+    mojom::blink::FocusType type) const {
+  Element* current = ResolveFocusTarget();
+  const TreeScope* scope = CallerTreeScope();
+  if (!current || !scope) {
+    return nullptr;
+  }
+  return FindAdjacentFocusable(*current, *scope, type);
+}
+
+Focusable* Focusable::nextFocusable() const {
+  return FindAdjacentFocusable(mojom::blink::FocusType::kForward);
+}
+
+Focusable* Focusable::previousFocusable() const {
+  return FindAdjacentFocusable(mojom::blink::FocusType::kBackward);
 }
 
 void Focusable::Trace(Visitor* visitor) const {

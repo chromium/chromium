@@ -187,6 +187,7 @@ namespace http://www.w3.org/1999/xhtml
     property moveBefore
     property namespaceURI
     property nextElementSibling
+    property nextFocusable
     property nextSibling
     property nodeName
     property nodeType
@@ -332,6 +333,7 @@ namespace http://www.w3.org/1999/xhtml
     property prependHTML
     property prependHTMLUnsafe
     property previousElementSibling
+    property previousFocusable
     property previousSibling
     property pseudo
     property querySelector
@@ -1574,6 +1576,7 @@ namespace http://www.w3.org/2000/svg
     property moveBefore
     property namespaceURI
     property nextElementSibling
+    property nextFocusable
     property nextSibling
     property nodeName
     property nodeType
@@ -1711,6 +1714,7 @@ namespace http://www.w3.org/2000/svg
     property prependHTML
     property prependHTMLUnsafe
     property previousElementSibling
+    property previousFocusable
     property previousSibling
     property pseudo
     property querySelector

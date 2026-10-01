@@ -979,6 +979,8 @@ interface CSSPseudoElement
     method convertRectFromNode
     method focus
     method getBoxQuads
+    method nextFocusable
+    method previousFocusable
     method pseudo
 interface CSSRGB : CSSColorValue
     attribute @@toStringTag
@@ -2535,9 +2537,11 @@ interface Element : Node
     method matchContainer
     method matches
     method moveBefore
+    method nextFocusable
     method prepend
     method prependHTML
     method prependHTMLUnsafe
+    method previousFocusable
     method pseudo
     method querySelector
     method querySelectorAll
@@ -3001,6 +3005,8 @@ interface Focusable
     getter target
     method constructor
     method focus
+    method nextFocusable
+    method previousFocusable
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride

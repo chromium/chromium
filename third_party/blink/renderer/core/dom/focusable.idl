@@ -14,4 +14,6 @@ interface Focusable {
     readonly attribute CSSPseudoElement? pseudoElement;
 
     undefined focus(optional FocusOptions options = {});
+    Focusable? nextFocusable();
+    Focusable? previousFocusable();
 };
