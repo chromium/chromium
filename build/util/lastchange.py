@@ -281,14 +281,14 @@ def WriteIfChanged(file_name, contents):
     Returns if new data was written.
     """
     try:
-        old_contents = open(file_name, 'r').read()
+        old_contents = open(file_name, 'r', encoding='utf-8').read()
     except EnvironmentError:
         pass
     else:
         if contents == old_contents:
             return False
         os.unlink(file_name)
-    open(file_name, 'w').write(contents)
+    open(file_name, 'w', encoding='utf-8', newline='').write(contents)
     return True
 
 
@@ -888,7 +888,9 @@ def main(argv=None):
                 committime_file = out_file + '.committime'
                 out_changed = WriteIfChanged(out_file, contents)
                 if out_changed or not os.path.exists(committime_file):
-                    with open(committime_file, 'w') as timefile:
+                    with open(
+                        committime_file, 'w', encoding='utf-8'
+                    ) as timefile:
                         timefile.write(str(version_info.timestamp))
             if header:
                 WriteIfChanged(
