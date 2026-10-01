@@ -741,10 +741,13 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
     DVLOG(1) << "Setting up " << client_index << " client";
 
     if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
+      // Select history-related types before the engine initializes, so that the
+      // initial configuration already includes them, instead of reconfiguring
+      // right after.
       if (!client->SignInNoWaitForCompletion(account) ||
-          !client->AwaitEngineInitialization() ||
           (enable_history_sync_in_transport_mode &&
-           !client->EnableHistorySyncNoWaitForCompletion())) {
+           !client->EnableHistorySyncNoWaitForCompletion()) ||
+          !client->AwaitEngineInitialization()) {
         ADD_FAILURE() << "SetupSync() failed.";
         return false;
       }
