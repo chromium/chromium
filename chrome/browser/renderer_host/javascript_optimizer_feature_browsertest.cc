@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -1678,6 +1679,21 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_WithPolicy,
 class JavascriptOptimizerUiTest : public JavascriptOptimizerUiBaseBrowserTest {
  public:
   JavascriptOptimizerUiTest() = default;
+
+  void SetUp() override {
+    // These tests interact with / screenshot Views elements (the omnibox icon
+    // and bubble), which is flaky in parallel browser_tests runs because window
+    // occlusion or activation changes from other tests can make
+    // ElementTrackerViews drop the browser's Views elements; outside pixel
+    // verification runs they would skip at the screenshot step anyway, and
+    // pixel_browser_tests runs them serially. See crbug.com/558994551.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kVerifyPixels)) {
+      GTEST_SKIP() << "A pixel test requires kVerifyPixels flag.";
+    }
+
+    JavascriptOptimizerUiBaseBrowserTest::SetUp();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, OmniboxIconPixelTest) {
@@ -1700,13 +1716,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, OmniboxIconPixelTest) {
                              /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-// TODO(crbug.com/558994551): Failing on Linux UBSan.
-#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
-#define MAYBE_BubblePixelTest DISABLED_BubblePixelTest
-#else
-#define MAYBE_BubblePixelTest BubblePixelTest
-#endif
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, MAYBE_BubblePixelTest) {
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubblePixelTest) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -1727,14 +1737,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, MAYBE_BubblePixelTest) {
           /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-// TODO(crbug.com/558994551): Failing on Linux UBSan.
-#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
-#define MAYBE_BubbleWithPolicyPixelTest DISABLED_BubbleWithPolicyPixelTest
-#else
-#define MAYBE_BubbleWithPolicyPixelTest BubbleWithPolicyPixelTest
-#endif
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest,
-                       MAYBE_BubbleWithPolicyPixelTest) {
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubbleWithPolicyPixelTest) {
   EnableEnterprisePolicy();
 
   ASSERT_TRUE(content::NavigateToURL(
