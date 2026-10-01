@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -141,8 +142,14 @@ TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndOpensSettingsLink) {
       l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_OPT_IN_DESCRIPTION,
                                  std::u16string(kTestEmail), link_text));
 
+  EXPECT_TRUE(styled_label->GetViewAccessibility().GetIsIgnored());
+
   views::Link* link_view = styled_label->GetFirstLinkForTesting();
   ASSERT_NE(link_view, nullptr);
+  EXPECT_FALSE(link_view->GetViewAccessibility().GetIsIgnored());
+  EXPECT_EQ(link_view->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_A11Y_NAME));
 
   EXPECT_CALL(
       web_contents_delegate(),
