@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -96,8 +95,7 @@ OpenedWebContentsSet OpenAllHelper(
     BrowserWindowInterface* browser,
     std::vector<UrlAndId> bookmark_urls,
     WindowOpenDisposition initial_disposition,
-    page_load_metrics::NavigationHandleUserData::InitiatorLocation
-        navigation_type,
+    std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action) {
   OpenedWebContentsSet::container_type opened_tabs;
   WindowOpenDisposition disposition = initial_disposition;
@@ -154,11 +152,9 @@ OpenedWebContentsSet OpenAllHelper(
     params.browser = browser_to_use;
     base::WeakPtr<content::NavigationHandle> handle =
         nav_wrapper.NavigateTo(&params);
-    if (handle) {
-      page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-          *handle, navigation_type,
-          StringifyChromeInitiatorLocation(
-              GetChromeInitiatorLocation(navigation_type)));
+    if (handle && navigation_initiator.has_value()) {
+      page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+          *handle, *navigation_initiator);
     }
     content::WebContents* opened_tab =
         handle ? handle->GetWebContents() : nullptr;
@@ -292,18 +288,18 @@ void GetURLsAndFoldersForOpenTabs(
 
 
 // Open a folder of bookmarks as tabs.
-void DoOpen(BrowserWindowInterface* browser,
-            std::vector<UrlAndId> url_and_ids_to_open,
-            WindowOpenDisposition initial_disposition,
-            std::optional<base::Uuid> bookmark_folder_node_id,
-            std::optional<std::u16string> folder_title,
-            bool add_to_split,
-            page_load_metrics::NavigationHandleUserData::InitiatorLocation
-                navigation_type,
-            std::optional<BookmarkLaunchAction> launch_action) {
+void DoOpen(
+    BrowserWindowInterface* browser,
+    std::vector<UrlAndId> url_and_ids_to_open,
+    WindowOpenDisposition initial_disposition,
+    std::optional<base::Uuid> bookmark_folder_node_id,
+    std::optional<std::u16string> folder_title,
+    bool add_to_split,
+    std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
+    std::optional<BookmarkLaunchAction> launch_action) {
   const auto opened_web_contents = OpenAllHelper(
       browser, std::move(url_and_ids_to_open), initial_disposition,
-      navigation_type, std::move(launch_action));
+      navigation_initiator, std::move(launch_action));
   if (add_to_split && opened_web_contents.size() == 1) {
     TabStripModel* model = browser->tab_strip_model();
     auto* const single_web_contents = *(opened_web_contents.begin());
@@ -363,8 +359,7 @@ void DoOpenPromptConfirm(
     std::optional<base::Uuid> bookmark_folder_node_id,
     std::optional<std::u16string> folder_title,
     bool add_to_split,
-    page_load_metrics::NavigationHandleUserData::InitiatorLocation
-        navigation_type,
+    std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action,
     chrome::MessageBoxResult result) {
   if (result != chrome::MESSAGE_BOX_RESULT_YES) {
@@ -372,8 +367,8 @@ void DoOpenPromptConfirm(
   }
 
   DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
-         bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-         launch_action);
+         bookmark_folder_node_id, folder_title, add_to_split,
+         navigation_initiator, launch_action);
 }
 }  // namespace
 
@@ -383,8 +378,7 @@ void OpenAllIfAllowed(
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context,
-    page_load_metrics::NavigationHandleUserData::InitiatorLocation
-        navigation_type,
+    std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
@@ -404,7 +398,7 @@ void OpenAllIfAllowed(
             ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
             : std::nullopt,
         context == bookmarks::OpenAllBookmarksContext::kInSplit,
-        navigation_type, std::move(launch_action),
+        navigation_initiator, std::move(launch_action),
         chrome::MESSAGE_BOX_RESULT_YES);
     return;
   }
@@ -425,7 +419,7 @@ void OpenAllIfAllowed(
               ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
               : std::nullopt,
           context == bookmarks::OpenAllBookmarksContext::kInSplit,
-          navigation_type, std::nullopt));
+          navigation_initiator, std::nullopt));
 }
 
 int OpenCount(const std::vector<raw_ptr<const bookmarks::BookmarkNode,

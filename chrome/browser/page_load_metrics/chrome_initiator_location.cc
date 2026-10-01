@@ -122,10 +122,8 @@ void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
 
 void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
-      StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, chrome_navigation_initiator::kBookmarkBar);
 }
 
 void AttachContextMenuSearchNavigationHandleUserData(

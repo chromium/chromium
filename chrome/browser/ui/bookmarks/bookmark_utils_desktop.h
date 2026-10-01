@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UTILS_DESKTOP_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UTILS_DESKTOP_H_
 
+#include <optional>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
@@ -69,6 +69,7 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 // which the bookmarks were opened. Its window is used as the anchor for
 // the dialog (if shown). `context` can optionally open the bookmarks into a
 // tab group or split view.
+// `navigation_initiator` is attached to the navigations, if given.
 // `launch_action` represents the location and time of the bookmark launch
 // action for callsites that support it.
 // TODO(crbug.com/40914589): This should be made non-optional once all callsites
@@ -80,9 +81,8 @@ void OpenAllIfAllowed(
     WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context =
         bookmarks::OpenAllBookmarksContext::kNone,
-    page_load_metrics::NavigationHandleUserData::InitiatorLocation
-        navigation_type = page_load_metrics::NavigationHandleUserData::
-            kInitiatorLocationOther,
+    std::optional<page_load_metrics::NavigationInitiator> navigation_initiator =
+        std::nullopt,
     std::optional<BookmarkLaunchAction> launch_action = std::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If

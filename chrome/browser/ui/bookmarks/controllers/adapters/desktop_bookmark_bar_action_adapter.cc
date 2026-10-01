@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -52,7 +52,7 @@ void DesktopBookmarkBarActionAdapter::OpenBookmark(
   RecordAppLaunchForBookmarkBar(browser_->GetProfile(), node->url());
   bookmarks::OpenAllIfAllowed(
       browser_, {node}, disposition, bookmarks::OpenAllBookmarksContext::kNone,
-      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
+      chrome_navigation_initiator::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
@@ -83,7 +83,7 @@ void DesktopBookmarkBarActionAdapter::OpenFolderNodes(
   bookmarks::OpenAllIfAllowed(
       browser_, raw_nodes, disposition,
       bookmarks::OpenAllBookmarksContext::kNone,
-      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
+      chrome_navigation_initiator::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
 }
 

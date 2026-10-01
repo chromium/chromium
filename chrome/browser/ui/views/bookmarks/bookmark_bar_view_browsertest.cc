@@ -17,7 +17,7 @@
 #include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -38,7 +38,6 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "components/undo/undo_manager.h"
@@ -201,17 +200,18 @@ class BookmarkBarNavigationTestBase : public BookmarkBarTestBase,
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    auto* navigation_userdata =
-        page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+    // Note: The holder is consulted directly, not via
+    // `GetNavigationInitiator()`, so that only the navigations that a trigger
+    // attached an initiator to are collected.
+    auto* holder =
+        page_load_metrics::NavigationInitiatorHolder::GetForNavigationHandle(
             *navigation_handle);
-    if (navigation_userdata) {
-      bookmark_navigation_list_.push_back(
-          navigation_userdata->navigation_type());
+    if (holder) {
+      bookmark_navigation_list_.push_back(holder->initiator());
     }
   }
 
-  const std::vector<
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation>&
+  const std::vector<page_load_metrics::NavigationInitiator>&
   bookmark_navigation_list() {
     return bookmark_navigation_list_;
   }
@@ -227,8 +227,7 @@ class BookmarkBarNavigationTestBase : public BookmarkBarTestBase,
   net::EmbeddedTestServer https_test_server_;
   net::EmbeddedTestServer http_test_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<page_load_metrics::NavigationHandleUserData::InitiatorLocation>
-      bookmark_navigation_list_;
+  std::vector<page_load_metrics::NavigationInitiator> bookmark_navigation_list_;
 };
 
 class BookmarkBarNavigationTest : public BookmarkBarNavigationTestBase {
@@ -671,8 +670,7 @@ IN_PROC_BROWSER_TEST_F(
         test_ukm_recorder()->ExpectEntryMetric(
             entry,
             ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
-            static_cast<int>(
-                GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar)));
+            chrome_navigation_initiator::kBookmarkBar.id());
         witness_bookmarkbar_ukm = true;
       }
     }
@@ -692,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(bookmark_navigation_list().size(), 2u);
   for (int i = 0; i < 2; ++i) {
     EXPECT_EQ(bookmark_navigation_list()[i],
-              GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
+              chrome_navigation_initiator::kBookmarkBar);
   }
   histogram_tester.ExpectTotalCount(
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 1);
@@ -830,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarDisabledNavigationTest,
   ASSERT_EQ(bookmark_navigation_list().size(), 1u);
   for (int i = 0; i < 1; ++i) {
     EXPECT_EQ(bookmark_navigation_list()[i],
-              GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
+              chrome_navigation_initiator::kBookmarkBar);
   }
   histogram_tester.ExpectTotalCount(
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 0);
