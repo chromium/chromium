@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
@@ -50,6 +51,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo_mac.h"
 #include "ui/display/display_features.h"
+#include "ui/display/mac/ca_display_link_mac.h"
+#include "ui/display/mac/display_link_mac.h"
 #include "ui/display/mac/vsync_provider_mac.h"
 #endif
 
@@ -122,6 +125,20 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   // is saved for VSyncProviderMac.
   if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
     ui::VSyncProviderMac::GetInstance();
+  }
+
+  // To support CADisplayLink in the GPU process, WindowServer events must be
+  // manually pumped because child processes lack the standard NSApplication
+  // event loop. We create a dedicated thread for this purpose. Note: Do not
+  // start WindowServerEventPumpThread in the browser process, as it will
+  // interfere with the standard event loop.
+  if (ui::DisplayLinkMac::SupportsCADisplayLinkInGPU()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (!command_line->HasSwitch("in-process-gpu") &&
+        !command_line->HasSwitch("single-process-tests")) {
+      window_server_event_thread_ =
+          std::make_unique<ui::WindowServerEventPumpThread>();
+    }
   }
 #endif
 }

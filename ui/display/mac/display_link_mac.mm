@@ -17,9 +17,6 @@
 
 namespace ui {
 
-// For testing only. Create CADisplayLink in the GPU process.
-BASE_FEATURE(kCADisplayLinkInGpu, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool SkipPostTaskForCallbacks() {
   return base::FeatureList::IsEnabled(
       display::features::kSkipPostTaskForCallbacks);
@@ -38,6 +35,15 @@ bool DisplayLinkMac::SupportsDisplayLinkMacInBrowser() {
       display::features::kCADisplayLinkInBrowser);
 }
 
+// Static
+bool DisplayLinkMac::SupportsCADisplayLinkInGPU() {
+  if (!@available(macos 14.0, *)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(display::features::kCADisplayLinkInGpu);
+}
+
 // static
 scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     int64_t vsync_display_id) {
@@ -53,12 +59,9 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
       static_cast<CGDirectDisplayID>(vsync_display_id);
 
   // CADisplayLink is available only for MacOS 14.0+.
-  if (@available(macos 14.0, *)) {
-    // Testing only.
-    if (base::FeatureList::IsEnabled(kCADisplayLinkInGpu)) {
-      return CADisplayLinkMac::GetForDisplay(display_id,
-                                             /*in_gpu_process=*/true);
-    }
+  if (SupportsCADisplayLinkInGPU()) {
+    return CADisplayLinkMac::GetForDisplay(display_id,
+                                           /*in_gpu_process=*/true);
   }
 
   scoped_refptr<DisplayLinkMac> display_link;

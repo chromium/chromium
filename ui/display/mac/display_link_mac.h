@@ -106,6 +106,7 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
   static bool SupportsDisplayLinkMacInBrowser();
+  static bool SupportsCADisplayLinkInGPU();
 
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the

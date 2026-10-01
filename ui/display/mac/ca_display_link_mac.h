@@ -7,11 +7,31 @@
 #import <CoreGraphics/CGDirectDisplay.h>
 
 #include "base/functional/callback.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "ui/display/mac/display_link_mac.h"
 
 namespace ui {
 struct ObjCState;
+
+// Workaround: In child processes (such as the GPU process) that lack a standard
+// AppKit event loop, WindowServer events are not pumped by NSApplication.
+// WindowServerEventPumpThread manually drains the connection port so that
+// pending display reconfiguration or wake events are processed and reach
+// CADisplayLink. Without this workaround:
+// (1) CADisplayLink fails to reconfigure and runs at the wrong frame rate
+//     after display settings change.
+// (2) CADisplayLink fails to send out VSync callbacks after power resume,
+//     leading to frozen browser windows.
+class DISPLAY_EXPORT WindowServerEventPumpThread : public base::Thread {
+ public:
+  WindowServerEventPumpThread();
+  ~WindowServerEventPumpThread() override;
+
+  // To be implemented.
+ private:
+  scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
+};
 
 class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
  public:

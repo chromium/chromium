@@ -252,4 +252,16 @@ void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   }
 }
 
+// FrameSinkManagerImpl creates and owns WindowServerEventPumpThread when
+// the CADisplayLinkInGpu feature is enabled.
+WindowServerEventPumpThread::WindowServerEventPumpThread()
+    : base::Thread("WindowServerEventPumpThread"),
+      viz_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+  // To be implemented.
+}
+
+WindowServerEventPumpThread::~WindowServerEventPumpThread() {
+  // To be implemented.
+}
+
 }  // namespace ui

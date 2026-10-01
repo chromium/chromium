@@ -57,6 +57,12 @@
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 
+#if BUILDFLAG(IS_MAC)
+namespace ui {
+class WindowServerEventPumpThread;
+}
+#endif
+
 namespace viz {
 
 class CapturableFrameSink;
@@ -711,6 +717,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Only one ExternalBeginFrameSourceMojoMac object is created and is
   // shared by all RootCompositorFrameSinks.
   std::unique_ptr<ExternalBeginFrameSourceMojoMac> external_begin_frame_source_;
+
+  std::unique_ptr<ui::WindowServerEventPumpThread> window_server_event_thread_;
 #endif
 
   // Counts frames for test.
