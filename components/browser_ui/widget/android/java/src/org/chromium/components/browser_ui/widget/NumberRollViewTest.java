@@ -10,30 +10,26 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link NumberRollView}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class NumberRollViewTest {
-    private Context mContext;
     private NumberRollView mNumberRollView;
     private TextView mDownNumber;
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getTargetContext();
+        Context context = ApplicationProvider.getApplicationContext();
         mNumberRollView =
                 (NumberRollView)
-                        LayoutInflater.from(mContext).inflate(R.layout.number_roll_view, null);
+                        LayoutInflater.from(context).inflate(R.layout.number_roll_view, null);
         mDownNumber = mNumberRollView.findViewById(R.id.down);
 
         mNumberRollView.setString(R.plurals.selected_items);
@@ -42,7 +38,6 @@ public class NumberRollViewTest {
     }
 
     @Test
-    @SmallTest
     public void testStringForZero() {
         assertEquals("Select items", mDownNumber.getText());
 

@@ -4,29 +4,25 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.test.InstrumentationRegistry;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link CheckBoxWithDescription}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+@RunWith(BaseRobolectricTestRunner.class)
 public class CheckBoxWithDescriptionTest {
     private Context mContext;
 
@@ -34,67 +30,61 @@ public class CheckBoxWithDescriptionTest {
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testCreateAndClick() {
         CheckBoxWithDescription checkbox =
                 createCheckBoxWithDescription("checkbox_1", "checkbox_1_desc");
-        Assert.assertEquals("Primary text should match.", "checkbox_1", checkbox.getPrimaryText());
-        Assert.assertEquals(
+        assertEquals("Primary text should match.", "checkbox_1", checkbox.getPrimaryText());
+        assertEquals(
                 "Primary text should be visible.",
                 View.VISIBLE,
                 checkbox.getPrimaryTextView().getVisibility());
-        Assert.assertEquals(
+        assertEquals(
                 "Description text should match.", "checkbox_1_desc", checkbox.getDescriptionText());
-        Assert.assertEquals(
+        assertEquals(
                 "Description text should be visible when it is not empty.",
                 View.VISIBLE,
                 checkbox.getDescriptionTextView().getVisibility());
-        Assert.assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
+        assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
 
         testClick(checkbox);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testCreateWithEmptyDescriptionAndClick() {
         CheckBoxWithDescription checkbox = createCheckBoxWithDescription("checkbox_2", "");
-        Assert.assertEquals("Primary text should match.", "checkbox_2", checkbox.getPrimaryText());
-        Assert.assertEquals(
+        assertEquals("Primary text should match.", "checkbox_2", checkbox.getPrimaryText());
+        assertEquals(
                 "Primary text should be visible.",
                 View.VISIBLE,
                 checkbox.getPrimaryTextView().getVisibility());
-        Assert.assertEquals("Description text should match.", "", checkbox.getDescriptionText());
-        Assert.assertEquals(
+        assertEquals("Description text should match.", "", checkbox.getDescriptionText());
+        assertEquals(
                 "Description text should be invisible when it is empty.",
                 View.GONE,
                 checkbox.getDescriptionTextView().getVisibility());
-        Assert.assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
+        assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
 
         testClick(checkbox);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testCreateWithoutDescriptionAndClick() {
         CheckBoxWithDescription checkbox = createCheckBoxWithDescription("checkbox_3", null);
-        Assert.assertEquals("Primary text should match.", "checkbox_3", checkbox.getPrimaryText());
-        Assert.assertEquals(
+        assertEquals("Primary text should match.", "checkbox_3", checkbox.getPrimaryText());
+        assertEquals(
                 "Primary text should be visible.",
                 View.VISIBLE,
                 checkbox.getPrimaryTextView().getVisibility());
-        Assert.assertEquals(
+        assertEquals(
                 "Description text should be invisible when it is not set.",
                 View.GONE,
                 checkbox.getDescriptionTextView().getVisibility());
-        Assert.assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
+        assertFalse("The checkbox should be unchecked.", checkbox.isChecked());
 
         testClick(checkbox);
     }
@@ -110,11 +100,9 @@ public class CheckBoxWithDescriptionTest {
     }
 
     private void testClick(CheckBoxWithDescription checkbox) {
-        View view = mock(View.class);
-        checkbox.onClick(view);
-        Assert.assertTrue("The checkbox should be checked after click.", checkbox.isChecked());
-        checkbox.onClick(view);
-        Assert.assertFalse(
-                "The checkbox should be unchecked after another click.", checkbox.isChecked());
+        checkbox.onClick(checkbox);
+        assertTrue("The checkbox should be checked after click.", checkbox.isChecked());
+        checkbox.onClick(checkbox);
+        assertFalse("The checkbox should be unchecked after another click.", checkbox.isChecked());
     }
 }
