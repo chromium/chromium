@@ -980,17 +980,18 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
     <div id=e1 focusgroup=grid></div>
     <table id=e2 focusgroup=grid></table>
     <table id=e3 focusgroup="grid wrap"></table>
-    <table id=e4 focusgroup="grid row-wrap"></table>
-    <table id=e5 focusgroup="grid col-wrap"></table>
-    <table id=e6 focusgroup="grid row-wrap col-wrap"></table>
+    <table id=e4 focusgroup="grid rowwrap"></table>
+    <table id=e5 focusgroup="grid colwrap"></table>
+    <table id=e6 focusgroup="grid rowwrap colwrap"></table>
     <table id=e7 focusgroup="grid flow"></table>
-    <table id=e8 focusgroup="grid row-flow"></table>
-    <table id=e9 focusgroup="grid col-flow"></table>
-    <table id=e10 focusgroup="grid row-flow col-flow"></table>
-    <table id=e11 focusgroup="grid row-wrap row-flow"></table>
-    <table id=e12 focusgroup="grid row-wrap col-flow"></table>
-    <table id=e13 focusgroup="grid col-wrap col-flow"></table>
-    <table id=e14 focusgroup="grid col-wrap row-flow"></table>
+    <table id=e8 focusgroup="grid rowflow"></table>
+    <table id=e9 focusgroup="grid colflow"></table>
+    <table id=e10 focusgroup="grid rowflow colflow"></table>
+    <table id=e11 focusgroup="grid rowwrap rowflow"></table>
+    <table id=e12 focusgroup="grid rowwrap colflow"></table>
+    <table id=e13 focusgroup="grid colwrap colflow"></table>
+    <table id=e14 focusgroup="grid colwrap rowflow"></table>
+    <div id=e16 focusgroup="grid manual noitemcontrols"></div>
     <table focusgroup=grid></table>
     <div id=e15 focusgroup="flow"></div> <!-- Error -->
   )HTML");
@@ -1010,6 +1011,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   auto* e13 = document.getElementById(AtomicString("e13"));
   auto* e14 = document.getElementById(AtomicString("e14"));
   auto* e15 = document.getElementById(AtomicString("e15"));
+  auto* e16 = document.getElementById(AtomicString("e16"));
   ASSERT_TRUE(e1);
   ASSERT_TRUE(e2);
   ASSERT_TRUE(e3);
@@ -1025,6 +1027,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   ASSERT_TRUE(e13);
   ASSERT_TRUE(e14);
   ASSERT_TRUE(e15);
+  ASSERT_TRUE(e16);
 
   FocusgroupData e1_data = e1->GetFocusgroupData();
   FocusgroupData e2_data = e2->GetFocusgroupData();
@@ -1041,46 +1044,59 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   FocusgroupData e13_data = e13->GetFocusgroupData();
   FocusgroupData e14_data = e14->GetFocusgroupData();
   FocusgroupData e15_data = e15->GetFocusgroupData();
+  FocusgroupData e16_data = e16->GetFocusgroupData();
 
-  EXPECT_EQ(e1_data,
-            FocusgroupData(FocusgroupBehavior::kGrid, FocusgroupFlags::kNone));
-  EXPECT_EQ(e2_data,
-            FocusgroupData(FocusgroupBehavior::kGrid, FocusgroupFlags::kNone));
+  EXPECT_EQ(e1_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kItemControls));
+  EXPECT_EQ(e2_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                    FocusgroupFlags::kItemControls));
   EXPECT_EQ(e3_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kWrapInline |
-                                        FocusgroupFlags::kWrapBlock));
+                                        FocusgroupFlags::kWrapBlock |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e4_data, FocusgroupData(FocusgroupBehavior::kGrid,
-                                    FocusgroupFlags::kWrapInline));
+                                    FocusgroupFlags::kWrapInline |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e5_data, FocusgroupData(FocusgroupBehavior::kGrid,
-                                    FocusgroupFlags::kWrapBlock));
+                                    FocusgroupFlags::kWrapBlock |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e6_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kWrapInline |
-                                        FocusgroupFlags::kWrapBlock));
+                                        FocusgroupFlags::kWrapBlock |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e7_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kRowFlow |
-                                        FocusgroupFlags::kColFlow));
+                                        FocusgroupFlags::kColFlow |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e8_data, FocusgroupData(FocusgroupBehavior::kGrid,
-                                    FocusgroupFlags::kRowFlow));
+                                    FocusgroupFlags::kRowFlow |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e9_data, FocusgroupData(FocusgroupBehavior::kGrid,
-                                    FocusgroupFlags::kColFlow));
+                                    FocusgroupFlags::kColFlow |
+                                        FocusgroupFlags::kItemControls));
   EXPECT_EQ(e10_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                      FocusgroupFlags::kRowFlow |
-                                         FocusgroupFlags::kColFlow));
-  // e11 has conflicting wrap/flow for row axis, so should be invalid.
-  EXPECT_EQ(e11_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
-                                     FocusgroupFlags::kNone));
+                                         FocusgroupFlags::kColFlow |
+                                         FocusgroupFlags::kItemControls));
+  // Conflicting modifiers fall back to a hard edge (non-wrapping) only on that
+  // axis.
+  EXPECT_EQ(e11_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kItemControls));
   EXPECT_EQ(e12_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                      FocusgroupFlags::kWrapInline |
-                                         FocusgroupFlags::kColFlow));
-  // e13 has conflicting wrap/flow for column axis, so should be invalid.
-  EXPECT_EQ(e13_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
-                                     FocusgroupFlags::kNone));
+                                         FocusgroupFlags::kColFlow |
+                                         FocusgroupFlags::kItemControls));
+  EXPECT_EQ(e13_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kItemControls));
   EXPECT_EQ(e14_data, FocusgroupData(FocusgroupBehavior::kGrid,
                                      FocusgroupFlags::kWrapBlock |
-                                         FocusgroupFlags::kRowFlow));
+                                         FocusgroupFlags::kRowFlow |
+                                         FocusgroupFlags::kItemControls));
   // e15 should be invalid since "flow" isn't a behavior token
   EXPECT_EQ(e15_data, FocusgroupData(FocusgroupBehavior::kNoBehavior,
                                      FocusgroupFlags::kNone));
+  EXPECT_EQ(e16_data, FocusgroupData(FocusgroupBehavior::kGrid,
+                                     FocusgroupFlags::kManual));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
@@ -1264,7 +1280,7 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
       static_cast<FocusgroupFlags>(FocusgroupFlags::kInline |
                                    FocusgroupFlags::kWrapInline)};
   EXPECT_EQ(
-      "toolbar:(inline|wrap|row-wrap)",
+      "toolbar:(inline|wrap|rowwrap)",
       focusgroup::FocusgroupDataToStringForTesting(toolbar_wrap_inline_data));
 
   // Grid basic.
@@ -1276,20 +1292,19 @@ TEST_F(ElementTest, FocusgroupFlagsToString) {
   // Grid with row wrap only.
   FocusgroupData grid_wrap_inline_data{FocusgroupBehavior::kGrid,
                                        FocusgroupFlags::kWrapInline};
-  EXPECT_EQ(
-      "grid:(wrap|row-wrap)",
-      focusgroup::FocusgroupDataToStringForTesting(grid_wrap_inline_data));
+  EXPECT_EQ("grid:(wrap|rowwrap)", focusgroup::FocusgroupDataToStringForTesting(
+                                       grid_wrap_inline_data));
 
   // Grid with row flow only.
   FocusgroupData grid_row_flow_data{FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kRowFlow};
-  EXPECT_EQ("grid:(flow|row-flow)",
+  EXPECT_EQ("grid:(flow|rowflow)",
             focusgroup::FocusgroupDataToStringForTesting(grid_row_flow_data));
 
   // Grid with column flow only.
   FocusgroupData grid_col_flow_data{FocusgroupBehavior::kGrid,
                                     FocusgroupFlags::kColFlow};
-  EXPECT_EQ("grid:(flow|col-flow)",
+  EXPECT_EQ("grid:(flow|colflow)",
             focusgroup::FocusgroupDataToStringForTesting(grid_col_flow_data));
 
   // Opt-out.

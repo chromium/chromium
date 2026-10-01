@@ -63,7 +63,7 @@ constexpr BehaviorMapping kBehaviorMap[] = {
     {"feed", FocusgroupBehavior::kFeed, ax::mojom::blink::Role::kFeed,
      FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls},
     {"grid", FocusgroupBehavior::kGrid, ax::mojom::blink::Role::kGrid,
-     FocusgroupFlags::kNone},
+     FocusgroupFlags::kItemControls},
     {"none", FocusgroupBehavior::kOptOut, ax::mojom::blink::Role::kUnknown,
      FocusgroupFlags::kNone},
 };
@@ -74,13 +74,14 @@ constexpr FlagMapping kModifierMap[] = {
     {"inline", FocusgroupFlags::kInline},
     {"block", FocusgroupFlags::kBlock},
     {"wrap", FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock},
-    {"row-wrap", FocusgroupFlags::kWrapInline},
-    {"col-wrap", FocusgroupFlags::kWrapBlock},
+    {"rowwrap", FocusgroupFlags::kWrapInline},
+    {"colwrap", FocusgroupFlags::kWrapBlock},
     {"flow", FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow},
-    {"row-flow", FocusgroupFlags::kRowFlow},
-    {"col-flow", FocusgroupFlags::kColFlow},
+    {"rowflow", FocusgroupFlags::kRowFlow},
+    {"colflow", FocusgroupFlags::kColFlow},
     {"nomemory", FocusgroupFlags::kNoMemory},
     {"itemcontrols", FocusgroupFlags::kItemControls},
+    {"manual", FocusgroupFlags::kManual},
 };
 
 // Returns true if a flag contains a modifier only meaningful for grid
@@ -94,7 +95,7 @@ inline bool IsGridOnlyFlag(FocusgroupFlags flag) {
   bool wrap_inline = flag & FocusgroupFlags::kWrapInline;
   bool wrap_block = flag & FocusgroupFlags::kWrapBlock;
   bool exactly_one_wrap = wrap_inline != wrap_block;
-  return any_flow || exactly_one_wrap;
+  return any_flow || exactly_one_wrap || flag & FocusgroupFlags::kManual;
 }
 
 // Returns a string representation of all valid behavior tokens.
@@ -216,6 +217,7 @@ FocusgroupData ParseFocusgroup(const Element* element,
   bool has_nowrap = false;
   bool has_itemcontrols = false;
   bool has_no_itemcontrols = false;
+  bool has_manual = false;
   const bool is_v2_enabled =
       RuntimeEnabledFeatures::FocusgroupV2Enabled(context);
 
@@ -345,6 +347,8 @@ FocusgroupData ParseFocusgroup(const Element* element,
       has_no_memory = true;
     } else if (flag & FocusgroupFlags::kItemControls) {
       has_itemcontrols = true;
+    } else if (flag & FocusgroupFlags::kManual) {
+      has_manual = true;
     } else if (flag & FocusgroupFlags::kInline) {
       has_inline = true;
     } else if (flag & FocusgroupFlags::kBlock) {
@@ -415,7 +419,7 @@ FocusgroupData ParseFocusgroup(const Element* element,
   }
 
   // Validate wrap + nowrap conflict.
-  if (has_wrap && has_nowrap) {
+  if (data.behavior != FocusgroupBehavior::kGrid && has_wrap && has_nowrap) {
     Error(
         "Specifying both 'wrap' and 'nowrap' is an author error; both are "
         "ignored.");
@@ -427,98 +431,60 @@ FocusgroupData ParseFocusgroup(const Element* element,
 
   // Grid focusgroup specific validation and flag setting.
   if (data.behavior == FocusgroupBehavior::kGrid) {
-    // Set the wrap/flow flags, if specified.
-    if (has_wrap) {
-      data.flags |= FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock;
-      if (has_row_wrap) {
-        Warn(
-            "Focusgroup attribute value 'row-wrap' present, but can be "
-            "omitted because focusgroup already wraps in both axes.");
-      }
-      if (has_col_wrap) {
-        Warn(
-            "Focusgroup attribute value 'col-wrap' present, but can be "
-            "omitted because focusgroup already wraps in both axes.");
-      }
-    } else {
-      if (has_row_wrap) {
-        data.flags |= FocusgroupFlags::kWrapInline;
-      }
-      if (has_col_wrap) {
-        data.flags |= FocusgroupFlags::kWrapBlock;
-      }
-
-      if (has_row_wrap && has_col_wrap) {
-        Warn(
-            "Focusgroup attribute values 'row-wrap col-wrap' should be "
-            "replaced by 'wrap'.");
-      }
+    if (has_manual) {
+      data.flags |= FocusgroupFlags::kManual;
     }
 
-    if (has_flow) {
-      if (data.flags & FocusgroupFlags::kWrapInline ||
-          data.flags & FocusgroupFlags::kWrapBlock) {
-        Error(
-            "Focusgroup attribute value 'flow' present, but focusgroup already "
-            "set to wrap in at least one axis.");
-        return {};
-      } else {
-        data.flags |= FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow;
-        if (has_row_flow) {
-          Warn(
-              "Focusgroup attribute value 'row-flow' present, but can be "
-              "omitted because focusgroup already flows in both axes.");
-        }
-        if (has_col_flow) {
-          Warn(
-              "Focusgroup attribute value 'col-flow' present, but can be "
-              "omitted because focusgroup already flows in both axes.");
-        }
-      }
-    } else {
-      if (has_row_flow) {
-        if (data.flags & FocusgroupFlags::kWrapInline) {
-          Error(
-              "Focusgroup attribute value 'row-flow' present, but "
-              "focusgroup already wraps in the row axis.");
-          return {};
-        } else {
-          data.flags |= FocusgroupFlags::kRowFlow;
-        }
-      }
-      if (has_col_flow) {
-        if (data.flags & FocusgroupFlags::kWrapBlock) {
-          Error(
-              "Focusgroup attribute value 'col-flow' present, but "
-              "focusgroup already wraps in the column axis.");
-          return {};
-        } else {
-          data.flags |= FocusgroupFlags::kColFlow;
-        }
-      }
-      if (data.flags & FocusgroupFlags::kRowFlow &&
-          data.flags & FocusgroupFlags::kColFlow) {
-        Warn(
-            "Focusgroup attribute values 'row-flow col-flow' should be "
-            "replaced by 'flow'.");
-      }
+    bool row_wrap = has_wrap || has_row_wrap;
+    bool col_wrap = has_wrap || has_col_wrap;
+    bool row_flow = has_flow || has_row_flow;
+    bool col_flow = has_flow || has_col_flow;
+
+    if (has_nowrap && (row_wrap || col_wrap || row_flow || col_flow)) {
+      Error(
+          "Specifying 'nowrap' with grid wrap or flow modifiers is an author "
+          "error; both axes use hard edges (non-wrapping).");
+      row_wrap = false;
+      col_wrap = false;
+      row_flow = false;
+      col_flow = false;
+    }
+    if (row_wrap && row_flow) {
+      Error(
+          "Specifying both row wrap and row flow is an author error; the row "
+          "axis uses hard edges (non-wrapping).");
+      row_wrap = false;
+      row_flow = false;
+    }
+    if (col_wrap && col_flow) {
+      Error(
+          "Specifying both column wrap and column flow is an author error; the "
+          "column axis uses hard edges (non-wrapping).");
+      col_wrap = false;
+      col_flow = false;
+    }
+
+    if (row_wrap) {
+      data.flags |= FocusgroupFlags::kWrapInline;
+    } else if (row_flow) {
+      data.flags |= FocusgroupFlags::kRowFlow;
+    }
+    if (col_wrap) {
+      data.flags |= FocusgroupFlags::kWrapBlock;
+    } else if (col_flow) {
+      data.flags |= FocusgroupFlags::kColFlow;
     }
 
     // These values are reserved for linear focusgroups.
     if (has_inline) {
       Warn(
           "Focusgroup attribute value 'inline' is not valid for grid "
-          "focusgroups; use row-wrap/col-wrap or flow modifiers instead.");
+          "focusgroups; use rowwrap/colwrap or flow modifiers instead.");
     }
     if (has_block) {
       Warn(
           "Focusgroup attribute value 'block' is not valid for grid "
-          "focusgroups; use row-wrap/col-wrap or flow modifiers instead.");
-    }
-    if (has_nowrap) {
-      Warn(
-          "Focusgroup attribute value 'nowrap' is not valid for grid "
-          "focusgroups; use row-wrap/col-wrap modifiers instead.");
+          "focusgroups; use rowwrap/colwrap or flow modifiers instead.");
     }
     return data;
   }
@@ -526,12 +492,12 @@ FocusgroupData ParseFocusgroup(const Element* element,
   // Linear focusgroup specific validation and flag setting.
   if (has_row_wrap) {
     Warn(
-        "Focusgroup attribute value 'row-wrap' is only valid for grid "
+        "Focusgroup attribute value 'rowwrap' is only valid for grid "
         "focusgroups; use 'wrap' for linear focusgroups instead.");
   }
   if (has_col_wrap) {
     Warn(
-        "Focusgroup attribute value 'col-wrap' is only valid for grid "
+        "Focusgroup attribute value 'colwrap' is only valid for grid "
         "focusgroups; use 'wrap' for linear focusgroups instead.");
   }
   if (has_flow) {
@@ -541,12 +507,17 @@ FocusgroupData ParseFocusgroup(const Element* element,
   }
   if (has_row_flow) {
     Warn(
-        "Focusgroup attribute value 'row-flow' is only valid for grid "
+        "Focusgroup attribute value 'rowflow' is only valid for grid "
         "focusgroups.");
   }
   if (has_col_flow) {
     Warn(
-        "Focusgroup attribute value 'col-flow' is only valid for grid "
+        "Focusgroup attribute value 'colflow' is only valid for grid "
+        "focusgroups.");
+  }
+  if (has_manual) {
+    Warn(
+        "Focusgroup attribute value 'manual' is only valid for grid "
         "focusgroups.");
   }
   // Redundancy check: specifying both 'inline' and 'block' is only redundant

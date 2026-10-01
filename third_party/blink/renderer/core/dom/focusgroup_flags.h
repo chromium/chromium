@@ -61,6 +61,9 @@ enum FocusgroupFlags : uint16_t {
   // Modifier gated on the FocusgroupV2 runtime feature:
   // Include controls associated with the active item in sequential navigation.
   kItemControls = 1 << 7,
+
+  // Use explicit focusgrouprow enrollment instead of native table structure.
+  kManual = 1 << 8,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
