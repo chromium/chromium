@@ -12,7 +12,6 @@
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
@@ -20,19 +19,17 @@ namespace extensions::mime_handler {
 
 namespace {
 
-// Restricts `headers` to the CORS-safelisted response header names, so a
-// generic (third-party) MIME handler extension only sees the response headers
-// that fetch() would expose to script cross-origin. Without this, a
+// Restricts `headers` to explicitly allowed response headers, so a generic
+// (third-party) MIME handler extension only sees those. Without this, a
 // zero-permission handler could read arbitrary cross-origin response headers
 // (auth tokens, and similar) off the stream it handles.
-// https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name
-void FilterToCorsSafelistedResponseHeaders(net::HttpResponseHeaders* headers) {
+void FilterResponseHeadersForHandler(net::HttpResponseHeaders* headers) {
   std::vector<std::string> names_to_remove;
   size_t iter = 0;
   std::string name;
   std::string value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    if (!network::cors::IsCorsSafelistedResponseHeaderName(name)) {
+    if (!IsResponseHeaderAllowedForHandler(name)) {
       names_to_remove.emplace_back(name);
     }
   }
@@ -56,8 +53,7 @@ void GenericMimeHandlerStreamDelegate::OnExtensionFrameReadyToCommit(
   }
   CHECK(transferrable_loader->head);
   if (transferrable_loader->head->headers) {
-    FilterToCorsSafelistedResponseHeaders(
-        transferrable_loader->head->headers.get());
+    FilterResponseHeadersForHandler(transferrable_loader->head->headers.get());
   }
   // Register the transferable URL loader as a subresource override so the
   // handler page can fetch the original response data via the stream URL.

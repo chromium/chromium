@@ -51,6 +51,11 @@ constexpr char kCustomHeaderName[] = "X-Custom";
 constexpr char kCustomHeaderValue[] = "bar";
 constexpr char kCoepHeaderName[] = "Cross-Origin-Embedder-Policy";
 constexpr char kCoepHeaderValue[] = "require-corp";
+constexpr char kContentDispositionHeaderName[] = "Content-Disposition";
+constexpr char kContentDispositionHeaderValue[] =
+    "inline; filename=\"doc.pdf\"";
+constexpr char kAcceptRangesHeaderName[] = "Accept-Ranges";
+constexpr char kAcceptRangesHeaderValue[] = "bytes";
 constexpr char kOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 constexpr int kTabId = 42;
 
@@ -178,12 +183,15 @@ TEST_F(MimeHandlerApiTest, GetStreamInfoSuccess) {
 }
 
 // A generic (third-party) handler sees only the CORS-safelisted response
-// header names through getStreamInfo().
+// header names, plus Content-Disposition and Accept-Ranges, through
+// getStreamInfo().
 TEST_F(MimeHandlerApiTest, GetStreamInfoFiltersHeadersForGenericHandler) {
   ClaimedStreamSetup setup = CreateAndSetUpClaimedStream(
       browser_context(), extension()->id(),
       CreatePdfResponseHeadWithExtraHeaders(
-          {{kCoepHeaderName, kCoepHeaderValue}}),
+          {{kCoepHeaderName, kCoepHeaderValue},
+           {kContentDispositionHeaderName, kContentDispositionHeaderValue},
+           {kAcceptRangesHeaderName, kAcceptRangesHeaderValue}}),
       std::make_unique<mime_handler::GenericMimeHandlerStreamDelegate>());
 
   auto function = base::MakeRefCounted<MimeHandlerGetStreamInfoFunction>();
@@ -199,6 +207,10 @@ TEST_F(MimeHandlerApiTest, GetStreamInfoFiltersHeadersForGenericHandler) {
       result->GetDict().FindDict("responseHeaders");
   ASSERT_TRUE(headers);
   EXPECT_TRUE(headers->FindString("Content-Type"));
+  EXPECT_THAT(headers->FindString(kContentDispositionHeaderName),
+              testing::Pointee(std::string(kContentDispositionHeaderValue)));
+  EXPECT_THAT(headers->FindString(kAcceptRangesHeaderName),
+              testing::Pointee(std::string(kAcceptRangesHeaderValue)));
   EXPECT_FALSE(headers->FindString(kCoepHeaderName));
 }
 

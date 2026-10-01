@@ -4,6 +4,9 @@
 
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 
+#include "base/strings/string_util.h"
+#include "services/network/public/cpp/cors/cors.h"
+
 namespace extensions {
 
 MimeHandlerStreamDelegate::MimeHandlerStreamDelegate() = default;
@@ -44,6 +47,14 @@ bool MimeHandlerStreamDelegate::RequiresPerInstanceProcessIsolation() const {
 
 bool MimeHandlerStreamDelegate::ShouldFilterResponseHeadersForHandler() const {
   return true;
+}
+
+bool IsResponseHeaderAllowedForHandler(std::string_view name) {
+  // The handler already reads the whole body. These two headers only tell it
+  // how to name the file and whether the server can send parts of it.
+  return network::cors::IsCorsSafelistedResponseHeaderName(name) ||
+         base::EqualsCaseInsensitiveASCII(name, "content-disposition") ||
+         base::EqualsCaseInsensitiveASCII(name, "accept-ranges");
 }
 
 }  // namespace extensions

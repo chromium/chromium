@@ -67,6 +67,8 @@ constexpr char kOriginalUrl2[] = "https://original_url2";
 constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
 constexpr char kAuthTokenHeaderValue[] = "s3cr3t";
 constexpr char kContentTypeHeaderName[] = "Content-Type";
+constexpr char kContentDispositionHeaderName[] = "Content-Disposition";
+constexpr char kAcceptRangesHeaderName[] = "Accept-Ranges";
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kStreamUrl1[] = "stream://url1";
 constexpr char kHandlerUrl1[] = "https://handler_url1";
@@ -81,6 +83,9 @@ std::unique_ptr<StreamContainer> MakeStreamContainerWithAuthTokenHeader() {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
           .AddHeader(kContentTypeHeaderName, kPdfMimeType)
           .AddHeader(kAuthTokenHeaderName, kAuthTokenHeaderValue)
+          .AddHeader(kContentDispositionHeaderName,
+                     "inline; filename=\"doc.pdf\"")
+          .AddHeader(kAcceptRangesHeaderName, "bytes")
           .Build();
   return std::make_unique<StreamContainer>(
       /*tab_id=*/1, /*embedded=*/false, GURL(kHandlerUrl1), kExtensionId1,
@@ -280,8 +285,8 @@ TEST_F(MimeHandlerStreamManagerTest, ShouldFilterResponseHeadersForHandler) {
   }
 }
 
-// A third-party handler's loader carries only the CORS-safelisted headers.
-// The browser's stored head keeps all of them.
+// A third-party handler's loader carries only explicitly allowed headers. The
+// browser's stored head keeps every header.
 TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameGetsFilteredResponseHead) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
@@ -312,6 +317,10 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameGetsFilteredResponseHead) {
   ASSERT_TRUE(registered_loader->head->headers);
   EXPECT_TRUE(
       registered_loader->head->headers->HasHeader(kContentTypeHeaderName));
+  EXPECT_TRUE(registered_loader->head->headers->HasHeader(
+      kContentDispositionHeaderName));
+  EXPECT_TRUE(
+      registered_loader->head->headers->HasHeader(kAcceptRangesHeaderName));
   EXPECT_FALSE(
       registered_loader->head->headers->HasHeader(kAuthTokenHeaderName));
 

@@ -47,6 +47,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/constants.h"
@@ -58,7 +59,6 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -231,10 +231,11 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
 }
 
 // A generic (third-party) MIME handler sees exactly the CORS-safelisted
-// response headers fetch() would expose cross-origin: the safelisted
-// Content-Type / Cache-Control / Last-Modified stay visible, while the custom
-// X-Auth-Token is filtered out. handler.js already asserts mimeType and the
-// %PDF- body on this same navigation, so this test covers only responseHeaders.
+// response headers fetch() would expose cross-origin, plus Content-Disposition
+// and Accept-Ranges: the safelisted Content-Type / Cache-Control /
+// Last-Modified stay visible, while the custom X-Auth-Token is filtered out.
+// handler.js already asserts mimeType and the %PDF- body on this same
+// navigation, so this test covers only responseHeaders.
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
                        GetStreamInfoFiltersNonSafelistedResponseHeaders) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
@@ -293,14 +294,14 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   EXPECT_TRUE(std::ranges::contains(fetch_header_names, "content-type"));
   EXPECT_FALSE(std::ranges::contains(fetch_header_names,
                                      base::ToLowerASCII(kAuthTokenHeaderName)));
-  std::vector<std::string> non_safelisted;
+  std::vector<std::string> disallowed;
   for (const std::string& name : fetch_header_names) {
-    if (!network::cors::IsCorsSafelistedResponseHeaderName(name)) {
-      non_safelisted.push_back(name);
+    if (!IsResponseHeaderAllowedForHandler(name)) {
+      disallowed.push_back(name);
     }
   }
-  EXPECT_TRUE(non_safelisted.empty())
-      << "stream fetch exposed " << base::JoinString(non_safelisted, ", ");
+  EXPECT_TRUE(disallowed.empty())
+      << "stream fetch exposed " << base::JoinString(disallowed, ", ");
 }
 
 // A PDF served with a strict Content-Security-Policy must still render at

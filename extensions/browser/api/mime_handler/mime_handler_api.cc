@@ -13,13 +13,13 @@
 #include "base/types/expected.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/cors/cors.h"
 
 namespace extensions {
 
@@ -96,10 +96,10 @@ ExtensionFunction::ResponseAction MimeHandlerGetStreamInfoFunction::Run() {
       if (!base::IsStringASCII(name) || !base::IsStringASCII(value)) {
         continue;
       }
-      // Restrict a generic (third-party) MIME handler extension to the
-      // response headers that fetch() would expose to script cross-origin.
+      // Restrict a generic (third-party) MIME handler extension to explicitly
+      // allowed response headers.
       if (resolved->should_filter_response_headers &&
-          !network::cors::IsCorsSafelistedResponseHeaderName(name)) {
+          !IsResponseHeaderAllowedForHandler(name)) {
         continue;
       }
       const std::string* existing =
