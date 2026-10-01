@@ -122,11 +122,16 @@ const ModuleProperties& ModulePropertiesFromProcessType(
       chrome::kRendererDll, "ChromeRendererMain",
       ProfileProcessType::kRenderer};
 
-  if (process_type == switches::kRendererProcess &&
-      (BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) ||
-       !GetPatchedRendererPath().empty())) {
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+  if (process_type == switches::kRendererProcess) {
     return kRendererProperties;
   }
+#else
+  if (process_type == switches::kRendererProcess &&
+      !GetPatchedRendererPath().empty()) {
+    return kRendererProperties;
+  }
+#endif
 
   return kOtherProperties;
 }
