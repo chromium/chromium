@@ -49,6 +49,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -121,6 +122,7 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_19W13)
+@DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R, message = "https://crbug.com/568383870")
 public class Fido2CredentialRequestTest {
     private static final String TAG = "Fido2CredentialRequestTest";
 
