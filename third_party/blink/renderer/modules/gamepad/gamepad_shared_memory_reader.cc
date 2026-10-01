@@ -34,6 +34,7 @@ GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalDOMWindow& window)
 void GamepadSharedMemoryReader::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(gamepad_monitor_remote_);
+  visitor->Trace(listener_);
 }
 
 void GamepadSharedMemoryReader::SendStartMessage() {

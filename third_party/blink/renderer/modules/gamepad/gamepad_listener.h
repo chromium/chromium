@@ -5,13 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_LISTENER_H_
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+
 namespace device {
 class Gamepad;
 }
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+
 namespace blink {
 
-class GamepadListener {
+class GamepadListener : public GarbageCollectedMixin {
  public:
   virtual ~GamepadListener() = default;
 

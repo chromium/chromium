@@ -67,7 +67,7 @@ class GamepadSharedMemoryReader
                    GamepadSharedMemoryReader>
       receiver_;
   HeapMojoRemote<device::mojom::blink::GamepadMonitor> gamepad_monitor_remote_;
-  raw_ptr<blink::GamepadListener> listener_ = nullptr;
+  Member<GamepadListener> listener_;
 };
 
 }  // namespace blink

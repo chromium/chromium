@@ -78,6 +78,7 @@ void GamepadDispatcher::Trace(Visitor* visitor) const {
   visitor->Trace(reader_);
   visitor->Trace(gamepad_haptics_manager_remote_);
   PlatformEventDispatcher::Trace(visitor);
+  GamepadListener::Trace(visitor);
 }
 
 void GamepadDispatcher::DidConnectGamepad(uint32_t index,
