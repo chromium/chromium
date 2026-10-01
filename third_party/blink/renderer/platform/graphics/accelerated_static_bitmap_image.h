@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_ACCELERATED_STATIC_BITMAP_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_ACCELERATED_STATIC_BITMAP_IMAGE_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -68,6 +69,20 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       SkAlphaType alpha_type,
       const gfx::HDRMetadata&,
       base::OnceCallback<void(gpu::SharedImageExportResult)> release_callback);
+
+  static scoped_refptr<StaticBitmapImage> CreateFromRaster(
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+      ImageOrientation orientation,
+      scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+          animated_image_frame_index_map = nullptr);
 
   bool IsOpaque() override;
   bool IsTextureBacked() const override { return true; }

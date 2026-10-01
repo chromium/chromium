@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
@@ -103,6 +104,38 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback)));
+}
+
+// static
+scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+    ImageOrientation orientation,
+    scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+        animated_image_frame_index_map) {
+  auto resource_provider = CanvasNon2DResourceProvider::Create(
+      size, format, alpha_type, color_space, hdr_metadata,
+      std::move(context_provider_wrapper), shared_image_usage_flags);
+  if (!resource_provider) {
+    return nullptr;
+  }
+
+  if (animated_image_frame_index_map) {
+    // GetOrCreateImageProvider() to make sure one is created prior to the
+    // call to SetAnimatedImageFrameIndexes().
+    resource_provider->GetOrCreateImageProvider();
+    resource_provider->SetAnimatedImageFrameIndexes(
+        std::move(animated_image_frame_index_map));
+  }
+
+  return resource_provider->DoExternalOverdrawAndSnapshot(draw_callback,
+                                                          orientation);
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(

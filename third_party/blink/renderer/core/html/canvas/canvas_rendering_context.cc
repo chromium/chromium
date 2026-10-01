@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
@@ -268,23 +267,12 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   if (base::FeatureList::IsEnabled(kAllowAcceleratedTexElement) &&
       SharedGpuContext::IsGpuCompositingEnabled()) {
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      auto resource_provider = CanvasNon2DResourceProvider::Create(
+      return AcceleratedStaticBitmapImage::CreateFromRaster(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
-      if (!resource_provider) {
-        return nullptr;
-      }
-
-      // GetOrCreateImageProvider() to make sure one is created prior to the
-      // call to SetAnimatedImageFrameIndexMaps().
-      resource_provider->GetOrCreateImageProvider();
-      resource_provider->SetAnimatedImageFrameIndexes(
+          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage, draw_to_canvas,
+          ImageOrientation(),
           child_paint_record->paint_state.animated_image_frame_index_map);
-
-      return resource_provider->DoExternalOverdrawAndSnapshot(
-          [&](cc::PaintCanvas& canvas) { draw_to_canvas(canvas); },
-          ImageOrientation());
     }
   }
 
