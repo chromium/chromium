@@ -182,6 +182,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   }
 
   protected onShareTabsRowPointerleave_() {
+    this.$.shareTabsTrigger.blur();
     this.scheduleCloseTimer_();
   }
 
@@ -210,6 +211,9 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected onMenuClose_() {
     this.tabMenuOpen = false;
+    requestAnimationFrame(() => {
+      this.$.shareTabsTrigger.blur();
+    });
   }
 
   protected onTabClick_(e: Event) {
@@ -257,6 +261,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.closeTimer_ = window.setTimeout(() => {
       if (this.$.tabMenu.open) {
         this.$.tabMenu.close();
+        this.$.shareTabsTrigger.blur();
       }
     }, 300);
   }

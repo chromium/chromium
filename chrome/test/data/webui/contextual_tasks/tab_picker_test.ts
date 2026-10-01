@@ -175,6 +175,30 @@ suite('TabPickerTest', () => {
         assertTrue(app.$.tabMenu.open);
       });
 
+  test(
+      'Clears focus and active state when pointer leaves and menu closes',
+      async () => {
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+        assertTrue(app.$.tabMenu.open);
+        assertEquals(
+            'true', app.$.shareTabsTrigger.getAttribute('aria-expanded'));
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerleave'));
+        assertFalse(document.activeElement === app.$.shareTabsTrigger);
+
+        const closePromise = eventToPromise('close', app.$.tabMenu);
+        app.$.tabMenu.close();
+        await closePromise;
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await microtasksFinished();
+
+        assertFalse(app.$.tabMenu.open);
+        assertEquals(
+            'false', app.$.shareTabsTrigger.getAttribute('aria-expanded'));
+        assertFalse(document.activeElement === app.$.shareTabsTrigger);
+      });
+
   test('Toggles tab menu on trigger click', async () => {
     assertFalse(app.$.tabMenu.open);
 
