@@ -10,6 +10,7 @@
 #import "components/ssl_errors/error_info.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/page_info/constants/page_info_constants.h"
 #import "ios/chrome/browser/page_info/ui/page_info_site_security_description.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -84,7 +85,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   }
 
   // At this point, this is a web page.
-  dataHolder.siteURL = base::SysUTF8ToNSString(URL.GetHost());
+  dataHolder.siteURL =
+      base::SysUTF16ToNSString(url_formatter::IDNToUnicode(URL.GetHost()));
   dataHolder.isEmpty = NO;
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE);

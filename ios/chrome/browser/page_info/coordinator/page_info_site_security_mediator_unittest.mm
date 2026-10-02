@@ -76,6 +76,17 @@ TEST_F(PageInfoSiteSecurityMediatorTest, TestWebPageConfiguration) {
   EXPECT_NSEQ(@"example.com", config.siteURL);
 }
 
+// Tests configuration for an Internationalized Domain Name (IDN) web page.
+TEST_F(PageInfoSiteSecurityMediatorTest, TestIDNWebPageConfiguration) {
+  SetVisibleURL(GURL("https://xn--e1afmkfd.xn--p1ai/"));
+
+  PageInfoSiteSecurityDescription* config =
+      [PageInfoSiteSecurityMediator configurationForWebState:web_state()];
+
+  EXPECT_FALSE(config.isEmpty);
+  EXPECT_NSEQ(@"пример.рф", config.siteURL);
+}
+
 // Tests navigation item title view with both title and URL labels.
 TEST_F(PageInfoSiteSecurityMediatorTest,
        TestNavigationItemTitleViewWithTitleAndURL) {
