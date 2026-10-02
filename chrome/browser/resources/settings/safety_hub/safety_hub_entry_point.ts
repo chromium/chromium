@@ -64,22 +64,29 @@ export class SettingsSafetyHubEntryPointElement extends
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private entryPointDataFetched_: Promise<void> = Promise.resolve();
 
   override connectedCallback() {
-    this.safetyHubBrowserProxy_.getSafetyHubEntryPointData().then(
-        (entryPoint: EntryPointInfo) => {
-          this.hasRecommendations_ = entryPoint.hasRecommendations;
-          this.headerString_ = entryPoint.header;
-          this.subheaderString_ = entryPoint.subheader;
-        });
-    // This should be called after the data for modules are retrieved so that
-    // currentRouteChanged is called afterwards.
+    this.entryPointDataFetched_ =
+        this.safetyHubBrowserProxy_.getSafetyHubEntryPointData().then(
+            (entryPoint: EntryPointInfo) => {
+              this.hasRecommendations_ = entryPoint.hasRecommendations;
+              this.headerString_ = entryPoint.header;
+              this.subheaderString_ = entryPoint.subheader;
+            });
     super.connectedCallback();
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override async currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
 
+    if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
+      return;
+    }
+    // super.connectedCallback() calls this synchronously, so wait for the
+    // entry point data to avoid recording a stale `hasRecommendations_`.
+    await this.entryPointDataFetched_;
+    // The user may have navigated away while waiting.
     if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
       return;
     }

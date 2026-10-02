@@ -130,7 +130,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   }
 
   recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
-    this.methodCalled('recordSafetyHubModuleWarningImpression', page);
+    this.methodCalled('recordSafetyHubEntryPointShown', page);
   }
 
   recordSafetyHubImpression(surface: SafetyHubSurfaces) {
