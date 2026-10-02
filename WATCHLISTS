@@ -2087,6 +2087,9 @@
     'runtime_enabled_features': {
       'filepath' : 'third_party/blink/renderer/platform/runtime_enabled_features.json5'
     },
+    'rust': {
+      'filepath' : 'tools/rust/'
+    },
     'safe_browsing': {
       'filepath': 'chrome/(browser|common|renderer)/safe_browsing/|'\
                   'components/safe_browsing/',
@@ -3353,6 +3356,7 @@
     'rlz_id': ['gab+watch@chromium.org',
                'robertshield+watch@chromium.org'],
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],
+    'rust': ['hans@chromium.org'],
       'safe_browsing': ['nwokedi+watch@chromium.org',
                       'vakh+safe_browsing_watch@chromium.org',
                       'xinghuilu+watch@chromium.org',
