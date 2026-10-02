@@ -3692,7 +3692,6 @@ crbug.com/356913465 [ Linux ] virtual/threaded/external/wpt/css/css-backgrounds/
 crbug.com/356913465 [ Win ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356955226 virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-identity-create-store-collect.tentative.sub.https.html [ Timeout ]
 crbug.com/356955226 virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-identity-discovery.tentative.sub.https.html [ Timeout ]
-crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
 crbug.com/352390127 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure Timeout ]
