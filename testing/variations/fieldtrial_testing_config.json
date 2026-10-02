@@ -20551,6 +20551,8 @@
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
                         "InitialWebUIWithoutExtensions",
+                        "InitialWebUIWithoutSpellCheckForNtp",
+                        "InitialWebUIWithoutTranslateForNtp",
                         "LazyKeyedServiceInstantiation",
                         "PerDependencyDeadlines",
                         "PrioritizeResizeTaskRunnerOnStartup",
