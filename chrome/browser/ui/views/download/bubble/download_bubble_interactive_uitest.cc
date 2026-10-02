@@ -516,6 +516,7 @@ IN_PROC_BROWSER_TEST_F(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId,
                           embedded_test_server()->GetURL("/empty.html")),
+      FocusWebContents(kWebContentsElementId),
       // Enter tab fullscreen.
       InParallel(RunSubsequence(ExecuteJs(
                      kWebContentsElementId,
