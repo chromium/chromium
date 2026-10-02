@@ -74,6 +74,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -242,6 +243,8 @@ public class TabGridDialogMediatorUnitTest {
             ObservableSuppliers.alwaysNull();
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
 
     private UserActionTester mActionTester;
     private Tab mTab1;
@@ -295,7 +298,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabModel.getRepresentativeTabAt(POSITION2)).thenReturn(mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs2);
-        when(mTabModel.getCurrentRepresentativeTabIndex()).thenReturn(POSITION1);
+        when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
         when(mTabModel.index()).thenReturn(POSITION1);
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(POSITION1)).thenReturn(mTab1);
@@ -1689,7 +1692,7 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that mTab2 is the current tab for the dialog.
         when(mTabModel.representativeIndexOf(mTab1)).thenReturn(groupIndex);
         when(mTabModel.getRepresentativeTabAt(groupIndex)).thenReturn(mTab2);
-        when(mTabModel.getCurrentRepresentativeTab()).thenReturn(mTab2);
+        mCurrentTabSupplier.set(mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabGroup);
 
         // Reset and confirm scroll index.

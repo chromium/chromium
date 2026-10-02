@@ -906,7 +906,7 @@ public class TabGridDialogMediator
         // If current selected tab is not within this dialog, always scroll to the top.
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assumeNonNull(tabModel);
-        Tab currentTab = tabModel.getCurrentRepresentativeTab();
+        Tab currentTab = tabModel.getCurrentTabSupplier().get();
         if (currentTab == null) return;
         if (!currentTabGroupIdMatches(currentTab.getTabGroupId())) {
             mModel.set(TabGridDialogProperties.INITIAL_SCROLL_INDEX, 0);

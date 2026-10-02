@@ -285,20 +285,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
     }
 
-    /** Holds a tab and its index in the tab collection. */
-    private static class IndexAndTab {
-        /** The index may be {@link TabList#INVALID_TAB_INDEX} if the tab is not in the model. */
-        public final int index;
-
-        /** The tab may be {@code null} if the tab is not in the model. */
-        public final @Nullable Tab tab;
-
-        IndexAndTab(int index, @Nullable Tab tab) {
-            this.index = index;
-            this.tab = tab;
-        }
-    }
-
     private final ObserverList<TabModelObserver> mTabModelObservers = new ObserverList<>();
     private final ObserverList<TabGroupObserver> mTabGroupObservers = new ObserverList<>();
     private final SettableLookAheadObservableSupplier<Tab> mCurrentTabSupplier =
@@ -1160,14 +1146,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public int getCurrentRepresentativeTabIndex() {
-        IndexAndTab currentRepresentativeIndexAndTab = getCurrentRepresentativeIndexAndTab();
-        return currentRepresentativeIndexAndTab.index;
-    }
-
-    @Override
-    public @Nullable Tab getCurrentRepresentativeTab() {
-        IndexAndTab currentRepresentativeIndexAndTab = getCurrentRepresentativeIndexAndTab();
-        return currentRepresentativeIndexAndTab.tab;
+        return representativeIndexOf(mCurrentTabSupplier.get());
     }
 
     @Override
@@ -2128,25 +2107,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 }
             }
         }
-    }
-
-    private IndexAndTab getCurrentRepresentativeIndexAndTab() {
-        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
-        Tab currentTab = mCurrentTabSupplier.get();
-        if (currentTab == null) return new IndexAndTab(TabList.INVALID_TAB_INDEX, null);
-
-        Token currentTabGroupId = currentTab.getTabGroupId();
-        List<Tab> representativeTabList = getRepresentativeTabList();
-        for (int i = 0; i < representativeTabList.size(); i++) {
-            Tab tab = representativeTabList.get(i);
-            if (tab == currentTab
-                    || (currentTabGroupId != null
-                            && currentTabGroupId.equals(tab.getTabGroupId()))) {
-                return new IndexAndTab(i, tab);
-            }
-        }
-        assert false : "Current tab not found in representative tab list.";
-        return new IndexAndTab(TabList.INVALID_TAB_INDEX, null);
     }
 
     private void updatePinnedState(int tabId, boolean isPinned) {

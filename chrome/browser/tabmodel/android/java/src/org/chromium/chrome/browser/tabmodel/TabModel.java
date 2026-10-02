@@ -408,9 +408,6 @@ public interface TabModel extends TabList {
      */
     int getCurrentRepresentativeTabIndex();
 
-    /** Returns the current representative tab or null if none is selected. */
-    @Nullable Tab getCurrentRepresentativeTab();
-
     /**
      * Returns the representative tab for an index or null if one does not exist. For an individual
      * tab this is the tab itself. For a tab group this is the most recently selected tab in the
