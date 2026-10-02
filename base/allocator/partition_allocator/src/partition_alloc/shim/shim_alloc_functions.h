@@ -118,7 +118,7 @@ PA_ALWAYS_INLINE void* ShimCppAlignedNewNoThrow(
     size_t size,
     size_t alignment,
     allocator_shim::AllocToken alloc_token =
-        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
+        allocator_shim::kDefaultAllocToken) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   void* context = nullptr;
