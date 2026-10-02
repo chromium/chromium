@@ -7203,6 +7203,21 @@
             ]
         }
     ],
+    "EagerlyResolveCoreDllsImports": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EagerlyResolveCoreDllsImports"
+                    ]
+                }
+            ]
+        }
+    ],
     "EarlyCookieLoadOnPreconnect": [
         {
             "platforms": [
