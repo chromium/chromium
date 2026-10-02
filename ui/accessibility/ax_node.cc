@@ -1302,7 +1302,7 @@ gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
       base::checked_cast<int>(character_offsets.size());
   // Character offsets are always based on the UTF-16 representation of the
   // text.
-  if (character_offsets_length < GetTextContentLengthUTF16()) {
+  if (character_offsets_length < text_content_length) {
     // Blink might not return pixel offsets for all characters. Clamp the
     // character range to be within the number of provided pixels. Note that the
     // first character always starts at pixel 0, so an offset for that character
