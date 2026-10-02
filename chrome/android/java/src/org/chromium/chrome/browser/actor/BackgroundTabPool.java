@@ -182,8 +182,8 @@ public class BackgroundTabPool
     }
 
     /**
-     * Claims and returns all cold tab IDs cached in {@link TabCache} that do not have an associated
-     * placeholder tab ID and are not live in memory.
+     * Claims and returns all tab IDs cached in {@link TabCache} or active in memory that do not
+     * have an associated placeholder tab ID.
      *
      * <p>This is a one-shot operation per pool instance to ensure unassociated tabs are restored at
      * most once into the first loaded window. The first call returns the set of unassociated tab
@@ -199,9 +199,8 @@ public class BackgroundTabPool
             return Collections.emptySet();
         }
         mUnassociatedTabsClaimed = true;
-        ArraySet<@TabId Integer> withoutPlaceholders = new ArraySet<>(mTabCache.getAllTabIds());
+        ArraySet<@TabId Integer> withoutPlaceholders = new ArraySet<>(getAllTabIds());
         withoutPlaceholders.removeAll(mPlaceholderToTabId.values());
-        withoutPlaceholders.removeAll(mLiveEntries.keySet());
         return Collections.unmodifiableSet(withoutPlaceholders);
     }
 
@@ -219,17 +218,12 @@ public class BackgroundTabPool
         if (tabId == null) {
             return null;
         }
-        LiveBackgroundTab liveTab = mLiveEntries.remove(tabId);
-        if (liveTab != null) {
-            removeTabObserver(liveTab.getTab());
-            notifyIfEmptied();
-            return liveTab;
-        }
         return loadTabInternal(tabId, placeholderTabId);
     }
 
     /**
-     * Loads a cold background tab from the pool by its unique original tab ID from TabCache.
+     * Loads a background tab from the pool by its unique original tab ID, returning either a {@link
+     * LiveBackgroundTab} or a deserialized {@link ColdBackgroundTab}.
      *
      * @param originalTabId The original tab ID of the tab to load.
      * @return The {@link BackgroundPoolTab}, or null if loading failed.
@@ -244,8 +238,11 @@ public class BackgroundTabPool
             @TabId int originalTabId, @TabId int placeholderTabId) {
         checkNotDestroyed();
         assert originalTabId != Tab.INVALID_TAB_ID : "Invalid original tab ID.";
-        assert !mLiveEntries.containsKey(originalTabId)
-                : "Cannot load live background tab as a cold tab: " + originalTabId;
+        LiveBackgroundTab liveTab = mLiveEntries.remove(originalTabId);
+        if (liveTab != null) {
+            removeTabObserver(liveTab.getTab());
+            return liveTab;
+        }
 
         TabCacheKey key = getCacheKey(originalTabId);
         LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(key);
@@ -352,7 +349,6 @@ public class BackgroundTabPool
      *
      * @return The {@link PlaceholderAssociationStore} instance.
      */
-    @VisibleForTesting
     public PlaceholderAssociationStore getAssociationStoreForTesting() {
         checkNotDestroyed();
         return mAssociationStore;
