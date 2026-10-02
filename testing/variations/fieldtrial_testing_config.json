@@ -5351,11 +5351,7 @@
                         "ContextualCueingV2MinTimeBetweenNudges": "8h",
                         "ContextualCueingV2MultiSourceAnnotationTimeout": "300s",
                         "ContextualCueingV2ShoppingClassifierThreshold": "0.9",
-                        "MinDaysSinceLastInvocation": "2",
-                        "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
-                        "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
-                        "fcp_use_attestation_transparency_verifier": "true",
-                        "upload_interval": "10m"
+                        "MinDaysSinceLastInvocation": "2"
                     },
                     "enable_features": [
                         "ContextualCueingV2",
@@ -5363,8 +5359,7 @@
                         "ContextualCueingV2MultiSource",
                         "GlicContextualCueV2ActiveUserBackoff",
                         "GlicContextualCueingV2AutoSubmit",
-                        "IndigoContextualCueingV2",
-                        "PrivateInsightsFeature"
+                        "IndigoContextualCueingV2"
                     ]
                 }
             ]
@@ -15629,6 +15624,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ZeroStateSuggestionsUsePrivateAi"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivateInsights": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
+                        "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
+                        "fcp_use_attestation_transparency_verifier": "true",
+                        "upload_interval": "10m"
+                    },
+                    "enable_features": [
+                        "PrivateInsightsFeature"
                     ]
                 }
             ]
