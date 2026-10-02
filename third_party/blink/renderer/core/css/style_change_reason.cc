@@ -16,6 +16,7 @@ const char kActiveStylesheetsUpdate[] = "ActiveStylesheetsUpdate";
 const char kAffectedByHas[] = "Affected by :has()";
 const char kAnimation[] = "Animation";
 const char kAttribute[] = "Attribute";
+const char kBodyColorChange[] = "BodyColorChange";
 const char kConditionalBackdrop[] = "Conditional ::backdrop";
 const char kControl[] = "Control";
 const char kControlValue[] = "ControlValue";

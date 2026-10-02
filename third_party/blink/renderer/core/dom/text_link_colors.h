@@ -58,6 +58,7 @@ class CORE_EXPORT TextLinkColors {
   void SetLinkColor(const Color& color);
   void SetVisitedLinkColor(const Color& color);
   void SetActiveLinkColor(const Color& color);
+  void ResetTextColor() { has_custom_text_color_ = false; }
   void ResetLinkColor() { has_custom_link_color_ = false; }
   void ResetVisitedLinkColor() { has_custom_visited_link_color_ = false; }
   void ResetActiveLinkColor() { has_custom_active_link_color_ = false; }

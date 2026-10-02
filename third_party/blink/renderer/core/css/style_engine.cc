@@ -4290,6 +4290,22 @@ void StyleEngine::ViewportDefiningElementDidChange() {
 }
 
 void StyleEngine::FirstBodyElementChanged(HTMLBodyElement* body) {
+  // Tables resolve '-internal-quirk-inherit' against the body color cached in
+  // TextLinkColors, and only the quirks UA sheet uses that value.
+  // https://quirks.spec.whatwg.org/#the-tables-inherit-color-from-body-quirk
+  if (GetDocument().InQuirksMode()) {
+    if (!body) {
+      // The last body is removed, so tables must use the initial color.
+      GetDocument().GetTextLinkColors().ResetTextColor();
+    }
+    // The matched properties cache does not track changes to the body color.
+    if (resolver_) {
+      resolver_->InvalidateMatchedPropertiesCache();
+    }
+    MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+        style_change_reason::kBodyColorChange));
+  }
+
   // If a body element changed status as being the first body element or not,
   // it might have changed its needs for scrollbars even if the style didn't
   // change. Marking it for recalc here will make sure a new ComputedStyle is

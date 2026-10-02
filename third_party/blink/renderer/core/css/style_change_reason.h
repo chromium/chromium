@@ -19,6 +19,7 @@ extern const char kActiveStylesheetsUpdate[];
 extern const char kAffectedByHas[];
 extern const char kAnimation[];
 extern const char kAttribute[];
+extern const char kBodyColorChange[];
 extern const char kConditionalBackdrop[];
 extern const char kControl[];
 extern const char kControlValue[];
