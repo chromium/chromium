@@ -73,6 +73,7 @@ source_set("search_what_you_see_promo") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/instructions_bottom_sheet/ui",
+    "//ios/chrome/browser/shared/ui/brick_configurations",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

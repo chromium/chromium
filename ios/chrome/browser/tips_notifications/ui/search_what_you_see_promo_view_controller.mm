@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -31,21 +35,40 @@ NSDictionary<NSString*, UIColor*>* colorProvider() {
 
 @implementation SearchWhatYouSeePromoViewController
 
+- (instancetype)init {
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SHOW_ME_HOW_ACTION);
+
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = kAnimationName;
+  animationConfiguration.lightModeColorProvider = colorProvider();
+  animationConfiguration.darkModeColorProvider = colorProvider();
+  animationConfiguration.useLegacyDarkMode = NO;
+
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_TITLE);
+  titleConfiguration.subtitle =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SUBTITLE);
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
+
+  AnimatedPromoConfiguration* animatedPromoConfiguration =
+      [[AnimatedPromoConfiguration alloc]
+          initWithAnimationBrickConfiguration:animationConfiguration
+                     buttonStackConfiguration:buttonStackConfiguration
+                      titleBrickConfiguration:titleConfiguration
+                               underTitleView:nil];
+
+  return [super initWithConfiguration:animatedPromoConfiguration];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.useLegacyDarkMode = NO;
-  self.animationName = kAnimationName;
-  self.lightModeColorProvider = colorProvider();
-  self.darkModeColorProvider = colorProvider();
-
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_TITLE);
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SUBTITLE);
-  self.secondaryActionString = l10n_util::GetNSString(
-      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SHOW_ME_HOW_ACTION);
-
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kSearchWhatYouSeePromoAXID;

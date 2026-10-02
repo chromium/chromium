@@ -14,10 +14,12 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "url/gurl.h"
 
 @interface SearchWhatYouSeePromoCoordinator () <
+    ButtonStackActionDelegate,
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate>
 @end
@@ -34,7 +36,7 @@
 
 - (void)start {
   _viewController = [[SearchWhatYouSeePromoViewController alloc] init];
-  _viewController.actionHandler = self;
+  _viewController.actionDelegate = self;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -51,7 +53,7 @@
 
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
-  _viewController.actionHandler = nil;
+  _viewController.actionDelegate = nil;
 
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
@@ -63,13 +65,13 @@
   _navigationController = nil;
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-- (void)confirmationAlertPrimaryAction {
+- (void)didTapPrimaryActionButton {
   NOTREACHED();
 }
 
-- (void)confirmationAlertSecondaryAction {
+- (void)didTapSecondaryActionButton {
   if (!_actionLogged) {
     LogTipsNotificationPromoAction(TipsNotificationType::kLensOverlay,
                                    TipsNotificationPromoAction::kSecondary);
@@ -97,6 +99,24 @@
   [_viewController presentViewController:_instructionsNavigationController
                                 animated:YES
                               completion:nil];
+}
+
+- (void)didTapTertiaryActionButton {
+  NOTREACHED();
+}
+
+- (void)didDismissButtonStackViewController {
+  NOTREACHED();
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  NOTREACHED();
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self didTapSecondaryActionButton];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
