@@ -2750,10 +2750,11 @@ export const ComposeboxEmbedderMixin =
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|
             null): {file: ComposeboxFile|null, errorMessage: string|null} {
-          const errorMessage =
-              this.getErrorMessageForUploadStatus(status, errorType);
+          let errorMessage = null;
           let file = this.attachedContext.get(token) ?? null;
           if (file) {
+            errorMessage =
+                this.getErrorMessageForUploadStatus(status, errorType);
             if (isContextUploadStatusTerminal(status) &&
                 status !== ContextUploadStatus.kUploadSuccessful) {
               if (file.objectUrl && file.objectUrl.startsWith('blob:')) {
