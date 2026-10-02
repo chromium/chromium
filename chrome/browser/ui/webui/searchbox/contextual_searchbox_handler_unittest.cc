@@ -33,6 +33,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -186,6 +187,9 @@ class FakeContextualTasksUIInterface
   // ContextualTasksUIInterface:
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override {
     return page_remote_;
+  }
+  contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() override {
+    return nullptr;
   }
   contextual_tasks::ContextualTasksAutoSuggestionManager*
   GetAutoSuggestionManager() override {

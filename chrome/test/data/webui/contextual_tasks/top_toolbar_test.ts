@@ -47,6 +47,26 @@ suite('TopToolbarTest', () => {
     });
   });
 
+  test('updates contextInfos when onContextUpdated fires', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    topToolbar = document.createElement('top-toolbar');
+    document.body.appendChild(topToolbar);
+    await microtasksFinished();
+
+    toolbarProxy.callbackRouterRemote.onContextUpdated([{
+      tab: {
+        url: 'https://example.com',
+        title: 'Example',
+        tabId: 1,
+        hasChromeTabData: false,
+      },
+    }]);
+    await microtasksFinished();
+
+    assertEquals(1, topToolbar.contextInfos.length);
+    assertEquals('Example', topToolbar.contextInfos[0]!.tab!.title);
+  });
+
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
        suite.skip :
        suite)('Expand button enabled', () => {

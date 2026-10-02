@@ -32,7 +32,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
+import type {ContextInfo} from './contextual_tasks_toolbar.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
@@ -170,9 +170,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
     super.connectedCallback();
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_ = [
-      callbackRouter.onContextUpdated.addListener(contextInfos => {
-        this.contextInfos = contextInfos;
-      }),
       callbackRouter.setShowReopenTabs.addListener(show => {
         this.showReopenTabs_ = show;
       }),
@@ -187,6 +184,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
       this.toolbarBrowserProxy_.callbackRouter.onSidePanelPinStateChanged
           .addListener((isPinned: boolean) => {
             this.isPinned = isPinned;
+          }),
+      this.toolbarBrowserProxy_.callbackRouter.onContextUpdated.addListener(
+          (contextInfos: ContextInfo[]) => {
+            this.contextInfos = contextInfos;
           }),
     ];
     window.addEventListener('blur', this.boundOnWindowBlur_);

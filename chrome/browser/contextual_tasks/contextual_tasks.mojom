@@ -29,38 +29,6 @@ struct ContextualWindowId {
   mojo_base.mojom.UnguessableToken value;
 };
 
-
-// Represents the the visual information needed to display a single context row
-// of a tab where title and url will be displayed in the sources menu.
-struct TabContext {
-  url.mojom.Url url;
-  string title;
-  int32 tab_id;
-  bool has_chrome_tab_data;
-};
-
-// Represents the the visual information needed to display a single context row
-// of an image in the sources menu.
-struct ImageContext {
-  url.mojom.Url url;
-  string title;
-};
-
-// Represents the the visual information needed to display a single context row
-// of a file in the sources menu.
-struct FileContext {
-  url.mojom.Url url;
-  string title;
-};
-
-// Union representing different types (tabs, files and images) of context
-// information.
-union ContextInfo {
-  TabContext tab;
-  ImageContext image;
-  FileContext file;
-};
-
 // Struct representing max width, margin bottom/left,
 // max height for composebox based on AIM server side positioning.
 // Margins can be negative to adjust margin top/right respectively.
@@ -238,11 +206,6 @@ interface Page {
   // sync completes to ensure the login state is correctly propagated for fresh
   // starts.
   OnCookieSyncCompleted();
-
-  // Called by the browser process (C++) when the context associated with the
-  // task is updated (e.g. tabs, files or images added/removed). This is used
-  // for updating the icon shown on the sources menu entry point.
-  OnContextUpdated(array<ContextInfo> context);
 
   // Called by the browser process (C++) when the AIM server sends a HideInput
   // command to hide the compose box.

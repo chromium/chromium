@@ -29,6 +29,10 @@ namespace lens {
 class ClientToAimMessage;
 }  // namespace lens
 
+namespace contextual_tasks_toolbar::mojom {
+class Page;
+}
+
 namespace contextual_tasks {
 class ContextualTasksComposeboxHandlerInterface;
 namespace mojom {
@@ -133,6 +137,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
 
   // Returns the Mojo remote used to communicate with the WebUI page.
   virtual mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() = 0;
+
+  // Returns the Mojo remote used to communicate with the Toolbar WebUI page.
+  virtual contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() = 0;
 
   // Fetches and assumes unique ownership of the pre-configured input state
   // model attached to the WebContents for the current task. Subsequent calls
