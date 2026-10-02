@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   AssertOverlayVisibility(/*visible=*/false);
 
   chrome::ExecuteCommandWithContext(
-      browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
+      browser(), IDC_SHOW_READING_MODE,
       actions::ActionInvocationContext::Builder()
           .SetProperty(
               kSidePanelOpenTriggerKey,

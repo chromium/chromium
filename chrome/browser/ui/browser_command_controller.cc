@@ -1509,7 +1509,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
                                         SidePanelOpenTrigger::kAppMenu);
       break;
 
-    case IDC_SHOW_READING_MODE_SIDE_PANEL: {
+    case IDC_SHOW_READING_MODE: {
       // Yes. This is a separate feature from the reading list.
       read_anything::ReadAnythingEntryPointController::ShowUI(
           browser_, read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
@@ -1859,8 +1859,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_COMMENTS_SIDE_PANEL, true);
   command_updater_->UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
   command_updater_->UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
-  command_updater_->UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL,
-                                         true);
+  command_updater_->UpdateCommandEnabled(IDC_SHOW_READING_MODE, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_READING_MODE_KEYBOARD, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                          true);

@@ -5263,7 +5263,7 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   context.SetProperty(chrome::kActionInvocationSourceKey,
                       chrome::ActionInvocationSource::kKeyboardShortcut);
 
-  if (command_id == IDC_SHOW_READING_MODE_SIDE_PANEL) {
+  if (command_id == IDC_SHOW_READING_MODE) {
     context.SetProperty(
         kSidePanelOpenTriggerKey,
         static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(

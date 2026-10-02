@@ -423,7 +423,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
     return Steps(
         Do([=, this]() {
           chrome::ExecuteCommandWithContext(
-              browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
+              browser(), IDC_SHOW_READING_MODE,
               actions::ActionInvocationContext::Builder()
                   .SetProperty(
                       kSidePanelOpenTriggerKey,

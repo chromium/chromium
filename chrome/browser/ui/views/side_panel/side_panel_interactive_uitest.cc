@@ -341,7 +341,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
                   read_anything::mojom::ReadAnythingPresentationState::
                       kInSidePanel));
           chrome::ExecuteCommandWithContext(
-              browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
+              browser(), IDC_SHOW_READING_MODE,
               actions::ActionInvocationContext::Builder()
                   .SetProperty(
                       kSidePanelOpenTriggerKey,

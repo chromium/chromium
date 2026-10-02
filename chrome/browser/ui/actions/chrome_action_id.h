@@ -515,7 +515,7 @@
   E(kActionSidePanelShowLens) \
   E(kActionSidePanelShowLensOverlayResults) \
   E(kActionSidePanelShowReadAnything) \
-  E(kActionShowReadingModeSidePanel, IDC_SHOW_READING_MODE_SIDE_PANEL) \
+  E(kActionShowReadingModeSidePanel, IDC_SHOW_READING_MODE) \
   E(kActionShowReadingModeKeyboard, IDC_SHOW_READING_MODE_KEYBOARD) \
   E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \
   E(kActionSidePanelShowSearchCompanion) \
