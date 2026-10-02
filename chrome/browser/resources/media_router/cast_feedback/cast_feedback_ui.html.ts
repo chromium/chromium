@@ -45,8 +45,9 @@ export function getHtml(this: CastFeedbackUiElement) {
     <div class="question" ?hidden="${!this.showDefaultSection_()}">
       <div class="h2">
         $i18n{prompt}
-        <span class="required-message"
-            ?hidden="${this.sufficientFeedback_}">*</span>
+        <span class="required-message" ?hidden="${this.sufficientFeedback_}">
+          *
+        </span>
       </div>
       <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
           .value="${this.comments_}" @input="${this.onCommentsInput_}">
@@ -56,8 +57,9 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div class="question">
         <div class="h2">
           $i18n{mirroringQualitySubheading}
-          <span class="required-message"
-              ?hidden="${this.sufficientFeedback_}">*</span>
+          <span class="required-message" ?hidden="${this.sufficientFeedback_}">
+            *
+          </span>
         </div>
         <div class="question-part">
           <div class="h3">$i18n{videoSmoothness}</div>
@@ -142,8 +144,9 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div class="question">
         <div class="h2">
           $i18n{additionalComments}
-          <span class="required-message"
-              ?hidden="${this.sufficientFeedback_}">*</span>
+          <span class="required-message" ?hidden="${this.sufficientFeedback_}">
+            *
+          </span>
         </div>
         <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
             .value="${this.comments_}" @input="${this.onCommentsInput_}">
@@ -154,8 +157,9 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div class="question">
         <div class="h2">
           $i18nRaw{setupVisibilityQuestion}
-          <span class="required-message"
-              ?hidden="${this.sufficientFeedback_}">*</span>
+          <span class="required-message" ?hidden="${this.sufficientFeedback_}">
+            *
+          </span>
         </div>
         <cr-radio-group .selected="${this.visibleInSetup_}"
             @selected-changed="${this.onVisibleInSetupSelectedChanged_}">
@@ -202,8 +206,9 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div class="question">
         <div class="h2">
           $i18n{additionalComments}
-          <span class="required-message"
-              ?hidden="${this.sufficientFeedback_}">*</span>
+          <span class="required-message" ?hidden="${this.sufficientFeedback_}">
+            *
+          </span>
         </div>
         <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
             value="{{comments_::input}}">

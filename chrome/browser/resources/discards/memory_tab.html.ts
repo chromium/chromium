@@ -50,7 +50,9 @@ export function getHtml(this: MemoryTabElement) {
             <div class="process-desc-container">
               <span
                   class="toggle-arrow ${
-                      this.isExpanded_(item.pid) ? 'expanded' : ''}">▶</span>
+                      this.isExpanded_(item.pid) ? 'expanded' : ''}">
+                ▶
+              </span>
               <span class="process-desc-text" title="${item.description}">
                 ${item.description}
               </span>
@@ -100,7 +102,9 @@ export function getHtml(this: MemoryTabElement) {
                             class="toggle-arrow ${this.isSectionExpanded_(
                                          item.pid, section.id) ?
                                 'expanded' :
-                                ''}">▶</span>
+                                ''}">
+                          ▶
+                        </span>
                         <span class="section-label">${section.label}</span>
                       </div>
                       ${section.totalFormatted ? html`

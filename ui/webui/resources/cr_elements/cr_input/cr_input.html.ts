@@ -42,5 +42,7 @@ export function getHtml(this: CrInputElement) {
   <slot name="suffix"></slot>
 </div>
 <div id="error" role="${this.getErrorRole_() || nothing}"
-    aria-live="assertive">${this.getErrorMessage_()}</div>`;
+    aria-live="assertive"><!--
+  -->${this.getErrorMessage_()}<!--
+--></div>`;
 }

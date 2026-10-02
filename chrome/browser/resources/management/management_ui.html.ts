@@ -120,7 +120,8 @@ export function getHtml(this: ManagementUiElement) {
         <section>
           <h3 class="cr-title-text">$i18n{localTrustRoots}</h3>
           <div class="subtitle" id="trust-roots-configuration">
-            ${this.localTrustRoots_}</div>
+            ${this.localTrustRoots_}
+          </div>
         </section>
       </div>
       <div ?hidden="${!this.filesUploadToCloud_}">

@@ -11,7 +11,9 @@ export function getHtml(this: CrCheckboxDemoElement) {
 <h1>cr-checkbox</h1>
 <div class="demos">
   <cr-checkbox ?checked="${this.myValue_}"
-      @checked-changed="${this.onCheckedChanged_}">Checkbox</cr-checkbox>
+      @checked-changed="${this.onCheckedChanged_}">
+    Checkbox
+  </cr-checkbox>
   <div>Above checkbox is checked? ${this.myValue_}</div>
 
   <cr-checkbox checked>Checkbox</cr-checkbox>

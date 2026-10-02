@@ -9,7 +9,9 @@ export function getHtml(this: DummyTestElement) {
 <div id="container">
   <!-- Case 1: Single-line text element where opening tag + text + end tag > 80 chars -->
   <span class="dummy-very-long-class-name-to-exceed-limit"
-      ?hidden="${this.someCondition_}">*</span>
+      ?hidden="${this.someCondition_}">
+    *
+  </span>
 
   <!-- Case 2: Single-line text element that fits within 80 chars -->
   <span class="short-msg" ?hidden="${this.isShort}">Hello</span>
@@ -39,8 +41,9 @@ export function getHtml(this: DummyTestElement) {
 
   <!-- Case 7: Multiline tag with text child where total length exceeds limit -->
   <dummy-button id="${this.buttonId}" class="${this.buttonClass}"
-      aria-label="${this.buttonLabel}"
-      @click="${this.onClick}">${this.buttonText}</dummy-button>
+      aria-label="${this.buttonLabel}" @click="${this.onClick}">
+    ${this.buttonText}
+  </dummy-button>
 </div>
 <!--_html_template_end_-->`;
 }

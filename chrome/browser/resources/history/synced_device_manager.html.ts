@@ -75,9 +75,11 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
             src="${this.accountInfo_.accountImageSrc}">
         <div class="account-info-container">
           <div id="account-name" class="account-name">
-            ${this.accountInfo_.name}</div>
+            ${this.accountInfo_.name}
+          </div>
           <div id="account-email" class="account-email">
-            ${this.accountInfo_.email}</div>
+            ${this.accountInfo_.email}
+          </div>
         </div>
       </div>
     ` : ''}
@@ -127,7 +129,8 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
             this.isTabsSyncTurnedOn_() ?
         html`
       <cr-button id="verify-its-you-button" class="action-button"
-          @click="${this.onTurnOnHistorySyncClick_}">$i18n{verifyItsYou}
+          @click="${this.onTurnOnHistorySyncClick_}">
+        $i18n{verifyItsYou}
       </cr-button>
     ` : html`
       <cr-button id="sync-history-button" class="action-button"

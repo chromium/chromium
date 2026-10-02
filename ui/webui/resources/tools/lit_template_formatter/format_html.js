@@ -265,10 +265,22 @@ function preprocessHtml(html, placeholderMap) {
   const offOnRegex =
       /<!--\s*lit-template-format-off\s*-->([\s\S]*?)<!--\s*lit-template-format-on\s*-->/g;
   substitutedHtml = substitutedHtml.replace(offOnRegex, (match) => {
+    for (const [key, value] of placeholderMap.entries()) {
+      if (match.includes(key)) {
+        value.formatOff = true;
+      }
+    }
     const placeholder = `${FORMAT_OFF_PREFIX}-${placeholderMap.size}`;
     placeholderMap.set(placeholder, {code: match});
     return `<${FORMAT_OFF_PREFIX} id="${placeholder}"></${FORMAT_OFF_PREFIX}>`;
   });
+
+  // Remove invalid closing tags for void elements (e.g. </img>) along with any
+  // preceding newline and indentation when on their own line, so parse5 does
+  // not merge the surrounding newlines into a blank line.
+  const voidCloseRegex =
+      new RegExp(`(?:\\n[ \\t]*)?</(?:${VOID_ELEMENTS.join('|')})>`, 'gi');
+  substitutedHtml = substitutedHtml.replace(voidCloseRegex, '');
 
   // Replace restricted tags so that non-compliant children will not be
   // stripped by parse5.

@@ -83,7 +83,8 @@ ${this.shown_ ? html`
                 this.isHistorySyncTurnedOn_() ?
             html`
           <cr-button id="verify-its-you-button" class="action-button"
-              @click="${this.onTurnOnHistorySyncClick_}">$i18n{verifyItsYou}
+              @click="${this.onTurnOnHistorySyncClick_}">
+            $i18n{verifyItsYou}
           </cr-button>
         ` : html`
           <cr-button id="sync-history-button" class="action-button"

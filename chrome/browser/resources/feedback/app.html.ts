@@ -16,7 +16,9 @@ export function getHtml(this: AppElement) {
   <div id="questionnaire-notification" aria-live="polite" class="off-screen">
   </div>
   <p id="description-empty-error" class="description-empty-notification"
-      aria-hidden="true" hidden>$i18n{noDescription}</p>
+      aria-hidden="true" hidden>
+    $i18n{noDescription}
+  </p>
   <div>
     <p id="additional-info-label">$i18n{additionalInfo}</p>
   </div>
@@ -40,8 +42,9 @@ export function getHtml(this: AppElement) {
       <label id="attached-filename-text"></label>
       <button id="remove-attached-file" class="remove-file-button"></button>
     </div>
-    <div id="attach-error" class="attach-file-notification" role="alert"
-        hidden>$i18n{attachFileToBig}</div>
+    <div id="attach-error" class="attach-file-notification" role="alert" hidden>
+      $i18n{attachFileToBig}
+    </div>
   </div>
   <div id="attach-file-note" aria-hidden="true">$i18n{attachFileNote}</div>
   <!-- User Consent -->

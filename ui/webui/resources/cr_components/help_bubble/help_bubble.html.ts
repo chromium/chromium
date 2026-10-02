@@ -49,7 +49,9 @@ export function getHtml(this: HelpBubbleElement) {
           tabindex="${this.getButtonTabIndex_(item)}"
           class="${this.getButtonClass_(item.isDefault)}"
           @click="${this.onButtonClick_}" role="button"
-          aria-label="${item.text}">${item.text}</cr-button>
+          aria-label="${item.text}"><!--
+        -->${item.text}<!--
+      --></cr-button>
     `)}
   </div>
   <div id="arrow" class="${this.getArrowClass_()}">

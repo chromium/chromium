@@ -124,13 +124,14 @@ function analyzeChildNodes(node, tagName, placeholderMap) {
   // If the element has non-whitespace text on a single line with no child
   // elements, the text and closing tag stay on the same line as the opening
   // tag. Account for both the text length and the closing tag length.
-  let inlineChildLength = 0;
-  if (!hasChildElement && hasNonWhitespaceText && !hasNewline &&
-      !VOID_ELEMENTS.includes(tagName)) {
+  let inlineChildLength =
+      node.childNodes[0]?.suppressLeadingWhitespace ? firstLineLength : 0;
+  if (inlineChildLength > 0 && !hasChildElement && hasNonWhitespaceText &&
+      !hasNewline && !VOID_ELEMENTS.includes(tagName)) {
     const closingPlaceholder = '/' + tagName;
     const endTagLen = placeholderMap.get(closingPlaceholder)?.code.length ??
         (tagName.length + 3);
-    inlineChildLength = firstLineLength + endTagLen;
+    inlineChildLength += endTagLen;
   }
 
   return {hasChildElement, inlineChildLength};
@@ -397,7 +398,8 @@ export function serializeNode(
     assert.ok(
         attr && placeholderMap.has(attr.value),
         `${FORMAT_OFF_PREFIX} missing id or placeholder mapping`);
-    return placeholderMap.get(attr.value).code;
+    return resolvePlaceholders(
+        placeholderMap.get(attr.value).code, placeholderMap);
   }
 
   const isTemplatePlaceholder = tagName.startsWith(TEMPLATE_PREFIX) ||
@@ -413,8 +415,7 @@ export function serializeNode(
   // the element contains only text and/or comment node children. To do
   // the best possible job respecting 80 chars in such cases, also get the
   // length of any inline child contents to account for when wrapping.
-  const {hasChildElement, inlineChildLength} =
-      analyzeChildNodes(node, tagName, placeholderMap);
+  const {inlineChildLength} = analyzeChildNodes(node, tagName, placeholderMap);
 
   // Resolve opening tag placeholders if they exist
   let startTag = '';
@@ -482,14 +483,12 @@ export function serializeNode(
   // characters).
   // For templates (e.g. html`...`), wrap non-empty template contents across
   // lines if the template exceeds 80 characters, but keep empty templates
-  // (html``) on a single line. For regular HTML elements, only wrap if there
-  // are child elements or if the element is empty.
+  // (html``) on a single line.
   const tagIsMultiline = startTag.includes('\n');
   const exceedsLineLimit = fullLength > LINE_LENGTH_LIMIT;
-  const shouldWrap = isTemplateNode ?
-      childrenHtml.trim() !== '' && (tagIsMultiline || exceedsLineLimit) :
-      (tagIsMultiline || exceedsLineLimit) &&
-          (hasChildElement || childrenHtml.trim() === '');
+  const shouldWrap = isTemplatePlaceholder ? isTemplateNode &&
+          childrenHtml.trim() !== '' && (tagIsMultiline || exceedsLineLimit) :
+                                             tagIsMultiline || exceedsLineLimit;
 
   if (shouldWrap) {
     if (lastChildSuppressesWhitespace) {
@@ -502,6 +501,9 @@ export function serializeNode(
     // and indent if they're not already on one.
     if (!childrenHtml.startsWith('\n') && childrenHtml.trim() !== '') {
       if (firstChildSuppressesWhitespace) {
+        if (!TRAILING_NEWLINE_REGEX.test(childrenHtml)) {
+          return `${startTag}${childrenHtml}${endTag}`;
+        }
         return `${startTag}${childrenHtml.trimEnd()}${endTagIndent}${endTag}`;
       }
       const childIndentSize = nextDepth > 0 ? (nextDepth - 1) * INDENT_SIZE : 0;

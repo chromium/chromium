@@ -206,21 +206,29 @@ suite('lit_template_formatter', () => {
         serialized, expectedSerialized,
         'Serialized output with wrapped attributes must match exactly');
 
-    // Test 2: lit-template-format off/on blocks
+    // Test 2: lit-template-format off/on blocks (including expressions) and
+    // void closing tag removal without injecting blank lines.
     const blockTemplate = `
       <div>
         <!-- lit-template-format-off -->
-        <span   class="weird-spacing" >No Formatting</span>
+        <span   class="weird-spacing" >${EXPR_PREFIX}-1</span>
         <!-- lit-template-format-on -->
+        <img src="foo.png">
+        </img>
       </div>
     `;
-    const blockMap = new Map();
+    const blockMap = new Map([
+      [`${EXPR_PREFIX}-1`, {code: '${this.unformattedExpr}'}],
+    ]);
     const blockAst = prepareHtmlAst(blockTemplate, blockMap);
     const blockSerialized = serializeHtmlAst(blockAst, blockMap, false);
     assert.ok(
         blockSerialized.includes(
-            '<span   class="weird-spacing" >No Formatting</span>'),
-        'lit-template-format off block must be preserved exactly');
+            '<span   class="weird-spacing" >${this.unformattedExpr}</span>'),
+        'lit-template-format off block with expressions must be preserved');
+    assert.ok(
+        blockSerialized.includes('<img src="foo.png">\n</div>'),
+        'Removing </img> on its own line must not inject a blank line');
 
     // Test 3: Partial attribute expressions with prefixes and suffixes
     const mixedAttrTemplate = `

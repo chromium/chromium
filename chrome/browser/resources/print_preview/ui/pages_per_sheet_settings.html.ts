@@ -10,7 +10,8 @@ export function getHtml(this: PagesPerSheetSettingsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <print-preview-settings-section>
-  <span id="pages-per-sheet-label" slot="title">$i18n{pagesPerSheetLabel}
+  <span id="pages-per-sheet-label" slot="title">
+    $i18n{pagesPerSheetLabel}
   </span>
   <div slot="controls">
     <select class="md-select" aria-labelledby="pages-per-sheet-label"

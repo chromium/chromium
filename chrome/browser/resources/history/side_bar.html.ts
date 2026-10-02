@@ -47,8 +47,9 @@ export function getHtml(this: HistorySideBarElement) {
     <cr-icon icon="cr:info"></cr-icon>
     <div ?hidden="${!this.showGMAOnly_}">$i18nRaw{sidebarFooterGMAOnly}</div>
     <div ?hidden="${!this.showGAAOnly_}">$i18nRaw{sidebarFooterGAAOnly}</div>
-    <div
-        ?hidden="${!this.showGMAAndGAA_}">$i18nRaw{sidebarFooterGMAAndGAA}</div>
+    <div ?hidden="${!this.showGMAAndGAA_}"><!--
+      -->$i18nRaw{sidebarFooterGMAAndGAA}<!--
+    --></div>
   </div>
 </div>
 <!--_html_template_end_-->`;

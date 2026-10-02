@@ -147,8 +147,9 @@ ${this.showPlainLinksUi_ ? html`
       </div>
     ` : html`
       <div id="sectionHeaderContainer">
-        <a class="extensionIphLink"
-            href="https://chromewebstore.google.com/">$i18nRaw{extensionsZeroStateChipsWithLinkIphLinkLabel}</a>
+        <a class="extensionIphLink" href="https://chromewebstore.google.com/">
+          $i18nRaw{extensionsZeroStateChipsWithLinkIphLinkLabel}
+        </a>
         $i18nRaw{extensionsZeroStateChipsWithLinkIphDesc}
       </div>
       <div id="labelContainer">

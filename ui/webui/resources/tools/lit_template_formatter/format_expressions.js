@@ -93,7 +93,7 @@ export async function formatTsExpressions(
     placeholderMap, clangFormatPath, _filePath) {
   for (const [key, value] of placeholderMap.entries()) {
     if (key.startsWith('/') || key.startsWith(PROP_PREFIX) ||
-        key.startsWith(FORMAT_OFF_PREFIX) || value.nested ||
+        key.startsWith(FORMAT_OFF_PREFIX) || value.nested || value.formatOff ||
         (key.startsWith(FALSE_TEMPLATE_PREFIX) && !value.isTemplate)) {
       // Skip closing tags, property name placeholders,
       // format-off placeholders, nested templates, and false template
