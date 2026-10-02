@@ -5583,6 +5583,10 @@ crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pas
 # Sheriff 2022-01-05
 crbug.com/40814447 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Crash Failure Pass Timeout ]
 
+# Temporarily disabled to land https://crrev.com/c/8498574
+crbug.com/535451658 http/tests/devtools/console/shadow-element.js [ Failure Pass ]
+
+
 # These tests expose issues with host defined options. The way in which they expose those issues is changing
 crbug.com/409953792 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/code-cache-nonce.html [ Failure Pass ]
 crbug.com/409953792 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/code-cache-base-url.html [ Failure Pass ]
