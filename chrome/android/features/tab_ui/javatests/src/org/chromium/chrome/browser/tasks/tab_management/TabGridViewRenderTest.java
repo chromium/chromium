@@ -71,9 +71,8 @@ public class TabGridViewRenderTest {
 
     private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
-                    (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
-                    MultiThumbnailMetadata.createMetadataWithoutUrls(
-                            Tab.INVALID_TAB_ID, false, false, null));
+                    (metadata, thumbnailSize, isSelected, callback) -> callback.onResult(null),
+                    MultiThumbnailMetadata.createMetadataForSingleTab(Tab.INVALID_TAB_ID));
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =

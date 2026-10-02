@@ -45,32 +45,18 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A {@link ThumbnailProvider} that will create a single Bitmap Thumbnail for all the related tabs
- * for the given tabs.
+ * A {@link ThumbnailProvider} that will create a single Bitmap Thumbnail for all the tabs in a tab
+ * group.
  */
 @NullMarked
 public class MultiThumbnailCardProvider implements ThumbnailProvider {
-    /**
-     * The metadata details for a thumbnail item as part of a multi thumbnail card representation.
-     * This object represents both real {@link Tab}s and {@link SavedTabGroupTab}s. If the tab field
-     * is null, a SavedTabGroupTab is being referenced.
-     */
-    private static class ThumbnailItemMetadata {
-        public final @Nullable Tab tab;
-        public final GURL url;
-
-        ThumbnailItemMetadata(@Nullable Tab tab, GURL url) {
-            this.tab = tab;
-            this.url = url;
-        }
-    }
-
     private final TabContentManager mTabContentManager;
     private final TabContentManagerThumbnailProvider mTabContentManagerThumbnailProvider;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
@@ -124,7 +110,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
          * Fetcher that get the thumbnail drawable depending on if the tab is selected.
          *
          * @see TabContentManager#getTabThumbnailWithCallback
-         * @param metadata Thumbnail is generated for tabs related to {@link
+         * @param metadata Thumbnail is generated for tabs in the group described by {@link
          *     MultiThumbnailMetadata}.
          * @param thumbnailSize Desired size of multi-thumbnail.
          * @param isTabSelected Whether the thumbnail is for a currently selected tab.
@@ -154,11 +140,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 mThumbnailHeight = thumbnailSize.getHeight();
             }
 
-            @TabGroupColorId Integer actualColorId = null;
+            @TabGroupColorId Integer actualColorId = metadata.tabGroupColor;
             boolean isIncognito = metadata.isIncognito;
-            if (metadata.isInTabGroup) {
-                actualColorId = metadata.tabGroupColor;
-            }
             mResolvedEmptyPlaceholderColor =
                     TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                             mContext, isIncognito, mIsTabSelected, actualColorId);
@@ -279,25 +262,29 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             mCanvas = new Canvas(mMultiThumbnailBitmap);
             mCanvas.drawColor(Color.TRANSPARENT);
 
-            // Initialize Tabs.
-            List<ThumbnailItemMetadata> thumbnailItemList = getThumbnailItems(metadata);
-            int relatedTabCount = thumbnailItemList.size();
-            boolean showPlus = relatedTabCount > MAX_THUMBNAIL_COUNT;
-            int tabsToShow = showPlus ? MAX_THUMBNAIL_COUNT - 1 : relatedTabCount;
-            ThumbnailItemMetadata[] thumbnailItems = new ThumbnailItemMetadata[MAX_THUMBNAIL_COUNT];
-            mText = showPlus ? "+" + (thumbnailItemList.size() - tabsToShow) : null;
+            // Live tab groups (tabGroupId != null) fetch thumbnails and favicons from their open
+            // Tabs in TabModel, whereas SavedTabGroups (tabGroupId == null) only have URLs in
+            // metadata.urlList and render favicons over empty placeholder slots.
+            TabModel tabModel = mCurrentTabModelSupplier.get();
+            assumeNonNull(tabModel);
+            boolean hasLiveTabs = metadata.tabGroupId != null;
+            List<Tab> tabsInGroup =
+                    hasLiveTabs
+                            ? tabModel.getTabsInGroup(metadata.tabGroupId)
+                            : Collections.emptyList();
+            int totalTabCount = hasLiveTabs ? tabsInGroup.size() : metadata.urlList.size();
+            boolean showPlus = totalTabCount > MAX_THUMBNAIL_COUNT;
+            int tabsToShow = showPlus ? MAX_THUMBNAIL_COUNT - 1 : totalTabCount;
+            mText = showPlus ? "+" + (totalTabCount - tabsToShow) : null;
             mThumbnailsToFetch.set(tabsToShow);
-            for (int i = 0; i < tabsToShow; i++) {
-                thumbnailItems[i] = thumbnailItemList.get(i);
-            }
 
-            boolean anyHiddenTabActing = checkAnyHiddenTabActing(thumbnailItemList, tabsToShow);
+            boolean anyHiddenTabActing =
+                    hasLiveTabs && checkAnyHiddenTabActing(tabsInGroup, tabsToShow);
 
             // Fetch and draw all.
             for (int i = 0; i < MAX_THUMBNAIL_COUNT; i++) {
-                ThumbnailItemMetadata thumbnailItem = thumbnailItems[i];
                 RectF thumbnailRect = mThumbnailRects.get(i);
-                if (thumbnailItem != null) {
+                if (i < tabsToShow) {
                     // Create final copies to get lambda captures to compile.
                     final int index = i;
                     final Size tabThumbnailSize =
@@ -307,18 +294,24 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                     // Fetching the favicon after getting the live thumbnail would lead to
                     // visible flicker.
                     final AtomicReference<Drawable> lastFavicon = new AtomicReference<>();
-                    if (thumbnailItem.tab != null) {
-                        Tab tab = thumbnailItem.tab;
+                    if (hasLiveTabs) {
+                        Tab tab = tabsInGroup.get(i);
+                        GURL url = tab.getUrl();
                         mTabContentManager.getTabThumbnailWithCallback(
                                 tab.getId(),
                                 tabThumbnailSize,
                                 thumbnail -> {
                                     if (tab.isClosing() || tab.isDestroyed()) return;
 
-                                    drawFavicon(thumbnail, index, lastFavicon, thumbnailItem);
+                                    drawFavicon(thumbnail, index, lastFavicon, tab, url);
                                 });
                     } else {
-                        drawFavicon(/* thumbnail= */ null, index, lastFavicon, thumbnailItem);
+                        drawFavicon(
+                                /* thumbnail= */ null,
+                                index,
+                                lastFavicon,
+                                /* tab= */ null,
+                                metadata.urlList.get(i));
                     }
                 } else {
                     drawThumbnailBitmapOnCanvasWithFrame(
@@ -431,31 +424,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             initializeAndStartFetching(mMultiThumbnailMetadata);
         }
 
-        private List<ThumbnailItemMetadata> getThumbnailItems(MultiThumbnailMetadata metadata) {
-            List<ThumbnailItemMetadata> thumbnailItems = new ArrayList<>();
-            TabModel tabModel = mCurrentTabModelSupplier.get();
-            assumeNonNull(tabModel);
-            if (metadata.tabId != Tab.INVALID_TAB_ID) {
-                // Retrieve all related tabs in the tab model for non-SavedTabGroup groups.
-                List<Tab> relatedTabList = tabModel.getRelatedTabList(metadata.tabId);
-                for (Tab tab : relatedTabList) {
-                    thumbnailItems.add(new ThumbnailItemMetadata(tab, tab.getUrl()));
-                }
-            } else {
-                // Populate just the URLs for SavedTabGroupTabs.
-                for (GURL url : metadata.urlList) {
-                    thumbnailItems.add(new ThumbnailItemMetadata(/* tab= */ null, url));
-                }
-            }
-
-            return thumbnailItems;
-        }
-
-        private boolean checkAnyHiddenTabActing(
-                List<ThumbnailItemMetadata> thumbnailItemList, int tabsToShow) {
-            for (int i = tabsToShow; i < thumbnailItemList.size(); i++) {
-                Tab tab = thumbnailItemList.get(i).tab;
-                if (tab != null && mActingTabIds.contains(tab.getId())) {
+        private boolean checkAnyHiddenTabActing(List<Tab> tabsInGroup, int tabsToShow) {
+            for (int i = tabsToShow; i < tabsInGroup.size(); i++) {
+                if (mActingTabIds.contains(tabsInGroup.get(i).getId())) {
                     return true;
                 }
             }
@@ -481,8 +452,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 @Nullable Bitmap thumbnail,
                 int index,
                 AtomicReference<Drawable> lastFavicon,
-                ThumbnailItemMetadata thumbnailItem) {
-            Tab tab = thumbnailItem.tab;
+                @Nullable Tab tab,
+                GURL url) {
             drawThumbnailBitmapOnCanvasWithFrame(
                     thumbnail, index, /* showGhostLoadIllustration= */ true);
 
@@ -499,9 +470,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 mTabListFaviconProvider.getFaviconDrawableForTabAsync(
                         new TabFaviconMetadata(
                                 tab,
-                                thumbnailItem.url,
+                                url,
                                 mMultiThumbnailMetadata.isIncognito,
-                                mMultiThumbnailMetadata.isInTabGroup),
+                                /* isInTabGroup= */ true),
                         (Drawable favicon) -> {
                             if (tab != null) {
                                 if (tab.isClosing() || tab.isDestroyed()) return;
@@ -715,16 +686,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         assumeNonNull(tabModel);
         assert tabModel.isTabModelRestored();
 
-        if (metadata.tabId != Tab.INVALID_TAB_ID) {
-            Tab tab = tabModel.getTabById(metadata.tabId);
-            assert tab != null;
-        }
-
-        boolean useMultiThumbnail = metadata.isInTabGroup;
-        if (useMultiThumbnail) {
+        if (metadata.tabId == Tab.INVALID_TAB_ID) {
             new MultiThumbnailFetcher(metadata, thumbnailSize, isSelected, callback).fetch();
             return;
         }
+
+        assert tabModel.getTabById(metadata.tabId) != null;
         mTabContentManagerThumbnailProvider.getTabThumbnailWithCallback(
                 metadata, thumbnailSize, isSelected, callback);
     }

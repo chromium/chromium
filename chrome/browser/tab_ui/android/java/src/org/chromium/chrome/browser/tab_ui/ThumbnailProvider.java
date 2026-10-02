@@ -8,8 +8,10 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
@@ -22,77 +24,87 @@ import java.util.Objects;
 public interface ThumbnailProvider {
     /**
      * The metadata details for the multi thumbnail view representing tabs and group cards. This
-     * object sources data from both real {@link Tab}s that may be in groups and {@link
-     * SavedTabGroup}s. If the tabId is an INVALID_TAB_ID, a SavedTabGroup is being referenced. The
-     * urlList may be empty for non-SavedTabGroup groups as they will be parsed via the model filter
-     * in {@link MultiThumbnailFetcher}.
+     * object sources data from both real {@link Tab}s/tab groups and {@link SavedTabGroup}s. If
+     * both {@link #tabId} is {@link Tab#INVALID_TAB_ID} and {@link #tabGroupId} is null, a {@link
+     * SavedTabGroup} is being referenced via {@link #urlList}.
      */
     class MultiThumbnailMetadata {
         public final int tabId;
+        public final @Nullable Token tabGroupId;
         public final List<GURL> urlList;
-        public final boolean isInTabGroup;
         public final boolean isIncognito;
         public final @Nullable @TabGroupColorId Integer tabGroupColor;
         public final List<Integer> actingTabIds;
 
         private MultiThumbnailMetadata(
                 int tabId,
+                @Nullable Token tabGroupId,
                 List<GURL> urlList,
-                boolean isInTabGroup,
                 boolean isIncognito,
                 @Nullable @TabGroupColorId Integer tabGroupColor,
                 List<Integer> actingTabIds) {
             this.tabId = tabId;
+            this.tabGroupId = tabGroupId;
             this.urlList = urlList;
-            this.isInTabGroup = isInTabGroup;
             this.isIncognito = isIncognito;
             this.tabGroupColor = tabGroupColor;
             this.actingTabIds = actingTabIds;
         }
 
-        /** Create a {@link MultiThumbnailMetadata} object with a urlList. */
-        public static MultiThumbnailMetadata createMetadataWithUrls(
-                int tabId,
-                List<GURL> urlList,
-                boolean isInTabGroup,
-                boolean isIncognito,
-                @Nullable @TabGroupColorId Integer tabGroupColor) {
+        /**
+         * Creates a {@link MultiThumbnailMetadata} object for a SavedTabGroup.
+         *
+         * @param urlList The list of URLs of the tabs in the saved tab group.
+         * @param isIncognito Whether the saved tab group is in incognito mode.
+         * @param tabGroupColor The color ID of the saved tab group.
+         * @return The {@link MultiThumbnailMetadata} for the saved tab group.
+         */
+        public static MultiThumbnailMetadata createMetadataForSavedTabGroup(
+                List<GURL> urlList, boolean isIncognito, @TabGroupColorId int tabGroupColor) {
             return new MultiThumbnailMetadata(
-                    tabId,
+                    Tab.INVALID_TAB_ID,
+                    /* tabGroupId= */ null,
                     urlList,
-                    isInTabGroup,
                     isIncognito,
                     tabGroupColor,
                     Collections.emptyList());
         }
 
-        /** Create a {@link MultiThumbnailMetadata} object without requiring a urlList. */
-        public static MultiThumbnailMetadata createMetadataWithoutUrls(
-                int tabId,
-                boolean isInTabGroup,
-                boolean isIncognito,
-                @Nullable @TabGroupColorId Integer tabGroupColor) {
+        /**
+         * Creates a {@link MultiThumbnailMetadata} object for a single tab.
+         *
+         * @param tabId The ID of the tab.
+         * @return The {@link MultiThumbnailMetadata} for the single tab.
+         */
+        public static MultiThumbnailMetadata createMetadataForSingleTab(int tabId) {
             return new MultiThumbnailMetadata(
                     tabId,
+                    /* tabGroupId= */ null,
                     Collections.emptyList(),
-                    isInTabGroup,
-                    isIncognito,
-                    tabGroupColor,
+                    /* isIncognito= */ false,
+                    /* tabGroupColor= */ null,
                     Collections.emptyList());
         }
 
-        /** Create a {@link MultiThumbnailMetadata} object with actingTabIds. */
-        public static MultiThumbnailMetadata createMetadataWithActingTabs(
-                int tabId,
-                boolean isInTabGroup,
+        /**
+         * Creates a {@link MultiThumbnailMetadata} object for a tab group.
+         *
+         * @param tabGroupId The {@link Token} ID of the tab group.
+         * @param isIncognito Whether the tab group is in incognito mode.
+         * @param tabGroupColor The color ID of the tab group.
+         * @param actingTabIds The list of tab IDs currently acting in the group.
+         * @return The {@link MultiThumbnailMetadata} for the tab group.
+         */
+        public static MultiThumbnailMetadata createMetadataForTabGroup(
+                Token tabGroupId,
                 boolean isIncognito,
-                @Nullable @TabGroupColorId Integer tabGroupColor,
+                @TabGroupColorId int tabGroupColor,
                 List<Integer> actingTabIds) {
             Collections.sort(actingTabIds);
             return new MultiThumbnailMetadata(
-                    tabId,
+                    Tab.INVALID_TAB_ID,
+                    tabGroupId,
                     Collections.emptyList(),
-                    isInTabGroup,
                     isIncognito,
                     tabGroupColor,
                     actingTabIds);
@@ -102,8 +114,8 @@ public interface ThumbnailProvider {
         public int hashCode() {
             return Objects.hash(
                     this.tabId,
+                    this.tabGroupId,
                     this.urlList,
-                    this.isInTabGroup,
                     this.isIncognito,
                     this.tabGroupColor,
                     this.actingTabIds);
@@ -113,8 +125,8 @@ public interface ThumbnailProvider {
         public boolean equals(Object obj) {
             return (obj instanceof MultiThumbnailMetadata other)
                     && this.tabId == other.tabId
+                    && Objects.equals(this.tabGroupId, other.tabGroupId)
                     && Objects.equals(this.urlList, other.urlList)
-                    && this.isInTabGroup == other.isInTabGroup
                     && this.isIncognito == other.isIncognito
                     && Objects.equals(this.tabGroupColor, other.tabGroupColor)
                     && Objects.equals(this.actingTabIds, other.actingTabIds);

@@ -54,10 +54,20 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 
 @NullMarked
 public class StripDragShadowView extends FrameLayout {
+    // Constants
+    @VisibleForTesting
+    protected static final int WIDTH_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
+
+    @VisibleForTesting
+    protected static final int HEIGHT_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
+
+    private static final int WIDTH_ON_XR_DP = 528;
+    private static final long ANIM_EXPAND_MS = 200L;
     private static final FloatProperty<StripDragShadowView> PROGRESS =
             new FloatProperty<>("progress") {
                 @Override
@@ -71,15 +81,7 @@ public class StripDragShadowView extends FrameLayout {
                 }
             };
 
-    // Constants
-    @VisibleForTesting
-    protected static final int WIDTH_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
-
-    @VisibleForTesting
-    protected static final int HEIGHT_DP = (int) StripLayoutUtils.MAX_TAB_WIDTH_DP;
-
-    private static final int WIDTH_ON_XR_DP = 528;
-    private static final long ANIM_EXPAND_MS = 200L;
+    private final int mSourceHeightPx;
 
     // Children Views
     private View mCardView;
@@ -89,7 +91,6 @@ public class StripDragShadowView extends FrameLayout {
 
     // Internal State
     private int mSourceWidthPx;
-    private final int mSourceHeightPx;
     private int mWidthPx;
     private int mHeightPx;
     private float mProgress;
@@ -221,11 +222,7 @@ public class StripDragShadowView extends FrameLayout {
         prepareForDrag(
                 mSingleThumbnailCardProvider,
                 tab,
-                MultiThumbnailMetadata.createMetadataWithoutUrls(
-                        tab.getId(),
-                        /* isInTabGroup= */ false,
-                        isIncognito,
-                        /* tabGroupColor= */ null),
+                MultiThumbnailMetadata.createMetadataForSingleTab(tab.getId()),
                 sourceWidthPx,
                 /* isMultiTabDrag= */ false);
     }
@@ -314,8 +311,11 @@ public class StripDragShadowView extends FrameLayout {
         prepareForDrag(
                 mMultiThumbnailCardProvider,
                 tab,
-                MultiThumbnailMetadata.createMetadataWithoutUrls(
-                        tab.getId(), /* isInTabGroup= */ true, isIncognito, colorId),
+                MultiThumbnailMetadata.createMetadataForTabGroup(
+                        tabGroupId,
+                        isIncognito,
+                        colorId,
+                        /* actingTabIds= */ Collections.emptyList()),
                 sourceWidthPx,
                 /* isMultiTabDrag= */ false);
     }

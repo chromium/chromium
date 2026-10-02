@@ -58,15 +58,15 @@ public class SingleTabSwitcherOnNtpMediator {
     // It is only non-null for NTP on tablets.
     private final @Nullable UiConfig mUiConfig;
     private final boolean mIsTablet;
+    private final @Nullable ThumbnailProvider mThumbnailProvider;
+    private final @Nullable ModuleDelegate mModuleDelegate;
 
     private boolean mInitialized;
     private @Nullable Tab mMostRecentTab;
     private @Nullable Callback<Integer> mSingleTabCardClickedCallback;
     private @Nullable Runnable mSeeMoreLinkClickedCallback;
-    private final @Nullable ThumbnailProvider mThumbnailProvider;
     private @Nullable Size mThumbnailSize;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
-    private final @Nullable ModuleDelegate mModuleDelegate;
 
     SingleTabSwitcherOnNtpMediator(
             Context context,
@@ -248,11 +248,7 @@ public class SingleTabSwitcherOnNtpMediator {
         }
 
         mThumbnailProvider.getTabThumbnailWithCallback(
-                MultiThumbnailMetadata.createMetadataWithoutUrls(
-                        mMostRecentTab.getId(),
-                        mMostRecentTab.getTabGroupId() != null,
-                        mMostRecentTab.isIncognitoBranded(),
-                        /* tabGroupColor= */ null),
+                MultiThumbnailMetadata.createMetadataForSingleTab(mMostRecentTab.getId()),
                 mThumbnailSize,
                 /* isSelected= */ false,
                 (@Nullable Drawable tabThumbnail) -> {
