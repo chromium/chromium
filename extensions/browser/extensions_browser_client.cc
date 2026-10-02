@@ -420,4 +420,9 @@ bool ExtensionsBrowserClient::IsLazyKeyedServiceInstantiationEnabled() const {
   return false;
 }
 
+bool ExtensionsBrowserClient::
+    IsLazySocketAndUsbKeyedServiceInstantiationEnabled() const {
+  return false;
+}
+
 }  // namespace extensions

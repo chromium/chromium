@@ -344,6 +344,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   gfx::NativeWindow GetNativeWindowForFunction(
       ExtensionFunction& function) override;
   bool IsLazyKeyedServiceInstantiationEnabled() const override;
+  bool IsLazySocketAndUsbKeyedServiceInstantiationEnabled() const override;
 
   void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
 

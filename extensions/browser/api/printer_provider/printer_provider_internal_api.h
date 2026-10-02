@@ -188,6 +188,10 @@ class PrinterProviderInternalReportUsbPrinterInfoFunction
                              PRINTERPROVIDERINTERNAL_REPORTUSBPRINTERINFO)
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    PrinterProviderInternalAPI>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_PRINTER_PROVIDER_INTERNAL_API_H_

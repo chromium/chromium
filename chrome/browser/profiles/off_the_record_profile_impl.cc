@@ -110,6 +110,7 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
+#include "extensions/browser/process_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -220,6 +221,15 @@ void OffTheRecordProfileImpl::Init() {
       this, std::make_unique<extensions::ExtensionIconSource>(profile_));
 
   extensions::WebRequestEventRouter::OnOTRBrowserContextCreated(profile_, this);
+
+  // ProcessManagerFactory does not override
+  // ServiceIsCreatedWithBrowserContext(), and previously IncognitoProcessManager
+  // was only created during CreateBrowserContextServices() as a side effect of
+  // eager ApiResourceManager services calling ProcessManager::Get() in their
+  // constructors. Explicitly instantiate ProcessManager here so it continues to
+  // observe ExtensionRegistry for split-mode extensions when the OTR profile is
+  // created.
+  extensions::ProcessManager::Get(this);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // The DomDistillerViewerSource is not a normal WebUI so it must be registered

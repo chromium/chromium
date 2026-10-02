@@ -631,6 +631,17 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_otr_active_services.erase("HidConnectionResourceManager");
   }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensionsSocketsAndUsb.Get()) {
+    guest_otr_active_services.erase("ResumableTCPServerSocketManager");
+    guest_otr_active_services.erase("ResumableTCPSocketManager");
+    guest_otr_active_services.erase("ResumableUDPSocketManager");
+    guest_otr_active_services.erase("SocketManager");
+    guest_otr_active_services.erase("TCPServerSocketEventDispatcher");
+    guest_otr_active_services.erase("TCPSocketEventDispatcher");
+    guest_otr_active_services.erase("UDPSocketEventDispatcher");
+    guest_otr_active_services.erase("UsbDeviceResourceManager");
+  }
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
     guest_otr_active_services.erase("ReadAnythingServiceFactory");
   }
@@ -1074,6 +1085,19 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_active_services.erase("OperationManager");
     guest_active_services.erase("PasswordsPrivateEventRouter");
     guest_active_services.erase("SidePanelService");
+  }
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationExtensionsSocketsAndUsb.Get()) {
+    guest_active_services.erase("PrinterProviderInternal");
+    guest_active_services.erase("ResumableTCPServerSocketManager");
+    guest_active_services.erase("ResumableTCPSocketManager");
+    guest_active_services.erase("ResumableUDPSocketManager");
+    guest_active_services.erase("SocketManager");
+    guest_active_services.erase("TCPServerSocketEventDispatcher");
+    guest_active_services.erase("TCPSocketEventDispatcher");
+    guest_active_services.erase("UDPSocketEventDispatcher");
+    guest_active_services.erase("UsbDeviceResourceManager");
+    guest_active_services.erase("WriteQuotaChecker");
   }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {

@@ -40,6 +40,17 @@ static base::LazyInstance<
 
 }  // namespace
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    PrinterProviderInternalAPI>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 // static
 BrowserContextKeyedAPIFactory<PrinterProviderInternalAPI>*
 PrinterProviderInternalAPI::GetFactoryInstance() {

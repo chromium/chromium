@@ -48,6 +48,10 @@ class UsbDeviceResource : public ApiResource {
   mojo::Remote<device::mojom::UsbDevice> device_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<UsbDeviceResource>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_USB_USB_DEVICE_RESOURCE_H_

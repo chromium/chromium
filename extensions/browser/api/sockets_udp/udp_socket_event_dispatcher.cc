@@ -19,6 +19,18 @@
 #include "net/base/net_errors.h"
 
 namespace extensions {
+
+template <>
+bool BrowserContextKeyedAPIFactory<
+    api::UDPSocketEventDispatcher>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 namespace api {
 
 using content::BrowserThread;

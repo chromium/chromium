@@ -54,6 +54,10 @@ class WriteQuotaChecker : public BrowserContextKeyedAPI {
   std::map<ExtensionId, size_t> bytes_used_map_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    WriteQuotaChecker>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKET_WRITE_QUOTA_CHECKER_H_

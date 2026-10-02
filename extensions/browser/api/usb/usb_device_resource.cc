@@ -17,6 +17,17 @@ using content::BrowserThread;
 
 namespace extensions {
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<UsbDeviceResource>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
     ApiResourceManager<UsbDeviceResource>>>::DestructorAtExit g_factory =
     LAZY_INSTANCE_INITIALIZER;

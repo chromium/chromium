@@ -23,6 +23,18 @@ constexpr int kDefaultBufferSize = 4096;
 }
 
 namespace extensions {
+
+template <>
+bool BrowserContextKeyedAPIFactory<
+    api::TCPSocketEventDispatcher>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 namespace api {
 
 using content::BrowserThread;

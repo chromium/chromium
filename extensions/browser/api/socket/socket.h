@@ -196,6 +196,10 @@ struct BrowserContextFactoryDependencies<ApiResourceManager<Socket>> {
   }
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    ApiResourceManager<Socket>>::ServiceIsCreatedWithBrowserContext() const;
+
 }  //  namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKET_SOCKET_H_

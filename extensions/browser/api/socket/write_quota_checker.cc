@@ -36,6 +36,17 @@ WriteQuotaChecker* WriteQuotaChecker::GetIfExists(
   return BrowserContextKeyedAPIFactory<WriteQuotaChecker>::GetIfExists(context);
 }
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    WriteQuotaChecker>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 // static
 BrowserContextKeyedAPIFactory<WriteQuotaChecker>*
 WriteQuotaChecker::GetFactoryInstance() {

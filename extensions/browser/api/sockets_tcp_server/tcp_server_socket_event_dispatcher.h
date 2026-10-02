@@ -108,6 +108,11 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
 };
 
 }  // namespace api
+
+template <>
+bool BrowserContextKeyedAPIFactory<api::TCPServerSocketEventDispatcher>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKETS_TCP_SERVER_TCP_SERVER_SOCKET_EVENT_DISPATCHER_H_

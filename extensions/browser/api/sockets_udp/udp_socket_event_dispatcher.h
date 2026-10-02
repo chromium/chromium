@@ -96,6 +96,11 @@ class UDPSocketEventDispatcher : public BrowserContextKeyedAPI {
 };
 
 }  // namespace api
+
+template <>
+bool BrowserContextKeyedAPIFactory<
+    api::UDPSocketEventDispatcher>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKETS_UDP_UDP_SOCKET_EVENT_DISPATCHER_H_

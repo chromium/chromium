@@ -1347,6 +1347,13 @@ bool ChromeExtensionsBrowserClient::IsLazyKeyedServiceInstantiationEnabled()
          features::kLazyKeyedServiceInstantiationExtensionsApi.Get();
 }
 
+bool ChromeExtensionsBrowserClient::
+    IsLazySocketAndUsbKeyedServiceInstantiationEnabled() const {
+  return base::FeatureList::IsEnabled(
+             features::kLazyKeyedServiceInstantiation) &&
+         features::kLazyKeyedServiceInstantiationExtensionsSocketsAndUsb.Get();
+}
+
 void ChromeExtensionsBrowserClient::SetAPIClientForTest(
     std::unique_ptr<ExtensionsAPIClient> client) {
   api_client_ = std::move(client);

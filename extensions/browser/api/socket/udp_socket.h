@@ -154,6 +154,10 @@ class ResumableUDPSocket : public UDPSocket {
   bool paused_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<ResumableUDPSocket>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  //  namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKET_UDP_SOCKET_H_

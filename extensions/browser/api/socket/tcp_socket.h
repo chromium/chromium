@@ -250,6 +250,14 @@ class ResumableTCPServerSocket : public TCPSocket {
   bool paused_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<ResumableTCPSocket>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    ResumableTCPServerSocket>>::ServiceIsCreatedWithBrowserContext() const;
+
 }  //  namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKET_TCP_SOCKET_H_

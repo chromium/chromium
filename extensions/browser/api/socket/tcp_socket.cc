@@ -58,6 +58,17 @@ const char kTCPSocketTypeInvalidError[] =
     "Cannot call both connect and listen on the same socket.";
 const char kSocketListenError[] = "Could not listen on the specified port.";
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<ResumableTCPSocket>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
     ApiResourceManager<ResumableTCPSocket>>>::DestructorAtExit g_factory =
     LAZY_INSTANCE_INITIALIZER;
@@ -67,6 +78,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<ResumableTCPSocket> >*
 ApiResourceManager<ResumableTCPSocket>::GetFactoryInstance() {
   return g_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    ResumableTCPServerSocket>>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazySocketAndUsbKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
