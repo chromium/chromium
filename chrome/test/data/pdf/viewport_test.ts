@@ -362,7 +362,7 @@ const tests = [
     viewport.setDocumentDimensions(documentDimensions);
 
     const params = {
-      page: 0,
+      pageIndex: 0,
       boundingBox: {x: 0, y: 0, width: 1, height: 1},
       fitToWidth: true,
     };
@@ -424,10 +424,10 @@ const tests = [
 
     function testForPosition(
         expectedX: number, expectedY: number, expectedZoom: number,
-        page?: number, viewPosition?: number) {
+        pageIndex?: number, viewPosition?: number) {
       viewport.setZoom(0.1);
       mockCallback.reset();
-      viewport.fitToWidth({page, viewPosition});
+      viewport.fitToWidth({pageIndex, viewPosition});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 
@@ -546,10 +546,10 @@ const tests = [
 
     function testForPosition(
         expectedX: number, expectedY: number, expectedZoom: number,
-        page?: number, scrollToTop?: boolean) {
+        pageIndex?: number, scrollToTop?: boolean) {
       viewport.setZoom(0.1);
       mockCallback.reset();
-      viewport.fitToPage({page, scrollToTop});
+      viewport.fitToPage({pageIndex, scrollToTop});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 
@@ -676,7 +676,7 @@ const tests = [
       viewport.setDocumentDimensions(documentDimensions);
       viewport.setZoom(0.1);
       mockCallback.reset();
-      viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+      viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
       assertZoomed(expectedMockWidth, expectedMockHeight, expectedZoom);
     }
 
@@ -690,10 +690,10 @@ const tests = [
 
     function testForPosition(
         expectedX: number, expectedY: number, expectedZoom: number,
-        page?: number, viewPosition?: number) {
+        pageIndex?: number, viewPosition?: number) {
       viewport.setZoom(0.1);
       mockCallback.reset();
-      viewport.fitToHeight({page, viewPosition});
+      viewport.fitToHeight({pageIndex, viewPosition});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 
@@ -759,14 +759,14 @@ const tests = [
     mockWindow.scrollTo(0, 0);
     chrome.test.assertEq(0, viewport.getMostVisiblePage());
     mockCallback.reset();
-    viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+    viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
     assertZoomed(200, 500, 1);
 
     viewport.setZoom(1);
     mockWindow.scrollTo(0, 100);
     chrome.test.assertEq(1, viewport.getMostVisiblePage());
     mockCallback.reset();
-    viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+    viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
     assertZoomed(50, 125, 0.25);
 
     // Test that the top of the most visible page is scrolled to.
@@ -777,7 +777,7 @@ const tests = [
     viewport.setZoom(1);
     mockWindow.scrollTo(0, 0);
     chrome.test.assertEq(0, viewport.getMostVisiblePage());
-    viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+    viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
     chrome.test.assertEq(0, viewport.getMostVisiblePage());
     chrome.test.assertEq(FittingType.FIT_TO_HEIGHT, viewport.fittingType);
     chrome.test.assertEq(0.5, viewport.getZoom());
@@ -786,7 +786,7 @@ const tests = [
     viewport.setZoom(1);
     mockWindow.scrollTo(0, 175);
     chrome.test.assertEq(1, viewport.getMostVisiblePage());
-    viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+    viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
     chrome.test.assertEq(1, viewport.getMostVisiblePage());
     chrome.test.assertEq(0.25, viewport.getZoom());
     chrome.test.assertEq(0, viewport.position.x);
@@ -796,7 +796,7 @@ const tests = [
     // scroll to the top of the page (it should stay at the scaled scroll
     // position).
     mockWindow.scrollTo(0, 0);
-    viewport.fitToHeight({page: viewport.getMostVisiblePage()});
+    viewport.fitToHeight({pageIndex: viewport.getMostVisiblePage()});
     chrome.test.assertEq(FittingType.FIT_TO_HEIGHT, viewport.fittingType);
     chrome.test.assertEq(0.5, viewport.getZoom());
     mockWindow.scrollTo(0, 10);
@@ -832,11 +832,11 @@ const tests = [
     }
 
     function testForVisibleBoundingBox(
-        page: number, boundingBox: Rect, expectedX: number, expectedY: number,
-        expectedZoom: number) {
+        pageIndex: number, boundingBox: Rect, expectedX: number,
+        expectedY: number, expectedZoom: number) {
       viewport.setZoom(0.1);
       mockCallback.reset();
-      viewport.fitToBoundingBox({boundingBox, page});
+      viewport.fitToBoundingBox({boundingBox, pageIndex});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 
@@ -894,7 +894,7 @@ const tests = [
     }
 
     function testForVisibleBoundingBoxWidth(
-        boundingBox: Rect, page: number, viewPosition: number|undefined,
+        boundingBox: Rect, pageIndex: number, viewPosition: number|undefined,
         expectedX: number, expectedY: number, expectedZoom: number) {
       viewport.setZoom(0.1);
       viewport.setPosition({
@@ -903,7 +903,7 @@ const tests = [
       });
       mockCallback.reset();
       viewport.fitToBoundingBoxDimension(
-          {boundingBox, page, viewPosition, fitToWidth: true});
+          {boundingBox, pageIndex, viewPosition, fitToWidth: true});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 
@@ -988,7 +988,7 @@ const tests = [
     }
 
     function testForVisibleBoundingBoxHeight(
-        boundingBox: Rect, page: number, viewPosition: number|undefined,
+        boundingBox: Rect, pageIndex: number, viewPosition: number|undefined,
         expectedX: number, expectedY: number, expectedZoom: number) {
       viewport.setZoom(0.1);
       viewport.setPosition({
@@ -997,7 +997,7 @@ const tests = [
       });
       mockCallback.reset();
       viewport.fitToBoundingBoxDimension(
-          {boundingBox, page, viewPosition, fitToWidth: false});
+          {boundingBox, pageIndex, viewPosition, fitToWidth: false});
       assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
     }
 

@@ -488,7 +488,7 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
       this.isUserInitiatedEvent = false;
       const fittingTypeParams = {
         boundingBox: params.boundingBox,
-        page: params.pageIndex || 0,
+        pageIndex: params.pageIndex || 0,
         viewPosition: params.viewPosition,
         fitToWidth: params.view === FittingType.FIT_TO_BOUNDING_BOX_WIDTH,
       };
