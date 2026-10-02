@@ -4,11 +4,10 @@
 
 #include "base/threading/platform_thread.h"
 
-#include <array>
-
 #include "base/bits.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
+#include "base/threading/platform_thread_internal.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/trace_event/trace_event.h"

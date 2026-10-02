@@ -14,6 +14,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_type.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread_internal.h"
 #include "base/threading/thread.h"
 #include "base/threading/threading_features.h"
 #include "build/blink_buildflags.h"

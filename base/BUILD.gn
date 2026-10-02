@@ -924,6 +924,7 @@ component("base") {
     "threading/hang_watcher.h",
     "threading/platform_thread.cc",
     "threading/platform_thread.h",
+    "threading/platform_thread_internal.h",
     "threading/platform_thread_metrics.cc",
     "threading/platform_thread_metrics.h",
     "threading/platform_thread_ref.cc",
