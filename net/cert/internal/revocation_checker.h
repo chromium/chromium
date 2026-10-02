@@ -110,6 +110,9 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
 // |net_fetcher| may be null, however this may lead to failed revocation checks
 // depending on |policy|.
 //
+// |delegate| will be used to check verification policies (ex, allowed
+// signature algorithms).
+//
 // |stapled_ocsp_verify_result|, if non-null, will be filled with the result of
 // checking the leaf certificate against |stapled_leaf_ocsp_response|.
 NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
@@ -119,6 +122,7 @@ NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
     std::string_view stapled_leaf_ocsp_response,
     base::Time current_time,
     CertNetFetcher* net_fetcher,
+    bssl::VerifyCertificateChainDelegate* delegate,
     bssl::CertPathErrors* errors,
     bssl::OCSPVerifyResult* stapled_ocsp_verify_result);
 

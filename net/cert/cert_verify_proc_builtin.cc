@@ -646,10 +646,10 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // to |policy|. Depending on the policy, errors will be added to the
     // respective certificates, so |errors->ContainsHighSeverityErrors()| will
     // reflect the revocation status of the chain after this call.
-    CheckValidatedChainRevocation(path->certs, policy, deadline_,
-                                  stapled_leaf_ocsp_response_, current_time_,
-                                  net_fetcher_, &path->errors,
-                                  &delegate_data->stapled_ocsp_verify_result);
+    CheckValidatedChainRevocation(
+        path->certs, policy, deadline_, stapled_leaf_ocsp_response_,
+        current_time_, net_fetcher_, /*delegate=*/this, &path->errors,
+        &delegate_data->stapled_ocsp_verify_result);
 
     CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
   }

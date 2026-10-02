@@ -269,7 +269,8 @@ std::string BuildOCSPResponse(
     const std::string& responder_subject,
     EVP_PKEY* responder_key,
     base::Time produced_at,
-    const std::vector<OCSPBuilderSingleResponse>& responses) {
+    const std::vector<OCSPBuilderSingleResponse>& responses,
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm) {
   std::string responder_name_hash = base::SHA1HashString(responder_subject);
   std::string responder_key_hash =
       base::SHA1HashString(PKeyToSPK(responder_key));
@@ -314,8 +315,8 @@ std::string BuildOCSPResponse(
 
   // responseExtensions not currently supported.
 
-  return BuildOCSPResponseWithResponseData(responder_key,
-                                           FinishCBB(tbs_cbb.get()));
+  return BuildOCSPResponseWithResponseData(
+      responder_key, FinishCBB(tbs_cbb.get()), signature_algorithm);
 }
 
 std::string BuildOCSPResponseWithResponseData(

@@ -45,7 +45,8 @@ std::string BuildOCSPResponse(
     const std::string& responder_subject,
     EVP_PKEY* responder_key,
     base::Time produced_at,
-    const std::vector<OCSPBuilderSingleResponse>& responses);
+    const std::vector<OCSPBuilderSingleResponse>& responses,
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm = std::nullopt);
 
 // Creates an bssl::OCSPResponse signed by |responder_key| with
 // |tbs_response_data| as the to-be-signed ResponseData. If

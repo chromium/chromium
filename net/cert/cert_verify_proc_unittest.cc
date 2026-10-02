@@ -3525,8 +3525,10 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   CertVerifyResult verify_result;
   int error = Verify(chain.get(), kHostname, flags, &verify_result);
 
-  // Should fail, leaf is revoked.
-  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+  // Verification should succeed: SHA-1 signature algorithm is not supported
+  // and soft-fail checking will ignore the inability to get revocation
+  // status.
+  EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
