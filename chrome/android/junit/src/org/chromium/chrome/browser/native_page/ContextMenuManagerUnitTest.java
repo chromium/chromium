@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
@@ -48,7 +47,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit test for {@link ContextMenuManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowPopupWindow.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -73,7 +71,8 @@ public class ContextMenuManagerUnitTest {
     @Before
     public void setup() {
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
-        mAnchorView = spy(new View(mActivity, null));
+        mAnchorView = new View(mActivity, null);
+        mActivity.setContentView(mAnchorView);
         mManager = new ContextMenuManager(mNavigationDelegate, mTouchEnabledDelegate, () -> {}, "");
     }
 
@@ -91,7 +90,6 @@ public class ContextMenuManagerUnitTest {
         doReturn(false).when(mNavigationDelegate).isOpenInOtherWindowEnabled();
         doReturn(false).when(mNavigationDelegate).isOpenInIncognitoEnabled();
         doReturn(null).when(mDelegate).getUrl();
-        doReturn(true).when(mAnchorView).isAttachedToWindow();
         // Disable navigation to new window.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
 

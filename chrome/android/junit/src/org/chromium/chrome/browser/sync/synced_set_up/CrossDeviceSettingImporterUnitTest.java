@@ -46,6 +46,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -110,7 +112,6 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CrossDeviceSettingImporterUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -268,12 +269,14 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     public void testPendingSnackbar_recreateSurvival_undoSnackbar() {
-        Activity spyActivity1 = spy(mActivity);
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
+        Activity activity1 = activityController.get();
         CrossDeviceSettingImporter importer1 =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
                         mActivityTabSupplier,
-                        spyActivity1,
+                        activity1,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
         Map<String, Object> prefs = Map.of(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false);
@@ -287,7 +290,7 @@ public class CrossDeviceSettingImporterUnitTest {
 
         // Simulate activity terminating due to configuration change (theme recreate or rotation):
         // SnackbarManager.onStop() calls onDismissNoAction(), followed by importer1.destroy().
-        doReturn(true).when(spyActivity1).isChangingConfigurations();
+        activityController.recreate();
         initialSnackbar.getController().onDismissNoAction(null);
         importer1.destroy();
 
@@ -299,12 +302,12 @@ public class CrossDeviceSettingImporterUnitTest {
         assertEquals(toApply, pending.settingsToApply);
 
         // Simulate activity recreation: new importer instance with same task ID.
-        Activity spyActivity2 = spy(mActivity);
+        Activity activity2 = activityController.get();
         CrossDeviceSettingImporter importer2 =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
                         mActivityTabSupplier,
-                        spyActivity2,
+                        activity2,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
 
@@ -325,7 +328,7 @@ public class CrossDeviceSettingImporterUnitTest {
 
         // Simulate a second activity recreation before timeout (e.g. screen rotation while snackbar
         // is active): pending snackbar should survive and be restored again.
-        doReturn(true).when(spyActivity2).isChangingConfigurations();
+        activityController.recreate();
         restoredSnackbar.getController().onDismissNoAction(null);
         importer2.destroy();
 
@@ -351,12 +354,13 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     public void testDestroy_clearsPendingSnackbarWhenNotChangingConfigurations() {
-        Activity spyActivity = spy(mActivity);
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
         CrossDeviceSettingImporter importer =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
                         mActivityTabSupplier,
-                        spyActivity,
+                        activityController.get(),
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
         SyncedSetupSettings prev =
@@ -370,7 +374,7 @@ public class CrossDeviceSettingImporterUnitTest {
                 CrossDeviceSettingImporter.getPendingSnackbarForTesting());
 
         // Destroy with configuration change promotes active snackbar to static pending snackbar.
-        doReturn(true).when(spyActivity).isChangingConfigurations();
+        activityController.recreate();
         importer.destroy();
         assertNotNull(CrossDeviceSettingImporter.getPendingSnackbarForTesting());
 
@@ -400,12 +404,14 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     public void testPendingSnackbar_recreateSurvival_redoSnackbar() {
-        Activity spyActivity1 = spy(mActivity);
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
+        Activity activity1 = activityController.get();
         CrossDeviceSettingImporter importer1 =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
                         mActivityTabSupplier,
-                        spyActivity1,
+                        activity1,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
         SyncedSetupSettings toApply =
@@ -416,7 +422,7 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar initialSnackbar = mSnackbarCaptor.getValue();
 
-        doReturn(true).when(spyActivity1).isChangingConfigurations();
+        activityController.recreate();
         initialSnackbar.getController().onDismissNoAction(null);
         importer1.destroy();
 
@@ -427,12 +433,12 @@ public class CrossDeviceSettingImporterUnitTest {
         assertTrue(pending.hadThemeChange);
 
         // Simulate activity recreation: new importer instance with same task ID.
-        Activity spyActivity2 = spy(mActivity);
+        Activity activity2 = activityController.get();
         CrossDeviceSettingImporter importer2 =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
                         mActivityTabSupplier,
-                        spyActivity2,
+                        activity2,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
 
@@ -450,7 +456,7 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
         Snackbar undoSnackbarAfterRedo = mSnackbarCaptor.getValue();
 
-        doReturn(true).when(spyActivity2).isChangingConfigurations();
+        activityController.recreate();
         undoSnackbarAfterRedo.getController().onDismissNoAction(null);
         importer2.destroy();
 
@@ -2047,7 +2053,8 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
         when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
 
-        Activity spyActivity = spy(mActivity);
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
         SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
                 Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true));
         CrossDeviceSettingImporter importer =
@@ -2055,7 +2062,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         new CrossDeviceSettingImporter(
                                 mActivityLifecycleDispatcher,
                                 mActivityTabSupplier,
-                                spyActivity,
+                                activityController.get(),
                                 mModalDialogManagerSupplier,
                                 mSnackbarManagerSupplier));
         doReturn(123).when(importer).getTaskId();
@@ -2079,10 +2086,9 @@ public class CrossDeviceSettingImporterUnitTest {
                         /* fileIdHash= */ "hash_1");
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(downloadedTheme);
 
-        doReturn(true).when(spyActivity).isChangingConfigurations();
+        activityController.recreate();
         initialUndoSnackbar.getController().onDismissNoAction(null);
         importer.destroy();
-        doReturn(false).when(spyActivity).isChangingConfigurations();
 
         // 3. Activity 2 starts up and restores the Undo snackbar.
         CrossDeviceSettingImporter recreatedImporter =
@@ -2090,7 +2096,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         new CrossDeviceSettingImporter(
                                 mActivityLifecycleDispatcher,
                                 mActivityTabSupplier,
-                                spyActivity,
+                                activityController.get(),
                                 mModalDialogManagerSupplier,
                                 mSnackbarManagerSupplier));
         doReturn(123).when(recreatedImporter).getTaskId();
@@ -2111,10 +2117,9 @@ public class CrossDeviceSettingImporterUnitTest {
         // 5. Simulate Activity recreate caused by Undo reverting the theme (with destroy() called
         // before onDismissNoAction() to verify order independence).
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
-        doReturn(true).when(spyActivity).isChangingConfigurations();
+        activityController.recreate();
         recreatedImporter.destroy();
         redoSnackbar.getController().onDismissNoAction(null);
-        doReturn(false).when(spyActivity).isChangingConfigurations();
 
         // 6. Activity 3 starts up and restores the Redo snackbar.
         CrossDeviceSettingImporter thirdImporter =
@@ -2122,7 +2127,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         new CrossDeviceSettingImporter(
                                 mActivityLifecycleDispatcher,
                                 mActivityTabSupplier,
-                                spyActivity,
+                                activityController.get(),
                                 mModalDialogManagerSupplier,
                                 mSnackbarManagerSupplier));
         doReturn(123).when(thirdImporter).getTaskId();

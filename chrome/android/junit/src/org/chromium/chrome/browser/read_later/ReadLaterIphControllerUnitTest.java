@@ -5,12 +5,9 @@
 package org.chromium.chrome.browser.read_later;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import org.junit.Before;
@@ -22,7 +19,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -31,24 +30,21 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 /** Unit test for {@link ReadLaterIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ReadLaterIphControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Activity mActivity;
-    @Mock View mToolbarMenuButton;
     @Mock AppMenuHandler mAppMenuHandler;
     @Mock UserEducationHelper mUserEducationHelper;
-    @Mock Context mContext;
-    @Mock Resources mResources;
     @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    Activity mActivity;
+    View mToolbarMenuButton;
     ReadLaterIphController mController;
 
     @Before
     public void setUp() {
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(mContext).when(mToolbarMenuButton).getContext();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mToolbarMenuButton = new View(ContextUtils.getApplicationContext());
 
         mController =
                 new ReadLaterIphController(

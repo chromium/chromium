@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,20 +36,13 @@ import java.util.ArrayList;
 
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class FeedItemDecorationTest {
     private static final int GUTTER_PADDING = 20;
+    private static final int RECYCLER_VIEW_WIDTH = 500;
+    private static final int RECYCLER_VIEW_HEIGHT = 1000;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Canvas mCanvas;
-    @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.State mState;
-    @Mock private View mView0;
-    @Mock private View mView1;
-    @Mock private View mView2;
-    @Mock private View mView3;
-    @Mock private View mView4;
-    @Mock private View mView5;
-    @Mock private View mView6;
     @Mock private FeedSurfaceCoordinator mCoordinator;
     @Mock private HybridListRenderer mRenderer;
     @Mock private ListLayoutHelper mLayoutHelper;
@@ -65,12 +57,27 @@ public final class FeedItemDecorationTest {
     @Mock private Drawable mNotRoundedDrawable;
     @Mock private Drawable mAllRoundedDrawable;
     private Activity mActivity;
+    private RecyclerView mRecyclerView;
+    private View mView0;
+    private View mView1;
+    private View mView2;
+    private View mView3;
+    private View mView4;
+    private View mView5;
+    private View mView6;
     private final ArrayList<View> mViewList = new ArrayList<>();
     private final ArrayList<Rect> mBoundsList = new ArrayList<>();
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
+        mView0 = new View(mActivity);
+        mView1 = new View(mActivity);
+        mView2 = new View(mActivity);
+        mView3 = new View(mActivity);
+        mView4 = new View(mActivity);
+        mView5 = new View(mActivity);
+        mView6 = new View(mActivity);
 
         mViewList.add(mView0);
         mViewList.add(mView1);
@@ -84,26 +91,30 @@ public final class FeedItemDecorationTest {
             mBoundsList.add(new Rect());
         }
 
-        when(mRecyclerView.getChildCount()).thenReturn(mViewList.size());
-        for (int i = 0; i < mViewList.size(); ++i) {
-            when(mRecyclerView.getChildAt(i)).thenReturn(mViewList.get(i));
-            when(mRecyclerView.getChildAdapterPosition(mViewList.get(i))).thenReturn(i);
-        }
-        doAnswer(
-                        invocation -> {
-                            View view = invocation.getArgument(0);
-                            Rect outBounds = invocation.getArgument(1);
+        mRecyclerView = new RecyclerView(mActivity);
+        mRecyclerView.setLayoutManager(new FixedBoundsLayoutManager());
+        mRecyclerView.setAdapter(
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public int getItemCount() {
+                        return mViewList.size();
+                    }
 
-                            for (int i = 0; i < mViewList.size(); ++i) {
-                                if (view == mViewList.get(i)) {
-                                    outBounds.set(mBoundsList.get(i));
-                                }
-                            }
+                    @Override
+                    public int getItemViewType(int position) {
+                        // Use the position as the view type so each position gets its own view.
+                        return position;
+                    }
 
-                            return null;
-                        })
-                .when(mRecyclerView)
-                .getDecoratedBoundsWithMargins(any(View.class), any(Rect.class));
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        return new RecyclerView.ViewHolder(mViewList.get(viewType)) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+                });
 
         when(mCoordinator.getContentManager()).thenReturn(mContentManager);
         when(mCoordinator.getHybridListRenderer()).thenReturn(mRenderer);
@@ -160,6 +171,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -206,6 +218,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         for (int i = 0; i < mViewList.size(); ++i) {
@@ -253,6 +266,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -319,6 +333,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -385,6 +400,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -436,6 +452,7 @@ public final class FeedItemDecorationTest {
 
         FeedItemDecoration feedItemDecoration =
                 new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        layoutRecyclerView();
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -472,5 +489,34 @@ public final class FeedItemDecorationTest {
         verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomLeftRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+    }
+
+    /** Lays out the RecyclerView so that each child is placed at its bounds in mBoundsList. */
+    private void layoutRecyclerView() {
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(RECYCLER_VIEW_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(RECYCLER_VIEW_HEIGHT, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, RECYCLER_VIEW_WIDTH, RECYCLER_VIEW_HEIGHT);
+    }
+
+    /** A LayoutManager that places each child at the bounds given by mBoundsList. */
+    private class FixedBoundsLayoutManager extends RecyclerView.LayoutManager {
+        @Override
+        public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+            return new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        @Override
+        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+            detachAndScrapAttachedViews(recycler);
+            for (int i = 0; i < state.getItemCount(); ++i) {
+                View view = recycler.getViewForPosition(i);
+                addView(view);
+                Rect bounds = mBoundsList.get(i);
+                layoutDecoratedWithMargins(
+                        view, bounds.left, bounds.top, bounds.right, bounds.bottom);
+            }
+        }
     }
 }

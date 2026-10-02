@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -44,9 +45,9 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.insets.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HistoryNavigationCoordinatorUnitTest {
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
+    private ViewGroup mParentView;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -59,7 +60,6 @@ public class HistoryNavigationCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock private ViewGroup mParentView;
     @Mock private TouchEventProvider mTouchEventProvider;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private InsetObserver mInsetObserver;
@@ -77,7 +77,7 @@ public class HistoryNavigationCoordinatorUnitTest {
     }
 
     private void onActivity(TestActivity activity) {
-        when(mParentView.getContext()).thenReturn(activity);
+        mParentView = new FrameLayout(activity);
     }
 
     private void initializeHistoryNavigationCoordinator() {
@@ -121,13 +121,11 @@ public class HistoryNavigationCoordinatorUnitTest {
         NavigationHandler navigationHandler =
                 mHistoryNavigationCoordinator.getNavigationHandlerForTesting();
 
-        when(mParentView.getWidth()).thenReturn(100);
-        when(mParentView.getHeight()).thenReturn(200);
+        mParentView.layout(0, 0, 100, 200);
         navigationHandler.onDown();
 
         // Simulate resizing the window.
-        when(mParentView.getWidth()).thenReturn(150);
-        when(mParentView.getHeight()).thenReturn(200);
+        mParentView.layout(0, 0, 150, 200);
 
         boolean handled = navigationHandler.onScroll(0f, 10f, 0f, 10f, 0f);
         assertTrue(handled);

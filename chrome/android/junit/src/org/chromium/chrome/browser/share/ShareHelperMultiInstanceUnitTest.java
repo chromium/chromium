@@ -10,10 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -23,29 +19,29 @@ import android.content.IntentSender.SendIntentException;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle.State;
-import androidx.test.core.app.ActivityScenario;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivity.IntentForResult;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.share.ShareHelper.TargetChosenReceiver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -55,7 +51,6 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPendingIntent.class, ShadowActivity.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShareHelperMultiInstanceUnitTest {
     private static final ComponentName COMPONENT_NAME_1 = new ComponentName("package", "one");
     private static final ComponentName COMPONENT_NAME_2 = new ComponentName("package", "two");
@@ -185,23 +180,32 @@ public class ShareHelperMultiInstanceUnitTest {
         }
     }
 
+    /** Robolectric always returns 0 from getTaskId(), so allow each window to have its own. */
+    private static class TestSubActivity extends Activity {
+        private int mTaskId;
+
+        @Override
+        public int getTaskId() {
+            return mTaskId;
+        }
+    }
+
     /** Class that simulate the share journey. */
     private static class SingleWindowTestInstance {
-        private final ActivityScenario<TestActivity> mActivityScenario;
+        private final ActivityController<TestSubActivity> mActivityController;
         private final WindowAndroid mWindow;
         private final IntentRequestTracker mIntentRequestTracker;
         private final TestTargetChosenCallback mCallback = new TestTargetChosenCallback();
+        private final TestSubActivity mActivity;
 
-        @Spy private TestActivity mActivity;
         @Nullable private IntentForResult mShareIntent;
         private boolean mClosed;
 
         public SingleWindowTestInstance(int taskId) {
-            mActivityScenario =
-                    ActivityScenario.launch(TestActivity.class)
-                            .onActivity(activity -> mActivity = spy(activity))
-                            .moveToState(State.STARTED);
-            doReturn(taskId).when(mActivity).getTaskId();
+            mActivityController = Robolectric.buildActivity(TestSubActivity.class);
+            mActivity = mActivityController.get();
+            mActivity.mTaskId = taskId;
+            mActivityController.create().start();
             mIntentRequestTracker = IntentRequestTracker.createFromActivity(mActivity);
             mWindow =
                     new ActivityWindowAndroid(
@@ -218,6 +222,7 @@ public class ShareHelperMultiInstanceUnitTest {
 
             mShareIntent = Shadows.shadowOf(mActivity).peekNextStartedActivityForResult();
             assertNotNull("Share activity is not launched.", mShareIntent);
+            assertTrue("Share receiver is not registered.", isShareReceiverRegistered());
             return this;
         }
 
@@ -259,13 +264,13 @@ public class ShareHelperMultiInstanceUnitTest {
 
         public SingleWindowTestInstance verifyCallbackState() {
             assertTrue("Callback is not in a valid state when share ends.", mCallback.isValid());
-            verify(mActivity).unregisterReceiver(any());
+            assertFalse("Share receiver is not unregistered.", isShareReceiverRegistered());
             return this;
         }
 
         public SingleWindowTestInstance verifyCallbackCanceled() {
             assertTrue("Callback onCancel should be called.", mCallback.onCancelCalled);
-            verify(mActivity).unregisterReceiver(any());
+            assertFalse("Share receiver is not unregistered.", isShareReceiverRegistered());
             return this;
         }
 
@@ -275,9 +280,25 @@ public class ShareHelperMultiInstanceUnitTest {
             mClosed = true;
             mWindow.destroy();
             mActivity.finish();
-            mActivityScenario.close();
+            mActivityController.stop().destroy();
+            RobolectricUtil.runAllBackgroundAndUi();
 
             return this;
+        }
+
+        /** Returns whether the share TargetChosenReceiver for this window's task is registered. */
+        private boolean isShareReceiverRegistered() {
+            String action =
+                    mActivity.getPackageName()
+                            + "/"
+                            + TargetChosenReceiver.class.getName()
+                            + mActivity.getTaskId()
+                            + "_ACTION";
+            for (ShadowApplication.Wrapper wrapper :
+                    Shadows.shadowOf(mActivity.getApplication()).getRegisteredReceivers()) {
+                if (wrapper.getIntentFilter().hasAction(action)) return true;
+            }
+            return false;
         }
 
         private ShareParams getTextParams() {

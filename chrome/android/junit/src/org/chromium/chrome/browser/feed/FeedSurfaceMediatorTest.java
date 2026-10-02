@@ -22,9 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
 
 import androidx.annotation.Px;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
@@ -68,7 +68,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
@@ -80,7 +79,6 @@ public class FeedSurfaceMediatorTest {
     // Mocked JNI.
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
-    @Mock private RecyclerView mRecyclerView;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
@@ -94,9 +92,9 @@ public class FeedSurfaceMediatorTest {
     @Mock private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
-    @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mLayoutChangeListenerCaptor;
 
     private Activity mActivity;
+    private RecyclerView mRecyclerView;
     private FeedSurfaceMediator mFeedSurfaceMediator;
 
     @Before
@@ -105,6 +103,7 @@ public class FeedSurfaceMediatorTest {
         // Print logs to stdout.
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
+        mRecyclerView = new RecyclerView(mActivity);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
@@ -358,10 +357,9 @@ public class FeedSurfaceMediatorTest {
                         mProfileMock);
         mFeedSurfaceMediator.updateContent();
 
-        verify(mRecyclerView).addOnLayoutChangeListener(mLayoutChangeListenerCaptor.capture());
         clearInvocations(mListLayoutHelper);
 
-        mLayoutChangeListenerCaptor.getValue().onLayoutChange(null, 0, 0, width, 1000, 0, 0, 0, 0);
+        mRecyclerView.layout(0, 0, width, 1000);
 
         verify(mListLayoutHelper).setColumnCount(expectedSpanCount);
     }
@@ -369,9 +367,12 @@ public class FeedSurfaceMediatorTest {
     @Test
     public void testScrollListenerRegisteredOnCreation() {
         mFeedSurfaceMediator = createMediator();
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
 
         // Verify scroll listener is added to the RecyclerView during creation.
-        verify(mRecyclerView).addOnScrollListener(any(RecyclerView.OnScrollListener.class));
+        assertRecyclerViewScrollForwardedOnce();
     }
 
     @Test
@@ -387,10 +388,23 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(false);
         mFeedSurfaceMediator.updateContent();
 
+        // 3. Turn feed back on so that scroll events are forwarded.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
+
         // Verify scroll listener is not added again or removed.
-        verify(mRecyclerView).addOnScrollListener(any(RecyclerView.OnScrollListener.class));
-        verify(mRecyclerView, never())
-                .removeOnScrollListener(any(RecyclerView.OnScrollListener.class));
+        assertRecyclerViewScrollForwardedOnce();
+    }
+
+    /** Scrolls the RecyclerView and verifies the scroll state change is forwarded exactly once. */
+    private void assertRecyclerViewScrollForwardedOnce() {
+        ScrollListener listener = mock(ScrollListener.class);
+        mFeedSurfaceMediator.addScrollListener(listener);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+
+        mRecyclerView.smoothScrollBy(0, 100);
+
+        verify(listener, times(1)).onScrollStateChanged(RecyclerView.SCROLL_STATE_SETTLING);
     }
 
     private FeedSurfaceMediator createMediator() {

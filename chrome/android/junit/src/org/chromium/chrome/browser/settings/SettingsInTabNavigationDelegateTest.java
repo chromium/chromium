@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -61,7 +62,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link SettingsInTabNavigationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsInTabNavigationDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mMockTab;
@@ -286,10 +286,10 @@ public class SettingsInTabNavigationDelegateTest {
 
     @Test
     public void testExecutePendingNavigations_NoHostFragment_DoesNotCrash() {
-        Activity mockActivity = mock(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
 
         // Verify calling executePendingNavigations with no active host fragment completes safely.
-        mDelegate.executePendingNavigations(mockActivity);
+        mDelegate.executePendingNavigations(activity);
     }
 
     @Test
@@ -352,14 +352,13 @@ public class SettingsInTabNavigationDelegateTest {
     public void testStartSettings_UnmappedFragment_WithHostFragment_ShowsFragmentInHost() {
         RecordingHostFragment hostFragment = attachHostFragment();
 
-        Context mockContext = spy(hostFragment.requireActivity());
-        doNothing().when(mockContext).startActivity(any());
+        Activity activity = hostFragment.requireActivity();
 
-        mDelegate.startSettings(mockContext, UnmappedTestFragment.class);
+        mDelegate.startSettings(activity, UnmappedTestFragment.class);
 
         // A page with no Url belongs in the host that is already open. Launching an Intent would
         // open a second settings tab at the root Url instead.
-        verify(mockContext, never()).startActivity(any());
+        assertNull(Shadows.shadowOf(activity).getNextStartedActivity());
         verify(mMockTab, never()).loadUrl(any());
         assertTrue(hostFragment.mShownFragment instanceof UnmappedTestFragment);
         assertTrue(hostFragment.mShownAddToBackStack);
