@@ -12,7 +12,6 @@
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "url/gurl.h"
 
@@ -165,16 +164,6 @@ AutocompleteMatch CreateHistoryUrlMlScoredMatch(
   return CreateMlScoredMatch(name, omnibox::AutocompleteMatchType::kHistoryUrl,
                              allowed_to_be_default_match, traditional_relevance,
                              ml_output);
-}
-
-AutocompleteMatch CreateAnswerMlScoredMatch(std::string name,
-                                            bool allowed_to_be_default_match,
-                                            int traditional_relevance,
-                                            float ml_output) {
-  AutocompleteMatch match = CreateSearchMlScoredMatch(
-      name, allowed_to_be_default_match, traditional_relevance, ml_output);
-  match.answer_template = omnibox::RichAnswerTemplate();
-  return match;
 }
 
 AutocompleteMatch CreateSearchMlScoredMatch(std::string name,

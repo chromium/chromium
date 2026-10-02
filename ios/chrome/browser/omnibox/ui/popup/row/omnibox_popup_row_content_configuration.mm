@@ -100,8 +100,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
   // Secondary Text.
   _secondaryText = _suggestion.detailText;
-  const BOOL allowsMultilineSecondary =
-      _suggestion.hasAnswer || _suggestion.wrapSecondaryText;
+  const BOOL allowsMultilineSecondary = _suggestion.wrapSecondaryText;
   _secondaryTextNumberOfLines =
       allowsMultilineSecondary ? _suggestion.numberOfLines : 1;
   _secondaryTextFading = !allowsMultilineSecondary;

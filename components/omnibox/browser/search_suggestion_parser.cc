@@ -45,7 +45,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
-#include "third_party/omnibox_proto/rich_suggest_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -724,11 +723,6 @@ SearchSuggestionParser::SuggestResult::ClassifyAnnotation() const {
   return {ACMatchClassification(0, ACMatchClassification::DIM)};
 }
 
-void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
-    const omnibox::RichAnswerTemplate& answer_template) {
-  answer_template_ = answer_template;
-}
-
 void SearchSuggestionParser::SuggestResult::SetSuggestTemplateInfo(
     const omnibox::SuggestTemplateInfo& suggest_template_info) {
   suggest_template_info_ = suggest_template_info;
@@ -1130,13 +1124,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
       }
 
-      omnibox::RichSuggestTemplate suggest_template;
       omnibox::EntityInfo entity_info;
       omnibox::SuggestTemplateInfo suggest_template_info;
       std::u16string match_contents_prefix;
       std::optional<int> suggestion_group_id;
-      bool answer_parsed_successfully = false;
-      omnibox::RichAnswerTemplate answer_template;
       bool has_suggest_template = false;
 
       if (response_metadata.suggestion_details &&
@@ -1144,12 +1135,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
           !(*response_metadata.suggestion_details)[index].GetDict().empty()) {
         const base::DictValue& suggestion_detail =
             (*response_metadata.suggestion_details)[index].GetDict();
-
-        // Rich Suggest Template.
-        const auto* rich_template_str =
-            suggestion_detail.FindString("google:templateinfo");
-        DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(rich_template_str,
-                                                            suggest_template);
 
         // Entity.
         const auto* entity_info_string =
@@ -1175,12 +1160,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
         // Suggestion group Id.
         suggestion_group_id = suggestion_detail.FindInt("zl");
-
-        // Answer.
-        if (suggest_template.has_rich_answer_template()) {
-          answer_template = suggest_template.rich_answer_template();
-          answer_parsed_successfully = true;
-        }
 
         // Entity to SUIT Fallback Translation Layer.
         // If the server sends legacy EntityInfo without SuggestTemplateInfo,
@@ -1209,10 +1188,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
           has_suggest_template
               ? std::make_optional(std::move(suggest_template_info))
               : std::nullopt);
-
-      if (answer_parsed_successfully) {
-        results->suggest_results.back().SetRichAnswerTemplate(answer_template);
-      }
 
       if (suggestion_group_id) {
         results->suggest_results.back().set_suggestion_group_id(

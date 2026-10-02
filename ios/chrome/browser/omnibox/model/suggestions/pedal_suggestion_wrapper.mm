@@ -25,10 +25,6 @@
   return NO;
 }
 
-- (BOOL)hasAnswer {
-  return NO;
-}
-
 - (BOOL)isURL {
   return NO;
 }

@@ -508,19 +508,6 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   bool require_shortcut;
 };
 
-// If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display
-// answers.
-struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
-  DECLARE_FEATURE(kOmniboxSuggestionAnswerMigration);
-  SuggestionAnswerMigration();
-  SuggestionAnswerMigration(const SuggestionAnswerMigration&);
-  SuggestionAnswerMigration(SuggestionAnswerMigration&&);
-  SuggestionAnswerMigration& operator=(const SuggestionAnswerMigration&);
-  SuggestionAnswerMigration& operator=(SuggestionAnswerMigration&&);
-  ~SuggestionAnswerMigration();
-  bool enabled;
-};
-
 struct OmniboxZpsSuggestionLimit : Config<OmniboxZpsSuggestionLimit> {
   DECLARE_FEATURE(kOmniboxZpsSuggestionLimit);
   OmniboxZpsSuggestionLimit();

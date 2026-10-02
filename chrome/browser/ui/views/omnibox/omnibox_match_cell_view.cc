@@ -21,7 +21,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"

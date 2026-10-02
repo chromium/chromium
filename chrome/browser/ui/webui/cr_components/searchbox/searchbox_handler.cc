@@ -90,7 +90,6 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"

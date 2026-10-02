@@ -219,19 +219,6 @@ AndroidNonZPSSection::AndroidNonZPSSection(
               },
               group_configs) {}
 
-void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
-  auto rich_answer_match = std::ranges::find_if(
-      matches,
-      [&](const auto& match) { return match.answer_template.has_value(); });
-  bool has_rich_answer = rich_answer_match != matches.end();
-  if (!has_rich_answer) {
-    return;
-  }
-
-  auto& above_keyboard_group = groups_[1];
-  above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
-}
-
 /* static */ size_t AndroidComposeboxNonZPSSection::num_attachments_;
 /* static */ omnibox::ToolMode AndroidComposeboxNonZPSSection::tool_mode_;
 

@@ -48,7 +48,6 @@ source_set("suggestions") {
   deps = [
     ":omnibox_pedal_swift",
     ":swift_dependencies",
-    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/omnibox/browser",
     "//components/omnibox/common",
@@ -62,7 +61,6 @@ source_set("suggestions") {
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",

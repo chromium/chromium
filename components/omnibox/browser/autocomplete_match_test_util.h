@@ -57,11 +57,6 @@ AutocompleteMatch CreateHistoryUrlMlScoredMatch(
     int traditional_relevance,
     float ml_output);
 
-AutocompleteMatch CreateAnswerMlScoredMatch(std::string name,
-                                            bool allowed_to_be_default_match,
-                                            int traditional_relevance,
-                                            float ml_output);
-
 AutocompleteMatch CreateSearchMlScoredMatch(std::string name,
                                             bool allowed_to_be_default_match,
                                             int traditional_relevance,

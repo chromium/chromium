@@ -590,24 +590,6 @@ base::DictValue SearchAggregatorProvider::CreateMockSearchAggregator(
   return result;
 }
 
-// static
-BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
-             "OmniboxSuggestionAnswerMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-SuggestionAnswerMigration::SuggestionAnswerMigration() {
-  enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
-}
-
-SuggestionAnswerMigration::SuggestionAnswerMigration(
-    const SuggestionAnswerMigration&) = default;
-SuggestionAnswerMigration::SuggestionAnswerMigration(
-    SuggestionAnswerMigration&&) = default;
-SuggestionAnswerMigration& SuggestionAnswerMigration::operator=(
-    const SuggestionAnswerMigration&) = default;
-SuggestionAnswerMigration& SuggestionAnswerMigration::operator=(
-    SuggestionAnswerMigration&&) = default;
-SuggestionAnswerMigration::~SuggestionAnswerMigration() = default;
-
 BASE_FEATURE(OmniboxZpsSuggestionLimit::kOmniboxZpsSuggestionLimit,
              "OmniboxZpsSuggestionLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);

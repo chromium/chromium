@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -34,8 +33,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
-#include "third_party/omnibox_proto/rich_suggest_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 namespace {
@@ -953,246 +950,6 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
   }
 }
 
-TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SuggestionAnswerMigration>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-
-  TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(u"weather los",
-                          metrics::OmniboxEventProto::NTP_REALBOX,
-                          scheme_classifier);
-  // Test behavior with template present; template is set from decoding
-  // "google:templateinfo" field.
-  {
-    // Setup RichAnswerTemplate with answer data.
-    omnibox::RichSuggestTemplate suggest_template;
-    suggest_template.mutable_rich_answer_template();
-
-    std::string json_data =
-        R"([
-      "weather los",
-      ["weather los angeles", "weather los angeles ca", "weather los alamitos"],
-      ["", "", ""],
-      [],
-      {
-        "google:clientdata": {
-          "bpc": false,
-          "tlw": false
-        },
-        "google:suggestdetail": [
-          {
-            "ansa": {
-              "l": [{"il": {"t": [{"t": "weather new york", "tt": 8}]}},
-                {"il": {"at": {"t": "Fri - New York, NY","tt": 19},
-                "i": {"d": "//www.gstatic.com/images/image.png", "t": 3},
-                "t": [{"t": "50F", "tt": 18}]}}]
-            },
-            "ansb": "8",
-            "google:templateinfo": ")" +
-        SerializeAndEncodeProto(suggest_template) +
-        R"("
-          },
-          {},
-          {}
-        ],
-        "google:suggestrelevance": [1252, 1251, 1250],
-        "google:suggestsubtypes": [
-          [512, 433],
-          [512],
-          [512]
-        ],
-        "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
-        "google:verbatimrelevance": 851
-      }
-    ])";
-
-    std::optional<base::Value> root_val =
-        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    ASSERT_TRUE(root_val);
-    ASSERT_TRUE(root_val.value().is_list());
-
-    SearchSuggestionParser::Results results;
-    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
-        /*default_result_relevance=*/400,
-        /*is_keyword_result=*/false, &results));
-
-    // Ensure the correct suggestion has RichAnswerTemplate info and is
-    // correctly parsed.
-    ASSERT_EQ(3U, results.suggest_results.size());
-    ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
-  }
-  // Test behavior with no template present; template is set from parsing "ansa"
-  // JSON field.
-  {
-    std::string json_data = R"([
-      "weather los",
-      ["weather los angeles", "weather los angeles ca", "weather los alamitos"],
-      ["", "", ""],
-      [],
-      {
-        "google:clientdata": {
-          "bpc": false,
-          "tlw": false
-        },
-        "google:suggestdetail": [
-          {
-            "ansa": {
-              "l": [{"il": {"t": [{"t": "weather los angeles", "tt": 8}]}},
-                {"il": {"at": {"t": "Fri - Los Angeles, CA","tt": 19},
-                "i": {"d": "//www.gstatic.com/images/image.png", "t": 3},
-                "t": [{"t": "68F", "tt": 18}]}}]
-            },
-            "ansb": "8"
-          },
-          {},
-          {}
-        ],
-        "google:suggestrelevance": [1300, 602, 601],
-        "google:suggestsubtypes": [
-          [512, 433, 131, 457],
-          [512,402],
-          [512,402]
-        ],
-        "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
-        "google:verbatimrelevance": 1300
-      }
-    ])";
-    std::optional<base::Value> root_val =
-        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    ASSERT_TRUE(root_val);
-    ASSERT_TRUE(root_val.value().is_list());
-
-    SearchSuggestionParser::Results results;
-    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
-        /*default_result_relevance=*/400,
-        /*is_keyword_result=*/false, &results));
-
-    // Ensure the correct suggestion has RichAnswerTemplate info and is
-    // correctly parsed.
-    ASSERT_EQ(3U, results.suggest_results.size());
-    ASSERT_FALSE(results.suggest_results[0].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
-
-  }
-  {
-    // Fallback to JSON parsing when decoding RichAnswerTemplate fails.
-    std::string json_data = R"([
-      "weather los",
-      ["weather los angeles", "weather los angeles ca", "weather los alamitos"],
-      ["", "", ""],
-      [],
-      {
-        "google:clientdata": {
-          "bpc": false,
-          "tlw": false
-        },
-        "google:suggestdetail": [
-          {
-            "ansa": {
-              "l": [{"il": {"t": [{"t": "weather los angeles", "tt": 8}]}},
-                {"il": {"at": {"t": "Fri - Los Angeles, CA","tt": 19},
-                "i": {"d": "//www.gstatic.com/images/image.png", "t": 3},
-                "t": [{"t": "68F", "tt": 18}]}}]
-            },
-            "ansb": "8",
-            "google:templateinfo": "<< invalid format >>"
-          },
-          {},
-          {}
-        ],
-        "google:suggestrelevance": [1300, 602, 601],
-        "google:suggestsubtypes": [
-          [512, 433, 131, 457],
-          [512,402],
-          [512,402]
-        ],
-        "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
-        "google:verbatimrelevance": 1300
-      }
-    ])";
-    std::optional<base::Value> root_val =
-        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    ASSERT_TRUE(root_val);
-    ASSERT_TRUE(root_val.value().is_list());
-
-    SearchSuggestionParser::Results results;
-    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
-        /*default_result_relevance=*/400,
-        /*is_keyword_result=*/false, &results));
-
-    // Ensure the correct suggestion has RichAnswerTemplate info and is
-    // correctly parsed.
-    ASSERT_EQ(3U, results.suggest_results.size());
-    ASSERT_FALSE(results.suggest_results[0].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
-
-  }
-  // Test behavior with template present but has no answers.
-  {
-    // Setup RichAnswerTemplate.
-    omnibox::RichSuggestTemplate suggest_template;
-    suggest_template.mutable_rich_answer_template();
-
-    std::string json_data =
-        R"([
-      "weather los",
-      ["weather los angeles", "weather los angeles ca", "weather los alamitos"],
-      ["", "", ""],
-      [],
-      {
-        "google:clientdata": {
-          "bpc": false,
-          "tlw": false
-        },
-        "google:suggestdetail": [
-          {
-            "ansb": "8",
-            "google:templateinfo": ")" +
-        SerializeAndEncodeProto(suggest_template) +
-        R"("
-          },
-          {},
-          {}
-        ],
-        "google:suggestrelevance": [1300, 602, 601],
-        "google:suggestsubtypes": [
-          [512, 433, 131, 457],
-          [512,402],
-          [512,402]
-        ],
-        "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
-        "google:verbatimrelevance": 1300
-      }
-    ])";
-    std::optional<base::Value> root_val =
-        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    ASSERT_TRUE(root_val);
-    ASSERT_TRUE(root_val.value().is_list());
-
-    SearchSuggestionParser::Results results;
-    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-        root_val->GetList(), input, scheme_classifier,
-        /*default_result_relevance=*/400,
-        /*is_keyword_result=*/false, &results));
-
-    // Results do not have a RichAnswerTemplate populated because of the lack of
-    // answers.
-    ASSERT_EQ(3U, results.suggest_results.size());
-    ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
-  }
-}
-
 TEST(SearchSuggestionParserTest, ParseValidTypes) {
   std::string json_data = R"([
       "",
@@ -1480,37 +1237,20 @@ TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
   };
   // clang-format on
 
-  auto test = [](std::vector<std::string> cases) {
-    for (std::string json_data : cases) {
-      std::optional<base::Value> root_val = base::JSONReader::Read(
-          json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-      ASSERT_TRUE(root_val);
-      ASSERT_TRUE(root_val.value().is_list());
-      TestSchemeClassifier scheme_classifier;
-      AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
-                              scheme_classifier);
-      SearchSuggestionParser::Results results;
-      ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
-          root_val->GetList(), input, scheme_classifier,
-          /*default_result_relevance=*/400,
-          /*is_keyword_result=*/false, &results));
-    }
-  };
-  {
-    SCOPED_TRACE(
-        "Attempting to parse suggest results and populate SuggestionAnswer");
-    test(cases);
-  }
-  {
-    SCOPED_TRACE(
-        "Attempting to parse suggest results and populate RichAnswerTemplate");
-    // Test with kOmniboxSuggestionAnswerMigration, which will attempt to
-    // populate omnibox::RichAnswerTemplate instead of SuggestionAnswer.
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::SuggestionAnswerMigration>
-        scoped_config;
-    scoped_config.Get().enabled = true;
-    test(cases);
+  for (const std::string& json_data : cases) {
+    SCOPED_TRACE(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    ASSERT_TRUE(root_val);
+    ASSERT_TRUE(root_val.value().is_list());
+    TestSchemeClassifier scheme_classifier;
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
+                            scheme_classifier);
+    SearchSuggestionParser::Results results;
+    ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+        root_val->GetList(), input, scheme_classifier,
+        /*default_result_relevance=*/400,
+        /*is_keyword_result=*/false, &results));
   }
 }
 

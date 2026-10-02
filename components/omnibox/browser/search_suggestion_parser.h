@@ -20,7 +20,6 @@
 #include "components/search_engines/search_engine_type.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
@@ -205,12 +204,6 @@ class SearchSuggestionParser {
       return suggestion_group_id_;
     }
 
-    void SetRichAnswerTemplate(
-        const omnibox::RichAnswerTemplate& answer_template);
-    const std::optional<omnibox::RichAnswerTemplate>& answer_template() const {
-      return answer_template_;
-    }
-
     void SetSuggestTemplateInfo(
         const omnibox::SuggestTemplateInfo& suggest_template_info);
     const std::optional<omnibox::SuggestTemplateInfo>& suggest_template_info()
@@ -260,9 +253,6 @@ class SearchSuggestionParser {
     // The optional suggestion group ID used to look up the suggestion group
     // config for the group this suggestion belongs to from the server response.
     std::optional<omnibox::GroupId> suggestion_group_id_;
-
-    // Optional proto that contains answer info for rich answers.
-    std::optional<omnibox::RichAnswerTemplate> answer_template_;
 
     // Proto containing generalized suggestion information.
     std::optional<omnibox::SuggestTemplateInfo> suggest_template_info_;

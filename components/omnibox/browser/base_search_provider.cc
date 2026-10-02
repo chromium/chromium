@@ -43,7 +43,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -159,11 +158,9 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
           suggest_template_info->image().dominant_color();
       match.image_url = GURL(suggest_template_info->image().url());
     }
-    match.answer_template = suggestion.answer_template();
   } else if (suggest_template_info) {
     // Non-Google engines can also provide an entity image, but only ones they
-    // hosted on the same domain. Answers (template, type) aren't handled as
-    // they are Google-only.
+    // hosted on the same domain.
     const GURL image_url(suggest_template_info->image().url());
     if (CanFetchSuggestionImage(image_url, *template_url, search_terms_data)) {
       match.image_dominant_color =
@@ -694,15 +691,8 @@ void BaseSearchProvider::AddMatchToMap(
     // this requires the lower-ranking duplicate being added last. See the use
     // of push_back above:
 
-    // This is to avoid losing the Answers in Suggest information.
     const auto& less_relevant_duplicate_match =
         existing_match.duplicate_matches.back();
-    if (less_relevant_duplicate_match.answer_template &&
-        !existing_match.answer_template) {
-      existing_match.actions = less_relevant_duplicate_match.actions;
-      existing_match.answer_template =
-          less_relevant_duplicate_match.answer_template;
-    }
     // This is to avoid having shopping categorical queries lose their images to
     // higher-relevance local history and verbatim matches. This works for the
     // shopping categorical queries because they only provide images at the
@@ -710,12 +700,11 @@ void BaseSearchProvider::AddMatchToMap(
     // Ideally the entire `entity_info`, when available on a suggestion, should
     // be copied over. However `entity_info` is broken down to its constituents
     // in the constructor of SearchSuggestionParser::SuggestResult and used to
-    // set individual fields on the AutocompleteMatch. This is in contrast to
-    // Answers in Suggest which is kept on the match in its entirety. This is
-    // partly because the entity name is used to set and classify the match
-    // contents. Ideally `entity_info` should also be kept on the match in its
-    // entirety so it can be carried over when deduplicating the matches here or
-    // later in the Autocomplete process.
+    // set individual fields on the AutocompleteMatch. This is partly because
+    // the entity name is used to set and classify the match contents. Ideally
+    // `entity_info` should also be kept on the match in its entirety so it can
+    // be carried over when deduplicating the matches here or later in the
+    // Autocomplete process.
     // TODO(crbug.com/40276602): rework how `entity_info` is used in the match.
     if (!less_relevant_duplicate_match.image_url.is_empty() &&
         existing_match.image_url.is_empty()) {

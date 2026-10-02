@@ -37,7 +37,6 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -367,8 +366,6 @@ struct AutocompleteMatch {
   void UpdateClipboardContent(JNIEnv* env);
   // Update the Java object with new destination URL.
   void UpdateJavaNavigationDetails();
-  // Update the Java object with new Answer-in-Suggest.
-  void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
 #endif
@@ -971,8 +968,6 @@ struct AutocompleteMatch {
   // If true, UI-level code should swap the contents and description fields
   // before displaying.
   bool swap_contents_and_description = false;
-
-  std::optional<omnibox::RichAnswerTemplate> answer_template;
 
   std::optional<omnibox::SuggestTemplateInfo> suggest_template;
 

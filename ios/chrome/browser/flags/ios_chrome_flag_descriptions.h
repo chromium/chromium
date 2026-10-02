@@ -1563,12 +1563,6 @@ inline constexpr char kOmniboxPastePromoExperimentDescription[] =
     "Enables non-modal default browser promo experiment arms for Omnibox "
     "navigation.";
 
-inline constexpr char kOmniboxSuggestionAnswerMigrationName[] =
-    "Omnibox suggestion answer migration";
-inline constexpr char kOmniboxSuggestionAnswerMigrationDescription[] =
-    "Enables omnibox Suggestion answer migration, when enabled the omnibox "
-    "will use the migrated Answer_template instead of answer.";
-
 inline constexpr char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 inline constexpr char kOmniboxUIMaxAutocompleteMatchesDescription[] =

@@ -33,7 +33,6 @@ public class AutocompleteMatchBuilder {
     private List<MatchClassification> mDisplayTextClassifications;
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
-    private byte[] mSerializedAnswerTemplate;
     private String mFillIntoEdit;
     private GURL mUrl;
     private GURL mImageUrl;
@@ -89,7 +88,6 @@ public class AutocompleteMatchBuilder {
         mDisplayTextClassifications = new ArrayList<>();
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
-        mSerializedAnswerTemplate = null;
         mFillIntoEdit = "";
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
@@ -135,7 +133,6 @@ public class AutocompleteMatchBuilder {
                 mDisplayTextClassifications,
                 mDescription,
                 mDescriptionClassifications,
-                mSerializedAnswerTemplate,
                 mFillIntoEdit,
                 mUrl,
                 mImageUrl,
@@ -374,15 +371,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setAdditionalText(String additionalText) {
         mAdditionalText = additionalText;
-        return this;
-    }
-
-    /**
-     * @param serializedAnswerTemplate Serialized RichAnswerTemplate proto.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setSerializedAnswerTemplate(byte[] serializedAnswerTemplate) {
-        mSerializedAnswerTemplate = serializedAnswerTemplate;
         return this;
     }
 
