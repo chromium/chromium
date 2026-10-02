@@ -16,12 +16,14 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_extension_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -240,6 +242,115 @@ TEST_F(IdentityAPITest, FireOnAccountSignInChangedOnlyIfSignedIn) {
   identity_env()->ClearPrimaryAccount();
   Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(IdentityAPITest, TokenCacheErasedAfterClearPrimaryAccount) {
+  std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  AccountInfo account = identity_env()->MakePrimaryAccountAvailable(
+      kTestAccount, signin::ConsentLevel::kSignin);
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  ExtensionTokenKey key(extension_id, account.GetCoreAccountInfo(),
+                        std::set<std::string>{"scope1"});
+  IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
+      "token1", {"scope1"}, base::Seconds(3600));
+
+  // 1. Removing the primary account while keeping refresh tokens specifically
+  // triggers OnPrimaryAccountChanged(kCleared) without triggering
+  // OnExtendedAccountInfoRemoved.
+  api()->token_cache().SetToken(key, token);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            api()->token_cache().GetToken(key).status());
+
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  identity_env()
+      ->identity_manager()
+      ->GetPrimaryAccountMutator()
+      ->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::kTest);
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            api()->token_cache().GetToken(key).status());
+
+  // 2. Full ClearPrimaryAccount revokes all refresh tokens and clears the
+  // primary account.
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  identity_env()->SetPrimaryAccount(account.GetEmail(),
+                                    signin::ConsentLevel::kSignin);
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  api()->token_cache().SetToken(key, token);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            api()->token_cache().GetToken(key).status());
+
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  identity_env()->ClearPrimaryAccount();
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            api()->token_cache().GetToken(key).status());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(IdentityAPITest, TokenCacheErasedAfterRefreshTokenRemoved) {
+  std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(2);
+  AccountInfo primary = identity_env()->MakePrimaryAccountAvailable(
+      kTestAccount, signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_env()->MakeAccountAvailable("secondary@example.com");
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  ExtensionTokenKey key(extension_id, secondary.GetCoreAccountInfo(),
+                        std::set<std::string>{"scope1"});
+  IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
+      "token1", {"scope1"}, base::Seconds(3600));
+  api()->token_cache().SetToken(key, token);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            api()->token_cache().GetToken(key).status());
+
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  identity_env()->RemoveRefreshTokenForAccount(secondary.GetAccountId());
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            api()->token_cache().GetToken(key).status());
+}
+
+TEST_F(IdentityAPITest, TokenCacheErasedAfterPersistentAuthError) {
+  std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  AccountInfo account = identity_env()->MakePrimaryAccountAvailable(
+      kTestAccount, signin::ConsentLevel::kSignin);
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+
+  ExtensionTokenKey key(extension_id, account.GetCoreAccountInfo(),
+                        std::set<std::string>{"scope1"});
+  IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
+      "token1", {"scope1"}, base::Seconds(3600));
+  api()->token_cache().SetToken(key, token);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            api()->token_cache().GetToken(key).status());
+
+  // Updating a valid refresh token triggers
+  // OnErrorStateOfRefreshTokenUpdatedForAccount with AuthErrorNone(), which
+  // should not evict the cached token.
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(1);
+  identity_env()->SetRefreshTokenForAccount(account.GetAccountId());
+  Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            api()->token_cache().GetToken(key).status());
+
+  identity_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            api()->token_cache().GetToken(key).status());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

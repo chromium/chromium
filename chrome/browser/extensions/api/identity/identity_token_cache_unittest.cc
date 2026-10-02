@@ -9,6 +9,8 @@
 
 #include "base/test/task_environment.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -25,8 +27,10 @@ class IdentityTokenCacheTest : public testing::Test {
  public:
   void SetAccessToken(const std::string& ext_id,
                       const std::string& token_string,
-                      const std::set<std::string>& scopes) {
-    SetAccessTokenInternal(ext_id, token_string, scopes, base::Seconds(3600));
+                      const std::set<std::string>& scopes,
+                      const CoreAccountId& account_id = CoreAccountId()) {
+    SetAccessTokenInternal(ext_id, token_string, scopes, base::Seconds(3600),
+                           account_id);
   }
 
   void SetExpiredAccessToken(const std::string& ext_id,
@@ -37,29 +41,41 @@ class IdentityTokenCacheTest : public testing::Test {
     task_environment_.FastForwardBy(base::Milliseconds(2));
   }
 
-  void SetRemoteConsentApprovedToken(const std::string& ext_id,
-                                     const std::string& consent_result,
-                                     const std::set<std::string>& scopes) {
-    ExtensionTokenKey key(ext_id, CoreAccountInfo(), scopes);
+  void SetRemoteConsentApprovedToken(
+      const std::string& ext_id,
+      const std::string& consent_result,
+      const std::set<std::string>& scopes,
+      const CoreAccountId& account_id = CoreAccountId()) {
+    CoreAccountInfo account_info;
+    account_info.account_id = account_id;
+    ExtensionTokenKey key(ext_id, account_info, scopes);
     IdentityTokenCacheValue token =
         IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result);
     cache_.SetToken(key, token);
   }
 
-  const IdentityTokenCacheValue& GetToken(const std::string& ext_id,
-                                          const std::set<std::string>& scopes) {
-    ExtensionTokenKey key(ext_id, CoreAccountInfo(), scopes);
+  const IdentityTokenCacheValue& GetToken(
+      const std::string& ext_id,
+      const std::set<std::string>& scopes,
+      const CoreAccountId& account_id = CoreAccountId()) {
+    CoreAccountInfo account_info;
+    account_info.account_id = account_id;
+    ExtensionTokenKey key(ext_id, account_info, scopes);
     return cache_.GetToken(key);
   }
 
   IdentityTokenCache& cache() { return cache_; }
 
  private:
-  void SetAccessTokenInternal(const std::string& ext_id,
-                              const std::string& token_string,
-                              const std::set<std::string>& scopes,
-                              base::TimeDelta time_to_live) {
-    ExtensionTokenKey key(ext_id, CoreAccountInfo(), scopes);
+  void SetAccessTokenInternal(
+      const std::string& ext_id,
+      const std::string& token_string,
+      const std::set<std::string>& scopes,
+      base::TimeDelta time_to_live,
+      const CoreAccountId& account_id = CoreAccountId()) {
+    CoreAccountInfo account_info;
+    account_info.account_id = account_id;
+    ExtensionTokenKey key(ext_id, account_info, scopes);
     IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
         token_string, scopes, time_to_live);
     cache_.SetToken(key, token);
@@ -238,6 +254,50 @@ TEST_F(IdentityTokenCacheTest, EraseAllTokensForExtension) {
             GetToken(unrelated_extension, scopes_1).status());
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED,
             GetToken(unrelated_extension, scopes_2).status());
+}
+
+TEST_F(IdentityTokenCacheTest, EraseAllTokensForAccount) {
+  CoreAccountId account_1 = CoreAccountId::FromGaiaId(GaiaId("account_1"));
+  CoreAccountId account_2 = CoreAccountId::FromGaiaId(GaiaId("account_2"));
+  std::string token_string = "token";
+  std::set<std::string> scopes_1 = {"foo", "bar"};
+  std::set<std::string> scopes_2 = {"foo", "foobar"};
+
+  SetAccessToken(kDefaultExtensionId, token_string, scopes_1, account_1);
+  SetRemoteConsentApprovedToken(kDefaultExtensionId, "approved", scopes_2,
+                                account_1);
+
+  std::string another_extension = "another_ext";
+  SetAccessToken(another_extension, token_string, scopes_1, account_2);
+  SetRemoteConsentApprovedToken(another_extension, "approved", scopes_2,
+                                account_2);
+
+  IdentityTokenCache::AccessTokensKey access_key_1(kDefaultExtensionId,
+                                                   account_1);
+  IdentityTokenCache::AccessTokensKey access_key_2(another_extension,
+                                                   account_2);
+  EXPECT_EQ(2ul, cache().access_tokens_cache().size());
+  EXPECT_TRUE(cache().access_tokens_cache().contains(access_key_1));
+  EXPECT_TRUE(cache().access_tokens_cache().contains(access_key_2));
+
+  // Erase tokens for account_1.
+  cache().EraseAllTokensForAccount(account_1);
+
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            GetToken(kDefaultExtensionId, scopes_1, account_1).status());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            GetToken(kDefaultExtensionId, scopes_2, account_1).status());
+
+  // access_tokens_cache_ should no longer contain account_1.
+  EXPECT_EQ(1ul, cache().access_tokens_cache().size());
+  EXPECT_FALSE(cache().access_tokens_cache().contains(access_key_1));
+  EXPECT_TRUE(cache().access_tokens_cache().contains(access_key_2));
+
+  // Account 2 tokens should remain untouched.
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+            GetToken(another_extension, scopes_1, account_2).status());
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED,
+            GetToken(another_extension, scopes_2, account_2).status());
 }
 
 TEST_F(IdentityTokenCacheTest, GetAccessTokens) {

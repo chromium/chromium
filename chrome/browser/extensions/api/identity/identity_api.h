@@ -142,6 +142,11 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   void OnRefreshTokensLoaded() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   // NOTE: This class must listen for this callback rather than
   // OnRefreshTokenRemovedForAccount() to obtain the Gaia ID of the removed
   // account.

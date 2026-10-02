@@ -103,8 +103,12 @@ To avoid frequent round-trips to Gaia and provide fast response times, `Identity
 * **Superset Scope Matching**:
   Minted tokens are indexed by extension ID and account. When looking up a token, the cache searches for any cached token whose granted scopes form a **superset** of the requested scopes. Because cached tokens are sorted in ascending order of scope count, the cache returns the smallest superset that satisfies the request, prioritizing exact scope matches.
 * **Expiration & Invalidation**:
-  * Expired tokens are purged lazily on lookup, or explicitly evicted when an extension calls `removeCachedAuthToken` or `clearAllCachedAuthTokens`.
-  * `IdentityAPI` observes `IdentityManager`; if an account signs out or its refresh token is revoked, all cached tokens and saved account preferences for that account are cleared immediately.
+  `IdentityAPI` observes `IdentityManager` and distinguishes between full account removal and token-only cache invalidation:
+  * **Account Removal**: When an account is removed from Chrome (its refresh token is revoked) or when the user signs out of Chrome's primary account (which revokes extension access to all Chrome accounts), Chrome disassociates the account from extensions entirely: it clears any saved extension-to-account preferences, fires `chrome.identity.onSignInChanged` (`signedIn: false`), and evicts all cached tokens for the affected account(s).
+  * **Token Cache Invalidation (Without Account Removal)**: Cached tokens are evicted while keeping the account itself associated with the extension when:
+    * A token reaches its TTL expiration (purged lazily on lookup).
+    * An extension explicitly calls `removeCachedAuthToken` or `clearAllCachedAuthTokens`.
+    * An account's refresh token enters a persistent authentication error state (for example, when credentials become invalid after a web sign-out or password change). The account remains signed in to Chrome and bound to the extension (`onSignInChanged` is not fired), but its cached tokens are immediately evicted so extensions do not repeatedly receive stale, rejected tokens.
 * **Request Queueing (`IdentityMintRequestQueue`)**:
   If an extension makes multiple concurrent calls to `getAuthToken` for the same extension, account, and scopes, `IdentityMintRequestQueue` places them into FIFO queues (separate queues for non-interactive and interactive steps). This prevents redundant parallel requests to Gaia and ensures only a single interactive consent dialog is shown at a time; once the first request populates the cache, queued requests behind it reuse the cached token.
 
@@ -273,6 +277,7 @@ ChromeOS features shared and managed deployment modes where standard interactive
 - **Sign-In Focus Suppression**: Extensions triggering browser sign-in cannot repeatedly steal window or tab focus; if a Dice sign-in tab is already open, `SigninViewController` suppresses `ActivateTabAt` for `AccessPoint::kExtensions`.
 - **Loopback Navigation Isolation**: Navigations to `https://<extension-id>.chromiumapp.org/*` are intercepted in-process by `WebAuthFlow` and never hit external networks.
 - **Flow Exclusivity**: An extension may only have one active interactive `launchWebAuthFlow` running at any given time, tracked by `IdentityAPI::StartTrackingWebAuthFlow()`.
+- **Cache Invalidation on Credential Invalidation**: Cached tokens in `IdentityTokenCache` are strictly bound to valid refresh tokens. When an account is removed (`OnExtendedAccountInfoRemoved`) or enters a persistent authentication error state (`OnErrorStateOfRefreshTokenUpdatedForAccount`), all cached tokens for that account are evicted immediately to prevent stale token reuse loops.
 - **Lifecycle & Shutdown**: `IdentityAPI` is tied to the lifetime of the `Profile`. On profile shutdown, all pending requests in `IdentityMintRequestQueue`, active `GaiaRemoteConsentFlow` instances, and running `WebAuthFlow` controllers are canceled and destroyed.
 
 ## Side Effects

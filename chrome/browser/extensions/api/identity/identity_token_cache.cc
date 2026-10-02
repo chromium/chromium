@@ -214,6 +214,20 @@ void IdentityTokenCache::EraseAllTokensForExtension(
                 });
 }
 
+void IdentityTokenCache::EraseAllTokensForAccount(
+    const CoreAccountId& account_id) {
+  std::erase_if(access_tokens_cache_,
+                [&account_id](const auto& key_value_pair) {
+                  const AccessTokensKey& key = key_value_pair.first;
+                  return key.account_id == account_id;
+                });
+  std::erase_if(intermediate_value_cache_,
+                [&account_id](const auto& key_value_pair) {
+                  const ExtensionTokenKey& key = key_value_pair.first;
+                  return key.account_info.account_id == account_id;
+                });
+}
+
 void IdentityTokenCache::EraseAllTokens() {
   intermediate_value_cache_.clear();
   access_tokens_cache_.clear();
