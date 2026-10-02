@@ -64,6 +64,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1112,6 +1113,7 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/566768773")
     public void testRenameWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
