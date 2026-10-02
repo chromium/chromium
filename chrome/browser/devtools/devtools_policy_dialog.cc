@@ -149,7 +149,7 @@ void DevToolsPolicyDialog::TestOnlyCloseDialog(
   }
 
   views::Widget::Widgets child_widgets =
-      views::Widget::GetAllChildWidgets(top_level_view);
+      views::Widget::GetAllOwnedWidgets(top_level_view);
 
   for (views::Widget* widget : child_widgets) {
     if (!widget || !widget->IsVisible() || !widget->widget_delegate()) {

@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -1491,10 +1492,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an
 // accessible title for tab-modal dialogs is not necessary.
 #if !BUILDFLAG(IS_MAC)
+class BrowserViewDesktopWidgetDisabledTest : public BrowserViewTest {
+ public:
+  BrowserViewDesktopWidgetDisabledTest() {
+    feature_list_.InitAndDisableFeature(features::kTabModalUsesDesktopWidget);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Open a tab-modal dialog and check that the accessibility tree only contains
 // the dialog.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
+IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetDisabledTest,
+                       GetAccessibleTabModalDialogTree) {
   content::ScopedAccessibilityModeOverride ax_mode_override(
       ui::kAXModeComplete);
   ui::AXPlatformNode* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(
@@ -1541,6 +1552,56 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
   EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "OK"),
             nullptr);
 }
+
+class BrowserViewDesktopWidgetEnabledTest : public BrowserViewTest {
+ public:
+  BrowserViewDesktopWidgetEnabledTest() {
+    feature_list_.InitAndEnableFeature(features::kTabModalUsesDesktopWidget);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Open a tab-modal dialog and check there are separate accessibility trees for
+// the browser and the dialog.
+IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetEnabledTest,
+                       GetAccessibleTabModalDialogTree) {
+  content::ScopedAccessibilityModeOverride ax_mode_override(
+      ui::kAXModeComplete);
+  ui::AXPlatformNode* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(
+      browser_view()->GetWidget()->GetRootView()->GetNativeViewAccessible());
+// We expect this conversion to be safe on Windows, but can't guarantee that it
+// is safe on other platforms.
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(ax_node);
+#else
+  if (!ax_node) {
+    return;
+  }
+#endif
+
+  content::WebContents* contents = browser_view()->GetActiveWebContents();
+  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
+
+  auto* dialog = static_cast<TabModalConfirmDialogViews*>(
+      TabModalConfirmDialog::Create(std::move(delegate), contents));
+  ui::AXPlatformNode* dialog_ax_node =
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          dialog->GetWidget()->GetRootView()->GetNativeViewAccessible());
+  ASSERT_TRUE(dialog_ax_node);
+  // When using a desktop widget, the dialog has its own root accessibility
+  // node, while the browser's accessibility tree retains the browser UI.
+  EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(
+                ax_node, l10n_util::GetStringUTF8(IDS_ACCNAME_APP)),
+            nullptr);
+  EXPECT_EQ(ui::AXPlatformNodeTestHelper::FindChildByName(
+                dialog_ax_node, l10n_util::GetStringUTF8(IDS_ACCNAME_APP)),
+            nullptr);
+  EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(dialog_ax_node, "OK"),
+            nullptr);
+}
+
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Tests that a content area scrim is shown when a tab modal dialog is active.

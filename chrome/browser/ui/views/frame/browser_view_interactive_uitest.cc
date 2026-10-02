@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
@@ -639,12 +640,33 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
   std::u16string GetDialogMessage() override { return std::u16string(); }
 };
 
+class BrowserViewDesktopWidgetDisabledTest : public BrowserViewTest {
+ public:
+  BrowserViewDesktopWidgetDisabledTest() {
+    feature_list_.InitAndDisableFeature(features::kTabModalUsesDesktopWidget);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class BrowserViewDesktopWidgetEnabledTest : public BrowserViewTest {
+ public:
+  BrowserViewDesktopWidgetEnabledTest() {
+    feature_list_.InitAndEnableFeature(features::kTabModalUsesDesktopWidget);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 // Open a tab-modal dialog and check that the accessible window title is the
 // title of the dialog. The accessible window title is based on the focused
 // dialog and this dependency on focus is why this is an interactive ui test.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
+IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetDisabledTest,
+                       GetAccessibleTabModalDialogTitle) {
   std::u16string window_title =
       u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
@@ -656,6 +678,41 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
   TabModalConfirmDialog::Create(std::move(delegate), contents);
   EXPECT_EQ(browser_view()->GetAccessibleWindowTitle(),
             delegate_observer->GetTitle());
+
+  delegate_observer->Close();
+
+  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
+                               window_title, base::CompareCase::SENSITIVE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetEnabledTest,
+                       GetAccessibleTabModalDialogTitle) {
+  std::u16string window_title =
+      u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
+                               window_title, base::CompareCase::SENSITIVE));
+
+  content::WebContents* contents = browser_view()->GetActiveWebContents();
+  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
+  TestTabModalConfirmDialogDelegate* delegate_observer = delegate.get();
+
+// When using desktop widgets, the dialog has its own window title. The
+// browser accessible window title should not be updated with the dialog
+// title.
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* dialog = static_cast<TabModalConfirmDialogViews*>(
+      TabModalConfirmDialog::Create(std::move(delegate), contents));
+  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
+                               window_title, base::CompareCase::SENSITIVE));
+  EXPECT_EQ(dialog->GetWidget()->widget_delegate()->GetAccessibleWindowTitle(),
+            delegate_observer->GetTitle());
+#else
+  TabModalConfirmDialog::Create(std::move(delegate), contents);
+  // The desktop widget override is a no-op on ChromeOS. The browser
+  // accessibility title should be updated to the dialog title.
+  EXPECT_EQ(browser_view()->GetAccessibleWindowTitle(),
+            delegate_observer->GetTitle());
+#endif
 
   delegate_observer->Close();
 
