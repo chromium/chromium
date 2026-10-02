@@ -700,6 +700,7 @@ if (is_android) {
       "//chromecast/android:libcast_browser_android",
       "//chromecast/browser/android:cast_shell_java",
       "//chromecast/browser/android:cast_shell_manifest",
+      "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//third_party/jni_zero:jni_zero_java",
     ]
