@@ -67,7 +67,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -88,13 +87,10 @@ import org.chromium.ui.test.util.ViewUtils;
 })
 public class SigninButtonCoordinatorTest {
 
-    private static final FakeAccountManagerFacade sFakeAccountManagerFacade =
-            new FakeAccountManagerFacade(/* serializeToPrefs= */ false);
-
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule(sFakeAccountManagerFacade);
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Rule(order = 1)
     public final AutoResetCtaTransitTestRule mActivityTestRule =
@@ -126,10 +122,6 @@ public class SigninButtonCoordinatorTest {
                         }
                     }
                 });
-        if (mSigninTestRule.getPrimaryAccount() != null) {
-            mSigninTestRule.forceSignOut();
-        }
-        ThreadUtils.runOnUiThreadBlocking(sFakeAccountManagerFacade::removeAllAccounts);
     }
 
     @Test

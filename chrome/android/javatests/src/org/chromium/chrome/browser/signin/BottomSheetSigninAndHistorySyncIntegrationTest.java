@@ -103,7 +103,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -123,19 +122,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    /**
-     * SigninManagerImpl captures AccountManagerFacadeProvider.getInstance() once, when the
-     * profile's SigninManager is created, and observes that instance for the lifetime of the
-     * browser process. A batched class outlives the individual tests, so every test has to install
-     * the same fake facade. Otherwise accounts added by the second and later tests are never seeded
-     * into native, and sign-in fails with kAccountInfoEmpty while the account picker fails to
-     * resolve profile data for the account it was asked to select.
-     */
-    private static final FakeAccountManagerFacade sFakeAccountManagerFacade =
-            new FakeAccountManagerFacade(/* serializeToPrefs= */ false);
-
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule(sFakeAccountManagerFacade);
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     /*
      * The tested SigninAndHistorySyncActivity will be on top of a blank ChromeTabbedActivity.
@@ -249,11 +237,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
             mSigninTestRule.forceSignOut();
         }
         ThreadUtils.runOnUiThreadBlocking(() -> mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true));
-        // The facade is shared by the whole class, so the accounts a test adds have to be dropped
-        // here. Removing them also notifies SigninManagerImpl, which reseeds native with the empty
-        // account list and leaves the next test with a clean identity state.
-        mSigninTestRule.setAddAccountFlowResult(null);
-        ThreadUtils.runOnUiThreadBlocking(sFakeAccountManagerFacade::removeAllAccounts);
         HistorySyncHelper.setInstanceForTesting(null);
         DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
     }

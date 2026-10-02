@@ -48,6 +48,14 @@ public class SigninTestRule implements TestRule {
     public static final Matcher<View> CANCEL_ADD_ACCOUNT_BUTTON_MATCHER =
             withId(FakeAccountManagerFacade.AddAccountActivityStub.CANCEL_BUTTON_ID);
 
+    // Shared facade across batched tests. SigninManagerImpl (a native profile singleton)
+    // registers an AccountsChangeObserver on the facade once during startup and never
+    // re-registers. A shared static instance prevents observer disconnect across batched
+    // test methods, while createWithCleanups() resets account state between runs.
+    private static final FakeAccountManagerFacade sSharedFakeAccountManagerFacade =
+            new FakeAccountManagerFacade(false);
+
+    private final boolean mAutomaticCleanupsEnabled;
     private boolean mIsSignedIn;
     private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
             new SigninTestUtil.CustomDeviceLockActivityLauncher();
@@ -55,15 +63,27 @@ public class SigninTestRule implements TestRule {
     private final FakeAccountManagerFacade mFakeAccountManagerFacade;
 
     public SigninTestRule() {
-        this(new FakeAccountManagerFacade(false));
+        this(new FakeAccountManagerFacade(false), /* automaticCleanupsEnabled= */ false);
     }
 
     public SigninTestRule(boolean serializeToPrefs) {
-        this(new FakeAccountManagerFacade(serializeToPrefs));
+        this(new FakeAccountManagerFacade(serializeToPrefs), /* automaticCleanupsEnabled= */ false);
     }
 
     public SigninTestRule(FakeAccountManagerFacade fakeAccountManagerFacade) {
+        this(fakeAccountManagerFacade, /* automaticCleanupsEnabled= */ false);
+    }
+
+    private SigninTestRule(
+            FakeAccountManagerFacade fakeAccountManagerFacade, boolean automaticCleanupsEnabled) {
         mFakeAccountManagerFacade = fakeAccountManagerFacade;
+        mAutomaticCleanupsEnabled = automaticCleanupsEnabled;
+    }
+
+    /** Creates a {@link SigninTestRule} that supports test batching with automatic cleanups. */
+    public static SigninTestRule createWithCleanups() {
+        return new SigninTestRule(
+                sSharedFakeAccountManagerFacade, /* automaticCleanupsEnabled= */ true);
     }
 
     @Override
@@ -88,6 +108,28 @@ public class SigninTestRule implements TestRule {
 
     public void tearDownRule() {
         DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
+        if (mAutomaticCleanupsEnabled) {
+            cleanUpAccountsAndSignOut();
+        }
+    }
+
+    /** Resets the fake account management and sign-in state to pristine condition. */
+    private void cleanUpAccountsAndSignOut() {
+        // TODO(crbug.com/40743432): Handle teardown failures. See comment:
+        // crrev.com/c/8493752/comment/d0bb43e9_c67bcd9c/
+        if (mIsSignedIn || (ProfileManager.isInitialized() && getPrimaryAccount() != null)) {
+            forceSignOut();
+        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeAccountManagerFacade.removeAllAccounts();
+                    mFakeAccountManagerFacade.setAddAccountFlowResult(null);
+                    // TODO(crbug.com/40743432): Also reset mDidAccountFetchingSucceed,
+                    // mBlockedGetAccountsPromise, and mGetAccessTokenError in
+                    // FakeAccountManagerFacade.
+                    // See crrev.com/c/8493752/comments/3bd13a48_85275c53
+                });
+        mIsSignedIn = false;
     }
 
     /** Adds an account to the fake AccountManagerFacade */
