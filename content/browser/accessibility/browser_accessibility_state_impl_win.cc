@@ -660,7 +660,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   ui::AssistiveTech most_important_assistive_tech = ui::AssistiveTech::kNone;
 
   if (HasTarget(AccessibilityTarget::kWinMagnifier)) {
-    base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
+    base::debug::SetCrashKeyString(ax_win_magnifier_crash_key, "true");
     most_important_assistive_tech = ui::AssistiveTech::kWinMagnifier;
   } else {
     base::debug::ClearCrashKeyString(ax_win_magnifier_crash_key);
