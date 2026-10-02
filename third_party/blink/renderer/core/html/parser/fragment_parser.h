@@ -41,9 +41,7 @@ class CORE_EXPORT FragmentParserConfig {
   };
 
   static FragmentParserConfig ForContainer(ContainerNode* context,
-                                           Sanitizer::Mode mode,
-                                           const AtomicString& interface_name,
-                                           const AtomicString& property_name);
+                                           Sanitizer::Mode mode);
 
   Sanitizer::Mode sanitizer_mode = Sanitizer::Mode::kUnsafe;
   ParseDeclarativeShadowRoots parse_declarative_shadows =

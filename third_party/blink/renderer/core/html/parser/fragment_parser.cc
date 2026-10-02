@@ -205,18 +205,13 @@ FragmentParserOptions FragmentParserOptions::From(
 }
 
 // static
-FragmentParserConfig FragmentParserConfig::ForContainer(
-    ContainerNode* context,
-    Sanitizer::Mode mode,
-    const AtomicString& interface_name,
-    const AtomicString& property_name) {
+FragmentParserConfig FragmentParserConfig::ForContainer(ContainerNode* context,
+                                                        Sanitizer::Mode mode) {
   CHECK(context->IsElementNode() || context->IsShadowRoot());
   return {.sanitizer_mode = mode,
           .parse_declarative_shadows =
               FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
           .force_html = FragmentParserConfig::ForceHtml::kForce,
-          .interface_name = interface_name,
-          .property_name = property_name,
           .context_element = context->IsElementNode()
                                  ? To<Element>(context)
                                  : &To<ShadowRoot>(context)->host(),

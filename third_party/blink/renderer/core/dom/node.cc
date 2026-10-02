@@ -1066,9 +1066,7 @@ void Node::replaceWithHTML(const String& html,
   if (ContainerNode* parent = ParentForHTMLInsertion(this, exception_state)) {
     parent->ReplaceChildWithHTML(
         this, html,
-        FragmentParserConfig::ForContainer(
-            parent, Sanitizer::Mode::kSafe, trusted_types_names::kNode,
-            trusted_types_names::kReplaceWithHTML),
+        FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kSafe),
         FragmentParserOptions(options), exception_state);
   }
 }
@@ -1089,9 +1087,8 @@ void Node::replaceWithHTMLUnsafe(
   if (!parent) {
     return;
   }
-  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
-      parent, Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kReplaceWithHTMLUnsafe);
+  const FragmentParserConfig config =
+      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kUnsafe);
 
   parent->ReplaceChildWithHTML(this, compliant_string, config, resolved_options,
                                exception_state);
@@ -1106,9 +1103,7 @@ void Node::beforeHTML(const String& html,
   }
   parent->InsertHTMLBefore(
       this, html,
-      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kSafe,
-                                         trusted_types_names::kNode,
-                                         trusted_types_names::kBeforeHTML),
+      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kSafe),
       FragmentParserOptions(options), exception_state);
 }
 
@@ -1128,9 +1123,8 @@ void Node::beforeHTMLUnsafe(
   if (!parent) {
     return;
   }
-  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
-      parent, Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kBeforeHTMLUnsafe);
+  const FragmentParserConfig config =
+      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kUnsafe);
 
   parent->InsertHTMLBefore(this, compliant_string, config, resolved_options,
                            exception_state);
@@ -1145,9 +1139,7 @@ void Node::afterHTML(const String& html,
   }
   parent->InsertHTMLBefore(
       nextSibling(), html,
-      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kSafe,
-                                         trusted_types_names::kNode,
-                                         trusted_types_names::kAfterHTML),
+      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kSafe),
       FragmentParserOptions(options), exception_state);
 }
 
@@ -1167,9 +1159,8 @@ void Node::afterHTMLUnsafe(
   if (!parent) {
     return;
   }
-  const FragmentParserConfig config = FragmentParserConfig::ForContainer(
-      parent, Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
-      trusted_types_names::kAfterHTMLUnsafe);
+  const FragmentParserConfig config =
+      FragmentParserConfig::ForContainer(parent, Sanitizer::Mode::kUnsafe);
 
   parent->InsertHTMLBefore(nextSibling(), compliant_string, config,
                            resolved_options, exception_state);
