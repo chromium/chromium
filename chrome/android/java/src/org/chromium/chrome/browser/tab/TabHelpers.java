@@ -79,7 +79,7 @@ public final class TabHelpers {
                 && tab.getWindowAndroid() != null
                 && tab.getWindowAndroid().getActivity().get() != null) {
             Activity activity = tab.getWindowAndroid().getActivity().get();
-            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)) {
+            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)) {
                 DisplayCutoutTabHelper.from(tab);
             }
         }

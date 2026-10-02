@@ -90,6 +90,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -675,7 +676,7 @@ public class EdgeToEdgeControllerTest {
     public void isSupportedConfiguration_default() {
         assertTrue(
                 "The default setup should be a supported configuration but it not!",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
 
@@ -685,7 +686,7 @@ public class EdgeToEdgeControllerTest {
         assertNull(activity.getWindow().getDecorView().getRootWindowInsets());
         assertFalse(
                 "The activity is not supported before its root window insets is available.",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity));
     }
 
     @Test
@@ -696,7 +697,7 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Even the always-draw flags do not override the device abilities.
         assertFalse(
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
 
@@ -708,7 +709,7 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Even the always-draw flags do not override the device abilities.
         assertTrue(
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
 
@@ -719,13 +720,13 @@ public class EdgeToEdgeControllerTest {
         // Even the always-draw flags do not override the device abilities.
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
         assertFalse(
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
 
     @Test
     public void supportConfigurationRecorded() {
-        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
         try (var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.EdgeToEdge.SupportedConfigurationSwitch2")
@@ -736,7 +737,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void supportConfigurationRecorded_supportedToUnsupported() {
-        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.EdgeToEdge.SupportedConfigurationSwitch2",
@@ -753,7 +754,7 @@ public class EdgeToEdgeControllerTest {
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         assertTrue(
                 "e2e bottom chin should be enabled on tablet",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
     }
 
     @Test
@@ -763,7 +764,7 @@ public class EdgeToEdgeControllerTest {
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         assertFalse(
                 "e2e bottom chin should be disabled on tablet when feature is disabled",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
     }
 
     @Test
@@ -773,14 +774,29 @@ public class EdgeToEdgeControllerTest {
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         assertFalse(
                 "e2e bottom chin should be disabled on tablet when width is less than min width",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void testShouldShowBottomChinByDefaultOnTablet() {
+        DisplayUtil.setCurrentSmallestScreenWidthForTesting(600);
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(EdgeToEdgeUtils.shouldShowBottomChinByDefaultOnTablet(mActivity));
+
+        ChromeFeatureList.sEdgeToEdgeTabletInvisibleBottomChinMinWidth.setForTesting(800);
+        assertTrue(EdgeToEdgeUtils.shouldShowBottomChinByDefaultOnTablet(mActivity));
+
+        ChromeFeatureList.sEdgeToEdgeTabletInvisibleBottomChinMinWidth.setForTesting(600);
+        assertFalse(EdgeToEdgeUtils.shouldShowBottomChinByDefaultOnTablet(mActivity));
     }
 
     @Test
     public void supportConfigurationRecorded_unsupportToSupported() {
         // Simulate a 3-button navbar being added without activity recreation.
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
-        assertFalse(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+        assertFalse(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         var watcher =
@@ -1094,7 +1110,7 @@ public class EdgeToEdgeControllerTest {
     public void drawToEdge_configurationChanges_tappable() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(null);
 
-        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
@@ -1125,7 +1141,7 @@ public class EdgeToEdgeControllerTest {
     public void drawToEdge_configurationChanges_neitherTappableNorGesture() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(null);
 
-        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
+        assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);

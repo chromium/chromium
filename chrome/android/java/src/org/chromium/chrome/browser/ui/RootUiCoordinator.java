@@ -2696,7 +2696,7 @@ public class RootUiCoordinator
                             instanceof TransitiveTopInsetProvider transitiveTopInsetProvider) {
                 transitiveTopInsetProvider.set(mEdgeToEdgeController);
             }
-            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)) {
+            if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity)) {
                 mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
                 // Only check for missing navbar insets when the bottom chin is enabled to avoid
                 // false positives when initialized solely for top edge-to-edge (e.g. 3-button nav).

@@ -460,7 +460,8 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         // toolbar) and bottom chin is enabled. Note: Bottom inset is 0 in 3-button mode.
         boolean isOnlyNavBarPresent =
                 (bottomInset == mBrowserControlsVisibilityManager.getBottomControlsHeight());
-        return isOnlyNavBarPresent && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
+        return isOnlyNavBarPresent
+                && EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity);
     }
 
     private int getScrimBottomMargin(boolean affectsNavBar) {

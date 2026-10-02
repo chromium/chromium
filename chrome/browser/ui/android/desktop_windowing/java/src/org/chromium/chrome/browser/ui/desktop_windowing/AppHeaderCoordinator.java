@@ -411,7 +411,7 @@ public class AppHeaderCoordinator
             View view, WindowInsetsCompat windowInsetsCompat) {
         if (EdgeToEdgeUtils.isEdgeToEdgeTabletEnabled()
                 && mActivity != null
-                && EdgeToEdgeUtils.isSupportedTablet(mActivity)) {
+                && EdgeToEdgeUtils.isBottomEdgeToEdgeSupportedOnTablet(mActivity)) {
             return windowInsetsCompat;
         }
         mKeyboardInset = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;

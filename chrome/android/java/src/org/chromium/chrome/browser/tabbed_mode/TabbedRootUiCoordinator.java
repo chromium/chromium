@@ -2104,7 +2104,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected Destroyable createEdgeToEdgeBottomChin() {
         boolean defaultVisibility =
                 !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                        || EdgeToEdgeUtils.defaultVisibilityOfBottomChinOnTablet(mActivity);
+                        || EdgeToEdgeUtils.shouldShowBottomChinByDefaultOnTablet(mActivity);
         assert mWindowAndroid != null;
         assert mLayoutManager != null;
         SystemBarColorHelper bottomChinColorHelper =
@@ -2847,7 +2847,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected boolean supportsEdgeToEdge() {
         // EdgeToEdgeController is needed either for the bottom chin (gesture nav) or for top
         // edge-to-edge on phones (migrated from TopInsetCoordinator, which supports 3-button nav).
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity)
                 || EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
     }
 

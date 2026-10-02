@@ -522,7 +522,7 @@ public class NewTabAnimationLayout extends Layout {
 
         // Edge-to-Edge Bottom Chin Height
         if (edgeToEdgeController != null && edgeToEdgeController.isDrawingToEdge()) {
-            boolean isTabOptedIn = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab);
+            boolean isTabOptedIn = EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(tab);
             boolean othersAreVisible = hasBottomBar || hasBottomToolbar;
             // Stacker shows the chin if the page is not opted in, OR if other layers are visible
             // (VISIBLE_IF_OTHERS_VISIBLE resolves to true when othersAreVisible is true).

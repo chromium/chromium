@@ -566,7 +566,7 @@ class TabbedNavigationBarColorController
         }
 
         return mContext instanceof Activity
-                && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled((Activity) mContext);
+                && EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice((Activity) mContext);
     }
 
     @Override

@@ -263,7 +263,7 @@ public class EdgeToEdgeControllerImpl
                         }
                         boolean wasDrawingToTopEdge = isDrawingToTopEdge();
                         drawToEdge(
-                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab),
+                                EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(tab),
                                 /* changedWindowState= */ false);
                         EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
                                 /* scrolling= */ false);
@@ -364,18 +364,18 @@ public class EdgeToEdgeControllerImpl
 
         mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
         // retriggerOnApplyWindowInsets to populate all the initial state.
-        mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab);
+        mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab);
         mInsetObserver.retriggerOnApplyWindowInsets();
     }
 
     @VisibleForTesting
     static boolean isSupportedByConfiguration(Activity activity, InsetObserver insetObserver) {
         if (shouldMonitorConfigurationChanges()) {
-            return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
+            return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
                     && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(
                             insetObserver.getLastRawWindowInsets());
         }
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity);
     }
 
     @VisibleForTesting
@@ -392,7 +392,7 @@ public class EdgeToEdgeControllerImpl
         }
 
         drawToEdge(
-                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
+                EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
         onContentViewScrollingStateChanged(/* scrolling= */ false);
 
@@ -433,7 +433,7 @@ public class EdgeToEdgeControllerImpl
         if (!EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity) || mStatusIndicatorVisible) {
             return false;
         }
-        if (EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(tab)) {
+        if (EdgeToEdgeUtils.tabSupportsTopEdgeToEdge(tab)) {
             return true;
         }
         // Preserves TopInsetCoordinator parity: During initial tab creation with an NTP URL,
@@ -639,7 +639,7 @@ public class EdgeToEdgeControllerImpl
                     @Override
                     public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
                         drawToEdge(
-                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab, value),
+                                EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab, value),
                                 /* changedWindowState= */ false);
                     }
 
@@ -667,7 +667,7 @@ public class EdgeToEdgeControllerImpl
         }
         mLayoutManager = newValue;
         drawToEdge(
-                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
+                EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
     }
 
@@ -699,7 +699,7 @@ public class EdgeToEdgeControllerImpl
         int currentLayoutType =
                 mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
         boolean shouldDrawToEdge =
-                EdgeToEdgeUtils.shouldDrawToEdge(
+                EdgeToEdgeUtils.shouldDrawToBottomEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
         shouldDrawToEdge &= isChinEnabled;
         pageOptedIntoEdgeToEdge &= isChinEnabled;
@@ -808,7 +808,7 @@ public class EdgeToEdgeControllerImpl
             mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
             if (mCurrentTab != null) {
                 mIsPageOptedIntoEdgeToEdge =
-                        EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab)
+                        EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab)
                                 && mIsBottomChinEnabled;
             }
             changedWindowState = true;

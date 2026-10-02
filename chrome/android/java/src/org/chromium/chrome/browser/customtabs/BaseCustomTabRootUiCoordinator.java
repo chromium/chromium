@@ -981,7 +981,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected boolean supportsEdgeToEdge() {
         // Currently edge to edge only supports CCT media viewer.
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity)
                 && mIntentDataProvider.get() != null
                 && mIntentDataProvider.get().shouldEnableEmbeddedMediaExperience();
     }

@@ -864,7 +864,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     protected boolean isDynamicSafeAreaInsetsEnabled() {
         if (mActivity == null) return false;
-        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity);
     }
 
     @Override

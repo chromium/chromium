@@ -78,7 +78,7 @@ public class EdgeToEdgeControllerCreator {
         // from TopInsetCoordinator) only requires status bar insets and operates independently
         // of the navigation bar mode.
         boolean shouldInitBottomChin =
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
                         && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insets)
                         && !navigationBarInsets.equals(Insets.NONE);
         boolean shouldInitTopInset =

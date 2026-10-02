@@ -380,7 +380,8 @@ public class TabbedNavigationBarColorControllerTest {
 
         Assume.assumeTrue(
                 "E2E not applicable.",
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivityTestRule.getActivity()));
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(
+                        mActivityTestRule.getActivity()));
         testNavBarColorAnimations();
     }
 
