@@ -98,6 +98,8 @@ class GlassFrameService : public BrowserCollectionObserver,
 
   void OnEligibleStateChanged();
 
+  void MaybeShowOptInPromo(BrowserWindowInterface* browser);
+
   std::map<BrowserWindowInterface*, base::RepeatingCallbackList<void(bool)>>
       window_callbacks_;
   std::map<BrowserWindowInterface*, base::CallbackListSubscription>

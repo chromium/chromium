@@ -11353,6 +11353,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DISCARD_RING_SETTINGS_TOAST" desc="A toast bubble that highlights where the inactive tabs look can be changed in settings.">
         Manage the look of inactive tabs here
       </message>
+      <message name="IDS_GLASS_FRAME_OPT_IN_IPH_TITLE" desc="The title for the glass frame opt-in in-product help promo bubble.">
+        Give your tabs a new transparent look
+      </message>
+      <message name="IDS_GLASS_FRAME_OPT_IN_IPH_BODY" desc="The body text shown for the glass frame opt-in in-product help promo bubble.">
+        Try the new style in settings. You can always switch back to the classic look.
+      </message>
+      <message name="IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON" desc="The text on the action button text for the glass frame opt-in in-product promo bubble to navigate to the settings page.">
+        Settings
+      </message>
+      <message name="IDS_GLASS_FRAME_IPH_SETTINGS_PAGE" desc="The text on chrome://settings/appearance page that is anchored to the tab styling drop down for users to enable glass frame.">
+        Set this setting to Modern to try the new transparent look for your tabs.
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">

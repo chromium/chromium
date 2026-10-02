@@ -28,8 +28,10 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -161,6 +163,7 @@ bool GlassFrameService::IsBrowserWindowEligible(
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
   MaybeTrackBrowser(browser);
   OnEligibleStateChanged();
+  MaybeShowOptInPromo(browser);
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
@@ -251,6 +254,16 @@ void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
     return;
   }
   is_glass_frame_enabled_ = is_enabled;
+  if (is_glass_frame_enabled_) {
+    for (BrowserWindowInterface* browser : tracked_browsers_) {
+      if (auto* const user_education =
+              BrowserUserEducationInterface::From(browser)) {
+        user_education->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHGlassFrameOptInFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      }
+    }
+  }
   OnEligibleStateChanged();
 }
 
@@ -259,6 +272,18 @@ void GlassFrameService::OnEligibleStateChanged() {
       GetEligibleBrowserWindowInterfaces();
   for (auto& [browser, callback_list] : window_callbacks_) {
     callback_list.Notify(eligible.contains(browser));
+  }
+}
+
+void GlassFrameService::MaybeShowOptInPromo(BrowserWindowInterface* browser) {
+  if (is_glass_frame_enabled_ || is_battery_saver_mode_active_ ||
+      !ActivationOrderedEligibleBrowsers().contains(browser)) {
+    return;
+  }
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser)) {
+    user_education->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHGlassFrameOptInFeature);
   }
 }
 

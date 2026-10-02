@@ -425,6 +425,7 @@ DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
 DEFINE_VARIATION_PARAM(kIPHGMCLocalMediaCastingFeature,
                        "IPH_GMCLocalMediaCasting");
 DEFINE_VARIATION_PARAM(kIPHGMCSaveVideoFrameFeature, "IPH_GMCSaveVideoFrame");
+DEFINE_VARIATION_PARAM(kIPHGlassFrameOptInFeature, "IPH_GlassFrameOptIn");
 DEFINE_VARIATION_PARAM(kIPHGlicPromoFeature, "IPH_GlicPromo");
 DEFINE_VARIATION_PARAM(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo");
@@ -869,6 +870,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
         VARIATION_ENTRY(kIPHDiscardRingFeature),
         VARIATION_ENTRY(kIPHExplicitBrowserSigninPreferenceRememberedFeature),
+        VARIATION_ENTRY(kIPHGlassFrameOptInFeature),
         VARIATION_ENTRY(kIPHGlicPromoFeature),
         VARIATION_ENTRY(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature),
         VARIATION_ENTRY(kIPHGlicTryItFeature),

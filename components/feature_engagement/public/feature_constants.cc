@@ -4,6 +4,7 @@
 
 #include "components/feature_engagement/public/feature_constants.h"
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -127,6 +128,9 @@ BASE_FEATURE(kIPHGMCLocalMediaCastingFeature,
 BASE_FEATURE(kIPHGMCSaveVideoFrameFeature,
              "IPH_GMCSaveVideoFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGlassFrameOptInFeature,
+             "IPH_GlassFrameOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicPromoFeature,
              "IPH_GlicPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

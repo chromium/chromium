@@ -273,6 +273,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDownloadEsbPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
     &kIPHFocusHelpBubbleScreenReaderPromoFeature,
+    &kIPHGlassFrameOptInFeature,
     &kIPHGlicPromoFeature,
     &kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
     &kIPHGlicTryItFeature,

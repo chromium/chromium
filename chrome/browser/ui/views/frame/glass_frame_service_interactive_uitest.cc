@@ -18,7 +18,9 @@
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,13 +28,18 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/view_utils.h"
@@ -509,3 +516,38 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, DailyMetric) {
                                      false, 1);
   histogram_tester.ExpectTotalCount("Browser.GlassFrame.IsDefault.Daily", 2);
 }
+
+#if BUILDFLAG(IS_MAC)
+class GlassFrameServiceOptInPromoInteractiveTest
+    : public InteractiveFeaturePromoTestMixin<
+          GlassFrameServiceInteractiveTest> {
+ public:
+  GlassFrameServiceOptInPromoInteractiveTest()
+      : InteractiveFeaturePromoTestMixin(
+            InteractiveFeaturePromoTestApi::UseDefaultTrackerAllowingPromos(
+                {feature_engagement::kIPHGlassFrameOptInFeature})) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlassFrame,
+        {{features::kGlassFrameEnabledByDefault.name, "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceOptInPromoInteractiveTest,
+                       ShowsOptInPromoOnStartup) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabContents);
+  RunTestSequence(WaitForPromo(feature_engagement::kIPHGlassFrameOptInFeature),
+                  PressDefaultPromoButton(),
+                  InstrumentTab(kSettingsTabContents, 1),
+                  WaitForWebContentsReady(
+                      kSettingsTabContents,
+                      chrome::GetSettingsUrl(chrome::kAppearanceSubPage)),
+                  InAnyContext(WaitForShow(kTabStylingSettingElementId)));
+}
+#endif  // BUILDFLAG(IS_MAC)

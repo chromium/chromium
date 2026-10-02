@@ -722,6 +722,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                 kInactiveTabSettingElementId,
                 kGlicOsToggleElementId,
                 kGlicOsWidgetKeyboardShortcutElementId,
+                kTabStylingSettingElementId,
             });
 
   TryShowHatsSurveyWithTimeout();
