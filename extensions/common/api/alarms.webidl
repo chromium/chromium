@@ -107,7 +107,7 @@ interface Alarms {
 
   // Clears all alarms.
   // |PromiseValue|: wasCleared
-  static Promise<boolean> clearAll();
+  static Promise<boolean?> clearAll();
 
   // Fired when an alarm has elapsed. Useful for event pages.
   static attribute OnAlarmEvent onAlarm;

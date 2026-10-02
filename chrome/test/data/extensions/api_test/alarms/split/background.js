@@ -58,8 +58,11 @@ chrome.test.runTests([
     chrome.alarms.create(`${alarmName}-1`, createParams);
     chrome.alarms.create(`${alarmName}-2`, createParams);
     chrome.alarms.clearAll(function(wasCleared) {
-      chrome.test.assertTrue(wasCleared);
-      chrome.test.succeed();
+      chrome.test.getConfig(function(config) {
+        const expected = config.customArg === 'legacy' ? true : undefined;
+        chrome.test.assertEq(expected, wasCleared);
+        chrome.test.succeed();
+      });
     });
   },
 ]);

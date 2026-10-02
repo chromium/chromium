@@ -37,6 +37,14 @@ namespace extensions_features {
 // NOTE(devlin): If there are consistently enough of these in flux, it might
 // make sense to have their own file.
 
+// Controls the return value of alarms.clearAll() API. If enabled,
+// alarms.clearAll() returns undefined, matching the new proposed behavior.
+// If disabled, alarms.clearAll() always returns true, matching legacy Chrome
+// behavior.
+// TODO(crbug.com/541711725): Remove after M160 and update alarms.clearAll()
+// in extensions/common/api/alarms.webidl to return Promise<undefined>.
+BASE_DECLARE_FEATURE(kApiAlarmsClearAllReturnUndefined);
+
 // Controls the availability of SplitView Extension APIs.
 BASE_DECLARE_FEATURE(kApiTabsSplitView);
 

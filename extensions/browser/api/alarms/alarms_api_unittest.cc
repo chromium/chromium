@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -34,6 +35,7 @@
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -595,8 +597,47 @@ void ExtensionAlarmsTestClearAllGetAllAlarms1Callback(
 }
 
 TEST_F(ExtensionAlarmsTest, ClearAll) {
-  // ClearAll with no alarms set.
+  // ClearAll with no alarms set and new behavior.
   {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(
+        extensions_features::kApiAlarmsClearAllReturnUndefined);
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
+    EXPECT_FALSE(result);
+  }
+
+  // ClearAll with an alarm set and new behavior.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(
+        extensions_features::kApiAlarmsClearAllReturnUndefined);
+    CreateAlarm("[null, {\"delayInMinutes\": 10}]");
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
+    EXPECT_FALSE(result);
+  }
+
+  // ClearAll with no alarms set and old behavior.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        extensions_features::kApiAlarmsClearAllReturnUndefined);
+    std::optional<base::Value> result = RunFunctionAndReturnValue(
+        base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
+    ASSERT_TRUE(result->is_bool());
+    EXPECT_TRUE(result->GetBool());
+  }
+
+  // ClearAll with an alarm set and old behavior.
+  {
+    // Disable feature, create 1 non-repeating alarm and remove it, ensuring the
+    // return value is always true irrespective of existence of alarms.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        extensions_features::kApiAlarmsClearAllReturnUndefined);
+    CreateAlarm("[null, {\"delayInMinutes\": 10}]");
+    // alarms.clearAll() always returns true matching legacy behavior.
     std::optional<base::Value> result = RunFunctionAndReturnValue(
         base::MakeRefCounted<AlarmsClearAllFunction>(), "[]");
     ASSERT_TRUE(result->is_bool());

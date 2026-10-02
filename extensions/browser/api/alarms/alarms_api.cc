@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +19,7 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/common/api/alarms.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace extensions {
@@ -248,7 +250,10 @@ ExtensionFunction::ResponseAction AlarmsClearAllFunction::Run() {
 }
 
 void AlarmsClearAllFunction::Callback() {
-  Respond(WithArguments(true));
+  Respond(base::FeatureList::IsEnabled(
+              extensions_features::kApiAlarmsClearAllReturnUndefined)
+              ? NoArguments()
+              : WithArguments(true));
 }
 
 }  // namespace extensions

@@ -14,6 +14,9 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+BASE_FEATURE(kApiAlarmsClearAllReturnUndefined,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiTabsSplitView, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiContentSettingsClipboard, base::FEATURE_ENABLED_BY_DEFAULT);

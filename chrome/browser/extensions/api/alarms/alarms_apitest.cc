@@ -4,6 +4,8 @@
 
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
+#include "base/test/with_feature_override.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +14,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/test.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -57,9 +60,27 @@ class AlarmsApiTest : public ExtensionApiTest {
   }
 };
 
+class AlarmsClearAllApiTest : public AlarmsApiTest,
+                              public base::test::WithFeatureOverride {
+ public:
+  AlarmsClearAllApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kApiAlarmsClearAllReturnUndefined) {}
+};
+
 // Tests that an alarm created by an extension with incognito split mode is
 // only triggered in the browser context it was created in.
-IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
+// TODO(crbug.com/568041938): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_IncognitoSplit DISABLED_IncognitoSplit
+#else
+#define MAYBE_IncognitoSplit IncognitoSplit
+#endif
+IN_PROC_BROWSER_TEST_P(AlarmsClearAllApiTest, MAYBE_IncognitoSplit) {
+  if (!IsParamFeatureEnabled()) {
+    SetCustomArg("legacy");
+  }
+
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   Profile* incognito_profile =
@@ -93,7 +114,11 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
 
 // Tests that the behavior for an alarm created in incognito context should be
 // the same if incognito is in spanning mode.
-IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
+IN_PROC_BROWSER_TEST_P(AlarmsClearAllApiTest, IncognitoSpanning) {
+  if (!IsParamFeatureEnabled()) {
+    SetCustomArg("legacy");
+  }
+
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile());
 
@@ -104,6 +129,8 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AlarmsClearAllApiTest, testing::Bool());
 
 // TODO(crbug.com/451193827): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
