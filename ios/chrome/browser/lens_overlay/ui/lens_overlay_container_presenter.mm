@@ -208,6 +208,18 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
 
 - (void)lensOverlayContainerDidChangeSizeClass:
     (LensOverlayContainerViewController*)lensOverlayContainerViewController {
+  [self updatePresentationInsets];
+}
+
+- (void)lensOverlayContainerDidChangeSafeAreaInsets:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController {
+  [self updatePresentationInsets];
+}
+
+#pragma mark - Private
+
+// Updates the presentation insets.
+- (void)updatePresentationInsets {
   NSDirectionalEdgeInsets insets =
       [self.delegate lensOverlayContainerPresenterInsetsForPresentation:self];
   _topConstraint.constant = insets.top;

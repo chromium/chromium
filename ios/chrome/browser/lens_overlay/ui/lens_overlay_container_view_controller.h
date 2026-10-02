@@ -77,8 +77,12 @@
                                           lensOverlayContainerViewController
                              animated:(BOOL)animated;
 
-/// Called when the container changes the current horizontal size class
+/// Called when the container changes the current horizontal size class.
 - (void)lensOverlayContainerDidChangeSizeClass:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController;
+
+/// Called when the container changes the safe area insets.
+- (void)lensOverlayContainerDidChangeSafeAreaInsets:
     (LensOverlayContainerViewController*)lensOverlayContainerViewController;
 
 @end

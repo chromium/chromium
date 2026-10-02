@@ -323,6 +323,11 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [self.delegate lensOverlayContainerDidChangeSizeClass:self];
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self.delegate lensOverlayContainerDidChangeSafeAreaInsets:self];
+}
+
 #pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
