@@ -102,6 +102,41 @@ bool IsDragAndDropEnabled() {
 bool IsDragEnabledForDropData(const DropData& drop_data) {
   return IsDragAndDropEnabled() || drop_data.text.has_value();
 }
+
+// Constructs a provisional `DropData` from `drag_metadata` during
+// `ACTION_DRAG_ENTERED` (when Android's `DragEvent` only exposes
+// `ClipDescription` MIME types, before `ACTION_DROP` provides `ClipData`) so
+// `WebContentsDelegate::CanDragEnter` can inspect the advertised drag types.
+// Note: Because actual `ClipData` values (e.g. specific URLs or text content)
+// are not available until `ACTION_DROP` on Android, if type-level inspection
+// is not sufficient, we will need to rearchitect to a "can drop" check instead
+// of a "can enter" check.
+DropData BuildProvisionalDropDataFromMetadata(
+    const std::vector<DropData::Metadata>& drag_metadata) {
+  DropData drop_data;
+  for (const auto& item : drag_metadata) {
+    switch (item.kind) {
+      case DropData::Kind::FILENAME:
+        drop_data.filenames.emplace_back(item.filename,
+                                         item.filename.BaseName());
+        break;
+      case DropData::Kind::STRING:
+        if (item.mime_type == ui::kMimeTypePlainText16) {
+          drop_data.text.emplace();
+        } else if (item.mime_type == ui::kMimeTypeHtml16) {
+          drop_data.html.emplace();
+        } else if (item.mime_type == ui::kMimeTypeMozillaUrl16) {
+          drop_data.url_infos.emplace_back(GURL(), std::u16string());
+        }
+        break;
+      case DropData::Kind::FILESYSTEMFILE:
+      case DropData::Kind::BINARY:
+        break;
+    }
+  }
+  return drop_data;
+}
+
 }  // namespace
 
 // static
@@ -640,6 +675,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
 
 void WebContentsViewAndroid::OnDragEntered(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
+  drag_rejected_by_delegate_ = false;
   // Android does not pass a valid location for ACTION_DRAG_STARTED, so do not
   // try to find GetRenderWidgetHostAtPointAsynchronously().
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
@@ -654,7 +690,7 @@ void WebContentsViewAndroid::DragEnteredCallback(
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
     base::WeakPtr<RenderWidgetHostViewBase> target) {
-  if (!target) {
+  if (!target || drag_rejected_by_delegate_) {
     return;
   }
 
@@ -664,15 +700,27 @@ void WebContentsViewAndroid::DragEnteredCallback(
     return;
   }
 
+  blink::DragOperationsMask allowed_ops =
+      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
+                                             blink::kDragOperationMove);
+  // Give the WebContentsDelegate an opportunity to reject the drag before
+  // setting the active drag target or forwarding DragTargetDragEnter to the
+  // renderer (matching Desktop's WebContentsViewAura and WebDragDest).
+  if (WebContentsDelegate* delegate = web_contents_->GetDelegate()) {
+    DropData provisional_drop_data =
+        BuildProvisionalDropDataFromMetadata(drag_metadata_);
+    if (!delegate->CanDragEnter(web_contents_, provisional_drop_data,
+                                allowed_ops)) {
+      drag_rejected_by_delegate_ = true;
+      return;
+    }
+  }
+
   current_target_rwh_for_drag_ = target_rwh->GetWeakPtr();
   // Reset per-target drag state until the newly entered RWH replies via
   // UpdateDragOperation().
   drag_operation_ = ui::mojom::DragOperation::kNone;
   document_is_handling_drag_ = false;
-
-  blink::DragOperationsMask allowed_ops =
-      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
-                                             blink::kDragOperationMove);
   current_target_rwh_for_drag_->DragTargetDragEnterWithMetaData(
       drag_metadata_, location, screen_location, allowed_ops, 0,
       base::DoNothing());
@@ -703,6 +751,10 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
     }
   }
 
+  if (drag_rejected_by_delegate_) {
+    return;
+  }
+
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
   if (rwhv) {
     web_contents_->GetRenderWidgetHostAtPointAsynchronously(
@@ -718,7 +770,7 @@ void WebContentsViewAndroid::DragUpdatedCallback(
     const gfx::PointF& screen_location,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  if (!target) {
+  if (!target || drag_rejected_by_delegate_) {
     return;
   }
   RenderWidgetHostImpl* target_rwh =
@@ -744,6 +796,9 @@ void WebContentsViewAndroid::DragUpdatedCallback(
                                                         screen_location);
     }
     DragEnteredCallback(location, screen_location, target);
+    if (drag_rejected_by_delegate_) {
+      return;
+    }
   }
 
   blink::DragOperationsMask allowed_ops =
@@ -764,10 +819,14 @@ void WebContentsViewAndroid::OnDragExited() {
   // ignored.
   drag_operation_ = ui::mojom::DragOperation::kNone;
   document_is_handling_drag_ = false;
+  drag_rejected_by_delegate_ = false;
 }
 
 void WebContentsViewAndroid::OnPerformDrop(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
+  if (drag_rejected_by_delegate_) {
+    return;
+  }
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
   if (rwhv) {
     web_contents_->GetRenderWidgetHostAtPointAsynchronously(
@@ -783,7 +842,7 @@ void WebContentsViewAndroid::PerformDropCallback(
     const gfx::PointF& screen_location,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  if (!target) {
+  if (!target || drag_rejected_by_delegate_) {
     return;
   }
   RenderWidgetHostImpl* target_rwh =
@@ -798,6 +857,9 @@ void WebContentsViewAndroid::PerformDropCallback(
                                                         screen_location);
     }
     DragEnteredCallback(location, screen_location, target);
+    if (drag_rejected_by_delegate_) {
+      return;
+    }
   }
 
   web_contents_->Focus();
@@ -856,6 +918,7 @@ void WebContentsViewAndroid::OnDragEnded() {
   drag_dropped_ = false;
   drag_operation_ = ui::mojom::DragOperation::kNone;
   document_is_handling_drag_ = false;
+  drag_rejected_by_delegate_ = false;
   drag_entered_location_ = gfx::PointF();
   drag_location_ = gfx::PointF();
   drag_screen_location_ = gfx::PointF();

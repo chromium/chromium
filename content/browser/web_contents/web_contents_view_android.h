@@ -198,6 +198,11 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
       DragInaccessibleImage_MixedMimeTypes_PreservesStringTypes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
                            OnDragEnded_ResetsDropDataAndSecurityInfo);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAndroidTest,
+      CanDragEnter_RejectedSuppressesDragEnterLocationAndDrop);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
+                           CanDragEnter_AcceptedSetsTargetRwh);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAndroidTest,
                            UpdateDragOperation_IgnoresStaleTargetRwh);
 
@@ -314,6 +319,10 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   // the document has registeted interest in the dropped data and the
   // renderer process should pass the data to the document on drop.
   bool document_is_handling_drag_ = false;
+  // Set to true when `WebContentsDelegate::CanDragEnter` rejects the current
+  // drag so subsequent `ACTION_DRAG_LOCATION` and `ACTION_DROP` events do not
+  // re-invoke `CanDragEnter` or dispatch drag events to the renderer.
+  bool drag_rejected_by_delegate_ = false;
 
   // Manages the animation during a session history navigation.
   std::unique_ptr<BackForwardTransitionAnimationManagerAndroid>

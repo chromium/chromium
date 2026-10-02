@@ -12,8 +12,10 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
+#include "ipc/constants.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
@@ -28,6 +30,28 @@
 namespace content {
 
 namespace {
+
+class MockWebContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit MockWebContentsDelegate(bool can_drag_enter)
+      : can_drag_enter_(can_drag_enter) {}
+
+  bool CanDragEnter(WebContents* source,
+                    const DropData& data,
+                    blink::DragOperationsMask operations_allowed) override {
+    can_drag_enter_call_count_++;
+    last_drop_data_ = data;
+    return can_drag_enter_;
+  }
+
+  int can_drag_enter_call_count() const { return can_drag_enter_call_count_; }
+  const DropData& last_drop_data() const { return last_drop_data_; }
+
+ private:
+  bool can_drag_enter_ = true;
+  int can_drag_enter_call_count_ = 0;
+  DropData last_drop_data_;
+};
 
 class MockWebContentsViewAndroid : public WebContentsViewAndroid {
  public:
@@ -361,6 +385,74 @@ TEST_F(WebContentsViewAndroidTest, ColorProviderSourceFallback) {
   EXPECT_EQ(web_contents_impl->GetColorProviderSourceForTesting(),
             default_source);
   web_contents()->GetColorProvider();
+}
+
+TEST_F(WebContentsViewAndroidTest,
+       CanDragEnter_RejectedSuppressesDragEnterLocationAndDrop) {
+  MockWebContentsDelegate delegate(/*can_drag_enter=*/false);
+  web_contents()->SetDelegate(&delegate);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {ui::kMimeTypePlainText16};
+
+  ui::DragEventAndroid enter_event(
+      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
+      mime_types, false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(enter_event);
+
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
+  EXPECT_TRUE(delegate.last_drop_data().text.has_value());
+  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+
+  ui::DragEventAndroid location_event(env, DragEventJni::ACTION_DRAG_LOCATION,
+                                      gfx::PointF(10, 10), gfx::PointF(10, 10),
+                                      mime_types, false, nullptr, nullptr,
+                                      nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(location_event);
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
+  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+
+  base::android::ScopedJavaLocalRef<jstring> j_text =
+      base::android::ConvertUTF8ToJavaString(env, "rejected text");
+  ui::DragEventAndroid drop_event(
+      env, DragEventJni::ACTION_DROP, gfx::PointF(10, 10), gfx::PointF(10, 10),
+      mime_types, false, nullptr, j_text, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(drop_event);
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
+  EXPECT_FALSE(view()->current_target_rwh_for_drag_);
+  ASSERT_TRUE(view()->GetDropData());
+  // FilterDropData sets view_id to the target RWH routing ID; when rejected,
+  // FilterDropData and DragTargetDrop are not called.
+  EXPECT_EQ(view()->GetDropData()->view_id, IPC::mojom::kRoutingIdNone);
+
+  // Exiting resets `drag_rejected_by_delegate_` so the next drag is evaluated.
+  ui::DragEventAndroid exit_event(
+      env, DragEventJni::ACTION_DRAG_EXITED, gfx::PointF(), gfx::PointF(), {},
+      false, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(exit_event);
+  view()->OnDragEvent(enter_event);
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 2);
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsViewAndroidTest, CanDragEnter_AcceptedSetsTargetRwh) {
+  MockWebContentsDelegate delegate(/*can_drag_enter=*/true);
+  web_contents()->SetDelegate(&delegate);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+
+  ui::DragEventAndroid enter_event(
+      env, DragEventJni::ACTION_DRAG_ENTERED, gfx::PointF(), gfx::PointF(),
+      mime_types, true, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  view()->OnDragEvent(enter_event);
+
+  EXPECT_EQ(delegate.can_drag_enter_call_count(), 1);
+  ASSERT_EQ(delegate.last_drop_data().filenames.size(), 1u);
+  EXPECT_EQ(view()->current_target_rwh_for_drag_.get(), GetRenderWidgetHost());
+
+  web_contents()->SetDelegate(nullptr);
 }
 
 TEST_F(WebContentsViewAndroidTest, UpdateDragOperation_IgnoresStaleTargetRwh) {
