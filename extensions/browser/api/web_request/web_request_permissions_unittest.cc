@@ -15,6 +15,7 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
@@ -22,6 +23,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -585,6 +587,107 @@ TEST_F(ExtensionWebRequestPermissionsTest,
                          WebRequestResourceType::MAIN_FRAME),
               test_case.expected_access_navigation);
   }
+}
+
+TEST_F(ExtensionWebRequestPermissionsTest,
+       CanExtensionAccessURLWithBlockedInitiators) {
+  using PageAccess = PermissionsData::PageAccess;
+
+  // User host restrictions only apply with this feature enabled.
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionsMenuAccessControl);
+  ExtensionsAPIClient api_client;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext").AddHostPermission("<all_urls>").Build();
+  // Policy-installed extensions are exempt from user host restrictions.
+  scoped_refptr<const Extension> policy_extension =
+      ExtensionBuilder("policy_ext")
+          .SetLocation(mojom::ManifestLocation::kExternalPolicy)
+          .AddHostPermission("<all_urls>")
+          .Build();
+
+  // User host restrictions are stored per context and ignored if the
+  // extension has no context ID.
+  const int context_id = util::GetBrowserContextId(browser_context());
+  extension->permissions_data()->SetContextId(context_id);
+  policy_extension->permissions_data()->SetContextId(context_id);
+
+  // Block one site via user settings and another via enterprise policy.
+  PermissionsData::SetUserHostRestrictions(
+      context_id,
+      URLPatternSet({URLPattern(Extension::kValidHostPermissionSchemes,
+                                "https://user-blocked.com/*")}),
+      URLPatternSet());
+  extension->permissions_data()->SetPolicyHostRestrictions(
+      URLPatternSet({URLPattern(Extension::kValidHostPermissionSchemes,
+                                "https://policy-blocked.com/*")}),
+      URLPatternSet());
+
+  // CanExtensionAccessURL() looks extensions up in the registry.
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+  ExtensionRegistry::Get(browser_context())->AddEnabled(policy_extension);
+
+  const GURL allowed_url("https://allowed.com/");
+  const url::Origin user_blocked_origin =
+      url::Origin::Create(GURL("https://user-blocked.com/"));
+  const url::Origin policy_blocked_origin =
+      url::Origin::Create(GURL("https://policy-blocked.com/"));
+
+  // Every case targets `allowed_url`; only the extension and initiator vary.
+  struct {
+    scoped_refptr<const Extension> extension;
+    std::optional<url::Origin> initiator;
+    PageAccess expected_access;
+  } kCases[] = {
+      // Browser-initiated requests (e.g. omnibox navigations).
+      {extension, std::nullopt, PageAccess::kAllowed},
+      {extension, url::Origin::Create(allowed_url), PageAccess::kAllowed},
+      // Opaque origin without a precursor.
+      {extension, url::Origin(), PageAccess::kAllowed},
+      // Initiators blocked by the user or by policy, directly or as the
+      // precursor of an opaque origin (e.g. a sandboxed frame).
+      {extension, user_blocked_origin, PageAccess::kDenied},
+      {extension, user_blocked_origin.DeriveNewOpaqueOrigin(),
+       PageAccess::kDenied},
+      {extension, policy_blocked_origin, PageAccess::kDenied},
+      {extension, policy_blocked_origin.DeriveNewOpaqueOrigin(),
+       PageAccess::kDenied},
+      // Policy-installed extensions are exempt from user host restrictions.
+      {policy_extension, user_blocked_origin, PageAccess::kAllowed},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "extension=%s initiator=%s", test_case.extension->name().c_str(),
+        test_case.initiator ? test_case.initiator->GetDebugString().c_str()
+                            : "none"));
+    // Blocked initiators must be denied regardless of the check mode, since
+    // declarativeNetRequest rules that don't need host permissions use
+    // DO_NOT_CHECK_HOST.
+    for (auto check :
+         {WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
+          WebRequestPermissions::DO_NOT_CHECK_HOST}) {
+      SCOPED_TRACE(base::StringPrintf("check=%d", static_cast<int>(check)));
+      // Navigations skip the initiator host permission check, so cover both
+      // navigation and subresource requests.
+      for (auto type : {WebRequestResourceType::MAIN_FRAME,
+                        WebRequestResourceType::OTHER}) {
+        SCOPED_TRACE(WebRequestResourceTypeToString(type));
+        EXPECT_EQ(test_case.expected_access,
+                  WebRequestPermissions::CanExtensionAccessURL(
+                      PermissionHelper::Get(browser_context()),
+                      test_case.extension->id(), allowed_url,
+                      /*tab_id=*/42, /*crosses_incognito=*/false, check,
+                      test_case.initiator, type));
+      }
+    }
+  }
+
+  // User host restrictions are global per context; reset them so they don't
+  // leak into other tests.
+  PermissionsData::SetUserHostRestrictions(context_id, URLPatternSet(),
+                                           URLPatternSet());
 }
 
 }  // namespace extensions

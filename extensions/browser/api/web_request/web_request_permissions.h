@@ -33,7 +33,9 @@ class WebRequestPermissions {
  public:
   // Different host permission checking modes for CanExtensionAccessURL.
   enum HostPermissionsCheck {
-    DO_NOT_CHECK_HOST = 0,  // No check.
+    // No host permission check. Requests initiated by policy or user blocked
+    // hosts are still denied.
+    DO_NOT_CHECK_HOST = 0,
     // Permission needed for given request URL.
     // TODO(karandeepb): Remove this checking mode.
     REQUIRE_HOST_PERMISSION_FOR_URL,

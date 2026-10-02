@@ -93,10 +93,19 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   }
 
   // Prevent viewing / modifying requests initiated by a host protected by
-  // policy.
-  if (initiator &&
-      extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL())) {
-    return PermissionsData::PageAccess::kDenied;
+  // policy or user settings. This applies regardless of
+  // `host_permissions_check`, so it also affects capabilities that don't
+  // require host permissions (e.g. declarativeNetRequest block/allow rules,
+  // which use DO_NOT_CHECK_HOST). Note: this is keyed on the initiator, not
+  // the tab, so requests initiated by cross-origin frames embedded in a
+  // restricted site are not covered.
+  if (initiator) {
+    const GURL initiator_url =
+        initiator->GetTupleOrPrecursorTupleIfOpaque().GetURL();
+    if (extension->permissions_data()->IsPolicyBlockedHost(initiator_url) ||
+        extension->permissions_data()->IsUrlBlockedByUser(initiator_url)) {
+      return PermissionsData::PageAccess::kDenied;
+    }
   }
 
   // Check if this event crosses incognito boundaries when it shouldn't.
