@@ -28,12 +28,10 @@ import static org.mockito.Mockito.when;
 
 import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -54,6 +52,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -85,9 +84,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Unit tests for {@link TabBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+// The detached decor view reports the display size from getWindowVisibleDisplayFrame(), so make
+// the display taller than MAX_OFFSET to let the decor view's height determine the viewport height.
+@Config(qualifiers = "h2000dp")
 public class TabBottomSheetCoordinatorUnitTest {
     private static final float FULL_HEIGHT_RATIO = 0.7f;
     private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
@@ -111,7 +115,6 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private Window mMockWindow;
-    @Mock private View mMockDecorView;
     @Mock private TouchEventProvider mMockTouchEventProvider;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
@@ -132,6 +135,7 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     private CoBrowseViews mCoBrowseViews;
     private Context mContext;
+    private View mDecorView;
     private View mView;
     private TabBottomSheetCoordinator mCoordinator;
     private PropertyModel mCoordinatorModel;
@@ -139,26 +143,21 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = spy(activity));
-        View containerView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
-        containerView.setFocusable(true);
-        containerView.setFocusableInTouchMode(true);
-
-        View containerViewSpy = spy(containerView);
-        // Delegate post() directly to the main looper Handler. Otherwise, because containerViewSpy
-        // is a Mockito spy, calling post() delegates to the unattached containerView delegate
-        // instance, which buffers the runnable indefinitely since it never gets attached to a
-        // window.
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            return new Handler(Looper.getMainLooper()).post(runnable);
-                        })
-                .when(containerViewSpy)
-                .post(any(Runnable.class));
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mContext = spy(new ContextWrapper(activity));
+                            mView =
+                                    LayoutInflater.from(mContext)
+                                            .inflate(R.layout.tab_bottom_sheet, null);
+                            mView.setFocusable(true);
+                            mView.setFocusableInTouchMode(true);
+                            activity.setContentView(mView);
+                        });
         mWebViewResizingHelper =
                 new WebViewResizingHelper(
-                        containerViewSpy,
+                        mView,
                         mWindowAndroid,
                         Color.WHITE,
                         Color.LTGRAY,
@@ -171,32 +170,24 @@ public class TabBottomSheetCoordinatorUnitTest {
         mCoBrowseViews =
                 spy(
                         new CoBrowseViews(
-                                containerViewSpy,
+                                mView,
                                 TabBottomSheetClientType.UNKNOWN,
                                 CoBrowseContainerType.BOTTOM_SHEET,
                                 mMockWebUi,
                                 0,
                                 mMockContentProvider,
                                 SupplierUtils.ofNull()));
-        mView = containerViewSpy;
         assertNotNull(
                 "peek_view_container should be found in CoBrowseViews",
                 mView.findViewById(R.id.peek_view_container));
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mMockModalDialogManager);
 
+        mDecorView = new View(mContext);
+        mDecorView.layout(0, 0, CONTAINER_WIDTH, MAX_OFFSET);
         when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);
-        when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
-        when(mMockDecorView.getHeight()).thenReturn(MAX_OFFSET);
+        when(mMockWindow.getDecorView()).thenReturn(mDecorView);
         when(mMockBottomSheetController.getMaxOffset()).thenReturn(MAX_OFFSET);
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, CONTAINER_WIDTH, MAX_OFFSET);
-                            return null;
-                        })
-                .when(mMockDecorView)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
 
         setupMockContentProvider();
 
@@ -230,7 +221,6 @@ public class TabBottomSheetCoordinatorUnitTest {
                                     .thenReturn(content);
                             return true;
                         });
-        mActivityScenarioRule.getScenario().onActivity(activity -> activity.setContentView(mView));
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
         when(mMockBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getSheetContentForTesting());
@@ -419,15 +409,7 @@ public class TabBottomSheetCoordinatorUnitTest {
     @Test
     public void testDoNotExpandWhenInsufficientViewportSpace() {
         // Setup a very small viewport height
-        when(mMockDecorView.getHeight()).thenReturn(50);
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, CONTAINER_WIDTH, 50);
-                            return null;
-                        })
-                .when(mMockDecorView)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
+        mDecorView.layout(0, 0, CONTAINER_WIDTH, 50);
 
         simulateShowSuccessAndGetObserver();
 
@@ -1072,7 +1054,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.TAB);
 
         // Trigger observer
-        observer.onDialogShown(mock(View.class));
+        observer.onDialogShown(new View(mContext));
 
         // Verify sheet collapse is called (via bottom sheet controller)
         verify(mMockBottomSheetController).collapseSheet(eq(true));
@@ -1088,7 +1070,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         when(mMockModalDialogManager.getCurrentType()).thenReturn(ModalDialogType.APP);
 
         // Trigger observer
-        observer.onDialogShown(mock(View.class));
+        observer.onDialogShown(new View(mContext));
 
         // Verify collapse is NOT triggered
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
@@ -1271,19 +1253,28 @@ public class TabBottomSheetCoordinatorUnitTest {
     @Test
     public void testAccessibilityFocusSentOnStableStates() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        List<Integer> sentEvents = new ArrayList<>();
+        mView.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void sendAccessibilityEvent(View host, int eventType) {
+                        super.sendAccessibilityEvent(host, eventType);
+                        sentEvents.add(eventType);
+                    }
+                });
 
         // 1. Transition to a stable showing state (HALF)
         observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
 
         // Verify accessibility focus event was sent
-        verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        assertEquals(List.of(AccessibilityEvent.TYPE_VIEW_FOCUSED), sentEvents);
 
-        clearInvocations(mView);
+        sentEvents.clear();
 
         // 2. Transition to stable showing state (FULL)
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         // Verify it was called again (1 time after clearing)
-        verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        assertEquals(List.of(AccessibilityEvent.TYPE_VIEW_FOCUSED), sentEvents);
     }
 
     @Test
@@ -1412,7 +1403,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         when(mMockBottomSheetController.requestShowContent(
                         any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
-        when(mMockDecorView.getHeight()).thenReturn(0);
+        mDecorView.layout(0, 0, CONTAINER_WIDTH, 0);
 
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
 

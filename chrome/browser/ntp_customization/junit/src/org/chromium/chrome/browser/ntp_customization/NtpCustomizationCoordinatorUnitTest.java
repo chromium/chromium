@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -29,10 +30,8 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ViewFlipper;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -71,7 +70,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJni;
@@ -79,11 +77,7 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationMediator mMediator;
-    @Mock private ViewFlipper mViewFlipper;
     @Mock private NtpThemeCoordinator mNtpThemeCoordinator;
-    @Mock private ViewGroup mHistoryContainerView;
-    @Mock private RecyclerView mRecyclerView;
-    @Mock private View mMoreOptionsContainer;
     @Mock private Profile mMockProfile;
     @Mock private TemplateUrlService mMockTemplateUrlService;
     @Mock private PrefService mMockPrefService;
@@ -94,6 +88,7 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     private Context mContext;
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
+    private ViewFlipper mViewFlipper;
     private View mContentView;
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -104,6 +99,10 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mViewFlipper =
+                (ViewFlipper)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
         mContentView =
                 LayoutInflater.from(mContext)
                         .inflate(
@@ -163,7 +162,7 @@ public class NtpCustomizationCoordinatorUnitTest {
 
         // Verifies each implementation calls the corresponding method of the mediator.
         delegate.registerBottomSheetLayout(11, mContentView);
-        verify(mViewFlipper).addView(eq(mContentView));
+        assertEquals(mViewFlipper, mContentView.getParent());
         verify(mMediator).registerBottomSheetLayout(11);
 
         delegate.backPressOnCurrentBottomSheet();
@@ -296,7 +295,7 @@ public class NtpCustomizationCoordinatorUnitTest {
 
         mNtpCustomizationCoordinator.destroy();
 
-        verify(mViewFlipper).removeAllViews();
+        assertEquals(0, mViewFlipper.getChildCount());
         verify(mMediator).destroy();
         verify(ntpCardsCoordinator).destroy();
         verify(ntpThemeTipCoordinator).destroy();
@@ -321,25 +320,14 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Test
     @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_V2, NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testShowBottomSheet_SyncEnabled() {
-        showBottomSheetImpl();
+        mNtpCustomizationCoordinator.showBottomSheet();
         assertNotNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
     }
 
     @Test
     @DisableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testShowBottomSheet_SyncDisabled() {
-        showBottomSheetImpl();
-        assertNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
-    }
-
-    private void showBottomSheetImpl() {
-        when(mViewFlipper.findViewById(R.id.ntp_theme_sync_history_container))
-                .thenReturn(mHistoryContainerView);
-        when(mHistoryContainerView.findViewById(R.id.ntp_theme_sync_history_recycler_view))
-                .thenReturn(mRecyclerView);
-        when(mHistoryContainerView.findViewById(R.id.more_options_container))
-                .thenReturn(mMoreOptionsContainer);
-
         mNtpCustomizationCoordinator.showBottomSheet();
+        assertNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
     }
 }

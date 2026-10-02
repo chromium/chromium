@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -23,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UnownedUserDataHost;
@@ -36,7 +36,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link TabBottomSheetUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBottomSheetUtilsUnitTest {
     private static final float EPSILON = 0.001f;
 
@@ -243,20 +242,17 @@ public class TabBottomSheetUtilsUnitTest {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(null));
         assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
 
-        Activity activity = mock(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-
-        when(activity.isFinishing()).thenReturn(true);
-        when(activity.isDestroyed()).thenReturn(false);
-        assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
-
-        when(activity.isFinishing()).thenReturn(false);
-        when(activity.isDestroyed()).thenReturn(true);
-        assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
-
-        when(activity.isFinishing()).thenReturn(false);
-        when(activity.isDestroyed()).thenReturn(false);
         assertFalse(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
+
+        activity.finish();
+        assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
+
+        Activity destroyedActivity =
+                Robolectric.buildActivity(Activity.class).create().destroy().get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(destroyedActivity));
+        assertTrue(TabBottomSheetUtils.isActivityFinishingOrDestroyed(mWindowAndroid));
     }
 
     @Test

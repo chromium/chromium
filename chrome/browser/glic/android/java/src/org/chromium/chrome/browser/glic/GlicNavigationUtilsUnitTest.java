@@ -10,15 +10,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import org.junit.After;
@@ -31,6 +30,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,15 +52,12 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link GlicNavigationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GlicNavigationUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfileMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private WindowAndroid mWindowAndroidMock;
-    @Mock private Activity mActivityMock;
-    @Mock private Resources mResourcesMock;
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private AccountManagerFacade mAccountManagerFacadeMock;
@@ -69,16 +66,17 @@ public class GlicNavigationUtilsUnitTest {
     @Mock private SettingsNavigation mSettingsNavigationMock;
     @Captor private ArgumentCaptor<Bundle> mFragmentArgsCaptor;
 
+    private Activity mActivityMock;
+
     @Before
     public void setUp() {
+        mActivityMock = Robolectric.buildActivity(Activity.class).get();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
         GlicNavigationUtils.setLauncher(() -> mLauncherMock);
 
         when(mWebContentsMock.getTopLevelNativeWindow()).thenReturn(mWindowAndroidMock);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivityMock));
-        when(mActivityMock.getResources()).thenReturn(mResourcesMock);
-        when(mResourcesMock.getString(anyInt())).thenReturn("test_string");
         when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentityManagerMock);
     }
@@ -106,7 +104,7 @@ public class GlicNavigationUtilsUnitTest {
     @Test
     public void testShowSignIn_WithoutPrimaryAccount_LaunchesSigninBottomSheet() {
         when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(null);
-        Intent intentMock = mock(Intent.class);
+        Intent intentMock = new Intent();
         when(mLauncherMock.createBottomSheetSigninIntentOrShowError(
                         eq(mActivityMock),
                         eq(mProfileMock),
@@ -122,7 +120,7 @@ public class GlicNavigationUtilsUnitTest {
                         eq(mProfileMock),
                         any(BottomSheetSigninAndHistorySyncConfig.class),
                         eq(SigninAccessPoint.GLIC_LAUNCH_BUTTON));
-        verify(mActivityMock).startActivity(intentMock);
+        assertEquals(intentMock, shadowOf(mActivityMock).getNextStartedActivity());
     }
 
     @Test

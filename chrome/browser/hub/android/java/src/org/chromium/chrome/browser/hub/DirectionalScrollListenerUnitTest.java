@@ -18,19 +18,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link DirectionalScrollListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DirectionalScrollListenerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mOnScrollUp;
     @Mock private Runnable mOnScrollDown;
-    @Mock private RecyclerView mRecyclerView;
 
+    private final RecyclerView mRecyclerView =
+            new RecyclerView(ContextUtils.getApplicationContext());
     private DirectionalScrollListener mListener;
 
     @Before

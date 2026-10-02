@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -32,12 +33,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Robolectric tests for {@link IncognitoReauthDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoReauthDialogTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ModalDialogManager mModalDialogManagerMock;
-    @Mock private View mIncognitoReauthViewMock;
 
+    private final View mIncognitoReauthViewMock = new View(ContextUtils.getApplicationContext());
     private final OnBackPressedCallback mOnBackPressedCallbackMock =
             new OnBackPressedCallback(false) {
                 @Override
@@ -57,7 +57,7 @@ public class IncognitoReauthDialogTest {
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mModalDialogManagerMock, mIncognitoReauthViewMock);
+        verifyNoMoreInteractions(mModalDialogManagerMock);
     }
 
     @Test

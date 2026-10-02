@@ -12,12 +12,8 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -29,12 +25,10 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 
 /** Unit tests for {@link FeedStreamViewResizer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class FeedStreamViewResizerTest {
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
-    @Mock private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private UiConfig mUiConfig;
 
     private FeedStreamViewResizer mResizer;
@@ -42,6 +36,7 @@ public final class FeedStreamViewResizerTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
+        mRecyclerView = new RecyclerView(mActivity);
         mUiConfig = new UiConfig(new View(mActivity));
         mResizer = FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
     }

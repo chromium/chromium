@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -32,7 +33,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Robolectric tests for {@link FullScreenIncognitoReauthCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullScreenIncognitoReauthCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContextMock;
@@ -43,12 +43,12 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Mock private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
     @Mock private ListMenuDelegate mIncognitoReauthListMenuDelegateMock;
 
-    @Mock private View mIncognitoReauthViewMock;
     @Mock private PropertyModel mPropertyModelMock;
     @Mock private PropertyModelChangeProcessor mPropertyModelChangeProcessorMock;
 
     @Mock private IncognitoReauthDialog mIncognitoReauthDialogMock;
 
+    private final View mIncognitoReauthViewMock = new View(ContextUtils.getApplicationContext());
     private final OnBackPressedCallback mOnBackPressedCallbackMock =
             new OnBackPressedCallback(false) {
                 @Override

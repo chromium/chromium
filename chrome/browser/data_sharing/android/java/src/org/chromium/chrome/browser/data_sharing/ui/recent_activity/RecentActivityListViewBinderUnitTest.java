@@ -4,20 +4,26 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,42 +31,47 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecentActivityListViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ViewGroup mListRowView;
-    @Mock private TextView mTitleView;
-    @Mock private TextView mDescriptionView;
-    @Mock private ImageView mFaviconView;
-    @Mock private ImageView mAvatarView;
-    private PropertyModel mPropertyModel;
     @Mock private OnClickListener mOnClickListener;
     @Mock private Drawable mDrawable;
-    @Mock private Context mContext;
-    @Mock private TextPaint mTextPaint;
-    @Captor private ArgumentCaptor<Runnable> mPostedTask;
+    private Context mContext;
+    private ViewGroup mListRowView;
+    private TextView mTitleView;
+    private TextView mDescriptionView;
+    private ImageView mFaviconView;
+    private ImageView mAvatarView;
+    private PropertyModel mPropertyModel;
 
     @Before
     public void setup() {
-        when(mListRowView.findViewById(R.id.title)).thenReturn(mTitleView);
-        when(mListRowView.findViewById(R.id.description)).thenReturn(mDescriptionView);
-        when(mListRowView.findViewById(R.id.favicon)).thenReturn(mFaviconView);
-        when(mListRowView.findViewById(R.id.avatar)).thenReturn(mAvatarView);
-        when(mDescriptionView.getContext()).thenReturn(mContext);
-        when(mDescriptionView.getPaint()).thenReturn(mTextPaint);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext = spy(new ContextWrapper(activity));
+        mListRowView = new FrameLayout(mContext);
+        mTitleView = new TextView(mContext);
+        mTitleView.setId(R.id.title);
+        mDescriptionView = new TextView(mContext);
+        mDescriptionView.setId(R.id.description);
+        mFaviconView = new ImageView(mContext);
+        mFaviconView.setId(R.id.favicon);
+        mAvatarView = new ImageView(mContext);
+        mAvatarView.setId(R.id.avatar);
+        mListRowView.addView(mTitleView);
+        mListRowView.addView(mDescriptionView);
+        mListRowView.addView(mFaviconView);
+        mListRowView.addView(mAvatarView);
+        activity.setContentView(mListRowView);
 
         mPropertyModel = new PropertyModel.Builder(RecentActivityListProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
@@ -71,11 +82,14 @@ public class RecentActivityListViewBinderUnitTest {
     public void testTitle() {
         final String title = "Title 1";
         mPropertyModel.set(RecentActivityListProperties.TITLE_TEXT, title);
-        verify(mTitleView).setText(eq(title));
+        assertEquals(title, mTitleView.getText().toString());
     }
 
     @Test
     public void testDescriptionWithTimestamp() {
+        String combinedString = "sample full description";
+        doReturn(combinedString).when(mContext).getString(anyInt(), any(), any(), any());
+
         DescriptionAndTimestamp descriptionAndTimestamp =
                 new DescriptionAndTimestamp(
                         /* description= */ "description 1",
@@ -85,13 +99,8 @@ public class RecentActivityListViewBinderUnitTest {
         mPropertyModel.set(
                 RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
                 descriptionAndTimestamp);
-        verify(mDescriptionView).post(mPostedTask.capture());
-
-        String combinedString = "sample full description";
-        when(mContext.getString(anyInt(), any(), any(), any())).thenReturn(combinedString);
-
-        mPostedTask.getValue().run();
-        verify(mDescriptionView, times(1)).setText(eq(combinedString));
+        ShadowLooper.idleMainLooper();
+        assertEquals(combinedString, mDescriptionView.getText().toString());
     }
 
     @Test
@@ -105,43 +114,45 @@ public class RecentActivityListViewBinderUnitTest {
         mPropertyModel.set(
                 RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
                 descriptionAndTimestamp);
-        verify(mDescriptionView).post(mPostedTask.capture());
-
-        mPostedTask.getValue().run();
+        ShadowLooper.idleMainLooper();
         verify(mContext, never()).getString(anyInt(), any(), any(), any());
-        verify(mDescriptionView, times(1)).setText(eq(descriptionAndTimestamp.timestamp));
+        assertEquals(descriptionAndTimestamp.timestamp, mDescriptionView.getText().toString());
     }
 
     @Test
     public void testFavicon() {
+        mFaviconView.setImageDrawable(mock(Drawable.class));
         mPropertyModel.set(
                 RecentActivityListProperties.FAVICON_PROVIDER,
-                imageView -> imageView.setImageDrawable(mDrawable));
-        InOrder inOrder = Mockito.inOrder(mFaviconView);
-        inOrder.verify(mFaviconView).setImageDrawable(eq(null));
-        inOrder.verify(mFaviconView).setImageDrawable(eq(mDrawable));
+                imageView -> {
+                    assertNull(imageView.getDrawable());
+                    imageView.setImageDrawable(mDrawable);
+                });
+        assertEquals(mDrawable, mFaviconView.getDrawable());
     }
 
     @Test
     public void testFavicon_nullProvider() {
         mPropertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, null);
-        InOrder inOrder = Mockito.inOrder(mFaviconView);
-        inOrder.verify(mFaviconView).setVisibility(eq(View.GONE));
+        assertEquals(View.GONE, mFaviconView.getVisibility());
     }
 
     @Test
     public void testAvatar() {
+        mAvatarView.setImageDrawable(mock(Drawable.class));
         mPropertyModel.set(
                 RecentActivityListProperties.AVATAR_PROVIDER,
-                imageView -> imageView.setImageDrawable(mDrawable));
-        InOrder inOrder = Mockito.inOrder(mAvatarView);
-        inOrder.verify(mAvatarView).setImageDrawable(eq(null));
-        inOrder.verify(mAvatarView).setImageDrawable(eq(mDrawable));
+                imageView -> {
+                    assertNull(imageView.getDrawable());
+                    imageView.setImageDrawable(mDrawable);
+                });
+        assertEquals(mDrawable, mAvatarView.getDrawable());
     }
 
     @Test
     public void testOnClickListener() {
         mPropertyModel.set(RecentActivityListProperties.ON_CLICK_LISTENER, mOnClickListener);
-        verify(mListRowView, times(1)).setOnClickListener(eq(mOnClickListener));
+        mListRowView.performClick();
+        verify(mOnClickListener, times(1)).onClick(eq(mListRowView));
     }
 }
