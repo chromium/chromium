@@ -15,7 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -27,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -36,6 +37,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.chrome.browser.ui.actions.appmenu.MenuButtonState;
@@ -53,11 +55,9 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for ToolbarAppMenuManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MenuButtonMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private Runnable mClearOmniboxFocus;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
     @Mock private AppMenuHandler mAppMenuHandler;
@@ -65,13 +65,13 @@ public class MenuButtonMediatorTest {
     @Mock private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock private Runnable mOnMenuButtonClicked;
     @Mock private Runnable mRequestRenderRunnable;
-    @Mock Resources mResources;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    @Mock private View mUtilityView;
     @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
+    private Activity mActivity;
+    private View mUtilityView;
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -79,8 +79,9 @@ public class MenuButtonMediatorTest {
     private MenuButtonMediator mMenuButtonMediator;
 
     @Before
-    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mUtilityView = new View(mActivity);
         mControlsVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         ObservableSuppliers.alwaysFalse());
@@ -101,7 +102,6 @@ public class MenuButtonMediatorTest {
                 .getAppMenuPropertiesDelegate();
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mMenuUiState = new MenuUiState();
-        doReturn(mResources).when(mActivity).getResources();
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
@@ -150,19 +150,13 @@ public class MenuButtonMediatorTest {
         mAppMenuSupplier.set(mAppMenuCoordinator);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        doReturn(true).when(mActivity).isDestroyed();
-        mMenuButtonMediator.updateStateChanged();
-
-        assertFalse(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
-        verify(mRequestRenderRunnable, never()).run();
-
-        doReturn(false).when(mActivity).isDestroyed();
         mMenuButtonMediator.updateStateChanged();
 
         assertFalse(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
         verify(mRequestRenderRunnable, never()).run();
 
         mMenuUiState.buttonState = new MenuButtonState();
+        mMenuUiState.buttonState.menuContentDescription = R.string.accessibility_toolbar_btn_menu;
         mMenuButtonMediator.updateStateChanged();
 
         assertTrue(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
@@ -188,19 +182,13 @@ public class MenuButtonMediatorTest {
                         mThemeColorProvider,
                         false);
 
-        doReturn(true).when(mActivity).isDestroyed();
-        newMediator.updateStateChanged();
-
-        assertFalse(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
-        verify(mRequestRenderRunnable, never()).run();
-
-        doReturn(false).when(mActivity).isDestroyed();
         newMediator.updateStateChanged();
 
         assertFalse(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
         verify(mRequestRenderRunnable, never()).run();
 
         mMenuUiState.buttonState = new MenuButtonState();
+        mMenuUiState.buttonState.menuContentDescription = R.string.accessibility_toolbar_btn_menu;
         newMediator.updateStateChanged();
 
         assertFalse(mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge);
@@ -220,14 +208,13 @@ public class MenuButtonMediatorTest {
 
     @Test
     public void testKeyboardIsDismissedWhenMenuShows() {
-        doReturn(mUtilityView).when(mActivity).getCurrentFocus();
+        Shadows.shadowOf(mActivity).setCurrentFocus(mUtilityView);
         mMenuButtonMediator.onMenuVisibilityChanged(true);
         verify(mKeyboardDelegate).hideKeyboard(eq(mUtilityView));
     }
 
     @Test
     public void testKeyboardIsNotDismissedWhenMenuShowsWithNoFocusedViews() {
-        doReturn(null).when(mActivity).getCurrentFocus();
         mMenuButtonMediator.onMenuVisibilityChanged(true);
         verify(mKeyboardDelegate, never()).hideKeyboard(any());
     }

@@ -5,24 +5,16 @@
 package org.chromium.chrome.browser.ui.side_ui;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -34,19 +26,15 @@ import java.util.Map;
 
 /** Tests for {@link ViewMarginAdjusterForSideUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ViewMarginAdjusterForSideUiTest {
-    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    @Mock View mView;
-    @Captor ArgumentCaptor<MarginLayoutParams> mLayoutParamsCaptor;
-
+    private View mView;
     private MarginLayoutParams mMarginLayoutParams;
 
     @Before
     public void setUp() {
+        mView = new View(ContextUtils.getApplicationContext());
         mMarginLayoutParams = new MarginLayoutParams(0, 0);
-        doReturn(mMarginLayoutParams).when(mView).getLayoutParams();
+        mView.setLayoutParams(mMarginLayoutParams);
     }
 
     @Test
@@ -57,25 +45,25 @@ public class ViewMarginAdjusterForSideUiTest {
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(0, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(0, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(0, params.getMarginStart());
+        assertEquals(200, params.getMarginEnd());
 
         // Start margin
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(200, 0),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView, times(2)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(200, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(0, mLayoutParamsCaptor.getValue().getMarginEnd());
+        params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(200, params.getMarginStart());
+        assertEquals(0, params.getMarginEnd());
 
         // Both margins
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(100, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(100, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
+        params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(100, params.getMarginStart());
+        assertEquals(200, params.getMarginEnd());
     }
 
     @Test
@@ -89,25 +77,25 @@ public class ViewMarginAdjusterForSideUiTest {
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(0, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(20, mLayoutParamsCaptor.getValue().leftMargin);
-        assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(20, params.leftMargin);
+        assertEquals(235, params.rightMargin);
 
         // Start margin
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(200, 0),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView, times(2)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(220, mLayoutParamsCaptor.getValue().leftMargin);
-        assertEquals(35, mLayoutParamsCaptor.getValue().rightMargin);
+        params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(220, params.leftMargin);
+        assertEquals(35, params.rightMargin);
 
         // Both margins
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(100, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(120, mLayoutParamsCaptor.getValue().leftMargin);
-        assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
+        params = (MarginLayoutParams) mView.getLayoutParams();
+        assertEquals(120, params.leftMargin);
+        assertEquals(235, params.rightMargin);
     }
 
     @Test
@@ -121,12 +109,12 @@ public class ViewMarginAdjusterForSideUiTest {
         marginContainerObserver.onSideUiSpecsChanged(
                 new SideUiSpecs(sideUiSpecs),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
-        verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
 
         // Ignores the width from WEB_CONTENTS-heighType container.
-        assertEquals(0, mLayoutParamsCaptor.getValue().getMarginStart());
+        assertEquals(0, params.getMarginStart());
 
         // Respects the width from TOOLBAR-heighType container.
-        assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
+        assertEquals(200, params.getMarginEnd());
     }
 }

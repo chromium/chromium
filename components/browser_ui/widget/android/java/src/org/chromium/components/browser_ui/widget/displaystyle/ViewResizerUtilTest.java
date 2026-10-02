@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -24,7 +23,6 @@ import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Tests for @{@link ViewResizerUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ViewResizerUtilTest {
 
     private Context mContext;
@@ -76,13 +74,15 @@ public final class ViewResizerUtilTest {
         // View is 500dp wide, so we should use 500 as container width, not 700.
         // (500 - 600)/2 < 0, so should use min padding.
         float density = mContext.getResources().getDisplayMetrics().density;
-        View mockView = Mockito.mock(View.class);
-        Mockito.when(mockView.getMeasuredWidth()).thenReturn((int) (500 * density));
+        View view = new View(mContext);
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec((int) (500 * density), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
         int expectedPadding = 20;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, mockView, /* minWidePaddingPixels= */ expectedPadding);
+                        mContext, view, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 
@@ -93,13 +93,15 @@ public final class ViewResizerUtilTest {
         // View is 500dp wide, but flag is disabled, so we should use screen width (700).
         // (700 - 600)/2 = 50.
         float density = mContext.getResources().getDisplayMetrics().density;
-        View mockView = Mockito.mock(View.class);
-        Mockito.when(mockView.getMeasuredWidth()).thenReturn((int) (500 * density));
+        View view = new View(mContext);
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec((int) (500 * density), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
         int expectedPadding = 50;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, mockView, /* minWidePaddingPixels= */ 20);
+                        mContext, view, /* minWidePaddingPixels= */ 20);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 

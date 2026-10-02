@@ -9,20 +9,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
@@ -68,7 +66,6 @@ import java.util.List;
     ContentFeatures.FED_CM_NATIVE_ID_PS,
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NativeAppTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -87,8 +84,6 @@ public class NativeAppTest {
 
     private AccountSelectionCoordinator mCoordinator;
     private Activity mActivity;
-    private Context mSpyContext;
-    private PackageManager mSpyPackageManager;
     private ShadowActivity mShadowActivity;
     private ShadowPackageManager mShadowPackageManager;
     private ChromeOriginVerifier mMockOriginVerifier;
@@ -96,16 +91,13 @@ public class NativeAppTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mSpyContext = spy(mActivity);
-        mSpyPackageManager = spy(mActivity.getPackageManager());
-        doReturn(mSpyPackageManager).when(mSpyContext).getPackageManager();
 
         mShadowActivity = Shadows.shadowOf(mActivity);
         mShadowPackageManager = Shadows.shadowOf(mActivity.getPackageManager());
 
-        WeakReference<Context> contextRef = new WeakReference<>(mSpyContext);
+        WeakReference<Context> contextRef = new WeakReference<>(mActivity);
         when(mWindowAndroid.getContext()).thenReturn(contextRef);
-        WeakReference<Activity> activityRef = new WeakReference<>((Activity) mSpyContext);
+        WeakReference<Activity> activityRef = new WeakReference<>(mActivity);
         when(mWindowAndroid.getActivity()).thenReturn(activityRef);
 
         mMockOriginVerifier = mock(ChromeOriginVerifier.class);
@@ -132,15 +124,20 @@ public class NativeAppTest {
                         mMockDelegate);
     }
 
+    /**
+     * Registers an app whose activity handles CONTINUE_URL but does not declare a MIME type. Uses
+     * an IntentFilter (rather than addResolveInfoForIntent(), which matches regardless of the
+     * queried MIME type) so that queries with a MIME type correctly do not match.
+     */
     private void registerFakeApp(String packageName) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse(CONTINUE_URL.getSpec()));
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.activityInfo = new ActivityInfo();
-        resolveInfo.activityInfo.packageName = packageName;
-        resolveInfo.activityInfo.name = packageName + ".LoginActivity";
-        mShadowPackageManager.addResolveInfoForIntent(intent, resolveInfo);
+        ComponentName component = new ComponentName(packageName, packageName + ".LoginActivity");
+        mShadowPackageManager.addActivityIfNotPresent(component);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        Uri uri = Uri.parse(CONTINUE_URL.getSpec());
+        filter.addDataScheme(uri.getScheme());
+        filter.addDataAuthority(uri.getHost(), null);
+        mShadowPackageManager.addIntentFilterForActivity(component, filter);
     }
 
     private void registerFakeApp(String packageName, String mimeType) {
@@ -264,15 +261,6 @@ public class NativeAppTest {
     public void testFallbackToCctWhenAppRegisteredWithoutMimeType() {
         // Register app without MIME type
         registerFakeApp(IDP_PACKAGE);
-
-        // Stub package manager to return empty for MIME type queries (workaround Robolectric bug)
-        doReturn(java.util.Collections.emptyList())
-                .when(mSpyPackageManager)
-                .queryIntentActivities(
-                        argThat(
-                                (Intent intent) ->
-                                        "application/web-identity+json".equals(intent.getType())),
-                        anyInt());
 
         mCoordinator.showModalDialog(CONTINUE_URL);
 

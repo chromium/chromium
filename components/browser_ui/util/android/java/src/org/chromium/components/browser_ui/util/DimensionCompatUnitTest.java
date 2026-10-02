@@ -5,9 +5,7 @@
 package org.chromium.components.browser_ui.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -19,12 +17,8 @@ import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -37,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link DimensionCompat}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DimensionCompatUnitTest {
     private Activity mActivity;
     private static final int TEST_SCREEN_WIDTH = 1000;
@@ -46,8 +39,6 @@ public class DimensionCompatUnitTest {
 
     private static final int TEST_STATUS_BAR_HEIGHT = 30;
     private static WindowInsets sTestSysBarInsets;
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Resources mResources;
 
     @Implements(WindowMetrics.class)
     public static class ShadowWindowMetrics {
@@ -114,12 +105,12 @@ public class DimensionCompatUnitTest {
             shadows = {ShadowWindowMetrics.class},
             qualifiers = "w" + TEST_SCREEN_WIDTH + "dp-h" + TEST_SCREEN_HEIGHT + "dp")
     public void getDimensionsLegacy() {
-        Activity mockActivity = spy(mActivity);
-        int statusBarHeight = 25;
-        when(mockActivity.getResources()).thenReturn(mResources);
-        when(mResources.getIdentifier("status_bar_height", "dimen", "android")).thenReturn(1);
-        when(mResources.getDimensionPixelSize(anyInt())).thenReturn(statusBarHeight);
-        DimensionCompat dimensionCompat = DimensionCompat.create(mockActivity, null);
+        Resources resources = mActivity.getResources();
+        int statusBarHeight =
+                resources.getDimensionPixelSize(
+                        resources.getIdentifier("status_bar_height", "dimen", "android"));
+        assertTrue("Framework status_bar_height should be non-zero.", statusBarHeight > 0);
+        DimensionCompat dimensionCompat = DimensionCompat.create(mActivity, null);
         assertEquals(
                 "Window height is not as expected.",
                 TEST_SCREEN_HEIGHT,

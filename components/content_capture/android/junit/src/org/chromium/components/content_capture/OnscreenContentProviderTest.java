@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.content_capture.ContentCaptureMetadataProto.ContentCaptureMetadata;
 import org.chromium.content_public.browser.WebContents;
@@ -32,17 +33,15 @@ import org.chromium.content_public.browser.WebContents;
 /** Unit tests for {@link OnscreenContentProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OnscreenContentProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private OnscreenContentProvider.Natives mOnscreenContentProviderJni;
-
-    @Mock private View mView;
     @Mock private PlatformContentCaptureController mMockController;
     @Mock private Context mContext;
     @Mock private WebContents mWebContents;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private OnscreenContentProvider mProvider;
 
     @Before

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -20,7 +21,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** JUnit tests for {@link AccountSelectionBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccountSelectionBottomSheetContentTest {
     private AccountSelectionBottomSheetContent mContent;
 
@@ -28,7 +28,7 @@ public class AccountSelectionBottomSheetContentTest {
     public void setUp() {
         mContent =
                 new AccountSelectionBottomSheetContent(
-                        /* contentView= */ Mockito.mock(View.class),
+                        /* contentView= */ new View(ContextUtils.getApplicationContext()),
                         /* bottomSheetController= */ Mockito.mock(BottomSheetController.class),
                         /* scrollOffsetSupplier= */ () -> 0,
                         RpMode.PASSIVE);

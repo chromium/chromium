@@ -6,11 +6,6 @@ package org.chromium.components.browser_ui.widget.containment;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -20,6 +15,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -39,23 +35,53 @@ import java.util.List;
 
 /** Unit tests for {@link ContainmentItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContainmentItemDecorationUnitTest {
+    private static final int CHILD_HEIGHT_PX = 10;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.State mState;
     @Mock private Canvas mCanvas;
     @Mock private ContainmentItemController mController;
 
     private Context mContext;
+    private RecyclerView mRecyclerView;
     private ContainmentItemDecoration mDecoration;
+
+    /** Adapter which serves a fixed list of pre-created child views. */
+    private static class ViewListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final List<View> mViews;
+
+        ViewListAdapter(List<View> views) {
+            mViews = views;
+        }
+
+        @Override
+        public int getItemCount() {
+            return mViews.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new RecyclerView.ViewHolder(mViews.get(viewType)) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+    }
 
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContext = activity;
+        mRecyclerView = new RecyclerView(mContext);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
         mDecoration = new ContainmentItemDecoration(mController);
     }
@@ -72,17 +98,32 @@ public class ContainmentItemDecorationUnitTest {
         View view = new View(mContext);
         view.setLayoutParams(
                 new RecyclerView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        ViewGroup.LayoutParams.MATCH_PARENT, CHILD_HEIGHT_PX));
         return view;
+    }
+
+    /** Sets the adapter items to {@code views} and lays out the RecyclerView. */
+    private void setItems(View... views) {
+        mRecyclerView.setAdapter(new ViewListAdapter(List.of(views)));
+        layoutRecyclerView(views.length * CHILD_HEIGHT_PX);
+    }
+
+    private void layoutRecyclerView(int heightPx) {
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(heightPx, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, 100, heightPx);
     }
 
     @Test
     public void testOnDraw_nullPreferenceStyles_doesNotUpdate() {
+        View child = createChildView();
+        setItems(child);
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isTrue();
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
-        verify(mRecyclerView, never()).getChildCount();
+        assertThat(child.getBackground()).isNull();
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isTrue();
     }
 
@@ -92,22 +133,18 @@ public class ContainmentItemDecorationUnitTest {
         mDecoration.updatePreferenceStyles(styles);
 
         View child = createChildView();
-        when(mRecyclerView.getChildCount()).thenReturn(1);
-        when(mRecyclerView.getChildAt(0)).thenReturn(child);
-        when(mRecyclerView.getChildAdapterPosition(child)).thenReturn(0);
+        setItems(child);
 
         // First onDraw styles child and sets mUpdateBackgrounds to false.
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
         assertThat(child.getBackground()).isInstanceOf(RippleDrawable.class);
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isFalse();
 
-        // Clear background and invocations.
+        // Clear background.
         child.setBackground(null);
-        clearInvocations(mRecyclerView);
 
         // Subsequent onDraw returns early because mUpdateBackgrounds is false.
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
-        verify(mRecyclerView, never()).getChildCount();
         assertThat(child.getBackground()).isNull();
     }
 
@@ -121,11 +158,7 @@ public class ContainmentItemDecorationUnitTest {
         View child0 = createChildView();
         View child1 = createChildView();
 
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(child0);
-        when(mRecyclerView.getChildAt(1)).thenReturn(child1);
-        when(mRecyclerView.getChildAdapterPosition(child0)).thenReturn(0);
-        when(mRecyclerView.getChildAdapterPosition(child1)).thenReturn(1);
+        setItems(child0, child1);
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
@@ -145,9 +178,9 @@ public class ContainmentItemDecorationUnitTest {
         View child1 = createChildView();
 
         // Initially only child0 is attached to RecyclerView, while adapter has 2 items.
-        when(mRecyclerView.getChildCount()).thenReturn(1);
-        when(mRecyclerView.getChildAt(0)).thenReturn(child0);
-        when(mRecyclerView.getChildAdapterPosition(child0)).thenReturn(0);
+        mRecyclerView.setAdapter(new ViewListAdapter(List.of(child0, child1)));
+        layoutRecyclerView(CHILD_HEIGHT_PX);
+        assertThat(mRecyclerView.getChildCount()).isEqualTo(1);
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
@@ -157,17 +190,13 @@ public class ContainmentItemDecorationUnitTest {
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isFalse();
 
         // Later child1 attaches and its offsets are measured.
+        layoutRecyclerView(2 * CHILD_HEIGHT_PX);
+        assertThat(mRecyclerView.getChildCount()).isEqualTo(2);
         Rect outRect = new Rect();
         mDecoration.getItemOffsets(outRect, child1, mRecyclerView, mState);
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isTrue();
 
         // Next draw pass styles child1.
-        when(mRecyclerView.getChildCount()).thenReturn(2);
-        when(mRecyclerView.getChildAt(0)).thenReturn(child0);
-        when(mRecyclerView.getChildAt(1)).thenReturn(child1);
-        when(mRecyclerView.getChildAdapterPosition(child0)).thenReturn(0);
-        when(mRecyclerView.getChildAdapterPosition(child1)).thenReturn(1);
-
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         // Now child1 is also styled and the update flag is cleared.
@@ -181,9 +210,7 @@ public class ContainmentItemDecorationUnitTest {
         mDecoration.updatePreferenceStyles(styles);
 
         View child = createChildView();
-        when(mRecyclerView.getChildCount()).thenReturn(1);
-        when(mRecyclerView.getChildAt(0)).thenReturn(child);
-        when(mRecyclerView.getChildAdapterPosition(child)).thenReturn(0);
+        setItems(child);
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
         assertThat(mDecoration.getUpdateBackgroundsForTesting()).isFalse();

@@ -42,7 +42,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SideUiResizeHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SideUiResizeHandlerTest {
     private static final int CONTAINER_WIDTH_PX = 240;
     private static final int CONTAINER_HEIGHT_PX = 600;
@@ -51,19 +50,20 @@ public class SideUiResizeHandlerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SideUiContainer mSideUiContainer;
-    @Mock private View mSideUiContainerView;
     @Mock private SideUiCoordinator mSideUiCoordinator;
 
     private Context mContext;
     private FrameLayout mAnchorContainerParent;
+    private View mSideUiContainerView;
     private FrameLayout mAnchorContainer;
 
     @Before
     public void setUp() {
         mContext = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mSideUiContainerView = new View(mContext);
+        mSideUiContainerView.layout(0, 0, CONTAINER_WIDTH_PX, CONTAINER_HEIGHT_PX);
         when(mSideUiContainer.getSideUiId()).thenReturn(SideUiId.VERTICAL_TABS);
         when(mSideUiContainer.getView()).thenReturn(mSideUiContainerView);
-        when(mSideUiContainerView.getWidth()).thenReturn(CONTAINER_WIDTH_PX);
 
         mAnchorContainerParent = new FrameLayout(mContext);
         mAnchorContainer = new FrameLayout(mContext);

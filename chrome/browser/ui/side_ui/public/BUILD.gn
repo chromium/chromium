@@ -45,10 +45,10 @@ robolectric_library("junit") {
   sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/ViewMarginAdjusterForSideUiTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_junit_test_support",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
-    "//third_party/mockito:mockito_java",
   ]
 }

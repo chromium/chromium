@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -38,15 +39,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock BottomSheetObserver mObserver;
     private @Mock BottomSheetContent mContent;
-    private @Mock View mContentView;
-    private @Mock View mToolbarView;
 
+    private final View mContentView = new View(ContextUtils.getApplicationContext());
+    private final View mToolbarView = new View(ContextUtils.getApplicationContext());
     private PropertyModel mModel;
     private BottomSheetMediator mMediator;
 

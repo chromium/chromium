@@ -26,7 +26,6 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Size;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -81,7 +80,6 @@ import java.util.List;
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w1920dp-h1080dp-mdpi" /* windowWidth = 1920dp; 1920dp = 1920px (mdpi) */)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SideUiCoordinatorImplTest {
 
     /** Window size in this test; it must match {@code @Config}. */
@@ -98,8 +96,6 @@ public class SideUiCoordinatorImplTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private ViewStub mLeftAnchorContainerStub;
-    @Mock private ViewStub mRightAnchorContainerStub;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private SideUiObserver mSideUiObserver;
     @Mock private TabModelSelector mTabModelSelector;
@@ -127,24 +123,17 @@ public class SideUiCoordinatorImplTest {
                 anchorContainerParent,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        // Set up anchor containers.
-        mLeftAnchorContainer =
-                (ViewGroup)
-                        LayoutInflater.from(mTestActivity)
-                                .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
-        mRightAnchorContainer =
-                (ViewGroup)
-                        LayoutInflater.from(mTestActivity)
-                                .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
+        // Set up anchor container stubs.
+        ViewStub leftAnchorContainerStub =
+                new ViewStub(mTestActivity, R.layout.side_ui_anchor_container);
+        ViewStub rightAnchorContainerStub =
+                new ViewStub(mTestActivity, R.layout.side_ui_anchor_container);
         anchorContainerParent.addView(
-                mLeftAnchorContainer,
+                leftAnchorContainerStub,
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         anchorContainerParent.addView(
-                mRightAnchorContainer,
+                rightAnchorContainerStub,
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
-
-        doReturn(mLeftAnchorContainer).when(mLeftAnchorContainerStub).inflate();
-        doReturn(mRightAnchorContainer).when(mRightAnchorContainerStub).inflate();
 
         // Set up browser controls classes.
         doReturn(mBrowserControlsVisibilityDelegate)
@@ -164,10 +153,12 @@ public class SideUiCoordinatorImplTest {
                         mFullscreenManager,
                         mTopControlsStacker,
                         anchorContainerParent,
-                        mLeftAnchorContainerStub,
-                        mRightAnchorContainerStub,
+                        leftAnchorContainerStub,
+                        rightAnchorContainerStub,
                         mIncognitoStateProvider,
                         mTabModelSelector);
+        mLeftAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(0);
+        mRightAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(1);
 
         // Initialize the SideUiContainer View.
         mSideUiContainerView = new View(mTestActivity);

@@ -73,7 +73,6 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for OptionalButtonView. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OptionalButtonViewTest {
     private Context mActivity;
 
@@ -84,16 +83,14 @@ public class OptionalButtonViewTest {
     private ShadowLooper mShadowLooper;
     private BooleanSupplier mMockAnimationChecker;
     private Callback<Transition> mMockBeginDelayedTransition;
-    private ViewGroup mMockTransitionRoot;
+    private ViewGroup mTransitionRoot;
     private ListMenuButton mButton;
     private ImageView mAnimationView;
 
     @Before
     public void setUp() {
-        mActivity =
-                new ContextThemeWrapper(
-                        Robolectric.setupActivity(Activity.class),
-                        R.style.Theme_BrowserUI_DayNight);
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        mActivity = new ContextThemeWrapper(activity, R.style.Theme_BrowserUI_DayNight);
         mMockAnimationChecker = mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
 
@@ -108,10 +105,10 @@ public class OptionalButtonViewTest {
 
         mMockBeginDelayedTransition = MockitoHelper.mockCallback();
 
-        mMockTransitionRoot = mock(ViewGroup.class);
-        when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
-        when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(true);
-        mOptionalButtonView.setTransitionRoot(mMockTransitionRoot);
+        mTransitionRoot = new FrameLayout(mActivity);
+        activity.setContentView(mTransitionRoot);
+        mTransitionRoot.layout(0, 0, 100, 100);
+        mOptionalButtonView.setTransitionRoot(mTransitionRoot);
 
         mShadowLooper = shadowOf(Looper.getMainLooper());
         Handler handler = new Handler(Looper.getMainLooper());
@@ -1011,7 +1008,9 @@ public class OptionalButtonViewTest {
 
         // Set transition root to be not laid out. If this happens then TransitionManager won't run
         // any transitions.
-        when(mMockTransitionRoot.isLaidOut()).thenReturn(false);
+        ViewGroup parent = (ViewGroup) mTransitionRoot.getParent();
+        parent.removeView(mTransitionRoot);
+        parent.addView(mTransitionRoot);
 
         // Try to update the button before the transition root is laid out.
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
@@ -1020,7 +1019,7 @@ public class OptionalButtonViewTest {
         verify(mMockBeginDelayedTransition, never()).onResult(any());
 
         // Run that listener once the view is laid out.
-        when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
+        mTransitionRoot.layout(0, 0, 100, 100);
         mOptionalButtonView.getViewTreeObserver().dispatchOnGlobalLayout();
 
         // Now we should begin our transition.
@@ -1033,7 +1032,9 @@ public class OptionalButtonViewTest {
 
         // Set transition root to be not laid out. If this happens then TransitionManager won't run
         // any transitions.
-        when(mMockTransitionRoot.isLaidOut()).thenReturn(false);
+        ViewGroup parent = (ViewGroup) mTransitionRoot.getParent();
+        parent.removeView(mTransitionRoot);
+        parent.addView(mTransitionRoot);
 
         // Try to update the button before its transition root is laid out.
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
@@ -1043,7 +1044,7 @@ public class OptionalButtonViewTest {
         buttonData.setCanShow(false);
 
         // Run that listener once the view is laid out.
-        when(mMockTransitionRoot.isLaidOut()).thenReturn(true);
+        mTransitionRoot.layout(0, 0, 100, 100);
         mOptionalButtonView.getViewTreeObserver().dispatchOnGlobalLayout();
 
         // Normally called by TransitionManager.
@@ -1391,8 +1392,9 @@ public class OptionalButtonViewTest {
 
     @Test
     public void testTransition_viewNotAttached_forcesShowTransitionEnd() {
-        // Override the default stubbing for this test.
-        when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(false);
+        // Detach the transition root for this test while keeping it laid out.
+        ((ViewGroup) mTransitionRoot.getParent()).removeView(mTransitionRoot);
+        mTransitionRoot.layout(0, 0, 100, 100);
 
         ButtonData buttonData = getDataForReaderModeIconButton();
         Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
@@ -1419,7 +1421,8 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Now set it to not attached.
-        when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(false);
+        ((ViewGroup) mTransitionRoot.getParent()).removeView(mTransitionRoot);
+        mTransitionRoot.layout(0, 0, 100, 100);
 
         Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
         mOptionalButtonView.setTransitionFinishedCallback(transitionFinishedCallback);
@@ -1444,7 +1447,7 @@ public class OptionalButtonViewTest {
         unlaidOutView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         unlaidOutView.setIsAnimationAllowedPredicate(mMockAnimationChecker);
-        unlaidOutView.setTransitionRoot(mMockTransitionRoot);
+        unlaidOutView.setTransitionRoot(mTransitionRoot);
         unlaidOutView.setFakeBeginDelayedTransitionForTesting(mMockBeginDelayedTransition);
         unlaidOutView.setHandlerForTesting(new Handler(Looper.getMainLooper()));
 
@@ -1486,7 +1489,6 @@ public class OptionalButtonViewTest {
         // Ensure view is laid out and animation is allowed.
         mOptionalButtonView.layout(0, 0, 100, 100);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
-        when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(true);
 
         ButtonData buttonData = getDataForReaderModeIconButton();
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
@@ -1519,7 +1521,6 @@ public class OptionalButtonViewTest {
     public void testUpdateButton_whenRunningTransition_clearsRunningTransitionAndUpdates() {
         mOptionalButtonView.layout(0, 0, 100, 100);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
-        when(mMockTransitionRoot.isAttachedToWindow()).thenReturn(true);
 
         ButtonData buttonData = getDataForReaderModeIconButton();
         mOptionalButtonView.updateButtonWithAnimation(buttonData);

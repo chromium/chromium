@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -54,7 +53,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link OptionalNewTabButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class OptionalNewTabButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
@@ -132,7 +130,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);
 
-        View view = mock(View.class);
+        View view = new View(mContext);
         mOptionalNewTabButtonController
                 .get(mTab)
                 .getButtonSpec()
