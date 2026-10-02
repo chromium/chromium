@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_RECURSIVE_MUTEX_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_RECURSIVE_MUTEX_H_
 
 #include <atomic>
 
@@ -39,15 +39,15 @@
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
 class DeferredTaskHandler;
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
-class LOCKABLE WTF_EXPORT RecursiveMutex {
+class LOCKABLE MODULES_EXPORT RecursiveMutex {
  public:
   // Overridden solely for the purpose of annotating them.
   // The compiler is expected to optimize the calls away.
@@ -83,4 +83,4 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_RECURSIVE_MUTEX_H_

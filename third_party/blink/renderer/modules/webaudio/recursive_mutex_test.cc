@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "third_party/blink/renderer/modules/webaudio/recursive_mutex.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

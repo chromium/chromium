@@ -59,7 +59,7 @@ The below is a list of major libraries. For a complete list, look at
 
 * **Threading**
 
-  [threading.h], [threading_primitives.h]
+  [threading.h]
 
 * **Miscellaneous**
 
@@ -97,7 +97,6 @@ current location][4] platform/wtf.
 [allocator.h]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/allocator/allocator.h
 [functional.h]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/functional.h
 [threading.h]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/threading.h
-[threading_primitives.h]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/threading_primitives.h
 [std_lib_extras.h]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/std_lib_extras.h
 [1]: https://chromium.googlesource.com/chromium/src/+/e372c152fc6e57743ebc508fe17f6eb131b4ff8d
 [2]: https://chromium.googlesource.com/chromium/src/+/547a6ca360a56fbee3d5ea4a71ba18f91622455c
