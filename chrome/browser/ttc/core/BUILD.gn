@@ -210,6 +210,7 @@ if (!is_android) {
       "//chrome/browser/actor/ui",
       "//chrome/browser/bookmarks",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/translate",
       "//chrome/browser/ttc/app:browser_tests",
       "//chrome/browser/ttc/app:public",
       "//chrome/browser/ui",

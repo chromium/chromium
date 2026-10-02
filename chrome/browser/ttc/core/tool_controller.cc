@@ -37,6 +37,7 @@
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -165,6 +166,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "seek_to_timestamp") {
     SeekToTimestamp(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "translate_page") {
+    TranslatePage(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -355,6 +361,26 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   seek_to_timestamp.verbalization =
       ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(seek_to_timestamp));
+
+  ToolDefinition translate_page;
+  translate_page.name = "translate_page";
+  translate_page.description = "Translate the current page.";
+  translate_page.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "target_language",
+                   base::DictValue()
+                       .Set("type", "string")
+                       .Set("description",
+                            "Target language code (e.g. \"en\", \"es\", "
+                            "\"fr\"). If empty, translates to the user's "
+                            "default language.")))
+          .Set("required", base::ListValue().Append("target_language"));
+  translate_page.behavior = ToolDefinition::Behavior::kBlocking;
+  translate_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(translate_page));
 #endif
 
   return tools;
@@ -576,6 +602,27 @@ void ToolController::SeekToTimestamp(const base::DictValue& arguments,
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::MediaControlToolRequest>(tab_handle,
                                                                 *seek);
+      },
+      std::move(callback));
+}
+
+void ToolController::TranslatePage(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  // If `target_language` is empty, the page is translated to the user's
+  // preferred language.
+  const std::string* target_language = arguments.FindString("target_language");
+  if (!target_language) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing target_language argument"));
+    return;
+  }
+
+  PerformActionOnActiveTab(
+      [&target_language](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::TranslatePageToolRequest>(
+            tab_handle, *target_language);
       },
       std::move(callback));
 }

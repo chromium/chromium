@@ -5,12 +5,16 @@
 #include "chrome/browser/ttc/core/tool_controller.h"
 
 #include <map>
+#include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -24,6 +28,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
@@ -44,11 +49,16 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/common/translate_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -607,6 +617,157 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+// Serves a mock translate script so that translations complete without
+// reaching the real translate service.
+class ToolControllerTranslateBrowserTest : public ToolControllerBrowserTest {
+ public:
+  // ToolControllerBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ToolControllerBrowserTest::SetUpCommandLine(command_line);
+    // The base fixture starts embedded_test_server() itself, so the mock
+    // script is served from a separate server.
+    translate_script_server_.RegisterRequestHandler(
+        base::BindRepeating(&ToolControllerTranslateBrowserTest::HandleRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(translate_script_server_.Start());
+    command_line->AppendSwitchASCII(
+        translate::switches::kTranslateScriptURL,
+        translate_script_server_.GetURL("/mock_translate_script.js").spec());
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().GetPath() != "/mock_translate_script.js") {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(R"JS(
+      var google = {};
+      google.translate = (function() {
+        return {
+          TranslateService: function() {
+            return {
+              isAvailable : function() { return true; },
+              restore : function() { return; },
+              getDetectedLanguage : function() { return "es"; },
+              translatePage : function(sourceLang, targetLang,
+                                       onTranslateProgress) {
+                onTranslateProgress(100, true, false);
+              }
+            };
+          }
+        };
+      })();
+      cr.googleTranslate.onTranslateElementLoad();
+    )JS");
+    http_response->set_content_type("text/javascript");
+    return std::move(http_response);
+  }
+
+  net::EmbeddedTestServer translate_script_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
+                       TranslatePageDefaultLanguage) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "translate_page";
+  tool_request.arguments.Set("target_language", "");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+  EXPECT_TRUE(future.Take().Ok());
+
+  ChromeTranslateClient* translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  ASSERT_TRUE(translate_client);
+  std::string source_language;
+  std::string expected_target_language;
+  translate_client->GetTranslateLanguages(web_contents(), &source_language,
+                                          &expected_target_language,
+                                          /*for_display=*/false);
+  EXPECT_EQ(translate_client->GetLanguageState().current_language(),
+            expected_target_language);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
+                       TranslatePageSpecificTargetLanguage) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "translate_page";
+  tool_request.arguments.Set("target_language", "fr");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+  EXPECT_TRUE(future.Take().Ok());
+
+  ChromeTranslateClient* translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  ASSERT_TRUE(translate_client);
+  EXPECT_EQ(translate_client->GetLanguageState().current_language(), "fr");
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
+                       TranslatePageMissingTargetLanguage) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "translate_page";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
+                       TranslatePageUnsupportedLanguage) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "translate_page";
+  tool_request.arguments.Set("target_language", "unsupported-lang-xyz");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kTranslateUnsupportedLanguage);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -632,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 12u);
+  ASSERT_EQ(tools.size(), 13u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -822,6 +983,31 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   const base::ListValue* seek_required = seek_schema.FindList("required");
   ASSERT_TRUE(seek_required);
   EXPECT_EQ(*seek_required, base::ListValue().Append("timecode"));
+
+  const ToolDefinition& translate_page = tools[12];
+  EXPECT_EQ(translate_page.name, "translate_page");
+  EXPECT_FALSE(translate_page.description.empty());
+  EXPECT_EQ(translate_page.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(translate_page.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& translate_schema =
+      translate_page.parameters_json_schema;
+  const std::string* translate_schema_type =
+      translate_schema.FindString("type");
+  ASSERT_TRUE(translate_schema_type);
+  EXPECT_EQ(*translate_schema_type, "object");
+
+  const std::string* translate_target_language_type =
+      translate_schema.FindStringByDottedPath(
+          "properties.target_language.type");
+  ASSERT_TRUE(translate_target_language_type);
+  EXPECT_EQ(*translate_target_language_type, "string");
+
+  const base::ListValue* translate_required =
+      translate_schema.FindList("required");
+  ASSERT_TRUE(translate_required);
+  EXPECT_EQ(*translate_required, base::ListValue().Append("target_language"));
 }
 
 // The session's actor task is started with the session and stopped when it
