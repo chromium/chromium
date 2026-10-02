@@ -8,8 +8,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +42,8 @@ class TestOmniboxPopupFullPresenter : public OmniboxPopupFullPresenter {
       OmniboxPopupPresenterDelegate& presenter_delegate,
       OmniboxController* controller)
       : OmniboxPopupFullPresenter(nullptr, presenter_delegate, controller) {}
+
+  using OmniboxPopupFullPresenter::GetShadowMargin;
 
   int content_height() const { return content_height_; }
   void set_content_height(int height) { content_height_ = height; }
@@ -114,5 +120,40 @@ TEST_F(OmniboxPopupFullPresenterTest,
 
   presenter_->Hide();
   EXPECT_EQ(presenter_->content_height(), 400);
+}
+
+TEST_F(OmniboxPopupFullPresenterTest, ShadowMarginDropsBottomWhenCollapsed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup,
+                            omnibox::kOmniboxFullWebUIShadow},
+      /*disabled_features=*/{});
+
+  const gfx::Insets full_insets = RoundedOmniboxResultsFrame::GetShadowInsets();
+  gfx::Insets collapsed_insets = full_insets;
+  collapsed_insets.set_bottom(0);
+  const int collapsed_height =
+      GetLayoutConstant(LayoutConstant::kLocationBarHeight) +
+      FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().height();
+
+  // Initially collapsed: bottom shadow margin is 0.
+  EXPECT_EQ(presenter_->GetShadowMargin(), collapsed_insets);
+
+  // The WebUI's reported height always includes its full vertical shadow
+  // padding, which is stripped before deciding whether the popup is collapsed.
+  presenter_->OnContentHeightChanged(collapsed_height + full_insets.height());
+  EXPECT_EQ(presenter_->content_height(), collapsed_height);
+  EXPECT_EQ(presenter_->GetShadowMargin(), collapsed_insets);
+
+  // Expanded: the full shadow margin is reserved.
+  presenter_->OnContentHeightChanged(collapsed_height + 200 +
+                                     full_insets.height());
+  EXPECT_EQ(presenter_->content_height(), collapsed_height + 200);
+  EXPECT_EQ(presenter_->GetShadowMargin(), full_insets);
+
+  // Collapsing again drops the bottom margin.
+  presenter_->OnContentHeightChanged(collapsed_height + full_insets.height());
+  EXPECT_EQ(presenter_->content_height(), collapsed_height);
+  EXPECT_EQ(presenter_->GetShadowMargin(), collapsed_insets);
 }
 }  // namespace

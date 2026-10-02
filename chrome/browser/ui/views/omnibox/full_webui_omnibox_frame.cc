@@ -50,7 +50,7 @@ class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
     // frame), which forwards them to the browser window beneath so underlying
     // controls (e.g. bookmarks bar or web content) receive the events.
     gfx::Rect interior = root->GetLocalBounds();
-    interior.Inset(RoundedOmniboxResultsFrame::GetShadowInsets());
+    interior.Inset(frame_->shadow_margin());
     if (!interior.Intersects(rect)) {
       return root;
     }
@@ -79,7 +79,7 @@ FullWebUIOmniboxFrame::~FullWebUIOmniboxFrame() = default;
 
 void FullWebUIOmniboxFrame::SetElevation(int elevation) {
   if (elevation == 0) {
-    SetBorder(views::CreateEmptyBorder(GetShadowInsets()));
+    SetBorder(views::CreateEmptyBorder(shadow_margin_));
 #if defined(USE_AURA)
     UpdateWindowTargeter();
 #endif  // USE_AURA
@@ -94,6 +94,16 @@ void FullWebUIOmniboxFrame::SetElevation(int elevation) {
   border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
   border->set_md_shadow_elevation(elevation);
   SetBorder(std::move(border));
+#if defined(USE_AURA)
+  UpdateWindowTargeter();
+#endif  // USE_AURA
+}
+
+void FullWebUIOmniboxFrame::SetShadowMargin(const gfx::Insets& shadow_margin) {
+  if (shadow_margin_ == shadow_margin) {
+    return;
+  }
+  shadow_margin_ = shadow_margin;
 #if defined(USE_AURA)
   UpdateWindowTargeter();
 #endif  // USE_AURA
@@ -144,11 +154,10 @@ gfx::Insets FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets() {
 gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() const {
   // The widget is always expanded by the shadow margin, whether the shadow is
   // painted by this frame's border or by the page.
-  const gfx::Insets insets = GetShadowInsets();
-  int top_inset = insets.top() + GetLocationBarAlignmentInsets().top() +
+  int top_inset = shadow_margin_.top() + GetLocationBarAlignmentInsets().top() +
                   GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-  return gfx::Insets::TLBR(top_inset, insets.left(), insets.bottom(),
-                           insets.right());
+  return gfx::Insets::TLBR(top_inset, shadow_margin_.left(),
+                           shadow_margin_.bottom(), shadow_margin_.right());
 }
 
 #if defined(USE_AURA)
@@ -158,7 +167,7 @@ void FullWebUIOmniboxFrame::UpdateWindowTargeter() {
   }
   auto* window = GetWidget()->GetNativeWindow();
   const gfx::Insets insets =
-      forward_mouse_events() ? GetEventForwardingInsets() : GetShadowInsets();
+      forward_mouse_events() ? GetEventForwardingInsets() : shadow_margin_;
   if (window->targeter()) {
     window->targeter()->SetInsets(insets);
   } else {

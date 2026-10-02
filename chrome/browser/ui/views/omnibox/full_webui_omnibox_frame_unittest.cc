@@ -83,6 +83,16 @@ TEST_F(FullWebUIOmniboxFrameTest, WindowTargeterInsets) {
   expected_rect = window->bounds();
   expected_rect.Inset(frame->GetInsets());
   EXPECT_EQ(mouse_rect, expected_rect);
+
+  // When collapsed, the bottom shadow margin is dropped so the window targeter
+  // includes the bottom of the widget instead of excluding a 28px bottom band.
+  gfx::Insets collapsed_margin = RoundedOmniboxResultsFrame::GetShadowInsets();
+  collapsed_margin.set_bottom(0);
+  frame->SetShadowMargin(collapsed_margin);
+  window->targeter()->GetHitTestRects(window, &mouse_rect, &touch_rect);
+  expected_rect = window->bounds();
+  expected_rect.Inset(collapsed_margin);
+  EXPECT_EQ(mouse_rect, expected_rect);
 }
 
 TEST_F(FullWebUIOmniboxFrameTest, SetElevationUpdatesTargeter) {
@@ -154,6 +164,23 @@ TEST_F(FullWebUIOmniboxFrameTest, ViewTargeterHitTesting) {
   frame->SetForwardMouseEvents(false);
   EXPECT_NE(frame->GetEventHandlerForPoint(gfx::Point(50, top_inset - 1)),
             frame);
+
+  // With the full shadow margin (expanded state), points in the bottom shadow
+  // band target the frame so they are forwarded to the browser window beneath.
+  const gfx::Insets full_margin = RoundedOmniboxResultsFrame::GetShadowInsets();
+  EXPECT_EQ(frame->GetEventHandlerForPoint(
+                gfx::Point(50, 500 - full_margin.bottom() + 1)),
+            frame);
+
+  // When collapsed (bottom shadow margin dropped to 0), points at the bottom of
+  // the widget target the child contents (the bottom of the input) rather than
+  // being redirected to the frame.
+  gfx::Insets collapsed_margin = full_margin;
+  collapsed_margin.set_bottom(0);
+  frame->SetShadowMargin(collapsed_margin);
+  frame->SetElevation(0);
+  widget_->LayoutRootViewIfNecessary();
+  EXPECT_NE(frame->GetEventHandlerForPoint(gfx::Point(50, 500 - 2)), frame);
 }
 
 TEST_F(FullWebUIOmniboxFrameTest, OnMouseEventMarksHandled) {

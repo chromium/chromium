@@ -14,6 +14,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -378,6 +379,23 @@ bool OmniboxPopupFullPresenter::ShouldReceiveFocus() const {
   return OmniboxPopupPresenterBase::ShouldReceiveFocus();
 }
 
+gfx::Insets OmniboxPopupFullPresenter::GetShadowMargin() const {
+  gfx::Insets margin = RoundedOmniboxResultsFrame::GetShadowInsets();
+  // While collapsed nothing is painted below the location bar, so drop the
+  // bottom margin to keep the widget from covering the UI directly beneath it
+  // (e.g. the bookmarks bar or the top of the web contents).
+  const int location_bar_height =
+      location_bar() ? location_bar()->BoundsInScreen().height()
+                     : GetLayoutConstant(LayoutConstant::kLocationBarHeight);
+  const int collapsed_height =
+      location_bar_height +
+      FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().height();
+  if (content_height_ <= collapsed_height) {
+    margin.set_bottom(0);
+  }
+  return margin;
+}
+
 void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   if (!GetWidget()) {
     return;
@@ -403,6 +421,8 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   auto* results_frame =
       views::AsViewClass<FullWebUIOmniboxFrame>(GetResultsFrame());
   CHECK(results_frame);
+  const gfx::Insets shadow_margin = GetShadowMargin();
+  results_frame->SetShadowMargin(shadow_margin);
   const bool shadow_in_webui = ShouldDrawShadowInWebUI();
   if (!shadow_in_webui) {
     const bool has_results = content_height_ > default_height;
@@ -410,8 +430,11 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
         has_results ? RoundedOmniboxResultsFrame::kDefaultElevation : 0);
   }
 
-  widget_bounds.set_height(content_height_ > 1 ? content_height_
-                                               : default_height);
+  // Never size the popup shorter than the location bar. While collapsed the
+  // WebView is clipped by the dropped bottom shadow margin, so a height seeded
+  // from its view bounds (see `OmniboxPopupWebUIBaseContent::Show()`) can
+  // under-report by that margin.
+  widget_bounds.set_height(std::max(content_height_, default_height));
 
   // Set width and height to at least their minimums (e.g. for permission
   // prompts).
@@ -422,10 +445,11 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
 
   // Normally the frame's border supplies the shadow margin. When the page
   // paints the shadow the frame has no border, so add the margin here; the
-  // WebView covers it and the page paints the shadow into it.
-  widget_bounds.Inset(-(shadow_in_webui
-                            ? RoundedOmniboxResultsFrame::GetShadowInsets()
-                            : results_frame->GetInsets()));
+  // WebView covers it and the page paints the shadow into it. While collapsed
+  // the bottom margin is dropped, which clips the page's (transparent) bottom
+  // shadow padding.
+  widget_bounds.Inset(
+      -(shadow_in_webui ? shadow_margin : results_frame->GetInsets()));
   GetWidget()->SetBounds(widget_bounds);
 }
 
@@ -757,8 +781,11 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
 
   bool contains_popup = false;
   if (IsShown()) {
-    contains_popup =
-        GetWidget()->GetWindowBoundsInScreen().Contains(cursor_point);
+    // Exclude the transparent shadow margin: on Aura the window targeter lets
+    // clicks there pass through to the browser window, so they are outside.
+    gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
+    popup_bounds.Inset(GetShadowMargin());
+    contains_popup = popup_bounds.Contains(cursor_point);
   }
 
   if (contains_popup) {

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -435,6 +437,52 @@ class FullWebUIOmniboxInteractiveTestBase
         },
         "WaitForPopupDismissed");
   }
+
+  // Clicks the top of the web contents, just below the collapsed popup, in the
+  // area the popup's bottom shadow margin would cover if it were not dropped
+  // while collapsed.
+  auto ClickJustBelowCollapsedPopup() {
+    return Steps(
+        MoveMouseTo(
+            ContentsWebView::kContentsWebViewElementId,
+            base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+              const gfx::Rect contents_bounds = el->GetScreenBounds();
+              const gfx::Point point(contents_bounds.CenterPoint().x(),
+                                     contents_bounds.y() + 2);
+              views::Widget* widget = GetPopupWidget(browser());
+              CHECK(widget);
+              const gfx::Rect popup_bounds = widget->GetWindowBoundsInScreen();
+              // The point is outside the collapsed popup, but inside
+              // the band a full bottom shadow margin would cover.
+              EXPECT_FALSE(popup_bounds.Contains(point));
+              EXPECT_LT(
+                  point.y(),
+                  popup_bounds.bottom() +
+                      RoundedOmniboxResultsFrame::GetShadowInsets().bottom());
+              return point;
+            })),
+        ClickMouse());
+  }
+
+#if defined(USE_AURA)
+  // Clicks midway into the popup's transparent bottom shadow margin, which is
+  // inside the popup widget's bounds but outside its content.
+  auto ClickPopupShadowMargin() {
+    return Steps(
+        InAnyContext(MoveMouseTo(
+            OmniboxPopupPresenter::kRoundedResultsFrame,
+            base::BindOnce([](ui::TrackedElement* el) {
+              const gfx::Rect bounds = el->GetScreenBounds();
+              const int bottom =
+                  RoundedOmniboxResultsFrame::GetShadowInsets().bottom();
+              CHECK_GT(bottom, 1);
+              return gfx::Point(bounds.CenterPoint().x(),
+                                bounds.bottom() - bottom / 2);
+            }))),
+        InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                        ClickMouse()));
+  }
+#endif  // defined(USE_AURA)
 
   // Clicks the tab strip's empty drag region.
   auto ClickTabStrip() {
@@ -1620,6 +1668,55 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForPopupActive(), ClickWebPageBody(kTab1), WaitForPopupDismissed());
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Verifies that while the popup is collapsed (no dropdown), it does not extend
+// below the location bar, so clicking just beneath it reaches the browser
+// window and dismisses the popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClickBelowCollapsedPopupDismissesPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), CheckWebUIInputFocus(true),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      ClickJustBelowCollapsedPopup(), WaitForPopupDismissed());
+}
+
+#if defined(USE_AURA)
+// Verifies that when the dropdown is expanded, clicking the popup's
+// transparent bottom shadow margin (which the window targeter passes through
+// to the browser window) dismisses the popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClickExpandedPopupShadowMarginDismissesPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), CheckWebUIInputFocus(true),
+      // Type the page's permanent URL so the dropdown expands with matches
+      // while clicking outside still reverts and dismisses the popup.
+      InputWebUIText("chrome://version"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // Wait for the widget to grow and regain its bottom shadow margin.
+      PollUntil(
+          [this]() {
+            views::Widget* widget = GetPopupWidget(browser());
+            auto* location_bar =
+                BrowserWindow::FromBrowser(browser())->GetLocationBar();
+            if (!widget || !location_bar) {
+              return false;
+            }
+            const int collapsed_widget_height =
+                location_bar->BoundsInScreen().height() +
+                FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets()
+                    .height() +
+                RoundedOmniboxResultsFrame::GetShadowInsets().top();
+            return widget->GetWindowBoundsInScreen().height() >
+                   collapsed_widget_height;
+          },
+          "WaitForExpandedPopupWidgetBounds"),
+      ClickPopupShadowMargin(), WaitForPopupDismissed());
+}
+#endif  // defined(USE_AURA)
 
 // Verifies that focusing the native Omnibox with an active selection range
 // (e.g. from double-clicking or dragging in Views) preserves the exact

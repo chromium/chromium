@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
@@ -384,6 +385,62 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
     return popup_handler_check &&
            popup_handler_check->latest_selection() == expected_selection;
   }));
+}
+
+// Verifies that the Full WebUI popup widget excludes the bottom shadow margin
+// when collapsed and includes it when expanded.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
+                       CollapsedAndExpandedShadowMarginBounds) {
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupView());
+  ASSERT_TRUE(popup_view);
+  auto* presenter = popup_view->presenter();
+  ASSERT_TRUE(presenter);
+
+  presenter->Show();
+  views::Widget* widget = presenter->get_widget_for_testing();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect location_bar_bounds = location_bar()->BoundsInScreen();
+  const gfx::Insets alignment_insets =
+      FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets();
+  const gfx::Insets full_shadow_insets =
+      RoundedOmniboxResultsFrame::GetShadowInsets();
+  gfx::Insets collapsed_shadow_insets = full_shadow_insets;
+  collapsed_shadow_insets.set_bottom(0);
+
+  gfx::Rect expected_collapsed_bounds = location_bar_bounds;
+  expected_collapsed_bounds.Inset(-alignment_insets);
+  const int collapsed_content_height = expected_collapsed_bounds.height();
+  expected_collapsed_bounds.Inset(-collapsed_shadow_insets);
+
+  // When the page paints the shadow, the height it reports always includes its
+  // full vertical shadow padding.
+  const int reported_shadow_height =
+      presenter->ShouldDrawShadowInWebUI() ? full_shadow_insets.height() : 0;
+
+  // Collapsed state: widget bounds exclude the bottom shadow margin.
+  presenter->OnContentHeightChanged(collapsed_content_height +
+                                    reported_shadow_height);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), expected_collapsed_bounds);
+
+  // Expanded state: widget bounds include the bottom shadow margin.
+  constexpr int kDropdownHeight = 200;
+  presenter->OnContentHeightChanged(collapsed_content_height + kDropdownHeight +
+                                    reported_shadow_height);
+  gfx::Rect expected_expanded_bounds = location_bar_bounds;
+  expected_expanded_bounds.Inset(-alignment_insets);
+  expected_expanded_bounds.set_height(collapsed_content_height +
+                                      kDropdownHeight);
+  expected_expanded_bounds.Inset(-full_shadow_insets);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), expected_expanded_bounds);
+
+  // Collapsing again excludes the bottom shadow margin.
+  presenter->OnContentHeightChanged(collapsed_content_height +
+                                    reported_shadow_height);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), expected_collapsed_bounds);
+
+  presenter->Hide();
 }
 
 class OmniboxPopupDimensionsTest : public OmniboxPopupViewWebUITest,

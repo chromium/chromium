@@ -48,6 +48,20 @@ export class OmniboxFullAppElement extends CrLitElement {
     // Force an initial refresh to avoid the race condition where the profile
     // theme loads after the page, but before the listener is ready.
     ColorChangeUpdater.forDocument().refreshColorsCss();
+
+    // On mousedown, Blink focuses the nearest mouse-focusable ancestor of the
+    // target, or clears focus if there is none. Only intervene in the latter
+    // case, so clicks on the transparent shadow margin, the focus ring, or the
+    // searchbox padding don't blur the input.
+    this.eventTracker_.add(document, 'mousedown', (e: MouseEvent) => {
+      const hitsFocusable = e.composedPath().some(
+          el => el instanceof HTMLElement &&
+              (el.tabIndex >= 0 || el.hasAttribute('tabindex') ||
+               el.isContentEditable));
+      if (!hitsFocusable) {
+        e.preventDefault();
+      }
+    }, true /* capture */);
   }
 
   override disconnectedCallback() {
