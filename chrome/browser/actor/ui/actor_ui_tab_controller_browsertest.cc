@@ -23,10 +23,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -55,27 +53,6 @@ namespace {
 
 using actor::mojom::ActionResultPtr;
 using base::test::TestFuture;
-
-class FutureTabStripModelObserver : public TabStripModelObserver {
- public:
-  // TabStripModelObserver:
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override {
-    if (change_type == TabChangeType::kAll) {
-      Reset();
-      future_.SetValue();
-    }
-  }
-
-  // Returns true if the future was fulfilled.
-  bool Wait() { return future_.Wait(); }
-
-  // Resets the future for the next event.
-  void Reset() { future_.Clear(); }
-
- private:
-  base::test::TestFuture<void> future_;
-};
 
 class BaseActorUiTabControllerTest : public InProcessBrowserTest {
  public:
@@ -280,32 +257,32 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
-                       TabStripModelNotifiedOnUpdate) {
+                       TabAlertControllerNotifiedOnUpdate) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
 
-  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
-  FutureTabStripModelObserver observer;
-  tab_strip_model->AddObserver(&observer);
+  tabs::TabAlertController* const tab_alert_controller =
+      tabs::TabAlertController::From(tab);
+  base::test::TestFuture<std::optional<tabs::TabAlert>> alert_future;
+  base::CallbackListSubscription subscription =
+      tab_alert_controller->AddAlertToShowChangedCallback(
+          alert_future.GetRepeatingCallback());
 
-  // The observer should be notified when the indicator is shown.
+  // The alert controller should notify when the indicator is shown.
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
       StartingToActOnTab(tab->GetHandle(), actor::TaskId(1)),
       result.GetCallback());
   actor::ExpectOkResult(result);
 
-  EXPECT_TRUE(observer.Wait());
+  EXPECT_EQ(alert_future.Take(), tabs::TabAlert::kActorAccessing);
 
-  // The observer should also be notified when the indicator is hidden.
-  observer.Reset();
+  // The alert controller should also notify when the indicator is hidden.
   state_manager->OnUiEvent(StoppedActingOnTab(tab->GetHandle()));
-  EXPECT_TRUE(observer.Wait());
-
-  tab_strip_model->RemoveObserver(&observer);
+  EXPECT_EQ(alert_future.Take(), std::nullopt);
 }
 
 class ActorUiTabControllerDisabledTest : public BaseActorUiTabControllerTest {

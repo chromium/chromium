@@ -24,7 +24,6 @@ ActorUiTabControllerInterface::~ActorUiTabControllerInterface() = default;
 ActorUiTabControllerInterface* ActorUiTabControllerInterface::From(
     tabs::TabInterface* tab) {
   if (!tab) {
-    LOG(ERROR) << "Tab does not exist.";
     RecordTabControllerError(
         ActorUiTabControllerError::kRequestedForNonExistentTab);
     return nullptr;
@@ -50,13 +49,11 @@ void ActorUiTabControllerInterface::UnregisterActorTabIndicatorStateChange() {
   on_actor_tab_indicator_changed_callback_.Reset();
 }
 
-bool ActorUiTabControllerInterface::NotifyActorTabIndicatorStateChanged(
+void ActorUiTabControllerInterface::NotifyActorTabIndicatorStateChanged(
     TabIndicatorStatus tab_indicator_status) {
   if (on_actor_tab_indicator_changed_callback_) {
     on_actor_tab_indicator_changed_callback_.Run(tab_indicator_status);
-    return true;
   }
-  return false;
 }
 
 }  // namespace actor::ui

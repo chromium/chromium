@@ -21,8 +21,6 @@
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "chrome/browser/actor/ui/test_support/mock_handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
 #include "chrome/common/actor/action_result.h"
@@ -98,7 +96,6 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    tab_strip_model_ = std::make_unique<TabStripModel>(&delegate_, profile());
     ON_CALL(mock_tab_, GetProfile).WillByDefault(Return(profile()));
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
@@ -106,8 +103,6 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     ON_CALL(mock_browser_window_interface_, GetProfile())
         .WillByDefault(Return(static_cast<TestingProfile*>(browser_context())));
-    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
-        .WillByDefault(Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(ReturnRef(user_data_host_));
 
@@ -205,7 +200,6 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
     mock_handoff_button_controller_.reset();
     window_controller_.reset();
     immersive_mode_controller_.reset();
-    tab_strip_model_.reset();
 
     testing::Mock::VerifyAndClear(&mock_tab_);
     mock_web_contents_ = nullptr;
@@ -270,8 +264,6 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
   std::unique_ptr<ActorUiWindowController> window_controller_;
-  TestTabStripModelDelegate delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<MockWebContents> mock_web_contents_ = nullptr;
   TaskId task_id_;
@@ -419,6 +411,37 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
   ON_CALL(mock_tab(), IsSelected).WillByDefault(Return(false));
   EXPECT_CALL(callback, Call(&mock_tab(), false));
   tab_controller()->OnUiTabStateChange(ui_tab_state_glow_on, base::DoNothing());
+}
+
+TEST_F(ActorUiTabControllerTest, TabIndicatorChangesOnUiTabStateChange) {
+  MockFunction<void(TabIndicatorStatus)> callback;
+  auto subscription =
+      tab_controller()->RegisterActorTabIndicatorStateChangedCallback(
+          base::BindRepeating(
+              &testing::MockFunction<void(TabIndicatorStatus)>::Call,
+              base::Unretained(&callback)));
+
+  UiTabState ui_tab_state_dynamic(
+      ActorOverlayState(), HandoffButtonState(),
+      /*tab_indicator=*/TabIndicatorStatus::kDynamic,
+      /*border_glow_visible=*/false);
+  EXPECT_CALL(callback, Call(TabIndicatorStatus::kDynamic));
+  tab_controller()->OnUiTabStateChange(ui_tab_state_dynamic, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  UiTabState ui_tab_state_static(ActorOverlayState(), HandoffButtonState(),
+                                 /*tab_indicator=*/TabIndicatorStatus::kStatic,
+                                 /*border_glow_visible=*/false);
+  EXPECT_CALL(callback, Call(TabIndicatorStatus::kStatic));
+  tab_controller()->OnUiTabStateChange(ui_tab_state_static, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  UiTabState ui_tab_state_none(ActorOverlayState(), HandoffButtonState(),
+                               /*tab_indicator=*/TabIndicatorStatus::kNone,
+                               /*border_glow_visible=*/false);
+  EXPECT_CALL(callback, Call(TabIndicatorStatus::kNone));
+  tab_controller()->OnUiTabStateChange(ui_tab_state_none, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
 TEST_F(ActorUiTabControllerTest,

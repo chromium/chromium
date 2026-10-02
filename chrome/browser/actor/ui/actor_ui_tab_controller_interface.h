@@ -118,7 +118,7 @@ class ActorUiTabControllerInterface {
 #endif
 
  protected:
-  bool NotifyActorTabIndicatorStateChanged(
+  void NotifyActorTabIndicatorStateChanged(
       TabIndicatorStatus tab_indicator_status);
 
  private:

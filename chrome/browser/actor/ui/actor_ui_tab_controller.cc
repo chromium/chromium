@@ -19,8 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
@@ -127,16 +125,9 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   // alert migrates away from the GLIC_ACCESSING resources.
   if (tab_indicator_ != tab_indicator_status) {
     tab_indicator_ = tab_indicator_status;
-    if (NotifyActorTabIndicatorStateChanged(tab_indicator_)) {
-      // Notify tab strip model of state change.
-      if (auto* browser_window = tab_->GetBrowserWindowInterface()) {
-        browser_window->GetTabStripModel()->NotifyTabChanged(
-            base::to_address(tab_), TabChangeType::kAll);
-      }
-    }
+    NotifyActorTabIndicatorStateChanged(tab_indicator_);
   }
   std::move(callback).Run();
-  return;
 }
 
 void ActorUiTabController::OnViewBoundsChanged() {
