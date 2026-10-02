@@ -27,6 +27,7 @@ static_library("network_header_injection") {
   ]
 
   deps = [
+    "//components/enterprise/isolated_mode",
     "//components/enterprise/network_header_injection/core",
     "//components/keyed_service/core",
     "//components/prefs",

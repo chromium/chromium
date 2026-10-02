@@ -4,7 +4,9 @@
 
 #include "chrome/browser/enterprise/network_header_injection/http_header_injection_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/network_header_injection/core/http_header_injection_service.h"
 
 namespace enterprise_custom_headers {
@@ -24,8 +26,14 @@ HttpHeaderInjectionServiceFactory::GetInstance() {
 }
 
 HttpHeaderInjectionServiceFactory::HttpHeaderInjectionServiceFactory()
-    : ProfileKeyedServiceFactory("HttpHeaderInjectionServiceFactory",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+    : ProfileKeyedServiceFactory(
+          "HttpHeaderInjectionServiceFactory",
+          base::FeatureList::IsEnabled(
+              enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2)
+              ? ProfileSelections::Builder()
+                    .WithIsolatedMode(ProfileSelection::kRedirectedToOriginal)
+                    .Build()
+              : ProfileSelections::BuildForRegularProfile()) {}
 
 HttpHeaderInjectionServiceFactory::~HttpHeaderInjectionServiceFactory() =
     default;
