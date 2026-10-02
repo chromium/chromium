@@ -16,6 +16,7 @@ import android.widget.ListView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -44,7 +46,7 @@ import java.lang.ref.WeakReference;
 /** Tests for the UsbChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/344665244): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UsbChooserDialogTest {
     @Rule
@@ -72,6 +74,16 @@ public class UsbChooserDialogTest {
     public void setUp() throws Exception {
         UsbChooserDialogJni.setInstanceForTesting(new TestUsbChooserDialogJni());
         mChooserDialog = createDialog();
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mChooserDialog != null && mChooserDialog.mItemChooserDialog != null) {
+                        mChooserDialog.mItemChooserDialog.dismiss();
+                    }
+                });
     }
 
     private UsbChooserDialog createDialog() {
