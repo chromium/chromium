@@ -13,9 +13,13 @@ from unittest import mock
 import perf_test_fakes as fakes
 from perf_test_fakes import IP, MAC_HOST, NO_ROUTE, USER, WIN_HOST, completed
 import remote_transport
-from remote_transport import (INFRA_FAILURE_NOTE, RemoteDeviceError,
-                              SenderNotFoundError, SenderSshError,
-                              SenderUnreachableError)
+from remote_transport import (
+    INFRA_FAILURE_NOTE,
+    RemoteDeviceError,
+    SenderNotFoundError,
+    SenderSshError,
+    SenderUnreachableError,
+)
 
 
 def _ssh(host=MAC_HOST, username=USER):
@@ -23,11 +27,11 @@ def _ssh(host=MAC_HOST, username=USER):
 
 
 class VerifyConnectivityTest(fakes.SenderTestCase):
-
     # Spec case 1.
     def test_dns_failure_raises_not_found_without_ssh(self):
         self.getaddrinfo.side_effect = socket.gaierror(
-            socket.EAI_NONAME, 'Name or service not known')
+            socket.EAI_NONAME, 'Name or service not known'
+        )
 
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(SenderNotFoundError) as ctx:
@@ -55,16 +59,21 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
         self.run.assert_not_called()
 
         reason = f'[Errno {errno.EHOSTUNREACH}] {NO_ROUTE}'
-        self.assertEqual(logs.output, [
-            f'WARNING:root:Sender check attempt {i}/3 failed for '
-            f'{MAC_HOST}: {reason}' for i in (1, 2, 3)
-        ])
+        self.assertEqual(
+            logs.output,
+            [
+                f'WARNING:root:Sender check attempt {i}/3 failed for '
+                f'{MAC_HOST}: {reason}'
+                for i in (1, 2, 3)
+            ],
+        )
         self.assertEqual(
             str(ctx.exception),
             f"Sender '{MAC_HOST}' ({IP}) is not reachable on port 22: "
             f"{reason}. Likely causes: device powered off/asleep/rebooting, "
             "network link or DHCP lease lost, or sshd not running. "
-            "This is an infra failure, not a test failure.")
+            "This is an infra failure, not a test failure.",
+        )
 
     def test_tcp_timeout_raises_unreachable(self):
         self.create_connection.side_effect = socket.timeout('timed out')
@@ -75,8 +84,9 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
 
     # Spec case 3.
     def test_ssh_255_raises_ssh_error_with_stderr(self):
-        self.ssh.responses['echo ok'] = completed(255,
-                                                  stderr=fakes.PUBKEY_DENIED)
+        self.ssh.responses['echo ok'] = completed(
+            255, stderr=fakes.PUBKEY_DENIED
+        )
 
         with self.assertLogs(level='WARNING') as logs:
             with self.assertRaises(SenderSshError) as ctx:
@@ -89,7 +99,9 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
         # run() itself also reports the 255 at ERROR.
         self.assertIn(
             f'ERROR:root:SSH to {MAC_HOST} failed (rc=255): '
-            f'{fakes.PUBKEY_DENIED}', logs.output)
+            f'{fakes.PUBKEY_DENIED}',
+            logs.output,
+        )
 
     def test_ssh_unexpected_stdout_raises_ssh_error(self):
         self.ssh.responses['echo ok'] = completed(stdout='Welcome!\n')
@@ -99,8 +111,7 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
         self.assertIn('Welcome!', str(ctx.exception))
 
     def test_ssh_timeout_raises_ssh_error(self):
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
-                                                         timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(SenderSshError) as ctx:
                 _ssh().verify_connectivity()
@@ -115,7 +126,8 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
 
         self.assertEqual(
             logs.output,
-            [f'INFO:root:Sender {MAC_HOST} ({IP}) reachable over SSH.'])
+            [f'INFO:root:Sender {MAC_HOST} ({IP}) reachable over SSH.'],
+        )
         self.getaddrinfo.assert_called_once_with(MAC_HOST, 22)
         self.create_connection.assert_called_once()
         self.conn.close.assert_called_once()
@@ -170,17 +182,20 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
         self.sleep.assert_not_called()
 
     def test_exception_hierarchy(self):
-        for cls in (SenderNotFoundError, SenderUnreachableError,
-                    SenderSshError):
+        for cls in (
+            SenderNotFoundError,
+            SenderUnreachableError,
+            SenderSshError,
+        ):
             self.assertTrue(issubclass(cls, RemoteDeviceError))
             self.assertIn('infra failure, not a test failure', cls.__doc__)
         self.assertTrue(issubclass(RemoteDeviceError, RuntimeError))
-        self.assertIn('infra failure, not a test failure',
-                      RemoteDeviceError.__doc__)
+        self.assertIn(
+            'infra failure, not a test failure', RemoteDeviceError.__doc__
+        )
 
 
 class SshTransportTest(fakes.SenderTestCase):
-
     def test_run_uses_batch_mode_and_connect_timeout(self):
         _ssh().run('true')
         argv = self.run.call_args[0][0]
@@ -201,8 +216,9 @@ class SshTransportTest(fakes.SenderTestCase):
         self.assertEqual(len(self.ssh.copies), 1)
         argv = self.ssh.copies[0]
         self.assertIn('BatchMode=yes', argv)
-        self.assertEqual(argv[-2:],
-                         [f'{USER}@{MAC_HOST}:/tmp/a.log', '/out/a.log'])
+        self.assertEqual(
+            argv[-2:], [f'{USER}@{MAC_HOST}:/tmp/a.log', '/out/a.log']
+        )
         self.assertEqual(self.run.call_args.kwargs['timeout'], 60)
 
     def test_logs_error_on_255_and_still_returns_result(self):
@@ -212,7 +228,8 @@ class SshTransportTest(fakes.SenderTestCase):
         self.assertEqual(result.returncode, 255)
         self.assertEqual(
             logs.output,
-            [f'ERROR:root:SSH to {MAC_HOST} failed (rc=255): {NO_ROUTE}'])
+            [f'ERROR:root:SSH to {MAC_HOST} failed (rc=255): {NO_ROUTE}'],
+        )
 
     def test_does_not_log_error_for_remote_command_failures(self):
         self.ssh.default = completed(1)
@@ -225,8 +242,9 @@ class SshTransportTest(fakes.SenderTestCase):
         self.assertFalse(transport.known_unreachable)
 
         with self.assertRaises(SenderUnreachableError) as ctx:
-            transport.raise_if_disconnected(completed(255, stderr=NO_ROUTE),
-                                            'grepping')
+            transport.raise_if_disconnected(
+                completed(255, stderr=NO_ROUTE), 'grepping'
+            )
         self.assertIn('while grepping', str(ctx.exception))
         self.assertIn(NO_ROUTE, str(ctx.exception))
         self.assertTrue(transport.known_unreachable)
@@ -247,7 +265,6 @@ class SshTransportTest(fakes.SenderTestCase):
 
 
 class LocalTransportTest(fakes.SenderTestCase):
-
     def test_run_uses_shell(self):
         self.run.side_effect = None
         self.run.return_value = completed(stdout='hi')

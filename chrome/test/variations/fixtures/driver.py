@@ -25,39 +25,48 @@ _PLATFORM_TO_RELEASE_OS = {
   'android_webview': 'webview',
 }
 
+
 def pytest_addoption(parser):
-  parser.addoption('--chromedriver',
-                   help='The path to the existing chromedriver. '
-                   'This will ignore --channel and skip downloading.')
+  parser.addoption(
+    '--chromedriver',
+    help='The path to the existing chromedriver. '
+    'This will ignore --channel and skip downloading.',
+  )
 
   # Options for android emulators
   parser.addoption(
     '--avd-config',
     type=os.path.realpath,
-    help=('Path to the avd config. Required for Android products. '
-          '(See //tools/android/avd/proto for message definition '
-          'and existing *.textpb files.)'))
+    help=(
+      'Path to the avd config. Required for Android products. '
+      '(See //tools/android/avd/proto for message definition '
+      'and existing *.textpb files.)'
+    ),
+  )
 
   parser.addoption(
     '--emulator-window',
     action='store_true',
     default=False,
-    help='Enable graphical window display on the emulator.')
+    help='Enable graphical window display on the emulator.',
+  )
 
   # Options for CrOS VMs.
   # You can browse available boards here:
   # https://cros-goldeneye.corp.google.com/chromeos/console/boards
-  parser.addoption('--board',
-                   default='betty',
-                   help='The board name of the CrOS VM.')
+  parser.addoption(
+    '--board', default='betty', help='The board name of the CrOS VM.'
+  )
 
 
 def _version_to_download(
-  chrome_version, platform, channel) -> packaging.version.Version:
+  chrome_version, platform, channel
+) -> packaging.version.Version:
   # Use the explicitly passed in version, if any.
   if chrome_version:
     logging.info(
-      'using --chrome-version to download chrome (ignoring --channel)')
+      'using --chrome-version to download chrome (ignoring --channel)'
+    )
     return test_utils.parse_version(chrome_version)
 
   release_os = _PLATFORM_TO_RELEASE_OS.get(platform, None)
@@ -66,6 +75,7 @@ def _version_to_download(
     return None
   else:
     return test_utils.find_version(release_os, channel)
+
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
@@ -89,7 +99,8 @@ def chromedriver_path(pytestconfig, test_options: TestOptions) -> Optional[str]:
   if cd_path := pytestconfig.getoption('chromedriver'):
     cd_path = os.path.abspath(cd_path)
     assert os.path.isfile(cd_path), (
-      f'Given chromedriver doesn\'t exist. ({cd_path})')
+      f'Given chromedriver doesn\'t exist. ({cd_path})'
+    )
     return cd_path
 
   platform = test_options.platform
@@ -132,8 +143,9 @@ def chromedriver_path(pytestconfig, test_options: TestOptions) -> Optional[str]:
   # If we also download Chrome binary, move the chromedriver to the Chrome
   # folder so the chromedriver can find it in the same folder
   if chrome_dir:
-    chromedriver_in_chrome = os.path.join(chrome_dir,
-                                          os.path.basename(chromedriver_path))
+    chromedriver_in_chrome = os.path.join(
+      chrome_dir, os.path.basename(chromedriver_path)
+    )
     shutil.move(chromedriver_path, chromedriver_in_chrome)
     chromedriver_path = chromedriver_in_chrome
 
@@ -149,8 +161,10 @@ def driver_logs(driver_factory: DriverFactory, add_artifact: AddArtifact):
   for session_count in range(session_start, session_end):
     session_folder = driver_factory.get_driver_session_folder(session_count)
     for filename in os.listdir(session_folder):
-      add_artifact(f'Session-{session_count}-Files {filename}',
-                   os.path.join(session_folder, filename))
+      add_artifact(
+        f'Session-{session_count}-Files {filename}',
+        os.path.join(session_folder, filename),
+      )
 
 
 @pytest.fixture(scope='session')
@@ -159,24 +173,27 @@ def driver_factory(
   chromedriver_path: str,
   tmp_path_factory: pytest.TempPathFactory,
   local_http_server: 'HTTPServer',
-  ) -> DriverFactory:
+) -> DriverFactory:
   """Returns a factory that creates a webdriver."""
   factory: Optional[DriverFactory] = None
   target_platform = pytestconfig.getoption('target_platform')
   artifacts_path = tmp_path_factory.mktemp('artifacts')
   if target_platform in ('linux', 'win', 'mac'):
     from chrome.test.variations.drivers import desktop
+
     factory = desktop.DesktopDriverFactory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
       artifacts_path=str(artifacts_path),
-      chromedriver_path=chromedriver_path)
+      chromedriver_path=chromedriver_path,
+    )
   elif target_platform in ('android', 'webview', 'android_webview'):
     assert test_utils.get_hosted_platform() == 'linux', (
       f'Only support to run android tests on Linux, but running on '
       f'{test_utils.get_hosted_platform()}'
     )
     from chrome.test.variations.drivers import android
+
     factories = {
       'android': android.AndroidDriverFactory,
       'webview': android.WebviewDriverFactory,
@@ -189,17 +206,18 @@ def driver_factory(
       enabled_emulator_window=pytestconfig.getoption('emulator_window'),
       artifacts_path=str(artifacts_path),
       chromedriver_path=chromedriver_path,
-      ports=[local_http_server.server_port]
+      ports=[local_http_server.server_port],
     )
   elif target_platform in ('cros'):
     from chrome.test.variations.drivers import chromeos
+
     factory = chromeos.CrOSDriverFactory(
       channel=pytestconfig.getoption('channel'),
       board=pytestconfig.getoption('board'),
       artifacts_path=str(artifacts_path),
       chromedriver_path=chromedriver_path,
-      server_port=local_http_server.server_port
-      )
+      server_port=local_http_server.server_port,
+    )
 
   if not factory:
     assert False, f'Not supported platform {target_platform}.'

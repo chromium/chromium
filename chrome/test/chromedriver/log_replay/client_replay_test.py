@@ -12,6 +12,7 @@ matches a test case from chromedriver/test/run_py_tests.py; they run the same
 case from run_py_tests.py, then replay the log and check that the behavior
 matches.
 """
+
 # pylint: disable=g-import-not-at-top, g-bad-import-order
 import json
 import optparse
@@ -33,11 +34,13 @@ _PY_TESTS = os.path.join(_TEST_DIR, "run_py_tests.py")
 sys.path.insert(1, _PARENT_DIR)
 import chrome_paths
 import util
+
 sys.path.remove(_PARENT_DIR)
 
 sys.path.insert(1, _TEST_DIR)
 import unittest_util
 import webserver
+
 sys.path.remove(_TEST_DIR)
 # pylint: enable=g-import-not-at-top, g-bad-import-order
 
@@ -47,11 +50,13 @@ _NEGATIVE_FILTER = []
 
 def SubstituteVariableEntries(s):
   """Identifies and removes items that can legitimately vary between runs."""
-  white_list = r'(("(id|userDataDir|frameId|version' \
-               r'|element-6066-11e4-a52e-4f735466cecf|message|timestamp' \
-               r'|expiry|chromedriverVersion|sessionId)": ' \
-               r'("[0-9]\.[0-9]*(\.[0-9]*)? \([a-f0-9]*\)"|[^\s},]*))' \
-               r'|[A-F0-9]{32}|cd_frame_id_="[a-f0-9]*")'
+  white_list = (
+    r'(("(id|userDataDir|frameId|version'
+    r'|element-6066-11e4-a52e-4f735466cecf|message|timestamp'
+    r'|expiry|chromedriverVersion|sessionId)": '
+    r'("[0-9]\.[0-9]*(\.[0-9]*)? \([a-f0-9]*\)"|[^\s},]*))'
+    r'|[A-F0-9]{32}|cd_frame_id_="[a-f0-9]*")'
+  )
 
   return re.sub(white_list, "<variable_item>", s)
 
@@ -76,13 +81,13 @@ def GenerateTestLog(test_name, chromedriver_path, chrome_path, log_dir):
     RuntimeError: run_py_tests.py had a test failure or other error.
   """
   args = [
-      sys.executable,
-      _PY_TESTS,
-      "--chromedriver=%s" % chromedriver_path,
-      "--chrome=%s" % chrome_path,
-      "--replayable=true",
-      "--log-path=%s" % log_dir,
-      "--filter=%s" % ("*" + test_name)
+    sys.executable,
+    _PY_TESTS,
+    "--chromedriver=%s" % chromedriver_path,
+    "--chrome=%s" % chrome_path,
+    "--replayable=true",
+    "--log-path=%s" % log_dir,
+    "--filter=%s" % ("*" + test_name),
   ]
   result = subprocess.call(args)
   if result != 0:
@@ -132,13 +137,15 @@ class ChromeDriverClientReplayTest(unittest.TestCase):
       real = "ERROR " + real["message"].split("\n")[0]
 
     # pylint: disable=unidiomatic-typecheck
-    self.assertTrue(type(logged) == type(real)
-                    or (isinstance(real, str)
-                        and isinstance(logged, str)))
+    self.assertTrue(
+      type(logged) == type(real)
+      or (isinstance(real, str) and isinstance(logged, str))
+    )
     # pylint: enable=unidiomatic-typecheck
 
-    if isinstance(real, str) \
-        and (real[:14] == "<!DOCTYPE html" or real[:5] == "<html"):
+    if isinstance(real, str) and (
+      real[:14] == "<!DOCTYPE html" or real[:5] == "<html"
+    ):
       real = "".join(real.split())
       logged = "".join(logged.split())
 
@@ -159,19 +166,22 @@ class ChromeDriverClientReplayTest(unittest.TestCase):
     Args:
       test_name: name of the test to run from run_py_tests.py.
     """
-    log_file = os.path.join(ChromeDriverClientReplayTest.log_dir,
-                            test_name + ".log")
+    log_file = os.path.join(
+      ChromeDriverClientReplayTest.log_dir, test_name + ".log"
+    )
     GenerateTestLog(test_name, _CHROMEDRIVER, _CHROME, log_file)
     with open(log_file) as lf:
       replay_path = log_file if _OPTIONS.devtools_replay else ""
-      server = client_replay.StartChromeDriverServer(_CHROMEDRIVER,
-                                                     _OPTIONS.output_log_path,
-                                                     replay_path)
-      chrome_binary = (util.GetAbsolutePathOfUserPath(_CHROME)
-                       if _CHROME else None)
+      server = client_replay.StartChromeDriverServer(
+        _CHROMEDRIVER, _OPTIONS.output_log_path, replay_path
+      )
+      chrome_binary = (
+        util.GetAbsolutePathOfUserPath(_CHROME) if _CHROME else None
+      )
 
-      replayer = client_replay.Replayer(lf, server, chrome_binary,
-                                        self.server_url)
+      replayer = client_replay.Replayer(
+        lf, server, chrome_binary, self.server_url
+      )
       real_response = None
       while True:
         command = replayer.command_sequence.NextCommand(real_response)
@@ -179,11 +189,12 @@ class ChromeDriverClientReplayTest(unittest.TestCase):
           break
         logged_response = replayer.command_sequence._last_response
         real_response = replayer.executor.Execute(
-            client_replay._COMMANDS[command.name],
-            command.GetPayloadPrimitive())
+          client_replay._COMMANDS[command.name], command.GetPayloadPrimitive()
+        )
 
-        self.CheckResponsesMatch(real_response["value"],
-                                 logged_response.GetPayloadPrimitive())
+        self.CheckResponsesMatch(
+          real_response["value"], logged_response.GetPayloadPrimitive()
+        )
       server.Kill()
 
   def GetFunctionName(self):
@@ -249,15 +260,21 @@ def main():
   usage = "usage: %prog <chromedriver binary> <chrome binary> [options]"
   parser = optparse.OptionParser(usage=usage)
   parser.add_option(
-      "", "--output-log-path",
-      help="Output verbose server logs to this file")
+    "", "--output-log-path", help="Output verbose server logs to this file"
+  )
   parser.add_option(
-      "", "--filter", type="string", default="*",
-      help="Filter for specifying what tests to run, \"*\" will run all,"
-      "including tests excluded by default. E.g., *testRunMethod")
+    "",
+    "--filter",
+    type="string",
+    default="*",
+    help="Filter for specifying what tests to run, \"*\" will run all,"
+    "including tests excluded by default. E.g., *testRunMethod",
+  )
   parser.add_option(
-      "", "--devtools-replay", help="Replay DevTools instead of using\n"
-      "real Chrome.")
+    "",
+    "--devtools-replay",
+    help="Replay DevTools instead of using\nreal Chrome.",
+  )
 
   # Need global to access these from the test runner.
   # pylint: disable=global-variable-undefined
@@ -267,20 +284,25 @@ def main():
   _CHROMEDRIVER = util.GetAbsolutePathOfUserPath(args[0])
   _CHROME = util.GetAbsolutePathOfUserPath(args[1])
   if not os.path.exists(_CHROMEDRIVER):
-    parser.error("Path given for chromedriver is invalid.\n"
-                 'Please run "%s --help" for help' % __file__)
+    parser.error(
+      "Path given for chromedriver is invalid.\n"
+      'Please run "%s --help" for help' % __file__
+    )
   if not os.path.exists(_CHROME):
-    parser.error("Path given for chrome is invalid.\n"
-                 'Please run "%s --help" for help' % __file__)
+    parser.error(
+      "Path given for chrome is invalid.\n"
+      'Please run "%s --help" for help' % __file__
+    )
 
   all_tests_suite = unittest.defaultTestLoader.loadTestsFromModule(
-      sys.modules[__name__])
-  test_filter = (GetNegativeFilter()
-                 if not _OPTIONS.filter else _OPTIONS.filter)
+    sys.modules[__name__]
+  )
+  test_filter = GetNegativeFilter() if not _OPTIONS.filter else _OPTIONS.filter
 
   tests = unittest_util.FilterTestSuite(all_tests_suite, test_filter)
   result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(tests)
   sys.exit(len(result.failures) + len(result.errors))
+
 
 if __name__ == "__main__":
   main()

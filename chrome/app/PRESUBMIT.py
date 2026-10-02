@@ -8,10 +8,10 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-
 import os
 import re
 from xml.dom import minidom
+
 
 def _CheckNoProductNameInGeneratedResources(input_api, output_api):
   """Check that no PRODUCT_NAME placeholders are found in resources files.
@@ -25,18 +25,25 @@ def _CheckNoProductNameInGeneratedResources(input_api, output_api):
   filename_filter = lambda x: x.LocalPath().endswith(('.grd', '.grdp'))
 
   for f, line_num, line in input_api.RightHandSideLines(filename_filter):
-    if ('PRODUCT_NAME' in line and 'name="IDS_PRODUCT_NAME"' not in line and
-       'name="IDS_SHORT_PRODUCT_NAME"' not in line):
+    if (
+      'PRODUCT_NAME' in line
+      and 'name="IDS_PRODUCT_NAME"' not in line
+      and 'name="IDS_SHORT_PRODUCT_NAME"' not in line
+    ):
       problems.append('%s:%d' % (f.LocalPath(), line_num))
 
   if problems:
-    return [output_api.PresubmitPromptWarning(
+    return [
+      output_api.PresubmitPromptWarning(
         "Don't use PRODUCT_NAME placeholders in string resources. Instead, "
         "add separate strings to google_chrome_strings.grd and "
         "chromium_strings.grd. See http://goo.gl/6614MQ for more information. "
         "Problems with this check? Contact dubroy@chromium.org.",
-        items=problems)]
+        items=problems,
+      )
+    ]
   return []
+
 
 def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
   """Disallow hardcoded 'Chrome' and 'Chromium' in generated_resources.grd.
@@ -48,8 +55,9 @@ def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
   STRICT = False
 
   brand_word = re.compile(r'(?<![A-Za-z])(Chrome|Chromium)(?![A-Za-z])')
-  filename_filter = \
-    lambda af: af.LocalPath().endswith("generated_resources.grd")
+  filename_filter = lambda af: af.LocalPath().endswith(
+    "generated_resources.grd"
+  )
 
   problems = []
 
@@ -97,7 +105,7 @@ def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
 
     # 3) Scan only touched message blocks; check *content* (strip tags).
     for start, end in touched_ranges:
-      block_text = "\n".join(new_lines[start - 1:end])  # inclusive
+      block_text = "\n".join(new_lines[start - 1 : end])  # inclusive
 
       # Ignore <ex>…</ex>
       stripped = re.sub(r"<ex>.*?</ex>", "", block_text, flags=re.DOTALL)
@@ -111,18 +119,22 @@ def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
     return []
 
   hint = (
-      "Avoid hardcoding 'Chrome' or 'Chromium' inside "
-      "generated_resources.grd.\nAdd new branded IDs to "
-      "google_chrome_strings.grd / chromium_strings.grd instead."
+    "Avoid hardcoding 'Chrome' or 'Chromium' inside "
+    "generated_resources.grd.\nAdd new branded IDs to "
+    "google_chrome_strings.grd / chromium_strings.grd instead."
   )
-  text = \
-  "Hardcoded brand names found in generated_resources.grd:\n" + "\n".join(
-    problems) + "\n\n" + hint
+  text = (
+    "Hardcoded brand names found in generated_resources.grd:\n"
+    + "\n".join(problems)
+    + "\n\n"
+    + hint
+  )
 
   if STRICT:
     return [output_api.PresubmitError(text)]
 
   return [output_api.PresubmitPromptWarning(text)]
+
 
 def _CheckFlagsMessageNotTranslated(input_api, output_api):
   """Check: all about:flags messages are marked as not requiring translation.
@@ -137,16 +149,20 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
 
   for f, line_num, line in input_api.RightHandSideLines(filename_filter):
     if "name=\"IDS_FLAGS_" in line and not "translateable=\"false\"" in line:
-      problems.append("Missing translateable=\"false\" in %s:%d"
-                      % (f.LocalPath(), line_num))
+      problems.append(
+        "Missing translateable=\"false\" in %s:%d" % (f.LocalPath(), line_num)
+      )
       problems.append(line)
 
   if problems:
-    return [output_api.PresubmitError(
+    return [
+      output_api.PresubmitError(
         "If you define a flag name, description or value, mark it as not "
         "requiring translation by adding the 'translateable' attribute with "
         "value \"false\". See https://crbug.com/40457200 for more context.",
-        items=problems)]
+        items=problems,
+      )
+    ]
   return []
 
   def _GetInfoStrings(file_contents):
@@ -160,64 +176,92 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
       element[0] is the 'name' attribute of the message
       element[1] is the message contents
     """
-    return [(message.getAttribute('name'), message.firstChild.nodeValue)
-            for message in (file_contents.getElementsByTagName('grit-part')[0]
-                            .getElementsByTagName('message'))
-            if message.getAttribute('name').startswith('IDS_EDU_LOGIN_INFO_')]
+    return [
+      (message.getAttribute('name'), message.firstChild.nodeValue)
+      for message in (
+        file_contents.getElementsByTagName('grit-part')[0].getElementsByTagName(
+          'message'
+        )
+      )
+      if message.getAttribute('name').startswith('IDS_EDU_LOGIN_INFO_')
+    ]
 
-  strings_file = next((af for af in input_api.change.AffectedFiles()
-                      if af.AbsoluteLocalPath() == CHROMEOS_STRINGS_PATH), None)
+  strings_file = next(
+    (
+      af
+      for af in input_api.change.AffectedFiles()
+      if af.AbsoluteLocalPath() == CHROMEOS_STRINGS_PATH
+    ),
+    None,
+  )
   if strings_file is None:
     return []
 
   old_info_strings = _GetInfoStrings(
-      minidom.parseString('\n'.join(strings_file.OldContents())))
+    minidom.parseString('\n'.join(strings_file.OldContents()))
+  )
   new_info_strings = _GetInfoStrings(
-      minidom.parseString('\n'.join(strings_file.NewContents())))
+    minidom.parseString('\n'.join(strings_file.NewContents()))
+  )
   if set(old_info_strings) == set(new_info_strings):
     return []
 
   if input_api.change.issue == 0:
     # First upload, notify about string changes.
     return [
-        output_api.PresubmitNotifyResult(
-            UPDATE_TEXT_VERSION_MESSAGE % "v<GERRIT_CL_NUMBER>"),
-        output_api.PresubmitNotifyResult(
-            UPDATE_INVALIDATION_VERSION_MESSAGE % "iv<GERRIT_CL_NUMBER>"),
+      output_api.PresubmitNotifyResult(
+        UPDATE_TEXT_VERSION_MESSAGE % "v<GERRIT_CL_NUMBER>"
+      ),
+      output_api.PresubmitNotifyResult(
+        UPDATE_INVALIDATION_VERSION_MESSAGE % "iv<GERRIT_CL_NUMBER>"
+      ),
     ]
 
   new_text_version = "v" + str(input_api.change.issue)
   new_invalidation_version = "iv" + str(input_api.change.issue)
 
-  text_version_file = next((af for af in input_api.change.AffectedFiles()
-                            if af.AbsoluteLocalPath() == TEXT_VERSION_PATH),
-                            None)
+  text_version_file = next(
+    (
+      af
+      for af in input_api.change.AffectedFiles()
+      if af.AbsoluteLocalPath() == TEXT_VERSION_PATH
+    ),
+    None,
+  )
   result = []
   # Check if text version was updated.
   if text_version_file is None or new_text_version not in '\n'.join(
-      text_version_file.NewContents()):
+    text_version_file.NewContents()
+  ):
     result.append(
-        output_api.PresubmitError(
-            UPDATE_TEXT_VERSION_MESSAGE % new_text_version))
+      output_api.PresubmitError(UPDATE_TEXT_VERSION_MESSAGE % new_text_version)
+    )
   # Check if invalidation version was updated.
   if text_version_file is None or new_invalidation_version not in '\n'.join(
-      text_version_file.NewContents()):
+    text_version_file.NewContents()
+  ):
     result.append(
-        output_api.PresubmitNotifyResult(
-            UPDATE_INVALIDATION_VERSION_MESSAGE % new_invalidation_version))
+      output_api.PresubmitNotifyResult(
+        UPDATE_INVALIDATION_VERSION_MESSAGE % new_invalidation_version
+      )
+    )
   return result
+
 
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoProductNameInGeneratedResources(input_api, output_api))
   results.extend(
-    _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api))
+    _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api)
+  )
   results.extend(_CheckFlagsMessageNotTranslated(input_api, output_api))
   return results
 
+
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
   return _CommonChecks(input_api, output_api)

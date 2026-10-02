@@ -14,12 +14,22 @@ PRESUBMIT_VERSION = '2.0.0'
 
 def CheckIconNames(input_api, output_api):
   import sys
+
   old_sys_path = sys.path[:]
   try:
     sys.path.append(
-        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..', '..',
-                               'tools', 'resources', 'icon_checker'))
+      input_api.os_path.join(
+        input_api.PresubmitLocalPath(),
+        '..',
+        '..',
+        '..',
+        'tools',
+        'resources',
+        'icon_checker',
+      )
+    )
     import icon_checker
+
     affected_icons = icon_checker.ExtractIconsFromHtml(input_api)
     return icon_checker.CheckIcons(input_api, output_api, affected_icons)
   finally:
@@ -28,8 +38,10 @@ def CheckIconNames(input_api, output_api):
 
 def InternalCheckUserActionUpdate(input_api, output_api, action_xml_path):
   """Checks if any new user action has been added."""
-  if any('actions.xml' == input_api.os_path.basename(f) for f in
-         input_api.change.LocalPaths()):
+  if any(
+    'actions.xml' == input_api.os_path.basename(f)
+    for f in input_api.change.LocalPaths()
+  ):
     # If actions.xml is already included in the changelist, the PRESUBMIT
     # for actions.xml will do a more complete presubmit check.
     return []
@@ -52,11 +64,15 @@ def InternalCheckUserActionUpdate(input_api, output_api, action_xml_path):
 
         # Search for the matched user action name in |current_actions|.
         if not IsActionPresent(current_actions, metric_name, is_boolean):
-          return [output_api.PresubmitPromptWarning(
-            'File %s line %d: %s is missing in '
-            'tools/metrics/actions/actions.xml. Please run '
-            'tools/metrics/actions/extract_actions.py to update.'
-            % (f.LocalPath(), line_num, metric_name), [])]
+          return [
+            output_api.PresubmitPromptWarning(
+              'File %s line %d: %s is missing in '
+              'tools/metrics/actions/actions.xml. Please run '
+              'tools/metrics/actions/extract_actions.py to update.'
+              % (f.LocalPath(), line_num, metric_name),
+              [],
+            )
+          ]
   return []
 
 
@@ -82,8 +98,9 @@ def IsActionPresent(current_actions, metric_name, is_boolean):
   action_disabled = 'name="{0}_Disable"'.format(metric_name)
   action_enabled = 'name="{0}_Enable"'.format(metric_name)
 
-  return (action_disabled in current_actions and
-      action_enabled in current_actions)
+  return (
+    action_disabled in current_actions and action_enabled in current_actions
+  )
 
 
 def IsBoolean(new_content_lines, metric_name, input_api):
@@ -99,27 +116,33 @@ def IsBoolean(new_content_lines, metric_name, input_api):
   new_content = '\n'.join(new_content_lines)
 
   html_element_re = r'<(.*?)(^|\s+)metric\s*=\s*"%s"(.*?)>' % (metric_name)
-  type_re = (r'datatype\s*=\s*"boolean"|type\s*=\s*"checkbox"|'
-      r'type\s*=\s*"radio".*?value\s*=\s*("true"|"false")')
+  type_re = (
+    r'datatype\s*=\s*"boolean"|type\s*=\s*"checkbox"|'
+    r'type\s*=\s*"radio".*?value\s*=\s*("true"|"false")'
+  )
 
   match = input_api.re.search(html_element_re, new_content, input_api.re.DOTALL)
-  return (match and
-      any(input_api.re.search(type_re, match.group(i)) for i in (1, 3)))
+  return match and any(
+    input_api.re.search(type_re, match.group(i)) for i in (1, 3)
+  )
 
 
 def CheckHtml(input_api, output_api):
   return input_api.canned_checks.CheckLongLines(
-      input_api, output_api, 80, lambda x: x.LocalPath().endswith('.html'))
+    input_api, output_api, 80, lambda x: x.LocalPath().endswith('.html')
+  )
 
 
 def CheckSvgsOptimized(input_api, output_api):
   results = []
   try:
     import sys
+
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
     from resources import svgo_presubmit
+
     results += svgo_presubmit.CheckOptimized(input_api, output_api)
   finally:
     sys.path = old_sys_path
@@ -129,6 +152,7 @@ def CheckSvgsOptimized(input_api, output_api):
 def _ImportWebDevStyle(input_api):
   try:
     import sys
+
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
@@ -171,8 +195,9 @@ def CheckNoNewJs(input_api, output_api):
     return False
 
   presubmit_support = _ImportWebDevStyle(input_api)
-  return presubmit_support.DisallowNewJsFiles(input_api, output_api,
-                                              lambda f: not excluded_path(f))
+  return presubmit_support.DisallowNewJsFiles(
+    input_api, output_api, lambda f: not excluded_path(f)
+  )
 
 
 def CheckNoNewPolymer(input_api, output_api):
@@ -198,4 +223,5 @@ def CheckNoNewPolymer(input_api, output_api):
 
   presubmit_support = _ImportWebDevStyle(input_api)
   return presubmit_support.DisallowNewPolymerElements(
-      input_api, output_api, lambda f: not excluded_path(f))
+    input_api, output_api, lambda f: not excluded_path(f)
+  )

@@ -24,12 +24,15 @@ import perf_config
 import remote_transport
 from remote_transport import INFRA_FAILURE_NOTE, RemoteDeviceError
 
-_STATUS_URL = (f'http://{perf_config.LOCAL_HOST_IP}:'
-               f'{perf_config.CHROMEDRIVER_PORT}/status')
-_CHROMEDRIVER_FLAGS = (f'--port={perf_config.CHROMEDRIVER_PORT} '
-                       '--disable-ipv6 --allowed-origins="*" --allowed-ips= '
-                       '--verbose --log-path=/tmp/chromedriver_verbose.log '
-                       '--enable-chrome-logs')
+_STATUS_URL = (
+    f'http://{perf_config.LOCAL_HOST_IP}:{perf_config.CHROMEDRIVER_PORT}/status'
+)
+_CHROMEDRIVER_FLAGS = (
+    f'--port={perf_config.CHROMEDRIVER_PORT} '
+    '--disable-ipv6 --allowed-origins="*" --allowed-ips= '
+    '--verbose --log-path=/tmp/chromedriver_verbose.log '
+    '--enable-chrome-logs'
+)
 _CHROMEDRIVER_CHECK_ATTEMPTS = 15
 _CHROMEDRIVER_READY_ATTEMPTS = 30
 
@@ -53,8 +56,11 @@ def download_cft_urls(platform_name, version=None):
 
     for v in reversed(data['versions']):
         # Match exact version OR the beginning of a version.
-        if not version or v['version'] == version or v['version'].startswith(
-                f"{version}."):
+        if (
+            not version
+            or v['version'] == version
+            or v['version'].startswith(f"{version}.")
+        ):
             chrome_url = None
             driver_url = None
             for download in v['downloads']['chrome']:
@@ -64,12 +70,16 @@ def download_cft_urls(platform_name, version=None):
                 if download['platform'] == platform_name:
                     driver_url = download['url']
             if chrome_url and driver_url:
-                logging.info("Found URLs for version %s on platform %s",
-                             v['version'], platform_name)
+                logging.info(
+                    "Found URLs for version %s on platform %s",
+                    v['version'],
+                    platform_name,
+                )
                 return v['version'], chrome_url, driver_url
 
     raise RuntimeError(
-        f"Could not find downloads for version {version} on {platform_name}")
+        f"Could not find downloads for version {version} on {platform_name}"
+    )
 
 
 def _zip_name_and_dir(url):
@@ -130,10 +140,12 @@ class Sender(abc.ABC):
         """Runs `command` on the sender and returns the CompletedProcess."""
         return self.transport.run(command)
 
-    def copy_from(self,
-                  remote_path,
-                  local_path,
-                  timeout=remote_transport.COPY_TIMEOUT_SECS):
+    def copy_from(
+        self,
+        remote_path,
+        local_path,
+        timeout=remote_transport.COPY_TIMEOUT_SECS,
+    ):
         """Copies `remote_path` on the sender to `local_path` here."""
         self.transport.copy_from(remote_path, local_path, timeout=timeout)
 
@@ -157,7 +169,7 @@ class Sender(abc.ABC):
             arch = platform.machine()
             return {
                 'arch': 'x64' if arch == 'x86_64' else arch,
-                'os_version': platform.release()
+                'os_version': platform.release(),
             }
 
         arch_probes = []
@@ -166,10 +178,9 @@ class Sender(abc.ABC):
             'arch': self._detect_arch(arch_probes),
             'os_version': self._detect_os_version(version_probes),
         }
-        self._raise_if_missing(info, {
-            'arch': arch_probes,
-            'os_version': version_probes
-        })
+        self._raise_if_missing(
+            info, {'arch': arch_probes, 'os_version': version_probes}
+        )
         return info
 
     def _probe(self, command, probes):
@@ -188,13 +199,15 @@ class Sender(abc.ABC):
             for command, result in probes:
                 details.append(
                     f'  {field} probe {command!r}: rc={result.returncode}, '
-                    f'stdout={result.stdout!r}, stderr={result.stderr!r}')
+                    f'stdout={result.stdout!r}, stderr={result.stderr!r}'
+                )
         if not missing:
             return
         raise RemoteDeviceError(
             f"Could not detect {' and '.join(missing)} of sender "
             f"'{self.transport.host}' (sender_os={self.OS_NAME}). "
-            f"{INFRA_FAILURE_NOTE}\n" + '\n'.join(details))
+            f"{INFRA_FAILURE_NOTE}\n" + '\n'.join(details)
+        )
 
     # --- chromedriver lifecycle ---
 
@@ -203,23 +216,23 @@ class Sender(abc.ABC):
         self.verify_connectivity()
         logging.info("Attempting to terminate old chromedriver processes...")
         result = self.run(self.TERMINATE_CHROMEDRIVER_CMD)
-        self.transport.raise_if_disconnected(result,
-                                             'terminating chromedriver')
+        self.transport.raise_if_disconnected(result, 'terminating chromedriver')
 
         for _ in range(_CHROMEDRIVER_CHECK_ATTEMPTS):
             result = self.run(self.CHROMEDRIVER_CHECK_CMD)
             # grep/pgrep exit 1 when nothing matches, which is the expected
             # result here. Only 255 means ssh itself failed.
-            self.transport.raise_if_disconnected(result,
-                                                 'checking for chromedriver')
+            self.transport.raise_if_disconnected(
+                result, 'checking for chromedriver'
+            )
             if not result.stdout.strip():
                 logging.info("Old chromedriver processes confirmed gone.")
                 return
-            logging.info(
-                "Old chromedriver processes still present, waiting...")
+            logging.info("Old chromedriver processes still present, waiting...")
             time.sleep(1)
         raise RuntimeError(
-            "Chromedriver processes lingered after kill attempts.")
+            "Chromedriver processes lingered after kill attempts."
+        )
 
     def wait_for_chromedriver(self):
         """Polls chromedriver's /status until it answers 200."""
@@ -233,27 +246,36 @@ class Sender(abc.ABC):
                     return
                 logging.warning(
                     "Attempt %d failed. Chromedriver not ready. "
-                    "Return code: %d, stdout: '%s', stderr: '%s'", i + 1,
-                    result.returncode, stdout, result.stderr.strip())
+                    "Return code: %d, stdout: '%s', stderr: '%s'",
+                    i + 1,
+                    result.returncode,
+                    stdout,
+                    result.stderr.strip(),
+                )
             except subprocess.TimeoutExpired:
                 logging.warning("Status check timed out. Retrying...")
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.warning(
-                    "A script-level error occurred: %s. Retrying...", e)
+                    "A script-level error occurred: %s. Retrying...", e
+                )
             time.sleep(2)
 
         logging.error("Chromedriver failed to start.")
         self.dump_console_logs()
         raise RuntimeError(
-            "Chromedriver still not ready after multiple attempts.")
+            "Chromedriver still not ready after multiple attempts."
+        )
 
     def dump_console_logs(self):
         """Logs chromedriver's console output from the sender."""
         logging.error("Dumping remote console logs:")
         result = self.run(self._console_log_command())
         if result.stdout.strip() or result.stderr.strip():
-            logging.error("REMOTE CONSOLE LOG:\nSTDOUT: %s\nSTDERR: %s",
-                          result.stdout, result.stderr)
+            logging.error(
+                "REMOTE CONSOLE LOG:\nSTDOUT: %s\nSTDERR: %s",
+                result.stdout,
+                result.stderr,
+            )
 
     def start_tunnel(self):
         """Forwards chromedriver to this host and the test server back.
@@ -261,8 +283,9 @@ class Sender(abc.ABC):
         Returns:
             The tunnel process, or None for a local sender.
         """
-        return self.transport.open_tunnel(perf_config.CHROMEDRIVER_PORT,
-                                          perf_config.SERVER_PORT)
+        return self.transport.open_tunnel(
+            perf_config.CHROMEDRIVER_PORT, perf_config.SERVER_PORT
+        )
 
     # --- Chrome install ---
 
@@ -281,14 +304,15 @@ class Sender(abc.ABC):
         arch = info['arch']
         if arch not in self.CFT_PLATFORMS:
             raise NotImplementedError(
-                f"Unsupported OS/Arch: {self.OS_NAME}/{arch}")
+                f"Unsupported OS/Arch: {self.OS_NAME}/{arch}"
+            )
 
         actual_version, chrome_url, driver_url = download_cft_urls(
-            self.CFT_PLATFORMS[arch], chrome_version)
+            self.CFT_PLATFORMS[arch], chrome_version
+        )
         logging.info("Downloading Chrome and Chromedriver.")
         if self.transport.is_local:
-            return self._install_locally(chrome_url,
-                                         driver_url), actual_version
+            return self._install_locally(chrome_url, driver_url), actual_version
 
         app_path = self._install(chrome_url, driver_url)
         logging.info("Finished chromedriver setup attempt.")
@@ -306,8 +330,10 @@ class Sender(abc.ABC):
         driver_path = f"{tmp_dir}/{driver_dir}/chromedriver"
 
         if os.path.exists(app_path) and os.path.exists(driver_path):
-            logging.info("Chrome and Chromedriver already installed locally. "
-                         "Skipping download/extract.")
+            logging.info(
+                "Chrome and Chromedriver already installed locally. "
+                "Skipping download/extract."
+            )
         else:
             subprocess.run(
                 f"curl -L {chrome_url} -o {tmp_dir}/{chrome_zip} && "
@@ -316,10 +342,13 @@ class Sender(abc.ABC):
                 f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
                 shell=True,
                 check=True,
-                timeout=120)
+                timeout=120,
+            )
         subprocess.run(f'chmod +x {driver_path}', shell=True, check=True)
-        self.transport.spawn(f'nohup {driver_path} {_CHROMEDRIVER_FLAGS} '
-                             f'> /tmp/chromedriver_console.log 2>&1 &')
+        self.transport.spawn(
+            f'nohup {driver_path} {_CHROMEDRIVER_FLAGS} '
+            f'> /tmp/chromedriver_console.log 2>&1 &'
+        )
         logging.info("Finished local chromedriver setup.")
         return app_path
 
@@ -330,8 +359,9 @@ class Sender(abc.ABC):
         if self.transport.known_unreachable:
             logging.warning('Skipping remote cleanup: sender unreachable.')
             return
-        self._run_cleanup(self._downloads_cleanup_command(),
-                          'tmp files on remote machine')
+        self._run_cleanup(
+            self._downloads_cleanup_command(), 'tmp files on remote machine'
+        )
 
     def cleanup_binaries(self):
         """Removes installed Chrome/chromedriver from the sender.
@@ -356,8 +386,10 @@ class Sender(abc.ABC):
         if self.transport.known_unreachable:
             logging.warning('Skipping remote cleanup: sender unreachable.')
             return
-        self._run_cleanup(self._binaries_cleanup_command(),
-                          'remote Chrome/Chromedriver directories')
+        self._run_cleanup(
+            self._binaries_cleanup_command(),
+            'remote Chrome/Chromedriver directories',
+        )
 
     def _run_cleanup(self, command, what):
         try:
@@ -368,15 +400,21 @@ class Sender(abc.ABC):
         if result.returncode == 0:
             logging.info('Cleaned up %s.', what)
         else:
-            logging.warning('Failed to clean up %s (rc=%d): %s', what,
-                            result.returncode, (result.stderr or '').strip())
+            logging.warning(
+                'Failed to clean up %s (rc=%d): %s',
+                what,
+                result.returncode,
+                (result.stderr or '').strip(),
+            )
 
     # --- Resource monitoring ---
 
     def start_monitoring(self, csv_remote_path):
         """Starts glances in the background, writing CSV to the sender."""
-        glances_cmd = (f"{self.GLANCES_PYTHON} -m glances -t 1 --export csv "
-                       f"--export-csv-file {csv_remote_path} --quiet")
+        glances_cmd = (
+            f"{self.GLANCES_PYTHON} -m glances -t 1 --export csv "
+            f"--export-csv-file {csv_remote_path} --quiet"
+        )
         logging.info("Starting Glances monitoring on sender...")
         return self.transport.spawn(glances_cmd)
 
@@ -418,12 +456,14 @@ class PosixSender(Sender):
     CHROME_APP = 'chrome'
     CHROMEDRIVER_CHECK_CMD = 'pgrep chromedriver'
     TERMINATE_CHROMEDRIVER_CMD = (
-        'pkill -f chromedriver || true; pkill -f chrome || true')
+        'pkill -f chromedriver || true; pkill -f chrome || true'
+    )
     STATUS_CMD = f'curl -s -o /dev/null -w "%{{http_code}}" {_STATUS_URL}'
 
     def _console_log_command(self):
-        return (f'cat {self.TMP_DIR}/chromedriver_console*.log '
-                '2>/dev/null || true')
+        return (
+            f'cat {self.TMP_DIR}/chromedriver_console*.log 2>/dev/null || true'
+        )
 
     def _downloads_cleanup_command(self):
         return f'rm -f {self.TMP_DIR}/*.zip'
@@ -442,15 +482,19 @@ class PosixSender(Sender):
         app_path = f"{tmp}/{chrome_dir}/{self.CHROME_APP}"
         driver_path = f"{tmp}/{driver_dir}/chromedriver"
 
-        check = self.run(f"{self._installed_test(app_path, driver_path)} && "
-                         "echo 'EXISTS' || echo 'MISSING'")
+        check = self.run(
+            f"{self._installed_test(app_path, driver_path)} && "
+            "echo 'EXISTS' || echo 'MISSING'"
+        )
         if check.stdout.strip() == 'EXISTS':
             logging.info(self._already_installed_message())
         else:
-            self.run(f"curl -L {chrome_url} -o {tmp}/{chrome_zip} && "
-                     f"curl -L {driver_url} -o {tmp}/{driver_zip} && "
-                     f"unzip -o {tmp}/{chrome_zip} -d {tmp} && "
-                     f"unzip -o {tmp}/{driver_zip} -d {tmp}")
+            self.run(
+                f"curl -L {chrome_url} -o {tmp}/{chrome_zip} && "
+                f"curl -L {driver_url} -o {tmp}/{driver_zip} && "
+                f"unzip -o {tmp}/{chrome_zip} -d {tmp} && "
+                f"unzip -o {tmp}/{driver_zip} -d {tmp}"
+            )
             self._after_extract(f'{tmp}/{chrome_dir}', f'{tmp}/{driver_dir}')
 
         self._start_chromedriver(driver_path)
@@ -460,16 +504,20 @@ class PosixSender(Sender):
         return f"[ -f '{app_path}' ] && [ -f '{driver_path}' ]"
 
     def _already_installed_message(self):
-        return (f"Chrome and Chromedriver already installed on remote "
-                f"{self.DISPLAY_NAME}. Skipping download/extract.")
+        return (
+            f"Chrome and Chromedriver already installed on remote "
+            f"{self.DISPLAY_NAME}. Skipping download/extract."
+        )
 
     def _after_extract(self, chrome_dir, driver_dir):
         """Hook for OS-specific fixups after unzipping."""
 
     def _start_chromedriver(self, driver_path):
         self.run(f'chmod +x {driver_path}')
-        self.transport.spawn(f'nohup {driver_path} {_CHROMEDRIVER_FLAGS} '
-                             f'> /tmp/chromedriver_console.log 2>&1 &')
+        self.transport.spawn(
+            f'nohup {driver_path} {_CHROMEDRIVER_FLAGS} '
+            f'> /tmp/chromedriver_console.log 2>&1 &'
+        )
 
 
 class MacSender(PosixSender):
@@ -484,7 +532,8 @@ class MacSender(PosixSender):
     CHROMEDRIVER_CHECK_CMD = 'ps aux | grep chromedriver | grep -v grep'
     TERMINATE_CHROMEDRIVER_CMD = (
         'killall chromedriver 2>/dev/null || true; '
-        'killall "Google Chrome for Testing" 2>/dev/null || true')
+        'killall "Google Chrome for Testing" 2>/dev/null || true'
+    )
 
     def _detect_os_version(self, probes):
         return self._probe('/usr/bin/sw_vers -productVersion', probes)
@@ -524,8 +573,9 @@ class CrosSender(LinuxSender):
         return f"[ -f '{app_path}' ]"
 
     def _already_installed_message(self):
-        return ("Chrome already installed on ChromeOS. "
-                "Skipping download/extract.")
+        return (
+            "Chrome already installed on ChromeOS. Skipping download/extract."
+        )
 
     def _start_chromedriver(self, driver_path):
         # Crossbench launches chromedriver itself.
@@ -542,16 +592,19 @@ class CrosSender(LinuxSender):
             "elif [ -f /sys/class/power_supply/sbat0/power_now ]; then "
             "cat /sys/class/power_supply/sbat0/power_now; "
             "else echo 0; fi >> /tmp/cros_power.txt; "
-            "sleep 1; done'")
+            "sleep 1; done'"
+        )
         logging.info("Starting ChromeOS power monitoring in background...")
         return self.transport.spawn(cros_cmd)
 
     def stop_monitoring(self, monitor_proc, csv_remote_path, csv_local_path):
         logging.info("Stopping Glances/Power monitoring...")
-        self.run("if [ -f /tmp/cros_power.pid ]; then "
-                 "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
-                 "rm -f /tmp/cros_power.pid; "
-                 "fi")
+        self.run(
+            "if [ -f /tmp/cros_power.pid ]; then "
+            "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
+            "rm -f /tmp/cros_power.pid; "
+            "fi"
+        )
         remote_log = "/tmp/cros_power.txt"
         self.copy_from(remote_log, csv_local_path)
         self.run(f"rm -f {remote_log}")
@@ -566,42 +619,53 @@ class WindowsSender(Sender):
     CFT_PLATFORMS = {'x64': 'win64', 'x86': 'win32'}
     CHROMEDRIVER_CHECK_CMD = (
         'powershell -Command "Get-Process -Name chromedriver -ErrorAction '
-        'SilentlyContinue"')
+        'SilentlyContinue"'
+    )
     TERMINATE_CHROMEDRIVER_CMD = (
         'powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
         '-ErrorAction SilentlyContinue; '
-        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"')
+        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"'
+    )
     STATUS_CMD = f'curl.exe -s -o NUL -w "%{{http_code}}" {_STATUS_URL}'
     GLANCES_PYTHON = 'python'
     GLANCES_KILL_CMD = (
         'powershell -Command "Get-WmiObject Win32_Process | '
         'Where-Object { $_.CommandLine -like \'*glances*\' } | '
-        'ForEach-Object { Stop-Process $_.ProcessId -Force }"')
+        'ForEach-Object { Stop-Process $_.ProcessId -Force }"'
+    )
 
     # Win32_Processor.Architecture codes.
     _CIM_ARCH = {'0': 'x86', '9': 'x64', '12': 'x64'}  # ARM64 runs x64.
     _ENV_ARCH = {'AMD64': 'x64', 'ARM64': 'x64', 'x86': 'x86'}
 
     def _console_log_command(self):
-        return ('powershell -Command "Get-Content -Path '
-                f'{self.TMP_DIR}/chromedriver-win*/chromedriver_console*.log '
-                '-ErrorAction SilentlyContinue"')
+        return (
+            'powershell -Command "Get-Content -Path '
+            f'{self.TMP_DIR}/chromedriver-win*/chromedriver_console*.log '
+            '-ErrorAction SilentlyContinue"'
+        )
 
     def _downloads_cleanup_command(self):
-        return ('powershell -Command "Remove-Item -Path '
-                f'{self.TMP_DIR}/*.zip '
-                '-Force -ErrorAction SilentlyContinue"')
+        return (
+            'powershell -Command "Remove-Item -Path '
+            f'{self.TMP_DIR}/*.zip '
+            '-Force -ErrorAction SilentlyContinue"'
+        )
 
     def _binaries_cleanup_command(self):
-        return ('powershell -Command "Remove-Item -Path '
-                f'{self.TMP_DIR}/chrome*,{self.TMP_DIR}/chromedriver* '
-                '-Recurse -Force -ErrorAction SilentlyContinue"')
+        return (
+            'powershell -Command "Remove-Item -Path '
+            f'{self.TMP_DIR}/chrome*,{self.TMP_DIR}/chromedriver* '
+            '-Recurse -Force -ErrorAction SilentlyContinue"'
+        )
 
     def _detect_arch(self, probes):
         # CIM avoids shell-specific environment issues.
         cim_code = self._probe(
             'powershell -Command '
-            '"(Get-CimInstance Win32_Processor).Architecture"', probes)
+            '"(Get-CimInstance Win32_Processor).Architecture"',
+            probes,
+        )
         if cim_code in self._CIM_ARCH:
             return self._CIM_ARCH[cim_code]
         # Fall back to environment variables if CIM fails. Unknown or empty
@@ -609,19 +673,25 @@ class WindowsSender(Sender):
         env_arch = self._probe(
             'powershell -Command "if ($env:PROCESSOR_ARCHITEW6432) '
             '{ $env:PROCESSOR_ARCHITEW6432 } else '
-            '{ $env:PROCESSOR_ARCHITECTURE }"', probes)
+            '{ $env:PROCESSOR_ARCHITECTURE }"',
+            probes,
+        )
         return self._ENV_ARCH.get(env_arch)
 
     def _detect_os_version(self, probes):
         return self._probe(
             'powershell -Command '
-            '"[System.Environment]::OSVersion.Version.ToString()"', probes)
+            '"[System.Environment]::OSVersion.Version.ToString()"',
+            probes,
+        )
 
     def _install(self, chrome_url, driver_url):
         tmp = self.TMP_DIR
-        self.run(f'powershell -Command "if (!(Test-Path \'{tmp}\')) '
-                 f'{{ New-Item -ItemType Directory -Path \'{tmp}\' '
-                 '-Force }}"')
+        self.run(
+            f'powershell -Command "if (!(Test-Path \'{tmp}\')) '
+            f'{{ New-Item -ItemType Directory -Path \'{tmp}\' '
+            '-Force }}"'
+        )
 
         chrome_zip, chrome_dir = _zip_name_and_dir(chrome_url)
         driver_zip, driver_dir = _zip_name_and_dir(driver_url)
@@ -633,7 +703,8 @@ class WindowsSender(Sender):
         check = self.run(
             f"powershell -Command \"if ((Test-Path '{app_path}') -and "
             f"(Test-Path '{driver_path}')) "
-            f"{{ Write-Output 'EXISTS' }} else {{ Write-Output 'MISSING' }}\"")
+            f"{{ Write-Output 'EXISTS' }} else {{ Write-Output 'MISSING' }}\""
+        )
         if check.stdout.strip() == 'EXISTS':
             logging.info(self._already_installed_message())
         else:
@@ -657,17 +728,22 @@ class WindowsSender(Sender):
                 f"Expand-Archive -Path '{chrome_zip_path}' "
                 f"-DestinationPath '{tmp}' -Force; "
                 f"Expand-Archive -Path '{driver_zip_path}' "
-                f"-DestinationPath '{tmp}' -Force }}\"")
+                f"-DestinationPath '{tmp}' -Force }}\""
+            )
             if result.returncode != 0:
-                raise RuntimeError(f"Failed to setup Chrome/Chromedriver on "
-                                   f"Windows: {result.stderr}")
+                raise RuntimeError(
+                    f"Failed to setup Chrome/Chromedriver on "
+                    f"Windows: {result.stderr}"
+                )
 
         self._start_chromedriver(f'{tmp}/{driver_dir}')
         return app_path
 
     def _already_installed_message(self):
-        return ("Chrome and Chromedriver already installed on Windows. "
-                "Skipping download/extract.")
+        return (
+            "Chrome and Chromedriver already installed on Windows. "
+            "Skipping download/extract."
+        )
 
     def _start_chromedriver(self, driver_dir):
         """Starts chromedriver in the interactive session via schtasks.
@@ -685,20 +761,28 @@ class WindowsSender(Sender):
             f'--log-path="{driver_dir}/chromedriver_verbose.log" '
             '--enable-chrome-logs > '
             f'"{driver_dir}/chromedriver_console.log" '
-            '2>&1\n')
+            '2>&1\n'
+        )
         batch_path = f'{self.TMP_DIR}/start_chromedriver.bat'
-        self.run(f"powershell -Command \"'{batch_script}' | "
-                 f"Out-File -FilePath '{batch_path}' -Encoding ascii\"")
+        self.run(
+            f"powershell -Command \"'{batch_script}' | "
+            f"Out-File -FilePath '{batch_path}' -Encoding ascii\""
+        )
 
         # Wrapped in PowerShell so this works whether sshd's shell is cmd,
         # PowerShell, or bash.
-        self.run('powershell -Command '
-                 '"schtasks /delete /tn StartChromeDriverTask /f"')
-        self.run('powershell -Command '
-                 '"schtasks /create /tn StartChromeDriverTask /tr '
-                 f'\'{batch_path}\' /sc ONCE /st 23:59 /IT /f"')
-        self.run('powershell -Command '
-                 '"schtasks /run /tn StartChromeDriverTask"')
+        self.run(
+            'powershell -Command '
+            '"schtasks /delete /tn StartChromeDriverTask /f"'
+        )
+        self.run(
+            'powershell -Command '
+            '"schtasks /create /tn StartChromeDriverTask /tr '
+            f'\'{batch_path}\' /sc ONCE /st 23:59 /IT /f"'
+        )
+        self.run(
+            'powershell -Command "schtasks /run /tn StartChromeDriverTask"'
+        )
 
 
 SENDER_CLASSES = {
@@ -713,6 +797,8 @@ def make_sender(args):
         sender_class = SENDER_CLASSES[args.sender_os]
     except KeyError:
         raise NotImplementedError(
-            f"Unsupported sender_os: {args.sender_os}") from None
+            f"Unsupported sender_os: {args.sender_os}"
+        ) from None
     return sender_class(
-        remote_transport.make_transport(args.sender, args.username))
+        remote_transport.make_transport(args.sender, args.username)
+    )

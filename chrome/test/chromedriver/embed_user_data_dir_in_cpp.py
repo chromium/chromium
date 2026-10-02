@@ -15,8 +15,12 @@ import cpp_source
 def main():
   parser = optparse.OptionParser()
   parser.add_option(
-      '', '--directory', type='string', default='.',
-      help='Path to directory where the cc/h  file should be created')
+    '',
+    '--directory',
+    type='string',
+    default='.',
+    help='Path to directory where the cc/h  file should be created',
+  )
   options, args = parser.parse_args()
 
   global_string_map = {}
@@ -27,8 +31,12 @@ def main():
       contents = f.read()
     global_string_map[var_name] = contents
 
-  cpp_source.WriteSource('user_data_dir', 'chrome/test/chromedriver/chrome',
-                         options.directory, global_string_map)
+  cpp_source.WriteSource(
+    'user_data_dir',
+    'chrome/test/chromedriver/chrome',
+    options.directory,
+    global_string_map,
+  )
 
 
 if __name__ == '__main__':

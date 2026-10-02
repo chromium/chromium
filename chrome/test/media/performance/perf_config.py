@@ -12,7 +12,8 @@ import os
 import sys
 
 REPO_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
+)
 BUILD_UTIL_ROOT = os.path.join(REPO_ROOT, 'build', 'util')
 CHROME_FUCHSIA_ROOT = os.path.join(REPO_ROOT, 'fuchsia_web', 'av_testing')
 TEST_SCRIPTS_ROOT = os.path.join(REPO_ROOT, 'build', 'fuchsia', 'test')
@@ -22,8 +23,10 @@ for _path in (BUILD_UTIL_ROOT, CHROME_FUCHSIA_ROOT, TEST_SCRIPTS_ROOT):
     if _path not in sys.path:
         sys.path.append(_path)
 
-CFT_JSON_URL = ('https://googlechromelabs.github.io/chrome-for-testing/'
-                'known-good-versions-with-downloads.json')
+CFT_JSON_URL = (
+    'https://googlechromelabs.github.io/chrome-for-testing/'
+    'known-good-versions-with-downloads.json'
+)
 
 CHROMEDRIVER_PORT = int(os.environ.get('CHROMEDRIVER_PORT', '49573'))
 SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))

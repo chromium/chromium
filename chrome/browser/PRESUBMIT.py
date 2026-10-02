@@ -14,17 +14,18 @@ import re
 # Enforce `git cl format` as an error on these specific files only, to keep the
 # blast radius small.
 _FORMAT_REQUIRED_BUILD_GN = (
-    'chrome/browser/BUILD.gn',
-    'chrome/browser/ui/BUILD.gn',
+  'chrome/browser/BUILD.gn',
+  'chrome/browser/ui/BUILD.gn',
 )
 
 
 def _CheckHighTrafficBuildGnFormatted(input_api, output_api):
-    return input_api.canned_checks.CheckPatchFormatted(
-        input_api,
-        output_api,
-        result_factory=output_api.PresubmitError,
-        file_filter=lambda f: f.LocalPath() in _FORMAT_REQUIRED_BUILD_GN)
+  return input_api.canned_checks.CheckPatchFormatted(
+    input_api,
+    output_api,
+    result_factory=output_api.PresubmitError,
+    file_filter=lambda f: f.LocalPath() in _FORMAT_REQUIRED_BUILD_GN,
+  )
 
 
 # Checks whether an autofill-related browsertest fixture class inherits from
@@ -32,307 +33,343 @@ def _CheckHighTrafficBuildGnFormatted(input_api, output_api):
 # type `autofill::test::AutofillBrowserTestEnvironment`. In that case, the
 # functions registers a presubmit warning.
 def _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
-        input_api, output_api):
-    autofill_files_pattern = re.compile(
-        r'(autofill|password_manager).*\.(mm|cc|h)')
-    concerned_files = [(f, input_api.ReadFile(f))
-                       for f in input_api.AffectedFiles(include_deletes=False)
-                       if autofill_files_pattern.search(f.LocalPath())]
+  input_api, output_api
+):
+  autofill_files_pattern = re.compile(
+    r'(autofill|password_manager).*\.(mm|cc|h)'
+  )
+  concerned_files = [
+    (f, input_api.ReadFile(f))
+    for f in input_api.AffectedFiles(include_deletes=False)
+    if autofill_files_pattern.search(f.LocalPath())
+  ]
 
-    warning_files = []
-    class_name = r'^( *)(class|struct)\s+\w+\s*:\s*'
-    target_base = r'[^\{]*\bpublic\s+(InProcess|Android)BrowserTest[^\{]*\{'
-    class_declaration_pattern = re.compile(class_name + target_base,
-                                           re.MULTILINE)
-    for autofill_file, file_content in concerned_files:
-        for class_match in re.finditer(class_declaration_pattern,
-                                       file_content):
-            indentation = class_match.group(1)
-            class_end_pattern = re.compile(r'^' + indentation + r'\};$',
-                                           re.MULTILINE)
-            class_end = class_end_pattern.search(
-                file_content[class_match.start():])
+  warning_files = []
+  class_name = r'^( *)(class|struct)\s+\w+\s*:\s*'
+  target_base = r'[^\{]*\bpublic\s+(InProcess|Android)BrowserTest[^\{]*\{'
+  class_declaration_pattern = re.compile(class_name + target_base, re.MULTILINE)
+  for autofill_file, file_content in concerned_files:
+    for class_match in re.finditer(class_declaration_pattern, file_content):
+      indentation = class_match.group(1)
+      class_end_pattern = re.compile(r'^' + indentation + r'\};$', re.MULTILINE)
+      class_end = class_end_pattern.search(file_content[class_match.start() :])
 
-            corresponding_subclass = (
-                '' if class_end is None else
-                file_content[class_match.start():class_match.start() +
-                             class_end.end()])
+      corresponding_subclass = (
+        ''
+        if class_end is None
+        else file_content[
+          class_match.start() : class_match.start() + class_end.end()
+        ]
+      )
 
-            required_member_pattern = re.compile(
-                r'^' + indentation +
-                r'  (::)?(autofill::)?test::AutofillBrowserTestEnvironment\s+\w+_;',
-                re.MULTILINE)
-            if not required_member_pattern.search(corresponding_subclass):
-                warning_files.append(autofill_file)
+      required_member_pattern = re.compile(
+        r'^'
+        + indentation
+        + r'  (::)?(autofill::)?test::AutofillBrowserTestEnvironment\s+\w+_;',
+        re.MULTILINE,
+      )
+      if not required_member_pattern.search(corresponding_subclass):
+        warning_files.append(autofill_file)
 
-    return [
-        output_api.PresubmitPromptWarning(
-            'Consider adding a member '
-            'autofill::test::AutofillBrowserTestEnvironment to the test '
-            'fixtures that derive from InProcessBrowserTest or '
-            'AndroidBrowserTest in order to disable '
-            'kAutofillServerCommunication in browser tests.', warning_files)
-    ] if len(warning_files) else []
+  return (
+    [
+      output_api.PresubmitPromptWarning(
+        'Consider adding a member '
+        'autofill::test::AutofillBrowserTestEnvironment to the test '
+        'fixtures that derive from InProcessBrowserTest or '
+        'AndroidBrowserTest in order to disable '
+        'kAutofillServerCommunication in browser tests.',
+        warning_files,
+      )
+    ]
+    if len(warning_files)
+    else []
+  )
+
 
 def _RunHistogramChecks(input_api, output_api, histogram_name):
-    if not input_api.HasAffectedFiles(path='bad_message.h'):
-        return []
-    try:
-        # Setup sys.path so that we can call histograms code.
-        import sys
-        original_sys_path = sys.path
-        sys.path = sys.path + [
-            input_api.os_path.join(input_api.change.RepositoryRoot(), 'tools',
-                                   'metrics', 'histograms')
-        ]
+  if not input_api.HasAffectedFiles(path='bad_message.h'):
+    return []
+  try:
+    # Setup sys.path so that we can call histograms code.
+    import sys
 
-        results = []
+    original_sys_path = sys.path
+    sys.path = sys.path + [
+      input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'tools', 'metrics', 'histograms'
+      )
+    ]
 
-        import presubmit_bad_message_reasons
-        results.extend(
-            presubmit_bad_message_reasons.PrecheckBadMessage(
-                input_api, output_api, histogram_name))
+    results = []
 
-        return results
-    except:
-        return [output_api.PresubmitError('Could not verify histogram!')]
-    finally:
-        sys.path = original_sys_path
+    import presubmit_bad_message_reasons
+
+    results.extend(
+      presubmit_bad_message_reasons.PrecheckBadMessage(
+        input_api, output_api, histogram_name
+      )
+    )
+
+    return results
+  except:
+    return [output_api.PresubmitError('Could not verify histogram!')]
+  finally:
+    sys.path = original_sys_path
 
 
 def _CheckUnwantedDependencies(input_api, output_api):
-    problems = []
-    for f in input_api.AffectedFiles():
-        if not f.LocalPath().endswith('DEPS'):
-            continue
+  problems = []
+  for f in input_api.AffectedFiles():
+    if not f.LocalPath().endswith('DEPS'):
+      continue
 
-        for line_num, line in f.ChangedContents():
-            if not line.strip().startswith('#'):
-                m = re.search(r".*\/blink\/public\/web.*", line)
-                if m:
-                    problems.append(m.group(0))
+    for line_num, line in f.ChangedContents():
+      if not line.strip().startswith('#'):
+        m = re.search(r".*\/blink\/public\/web.*", line)
+        if m:
+          problems.append(m.group(0))
 
-    if not problems:
-        return []
-    return [
-        output_api.PresubmitPromptWarning(
-            'chrome/browser cannot depend on blink/public/web interfaces. ' +
-            'Use blink/public/common instead.',
-            items=problems)
-    ]
+  if not problems:
+    return []
+  return [
+    output_api.PresubmitPromptWarning(
+      'chrome/browser cannot depend on blink/public/web interfaces. '
+      + 'Use blink/public/common instead.',
+      items=problems,
+    )
+  ]
 
 
 def _CheckNoInteractiveUiTestLibInNonInteractiveUiTest(input_api, output_api):
-    """Makes sure that ui_controls related API are used only in
-    interactive_in_tests.
-    """
-    problems = []
-    # There are interactive tests whose name ends with `_browsertest.cc`
-    # or `_browser_test.cc`.
-    files_to_skip = ((r'.*interactive_.*test\.cc', ) +
-                     input_api.DEFAULT_FILES_TO_SKIP)
+  """Makes sure that ui_controls related API are used only in
+  interactive_in_tests.
+  """
+  problems = []
+  # There are interactive tests whose name ends with `_browsertest.cc`
+  # or `_browser_test.cc`.
+  files_to_skip = (
+    r'.*interactive_.*test\.cc',
+  ) + input_api.DEFAULT_FILES_TO_SKIP
 
-    def FileFilter(affected_file):
-        """Check non interactive_uitests only."""
-        return input_api.FilterSourceFile(affected_file,
-                                          files_to_check=(r'.*browsertest\.cc',
-                                                          r'.*unittest\.cc'),
-                                          files_to_skip=files_to_skip)
+  def FileFilter(affected_file):
+    """Check non interactive_uitests only."""
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=(r'.*browsertest\.cc', r'.*unittest\.cc'),
+      files_to_skip=files_to_skip,
+    )
 
-    ui_controls_includes = (input_api.re.compile(
-        r'#include.*/(ui_controls.*h|interactive_test_utils.h)"'))
+  ui_controls_includes = input_api.re.compile(
+    r'#include.*/(ui_controls.*h|interactive_test_utils.h)"'
+  )
 
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=FileFilter):
-        for line_num, line in f.ChangedContents():
-            m = re.search(ui_controls_includes, line)
-            if m:
-                problems.append('  %s:%d:%s' %
-                                (f.LocalPath(), line_num, m.group(0)))
+  for f in input_api.AffectedFiles(
+    include_deletes=False, file_filter=FileFilter
+  ):
+    for line_num, line in f.ChangedContents():
+      m = re.search(ui_controls_includes, line)
+      if m:
+        problems.append('  %s:%d:%s' % (f.LocalPath(), line_num, m.group(0)))
 
-    if not problems:
-        return []
+  if not problems:
+    return []
 
-    WARNING_MSG = """
+  WARNING_MSG = """
     ui_controls API can be used only in interactive_ui_tests.
     If the test is in the interactive_ui_tests, please consider renaming
     to xxx_interactive_uitest.cc"""
-    return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+  return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
 
 
 def _CheckForUselessExterns(input_api, output_api):
-    """Makes sure developers don't copy "extern const char kFoo[]" from
-    foo.h to foo.cc.
-    """
-    problems = []
-    BAD_PATTERN = input_api.re.compile(r'^extern const')
+  """Makes sure developers don't copy "extern const char kFoo[]" from
+  foo.h to foo.cc.
+  """
+  problems = []
+  BAD_PATTERN = input_api.re.compile(r'^extern const')
 
-    def FileFilter(affected_file):
-        """Check only a particular list of files"""
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=[r'chrome[/\\]browser[/\\]flag_descriptions\.cc'])
+  def FileFilter(affected_file):
+    """Check only a particular list of files"""
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=[r'chrome[/\\]browser[/\\]flag_descriptions\.cc'],
+    )
 
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=FileFilter):
-        for _, line in f.ChangedContents():
-            if BAD_PATTERN.search(line):
-                problems.append(f)
+  for f in input_api.AffectedFiles(
+    include_deletes=False, file_filter=FileFilter
+  ):
+    for _, line in f.ChangedContents():
+      if BAD_PATTERN.search(line):
+        problems.append(f)
 
-    if not problems:
-        return []
+  if not problems:
+    return []
 
-    WARNING_MSG = """Do not write "extern const char" in these .cc files:"""
-    return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+  WARNING_MSG = """Do not write "extern const char" in these .cc files:"""
+  return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
 
 
 def _CheckBuildFilesForIndirectAshSources(input_api, output_api):
-    """Warn when indirect paths are added to an ash target's "sources".
+  """Warn when indirect paths are added to an ash target's "sources".
 
-    Indirect paths are paths containing a slash, e.g. "foo/bar.h" or
-    "../foo.cc".
-    """
+  Indirect paths are paths containing a slash, e.g. "foo/bar.h" or
+  "../foo.cc".
+  """
 
-    MSG = ("It appears that sources were added to the above BUILD.gn file but "
-           "their paths contain a slash, indicating that the files are from a "
-           "different directory (e.g. a subdirectory). As a general rule, Ash "
-           "sources should live in the same directory as the BUILD.gn file "
-           "listing them. There may be cases where this is not feasible or "
-           "doesn't make sense, hence this is only a warning. If in doubt, "
-           "please contact ash-chrome-refactor-wg@google.com.")
+  MSG = (
+    "It appears that sources were added to the above BUILD.gn file but "
+    "their paths contain a slash, indicating that the files are from a "
+    "different directory (e.g. a subdirectory). As a general rule, Ash "
+    "sources should live in the same directory as the BUILD.gn file "
+    "listing them. There may be cases where this is not feasible or "
+    "doesn't make sense, hence this is only a warning. If in doubt, "
+    "please contact ash-chrome-refactor-wg@google.com."
+  )
 
-    os_path = input_api.os_path
+  os_path = input_api.os_path
 
-    # Any BUILD.gn in or under one of these directories will be checked.
-    monitored_dirs = [
-        os_path.join("chrome", "browser", "ash"),
-        os_path.join("chrome", "browser", "chromeos"),
-        os_path.join("chrome", "browser", "ui", "ash"),
-        os_path.join("chrome", "browser", "ui", "chromeos"),
-        os_path.join("chrome", "browser", "ui", "webui", "ash"),
-    ]
+  # Any BUILD.gn in or under one of these directories will be checked.
+  monitored_dirs = [
+    os_path.join("chrome", "browser", "ash"),
+    os_path.join("chrome", "browser", "chromeos"),
+    os_path.join("chrome", "browser", "ui", "ash"),
+    os_path.join("chrome", "browser", "ui", "chromeos"),
+    os_path.join("chrome", "browser", "ui", "webui", "ash"),
+  ]
 
-    def should_check_path(affected_path):
-        if os_path.basename(affected_path) != 'BUILD.gn':
-            return False
-        ad = os_path.dirname(affected_path)
-        for md in monitored_dirs:
-            if os_path.commonpath([ad, md]) == md:
-                return True
-        return False
+  def should_check_path(affected_path):
+    if os_path.basename(affected_path) != 'BUILD.gn':
+      return False
+    ad = os_path.dirname(affected_path)
+    for md in monitored_dirs:
+      if os_path.commonpath([ad, md]) == md:
+        return True
+    return False
 
-    # Simplifying assumption: 'sources' keyword always appears at the beginning
-    # of a line (optionally preceded by whitespace).
-    sep = r'(?m:\s*#.*$)*\s*'  # whitespace and/or comments, possibly empty
-    sources_re = re.compile(
-        fr'(?m:^\s*sources{sep}\+?={sep}\[((?:{sep}"[^"]*"{sep},?{sep})*)\])')
-    source_re = re.compile(fr'{sep}"([^"]*)"')
+  # Simplifying assumption: 'sources' keyword always appears at the beginning
+  # of a line (optionally preceded by whitespace).
+  sep = r'(?m:\s*#.*$)*\s*'  # whitespace and/or comments, possibly empty
+  sources_re = re.compile(
+    rf'(?m:^\s*sources{sep}\+?={sep}\[((?:{sep}"[^"]*"{sep},?{sep})*)\])'
+  )
+  source_re = re.compile(rf'{sep}"([^"]*)"')
 
-    def find_indirect_sources(contents):
-        result = []
-        for sources_m in sources_re.finditer(contents):
-            for source_m in source_re.finditer(sources_m.group(1)):
-                source = source_m.group(1)
-                if '/' in source:
-                    result.append(source)
-        return result
+  def find_indirect_sources(contents):
+    result = []
+    for sources_m in sources_re.finditer(contents):
+      for source_m in source_re.finditer(sources_m.group(1)):
+        source = source_m.group(1)
+        if '/' in source:
+          result.append(source)
+    return result
 
-    results = []
-    for f in input_api.AffectedTestableFiles():
-        if not should_check_path(f.LocalPath()):
-            continue
+  results = []
+  for f in input_api.AffectedTestableFiles():
+    if not should_check_path(f.LocalPath()):
+      continue
 
-        indirect_sources_new = find_indirect_sources('\n'.join(
-            f.NewContents()))
-        if not indirect_sources_new:
-            continue
+    indirect_sources_new = find_indirect_sources('\n'.join(f.NewContents()))
+    if not indirect_sources_new:
+      continue
 
-        indirect_sources_old = find_indirect_sources('\n'.join(
-            f.OldContents()))
-        added_indirect_sources = (set(indirect_sources_new) -
-                                  set(indirect_sources_old))
+    indirect_sources_old = find_indirect_sources('\n'.join(f.OldContents()))
+    added_indirect_sources = set(indirect_sources_new) - set(
+      indirect_sources_old
+    )
 
-        if added_indirect_sources:
-            results.append(
-                output_api.PresubmitPromptWarning(
-                    "Indirect sources detected.", [f.LocalPath()],
-                    f"{MSG}\n  " +
-                    "\n  ".join(sorted(added_indirect_sources))))
-    return results
+    if added_indirect_sources:
+      results.append(
+        output_api.PresubmitPromptWarning(
+          "Indirect sources detected.",
+          [f.LocalPath()],
+          f"{MSG}\n  " + "\n  ".join(sorted(added_indirect_sources)),
+        )
+      )
+  return results
 
 
 # Files that legitimately declare, implement, or construct Browser by
 # including chrome/browser/ui/browser.h. All other files must use
 # BrowserWindowInterface instead.
 _BROWSER_HEADER_ALLOWED_PATHS = (
-    'chrome/browser/ui/browser.h',
-    'chrome/browser/ui/browser.cc',
-    ('chrome/browser/ui/browser_window/internal/'
-     'create_browser_window_non_android.cc'),
+  'chrome/browser/ui/browser.h',
+  'chrome/browser/ui/browser.cc',
+  (
+    'chrome/browser/ui/browser_window/internal/'
+    'create_browser_window_non_android.cc'
+  ),
 )
 
 # Files that legitimately declare, implement, or construct Browser directly
 # (e.g. forward declarations, factories, or migration fallbacks).
 _BROWSER_USAGE_EXCLUDED_PATHS = (
-    'chrome/browser/ui/browser.h',
-    'chrome/browser/ui/browser.cc',
-    'chrome/browser/ui/browser_window/public/browser_window_interface.h',
-    'chrome/browser/ui/browser_window/public/create_browser_window.h',
-    ('chrome/browser/ui/browser_window/internal/'
-     'create_browser_window_non_android.cc'),
-    'chrome/browser/ui/views/frame/browser_window_factory.cc',
+  'chrome/browser/ui/browser.h',
+  'chrome/browser/ui/browser.cc',
+  'chrome/browser/ui/browser_window/public/browser_window_interface.h',
+  'chrome/browser/ui/browser_window/public/create_browser_window.h',
+  (
+    'chrome/browser/ui/browser_window/internal/'
+    'create_browser_window_non_android.cc'
+  ),
+  'chrome/browser/ui/views/frame/browser_window_factory.cc',
 )
 
 
 def _CheckSourcesForBadIncludes(input_api, output_api):
-    """Make sure changes don't include chrome/browser/ui/browser.h."""
+  """Make sure changes don't include chrome/browser/ui/browser.h."""
 
-    MSG = (
-        "Please don't include chrome/browser/ui/browser.h. "
-        "Instead, use "
-        "chrome/browser/ui/browser_window/public/browser_window_interface.h "
-        "(or the BrowserDelegate/BrowserController abstraction in "
-        "chrome/browser/ash/browser_delegate/ for Ash code).")
+  MSG = (
+    "Please don't include chrome/browser/ui/browser.h. "
+    "Instead, use "
+    "chrome/browser/ui/browser_window/public/browser_window_interface.h "
+    "(or the BrowserDelegate/BrowserController abstraction in "
+    "chrome/browser/ash/browser_delegate/ for Ash code)."
+  )
 
-    # If you add other files here, please adapt the message and comment above.
-    bad_includes = [
-        "chrome/browser/ui/browser.h",
-    ]
+  # If you add other files here, please adapt the message and comment above.
+  bad_includes = [
+    "chrome/browser/ui/browser.h",
+  ]
 
-    def should_check_path(affected_path):
-        # TODO(crbug.com/447299513): Use pathlib's full_match once we are at
-        # Python >= 3.13
-        if not affected_path.startswith('chrome/browser/'):
-            return False
+  def should_check_path(affected_path):
+    # TODO(crbug.com/447299513): Use pathlib's full_match once we are at
+    # Python >= 3.13
+    if not affected_path.startswith('chrome/browser/'):
+      return False
 
-        if not affected_path.endswith(('.cc', '.h', '.mm')):
-            return False
+    if not affected_path.endswith(('.cc', '.h', '.mm')):
+      return False
 
-        if affected_path in _BROWSER_HEADER_ALLOWED_PATHS:
-            return False
+    if affected_path in _BROWSER_HEADER_ALLOWED_PATHS:
+      return False
 
-        return True
+    return True
 
-    bad_includes_re = input_api.re.compile(
-        r'^\s*#include\s*["<](' +
-        '|'.join(input_api.re.escape(file) for file in bad_includes) +
-        r')[">]')
+  bad_includes_re = input_api.re.compile(
+    r'^\s*#include\s*["<]('
+    + '|'.join(input_api.re.escape(file) for file in bad_includes)
+    + r')[">]'
+  )
 
-    def find_bad_includes(lines):
-        return [line for line in lines if bad_includes_re.match(line)]
+  def find_bad_includes(lines):
+    return [line for line in lines if bad_includes_re.match(line)]
 
-    results = []
-    for f in input_api.AffectedTestableFiles():
-        if not should_check_path(f.UnixLocalPath()):
-            continue
+  results = []
+  for f in input_api.AffectedTestableFiles():
+    if not should_check_path(f.UnixLocalPath()):
+      continue
 
-        bad_includes_new = find_bad_includes(f.NewContents())
-        if bad_includes_new:
-            results.append(
-                output_api.PresubmitError(
-                    "Bad includes detected in the following files.",
-                    [f.LocalPath()], f"{MSG}\n"))
-    return results
+    bad_includes_new = find_bad_includes(f.NewContents())
+    if bad_includes_new:
+      results.append(
+        output_api.PresubmitError(
+          "Bad includes detected in the following files.",
+          [f.LocalPath()],
+          f"{MSG}\n",
+        )
+      )
+  return results
 
 
 # Alias for backward compatibility if called externally.
@@ -349,220 +386,225 @@ _CheckAshSourcesForBadIncludes = _CheckSourcesForBadIncludes
 # ui::BaseWindow* directly. New code that only needs a BaseWindow method
 # should prefer GetWindow().
 _BASE_WINDOW_METHODS = (
-    'GetNativeWindow',
-    'Show',
-    'ShowInactive',
-    'Hide',
-    'Close',
-    'Activate',
-    'Deactivate',
-    'IsActive',
-    'IsVisible',
-    'IsFullscreen',
-    'IsMinimized',
-    'IsMaximized',
-    'Minimize',
-    'Maximize',
-    'Restore',
-    'GetBounds',
-    'GetRestoredBounds',
-    'GetRestoredState',
-    'SetBounds',
+  'GetNativeWindow',
+  'Show',
+  'ShowInactive',
+  'Hide',
+  'Close',
+  'Activate',
+  'Deactivate',
+  'IsActive',
+  'IsVisible',
+  'IsFullscreen',
+  'IsMinimized',
+  'IsMaximized',
+  'Minimize',
+  'Maximize',
+  'Restore',
+  'GetBounds',
+  'GetRestoredBounds',
+  'GetRestoredState',
+  'SetBounds',
 )
 
 # Files in chrome/browser/ whose `window()` member belongs to a different
 # class (extensions::WindowController, extensions::AppWindow,
 # ash::WindowDimmer, etc.) and which should not be flagged.
 _BROWSER_WINDOW_GETTER_EXCLUDED_PATHS = (
-    'chrome/browser/extensions/api/tabs/tabs_api.cc',
-    'chrome/browser/extensions/api/tabs/tabs_test.cc',
-    'chrome/browser/extensions/api/tabs/windows_util_android.cc',
-    'chrome/browser/extensions/chrome_extension_function_details.cc',
-    'chrome/browser/extensions/extension_commands_global_registry_apitest.cc',
-    'chrome/browser/extensions/locked_fullscreen_window_apitest.cc',
-    'chrome/browser/extensions/window_controller_list.cc',
-    'chrome/browser/ui/views/extensions/windows_utils_views.cc',
-    'chrome/browser/ui/ash/shelf/chrome_shelf_controller_unittest.cc',
-    'chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.cc',
+  'chrome/browser/extensions/api/tabs/tabs_api.cc',
+  'chrome/browser/extensions/api/tabs/tabs_test.cc',
+  'chrome/browser/extensions/api/tabs/windows_util_android.cc',
+  'chrome/browser/extensions/chrome_extension_function_details.cc',
+  'chrome/browser/extensions/extension_commands_global_registry_apitest.cc',
+  'chrome/browser/extensions/locked_fullscreen_window_apitest.cc',
+  'chrome/browser/extensions/window_controller_list.cc',
+  'chrome/browser/ui/views/extensions/windows_utils_views.cc',
+  'chrome/browser/ui/ash/shelf/chrome_shelf_controller_unittest.cc',
+  'chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.cc',
 )
 
 
 def _CheckNoNewBrowserWindowGetter(input_api, output_api):
-    """Warns when new code calls `browser->window()->X()` for a method `X`
-    declared on ui::BaseWindow. Prefer `browser->GetWindow()->X()`, which
-    returns the narrower ui::BaseWindow* interface. See
-    https://crbug.com/496674143.
+  """Warns when new code calls `browser->window()->X()` for a method `X`
+  declared on ui::BaseWindow. Prefer `browser->GetWindow()->X()`, which
+  returns the narrower ui::BaseWindow* interface. See
+  https://crbug.com/496674143.
 
-    Operates on whole-file content so call sites that line-wrap between
-    `window()` and `->X(` are still caught.
-    """
-    # Match `<expr>->window()` or `<expr>.window()` followed (possibly across
-    # lines) by `->X(` where X is a ui::BaseWindow method. The leading `->`
-    # or `.` prevents matching bare `window()`, `app_window()`,
-    # `dialog_window()`, `root_window()`, etc.
-    method_alt = '|'.join(_BASE_WINDOW_METHODS)
-    pattern = input_api.re.compile(
-        r'(?:->|\.)\s*window\(\)\s*->\s*'
-        r'(?P<method>' + method_alt + r')\s*\(', input_api.re.DOTALL)
-    # Lines beginning with `//` (after optional whitespace) are treated as
-    # comments and ignored.
-    comment_pattern = input_api.re.compile(r'^\s*//')
+  Operates on whole-file content so call sites that line-wrap between
+  `window()` and `->X(` are still caught.
+  """
+  # Match `<expr>->window()` or `<expr>.window()` followed (possibly across
+  # lines) by `->X(` where X is a ui::BaseWindow method. The leading `->`
+  # or `.` prevents matching bare `window()`, `app_window()`,
+  # `dialog_window()`, `root_window()`, etc.
+  method_alt = '|'.join(_BASE_WINDOW_METHODS)
+  pattern = input_api.re.compile(
+    r'(?:->|\.)\s*window\(\)\s*->\s*'
+    r'(?P<method>' + method_alt + r')\s*\(',
+    input_api.re.DOTALL,
+  )
+  # Lines beginning with `//` (after optional whitespace) are treated as
+  # comments and ignored.
+  comment_pattern = input_api.re.compile(r'^\s*//')
 
-    def is_excluded(local_path):
-        unix_path = local_path.replace('\\', '/')
-        return unix_path in _BROWSER_WINDOW_GETTER_EXCLUDED_PATHS
+  def is_excluded(local_path):
+    unix_path = local_path.replace('\\', '/')
+    return unix_path in _BROWSER_WINDOW_GETTER_EXCLUDED_PATHS
 
-    problems = []
-    for f in input_api.AffectedFiles():
-        local_path = f.LocalPath()
-        if not local_path.endswith(('.cc', '.h', '.mm')):
-            continue
-        if is_excluded(local_path):
-            continue
-        changed_lines = {ln for ln, _ in f.ChangedContents()}
-        if not changed_lines:
-            continue
-        # Re-read the new contents as a single string so the regex can span
-        # newlines. Use NewContents() (a list of lines) joined with \n.
-        new_lines = f.NewContents()
-        contents = '\n'.join(new_lines)
+  problems = []
+  for f in input_api.AffectedFiles():
+    local_path = f.LocalPath()
+    if not local_path.endswith(('.cc', '.h', '.mm')):
+      continue
+    if is_excluded(local_path):
+      continue
+    changed_lines = {ln for ln, _ in f.ChangedContents()}
+    if not changed_lines:
+      continue
+    # Re-read the new contents as a single string so the regex can span
+    # newlines. Use NewContents() (a list of lines) joined with \n.
+    new_lines = f.NewContents()
+    contents = '\n'.join(new_lines)
 
-        # Precompute line-start offsets for quick offset->line conversion.
-        line_starts = [0]
-        for line in new_lines[:-1]:
-            line_starts.append(line_starts[-1] + len(line) + 1)
+    # Precompute line-start offsets for quick offset->line conversion.
+    line_starts = [0]
+    for line in new_lines[:-1]:
+      line_starts.append(line_starts[-1] + len(line) + 1)
 
-        def offset_to_line(offset):
-            lo, hi = 0, len(line_starts) - 1
-            while lo < hi:
-                mid = (lo + hi + 1) // 2
-                if line_starts[mid] <= offset:
-                    lo = mid
-                else:
-                    hi = mid - 1
-            return lo + 1  # 1-based.
+    def offset_to_line(offset):
+      lo, hi = 0, len(line_starts) - 1
+      while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if line_starts[mid] <= offset:
+          lo = mid
+        else:
+          hi = mid - 1
+      return lo + 1  # 1-based.
 
-        for match in pattern.finditer(contents):
-            start_line = offset_to_line(match.start())
-            method_line = offset_to_line(match.start('method'))
-            # Only flag if at least one line covered by the match (from the
-            # opening `(?:->|\.)window()` through the method name) is a
-            # changed line.
-            covered = range(start_line, method_line + 1)
-            if not any(ln in changed_lines for ln in covered):
-                continue
-            # Allow `// nocheck` on any covered line as an escape hatch.
-            if any(
-                    new_lines[ln - 1].rstrip().endswith(' nocheck')
-                    for ln in covered if 1 <= ln <= len(new_lines)):
-                continue
-            # Skip if the start line is itself a comment (heuristic: avoids
-            # flagging "// browser->window()->Show() is deprecated").
-            if comment_pattern.match(new_lines[start_line - 1]):
-                continue
-            problems.append('    %s:%d' % (local_path, method_line))
+    for match in pattern.finditer(contents):
+      start_line = offset_to_line(match.start())
+      method_line = offset_to_line(match.start('method'))
+      # Only flag if at least one line covered by the match (from the
+      # opening `(?:->|\.)window()` through the method name) is a
+      # changed line.
+      covered = range(start_line, method_line + 1)
+      if not any(ln in changed_lines for ln in covered):
+        continue
+      # Allow `// nocheck` on any covered line as an escape hatch.
+      if any(
+        new_lines[ln - 1].rstrip().endswith(' nocheck')
+        for ln in covered
+        if 1 <= ln <= len(new_lines)
+      ):
+        continue
+      # Skip if the start line is itself a comment (heuristic: avoids
+      # flagging "// browser->window()->Show() is deprecated").
+      if comment_pattern.match(new_lines[start_line - 1]):
+        continue
+      problems.append('    %s:%d' % (local_path, method_line))
 
-    if not problems:
-        return []
-    return [
-        output_api.PresubmitPromptWarning(
-            'Browser::window() returns BrowserWindow* and is being '
-            'eliminated. For methods declared on ui::BaseWindow, prefer '
-            'Browser::GetWindow() which returns ui::BaseWindow* directly. '
-            'See https://crbug.com/496674143.\n'
-            'If the matched call is on an unrelated class whose window() '
-            'method happens to share a name (e.g. '
-            'extensions::WindowController, extensions::AppWindow, '
-            'ash::WindowDimmer), append "// nocheck" to the line containing '
-            'the method call or add the file to '
-            '_BROWSER_WINDOW_GETTER_EXCLUDED_PATHS in '
-            'chrome/browser/PRESUBMIT.py.\n' +
-            '\n'.join(problems))
-    ]
+  if not problems:
+    return []
+  return [
+    output_api.PresubmitPromptWarning(
+      'Browser::window() returns BrowserWindow* and is being '
+      'eliminated. For methods declared on ui::BaseWindow, prefer '
+      'Browser::GetWindow() which returns ui::BaseWindow* directly. '
+      'See https://crbug.com/496674143.\n'
+      'If the matched call is on an unrelated class whose window() '
+      'method happens to share a name (e.g. '
+      'extensions::WindowController, extensions::AppWindow, '
+      'ash::WindowDimmer), append "// nocheck" to the line containing '
+      'the method call or add the file to '
+      '_BROWSER_WINDOW_GETTER_EXCLUDED_PATHS in '
+      'chrome/browser/PRESUBMIT.py.\n' + '\n'.join(problems)
+    )
+  ]
 
 
 def _CheckNoNewBrowserWindowMemberCall(input_api, output_api):
-    """Warns when new code calls `browser->window()`, `browser_->window()`,
-    or `browser()->window()`.
+  """Warns when new code calls `browser->window()`, `browser_->window()`,
+  or `browser()->window()`.
 
-    `Browser::window()` is being eliminated (https://crbug.com/496674143).
-    Callers should migrate to one of:
-      * `BrowserWindow::FromBrowser(browser)` -- the drop-in replacement,
-      * `BrowserView::GetBrowserViewForBrowser(browser)` -- when the caller
-        needs Views-specific API,
-      * `WebUIBrowserWindow::FromBrowser(browser)` -- when the caller needs
-        WebUI-browser-specific API,
-      * `Browser::GetWindow()` -- when the caller only needs ui::BaseWindow
-        API (this case is also flagged by `_CheckNoNewBrowserWindowGetter`
-        above, so this check skips it to avoid duplicate warnings).
+  `Browser::window()` is being eliminated (https://crbug.com/496674143).
+  Callers should migrate to one of:
+    * `BrowserWindow::FromBrowser(browser)` -- the drop-in replacement,
+    * `BrowserView::GetBrowserViewForBrowser(browser)` -- when the caller
+      needs Views-specific API,
+    * `WebUIBrowserWindow::FromBrowser(browser)` -- when the caller needs
+      WebUI-browser-specific API,
+    * `Browser::GetWindow()` -- when the caller only needs ui::BaseWindow
+      API (this case is also flagged by `_CheckNoNewBrowserWindowGetter`
+      above, so this check skips it to avoid duplicate warnings).
 
-    To minimize false positives this check matches only the three by-far
-    most common receivers: `browser`, `browser_`, and `browser()`. Other
-    variable names (`my_browser->window()`, `the_browser_->window()`, etc.)
-    should still be migrated but won't trip this warning.
-    """
-    # Files that legitimately keep using `browser->window()` /
-    # `browser_->window()` (the declaration itself, the migration fallback
-    # inside BrowserWindow::FromBrowser, etc.). Entries should be removed
-    # once https://crbug.com/496674143 fully retires Browser::window().
-    allowed_files = (
-        'chrome/browser/ui/browser.h',
-        'chrome/browser/ui/views/frame/browser_window_factory.cc',
+  To minimize false positives this check matches only the three by-far
+  most common receivers: `browser`, `browser_`, and `browser()`. Other
+  variable names (`my_browser->window()`, `the_browser_->window()`, etc.)
+  should still be migrated but won't trip this warning.
+  """
+  # Files that legitimately keep using `browser->window()` /
+  # `browser_->window()` (the declaration itself, the migration fallback
+  # inside BrowserWindow::FromBrowser, etc.). Entries should be removed
+  # once https://crbug.com/496674143 fully retires Browser::window().
+  allowed_files = (
+    'chrome/browser/ui/browser.h',
+    'chrome/browser/ui/views/frame/browser_window_factory.cc',
+  )
+
+  # Matches `browser->window()`, `browser_->window()`, or
+  # `browser()->window()`, tolerating whitespace. The `(?<![A-Za-z0-9_])`
+  # lookbehind prevents matching identifiers that merely end with
+  # `browser` (e.g. `my_browser`, `new_browser`, `GetBrowser`).
+  receiver = (
+    r'(?<![A-Za-z0-9_])browser(?:_|\s*\(\s*\))?\s*->\s*window\s*\(\s*\)'
+  )
+  call_pattern = input_api.re.compile(receiver)
+  # If the call is `<receiver>->X(` where X is on ui::BaseWindow,
+  # _CheckNoNewBrowserWindowGetter already warns; skip to avoid duplicates.
+  base_window_chain_pattern = input_api.re.compile(
+    receiver + r'\s*->\s*(?:' + '|'.join(_BASE_WINDOW_METHODS) + r')\s*\('
+  )
+  comment_pattern = input_api.re.compile(r'^\s*//')
+
+  def is_excluded(local_path):
+    unix_path = local_path.replace('\\', '/')
+    return unix_path in allowed_files
+
+  problems = []
+  for f in input_api.AffectedFiles():
+    local_path = f.LocalPath()
+    if not local_path.endswith(('.cc', '.h', '.mm')):
+      continue
+    if is_excluded(local_path):
+      continue
+    for line_num, line in f.ChangedContents():
+      if not call_pattern.search(line):
+        continue
+      if base_window_chain_pattern.search(line):
+        continue
+      if comment_pattern.match(line):
+        continue
+      if line.rstrip().endswith(' nocheck'):
+        continue
+      problems.append('    %s:%d' % (local_path.replace('\\', '/'), line_num))
+
+  if not problems:
+    return []
+  return [
+    output_api.PresubmitPromptWarning(
+      'Browser::window() is being eliminated '
+      '(https://crbug.com/496674143). Prefer '
+      'BrowserWindow::FromBrowser(browser) as a drop-in replacement, '
+      'or call BrowserView::GetBrowserViewForBrowser(browser) / '
+      'WebUIBrowserWindow::FromBrowser(browser) when the concrete '
+      'subclass is needed. For methods declared on ui::BaseWindow, '
+      'prefer Browser::GetWindow() instead.\n'
+      'If the matched call is on an unrelated class whose window() '
+      'method happens to share a name, append "// nocheck" to the '
+      'line or add the file to the allowlist in '
+      'chrome/browser/PRESUBMIT.py.\n' + '\n'.join(problems)
     )
-
-    # Matches `browser->window()`, `browser_->window()`, or
-    # `browser()->window()`, tolerating whitespace. The `(?<![A-Za-z0-9_])`
-    # lookbehind prevents matching identifiers that merely end with
-    # `browser` (e.g. `my_browser`, `new_browser`, `GetBrowser`).
-    receiver = r'(?<![A-Za-z0-9_])browser(?:_|\s*\(\s*\))?\s*->\s*window\s*\(\s*\)'
-    call_pattern = input_api.re.compile(receiver)
-    # If the call is `<receiver>->X(` where X is on ui::BaseWindow,
-    # _CheckNoNewBrowserWindowGetter already warns; skip to avoid duplicates.
-    base_window_chain_pattern = input_api.re.compile(
-        receiver + r'\s*->\s*(?:' + '|'.join(_BASE_WINDOW_METHODS) +
-        r')\s*\(')
-    comment_pattern = input_api.re.compile(r'^\s*//')
-
-    def is_excluded(local_path):
-        unix_path = local_path.replace('\\', '/')
-        return unix_path in allowed_files
-
-    problems = []
-    for f in input_api.AffectedFiles():
-        local_path = f.LocalPath()
-        if not local_path.endswith(('.cc', '.h', '.mm')):
-            continue
-        if is_excluded(local_path):
-            continue
-        for line_num, line in f.ChangedContents():
-            if not call_pattern.search(line):
-                continue
-            if base_window_chain_pattern.search(line):
-                continue
-            if comment_pattern.match(line):
-                continue
-            if line.rstrip().endswith(' nocheck'):
-                continue
-            problems.append('    %s:%d' %
-                            (local_path.replace('\\', '/'), line_num))
-
-    if not problems:
-        return []
-    return [
-        output_api.PresubmitPromptWarning(
-            'Browser::window() is being eliminated '
-            '(https://crbug.com/496674143). Prefer '
-            'BrowserWindow::FromBrowser(browser) as a drop-in replacement, '
-            'or call BrowserView::GetBrowserViewForBrowser(browser) / '
-            'WebUIBrowserWindow::FromBrowser(browser) when the concrete '
-            'subclass is needed. For methods declared on ui::BaseWindow, '
-            'prefer Browser::GetWindow() instead.\n'
-            'If the matched call is on an unrelated class whose window() '
-            'method happens to share a name, append "// nocheck" to the '
-            'line or add the file to the allowlist in '
-            'chrome/browser/PRESUBMIT.py.\n' +
-            '\n'.join(problems))
-    ]
+  ]
 
 
 ###############################################################################
@@ -575,8 +617,8 @@ def _CheckNoNewBrowserWindowMemberCall(input_api, output_api):
 #   class FooTest : public BrowserWithTestWindowTest { ... };
 #   class BarTest : public TestWithBrowserView { ... };
 _BEDROCK_BANNED_FIXTURE_CLASSES = (
-    'BrowserWithTestWindowTest',
-    'TestWithBrowserView',
+  'BrowserWithTestWindowTest',
+  'TestWithBrowserView',
 )
 
 # Header includes banned in desktop unit tests (Project Bedrock).
@@ -586,329 +628,358 @@ _BEDROCK_BANNED_FIXTURE_CLASSES = (
 #   #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #   #include "chrome/test/base/test_browser_window.h"
 _BEDROCK_BANNED_UNIT_TEST_INCLUDES = (
-    'chrome/test/base/browser_with_test_window_test.h',
-    'chrome/browser/ui/views/frame/test_with_browser_view.h',
-    'chrome/test/base/test_browser_window.h',
+  'chrome/test/base/browser_with_test_window_test.h',
+  'chrome/browser/ui/views/frame/test_with_browser_view.h',
+  'chrome/test/base/test_browser_window.h',
 )
 
 
 def _CheckNoNewBrowserUsage(input_api, output_api):
-    """Bans direct Browser class usage, browser.h includes, and
-    monolithic browser test fixtures/headers in desktop unit tests under
-    chrome/browser/ as part of Project Bedrock.
+  """Bans direct Browser class usage, browser.h includes, and
+  monolithic browser test fixtures/headers in desktop unit tests under
+  chrome/browser/ as part of Project Bedrock.
 
-    All window functionality is available via BrowserWindowInterface
-    (chrome/browser/ui/browser_window/public/
-    browser_window_interface.h).
-    """
-    bad_include_pattern = input_api.re.compile(
-        r'#include\s*["<]chrome/browser/ui/browser\.h[">]')
-    browser_class_pattern = input_api.re.compile(r'\bBrowser\b')
-    banned_unit_test_include_pattern = input_api.re.compile(
-        r'#include\s*["<](' +
-        '|'.join(input_api.re.escape(h)
-                 for h in _BEDROCK_BANNED_UNIT_TEST_INCLUDES) + r')[">]')
-    banned_fixture_pattern = input_api.re.compile(
-        r'\bpublic\s+(?:::)?(' +
-        '|'.join(input_api.re.escape(c)
-                 for c in _BEDROCK_BANNED_FIXTURE_CLASSES) + r')\b')
-    comment_pattern = input_api.re.compile(r'^\s*(//|/\*|\*)')
-    string_literal_pattern = input_api.re.compile(r'"(\\.|[^"\\])*"')
+  All window functionality is available via BrowserWindowInterface
+  (chrome/browser/ui/browser_window/public/
+  browser_window_interface.h).
+  """
+  bad_include_pattern = input_api.re.compile(
+    r'#include\s*["<]chrome/browser/ui/browser\.h[">]'
+  )
+  browser_class_pattern = input_api.re.compile(r'\bBrowser\b')
+  banned_unit_test_include_pattern = input_api.re.compile(
+    r'#include\s*["<]('
+    + '|'.join(
+      input_api.re.escape(h) for h in _BEDROCK_BANNED_UNIT_TEST_INCLUDES
+    )
+    + r')[">]'
+  )
+  banned_fixture_pattern = input_api.re.compile(
+    r'\bpublic\s+(?:::)?('
+    + '|'.join(input_api.re.escape(c) for c in _BEDROCK_BANNED_FIXTURE_CLASSES)
+    + r')\b'
+  )
+  comment_pattern = input_api.re.compile(r'^\s*(//|/\*|\*)')
+  string_literal_pattern = input_api.re.compile(r'"(\\.|[^"\\])*"')
 
-    problems = []
-    for f in input_api.AffectedFiles(include_deletes=False):
-        local_path = f.LocalPath().replace('\\', '/')
+  problems = []
+  for f in input_api.AffectedFiles(include_deletes=False):
+    local_path = f.LocalPath().replace('\\', '/')
 
-        # Only evaluate C++ source and header files.
-        if not local_path.endswith(('.cc', '.h', '.mm')):
-            continue
+    # Only evaluate C++ source and header files.
+    if not local_path.endswith(('.cc', '.h', '.mm')):
+      continue
 
-        is_browser_header_allowed = local_path in _BROWSER_HEADER_ALLOWED_PATHS
-        is_browser_usage_excluded = local_path in _BROWSER_USAGE_EXCLUDED_PATHS
+    is_browser_header_allowed = local_path in _BROWSER_HEADER_ALLOWED_PATHS
+    is_browser_usage_excluded = local_path in _BROWSER_USAGE_EXCLUDED_PATHS
 
-        # If both header include and class usage are allowed, skip entirely.
-        if is_browser_header_allowed and is_browser_usage_excluded:
-            continue
+    # If both header include and class usage are allowed, skip entirely.
+    if is_browser_header_allowed and is_browser_usage_excluded:
+      continue
 
-        # Determine if the file is a desktop unit test (excluding Ash
-        # and ChromeOS; Android does not compile Browser /
-        # BrowserWithTestWindowTest).
-        is_desktop_unit_test = (
-            (local_path.endswith('_unittest.cc') or
-             local_path.endswith('_unittest.h')) and
-            '/ash/' not in local_path and
-            '/chromeos/' not in local_path)
+    # Determine if the file is a desktop unit test (excluding Ash
+    # and ChromeOS; Android does not compile Browser /
+    # BrowserWithTestWindowTest).
+    is_desktop_unit_test = (
+      (
+        local_path.endswith('_unittest.cc')
+        or local_path.endswith('_unittest.h')
+      )
+      and '/ash/' not in local_path
+      and '/chromeos/' not in local_path
+    )
 
-        for line_num, line in f.ChangedContents():
-            # Skip whole-line comments (//, /*, *).
-            if comment_pattern.match(line):
-                continue
+    for line_num, line in f.ChangedContents():
+      # Skip whole-line comments (//, /*, *).
+      if comment_pattern.match(line):
+        continue
 
-            # Check for direct include of chrome/browser/ui/browser.h.
-            # browser.h includes are prohibited for all client code and
-            # cannot be bypassed with '// nocheck'.
-            if not is_browser_header_allowed and bad_include_pattern.search(
-                    line):
-                problems.append('    %s:%d' % (local_path, line_num))
-                continue
+      # Check for direct include of chrome/browser/ui/browser.h.
+      # browser.h includes are prohibited for all client code and
+      # cannot be bypassed with '// nocheck'.
+      if not is_browser_header_allowed and bad_include_pattern.search(line):
+        problems.append('    %s:%d' % (local_path, line_num))
+        continue
 
-            # Skip files that legitimately declare, implement, or construct
-            # Browser.
-            if is_browser_usage_excluded:
-                continue
+      # Skip files that legitimately declare, implement, or construct
+      # Browser.
+      if is_browser_usage_excluded:
+        continue
 
-            # Skip lines explicitly annotated with the '// nocheck'
-            # escape hatch.
-            if input_api.re.search(r'//\s*nocheck', line):
-                continue
+      # Skip lines explicitly annotated with the '// nocheck'
+      # escape hatch.
+      if input_api.re.search(r'//\s*nocheck', line):
+        continue
 
-            # For desktop unit tests, check for banned monolithic test
-            # headers and fixtures.
-            if is_desktop_unit_test:
-                # Strip inline comments before inspecting code content.
-                code_line = line.split('//')[0]
-                if (banned_unit_test_include_pattern.search(code_line) or
-                        banned_fixture_pattern.search(code_line)):
-                    problems.append('    %s:%d' % (local_path, line_num))
-                    continue
+      # For desktop unit tests, check for banned monolithic test
+      # headers and fixtures.
+      if is_desktop_unit_test:
+        # Strip inline comments before inspecting code content.
+        code_line = line.split('//')[0]
+        if banned_unit_test_include_pattern.search(
+          code_line
+        ) or banned_fixture_pattern.search(code_line):
+          problems.append('    %s:%d' % (local_path, line_num))
+          continue
 
-            # Strip inline comments and string literals to avoid false
-            # positives.
-            code_line = line.split('//')[0]
-            code_without_strings = string_literal_pattern.sub('""', code_line)
+      # Strip inline comments and string literals to avoid false
+      # positives.
+      code_line = line.split('//')[0]
+      code_without_strings = string_literal_pattern.sub('""', code_line)
 
-            # Check for usage of the Browser class.
-            if browser_class_pattern.search(code_without_strings):
-                problems.append('    %s:%d' % (local_path, line_num))
+      # Check for usage of the Browser class.
+      if browser_class_pattern.search(code_without_strings):
+        problems.append('    %s:%d' % (local_path, line_num))
 
-    # Return empty list if no violations were found.
-    if not problems:
-        return []
+  # Return empty list if no violations were found.
+  if not problems:
+    return []
 
-    # Return a unified PresubmitError with Bedrock best-practice
-    # guidance.
-    return [
-        output_api.PresubmitError(
-            'Direct usage of the Browser class, including browser.h, and '
-            'monolithic\nbrowser test fixtures/headers '
-            '(BrowserWithTestWindowTest,\nTestWithBrowserView, '
-            'test_browser_window.h) is prohibited as part\nof Project '
-            'Bedrock.\n\n'
-            'Please use modern interfaces and focused test doubles '
-            'instead:\n'
-            '  - BrowserWindowInterface / MockBrowserWindowInterface for '
-            'window\n    interactions\n'
-            '  - TabInterface for tab-level interactions\n'
-            '  - ChromeRenderViewHostTestHarness or testing::Test for unit '
-            'test\n    fixtures\n'
-            '  - InProcessBrowserTest for integration / browser tests\n'
-            '    (in *_browsertest.cc)\n\n'
-            'If an exception is required, append "// nocheck" to the line '
-            '(for Browser\nclass usage or test fixtures only; browser.h '
-            'includes cannot be\nbypassed) or add the file to '
-            '_BROWSER_USAGE_EXCLUDED_PATHS in\nchrome/browser/PRESUBMIT.py.\n' +
-            '\n'.join(problems))
-    ]
+  # Return a unified PresubmitError with Bedrock best-practice
+  # guidance.
+  return [
+    output_api.PresubmitError(
+      'Direct usage of the Browser class, including browser.h, and '
+      'monolithic\nbrowser test fixtures/headers '
+      '(BrowserWithTestWindowTest,\nTestWithBrowserView, '
+      'test_browser_window.h) is prohibited as part\nof Project '
+      'Bedrock.\n\n'
+      'Please use modern interfaces and focused test doubles '
+      'instead:\n'
+      '  - BrowserWindowInterface / MockBrowserWindowInterface for '
+      'window\n    interactions\n'
+      '  - TabInterface for tab-level interactions\n'
+      '  - ChromeRenderViewHostTestHarness or testing::Test for unit '
+      'test\n    fixtures\n'
+      '  - InProcessBrowserTest for integration / browser tests\n'
+      '    (in *_browsertest.cc)\n\n'
+      'If an exception is required, append "// nocheck" to the line '
+      '(for Browser\nclass usage or test fixtures only; browser.h '
+      'includes cannot be\nbypassed) or add the file to '
+      '_BROWSER_USAGE_EXCLUDED_PATHS in\nchrome/browser/PRESUBMIT.py.\n'
+      + '\n'.join(problems)
+    )
+  ]
 
 
 ###############################################################################
 # Check if all flag_descriptions are used from about_flags (cleanup)
 ###############################################################################
 
-FLAG_DESCRIPTIONS  = 'chrome/browser/flag_descriptions.h'
-ABOUT_FLAGS        = 'chrome/browser/about_flags.cc'
+FLAG_DESCRIPTIONS = 'chrome/browser/flag_descriptions.h'
+ABOUT_FLAGS = 'chrome/browser/about_flags.cc'
 IDENTIFIER_FLAG_RE = re.compile(r'\bk[A-Z][A-Za-z0-9]+\b')
-PREPROCESSOR_RE    = re.compile(r'^#if(?!ndef CHROME_BROWSER)', re.MULTILINE)
+PREPROCESSOR_RE = re.compile(r'^#if(?!ndef CHROME_BROWSER)', re.MULTILINE)
+
 
 def _ReadFile(input_api, relpath: str):
-    root = input_api.change.RepositoryRoot()
-    abspath = os.path.join(root, relpath)
-    with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
-        return f.read()
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return f.read()
+
 
 def _NaiveExtractIdentifiers(text: str) -> set[str]:
-    return set(IDENTIFIER_FLAG_RE.findall(text))
+  return set(IDENTIFIER_FLAG_RE.findall(text))
+
 
 def _ReadIdentifiersFromFile(input_api, relpath: str):
-    root = input_api.change.RepositoryRoot()
-    abspath = os.path.join(root, relpath)
-    with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
-        return set(IDENTIFIER_FLAG_RE.findall(f.read()))
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return set(IDENTIFIER_FLAG_RE.findall(f.read()))
+
 
 def _FlagFilesHaveChanged(input_api) -> bool:
-    """ Detect if any of the files of interest have changed. """
-    flag_files = {FLAG_DESCRIPTIONS, ABOUT_FLAGS}
-    for f in input_api.AffectedFiles(include_deletes=False):
-        if f.LocalPath().replace('\\', '/') in flag_files:
-            return True
-    return False
+  """Detect if any of the files of interest have changed."""
+  flag_files = {FLAG_DESCRIPTIONS, ABOUT_FLAGS}
+  for f in input_api.AffectedFiles(include_deletes=False):
+    if f.LocalPath().replace('\\', '/') in flag_files:
+      return True
+  return False
+
 
 def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
-    result = []
+  result = []
 
-    fd_content = _ReadFile(input_api, FLAG_DESCRIPTIONS)
-    about_content = _ReadFile(input_api, ABOUT_FLAGS)
+  fd_content = _ReadFile(input_api, FLAG_DESCRIPTIONS)
+  about_content = _ReadFile(input_api, ABOUT_FLAGS)
 
-    fd_idents = _NaiveExtractIdentifiers(fd_content)
-    about_idents = _NaiveExtractIdentifiers(about_content)
+  fd_idents = _NaiveExtractIdentifiers(fd_content)
+  about_idents = _NaiveExtractIdentifiers(about_content)
 
-    redundant_idents = sorted(list(fd_idents - about_idents))
-    if len(redundant_idents) > 0:
-        result.append(
-            output_api.PresubmitError(
-                'The following flag_descriptions.h identifiers are no longer '
-                'needed and should be removed:\n\t- ' +
-                '\n\t- '.join(redundant_idents)))
+  redundant_idents = sorted(list(fd_idents - about_idents))
+  if len(redundant_idents) > 0:
+    result.append(
+      output_api.PresubmitError(
+        'The following flag_descriptions.h identifiers are no longer '
+        'needed and should be removed:\n\t- ' + '\n\t- '.join(redundant_idents)
+      )
+    )
 
-    # Check for newly added #if(defined) -- can't have #else/#elif/#endif
-    # without #if, so no need to look for that.
-    if PREPROCESSOR_RE.search(fd_content):
-        result.append(
-            output_api.PresubmitError(
-                'Preprocessor conditional directives should not be used in {}'.
-                format(FLAG_DESCRIPTIONS)))
+  # Check for newly added #if(defined) -- can't have #else/#elif/#endif
+  # without #if, so no need to look for that.
+  if PREPROCESSOR_RE.search(fd_content):
+    result.append(
+      output_api.PresubmitError(
+        'Preprocessor conditional directives should not be used in {}'.format(
+          FLAG_DESCRIPTIONS
+        )
+      )
+    )
 
-    # TODO: check if fd_flags are sorted.
+  # TODO: check if fd_flags are sorted.
 
-    return result
+  return result
+
 
 def _CheckForOrphanedFlagMetadata(input_api, output_api):
-    flag_tools_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                            'tools', 'flags')
-    script_path = input_api.os_path.join(flag_tools_dir, 'lint_flags.py')
-    cmd = [input_api.python3_executable, script_path]
+  flag_tools_dir = input_api.os_path.join(
+    input_api.change.RepositoryRoot(), 'tools', 'flags'
+  )
+  script_path = input_api.os_path.join(flag_tools_dir, 'lint_flags.py')
+  cmd = [input_api.python3_executable, script_path]
 
-    # Use Command API so that the check can run concurrently when --parallel
-    # is used.
-    return input_api.RunTests([
-        input_api.Command(
-            name='CheckForOrphanedFlagMetadata',
-            cmd=cmd,
-            kwargs={'cwd': flag_tools_dir},
-            message=output_api.PresubmitError
-        )
-    ])
+  # Use Command API so that the check can run concurrently when --parallel
+  # is used.
+  return input_api.RunTests(
+    [
+      input_api.Command(
+        name='CheckForOrphanedFlagMetadata',
+        cmd=cmd,
+        kwargs={'cwd': flag_tools_dir},
+        message=output_api.PresubmitError,
+      )
+    ]
+  )
+
 
 def _CheckNewDirectoryHasBuildGn(input_api, output_api):
-    """Checks that any new direct subdirectory under chrome/browser or
-    chrome/browser/ui has a BUILD.gn.
-    See docs/chrome_browser_design_principles.md for details.
-    """
-    affected_files = list(input_api.AffectedFiles(include_deletes=False))
-    added_files = set(f.LocalPath() for f in affected_files
-                      if f.Action() == 'A')
-    files_in_cl = set(f.LocalPath() for f in affected_files)
+  """Checks that any new direct subdirectory under chrome/browser or
+  chrome/browser/ui has a BUILD.gn.
+  See docs/chrome_browser_design_principles.md for details.
+  """
+  affected_files = list(input_api.AffectedFiles(include_deletes=False))
+  added_files = set(f.LocalPath() for f in affected_files if f.Action() == 'A')
+  files_in_cl = set(f.LocalPath() for f in affected_files)
 
-    missing_build_gn_dirs = []
-    repo_root = input_api.change.RepositoryRoot()
+  missing_build_gn_dirs = []
+  repo_root = input_api.change.RepositoryRoot()
 
-    # Directories where files are being added.
-    dirs_of_added_files = set(
-        input_api.os_path.dirname(f) for f in added_files)
+  # Directories where files are being added.
+  dirs_of_added_files = set(input_api.os_path.dirname(f) for f in added_files)
 
-    for d in dirs_of_added_files:
-        # Only verify direct subdirectories of chrome/browser or
-        # chrome/browser/ui.
-        if input_api.os_path.dirname(d).replace('\\', '/') not in (
-                'chrome/browser', 'chrome/browser/ui'):
-            continue
+  for d in dirs_of_added_files:
+    # Only verify direct subdirectories of chrome/browser or
+    # chrome/browser/ui.
+    if input_api.os_path.dirname(d).replace('\\', '/') not in (
+      'chrome/browser',
+      'chrome/browser/ui',
+    ):
+      continue
 
-        # If BUILD.gn is in the CL or already on disk, we're good.
-        build_gn_path = input_api.os_path.join(d, 'BUILD.gn')
-        if build_gn_path in files_in_cl or input_api.os_path.exists(
-                input_api.os_path.join(repo_root, build_gn_path)):
-            continue
+    # If BUILD.gn is in the CL or already on disk, we're good.
+    build_gn_path = input_api.os_path.join(d, 'BUILD.gn')
+    if build_gn_path in files_in_cl or input_api.os_path.exists(
+      input_api.os_path.join(repo_root, build_gn_path)
+    ):
+      continue
 
-        # Check if the directory is new. It's new if all files in it
-        # (according to glob) are being added in this CL.
-        files_in_dir = input_api.glob(input_api.os_path.join(
-            repo_root, d, '*'))
-        is_new_dir = True
-        for f_abs in files_in_dir:
-            if input_api.os_path.isfile(f_abs):
-                f_rel = input_api.os_path.relpath(f_abs, repo_root)
-                if f_rel not in added_files:
-                    is_new_dir = False
-                    break
+    # Check if the directory is new. It's new if all files in it
+    # (according to glob) are being added in this CL.
+    files_in_dir = input_api.glob(input_api.os_path.join(repo_root, d, '*'))
+    is_new_dir = True
+    for f_abs in files_in_dir:
+      if input_api.os_path.isfile(f_abs):
+        f_rel = input_api.os_path.relpath(f_abs, repo_root)
+        if f_rel not in added_files:
+          is_new_dir = False
+          break
 
-        if is_new_dir:
-            missing_build_gn_dirs.append(d)
+    if is_new_dir:
+      missing_build_gn_dirs.append(d)
 
-    if missing_build_gn_dirs:
-        return [
-            output_api.PresubmitPromptWarning(
-                'New direct subdirectories of chrome/browser or '
-                'chrome/browser/ui must have a BUILD.gn file.',
-                items=sorted(missing_build_gn_dirs))
-        ]
+  if missing_build_gn_dirs:
+    return [
+      output_api.PresubmitPromptWarning(
+        'New direct subdirectories of chrome/browser or '
+        'chrome/browser/ui must have a BUILD.gn file.',
+        items=sorted(missing_build_gn_dirs),
+      )
+    ]
 
-    return []
+  return []
+
 
 def _CheckNoNewProfileIDPrefixes(input_api, output_api):
-    """Makes sure developers don't add new profile ID prefixes."""
-    problems = []
+  """Makes sure developers don't add new profile ID prefixes."""
+  problems = []
 
-    def FileFilter(affected_file):
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=[
-                r'chrome[/\\]browser[/\\]profiles[/\\]profile\.cc'
-            ])
+  def FileFilter(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=[r'chrome[/\\]browser[/\\]profiles[/\\]profile\.cc'],
+    )
 
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=FileFilter):
-        for line_num, line in f.ChangedContents():
-            if input_api.re.search(r'char\s+k[A-Za-z0-9_]+ProfileIDPrefix\[\]',
-                                   line):
-                problems.append('  %s:%d:%s' %
-                                (f.LocalPath(), line_num, line.strip()))
+  for f in input_api.AffectedFiles(
+    include_deletes=False, file_filter=FileFilter
+  ):
+    for line_num, line in f.ChangedContents():
+      if input_api.re.search(r'char\s+k[A-Za-z0-9_]+ProfileIDPrefix\[\]', line):
+        problems.append('  %s:%d:%s' % (f.LocalPath(), line_num, line.strip()))
 
-    if not problems:
-        return []
+  if not problems:
+    return []
 
-    WARNING_MSG = (
-        'Adding new Profile ID prefixes is strongly discouraged.\n'
-        'Please avoid adding new prefixes and associated custom logic\n'
-        'for Profile differentiated by such prefixes.')
-    return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+  WARNING_MSG = (
+    'Adding new Profile ID prefixes is strongly discouraged.\n'
+    'Please avoid adding new prefixes and associated custom logic\n'
+    'for Profile differentiated by such prefixes.'
+  )
+  return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
 
 
 ###############################################################################
 # Presubmit aggregator
 ###############################################################################
 
-def _CommonChecks(input_api, output_api):
-    """Checks common to both upload and commit."""
-    results = []
-    results.extend(_CheckHighTrafficBuildGnFormatted(input_api, output_api))
-    results.extend(_CheckNewDirectoryHasBuildGn(input_api, output_api))
-    results.extend(
-        _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
-            input_api, output_api))
-    results.extend(_CheckNoNewProfileIDPrefixes(input_api, output_api))
-    results.extend(_CheckUnwantedDependencies(input_api, output_api))
-    results.extend(
-        _RunHistogramChecks(input_api, output_api, "BadMessageReasonChrome"))
-    results.extend(
-        _CheckNoInteractiveUiTestLibInNonInteractiveUiTest(
-            input_api, output_api))
-    results.extend(_CheckForUselessExterns(input_api, output_api))
-    results.extend(_CheckBuildFilesForIndirectAshSources(
-        input_api, output_api))
-    results.extend(_CheckSourcesForBadIncludes(input_api, output_api))
-    results.extend(_CheckNoNewBrowserWindowGetter(input_api, output_api))
-    results.extend(_CheckNoNewBrowserWindowMemberCall(input_api, output_api))
-    results.extend(_CheckNoNewBrowserUsage(input_api, output_api))
 
-    if _FlagFilesHaveChanged(input_api):
-        results.extend(
-            _CheckForUnwantedFlagDescriptionContent(input_api, output_api))
-        results.extend(_CheckForOrphanedFlagMetadata(input_api, output_api))
-    return results
+def _CommonChecks(input_api, output_api):
+  """Checks common to both upload and commit."""
+  results = []
+  results.extend(_CheckHighTrafficBuildGnFormatted(input_api, output_api))
+  results.extend(_CheckNewDirectoryHasBuildGn(input_api, output_api))
+  results.extend(
+    _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
+      input_api, output_api
+    )
+  )
+  results.extend(_CheckNoNewProfileIDPrefixes(input_api, output_api))
+  results.extend(_CheckUnwantedDependencies(input_api, output_api))
+  results.extend(
+    _RunHistogramChecks(input_api, output_api, "BadMessageReasonChrome")
+  )
+  results.extend(
+    _CheckNoInteractiveUiTestLibInNonInteractiveUiTest(input_api, output_api)
+  )
+  results.extend(_CheckForUselessExterns(input_api, output_api))
+  results.extend(_CheckBuildFilesForIndirectAshSources(input_api, output_api))
+  results.extend(_CheckSourcesForBadIncludes(input_api, output_api))
+  results.extend(_CheckNoNewBrowserWindowGetter(input_api, output_api))
+  results.extend(_CheckNoNewBrowserWindowMemberCall(input_api, output_api))
+  results.extend(_CheckNoNewBrowserUsage(input_api, output_api))
+
+  if _FlagFilesHaveChanged(input_api):
+    results.extend(
+      _CheckForUnwantedFlagDescriptionContent(input_api, output_api)
+    )
+    results.extend(_CheckForOrphanedFlagMetadata(input_api, output_api))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)

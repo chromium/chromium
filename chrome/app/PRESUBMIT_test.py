@@ -27,9 +27,11 @@ def _stub_rhs_lines(input_api, tuples):
 
   `tuples`: iterable of (MockFile, line_num, line_text)
   """
+
   def _rhs(file_filter):
     # Respect the file_filter the checker passes in.
     return [(f, ln, lt) for (f, ln, lt) in tuples if file_filter(f)]
+
   input_api.RightHandSideLines = _rhs
 
 
@@ -49,10 +51,12 @@ class CheckNoLiteralBrandNamesTest(unittest.TestCase):
     _stub_rhs_lines(input_api, [(mock_file, 3, lines[2])])
 
     out = PRESUBMIT._CheckNoLiteralBrandNamesInGeneratedResources(
-                      input_api, _MockOutputApi())
+      input_api, _MockOutputApi()
+    )
     self.assertEqual(1, len(out))
     self.assertIn(
-      "Hardcoded brand names found in generated_resources.grd:", str(out[0]))
+      "Hardcoded brand names found in generated_resources.grd:", str(out[0])
+    )
     # The following line is the corrected part.
     # The check flags line 1, so the test should assert for line 1.
     self.assertIn("chrome/app/generated_resources.grd:1", str(out[0]))
@@ -70,7 +74,8 @@ class CheckNoLiteralBrandNamesTest(unittest.TestCase):
     _stub_rhs_lines(input_api, [(mock_file, 3, lines[2])])
 
     out = PRESUBMIT._CheckNoLiteralBrandNamesInGeneratedResources(
-                      input_api, _MockOutputApi())
+      input_api, _MockOutputApi()
+    )
     self.assertEqual(1, len(out))
     self.assertIn("chromium", str(out[0]).lower())
 
@@ -88,8 +93,10 @@ class CheckNoLiteralBrandNamesTest(unittest.TestCase):
     _stub_rhs_lines(input_api, [(mock_file, 3, lines[2])])
 
     out = PRESUBMIT._CheckNoLiteralBrandNamesInGeneratedResources(
-                      input_api, _MockOutputApi())
+      input_api, _MockOutputApi()
+    )
     self.assertEqual([], out, msg=f"Unexpected result: {out}")
+
 
 if __name__ == '__main__':
   unittest.main()

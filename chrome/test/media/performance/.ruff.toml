@@ -1,0 +1,5 @@
+line-length = 80
+indent-width = 4
+
+[format]
+quote-style = "preserve"

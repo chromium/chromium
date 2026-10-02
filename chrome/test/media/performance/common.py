@@ -32,14 +32,30 @@ import camera
 from repeating_log import RepeatingLog
 
 from cros_setup import setup_cros_environment
-from media_metrics import (calculate_psnr_ssim, finalize_results,
-                           parse_glances_csv_and_record)
-from perf_config import (BUILD_UTIL_ROOT, CHROME_FUCHSIA_ROOT, CFT_JSON_URL,
-                         CHROMEDRIVER_PORT, LOCAL_HOST_IP, RECORDINGS_DIR,
-                         REMOTE_URL, REPO_ROOT, SERVER_PORT, TEST_SCRIPTS_ROOT,
-                         TRACES_DIR)
-from remote_transport import (RemoteDeviceError, SenderNotFoundError,
-                              SenderSshError, SenderUnreachableError)
+from media_metrics import (
+    calculate_psnr_ssim,
+    finalize_results,
+    parse_glances_csv_and_record,
+)
+from perf_config import (
+    BUILD_UTIL_ROOT,
+    CHROME_FUCHSIA_ROOT,
+    CFT_JSON_URL,
+    CHROMEDRIVER_PORT,
+    LOCAL_HOST_IP,
+    RECORDINGS_DIR,
+    REMOTE_URL,
+    REPO_ROOT,
+    SERVER_PORT,
+    TEST_SCRIPTS_ROOT,
+    TRACES_DIR,
+)
+from remote_transport import (
+    RemoteDeviceError,
+    SenderNotFoundError,
+    SenderSshError,
+    SenderUnreachableError,
+)
 from senders import WIN_REMOTE_TMP_DIR, make_sender
 # pylint: enable=import-error, wrong-import-position, unused-import
 
@@ -49,25 +65,21 @@ from senders import WIN_REMOTE_TMP_DIR, make_sender
 FAIL_CODE = -128
 
 METRICS = [
-    'smoothness', 'freezing', 'dropped_frame_count', 'total_frame_count',
-    'dropped_frame_percentage'
+    'smoothness',
+    'freezing',
+    'dropped_frame_count',
+    'total_frame_count',
+    'dropped_frame_percentage',
 ]
 
 # Framerate is now legacy data, but until our results are standardized we'll
 # maintain the data in case it's necessary to pass later.
-VIDEOS = [{
-    'name': '1080p30fpsAV1_foodmarket_sync.mp4',
-    'fps': 30
-}, {
-    'name': '1080p30fpsH264_foodmarket_yt_sync.mp4',
-    'fps': 30
-}, {
-    'name': '1080p60fpsHEVC_boat_yt_sync.mp4',
-    'fps': 60
-}, {
-    'name': '1080p60fpsVP9_boat_yt_sync.webm',
-    'fps': 60
-}]
+VIDEOS = [
+    {'name': '1080p30fpsAV1_foodmarket_sync.mp4', 'fps': 30},
+    {'name': '1080p30fpsH264_foodmarket_yt_sync.mp4', 'fps': 30},
+    {'name': '1080p60fpsHEVC_boat_yt_sync.mp4', 'fps': 60},
+    {'name': '1080p60fpsVP9_boat_yt_sync.webm', 'fps': 60},
+]
 
 
 class StartProcess(AbstractContextManager):
@@ -123,12 +135,15 @@ def teardown_recording_process(rec_proc):
             rec_proc.communicate(timeout=20)
             logging.info("Recording finished.")
         except subprocess.TimeoutExpired as e:
-            logging.warning("WARNING: Recording process timed out after 20 "
-                            "seconds. Terminating it now.")
+            logging.warning(
+                "WARNING: Recording process timed out after 20 "
+                "seconds. Terminating it now."
+            )
             rec_proc.terminate()
             rec_proc.wait()
-            raise RuntimeError("Recording process timed out and was "
-                               "forcefully terminated.") from e
+            raise RuntimeError(
+                "Recording process timed out and was forcefully terminated."
+            ) from e
 
 
 def teardown_test_environment(driver, tunnel_proc, args):
@@ -181,8 +196,10 @@ def start_glances_monitoring(args, csv_remote_path):
     return make_sender(args).start_monitoring(csv_remote_path)
 
 
-def stop_glances_monitoring(args, glances_proc, csv_remote_path,
-                            csv_local_path):
+def stop_glances_monitoring(
+    args, glances_proc, csv_remote_path, csv_local_path
+):
     """Stops monitoring, copies its output here, and cleans up the sender."""
-    make_sender(args).stop_monitoring(glances_proc, csv_remote_path,
-                                      csv_local_path)
+    make_sender(args).stop_monitoring(
+        glances_proc, csv_remote_path, csv_local_path
+    )

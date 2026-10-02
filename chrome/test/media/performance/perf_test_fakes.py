@@ -25,16 +25,15 @@ PUBKEY_DENIED = f'{USER}@{MAC_HOST}: Permission denied (publickey).'
 
 
 def make_args(sender=MAC_HOST, username=USER, sender_os='mac'):
-    return types.SimpleNamespace(sender=sender,
-                                 username=username,
-                                 sender_os=sender_os)
+    return types.SimpleNamespace(
+        sender=sender, username=username, sender_os=sender_os
+    )
 
 
 def completed(returncode=0, stdout='', stderr=''):
-    return subprocess.CompletedProcess(args=['ssh'],
-                                       returncode=returncode,
-                                       stdout=stdout,
-                                       stderr=stderr)
+    return subprocess.CompletedProcess(
+        args=['ssh'], returncode=returncode, stdout=stdout, stderr=stderr
+    )
 
 
 def no_route():
@@ -80,14 +79,16 @@ class SenderTestCase(unittest.TestCase):
         self.addCleanup(remote_transport._preflight_results.clear)
         # pylint: enable=protected-access
 
-        self.getaddrinfo = self._patch('socket.getaddrinfo',
-                                       return_value=[
-                                           (socket.AF_INET, socket.SOCK_STREAM,
-                                            6, '', (IP, 22))
-                                       ])
+        self.getaddrinfo = self._patch(
+            'socket.getaddrinfo',
+            return_value=[
+                (socket.AF_INET, socket.SOCK_STREAM, 6, '', (IP, 22))
+            ],
+        )
         self.conn = mock.MagicMock()
-        self.create_connection = self._patch('socket.create_connection',
-                                             return_value=self.conn)
+        self.create_connection = self._patch(
+            'socket.create_connection', return_value=self.conn
+        )
         self.ssh = FakeSsh()
         self.run = self._patch('subprocess.run', side_effect=self.ssh)
         self.popen = self._patch('subprocess.Popen')
@@ -108,6 +109,7 @@ class SenderTestCase(unittest.TestCase):
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(remote_transport.SenderUnreachableError):
                 remote_transport.make_transport(
-                    args.sender, args.username).verify_connectivity()
+                    args.sender, args.username
+                ).verify_connectivity()
         self.run.reset_mock()
         self.ssh.remote_commands.clear()

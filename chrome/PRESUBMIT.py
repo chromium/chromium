@@ -8,16 +8,11 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-
 import re
 
-INCLUDE_CPP_FILES_ONLY = (
-  r'.*\.(cc|h)$',
-)
+INCLUDE_CPP_FILES_ONLY = (r'.*\.(cc|h)$',)
 
-INCLUDE_SOURCE_FILES_ONLY = (
-  r'.*\.(c|cc|cpp|h|m|mm)$',
-)
+INCLUDE_SOURCE_FILES_ONLY = (r'.*\.(c|cc|cpp|h|m|mm)$',)
 
 EXCLUDE = (
   # Objective C confuses everything.
@@ -34,304 +29,312 @@ EXCLUDE = (
   r'safe_browsing_util\.cc$',
 )
 
+
 def _CheckChangeLintsClean(input_api, output_api):
-    """Makes sure that the chrome/ code is cpplint clean."""
-    files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + EXCLUDE
-    sources = lambda x: input_api.FilterSourceFile(
-        x, files_to_check=INCLUDE_CPP_FILES_ONLY, files_to_skip=files_to_skip)
-    return input_api.canned_checks.CheckChangeLintsClean(
-        input_api, output_api, sources)
+  """Makes sure that the chrome/ code is cpplint clean."""
+  files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + EXCLUDE
+  sources = lambda x: input_api.FilterSourceFile(
+    x, files_to_check=INCLUDE_CPP_FILES_ONLY, files_to_skip=files_to_skip
+  )
+  return input_api.canned_checks.CheckChangeLintsClean(
+    input_api, output_api, sources
+  )
 
 
 def _CheckNoContentUnitTestsInChrome(input_api, output_api):
-    """Makes sure that unit_tests does not include unit tests from content/."""
-    problems = []
-    for f in input_api.AffectedFiles():
-        if not f.LocalPath().endswith('BUILD.gn'):
-            continue
+  """Makes sure that unit_tests does not include unit tests from content/."""
+  problems = []
+  for f in input_api.AffectedFiles():
+    if not f.LocalPath().endswith('BUILD.gn'):
+      continue
 
-        for line_num, line in f.ChangedContents():
-            m = re.search(r"'(.*\/content\/.*unittest.*)'", line)
-            if m:
-                problems.append(m.group(1))
+    for line_num, line in f.ChangedContents():
+      m = re.search(r"'(.*\/content\/.*unittest.*)'", line)
+      if m:
+        problems.append(m.group(1))
 
-    if not problems:
-        return []
-    return [
-        output_api.PresubmitPromptWarning(
-            'Unit tests located in content/ should be added to the ' +
-            'content_unittests target.',
-            items=problems)
-    ]
+  if not problems:
+    return []
+  return [
+    output_api.PresubmitPromptWarning(
+      'Unit tests located in content/ should be added to the '
+      + 'content_unittests target.',
+      items=problems,
+    )
+  ]
 
 
 def _CheckNoIsAppleBuildFlagsInChromeFile(input_api, f):
-    """Check for IS_APPLE in a given file in chrome/."""
-    preprocessor_statement = input_api.re.compile(r'^\s*#')
-    apple_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_APPLE\)')
-    results = []
-    for lnum, line in f.ChangedContents():
-        if preprocessor_statement.search(line) and apple_buildflag.search(
-                line):
-            results.append('    %s:%d' % (f.LocalPath(), lnum))
+  """Check for IS_APPLE in a given file in chrome/."""
+  preprocessor_statement = input_api.re.compile(r'^\s*#')
+  apple_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_APPLE\)')
+  results = []
+  for lnum, line in f.ChangedContents():
+    if preprocessor_statement.search(line) and apple_buildflag.search(line):
+      results.append('    %s:%d' % (f.LocalPath(), lnum))
 
-    return results
+  return results
 
 
 def _CheckNoIsAppleBuildFlagsInChrome(input_api, output_api):
-    """Check for IS_APPLE which isn't used in chrome/."""
-    apple_buildflags = []
+  """Check for IS_APPLE which isn't used in chrome/."""
+  apple_buildflags = []
 
-    def SourceFilter(affected_file):
-        return input_api.FilterSourceFile(affected_file,
-                                          INCLUDE_SOURCE_FILES_ONLY,
-                                          input_api.DEFAULT_FILES_TO_SKIP)
+  def SourceFilter(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file, INCLUDE_SOURCE_FILES_ONLY, input_api.DEFAULT_FILES_TO_SKIP
+    )
 
-    for f in input_api.AffectedSourceFiles(SourceFilter):
-        apple_buildflags.extend(
-            _CheckNoIsAppleBuildFlagsInChromeFile(input_api, f))
+  for f in input_api.AffectedSourceFiles(SourceFilter):
+    apple_buildflags.extend(_CheckNoIsAppleBuildFlagsInChromeFile(input_api, f))
 
-    if not apple_buildflags:
-        return []
+  if not apple_buildflags:
+    return []
 
-    return [
-        output_api.PresubmitError(
-            'IS_APPLE is not used in chrome/ but found in:\n',
-            apple_buildflags)
-    ]
+  return [
+    output_api.PresubmitError(
+      'IS_APPLE is not used in chrome/ but found in:\n', apple_buildflags
+    )
+  ]
 
 
 def _CheckNoIsFuchsiaBuildFlagsInChromeFile(input_api, f):
-    """Check for IS_FUCHSIA in a given file in chrome/."""
-    preprocessor_statement = input_api.re.compile(r'^\s*#')
-    fuchsia_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_FUCHSIA\)')
-    results = []
-    for lnum, line in f.ChangedContents():
-        if preprocessor_statement.search(line) and fuchsia_buildflag.search(
-                line):
-            results.append('    %s:%d' % (f.LocalPath(), lnum))
+  """Check for IS_FUCHSIA in a given file in chrome/."""
+  preprocessor_statement = input_api.re.compile(r'^\s*#')
+  fuchsia_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_FUCHSIA\)')
+  results = []
+  for lnum, line in f.ChangedContents():
+    if preprocessor_statement.search(line) and fuchsia_buildflag.search(line):
+      results.append('    %s:%d' % (f.LocalPath(), lnum))
 
-    return results
+  return results
 
 
 def _CheckNoIsFuchsiaBuildFlagsInChrome(input_api, output_api):
-    """Check for IS_FUCHSIA which isn't used in chrome/."""
-    fuchsia_buildflags = []
+  """Check for IS_FUCHSIA which isn't used in chrome/."""
+  fuchsia_buildflags = []
 
-    def SourceFilter(affected_file):
-        return input_api.FilterSourceFile(affected_file,
-                                          INCLUDE_SOURCE_FILES_ONLY,
-                                          input_api.DEFAULT_FILES_TO_SKIP)
+  def SourceFilter(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file, INCLUDE_SOURCE_FILES_ONLY, input_api.DEFAULT_FILES_TO_SKIP
+    )
 
-    for f in input_api.AffectedSourceFiles(SourceFilter):
-        fuchsia_buildflags.extend(
-            _CheckNoIsFuchsiaBuildFlagsInChromeFile(input_api, f))
+  for f in input_api.AffectedSourceFiles(SourceFilter):
+    fuchsia_buildflags.extend(
+      _CheckNoIsFuchsiaBuildFlagsInChromeFile(input_api, f)
+    )
 
-    if not fuchsia_buildflags:
-        return []
+  if not fuchsia_buildflags:
+    return []
 
-    return [
-        output_api.PresubmitError(
-            'IS_FUCHSIA is not used in chrome/ but found in:\n',
-            fuchsia_buildflags)
-    ]
+  return [
+    output_api.PresubmitError(
+      'IS_FUCHSIA is not used in chrome/ but found in:\n', fuchsia_buildflags
+    )
+  ]
 
 
 def _CheckNoIsIOSBuildFlagsInChromeFile(input_api, f):
-    """Check for IS_IOS in a given file in chrome/."""
-    preprocessor_statement = input_api.re.compile(r'^\s*#')
-    ios_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_IOS\)')
-    results = []
-    for lnum, line in f.ChangedContents():
-        if preprocessor_statement.search(line) and ios_buildflag.search(line):
-            results.append('    %s:%d' % (f.LocalPath(), lnum))
+  """Check for IS_IOS in a given file in chrome/."""
+  preprocessor_statement = input_api.re.compile(r'^\s*#')
+  ios_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_IOS\)')
+  results = []
+  for lnum, line in f.ChangedContents():
+    if preprocessor_statement.search(line) and ios_buildflag.search(line):
+      results.append('    %s:%d' % (f.LocalPath(), lnum))
 
-    return results
+  return results
 
 
 def _CheckNoIsIOSBuildFlagsInChrome(input_api, output_api):
-    """Check for IS_IOS which isn't used in chrome/."""
-    ios_buildflags = []
+  """Check for IS_IOS which isn't used in chrome/."""
+  ios_buildflags = []
 
-    def SourceFilter(affected_file):
-        return input_api.FilterSourceFile(affected_file,
-                                          INCLUDE_SOURCE_FILES_ONLY,
-                                          input_api.DEFAULT_FILES_TO_SKIP)
+  def SourceFilter(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file, INCLUDE_SOURCE_FILES_ONLY, input_api.DEFAULT_FILES_TO_SKIP
+    )
 
-    for f in input_api.AffectedSourceFiles(SourceFilter):
-        ios_buildflags.extend(_CheckNoIsIOSBuildFlagsInChromeFile(
-            input_api, f))
+  for f in input_api.AffectedSourceFiles(SourceFilter):
+    ios_buildflags.extend(_CheckNoIsIOSBuildFlagsInChromeFile(input_api, f))
 
-    if not ios_buildflags:
-        return []
+  if not ios_buildflags:
+    return []
 
-    return [
-        output_api.PresubmitError(
-            'IS_IOS is not used in chrome/ but found in:\n', ios_buildflags)
-    ]
+  return [
+    output_api.PresubmitError(
+      'IS_IOS is not used in chrome/ but found in:\n', ios_buildflags
+    )
+  ]
 
 
 def _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api):
-    files = []
-    breaking_version_installer_updated = False
+  files = []
+  breaking_version_installer_updated = False
 
-    def _FilterFile(affected_file):
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=input_api.DEFAULT_FILES_TO_CHECK +
-            (r'.*\.release', ))
+  def _FilterFile(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=input_api.DEFAULT_FILES_TO_CHECK + (r'.*\.release',),
+    )
 
-    for f in input_api.AffectedSourceFiles(_FilterFile):
-        # Normalize the local path to Linux-style path separators so that the
-        # path comparisons work on Windows as well.
-        local_path = f.LocalPath().replace('\\', '/')
-        breaking_version_installer_updated |= (
-            local_path ==
-            'chrome/installer/setup/last_breaking_installer_version.cc')
-        if (local_path == 'chrome/installer/mini_installer/chrome.release'
-                or local_path.startswith('chrome/test/mini_installer')):
-            files.append(local_path)
+  for f in input_api.AffectedSourceFiles(_FilterFile):
+    # Normalize the local path to Linux-style path separators so that the
+    # path comparisons work on Windows as well.
+    local_path = f.LocalPath().replace('\\', '/')
+    breaking_version_installer_updated |= (
+      local_path == 'chrome/installer/setup/last_breaking_installer_version.cc'
+    )
+    if (
+      local_path == 'chrome/installer/mini_installer/chrome.release'
+      or local_path.startswith('chrome/test/mini_installer')
+    ):
+      files.append(local_path)
 
-    if files and not breaking_version_installer_updated:
-        return [
-            output_api.PresubmitPromptWarning('''
+  if files and not breaking_version_installer_updated:
+    return [
+      output_api.PresubmitPromptWarning(
+        '''
 Update chrome/installer/setup/last_breaking_installer_version.cc if the changes
 found in the following files might break make downgrades not possible beyond
 this browser's version.''',
-                                              items=files)
-        ]
+        items=files,
+      )
+    ]
 
-    if not files and breaking_version_installer_updated:
-        return [
-            output_api.PresubmitPromptWarning('''
+  if not files and breaking_version_installer_updated:
+    return [
+      output_api.PresubmitPromptWarning('''
 No installer breaking changes detected but
 chrome/installer/setup/last_breaking_installer_version.cc was updated. Please
 update chrome/installer/PRESUBMIT.py if more files need to be watched for
 breaking installer changes.''')
-        ]
+    ]
 
-    return []
+  return []
 
 
 def _CheckNoBaseRunLoopInChrome(input_api, output_api):
-    """Check for base::RunLoop usage in chrome/ (production code only)."""
-    # These are files in //chrome that currently use base::RunLoop and are
-    # grandfathered in. New usages should be avoided.
-    allowed_files = [
-        'chrome/app_shim/app_shim_main_delegate.mm',
-        'chrome/browser/app_controller_mac.mm',
-        'chrome/browser/apps/app_service/app_registry_cache_waiter.h',
-        'chrome/browser/apps/app_service/browser_app_launcher.cc',
-        'chrome/browser/ash/accessibility/speech_monitor.cc',
-        'chrome/browser/ash/arc/session/arc_session_manager.cc',
-        'chrome/browser/ash/system_web_apps/system_web_app_manager.cc',
-        'chrome/browser/browser_process_impl.cc',
-        'chrome/browser/browser_switcher/ieem_sitelist_parser_fuzzer.cc',
-        'chrome/browser/btm/btm_browser_signin_detector_factory.h',
-        'chrome/browser/chrome_browser_main.cc',
-        'chrome/browser/chrome_browser_main.h',
-        'chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.cc',
-        'chrome/browser/extensions/blocked_action_waiter.h',
-        'chrome/browser/extensions/load_error_waiter.h',
-        'chrome/browser/extensions/startup_helper.cc',
-        'chrome/browser/first_run/first_run.cc',
-        'chrome/browser/first_run/first_run_internal_linux.cc',
-        'chrome/browser/lifetime/browser_shutdown.cc',
-        'chrome/browser/notifications/stub_notification_display_service.cc',
-        'chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.cc',
-        'chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h',
-        'chrome/browser/policy/extension_force_install_mixin.cc',
-        'chrome/browser/printing/print_job.cc',
-        'chrome/browser/printing/print_view_manager_base.cc',
-        'chrome/browser/profiles/keep_alive/profile_keep_alive_waiter.h',
-        'chrome/browser/profiles/profile_manager.cc',
-        'chrome/browser/sessions/session_restore.cc',
-        'chrome/browser/sessions/tab_restore_service_load_waiter.h',
-        'chrome/browser/ssl/ssl_client_auth_requestor_mock.h',
-        'chrome/browser/sync_file_system/local/canned_syncable_file_system.cc',
-        'chrome/browser/ui/ash/login/login_display_host.h',
-        'chrome/browser/ui/cocoa/first_run_dialog_cocoa.mm',
-        'chrome/browser/ui/cocoa/share_menu_controller.mm',
-        'chrome/browser/ui/global_error/global_error_waiter.h',
-        'chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h',
-        'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.cc',
-        'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h',
-        'chrome/browser/ui/views/chrome_browser_main_extra_parts_views.cc',
-        'chrome/browser/ui/views/first_run_dialog.cc',
-        'chrome/browser/ui/views/message_box_dialog.cc',
-        'chrome/browser/ui/views/process_singleton_dialog_linux.cc',
-        'chrome/browser/ui/views/uninstall_view.cc',
-        'chrome/browser/web_applications/os_integration/mac/app_shim_launch.mm',
-        'chrome/browser/web_applications/os_integration/mac/web_app_shortcut_copier_mac.mm',
-        'chrome/browser/web_applications/web_app_command_manager.cc',
-        'chrome/browser/web_applications/web_app_command_manager.h',
-        'chrome/browser/web_applications/web_app_provider.cc',
-        'chrome/browser/webauthn/enclave_keys_waiter.h',
-        'chrome/credential_provider/extension/service.cc',
-        'chrome/enterprise_companion/app/app.cc',
-        'chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc',
-        'chrome/updater/app/app.cc',
-        'chrome/updater/app/app_server.cc',
-    ]
+  """Check for base::RunLoop usage in chrome/ (production code only)."""
+  # These are files in //chrome that currently use base::RunLoop and are
+  # grandfathered in. New usages should be avoided.
+  allowed_files = [
+    'chrome/app_shim/app_shim_main_delegate.mm',
+    'chrome/browser/app_controller_mac.mm',
+    'chrome/browser/apps/app_service/app_registry_cache_waiter.h',
+    'chrome/browser/apps/app_service/browser_app_launcher.cc',
+    'chrome/browser/ash/accessibility/speech_monitor.cc',
+    'chrome/browser/ash/arc/session/arc_session_manager.cc',
+    'chrome/browser/ash/system_web_apps/system_web_app_manager.cc',
+    'chrome/browser/browser_process_impl.cc',
+    'chrome/browser/browser_switcher/ieem_sitelist_parser_fuzzer.cc',
+    'chrome/browser/btm/btm_browser_signin_detector_factory.h',
+    'chrome/browser/chrome_browser_main.cc',
+    'chrome/browser/chrome_browser_main.h',
+    'chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.cc',
+    'chrome/browser/extensions/blocked_action_waiter.h',
+    'chrome/browser/extensions/load_error_waiter.h',
+    'chrome/browser/extensions/startup_helper.cc',
+    'chrome/browser/first_run/first_run.cc',
+    'chrome/browser/first_run/first_run_internal_linux.cc',
+    'chrome/browser/lifetime/browser_shutdown.cc',
+    'chrome/browser/notifications/stub_notification_display_service.cc',
+    'chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.cc',
+    'chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h',
+    'chrome/browser/policy/extension_force_install_mixin.cc',
+    'chrome/browser/printing/print_job.cc',
+    'chrome/browser/printing/print_view_manager_base.cc',
+    'chrome/browser/profiles/keep_alive/profile_keep_alive_waiter.h',
+    'chrome/browser/profiles/profile_manager.cc',
+    'chrome/browser/sessions/session_restore.cc',
+    'chrome/browser/sessions/tab_restore_service_load_waiter.h',
+    'chrome/browser/ssl/ssl_client_auth_requestor_mock.h',
+    'chrome/browser/sync_file_system/local/canned_syncable_file_system.cc',
+    'chrome/browser/ui/ash/login/login_display_host.h',
+    'chrome/browser/ui/cocoa/first_run_dialog_cocoa.mm',
+    'chrome/browser/ui/cocoa/share_menu_controller.mm',
+    'chrome/browser/ui/global_error/global_error_waiter.h',
+    'chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h',
+    'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.cc',
+    'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h',
+    'chrome/browser/ui/views/chrome_browser_main_extra_parts_views.cc',
+    'chrome/browser/ui/views/first_run_dialog.cc',
+    'chrome/browser/ui/views/message_box_dialog.cc',
+    'chrome/browser/ui/views/process_singleton_dialog_linux.cc',
+    'chrome/browser/ui/views/uninstall_view.cc',
+    'chrome/browser/web_applications/os_integration/mac/app_shim_launch.mm',
+    'chrome/browser/web_applications/os_integration/mac/web_app_shortcut_copier_mac.mm',
+    'chrome/browser/web_applications/web_app_command_manager.cc',
+    'chrome/browser/web_applications/web_app_command_manager.h',
+    'chrome/browser/web_applications/web_app_provider.cc',
+    'chrome/browser/webauthn/enclave_keys_waiter.h',
+    'chrome/credential_provider/extension/service.cc',
+    'chrome/enterprise_companion/app/app.cc',
+    'chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc',
+    'chrome/updater/app/app.cc',
+    'chrome/updater/app/app_server.cc',
+  ]
 
-    test_patterns = [
-        r'.*test.*',
-        r'.*fake.*',
-        r'.*mock.*',
-        r'.*fuzz.*',
-    ]
-    test_re = input_api.re.compile('|'.join(test_patterns))
+  test_patterns = [
+    r'.*test.*',
+    r'.*fake.*',
+    r'.*mock.*',
+    r'.*fuzz.*',
+  ]
+  test_re = input_api.re.compile('|'.join(test_patterns))
 
-    def SourceFilter(affected_file):
-        return input_api.FilterSourceFile(affected_file,
-                                          INCLUDE_SOURCE_FILES_ONLY,
-                                          input_api.DEFAULT_FILES_TO_SKIP)
+  def SourceFilter(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file, INCLUDE_SOURCE_FILES_ONLY, input_api.DEFAULT_FILES_TO_SKIP
+    )
 
-    run_loop_re = input_api.re.compile(r'\bbase::RunLoop\b')
-    problems = []
-    for f in input_api.AffectedSourceFiles(SourceFilter):
-        local_path = f.LocalPath().replace('\\', '/')
-        if local_path in allowed_files or test_re.match(local_path):
-            continue
+  run_loop_re = input_api.re.compile(r'\bbase::RunLoop\b')
+  problems = []
+  for f in input_api.AffectedSourceFiles(SourceFilter):
+    local_path = f.LocalPath().replace('\\', '/')
+    if local_path in allowed_files or test_re.match(local_path):
+      continue
 
-        for line_num, line in f.ChangedContents():
-            if run_loop_re.search(line):
-                problems.append('    %s:%d' % (local_path, line_num))
+    for line_num, line in f.ChangedContents():
+      if run_loop_re.search(line):
+        problems.append('    %s:%d' % (local_path, line_num))
 
-    if not problems:
-        return []
+  if not problems:
+    return []
 
-    return [
-        output_api.PresubmitError(
-            'base::RunLoop is disallowed in production code in //chrome. '
-            'Please email chrome-directory-owners@chromium.org if you '
-            'believe a RunLoop is necessary. It could be necessary for '
-            'integration with OS APIs.',
-            items=problems)
-    ]
+  return [
+    output_api.PresubmitError(
+      'base::RunLoop is disallowed in production code in //chrome. '
+      'Please email chrome-directory-owners@chromium.org if you '
+      'believe a RunLoop is necessary. It could be necessary for '
+      'integration with OS APIs.',
+      items=problems,
+    )
+  ]
 
 
 def _CommonChecks(input_api, output_api):
-    """Checks common to both upload and commit."""
-    results = []
-    results.extend(_CheckNoContentUnitTestsInChrome(input_api, output_api))
-    results.extend(_CheckNoIsAppleBuildFlagsInChrome(input_api, output_api))
-    results.extend(_CheckNoIsFuchsiaBuildFlagsInChrome(input_api, output_api))
-    results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
-    results.extend(
-        _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api))
-    results.extend(_CheckNoBaseRunLoopInChrome(input_api, output_api))
-    return results
+  """Checks common to both upload and commit."""
+  results = []
+  results.extend(_CheckNoContentUnitTestsInChrome(input_api, output_api))
+  results.extend(_CheckNoIsAppleBuildFlagsInChrome(input_api, output_api))
+  results.extend(_CheckNoIsFuchsiaBuildFlagsInChrome(input_api, output_api))
+  results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
+  results.extend(
+    _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api)
+  )
+  results.extend(_CheckNoBaseRunLoopInChrome(input_api, output_api))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    results = []
-    results.extend(_CommonChecks(input_api, output_api))
-    results.extend(_CheckChangeLintsClean(input_api, output_api))
-    return results
+  results = []
+  results.extend(_CommonChecks(input_api, output_api))
+  results.extend(_CheckChangeLintsClean(input_api, output_api))
+  return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    results = []
-    results.extend(_CommonChecks(input_api, output_api))
-    return results
+  results = []
+  results.extend(_CommonChecks(input_api, output_api))
+  return results

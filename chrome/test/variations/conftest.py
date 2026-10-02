@@ -16,39 +16,48 @@ pytest_plugins = [
   'chrome.test.variations.fixtures.seed_locator',
   'chrome.test.variations.fixtures.skia_gold',
   'chrome.test.variations.fixtures.features',
-  'chrome.test.variations.fixtures.test_options'
+  'chrome.test.variations.fixtures.test_options',
 ]
 
 
 def pytest_addoption(parser: pytest.Parser):
   # These are not currently used but supplied from the test runner, we need to
   # ignore them for now so it will not stop the script.
-  parser.addoption('--isolated-script-test-repeat',
-                   '--isolated-script-test-filter',
-                   '--isolated-script-test-launcher-retry-limit',
-                   '--isolated-script-test-perf-output',
-                   '--git-revision',
-                   '--gerrit-issue',
-                   '--gerrit-patchset',
-                   '--buildbucket-id',
-                   '--logs-dir')
+  parser.addoption(
+    '--isolated-script-test-repeat',
+    '--isolated-script-test-filter',
+    '--isolated-script-test-launcher-retry-limit',
+    '--isolated-script-test-perf-output',
+    '--git-revision',
+    '--gerrit-issue',
+    '--gerrit-patchset',
+    '--buildbucket-id',
+    '--logs-dir',
+  )
 
-  parser.addoption('--isolated-script-test-output',
-                   '--write-full-results-to',
-                   '--json-results-file',
-                   dest='json_results_file',
-                   help='If present, store test results on this path.')
+  parser.addoption(
+    '--isolated-script-test-output',
+    '--write-full-results-to',
+    '--json-results-file',
+    dest='json_results_file',
+    help='If present, store test results on this path.',
+  )
 
-  parser.addoption('--root-build-dir',
-                   dest='root_build_dir',
-                   help='The path to build output directory. It can be '
-                   'relative to the source root or the absolute path. The path '
-                   'will be added to python search path.')
+  parser.addoption(
+    '--root-build-dir',
+    dest='root_build_dir',
+    help='The path to build output directory. It can be '
+    'relative to the source root or the absolute path. The path '
+    'will be added to python search path.',
+  )
 
-  parser.addoption('--magic-vm-cache',
-                   dest='magic_vm_cache',
-                   help='Path to the magic CrOS VM cache dir. See the comment '
-                   '"magic_cros_vm_cache" in mixins.star for more info.')
+  parser.addoption(
+    '--magic-vm-cache',
+    dest='magic_vm_cache',
+    help='Path to the magic CrOS VM cache dir. See the comment '
+    '"magic_cros_vm_cache" in mixins.star for more info.',
+  )
+
 
 def setup_java_path(src_dir: str):
   java_home = os.path.join(src_dir, 'third_party', 'jdk', 'current')
@@ -59,7 +68,8 @@ def setup_java_path(src_dir: str):
 
 def pytest_cmdline_main(config: pytest.Config):
   src_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), *([os.pardir] * 3)))
+    os.path.join(os.path.dirname(__file__), *([os.pardir] * 3))
+  )
 
   setup_java_path(src_dir)
   root_build_dir = config.getoption('root_build_dir')

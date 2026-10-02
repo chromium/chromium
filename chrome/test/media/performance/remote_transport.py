@@ -23,8 +23,12 @@ SSH_KEY_PATH = os.path.expanduser('~/.ssh/id_ed25519')
 # BatchMode makes ssh fail instead of hanging on a password/passphrase prompt,
 # and ConnectTimeout bounds how long ssh waits for an unreachable host.
 SSH_BASE_OPTS = [
-    '-o', 'StrictHostKeyChecking=no', '-o', 'BatchMode=yes', '-o',
-    'ConnectTimeout=10'
+    '-o',
+    'StrictHostKeyChecking=no',
+    '-o',
+    'BatchMode=yes',
+    '-o',
+    'ConnectTimeout=10',
 ]
 # ssh exits with 255 when it fails to connect or authenticate. Any other code
 # is the exit status of the remote command.
@@ -136,12 +140,14 @@ class LocalTransport(Transport):
 
     def run(self, command, timeout=COMMAND_TIMEOUT_SECS):
         logging.debug('Executing local command: %s', command)
-        return subprocess.run(command,
-                              shell=True,
-                              capture_output=True,
-                              text=True,
-                              timeout=timeout,
-                              check=False)
+        return subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
 
     def spawn(self, command):
         logging.debug('Executing local command: %s', command)
@@ -151,7 +157,8 @@ class LocalTransport(Transport):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True)
+            text=True,
+        )
 
     def copy_from(self, remote_path, local_path, timeout=COPY_TIMEOUT_SECS):
         del timeout
@@ -176,21 +183,27 @@ class SshTransport(Transport):
 
     def _ssh_argv(self, command):
         return [
-            'ssh', *SSH_BASE_OPTS, '-i', SSH_KEY_PATH, self._destination,
-            command
+            'ssh',
+            *SSH_BASE_OPTS,
+            '-i',
+            SSH_KEY_PATH,
+            self._destination,
+            command,
         ]
 
     def run(self, command, timeout=COMMAND_TIMEOUT_SECS):
         argv = self._ssh_argv(command)
         logging.debug('Executing SSH command: %s', ' '.join(argv))
-        result = subprocess.run(argv,
-                                capture_output=True,
-                                text=True,
-                                timeout=timeout,
-                                check=False)
+        result = subprocess.run(
+            argv, capture_output=True, text=True, timeout=timeout, check=False
+        )
         if result.returncode == SSH_CONNECT_ERROR:
-            logging.error('SSH to %s failed (rc=%d): %s', self.host,
-                          result.returncode, (result.stderr or '').strip())
+            logging.error(
+                'SSH to %s failed (rc=%d): %s',
+                self.host,
+                result.returncode,
+                (result.stderr or '').strip(),
+            )
         return result
 
     def spawn(self, command):
@@ -201,15 +214,22 @@ class SshTransport(Transport):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True)
+            text=True,
+        )
 
     def copy_from(self, remote_path, local_path, timeout=COPY_TIMEOUT_SECS):
-        subprocess.run([
-            'scp', '-i', SSH_KEY_PATH, *SSH_BASE_OPTS,
-            f'{self._destination}:{remote_path}', local_path
-        ],
-                       check=False,
-                       timeout=timeout)
+        subprocess.run(
+            [
+                'scp',
+                '-i',
+                SSH_KEY_PATH,
+                *SSH_BASE_OPTS,
+                f'{self._destination}:{remote_path}',
+                local_path,
+            ],
+            check=False,
+            timeout=timeout,
+        )
 
     def open_tunnel(self, local_port, remote_port):
         self.verify_connectivity()
@@ -261,7 +281,8 @@ class SshTransport(Transport):
         error = SenderUnreachableError(
             f"Lost SSH connection to sender '{self.host}' while {action} "
             f"(rc={result.returncode}): {stderr}. {INFRA_FAILURE_NOTE}",
-            stderr)
+            stderr,
+        )
         self._mark_unreachable(error)
         raise error
 
@@ -292,9 +313,13 @@ class SshTransport(Transport):
                 self._check_ssh()
             except RemoteDeviceError as e:
                 last_error = e
-                logging.warning('Sender check attempt %d/%d failed for %s: %s',
-                                attempt, PREFLIGHT_MAX_ATTEMPTS, self.host,
-                                e.reason)
+                logging.warning(
+                    'Sender check attempt %d/%d failed for %s: %s',
+                    attempt,
+                    PREFLIGHT_MAX_ATTEMPTS,
+                    self.host,
+                    e.reason,
+                )
                 if attempt < PREFLIGHT_MAX_ATTEMPTS:
                     time.sleep(PREFLIGHT_RETRY_DELAY_SECS)
                 continue
@@ -315,7 +340,9 @@ class SshTransport(Transport):
             raise SenderNotFoundError(
                 f"Sender '{self.host}' does not resolve ({reason}). Check the "
                 f"--sender hostname and the lab DHCP/DNS entry. "
-                f"{INFRA_FAILURE_NOTE}", reason) from e
+                f"{INFRA_FAILURE_NOTE}",
+                reason,
+            ) from e
         # Each entry is (family, type, proto, canonname, sockaddr); sockaddr[0]
         # is the IP address for both IPv4 and IPv6.
         return addrinfo[0][4][0]
@@ -323,8 +350,9 @@ class SshTransport(Transport):
     def _check_tcp(self, ip):
         """Opens and immediately closes a TCP connection to port 22."""
         try:
-            conn = socket.create_connection((self.host, SSH_PORT),
-                                            timeout=PREFLIGHT_TCP_TIMEOUT_SECS)
+            conn = socket.create_connection(
+                (self.host, SSH_PORT), timeout=PREFLIGHT_TCP_TIMEOUT_SECS
+            )
         except OSError as e:
             # socket.timeout has no errno/strerror, so fall back to str(e).
             if e.errno is not None:
@@ -335,7 +363,9 @@ class SshTransport(Transport):
                 f"Sender '{self.host}' ({ip}) is not reachable on port "
                 f"{SSH_PORT}: {reason}. Likely causes: device powered "
                 "off/asleep/rebooting, network link or DHCP lease lost, or "
-                f"sshd not running. {INFRA_FAILURE_NOTE}", reason) from e
+                f"sshd not running. {INFRA_FAILURE_NOTE}",
+                reason,
+            ) from e
         conn.close()
 
     def _check_ssh(self):
@@ -347,7 +377,9 @@ class SshTransport(Transport):
             reason = f"ssh timed out after {e.timeout}s running 'echo ok'"
             raise SenderSshError(
                 f"SSH to {self._destination} failed: {reason}. "
-                f"{INFRA_FAILURE_NOTE}", reason) from e
+                f"{INFRA_FAILURE_NOTE}",
+                reason,
+            ) from e
 
         stdout = (result.stdout or '').strip()
         if result.returncode != 0 or stdout != 'ok':
@@ -357,7 +389,9 @@ class SshTransport(Transport):
                 f"SSH to {self._destination} failed (rc={result.returncode}, "
                 f"stdout={stdout!r}). Check the SSH key, authorized_keys, and "
                 f"host key on the sender. {INFRA_FAILURE_NOTE}\n"
-                f"ssh stderr:\n{stderr}", reason)
+                f"ssh stderr:\n{stderr}",
+                reason,
+            )
 
 
 def make_transport(host, username):

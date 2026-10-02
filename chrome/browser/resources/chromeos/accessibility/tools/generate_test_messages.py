@@ -33,21 +33,24 @@ TestMessages = %(json)s;
 def main():
   parser = optparse.OptionParser(description=__doc__)
   parser.add_option(
-      '-o',
-      '--output_file',
-      action='store',
-      metavar='SPEC',
-      help=('Where to output the generated deps file.'))
+    '-o',
+    '--output_file',
+    action='store',
+    metavar='SPEC',
+    help=('Where to output the generated deps file.'),
+  )
   options, args = parser.parse_args()
   if options.output_file is None:
     Die('Output file not specified')
   if len(args) != 1:
     Die('Exactly one input file must be specified')
   in_file_name = args[0]
+
   def _OpenFile(filename):
     if filename.endswith('.gz'):
       return gzip.open(filename)
     return open(filename, 'rb')
+
   with _OpenFile(in_file_name) as in_file:
     json = in_file.read().decode('utf-8').strip()
   with io.open(options.output_file, 'w', encoding='utf-8') as out_file:

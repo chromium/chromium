@@ -10,14 +10,16 @@ import re
 import subprocess
 
 import perf_config
+
 # pylint: disable=import-error, wrong-import-position
 from lib.proto import measures
 from lib.results import result_sink
 # pylint: enable=import-error, wrong-import-position
 
 
-def calculate_psnr_ssim(video_file: str, recorded_path: str,
-                        original_path: str):
+def calculate_psnr_ssim(
+    video_file: str, recorded_path: str, original_path: str
+):
     """Calculates PSNR and SSIM via FFmpeg and records them."""
     logging.info("Calculating PSNR and SSIM via FFmpeg...")
 
@@ -30,15 +32,21 @@ def calculate_psnr_ssim(video_file: str, recorded_path: str,
     # - '[rec][orig]psnr': Calculate PSNR on the scaled videos.
     # - '-f null -': Force null output (don't save a file, just output stats).
     psnr_cmd = [
-        'ffmpeg', '-i', recorded_path, '-i', original_path, '-lavfi',
-        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]psnr', '-f', 'null', '-'
+        'ffmpeg',
+        '-i',
+        recorded_path,
+        '-i',
+        original_path,
+        '-lavfi',
+        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]psnr',
+        '-f',
+        'null',
+        '-',
     ]
     try:
-        psnr_result = subprocess.run(psnr_cmd,
-                                     capture_output=True,
-                                     text=True,
-                                     timeout=120,
-                                     check=False)
+        psnr_result = subprocess.run(
+            psnr_cmd, capture_output=True, text=True, timeout=120, check=False
+        )
         psnr_match = re.search(r'average:(\d+\.\d+|inf)', psnr_result.stderr)
         if psnr_match:
             val = psnr_match.group(1)
@@ -48,22 +56,29 @@ def calculate_psnr_ssim(video_file: str, recorded_path: str,
         else:
             logging.warning(
                 "Failed to parse PSNR from FFmpeg output. Stderr: %s",
-                psnr_result.stderr)
+                psnr_result.stderr,
+            )
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to calculate PSNR: %s", e)
 
     # SSIM command. Arguments are identical to PSNR above, but calculates
     # Structural Similarity (SSIM) instead.
     ssim_cmd = [
-        'ffmpeg', '-i', recorded_path, '-i', original_path, '-lavfi',
-        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]ssim', '-f', 'null', '-'
+        'ffmpeg',
+        '-i',
+        recorded_path,
+        '-i',
+        original_path,
+        '-lavfi',
+        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]ssim',
+        '-f',
+        'null',
+        '-',
     ]
     try:
-        ssim_result = subprocess.run(ssim_cmd,
-                                     capture_output=True,
-                                     text=True,
-                                     timeout=120,
-                                     check=False)
+        ssim_result = subprocess.run(
+            ssim_cmd, capture_output=True, text=True, timeout=120, check=False
+        )
         ssim_match = re.search(r'All:(\d+\.\d+)', ssim_result.stderr)
         if ssim_match:
             ssim_val = float(ssim_match.group(1))
@@ -72,7 +87,8 @@ def calculate_psnr_ssim(video_file: str, recorded_path: str,
         else:
             logging.warning(
                 "Failed to parse SSIM from FFmpeg output. Stderr: %s",
-                ssim_result.stderr)
+                ssim_result.stderr,
+            )
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.error("Failed to calculate SSIM: %s", e)
 
@@ -91,8 +107,7 @@ def finalize_results(chrome_version=None):
     # If running in a LUCI environment, try to upload immediately.
     client = result_sink.TryInitClient()
     if client:
-        logging.info(
-            "LUCI ResultSink detected. Uploading extended properties.")
+        logging.info("LUCI ResultSink detected. Uploading extended properties.")
         try:
             records = {measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()}
             client.UpdateInvocationExtendedProperties(records)
@@ -129,8 +144,9 @@ def _record_cros_power(video_file, csv_local_path):
     else:
         avg_power = avg_raw
 
-    measures.average(video_file, 'video_perf',
-                     'power_consumption_watts').record(avg_power)
+    measures.average(
+        video_file, 'video_perf', 'power_consumption_watts'
+    ).record(avg_power)
     logging.info("ChromeOS Average Power Draw: %.2f W", avg_power)
 
 
@@ -151,14 +167,16 @@ def _record_glances_csv(video_file, csv_local_path):
 
     if cpu_usages:
         avg_cpu = sum(cpu_usages) / len(cpu_usages)
-        measures.average(video_file, 'video_perf',
-                         'cpu_utilization').record(avg_cpu)
+        measures.average(video_file, 'video_perf', 'cpu_utilization').record(
+            avg_cpu
+        )
         logging.info("Average CPU utilization: %.2f%%", avg_cpu)
 
     if power_draws:
         avg_power = sum(power_draws) / len(power_draws)
-        measures.average(video_file, 'video_perf',
-                         'power_consumption_watts').record(avg_power)
+        measures.average(
+            video_file, 'video_perf', 'power_consumption_watts'
+        ).record(avg_power)
         logging.info("Average Power Draw: %.2f W", avg_power)
 
 
@@ -173,7 +191,8 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
     if not os.path.exists(csv_local_path):
         logging.warning(
             "Monitoring log file not found at %s. Skipping metric parsing.",
-            csv_local_path)
+            csv_local_path,
+        )
         return
 
     try:

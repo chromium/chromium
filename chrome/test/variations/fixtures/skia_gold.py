@@ -18,6 +18,7 @@ from typing import List, Tuple
 # The module skia_gold_common is relative to its own path, add "build" dir
 # to the search path.
 from chrome.test.variations.test_utils import SRC_DIR
+
 sys.path.append(os.path.join(SRC_DIR, 'build'))
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session_manager as sgsm
@@ -26,7 +27,8 @@ from skia_gold_common.skia_gold_session import SkiaGoldSession
 from chrome.test.variations.fixtures.result_sink import AddTag
 from chrome.test.variations.fixtures.test_options import TestOptions
 
-_CORPUS ='finch-smoke-tests'
+_CORPUS = 'finch-smoke-tests'
+
 
 @functools.lru_cache
 def _get_skia_gold_args() -> argparse.Namespace:
@@ -51,6 +53,7 @@ def _is_png(data: bytes) -> bool:
 @attr.attrs()
 class VariationsSkiaGoldUtil:
   """Wrapper test util class for skia gold API."""
+
   img_dir: str = attr.attrib()
   skia_gold_session: SkiaGoldSession = attr.attrib()
   test_name: str = attr.attrib()
@@ -65,7 +68,7 @@ class VariationsSkiaGoldUtil:
   def _inexact_matching_args(self, max_diff: int) -> List[str]:
     # Fuzzy matching algorithms allow to diff in a certain number of pixels.
     # https://skia.googlesource.com/buildbot/+/main/gold-client/go/imgmatching/fuzzy/fuzzy.go
-    return[
+    return [
       '--add-test-optional-key',
       'image_matching_algorithm:fuzzy',
       # Some hardware may cause rasterization inconsistency, resulting two
@@ -83,9 +86,9 @@ class VariationsSkiaGoldUtil:
     """Convenient method to screenshot an selement."""
     return base64.b64decode(ele.screenshot_as_base64)
 
-  def compare(self, name: str,
-              png_data: bytes,
-              threshold: float = 0.001) -> Tuple[int, str]:
+  def compare(
+    self, name: str, png_data: bytes, threshold: float = 0.001
+  ) -> Tuple[int, str]:
     """Compares image using skia gold API.
 
     It saves png data into a file first and compares using `goldctl`. The image
@@ -111,9 +114,11 @@ class VariationsSkiaGoldUtil:
 
     image_name = f'{self.test_name}:{name}'
     status, error_msg = self.skia_gold_session.RunComparison(
-      name=image_name, png_file=png_file,
+      name=image_name,
+      png_file=png_file,
       inexact_matching_args=self._inexact_matching_args(max_pixel),
-      use_luci=self.use_luci)
+      use_luci=self.use_luci,
+    )
 
     # Screenshots for variations are in chrome-gold.skia.org
     triage_link = self.skia_gold_session.GetTriageLinks(image_name)[1]
@@ -122,13 +127,14 @@ class VariationsSkiaGoldUtil:
 
     return status, f'{error_msg} \n{triage_link}'
 
+
 @pytest.fixture
 def skia_gold_util(
   request: pytest.FixtureRequest,
   tmp_path_factory: pytest.TempPathFactory,
   test_options: TestOptions,
-  add_tag: AddTag
-  ) -> VariationsSkiaGoldUtil:
+  add_tag: AddTag,
+) -> VariationsSkiaGoldUtil:
   """Returns VariationsSkiaGoldUtil to help compare gold images."""
 
   # Doesn't generate skia name for parameterization yet
@@ -137,18 +143,19 @@ def skia_gold_util(
   skia_tmp_dir = tmp_path_factory.mktemp('skia_gold', True)
   skia_img_dir = tmp_path_factory.mktemp('skia_img', True)
 
-  skia_gold_properties = sgp.SkiaGoldProperties(
-    args=_get_skia_gold_args())
+  skia_gold_properties = sgp.SkiaGoldProperties(args=_get_skia_gold_args())
   skia_gold_session_manager = sgsm.SkiaGoldSessionManager(
-    skia_tmp_dir,
-    skia_gold_properties
+    skia_tmp_dir, skia_gold_properties
   )
 
   config = request.config
-  session = skia_gold_session_manager.GetSkiaGoldSession({
-    'platform': test_options.platform,
-    'channel': test_options.channel,
-  }, _CORPUS)
+  session = skia_gold_session_manager.GetSkiaGoldSession(
+    {
+      'platform': test_options.platform,
+      'channel': test_options.channel,
+    },
+    _CORPUS,
+  )
 
   test_file = os.path.relpath(request.module.__file__, SRC_DIR)
 
@@ -159,7 +166,8 @@ def skia_gold_util(
       skia_gold_session=session,
       add_tag=add_tag,
       test_name=f'{test_file}:{request.node.name}',
-      use_luci=(not skia_gold_properties.local_pixel_tests))
+      use_luci=(not skia_gold_properties.local_pixel_tests),
+    )
     yield util
   finally:
     # TODO(b/280321923):

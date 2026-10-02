@@ -37,15 +37,16 @@ import sys
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
+  os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6)
+)
+sys.path.insert(0, os.path.join(_CHROME_SOURCE, 'third_party/rjsmin'))
 sys.path.insert(
-    0,
-    os.path.join(_CHROME_SOURCE,
-                 'third_party/rjsmin'))
-sys.path.insert(
-    0,
-    os.path.join(_CHROME_SOURCE, ('third_party/google-closure-library/' +
-                                  'closure/bin/build')))
+  0,
+  os.path.join(
+    _CHROME_SOURCE,
+    ('third_party/google-closure-library/' + 'closure/bin/build'),
+  ),
+)
 import rjsmin
 import source
 import treescan
@@ -73,6 +74,7 @@ class SourceWithPaths(source.Source):
 
   def __str__(self):
     return self.GetOutPath()
+
 
 class Bundle(object):
   '''An ordered list of sources without duplicates.'''
@@ -119,8 +121,8 @@ class PathRewriter(object):
 
   def __init__(self, specs=[]):
     '''Args:
-      specs: A list of mappings, each consisting of the input prefix and
-        the corresponding output prefix separated by colons.
+    specs: A list of mappings, each consisting of the input prefix and
+      the corresponding output prefix separated by colons.
     '''
     self._prefix_map = []
     for spec in specs:
@@ -142,21 +144,24 @@ class PathRewriter(object):
     '''
     for in_prefix, out_prefix in self._prefix_map:
       if in_path.startswith(in_prefix):
-        return os.path.join(out_prefix, in_path[len(in_prefix):])
+        return os.path.join(out_prefix, in_path[len(in_prefix) :])
     return in_path
 
 
-def ReadSources(source_files=[],
-                need_source_text=False,
-                path_rewriter=PathRewriter(),
-                exclude=[]):
+def ReadSources(
+  source_files=[],
+  need_source_text=False,
+  path_rewriter=PathRewriter(),
+  exclude=[],
+):
   '''Reads all sources specified on the command line.'''
 
   def EnsureSourceLoaded(in_path, sources):
     if in_path not in sources:
       out_path = path_rewriter.RewritePath(in_path)
       sources[in_path] = SourceWithPaths(
-          source.GetFileContents(in_path), in_path, out_path)
+        source.GetFileContents(in_path), in_path, out_path
+      )
 
   # Only read the actual source file if we will do a dependency analysis or
   # the caller asks for it.
@@ -181,10 +186,13 @@ def _GetBase(sources):
     SourceWithPath: The source file providing the goog namespace.
   '''
   for source in list(sources.values()):
-    if (os.path.basename(source.GetInPath()) == 'base.js' and
-        'goog' in source.provides):
+    if (
+      os.path.basename(source.GetInPath()) == 'base.js'
+      and 'goog' in source.provides
+    ):
       return source
   Die('goog.base not provided by any file.')
+
 
 def _MarkAsCompiled(sources):
   '''Sets COMPILED to true in the Closure base.js source.
@@ -195,15 +203,17 @@ def _MarkAsCompiled(sources):
   '''
   base = _GetBase(sources)
   new_content, count = re.subn(
-      '^var COMPILED = false;$',
-      'var COMPILED = true;',
-      base.GetSource(),
-      count=1,
-      flags=re.MULTILINE)
+    '^var COMPILED = false;$',
+    'var COMPILED = true;',
+    base.GetSource(),
+    count=1,
+    flags=re.MULTILINE,
+  )
   if count != 1:
     Die('COMPILED var assignment not found in %s' % base.GetInPath())
-  sources[base.GetInPath()] = SourceWithPaths(new_content, base.GetInPath(),
-                                              base.GetOutPath())
+  sources[base.GetInPath()] = SourceWithPaths(
+    new_content, base.GetInPath(), base.GetOutPath()
+  )
 
 
 def LinkOrCopyFiles(sources, dest_dir):
@@ -223,8 +233,9 @@ def LinkOrCopyFiles(sources, dest_dir):
       shutil.copy(src, dst)
 
   for source in sources:
-    LinkOrCopyOneFile(source.GetInPath(),
-                      os.path.join(dest_dir, source.GetOutPath()))
+    LinkOrCopyOneFile(
+      source.GetInPath(), os.path.join(dest_dir, source.GetOutPath())
+    )
 
 
 def ClearDirectories(clear_dest_dirs):
@@ -293,65 +304,81 @@ def WriteDepfile(depfile, outfile, infiles):
 def CreateOptionParser():
   parser = optparse.OptionParser(description=__doc__)
   parser.usage = '%prog [options] <top_level_file>...'
-  parser.add_option('--clear_dest_dir',
-      action='append',
-      dest='clear_dest_dirs',
-      default=[],
-      help='The destination directory will be cleared of files. '
-      'This is highly recommended to ensure that no stale files '
-      'are left in the directory.')
   parser.add_option(
-      '-d',
-      '--dest_dir',
-      action='store',
-      metavar='DIR',
-      help=('Destination directory.  Used when translating ' +
-            'input paths to output paths and when copying '
-            'files.'))
+    '--clear_dest_dir',
+    action='append',
+    dest='clear_dest_dirs',
+    default=[],
+    help='The destination directory will be cleared of files. '
+    'This is highly recommended to ensure that no stale files '
+    'are left in the directory.',
+  )
   parser.add_option(
-      '-o',
-      '--output_file',
-      action='store',
-      metavar='FILE',
-      help=('File to output result to for modes that output '
-            'a single file.'))
+    '-d',
+    '--dest_dir',
+    action='store',
+    metavar='DIR',
+    help=(
+      'Destination directory.  Used when translating '
+      + 'input paths to output paths and when copying '
+      'files.'
+    ),
+  )
   parser.add_option(
-      '-w',
-      '--rewrite_prefix',
-      action='append',
-      default=[],
-      dest='prefix_map',
-      metavar='SPEC',
-      help=('Two path prefixes, separated by colons ' +
-            'specifying that a file whose (relative) path ' +
-            'name starts with the first prefix should have ' +
-            'that prefix replaced by the second prefix to ' +
-            'form a path relative to the output directory.'))
+    '-o',
+    '--output_file',
+    action='store',
+    metavar='FILE',
+    help=('File to output result to for modes that output a single file.'),
+  )
   parser.add_option(
-      '-m',
-      '--mode',
-      type='choice',
-      action='store',
-      choices=['list', 'html', 'bundle', 'compressed_bundle', 'copy'],
-      default='list',
-      metavar='MODE',
-      help=("Otput mode. One of 'list', 'html', 'bundle', " +
-            "'compressed_bundle' or 'copy'."))
+    '-w',
+    '--rewrite_prefix',
+    action='append',
+    default=[],
+    dest='prefix_map',
+    metavar='SPEC',
+    help=(
+      'Two path prefixes, separated by colons '
+      + 'specifying that a file whose (relative) path '
+      + 'name starts with the first prefix should have '
+      + 'that prefix replaced by the second prefix to '
+      + 'form a path relative to the output directory.'
+    ),
+  )
   parser.add_option(
-      '-x',
-      '--exclude',
-      action='append',
-      default=[],
-      help=('Exclude files whose full path contains a match for '
-            'the given regular expression.  Does not apply to '
-            'filenames given as arguments or with the '
-            '-m option.'))
+    '-m',
+    '--mode',
+    type='choice',
+    action='store',
+    choices=['list', 'html', 'bundle', 'compressed_bundle', 'copy'],
+    default='list',
+    metavar='MODE',
+    help=(
+      "Otput mode. One of 'list', 'html', 'bundle', "
+      + "'compressed_bundle' or 'copy'."
+    ),
+  )
   parser.add_option(
-      '--depfile',
-      metavar='FILENAME',
-      help='Store .d style dependencies in FILENAME')
+    '-x',
+    '--exclude',
+    action='append',
+    default=[],
+    help=(
+      'Exclude files whose full path contains a match for '
+      'the given regular expression.  Does not apply to '
+      'filenames given as arguments or with the '
+      '-m option.'
+    ),
+  )
   parser.add_option(
-      '--stampfile', metavar='FILENAME', help='Write empty stamp file')
+    '--depfile',
+    metavar='FILENAME',
+    help='Store .d style dependencies in FILENAME',
+  )
+  parser.add_option(
+    '--stampfile', metavar='FILENAME', help='Write empty stamp file'
+  )
   return parser
 
 
@@ -364,8 +391,7 @@ def main():
   will_output_source_text = options.mode in ('bundle', 'compressed_bundle')
   path_rewriter = PathRewriter(options.prefix_map)
   exclude = [re.compile(r) for r in options.exclude]
-  sources = ReadSources(args, will_output_source_text,
-                        path_rewriter, exclude)
+  sources = ReadSources(args, will_output_source_text, path_rewriter, exclude)
   if will_output_source_text:
     _MarkAsCompiled(sources)
   bundle = Bundle()

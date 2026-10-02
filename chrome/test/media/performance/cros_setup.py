@@ -20,14 +20,20 @@ import senders
 
 # Optional Crossbench dependencies that the perf bots do not install.
 _MOCKED_PACKAGES = [
-    "google.cloud", "psutil", "xlsxwriter", "hjson", "mobly",
-    "snippet_uiautomator"
+    "google.cloud",
+    "psutil",
+    "xlsxwriter",
+    "hjson",
+    "mobly",
+    "snippet_uiautomator",
 ]
 # Geometry flags are handled by the Viewport, and passing them to the
 # autologin launch script crashes it.
 _EXCLUDED_FLAGS = [
-    '--window-size', '--window-position', '--start-maximized',
-    '--start-fullscreen'
+    '--window-size',
+    '--window-position',
+    '--start-maximized',
+    '--start-fullscreen',
 ]
 _CROS_CHROME_PATH = "/opt/google/chrome/chrome"
 
@@ -40,8 +46,10 @@ class _MockFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
 
     def find_spec(self, fullname, path, target=None):
         del path, target
-        if any(fullname == pkg or fullname.startswith(pkg + '.')
-               for pkg in self.mocked_packages):
+        if any(
+            fullname == pkg or fullname.startswith(pkg + '.')
+            for pkg in self.mocked_packages
+        ):
             return importlib.util.spec_from_loader(fullname, self)
         return None
 
@@ -61,8 +69,10 @@ def _prepare_crossbench_imports():
     try:
         # pylint: disable-next=import-outside-toplevel
         import google.protobuf.runtime_version
+
         google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = (
-            lambda *args, **kwargs: None)
+            lambda *args, **kwargs: None
+        )
     except (ImportError, AttributeError):
         pass
     sys.path.insert(0, perf_config.CROSSBENCH_ROOT)
@@ -80,8 +90,11 @@ def _detect_milestone(cb_platform):
             actual_version = version_str.split()[-2]
 
         milestone = actual_version.split('.')[0]
-        logging.info("Detected remote Chrome version: %s (milestone: %s)",
-                     actual_version, milestone)
+        logging.info(
+            "Detected remote Chrome version: %s (milestone: %s)",
+            actual_version,
+            milestone,
+        )
         return milestone
     except Exception as e:  # pylint: disable=broad-exception-caught
         logging.warning("Failed to detect remote Chrome version: %s", e)
@@ -98,9 +111,11 @@ def _install_chromedriver(sender, milestone):
     """
     try:
         if not milestone:
-            logging.warning("Milestone is None. download_cft_urls will fall "
-                            "back to the latest version, which may cause a "
-                            "mismatch.")
+            logging.warning(
+                "Milestone is None. download_cft_urls will fall "
+                "back to the latest version, which may cause a "
+                "mismatch."
+            )
         _, _, driver_url = senders.download_cft_urls('linux64', milestone)
         sender.install_chrome(milestone)
         driver_dir = driver_url.split('/')[-1].replace('.zip', '')
@@ -147,11 +162,13 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     from crossbench.browsers.viewport import Viewport
     # pylint: enable=import-outside-toplevel
 
-    cb_platform = ChromeOsSshPlatform(host_platform,
-                                      host=args.sender,
-                                      port=0,
-                                      ssh_port=22,
-                                      ssh_user=args.username)
+    cb_platform = ChromeOsSshPlatform(
+        host_platform,
+        host=args.sender,
+        port=0,
+        ssh_port=22,
+        ssh_user=args.username,
+    )
 
     # Enable detailed logging for Crossbench to debug autologin issues.
     logging.getLogger('crossbench').setLevel(logging.DEBUG)
@@ -166,20 +183,22 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     remote_driver_path = _install_chromedriver(sender, milestone)
 
     chrome_os_flags = _crossbench_flags(chrome_options_list)
-    settings = Settings(flags=chrome_os_flags,
-                        platform=cb_platform,
-                        driver_path=remote_driver_path,
-                        viewport=Viewport.MAXIMIZED)
+    settings = Settings(
+        flags=chrome_os_flags,
+        platform=cb_platform,
+        driver_path=remote_driver_path,
+        viewport=Viewport.MAXIMIZED,
+    )
 
     # We must explicitly provide the binary path on ChromeOS.
-    browser = ChromeWebDriverChromeOsSsh(label="cros_perf_test",
-                                         path=_CROS_CHROME_PATH,
-                                         settings=settings)
+    browser = ChromeWebDriverChromeOsSsh(
+        label="cros_perf_test", path=_CROS_CHROME_PATH, settings=settings
+    )
 
     # Crossbench filters out geometry flags by default for ChromeOS in
     # '_filter_flags_for_run'. We override this behavior to ensure our flags
     # reach the launch script (autologin.py).
-    browser.UNSUPPORTED_FLAGS += ("--user-data-dir", )
+    browser.UNSUPPORTED_FLAGS += ("--user-data-dir",)
 
     def _safe_setup_window():
         for _ in range(20):
@@ -206,8 +225,9 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     # Crossbench requires the network to be 'open' before starting the browser.
     with browser.network.open(mock_session):
         # Reverse-forward the local HTTP server so the DUT can reach it.
-        logging.info("Setting up reverse port forwarding for port %d...",
-                     server_port)
+        logging.info(
+            "Setting up reverse port forwarding for port %d...", server_port
+        )
         try:
             cb_platform.ports.stop_reverse_forward(server_port)
         except Exception:  # pylint: disable=broad-exception-caught
