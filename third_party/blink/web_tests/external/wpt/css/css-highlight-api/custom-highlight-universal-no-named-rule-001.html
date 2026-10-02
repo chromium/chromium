@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Custom Highlight: ::highlight(*) acts as a base for a named highlight</title>
+<title>Custom Highlight: a registered highlight with no named rule paints with the ::highlight(*) style</title>
 <link rel="author" href="mailto:seokho@chromium.org">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/9091">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#selectordef-highlight-highlight-name-selector">
 <link rel="match" href="custom-highlight-universal-painting-001-ref.html">
-<meta name="assert" value="The ::highlight(*) declarations merge into a named highlight's cascade; the named rule overrides conflicting properties.">
+<meta name="assert" value="A registered highlight with no ::highlight() rule falls back to the element's ::highlight(*) style when painted.">
 <style>
   ::highlight(*) {
     background-color: yellow;
-    color: red;
-  }
-  ::highlight(foo) {
     color: blue;
   }
 </style>
@@ -20,5 +17,5 @@
   r.setStart(document.body, 0);
   r.setEnd(document.body, 2);
 
-  CSS.highlights.set("foo", new Highlight(r));
+  CSS.highlights.set("bar", new Highlight(r));
 </script>
