@@ -69,15 +69,11 @@ void OverlayDialog::AddedToWidget() {
   view_ax.SetIsIgnored(true);
 }
 
-void OverlayDialog::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(ash::kColorAshShieldAndBase60));
-}
-
 OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
                              std::unique_ptr<views::View> dialog_view)
     : has_dialog_view_(dialog_view),
       scoped_callback_(std::move(on_destroying)) {
+  SetBackground(views::CreateSolidBackground(ash::kColorAshShieldAndBase60));
   if (dialog_view) {
     SetInteriorMargin(gfx::Insets::VH(0, 32));
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);

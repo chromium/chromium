@@ -45,7 +45,6 @@ class OverlayDialog : public views::FlexLayoutView {
 
   // views::View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
  private:
   friend class OverlayDialogTest;
