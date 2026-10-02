@@ -1162,6 +1162,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_36_google_apis_x64",
+        "enable_rts_filtering": true,
         "merge": {
           "args": [
             "--bucket",

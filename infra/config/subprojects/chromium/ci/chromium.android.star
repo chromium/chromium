@@ -4234,6 +4234,9 @@ ci.builder(
                     shards = 3,
                 ),
             ),
+            "components_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "content_shell_freeze_test": targets.mixin(
                 # TODO (b/511219429): Remove once stability is established and also add to android_rel_isolated_scripts
                 ci_only = True,
