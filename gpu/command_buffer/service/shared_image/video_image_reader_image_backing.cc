@@ -1009,6 +1009,10 @@ class VideoImageReaderImageBacking::VideoRepresentation
       handle.Adopt(std::move(fence_fd));
       std::unique_ptr<gl::GLFence> gl_fence =
           gl::GLFence::CreateFromGpuFenceHandle(std::move(handle));
+
+      // Adding a CHECK instead of returning false since we can not gracefully
+      // recover in these cases.
+      CHECK(gl_fence);
       gl_fence->ServerWait();
     }
     return true;

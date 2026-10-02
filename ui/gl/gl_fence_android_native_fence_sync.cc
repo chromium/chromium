@@ -49,10 +49,20 @@ GLFenceAndroidNativeFenceSync::CreateForGpuFence() {
 std::unique_ptr<GLFenceAndroidNativeFenceSync>
 GLFenceAndroidNativeFenceSync::CreateFromGpuFenceHandle(
     gfx::GpuFenceHandle gpu_fence) {
-  DCHECK_GE(gpu_fence.Peek(), 0);
-  EGLint attribs[] = {EGL_SYNC_NATIVE_FENCE_FD_ANDROID,
-                      gpu_fence.Release().release(), EGL_NONE};
-  return CreateInternal(EGL_SYNC_NATIVE_FENCE_ANDROID, attribs);
+  base::ScopedFD fence_fd = gpu_fence.Release();
+  if (!fence_fd.is_valid()) {
+    return nullptr;
+  }
+  // Release `fence_fd` ownership before calling `CreateInternal()`:
+  // `eglCreateSyncKHR` assumes ownership of the FD and may close it before
+  // returning, which Android's fdsan requires to be unowned (tag 0).
+  EGLint raw_fd = fence_fd.release();
+  EGLint attribs[] = {EGL_SYNC_NATIVE_FENCE_FD_ANDROID, raw_fd, EGL_NONE};
+  auto fence = CreateInternal(EGL_SYNC_NATIVE_FENCE_ANDROID, attribs);
+  if (!fence) {
+    base::ScopedFD close_fd(raw_fd);
+  }
+  return fence;
 }
 
 gfx::GpuFenceHandle GLFenceAndroidNativeFenceSync::GetGpuFenceHandle() {

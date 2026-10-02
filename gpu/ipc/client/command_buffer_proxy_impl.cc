@@ -699,6 +699,9 @@ void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,
   }
 
   gfx::GpuFence* gpu_fence = gfx::GpuFence::FromClientGpuFence(source);
+  if (!gpu_fence) {
+    return;
+  }
   command_buffer_->CreateGpuFenceFromHandle(
       gpu_fence_id, gpu_fence->GetGpuFenceHandle().Clone());
 }
