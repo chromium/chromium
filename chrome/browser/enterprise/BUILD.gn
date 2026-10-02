@@ -23,6 +23,7 @@ source_set("enterprise") {
     "connectors/connectors_service.h",
     "connectors/device_trust/device_trust_connector_service_factory.h",
     "connectors/device_trust/device_trust_service_factory.h",
+    "connectors/device_trust/navigation_throttle.h",
     "connectors/device_trust/signals/signals_service_factory.h",
     "connectors/interstitials/delayed_interstitial_reporter.h",
     "connectors/interstitials/enterprise_block_controller_client.h",
@@ -154,7 +155,6 @@ source_set("enterprise") {
       "//ui/views",
     ]
     public += [
-      "connectors/device_trust/navigation_throttle.h",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
       "data_protection/data_protection_ui_controller.h",
       "reporting/browser_report_generator_desktop.h",
@@ -420,6 +420,7 @@ source_set("impl") {
     "connectors/connectors_service.cc",
     "connectors/device_trust/device_trust_connector_service_factory.cc",
     "connectors/device_trust/device_trust_service_factory.cc",
+    "connectors/device_trust/navigation_throttle.cc",
     "connectors/interstitials/delayed_interstitial_reporter.cc",
     "connectors/interstitials/enterprise_block_controller_client.cc",
     "connectors/interstitials/enterprise_block_page.cc",
@@ -477,6 +478,7 @@ source_set("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/enterprise/connectors/reporting:impl",
@@ -569,7 +571,6 @@ source_set("impl") {
     ]
   } else {
     sources += [
-      "connectors/device_trust/navigation_throttle.cc",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.cc",
       "connectors/device_trust/signals/signals_service_factory.cc",
       "data_protection/data_protection_ui_controller.cc",
@@ -582,7 +583,6 @@ source_set("impl") {
       "signals/device_info_fetcher.cc",
     ]
     deps += [
-      "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/lifetime",

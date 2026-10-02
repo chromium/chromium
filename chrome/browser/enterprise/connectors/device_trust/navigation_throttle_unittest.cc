@@ -6,14 +6,15 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
-#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_user_permission_service.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -27,6 +28,7 @@
 #include "components/enterprise/device_trust/core/mock_device_trust_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,6 +40,10 @@
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::NavigationThrottle;
 using ::testing::_;
@@ -113,6 +119,7 @@ scoped_refptr<net::HttpResponseHeaders> GetRedirectedHeader() {
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 // Simple mock for ConsentRequester used in tests.
 class MockConsentRequester : public ConsentRequester {
  public:
@@ -124,6 +131,7 @@ class MockConsentRequester : public ConsentRequester {
 
   MOCK_METHOD(void, RequestConsent, (RequestConsentCallback), (override));
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
@@ -139,12 +147,14 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
             [this](const GURL& url) { return fake_connector_->Watches(url); });
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   void CreateAndSetMockConsentRequester() {
     auto mock_consent_requester = std::make_unique<MockConsentRequester>();
     mock_consent_requester_ = mock_consent_requester.get();
     ConsentRequester::SetConsentRequesterForTest(
         std::move(mock_consent_requester));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void EnableDTCPolicy() {
     fake_connector_->UpdateInlinePolicy(GetTrustedUrls(),
@@ -173,7 +183,9 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
   std::unique_ptr<DeviceTrustNavigationThrottle> CreateThrottle(
       content::MockNavigationThrottleRegistry& registry) {
+#if !BUILDFLAG(IS_ANDROID)
     CreateAndSetMockConsentRequester();
+#endif  // !BUILDFLAG(IS_ANDROID)
     auto test_throttle = std::make_unique<DeviceTrustNavigationThrottle>(
         &mock_device_trust_service_, &mock_user_permission_service_, registry);
     return test_throttle;
@@ -226,6 +238,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
                                          expected_result, 1);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   void VerifyConsentDialogFlowSuccessful(
       std::unique_ptr<DeviceTrustNavigationThrottle> throttle) {
     EXPECT_CALL(*mock_consent_requester_, RequestConsent(_))
@@ -238,10 +251,21 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
     run_loop.Run();
   }
+#else
+  size_t CountCreatedThrottles() {
+    content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
+    content::MockNavigationThrottleRegistry test_registry(
+        &test_handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    DeviceTrustNavigationThrottle::MaybeCreateAndAdd(test_registry);
+    return test_registry.throttles().size();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> test_prefs_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -250,7 +274,9 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
       mock_user_permission_service_;
   std::unique_ptr<FakeDeviceTrustConnectorService> fake_connector_;
   base::HistogramTester histogram_tester_;
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockConsentRequester, DanglingUntriaged> mock_consent_requester_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
@@ -541,6 +567,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
                                        DTHandshakeResult::kTimeout, 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DeviceTrustNavigationThrottleTest,
        ExpectHeaderDeviceTrustOnRequestWithConsentDialog) {
   EnableDTCPolicy();
@@ -612,6 +639,30 @@ TEST_F(DeviceTrustNavigationThrottleTest,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   VerifyConsentDialogFlowSuccessful(CreateThrottle(test_registry));
 }
+#else
+// Android gathers consent natively outside of the navigation flow, so a
+// navigation that would trigger the consent dialog on Desktop simply proceeds
+// with the handshake.
+TEST_F(DeviceTrustNavigationThrottleTest, NoConsentDialogOnRequest) {
+  EnableDTCPolicy();
+  SetCanCollectSignals();
+  SetShouldCollectConsent();
+
+  content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
+  SetHasUserGesture(&test_handle);
+  EXPECT_CALL(test_handle,
+              SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = CreateThrottle(test_registry);
+
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogramName, DTAttestationFunnelStep::kAttestationFlowStarted,
+      1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DeviceTrustNavigationThrottleTest, NavigationNoUserGesture) {
   EnableDTCPolicy();
@@ -627,7 +678,9 @@ TEST_F(DeviceTrustNavigationThrottleTest, NavigationNoUserGesture) {
       &test_handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   auto throttle = CreateThrottle(test_registry);
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*mock_consent_requester_, RequestConsent(_)).Times(0);
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
@@ -646,8 +699,34 @@ TEST_F(DeviceTrustNavigationThrottleTest, NavigationNotInMainFrame) {
       &test_handle,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   auto throttle = CreateThrottle(test_registry);
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*mock_consent_requester_, RequestConsent(_)).Times(0);
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DeviceTrustNavigationThrottleTest, ThrottleCreated) {
+  scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorAndroid);
+  test_prefs_->SetBoolean(
+      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+
+  EXPECT_EQ(1u, CountCreatedThrottles());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleWhenNotEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorAndroid);
+
+  EXPECT_EQ(0u, CountCreatedThrottles());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleWhenFeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kDeviceTrustConnectorAndroid);
+  test_prefs_->SetBoolean(
+      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+
+  EXPECT_EQ(0u, CountCreatedThrottles());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_connectors
