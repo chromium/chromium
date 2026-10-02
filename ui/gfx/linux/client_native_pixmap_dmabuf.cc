@@ -126,14 +126,6 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
              format == viz::SinglePlaneFormat::kBGRA_1010102;
     case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
-      // TODO(crbug.com/954233): RG_88 is enabled only with
-      // --enable-native-gpu-memory-buffers . Otherwise it breaks some telemetry
-      // tests. Fix that issue and enable it again.
-      if (format == viz::SinglePlaneFormat::kRG_88 &&
-          !AllowCpuMappableBuffers()) {
-        return false;
-      }
-
       if (format == viz::MultiPlaneFormat::kNV12) {
         return true;
       }
@@ -143,7 +135,6 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
           // The minigbm backends and Mesa drivers commonly used on x86 systems
           // support the following formats.
           format == viz::SinglePlaneFormat::kR_8 ||
-          format == viz::SinglePlaneFormat::kRG_88 ||
           format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::SinglePlaneFormat::kRGBA_1010102 ||
           format == viz::SinglePlaneFormat::kBGRA_1010102 ||
@@ -171,7 +162,6 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
           // The minigbm backends and Mesa drivers commonly used on x86 systems
           // support the following formats.
           format == viz::SinglePlaneFormat::kR_8 ||
-          format == viz::SinglePlaneFormat::kRG_88 ||
           format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kP010 ||
 #endif

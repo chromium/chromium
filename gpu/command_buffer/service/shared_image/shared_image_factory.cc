@@ -496,9 +496,6 @@ bool SharedImageFactory::IsNativeBufferSupported(
              format == viz::SinglePlaneFormat::kBGRX_8888 ||
              format == viz::SinglePlaneFormat::kRGBX_8888 ||
              format == viz::SinglePlaneFormat::kR_8 ||
-             format == viz::SinglePlaneFormat::kRG_88 ||
-             format == viz::SinglePlaneFormat::kR_16 ||
-             format == viz::SinglePlaneFormat::kRG_1616 ||
              format == viz::SinglePlaneFormat::kRGBA_F16 ||
              format == viz::SinglePlaneFormat::kBGRA_1010102 ||
              format == viz::MultiPlaneFormat::kNV12 ||
