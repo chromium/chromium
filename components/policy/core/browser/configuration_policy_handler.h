@@ -67,6 +67,13 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
   // sensitive values such as passwords, or to pretty-print values.
   virtual void PrepareForDisplaying(PolicyMap* policies) const;
 
+  // Called after CheckPolicySettings() instead of
+  // ApplyPolicySettingsWithParameters() when the policies will not be applied,
+  // either because the check failed or because the policies are only being
+  // checked, e.g. to list their errors on chrome://policy. Handlers that keep
+  // state from CheckPolicySettings() for the apply step should release it here.
+  virtual void OnPolicySettingsNotApplied();
+
  protected:
   // This is a convenience version of ApplyPolicySettingsWithParameters()
   // for derived classes that leaves out the |parameters|. Anyone extending

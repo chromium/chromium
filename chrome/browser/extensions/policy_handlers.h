@@ -148,6 +148,7 @@ class ExtensionSettingsPolicyHandler
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
+  void OnPolicySettingsNotApplied() override;
 
  private:
   // Performs sanitization for both Check/ApplyPolicySettings(). If an entry
@@ -158,7 +159,8 @@ class ExtensionSettingsPolicyHandler
 
   // Cached policy value from CheckPolicySettings(), reused by
   // ApplyPolicySettings() to avoid redundant clone + normalization +
-  // sanitization of the same data.
+  // sanitization of the same data. OnPolicySettingsNotApplied() releases it
+  // when no ApplyPolicySettings() call follows.
   std::unique_ptr<base::Value> checked_value_;
 
   // Tracks whether CheckPolicySettings() was called before

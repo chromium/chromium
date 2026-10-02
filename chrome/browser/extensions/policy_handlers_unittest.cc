@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
@@ -546,6 +547,37 @@ TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, policy_result->Clone(), nullptr);
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  handler.ApplyPolicySettings(policy_map, &prefs);
+  base::Value* value = nullptr;
+  ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
+  EXPECT_EQ(*policy_result, *value);
+}
+
+// A check whose result is not applied, e.g. when chrome://policy only lists
+// policy errors, leaves nothing pending, and a later check and apply still
+// work.
+TEST(ExtensionSettingsPolicyHandlerTest, OnPolicySettingsNotApplied) {
+  auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
+      kTestManagementPolicy2, kJsonParseOptions);
+  ASSERT_TRUE(policy_result.has_value()) << policy_result.error().message;
+
+  policy::Schema chrome_schema =
+      policy::Schema::Wrap(policy::GetChromeSchemaData());
+  policy::PolicyMap policy_map;
+  policy::PolicyErrorMap errors;
+  PrefValueMap prefs;
+  ExtensionSettingsPolicyHandler handler(chrome_schema);
+
+  policy_map.Set(policy::key::kExtensionSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, policy_result->Clone(), nullptr);
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  handler.OnPolicySettingsNotApplied();
+
+  // Nothing is left pending for ApplyPolicySettings().
+  EXPECT_CHECK_DEATH(handler.ApplyPolicySettings(policy_map, &prefs));
+
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = nullptr;

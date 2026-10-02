@@ -52,6 +52,8 @@ void ConfigurationPolicyHandler::ApplyPolicySettingsWithParameters(
   ApplyPolicySettings(policies, prefs);
 }
 
+void ConfigurationPolicyHandler::OnPolicySettingsNotApplied() {}
+
 // NamedPolicyHandler implementation -------------------------------------------
 NamedPolicyHandler::NamedPolicyHandler(const char* policy_name)
     : policy_name_(policy_name) {}

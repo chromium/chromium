@@ -84,6 +84,8 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
     if (handler->CheckPolicySettings(filtered_policies, errors) && prefs) {
       handler->ApplyPolicySettingsWithParameters(filtered_policies, parameters,
                                                  prefs);
+    } else {
+      handler->OnPolicySettingsNotApplied();
     }
   }
 

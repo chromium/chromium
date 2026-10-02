@@ -466,4 +466,9 @@ void ExtensionSettingsPolicyHandler::ApplyPolicySettings(
                   base::Value::FromUniquePtrValue(std::move(checked_value_)));
 }
 
+void ExtensionSettingsPolicyHandler::OnPolicySettingsNotApplied() {
+  checked_value_.reset();
+  check_called_ = false;
+}
+
 }  // namespace extensions
