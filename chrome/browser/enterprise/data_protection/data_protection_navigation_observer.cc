@@ -418,9 +418,9 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
 }
 
 DataProtectionNavigationObserver::~DataProtectionNavigationObserver() {
-  // A pending callback means the navigation never finished, e.g. because the
-  // tab was closed mid-navigation. Report a verdict that already arrived.
-  if (pending_navigation_callback_) {
+  // The navigation never finished, e.g. because the tab was closed
+  // mid-navigation. Report a verdict that already arrived.
+  if (navigation_state_ == NavigationState::kInProgress) {
     MaybeReportUncommittedNavigation(web_contents(), original_url_,
                                      std::move(rt_lookup_response_));
   }
@@ -442,23 +442,24 @@ void DataProtectionNavigationObserver::OnLookupComplete(
       kURLVerdictScreenshotHistogram,
       GetUrlSettings("", rt_lookup_response.get()).allow_screenshots);
 
-  if (!is_navigation_finished_) {
-    rt_lookup_response_ = std::move(rt_lookup_response);
-    return;
+  switch (navigation_state_) {
+    case NavigationState::kInProgress:
+      // Kept for DidFinishNavigation(), or for the destructor if the
+      // navigation never finishes.
+      rt_lookup_response_ = std::move(rt_lookup_response);
+      return;
+    case NavigationState::kNotCommitted:
+      // The page in the tab is still the previous one, so the verdict must not
+      // be applied to it. Only report it.
+      MaybeReportUncommittedNavigation(web_contents(), original_url_,
+                                       std::move(rt_lookup_response));
+      return;
+    case NavigationState::kCommitted:
+      OnDoLookupComplete(web_contents()->GetWeakPtr(),
+                         std::move(pending_navigation_callback_), identifier_,
+                         std::move(rt_lookup_response));
+      return;
   }
-
-  // The navigation ended without committing before this verdict arrived.
-  // DidFinishNavigation() dropped `pending_navigation_callback_` so the verdict
-  // can't be applied to the page still in the tab; only report it.
-  if (!pending_navigation_callback_) {
-    MaybeReportUncommittedNavigation(web_contents(), original_url_,
-                                     std::move(rt_lookup_response));
-    return;
-  }
-
-  OnDoLookupComplete(web_contents()->GetWeakPtr(),
-                     std::move(pending_navigation_callback_), identifier_,
-                     std::move(rt_lookup_response));
 }
 
 bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
@@ -502,7 +503,8 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
 }
 
 void DataProtectionNavigationObserver::MaybeCleanup() {
-  if (is_navigation_finished_ && is_verdict_received_) {
+  if (navigation_state_ != NavigationState::kInProgress &&
+      is_verdict_received_) {
     DCHECK(delegate_);
     delegate_->Cleanup(navigation_id_);
   }
@@ -510,11 +512,15 @@ void DataProtectionNavigationObserver::MaybeCleanup() {
 
 void DataProtectionNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->GetNavigationId() != navigation_id_) {
+  // Ignore other navigations, and repeat calls for this one.
+  if (navigation_handle->GetNavigationId() != navigation_id_ ||
+      navigation_state_ != NavigationState::kInProgress) {
     return;
   }
 
-  is_navigation_finished_ = true;
+  navigation_state_ = navigation_handle->HasCommitted()
+                          ? NavigationState::kCommitted
+                          : NavigationState::kNotCommitted;
   base::ScopedClosureRunner done(
       base::BindOnce(&DataProtectionNavigationObserver::MaybeCleanup,
                      weak_factory_.GetWeakPtr()));
@@ -523,15 +529,11 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   // Even though some of these checks where already performed in
   // CreateForNavigationIfNeeded(), they still need to checked again here
   // to handle pages with iframes.
-  //
-  // `pending_navigation_callback_` being null implies `DidFinishNavigation`
-  // has already been called, so further lookups/metrics code need to run.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !pending_navigation_callback_) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 
-  if (!navigation_handle->HasCommitted()) {
+  if (navigation_state_ == NavigationState::kNotCommitted) {
     // No new page was created, e.g. because the navigation turned into a
     // download, got a 204 response, or was cancelled or replaced. The primary
     // page is still the previous one, so the verdict must not be applied to

@@ -641,6 +641,39 @@ TEST_F(DataProtectionNavigationObserverTest,
   EXPECT_FALSE(future.IsReady());
 }
 
+// The observer can also be destroyed after its navigation committed but before
+// the verdict arrived, e.g. when the tab is closed right after the commit.
+// There is no verdict to report yet, and the destructor only reports
+// navigations that never finished.
+TEST_F(DataProtectionNavigationObserverTest,
+       CommittedNavigation_ObserverDestroyedBeforeVerdict_NoReport) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+  base::test::TestFuture<const UrlSettings&> future;
+  auto controller = std::make_unique<FakeDataProtectionNavigationController>(
+      web_contents(), &lookup_service_, future.GetCallback());
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  simulator->Commit();
+  ASSERT_FALSE(future_lookup_complete.IsReady());
+
+  controller.reset();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 TEST_F(DataProtectionNavigationObserverTest,
        TestWatermarkTextUpdated_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(

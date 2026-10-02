@@ -113,6 +113,18 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service);
 
  private:
+  // Outcome of the observed navigation, set once by DidFinishNavigation().
+  enum class NavigationState {
+    // DidFinishNavigation() hasn't been called yet.
+    kInProgress,
+    // The navigation committed. The verdict is applied to the new page.
+    kCommitted,
+    // The navigation finished without committing, e.g. because it turned into
+    // a download, got a 204 response, or was cancelled or replaced. The
+    // previous page is still in the tab, so the verdict is only reported.
+    kNotCommitted,
+  };
+
   void OnLookupComplete(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
@@ -132,7 +144,7 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
 
   bool is_from_cache_ = false;
 
-  bool is_navigation_finished_ = false;
+  NavigationState navigation_state_ = NavigationState::kInProgress;
 
   bool is_verdict_received_ = false;
 
@@ -162,6 +174,9 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   // `this` is owned by delegate_
   raw_ptr<DataProtectionNavigationDelegate> delegate_;
 
+  // Applies the data protection settings to the page committed by the
+  // navigation. Dropped without running if the navigation finishes without
+  // committing.
   Callback pending_navigation_callback_;
 
   base::WeakPtrFactory<DataProtectionNavigationObserver> weak_factory_{this};
