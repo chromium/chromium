@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
         ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   }
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
-  ASSERT_EQ(4u, new_browser->GetTabStripModel()->count());
+  ASSERT_EQ(4, new_browser->GetTabStripModel()->count());
   ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
 
   // Check expectations when the profile creation flow is done.
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   ASSERT_EQ(new_browser->GetProfile(), other_profile);
-  ASSERT_EQ(4u, new_browser->GetTabStripModel()->count());
+  ASSERT_EQ(4, new_browser->GetTabStripModel()->count());
   ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
 
   // Check expectations when the profile creation flow is done.
@@ -4493,7 +4493,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   EXPECT_EQ(new_browser->GetProfile()->GetPath(), managed_profile_path());
-  ASSERT_EQ(4u, new_browser->GetTabStripModel()->count());
+  ASSERT_EQ(4, new_browser->GetTabStripModel()->count());
   ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
   WaitForPickerClosed();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(

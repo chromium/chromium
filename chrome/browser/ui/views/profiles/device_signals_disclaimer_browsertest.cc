@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
 
   auto* browser_collection =
       ProfileBrowserCollection::GetForProfile(browser()->GetProfile());
-  EXPECT_EQ(browser_collection->GetSize(), 2);
+  EXPECT_EQ(browser_collection->GetSize(), 2u);
 
   // Simulate the user clicking Close button and wait for destruction.
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
       ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   browser_destroyed_observer.Wait();
 
-  EXPECT_EQ(browser_collection->GetSize(), 1);
+  EXPECT_EQ(browser_collection->GetSize(), 1u);
   histogram_tester_.ExpectBucketCount(
       kEnterpriseSignalsDisclaimerModalLearnMoreClicked, true, 1);
 }

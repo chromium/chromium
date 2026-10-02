@@ -1315,3 +1315,129 @@ if (enable_dice_support) {
     }
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = []
+  deps = [
+    ":profiles_pixel_test_utils",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_chromeos) {
+    sources += [
+      "dice_web_signin_interception_bubble_view_browsertest.cc",
+      "dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
+      "profile_menu_view_browsertest.cc",
+      "signin_view_controller_delegate_views_browsertest.cc",
+    ]
+    deps += [
+      ":signin_view_controller_delegate_views",
+      "//chrome/browser/profiles/batch_upload:test_support",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
+      "//chrome/browser/ui/webui/signin/signout_confirmation",
+      "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
+      "//components/signin/core/browser:test_support",
+      "//components/sync_bookmarks",
+      "//components/sync_device_info:test_support",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "device_signals_disclaimer_browsertest.cc",
+      "profile_picker_glic_flow_controller_browsertest.cc",
+      "profile_picker_sign_in_provider_browsertest.cc",
+      "profile_picker_utils_browsertest.cc",
+      "profile_picker_view_browsertest.cc",
+    ]
+    deps += [
+      ":avatar_toolbar_button",
+      ":profile_menu_view",
+      ":profile_picker_utils",
+      ":profile_picker_view",
+      ":profile_picker_view_test_utils",
+      ":profile_picker_web_contents_host",
+      "//chrome/browser:chrome_browser_main",
+      "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/browser_active_state_manager",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+      "//chrome/browser/ui/webui:profile_helper",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
+      "//chrome/test/base:profile_lifecycle_test_utils",
+      "//chrome/test/base:testing_browser_process",
+      "//chrome/test/user_education",
+      "//ui/base:ozone_buildflags",
+    ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+
+  if (is_win || is_linux) {
+    sources += [
+      "history_sync_optin_ui_browsertest.cc",
+      "managed_user_profile_notice_ui_browsertest.cc",
+      "profile_menu_view_ui_browsertest.cc",
+      "profile_picker_signin_ui_browsertest.cc",
+      "profile_picker_ui_browsertest.cc",
+      "profile_type_choice_ui_browsertest.cc",
+      "sync_confirmation_ui_browsertest.cc",
+    ]
+    deps += [
+      "//chrome/browser/consent_auditor",
+      "//chrome/browser/consent_auditor:test_support",
+      "//chrome/browser/ui/views/frame:top_container_view",
+      "//components/consent_auditor",
+    ]
+  }
+
+  if (enable_dice_support) {
+    sources += [ "cross_device_signin_qr_bubble_ui_browsertest.cc" ]
+    deps += [
+      ":dice_web_signin_interception_bubble_view",
+      ":profile_management_step_controller",
+      ":profile_picker_glic_flow_controller",
+      ":profile_picker_reauth_provider",
+    ]
+    if (is_win || is_linux) {
+      sources += [
+        "first_run_default_browser_ui_browsertest.cc",
+        "first_run_feature_showcase_ui_browsertest.cc",
+        "first_run_finish_or_continue_ui_browsertest.cc",
+        "first_run_intro_browsertest.cc",
+        "first_run_sign_in_celebration_ui_browsertest.cc",
+      ]
+      deps += [
+        ":first_run_flow_controller",
+        "//chrome/browser/ui/views/profiles/feature_showcase",
+        "//chrome/browser/ui/webui/intro",
+      ]
+    }
+  }
+
+  if (enable_dice_support || is_chromeos) {
+    sources += [
+      "batch_upload_dialog_view_browsertest.cc",
+      "batch_upload_dialog_view_pixel_browsertest.cc",
+    ]
+    deps += [
+      ":batch_upload_dialog_view",
+      "//chrome/browser/profiles/batch_upload",
+    ]
+  }
+}

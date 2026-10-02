@@ -2114,6 +2114,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/passwords:password_bubble_view_base",
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button_browser_tests",
+      "//chrome/browser/ui/views/profiles:browser_tests",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/storage",
       "//chrome/browser/ui/views/tabs:base",
@@ -2897,12 +2898,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/compose:browser_tests" ]
     }
 
-    if (is_win || is_mac || is_linux) {
-      sources += [
-        "../browser/ui/views/profiles/device_signals_disclaimer_browsertest.cc",
-      ]
-    }
-
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
       deps += [
@@ -2917,18 +2912,8 @@ if (!is_android) {
         "//chrome/browser/enterprise/signin:browser_tests",
         "//chrome/browser/ui/startup/default_browser_prompt:browser_tests",
         "//chrome/browser/ui/views/media_preview/mic_preview:browser_tests",
-        "//chrome/browser/ui/views/profiles:profile_menu_view",
-        "//chrome/browser/ui/views/profiles:profile_picker_view_test_utils",
-        "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
         "//chrome/browser/ui/webui:profile_helper",
       ]
-      if (enable_dice_support) {
-        deps += [
-          "//chrome/browser/ui/views/profiles:profile_management_step_controller",
-          "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
-          "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
-        ]
-      }
     }
 
     if (is_chrome_for_testing) {
@@ -3195,7 +3180,6 @@ if (!is_android) {
         "../browser/ui/views/controls/textfield/textfield_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
-        "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
 
       if (is_win) {
@@ -3251,20 +3235,8 @@ if (!is_android) {
     }
 
     if (enable_dice_support) {
-      sources += [ "../browser/ui/views/profiles/cross_device_signin_qr_bubble_ui_browsertest.cc" ]
       if (is_win || is_linux) {
-        sources += [
-          "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
-          "../browser/ui/views/profiles/first_run_feature_showcase_ui_browsertest.cc",
-          "../browser/ui/views/profiles/first_run_finish_or_continue_ui_browsertest.cc",
-          "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
-          "../browser/ui/views/profiles/first_run_sign_in_celebration_ui_browsertest.cc",
-        ]
-        deps += [
-          "//chrome/browser/ui/views/profiles:first_run_flow_controller",
-          "//chrome/browser/ui/views/profiles/feature_showcase",
-          "//chrome/browser/ui/webui/intro",
-        ]
+        deps += [ "//chrome/browser/ui/webui/intro" ]
       }
       if (!is_chromeos) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]
@@ -3287,15 +3259,6 @@ if (!is_android) {
     }
 
     if (is_win || is_linux) {
-      sources += [
-        "../browser/ui/views/profiles/history_sync_optin_ui_browsertest.cc",
-        "../browser/ui/views/profiles/managed_user_profile_notice_ui_browsertest.cc",
-        "../browser/ui/views/profiles/profile_menu_view_ui_browsertest.cc",
-        "../browser/ui/views/profiles/profile_picker_signin_ui_browsertest.cc",
-        "../browser/ui/views/profiles/profile_picker_ui_browsertest.cc",
-        "../browser/ui/views/profiles/profile_type_choice_ui_browsertest.cc",
-        "../browser/ui/views/profiles/sync_confirmation_ui_browsertest.cc",
-      ]
       deps += [
         "//chrome/browser/consent_auditor",
         "//chrome/browser/consent_auditor:test_support",
@@ -3377,9 +3340,6 @@ if (!is_android) {
         "//chrome/browser/ui/views/frame:custom_floating_corner",
         "//chrome/browser/ui/views/frame:multi_contents_background_view",
         "//chrome/browser/ui/views/frame:multi_contents_resize_area",
-        "//chrome/browser/ui/views/profiles:batch_upload_dialog_view",
-        "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
-        "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",
         "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
@@ -3409,7 +3369,6 @@ if (!is_android) {
         "../browser/ui/views/bubble/bubble_frame_view_browsertest.cc",
         "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
-        "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
@@ -3445,8 +3404,6 @@ if (!is_android) {
       }
       if (enable_dice_support) {
         deps += [
-          "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
-          "//chrome/browser/ui/views/profiles:profile_picker_glic_flow_controller",
           "//chrome/browser/ui/webui/signin/signout_confirmation",
           "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
           "//components/sync_bookmarks",
@@ -3466,11 +3423,7 @@ if (!is_android) {
           "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
         ]
       } else {
-        sources += [
-          "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",
-          "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
-          "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
-        ]
+        sources += [ "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc" ]
         deps += [
           "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils",
           "//chrome/browser/ui/views/policy:enterprise_startup_dialog",
@@ -3478,14 +3431,6 @@ if (!is_android) {
           "//chrome/browser/ui/views/scheduled_restart:browser_tests",
           "//chrome/browser/ui/views/shortcuts:browser_tests",
         ]
-      }
-      if (enable_dice_support || is_chromeos) {
-        sources += [
-          "../browser/ui/views/profiles/batch_upload_dialog_view_browsertest.cc",
-          "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
-        ]
-        deps +=
-            [ "//chrome/browser/ui/views/profiles:batch_upload_dialog_view" ]
       }
       deps += [
         ":test_support_ui",
@@ -3640,11 +3585,6 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/printing_metrics:browser_tests",
         ]
       }
-
-      sources -= [
-        # chromeos does not use the profile chooser view
-        "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
-      ]
 
       deps += [
         ":test_support_ui",
@@ -4171,10 +4111,6 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
-        "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",
-        "../browser/ui/views/profiles/profile_picker_sign_in_provider_browsertest.cc",
-        "../browser/ui/views/profiles/profile_picker_utils_browsertest.cc",
-        "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
@@ -4185,11 +4121,6 @@ if (!is_android) {
         "//chrome/browser:main_extra_parts",
         "//chrome/browser/ui/supervised_user",
         "//chrome/browser/ui/supervised_user:browser_tests",
-        "//chrome/browser/ui/views/profiles:profile_management_types",
-        "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
-        "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
-        "//chrome/browser/ui/views/profiles:profile_picker_utils",
-        "//chrome/browser/ui/views/profiles:profile_picker_view",
         "//chrome/browser/ui/views/supervised_user",
       ]
     }
