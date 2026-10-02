@@ -22,6 +22,8 @@ blink_core_sources_frame = [
   "csp/content_security_policy.cc",
   "csp/content_security_policy.h",
   "csp/content_security_policy_violation_type.h",
+  "csp/cross_thread_security_policy_violation_event_init.cc",
+  "csp/cross_thread_security_policy_violation_event_init.h",
   "csp/csp_directive_list.cc",
   "csp/csp_directive_list.h",
   "csp/csp_source.cc",

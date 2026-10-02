@@ -72,6 +72,13 @@ void SharedWorkerReportingProxy::ReportConsoleMessage(
   // Not supported in SharedWorker.
 }
 
+void SharedWorkerReportingProxy::DispatchCSPViolationEvent(
+    const SecurityPolicyViolationEventInit& violation_data) {
+  DCHECK(!IsMainThread());
+  // TODO(crbug.com/40612680): Forward the violation across processes to
+  // each connecting document.
+}
+
 void SharedWorkerReportingProxy::DidFailToFetchClassicScript() {
   DCHECK(!IsMainThread());
   PostCrossThreadTask(

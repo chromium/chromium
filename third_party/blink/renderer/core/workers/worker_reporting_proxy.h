@@ -39,6 +39,7 @@
 
 namespace blink {
 
+class SecurityPolicyViolationEventInit;
 class WorkerOrWorkletGlobalScope;
 struct JavaScriptFrameworkDetectionResult;
 
@@ -61,6 +62,12 @@ class CORE_EXPORT WorkerReportingProxy {
                                     mojom::ConsoleMessageLevel,
                                     const String& message,
                                     const SourceLocation*) {}
+
+  // Invoked when a Content Security Policy violation occurs while fetching
+  // the module graph, so that a 'securitypolicyviolation' event can be
+  // dispatched on the context that owns the policy.
+  virtual void DispatchCSPViolationEvent(
+      const SecurityPolicyViolationEventInit&) {}
 
   // Invoked at the beginning of WorkerThread::InitializeOnWorkerThread.
   virtual void WillInitializeWorkerContext() {}

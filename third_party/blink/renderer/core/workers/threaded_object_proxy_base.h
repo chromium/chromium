@@ -14,6 +14,7 @@
 namespace blink {
 
 class ParentExecutionContextTaskRunners;
+class SecurityPolicyViolationEventInit;
 class ThreadedMessagingProxyBase;
 
 // The base proxy class to talk to a DedicatedWorker or *Worklet object on the
@@ -36,6 +37,8 @@ class CORE_EXPORT ThreadedObjectProxyBase : public WorkerReportingProxy {
                             mojom::ConsoleMessageLevel,
                             const String& message,
                             const SourceLocation*) override;
+  void DispatchCSPViolationEvent(
+      const SecurityPolicyViolationEventInit&) override;
   void DidCloseWorkerGlobalScope() override;
   void DidTerminateWorkerThread() override;
 

@@ -10,6 +10,9 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/events/security_policy_violation_event.h"
+#include "third_party/blink/renderer/core/frame/csp/cross_thread_security_policy_violation_event_init.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -140,6 +143,34 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
   SourceLocation* location = cross_thread_location.ToSourceLocation();
   execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       level, message, location, worker_thread_.get()));
+}
+
+void ThreadedMessagingProxyBase::DispatchCSPViolationEvent(
+    const CrossThreadSecurityPolicyViolationEventInit& violation_data) {
+  DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (asked_to_terminate_ || !execution_context_) {
+    return;
+  }
+
+  SecurityPolicyViolationEvent& event = *SecurityPolicyViolationEvent::Create(
+      event_type_names::kSecuritypolicyviolation, violation_data.ToEventInit());
+
+  // According to the CSP violation reporting steps, the event is dispatched on
+  // the calling context's global object (CSP 2.4.2, via HTML's fetchClient), or
+  // on its Document if that global object is a Window (CSP 5.5 / step 3.2.2).
+  // See https://w3c.github.io/webappsec-csp/#report-violation.
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+    // For a Window caller, dispatch on its Document.
+    if (Document* document = window->document()) {
+      document->DispatchEvent(event);
+    }
+  } else if (auto* scope =
+                 DynamicTo<WorkerGlobalScope>(execution_context_.Get())) {
+    // When DedicatedWorker creates a nested DedicatedWorker, the caller can
+    // be a WorkerGlobalScope.
+    scope->DispatchEvent(event);
+  }
 }
 
 void ThreadedMessagingProxyBase::ParentObjectDestroyed() {

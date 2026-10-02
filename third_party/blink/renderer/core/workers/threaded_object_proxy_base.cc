@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/cross_thread_security_policy_violation_event_init.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
@@ -64,6 +65,24 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
       CrossThreadBindOnce(&ThreadedMessagingProxyBase::ReportConsoleMessage,
                           MessagingProxyWeakPtr(), source, level, message,
                           std::move(cross_thread_location)));
+}
+
+void ThreadedObjectProxyBase::DispatchCSPViolationEvent(
+    const SecurityPolicyViolationEventInit& violation_data) {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+    return;
+  }
+
+  CrossThreadSecurityPolicyViolationEventInit cross_thread_violation_data =
+      CrossThreadSecurityPolicyViolationEventInit::From(violation_data);
+
+  PostCrossThreadTask(
+      *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &ThreadedMessagingProxyBase::DispatchCSPViolationEvent,
+          MessagingProxyWeakPtr(), std::move(cross_thread_violation_data)));
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {

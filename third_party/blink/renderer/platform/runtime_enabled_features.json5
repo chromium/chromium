@@ -2489,6 +2489,14 @@
       status: "stable",
     },
     {
+      // Dispatches a securitypolicyviolation event for CSP violations
+      // detected while fetching a worker's or worklet's module graph
+      // (top-level script, redirects, and nested static imports).
+      // See https://crbug.com/40612680
+      name: "DispatchWorkerCSPViolationEventForModuleGraphFetching",
+      status: "experimental",
+    },
+    {
       // Allowing elements with display:contents to have focus.
       // See https://crbug.com/1366037
       name: "DisplayContentsFocusable",
