@@ -30,6 +30,7 @@
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
+#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/glic/host/context/glic_page_features_manager.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
@@ -209,6 +210,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
@@ -1092,6 +1094,17 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   manage_passwords_ui_controller_ =
       GetUserDataFactory().CreateInstance<ManagePasswordsUIController>(
           tab, tab, tab.GetContents());
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (autofill::ContentAutofillClient::FromWebContents(tab.GetContents()) &&
+      optimization_guide_decider &&
+      base::FeatureList::IsEnabled(
+          payments::facilitated::kEnableDesktopQrCodeDetection)) {
+    chrome_facilitated_payments_client_ =
+        GetUserDataFactory().CreateInstance<ChromeFacilitatedPaymentsClient>(
+            tab, tab, tab.GetContents(), optimization_guide_decider);
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1537,6 +1550,18 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   manage_passwords_ui_controller_ =
       GetUserDataFactory().CreateInstance<ManagePasswordsUIController>(
           *tab, *tab, new_contents);
+
+  if (chrome_facilitated_payments_client_) {
+    chrome_facilitated_payments_client_.reset();
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+    if (autofill::ContentAutofillClient::FromWebContents(new_contents) &&
+        optimization_guide_decider) {
+      chrome_facilitated_payments_client_ =
+          GetUserDataFactory().CreateInstance<ChromeFacilitatedPaymentsClient>(
+              *tab, *tab, new_contents, optimization_guide_decider);
+    }
+  }
 }
 
 customize_chrome::SidePanelController*

@@ -8,6 +8,7 @@
 
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -35,7 +36,8 @@ void BindPaymentLinkHandler(
   }
 
   ChromeFacilitatedPaymentsClient* client =
-      ChromeFacilitatedPaymentsClient::FromWebContents(web_contents);
+      ChromeFacilitatedPaymentsClient::From(
+          tabs::TabInterface::MaybeGetFromContents(web_contents));
   if (!client) {
     return;
   }

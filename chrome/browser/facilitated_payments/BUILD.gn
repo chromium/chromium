@@ -8,7 +8,10 @@ static_library("facilitated_payments") {
     "ui/chrome_facilitated_payments_client.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base/unowned_user_data",
+  ]
 
   deps = [
     "//chrome/browser/autofill",
@@ -23,6 +26,7 @@ static_library("facilitated_payments") {
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/utils",
+    "//components/tabs:public",
   ]
 
   # The payment UI, payment link handling, and platform API client are
@@ -56,6 +60,7 @@ if (is_android) {
       "//components/facilitated_payments/core/browser",
       "//components/facilitated_payments/core/features",
       "//components/optimization_guide/core:test_support",
+      "//components/tabs:test_support",
     ]
   }
 }

@@ -26,9 +26,7 @@ ContentFacilitatedPaymentsDriverFactory::
       client_(CHECK_DEREF(client)) {}
 
 ContentFacilitatedPaymentsDriverFactory::
-    ~ContentFacilitatedPaymentsDriverFactory() {
-  DCHECK(driver_map_.empty());
-}
+    ~ContentFacilitatedPaymentsDriverFactory() = default;
 
 ContentFacilitatedPaymentsDriver&
 ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(

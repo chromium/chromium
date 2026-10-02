@@ -26,6 +26,7 @@
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
+#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_tab_helper.h"
@@ -89,6 +90,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/contextual_tasks/public/features.h"
@@ -457,6 +459,19 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   ml_installability_promoter_ =
       GetUserDataFactory().CreateInstance<webapps::MLInstallabilityPromoter>(
           *tab, *tab, web_contents);
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents) &&
+      optimization_guide_decider) {
+    chrome_facilitated_payments_client_ =
+        GetUserDataFactory().CreateInstance<ChromeFacilitatedPaymentsClient>(
+            *tab, *tab, web_contents, optimization_guide_decider,
+            base::BindRepeating([](content::WebContents* web_contents) {
+              auto* tab_android = TabAndroid::FromWebContents(web_contents);
+              return tab_android && tab_android->IsCustomTab();
+            }));
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

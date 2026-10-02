@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
@@ -42,12 +43,14 @@
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+DEFINE_USER_DATA(ChromeFacilitatedPaymentsClient);
+
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback)
-    : content::WebContentsUserData<ChromeFacilitatedPaymentsClient>(
-          *web_contents),
+    : web_contents_(CHECK_DEREF(web_contents)),
       driver_factory_(web_contents,
                       /* client= */ this),
 #if BUILDFLAG(IS_ANDROID)
@@ -56,7 +59,8 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
       device_delegate_(web_contents),
 #endif  // BUILDFLAG(IS_ANDROID)
       optimization_guide_decider_(optimization_guide_decider),
-      is_cct_callback_(std::move(is_cct_callback)) {
+      is_cct_callback_(std::move(is_cct_callback)),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
 #if BUILDFLAG(IS_ANDROID)
   pix_account_linking_manager_ =
       std::make_unique<payments::facilitated::PixAccountLinkingManager>(
@@ -72,6 +76,12 @@ ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() {
     pix_account_linking_manager_->DismissPrompt();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+// static
+ChromeFacilitatedPaymentsClient* ChromeFacilitatedPaymentsClient::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 void ChromeFacilitatedPaymentsClient::LoadRiskData(
@@ -304,5 +314,3 @@ void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeFacilitatedPaymentsClient);

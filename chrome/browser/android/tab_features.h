@@ -129,6 +129,7 @@ class MLInstallabilityPromoter;
 class AboutThisSiteTabHelper;
 class AutoPictureInPictureTabHelper;
 class ChainedBackNavigationTracker;
+class ChromeFacilitatedPaymentsClient;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
 class FileSystemAccessTabHelper;
@@ -295,6 +296,8 @@ class TabFeatures {
       auto_picture_in_picture_tab_helper_;
   std::unique_ptr<webapps::MLInstallabilityPromoter>
       ml_installability_promoter_;
+  std::unique_ptr<ChromeFacilitatedPaymentsClient>
+      chrome_facilitated_payments_client_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

@@ -25,18 +25,14 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
-#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -78,7 +74,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/facilitated_payments/core/features/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
@@ -127,24 +122,17 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
-#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
-#include "components/facilitated_payments/core/features/features.h"
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/sensitive_content/features.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "components/image_fetcher/core/image_fetcher_service.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -414,25 +402,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
           web_contents));
-
-  // ChromeFacilitatedPaymentsClient requires ContentAutofillClient / payments
-  // autofill capabilities (gated by enable_browser_autofill).
-  if (enable_browser_autofill) {
-    if (auto* optimization_guide_decider =
-            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
-      ChromeFacilitatedPaymentsClient::CreateForWebContents(
-          web_contents, optimization_guide_decider,
-          base::BindRepeating([](content::WebContents* web_contents) {
-            auto* tab_android = TabAndroid::FromWebContents(web_contents);
-            auto* delegate =
-                tab_android
-                    ? static_cast<android::TabWebContentsDelegateAndroid*>(
-                          web_contents->GetDelegate())
-                    : nullptr;
-            return delegate && delegate->IsCustomTab();
-          }));
-    }
-  }
 #else   // BUILDFLAG(IS_ANDROID)
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,
@@ -440,20 +409,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
           web_contents));
 
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-
-  // On Desktop the client only runs payment QR code detection (no payment UI),
-  // so it is created behind its own flag. Preconditions are checked before the
-  // flag to avoid activating the experiment for ineligible tabs.
-  if (enable_browser_autofill) {
-    auto* optimization_guide_decider =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    if (optimization_guide_decider &&
-        base::FeatureList::IsEnabled(
-            payments::facilitated::kEnableDesktopQrCodeDetection)) {
-      ChromeFacilitatedPaymentsClient::CreateForWebContents(
-          web_contents, optimization_guide_decider);
-    }
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

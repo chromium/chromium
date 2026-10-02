@@ -47,6 +47,7 @@ class AutoPictureInPictureTabHelper;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
 class BrowserSyncedTabDelegate;
+class ChromeFacilitatedPaymentsClient;
 class CollaborationMessagingPageActionController;
 class CommitLimitOOMRecoveryTracker;
 class ConnectionHelpTabHelper;
@@ -985,6 +986,9 @@ class TabFeatures {
   std::unique_ptr<TabDialogs> tab_dialogs_;
 
   std::unique_ptr<ManagePasswordsUIController> manage_passwords_ui_controller_;
+
+  std::unique_ptr<ChromeFacilitatedPaymentsClient>
+      chrome_facilitated_payments_client_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

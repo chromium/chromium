@@ -11,13 +11,14 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
@@ -48,22 +49,33 @@ namespace strike_database {
 class StrikeDatabase;
 }  // namespace strike_database
 
-// Chrome implementation of `FacilitatedPaymentsClient`. `WebContents` owns 1
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
+// Chrome implementation of `FacilitatedPaymentsClient`. `TabFeatures` owns 1
 // instance of this class. Creates and owns
 // `ContentFacilitatedPaymentsDriverFactory`.
 class ChromeFacilitatedPaymentsClient
-    : public payments::facilitated::FacilitatedPaymentsClient,
-      public content::WebContentsUserData<ChromeFacilitatedPaymentsClient> {
+    : public payments::facilitated::FacilitatedPaymentsClient {
  public:
+  DECLARE_USER_DATA(ChromeFacilitatedPaymentsClient);
+
+  // Note: `web_contents` is passed explicitly because `tab.GetContents()` still
+  // returns the old contents during `TabFeatures::WillDiscardContents`.
   ChromeFacilitatedPaymentsClient(
+      tabs::TabInterface& tab,
       content::WebContents* web_contents,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback = {});
+      base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback =
+          {});
   ChromeFacilitatedPaymentsClient(const ChromeFacilitatedPaymentsClient&) =
       delete;
   ChromeFacilitatedPaymentsClient& operator=(
       const ChromeFacilitatedPaymentsClient&) = delete;
   ~ChromeFacilitatedPaymentsClient() override;
+
+  static ChromeFacilitatedPaymentsClient* From(tabs::TabInterface* tab);
 
   // RiskDataLoader:
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
@@ -79,7 +91,7 @@ class ChromeFacilitatedPaymentsClient
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
+  content::WebContents& GetWebContents() const { return *web_contents_; }
 
   // FacilitatedPaymentsClient:
   const url::Origin& GetLastCommittedOrigin() const final;
@@ -136,6 +148,8 @@ class ChromeFacilitatedPaymentsClient
   // frame URL is eligible for that feature.
   void RegisterAllowlists();
 
+  const raw_ref<content::WebContents> web_contents_;
+
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
 
@@ -156,7 +170,8 @@ class ChromeFacilitatedPaymentsClient
 
   base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<ChromeFacilitatedPaymentsClient>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
