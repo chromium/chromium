@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -101,6 +103,23 @@ public class ContextMenuItemViewTest {
         mModel.set(ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER, this::click);
         mIcon.callOnClick();
         assertTrue("Icon hasn't been clicked.", mIsClicked);
+    }
+
+    @Test
+    public void testViewHolderCachedInTag() {
+        Object tag = mShareItemView.getTag(R.id.context_menu_item_view_holder);
+        assertNotNull("ViewHolder should be cached in view tag.", tag);
+        assertTrue(
+                "Cached tag should be an instance of ContextMenuItemViewBinder.ViewHolder.",
+                tag instanceof ContextMenuItemViewBinder.ViewHolder);
+
+        // Update a property and verify the exact same ViewHolder instance is reused across bind
+        // passes.
+        mModel.set(ContextMenuItemWithIconButtonProperties.TITLE, "Updated Title");
+        assertSame(
+                "Cached ViewHolder instance should be reused across property updates.",
+                tag,
+                mShareItemView.getTag(R.id.context_menu_item_view_holder));
     }
 
     private void click(View v) {

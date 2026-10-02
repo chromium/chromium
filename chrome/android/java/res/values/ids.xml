@@ -10,6 +10,7 @@ found in the LICENSE file.
     <!-- go/keep-sorted start -->
     <item name="background_drawable" type="id"/>
     <item name="bookmark_page" type="id"/>
+    <item name="context_menu_item_view_holder" type="id"/>
     <item name="custom_tab_bottom_bar_wrapper" type="id"/>
     <item name="foreground_drawable" type="id"/>
     <item name="fre_pager" type="id"/>
