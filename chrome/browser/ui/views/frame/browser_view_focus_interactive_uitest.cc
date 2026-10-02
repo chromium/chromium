@@ -63,7 +63,7 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
         contents_container_views =
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->GetContentsContainerViews();
-    ASSERT_EQ(2, contents_container_views.size());
+    ASSERT_EQ(2u, contents_container_views.size());
 
     // Start from the view prior to the left contents web view in the focus
     // order. This should be somewhere outside of the contents container, but
