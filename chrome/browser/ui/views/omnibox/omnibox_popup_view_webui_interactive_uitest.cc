@@ -45,6 +45,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "components/viz/common/features.h"
 #endif
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -662,6 +663,53 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIFrameCacheTest, FrameCacheUsage) {
   } else {
     EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
   }
+}
+
+// Occluding a window must not unlock the frame of its visible tab. Otherwise
+// the frame can be evicted, and the window shows up grey when it becomes
+// visible again.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIFrameCacheTest,
+                       OccludedTabKeepsFrameLocked) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  // Ensure the tab has embedded a surface, so its frame is tracked by the
+  // FrameEvictionManager.
+  content::WaitForCopyableViewInWebContents(web_contents);
+
+  content::PurgeUnlockedCompositorFrames();
+  ASSERT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+
+  web_contents->WasOccluded();
+  ASSERT_EQ(content::Visibility::OCCLUDED, web_contents->GetVisibility());
+  EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+
+  web_contents->WasShown();
+}
+
+// A tab that is occluded and then hidden must still unlock its frame, even
+// though the occlusion already marked its RenderWidgetHost as hidden.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIFrameCacheTest,
+                       OccludedThenHiddenTabUnlocksFrame) {
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WaitForCopyableViewInWebContents(web_contents);
+
+  content::PurgeUnlockedCompositorFrames();
+  ASSERT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+
+  web_contents->WasOccluded();
+  ASSERT_EQ(content::Visibility::OCCLUDED, web_contents->GetVisibility());
+  EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+
+  web_contents->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents->GetVisibility());
+  if (GetParam()) {
+    EXPECT_EQ(1u, content::GetUnlockedCompositorFrameCount());
+  } else {
+    EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+  }
+
+  web_contents->WasShown();
 }
 #endif
 
