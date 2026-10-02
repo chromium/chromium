@@ -8104,11 +8104,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "page-info-certificate-information",
-    "owners": [ "xiaoweigao@microsoft.com" , "fsenra@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "page-tools-feature-unavailability",
     "owners": [ "fbeauchamp@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160

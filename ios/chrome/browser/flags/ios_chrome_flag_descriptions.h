@@ -1950,11 +1950,6 @@ inline constexpr char kVariationsRestrictDogfoodName[] =
 inline constexpr char kVariationsRestrictDogfoodDescription[] =
     "When enabled, request dogfood variations from the variations server.";
 
-inline constexpr char kViewCertificateInformationName[] =
-    "View Certificate Information";
-inline constexpr char kViewCertificateInformationDescription[] =
-    "Enables viewing detailed certificate information in Page Info.";
-
 inline constexpr char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

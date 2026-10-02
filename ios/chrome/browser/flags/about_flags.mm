@@ -120,7 +120,6 @@
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/page_info/certificate/features/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
@@ -1709,11 +1708,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"enable-lens-on-ipad", flag_descriptions::kEnableLensOnIPadName,
      flag_descriptions::kEnableLensOnIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableLensOnIPad)},
-    {"page-info-certificate-information",
-     flag_descriptions::kViewCertificateInformationName,
-     flag_descriptions::kViewCertificateInformationDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(page_info_certificate::kViewCertificateInformation)},
     {"search-engine-choice-screen-snackbar",
      flag_descriptions::kSearchEngineChoiceScreenSnackbarName,
      flag_descriptions::kSearchEngineChoiceScreenSnackbarDescription,
