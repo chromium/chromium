@@ -156,7 +156,12 @@ public class FuseboxSessionState implements UserData {
         // Use current URL if the Retention is active as the starting input.
         // On eligible LFF devices the Omnibox should, by default, present the
         // current page URL (if the URL is eligible for display).
+        // Hub and Tab Search always start with an empty search box (see below), so the page URL
+        // must not become their initial input either. Otherwise an empty search box would be
+        // treated as text edited by the user (crbug.com/561860973).
         if (OmniboxCapabilities.hasDesktopExperience(context)
+                && !PageClassificationUtils.isHubOrTabSearch(
+                        mAutocompleteInput.getPageClassification())
                 && UrlBarData.shouldShowUrl(
                         mAutocompleteInput.getPageUrl(), /* isOffTheRecord= */ false)) {
             GURL pageUrl = mAutocompleteInput.getPageUrl();
