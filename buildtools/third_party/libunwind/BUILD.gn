@@ -30,6 +30,12 @@ source_set("libunwind") {
     defines = [ "_LIBUNWIND_DISABLE_VISIBILITY_ANNOTATIONS" ]
   }
   include_dirs = [ "//third_party/libunwind/src/include" ]
+
+  # TODO(crbug.com/40440396): libunwind's unwind.h declares
+  # _Unwind_GetLanguageSpecificData() differently from the compiler's unwind.h
+  # in //build/modules:system, so they conflict in a modules build.
+  use_libcxx_modules = false
+
   sources = [
     # C++ sources
     "//third_party/libunwind/src/src/Unwind-EHABI.cpp",
@@ -46,15 +52,11 @@ source_set("libunwind") {
   ]
   configs -= [
     "//build/config/compiler:chromium_code",
-    "//build/config/compiler:no_exceptions",
-    "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
     "//build/config/compiler:default_optimization",
   ]
   configs += [
     "//build/config/compiler:no_chromium_code",
-    "//build/config/compiler:exceptions",
-    "//build/config/compiler:rtti",
     "//build/config/compiler:optimize_speed",
 
     # Must be after no_chromium_code
