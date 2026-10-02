@@ -1985,14 +1985,6 @@ static_library("ui") {
     ]
   }
 
-  # Desktop-Android-only dependencies.
-  if (is_desktop_android) {
-    deps += [
-      "//chrome/browser/ui/android/extensions/side_panel/internal",
-      "//chrome/browser/ui/android/extensions/windowing/internal",
-    ]
-  }
-
   if (enable_captive_portal_detection) {
     deps += [ "//chrome/browser/captive_portal" ]
   }
@@ -2405,6 +2397,13 @@ static_library("ui") {
       "//chrome/browser/ui/android",
       "//chrome/browser/ui/android:context_menu_helper",
     ]
+
+    if (enable_extensions_core) {
+      deps += [
+        "//chrome/browser/ui/android/extensions/side_panel/internal",
+        "//chrome/browser/ui/android/extensions/windowing/internal",
+      ]
+    }
   } else {
     # !is_android
     sources = [

@@ -1038,7 +1038,7 @@ if (_is_default_toolchain) {
       "//components/visited_url_ranking/internal:internal_java",
     ]
 
-    if (is_desktop_android) {
+    if (enable_extensions_core) {
       deps += [
         "//chrome/browser/ui/android/extensions/side_panel/internal:java",
         "//chrome/browser/ui/android/extensions/windowing/internal:java",
@@ -2467,10 +2467,14 @@ if (_is_default_toolchain) {
       "//components/embedder_support/android:virtual_structure_javatests",
     ]
 
-    if (is_desktop_android) {
+    if (enable_extensions_core) {
       deps += [
         "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
+      ]
+    }
 
+    if (is_desktop_android) {
+      deps += [
         # TODO(crbug.com/473636857): Include in normal builds once all Android
         # support is finished.
         "//chrome/browser/ui/browser_window/internal:javatests",
