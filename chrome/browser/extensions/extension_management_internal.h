@@ -172,8 +172,6 @@ struct GlobalSettings {
 
   ~GlobalSettings();
 
-  void Reset();
-
   // Settings specifying which URLs are allowed to install extensions, will be
   // enforced only if `has_restricted_install_sources` is set to true.
   std::optional<URLPatternSet> install_sources;
@@ -184,6 +182,10 @@ struct GlobalSettings {
 
   UnpublishedAvailability unpublished_availability_setting =
       UnpublishedAvailability::kAllowUnpublished;
+
+  // Cached value of the
+  // ExtensionForceInstallWithSearchOrNewTabOverridesEnabled enterprise policy.
+  bool allow_low_trust_dse_ntp_overrides = false;
 };
 
 }  // namespace internal

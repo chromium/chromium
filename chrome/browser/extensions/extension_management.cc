@@ -140,6 +140,12 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   pref_change_registrar_.Add(pref_names::kExtensionUnpublishedAvailability,
                              pref_change_callback);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  pref_change_registrar_.Add(
+      pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+      pref_change_callback);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
   // Note that both |global_settings_| and |default_settings_| will be null
   // before first call to Refresh(), so in order to resolve this, Refresh() must
   // be called in the initialization of ExtensionManagement.
@@ -535,10 +541,11 @@ bool ExtensionManagement::IsLowTrustEnforcementActive() const {
 
 bool ExtensionManagement::IsDseNtpOverrideBlockingActive() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(kBlockPolicyDseNtpOverridesInLowTrust)) {
+  if (!base::FeatureList::IsEnabled(kBlockPolicyDseNtpOverridesInLowTrust) ||
+      global_settings_->allow_low_trust_dse_ntp_overrides) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return IsLowTrustEnforcementActive();
 }
 
@@ -736,6 +743,11 @@ void ExtensionManagement::Refresh() {
   const base::Value* unpublished_availability_pref =
       LoadPreference(pref_names::kExtensionUnpublishedAvailability,
                      /*force_managed=*/true, base::Value::Type::INTEGER);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const base::Value* allow_overrides_pref = LoadPreference(
+      pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+      /*force_managed=*/true, base::Value::Type::BOOLEAN);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Reset all settings.
   global_settings_ = std::make_unique<internal::GlobalSettings>();
@@ -827,6 +839,13 @@ void ExtensionManagement::Refresh() {
         static_cast<internal::GlobalSettings::UnpublishedAvailability>(
             unpublished_availability_pref->GetInt());
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (allow_overrides_pref) {
+    global_settings_->allow_low_trust_dse_ntp_overrides =
+        allow_overrides_pref->GetBool();
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   if (dict_pref) {
     // Parse new extension management preference.

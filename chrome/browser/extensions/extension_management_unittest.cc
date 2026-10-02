@@ -1969,4 +1969,77 @@ TEST_F(ExtensionManagementServiceTest, IsForcedOrRecommendedInstallConfigured) {
       update_url_id, other_update_url));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Verifies that low-trust blocking of policy-installed DSE/NTP override
+// extensions is active by default, and that enterprise administrators can
+// allow these extensions via the
+// ExtensionForceInstallWithSearchOrNewTabOverridesEnabled policy preference.
+TEST_F(ExtensionManagementServiceTest,
+       SearchOrNewTabOverridesPolicyDisablesLowTrustBlocking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  const std::string extension_id = "abcdefghijklmnopabcdefghijklmnop";
+  const std::string update_url = extension_urls::kChromeWebstoreUpdateURL;
+  const std::string pref_json = base::StringPrintf(
+      R"({
+        "%s": {
+          "installation_mode": "force_installed",
+          "update_url": "%s"
+        }
+      })",
+      extension_id.c_str(), update_url.c_str());
+  SetExampleDictPref(pref_json);
+
+  scoped_refptr<const Extension> extension =
+      CreateExtension(ManifestLocation::kExternalPolicyDownload, "0.1",
+                      extension_id, update_url);
+  extension_management_->low_trust_block_manager()->MarkBlocked(
+      extension_id,
+      BlockedExtensionInfo{.override_type = util::DseNtpOverrideType::kDse,
+                           .update_url = update_url,
+                           .timestamp = base::Time::Now()});
+
+  // Low-trust blocking is enforced by default when the policy is not
+  // configured, downgrading the effective installation mode of a blocked
+  // extension to kAllowed.
+  EXPECT_TRUE(extension_management_->IsDseNtpOverrideBlockingActive());
+  EXPECT_EQ(ManagedInstallationMode::kAllowed,
+            extension_management_->GetInstallationMode(extension.get()));
+
+  // Unmanaged user preferences cannot disable low-trust blocking.
+  SetPref(/*managed=*/false,
+          pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+          base::Value(true));
+  EXPECT_TRUE(extension_management_->IsDseNtpOverrideBlockingActive());
+  EXPECT_EQ(ManagedInstallationMode::kAllowed,
+            extension_management_->GetInstallationMode(extension.get()));
+
+  // Enabling the managed policy allows admins to permit DSE/NTP override
+  // extensions in low-trust environments, restoring the kForced installation
+  // mode even if the extension was previously marked blocked.
+  SetPref(/*managed=*/true,
+          pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+          base::Value(true));
+  EXPECT_FALSE(extension_management_->IsDseNtpOverrideBlockingActive());
+  EXPECT_EQ(ManagedInstallationMode::kForced,
+            extension_management_->GetInstallationMode(extension.get()));
+
+  // Removing the managed preference resets to default (blocking active).
+  RemovePref(
+      /*managed=*/true,
+      pref_names::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled);
+  EXPECT_TRUE(extension_management_->IsDseNtpOverrideBlockingActive());
+  EXPECT_EQ(ManagedInstallationMode::kAllowed,
+            extension_management_->GetInstallationMode(extension.get()));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 }  // namespace extensions

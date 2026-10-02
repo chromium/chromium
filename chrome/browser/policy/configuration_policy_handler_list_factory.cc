@@ -2270,6 +2270,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kExtensionReviewPromptsEnabled,
     prefs::kExtensionReviewPromptsAllowed,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  { key::kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+    extensions::pref_names::
+        kExtensionForceInstallWithSearchOrNewTabOverridesEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

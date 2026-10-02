@@ -1,0 +1,49 @@
+caption: Enable policy-installed extensions that override default search or New Tab Page settings
+
+desc: |-
+  Controls whether policy-installed extensions (force-installed or recommended) that override the default search engine or New Tab Page settings are allowed in low-trust environments.
+
+  This policy only applies to low-trust environments (such as devices where policies are configured locally without domain or cloud management). High-trust environments are not affected:
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is not available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise Core</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is not available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise Core</ph>.
+
+  Policy-installed extensions that override the default search engine or New Tab Page settings will remain enabled in these high-trust instances.
+
+  When set to Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow policy-installed extensions that override the default search engine or New Tab Page settings to be installed and remain enabled in low-trust environments.
+
+  When set to Disabled or not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will prevent policy-installed extensions that override the default search engine or New Tab Page settings from being installed in low-trust environments, and will remove them if already installed.
+
+  If an affected extension is updated to no longer override these settings, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will automatically install it within 7 days.
+
+  This is a temporary policy and will be removed in a future release.
+
+owners:
+- anunoy@chromium.org
+- file://extensions/OWNERS
+
+future_on:
+- chrome.mac
+- chrome.win
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: main
+
+schema:
+  type: boolean
+
+items:
+- caption: Enable policy-installed extensions that override default search or New Tab Page settings in low-trust environments
+  value: true
+- caption: Remove policy-installed extensions that override default search or New Tab Page settings in low-trust environments
+  value: false
+
+default: false
+
+example_value: false
+
+tags: []

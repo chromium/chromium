@@ -13,3 +13,4 @@ Extensions:
   - ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls
   - ExtensionDOMActivityLoggingEnabled
   - ExtensionReviewPromptsEnabled
+  - ExtensionForceInstallWithSearchOrNewTabOverridesEnabled

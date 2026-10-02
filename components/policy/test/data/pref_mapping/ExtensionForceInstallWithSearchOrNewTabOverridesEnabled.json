@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "win",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.force_install_with_search_or_new_tab_overrides_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

@@ -134,6 +134,13 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";
 
+// Boolean pref indicating whether policy-installed extensions that override
+// default search or New Tab Page settings are allowed in low-trust
+// environments.
+inline constexpr char
+    kExtensionForceInstallWithSearchOrNewTabOverridesEnabled[] =
+        "extensions.force_install_with_search_or_new_tab_overrides_enabled";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // The time at which the extension was installed, used to record the time to
