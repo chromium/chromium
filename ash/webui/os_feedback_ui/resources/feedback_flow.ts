@@ -180,23 +180,23 @@ export class FeedbackFlowElement extends PolymerElement {
    * The description entered by the user. It is set when the user clicks the
    * next button on the search page.
    */
-  private description: string;
+  private description = '';
 
   /**
    * The description template provided source application to help user write
    * feedback.
    */
-  protected descriptionTemplate: string;
+  protected descriptionTemplate = '';
 
   /**
    * The description placeholder text is used to give the user a hint on how
    * to write the description. Some apps, such as the Camera app can use a
    * custom placeholder.
    */
-  protected descriptionPlaceholderText: string;
+  protected descriptionPlaceholderText = '';
 
   /**  The status of sending report. */
-  private sendReportStatus: SendReportStatus|null;
+  private sendReportStatus: SendReportStatus|null = null;
 
   /**  Whether user clicks the help content or not. */
   private helpContentClicked = false;
@@ -205,10 +205,10 @@ export class FeedbackFlowElement extends PolymerElement {
   private helpContentOutcomeMetricEmitted = false;
 
   /**  Number of results returned in each search. */
-  private helpContentSearchResultCount: number;
+  private helpContentSearchResultCount = 0;
 
   /**  Whether there is no help content shown(offline or search is down). */
-  private noHelpContentDisplayed: boolean;
+  private noHelpContentDisplayed = false;
 
   /**
    * When the feedback tool is opened as a dialog, feedback context is passed
@@ -217,7 +217,7 @@ export class FeedbackFlowElement extends PolymerElement {
   private dialogArgs: string;
 
   /**  Whether the user has logged in (not on oobe or on the login screen). */
-  private isUserLoggedIn: boolean;
+  private isUserLoggedIn = false;
 
   constructor() {
     super();

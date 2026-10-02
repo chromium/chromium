@@ -129,7 +129,7 @@ export class SearchPageElement extends SearchPageElementBase {
   private iframeLoaded: Promise<void>|null = null;
   private iframe: HTMLIFrameElement|null = null;
   /**  The content list received when query is empty. */
-  private popularHelpContentList: HelpContent[];
+  private popularHelpContentList: HelpContent[]|null = null;
   /**
    * The list of questionnaire questions that have already been appended to
    * the input text.
@@ -265,7 +265,7 @@ export class SearchPageElement extends SearchPageElementBase {
 
     if (isQueryEmpty) {
       // Load popular help content if they are not loaded before.
-      if (this.popularHelpContentList === undefined) {
+      if (this.popularHelpContentList === null) {
         response = await this.helpContentProvider.getHelpContents(request);
         this.popularHelpContentList = response.response.results;
       }
@@ -280,7 +280,7 @@ export class SearchPageElement extends SearchPageElementBase {
     this.isPopularContentForTesting = isPopularContent;
     const data = {
       contentList:
-          (isPopularContent ? this.popularHelpContentList :
+          (isPopularContent ? this.popularHelpContentList! :
                               response!.response.results),
       isQueryEmpty: isQueryEmpty,
       isPopularContent: isPopularContent,
