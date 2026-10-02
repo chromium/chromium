@@ -8,6 +8,7 @@
 #include <complex>
 #include <vector>
 
+#include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,7 @@ class MockVoiceIsolationComponent : public VoiceIsolationComponent {
   MOCK_METHOD(size_t, FrameSize, (), (const, override));
   MOCK_METHOD(size_t, FramesPerSecond, (), (const, override));
   MOCK_METHOD(void, ClearBuffers, (), (override));
+  MOCK_METHOD(base::TimeDelta, AlgorithmicDelay, (), (const, override));
 };
 
 }  // namespace
@@ -64,8 +66,10 @@ TEST(StftVoiceIsolationTest, Creation) {
 }
 
 TEST(StftVoiceIsolationTest, FrameSizeAndDelay) {
-  // Expectation: we do two FFT of 20ms each. The input is 20ms. We use an
-  // overlapping window. We return 160 complex values per FFT.
+  // Expectation: The inner component processes frequency-domain data from two
+  // FFTs per step (640 floats total, representing 160 complex bins per FFT).
+  // The outer StftVoiceIsolation operates in the time domain with a frame size
+  // of 320 samples (20 ms at 16 kHz, with 50 frames per second).
   constexpr size_t kFftSize = 2 * 2 * 160;
   constexpr size_t kFrameSize = 2 * 160;
   constexpr size_t kFramesPerSecond = 50;
@@ -75,9 +79,22 @@ TEST(StftVoiceIsolationTest, FrameSizeAndDelay) {
   EXPECT_CALL(*mock_inner, FramesPerSecond())
       .WillRepeatedly(Return(kFramesPerSecond));
 
+  // The inner component introduces its own algorithmic delay (e.g. 5 ms).
+  EXPECT_CALL(*mock_inner, AlgorithmicDelay())
+      .WillRepeatedly(Return(base::Milliseconds(5)));
+
   StftVoiceIsolation stft(std::move(mock_inner));
   EXPECT_EQ(stft.FrameSize(), kFrameSize);
   EXPECT_EQ(stft.FramesPerSecond(), kFramesPerSecond);
+
+  // The STFT overlap-add synthesis introduces an algorithmic lookahead delay
+  // equal to half the FFT window (one hop):
+  //   hop_delay = (fft_size_ / 2) / (fft_size_ * FramesPerSecond())
+  //             = 0.5 / 50 = 10 ms.
+  // AlgorithmicDelay() aggregates the inner component's delay and the STFT
+  // synthesis lookahead delay:
+  //   total_delay = inner_delay (5 ms) + stft_delay (10 ms) = 15 ms.
+  EXPECT_EQ(stft.AlgorithmicDelay(), base::Milliseconds(15));
 }
 
 TEST(StftVoiceIsolationTest, ProcessAudioLoopback) {

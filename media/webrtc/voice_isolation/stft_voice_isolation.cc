@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/pffft/src/pffft.h"
 
@@ -213,6 +214,10 @@ void WindowedFft::Clear() {
   std::fill(fft_workplace_.begin(), fft_workplace_.end(), 0.0f);
 }
 
+size_t WindowedFft::DelayFrames() const {
+  return fft_size_ / 2;
+}
+
 StftVoiceIsolation::StftVoiceIsolation(
     std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation)
     : fft_size_(internal_voice_isolation->FrameSize() / 2),
@@ -258,6 +263,12 @@ void StftVoiceIsolation::ClearBuffers() {
   if (internal_voice_isolation_) {
     internal_voice_isolation_->ClearBuffers();
   }
+}
+
+base::TimeDelta StftVoiceIsolation::AlgorithmicDelay() const {
+  return internal_voice_isolation_->AlgorithmicDelay() +
+         AudioTimestampHelper::FramesToTime(windowed_fft_->DelayFrames(),
+                                            FrameSize() * FramesPerSecond());
 }
 
 }  // namespace media

@@ -260,4 +260,11 @@ void TfLiteVoiceIsolation::ClearBuffers() {
   }
 }
 
+base::TimeDelta TfLiteVoiceIsolation::AlgorithmicDelay() const {
+  // The production model is causal with zero lookahead.
+  // TODO(crbug.com/568614815): Read lookahead delay from TFLite model metadata
+  // so future models can declare lookahead dynamically.
+  return base::TimeDelta();
+}
+
 }  // namespace media

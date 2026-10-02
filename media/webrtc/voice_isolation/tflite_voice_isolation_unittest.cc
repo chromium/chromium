@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,6 +126,7 @@ TEST(TfLiteVoiceIsolation, MAYBE_CreateWorks) {
   ASSERT_OK_AND_ASSIGN(auto voice_isolation,
                        TfLiteVoiceIsolation::MaybeCreate(model.get()));
   EXPECT_EQ(voice_isolation->FrameSize(), 640u);
+  EXPECT_EQ(voice_isolation->AlgorithmicDelay(), base::TimeDelta());
 }
 
 TEST(TfLiteVoiceIsolation, MAYBE_ProcessAudioWorks) {

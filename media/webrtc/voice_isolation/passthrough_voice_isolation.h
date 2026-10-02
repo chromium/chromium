@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 
 namespace media {
@@ -27,6 +28,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) PassthroughVoiceIsolation
   size_t FramesPerSecond() const override;
 
   void ClearBuffers() override;
+
+  base::TimeDelta AlgorithmicDelay() const override;
 
  private:
   const size_t frame_size_;

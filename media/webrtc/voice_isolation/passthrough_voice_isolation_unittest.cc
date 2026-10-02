@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,6 +18,7 @@ TEST(PassthroughVoiceIsolationTest, CorrectFrameSizeAndDelay) {
 
   EXPECT_EQ(passthrough.FrameSize(), 480u);
   EXPECT_EQ(passthrough.FramesPerSecond(), 480u);
+  EXPECT_EQ(passthrough.AlgorithmicDelay(), base::TimeDelta());
 }
 
 TEST(PassthroughVoiceIsolationTest, ProcessAudioPassthrough) {

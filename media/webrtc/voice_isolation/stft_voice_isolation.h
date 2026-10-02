@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/pffft/src/pffft.h"
 
@@ -39,6 +40,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) StftVoiceIsolation
 
   void ClearBuffers() override;
 
+  base::TimeDelta AlgorithmicDelay() const override;
+
  private:
   const size_t fft_size_;
   std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation_;
@@ -63,6 +66,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) WindowedFft {
 
   // Clears the internal state.
   void Clear();
+
+  size_t DelayFrames() const;
 
  private:
   const unsigned int fft_size_;

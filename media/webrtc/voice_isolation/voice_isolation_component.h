@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/time/time.h"
 
 namespace media {
 
@@ -50,6 +51,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolationComponent {
 
   // Clears all internal state.
   virtual void ClearBuffers() = 0;
+
+  // Returns the algorithmic delay this component adds: the time between an
+  // input sample and its corresponding output sample. Excludes computation
+  // time. Includes the delay of any wrapped components. Constant for the
+  // lifetime of the object.
+  virtual base::TimeDelta AlgorithmicDelay() const = 0;
 };
 }  // namespace media
 
