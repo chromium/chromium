@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -295,6 +296,11 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     return it != coordinator_->task_id_to_web_contents_cache_.end()
                ? it->second->web_contents.get()
                : nullptr;
+  }
+
+  void SetPermissionControllerForTesting(
+      std::unique_ptr<ContextualTasksPermissionController> controller) {
+    coordinator_->permission_controller_ = std::move(controller);
   }
 
   std::unique_ptr<KeyedService> CreateMockContextController(
@@ -1466,6 +1472,52 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   coordinator_->RecordTimeToHandshakeComplete(cached_wc);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.SidePanel.TimeToHandshakeComplete", 2);
+}
+
+class MockContextualTasksPermissionController
+    : public ContextualTasksPermissionController {
+ public:
+  explicit MockContextualTasksPermissionController(
+      BrowserWindowInterface* browser_window)
+      : ContextualTasksPermissionController(browser_window) {}
+
+  ~MockContextualTasksPermissionController() override = default;
+
+  MOCK_METHOD(void, PushStateToWebUINow, (), (override));
+};
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnActiveTabChanged_PushesPermissionState) {
+  auto permission_controller =
+      std::make_unique<MockContextualTasksPermissionController>(
+          browser_window_.get());
+  auto* permission_controller_ptr = permission_controller.get();
+  SetPermissionControllerForTesting(std::move(permission_controller));
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(testing::_))
+      .WillRepeatedly(Return(task));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillRepeatedly(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab1->GetContents())}));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_id);
+  ASSERT_TRUE(panel_contents);
+
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab1));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*permission_controller_ptr, PushStateToWebUINow())
+      .WillOnce([&]() { run_loop.Quit(); });
+  coordinator_->OnActiveTabChanged(*tab_list_, tab1);
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

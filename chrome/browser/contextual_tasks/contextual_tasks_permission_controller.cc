@@ -48,25 +48,15 @@ ContextualTasksPermissionController::~ContextualTasksPermissionController() =
 
 void ContextualTasksPermissionController::RegisterWebContents(
     content::WebContents* web_contents) {
-  if (!web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!web_contents || !location_bar_) {
     return;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (location_bar_) {
-    web_contents->RemoveUserData(
-        location_bar::LocationBarOverrideData::UserDataKey());
-    location_bar::LocationBarOverrideData::CreateForWebContents(
-        web_contents, location_bar_.get());
-  }
+  web_contents->RemoveUserData(
+      location_bar::LocationBarOverrideData::UserDataKey());
+  location_bar::LocationBarOverrideData::CreateForWebContents(
+      web_contents, location_bar_.get());
 #endif
-
-  // Disconnect stale permission observer and if applicable, register
-  // new one based on new web contents.
-  prm_observation_.Reset();
-  if (auto* prm = permissions::PermissionRequestManager::FromWebContents(
-          web_contents)) {
-    prm_observation_.Observe(prm);
-  }
 }
 
 void ContextualTasksPermissionController::UnregisterWebContents(
@@ -84,6 +74,27 @@ void ContextualTasksPermissionController::UnregisterWebContents(
       prm && prm_observation_.IsObservingSource(prm)) {
     prm_observation_.Reset();
   }
+}
+
+void ContextualTasksPermissionController::Update(
+    content::WebContents* web_contents) {
+  prm_observation_.Reset();
+  if (web_contents) {
+    if (auto* prm = permissions::PermissionRequestManager::FromWebContents(
+            web_contents)) {
+      prm_observation_.Observe(prm);
+    }
+  }
+
+  // Push state to webUI from location bar if it exists.
+  // Otherwise, push from the permission controller.
+#if !BUILDFLAG(IS_ANDROID)
+  if (location_bar_) {
+    location_bar_->Update(web_contents);
+    return;
+  }
+#endif
+  PushStateToWebUI();
 }
 
 toolbar_ui_api::mojom::PermissionDashboardStatePtr
