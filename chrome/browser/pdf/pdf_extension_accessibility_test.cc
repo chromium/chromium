@@ -1645,14 +1645,18 @@ class PdfSearchifyIntegrationTest
     // If the given `pdf_path` contains a filename, "test.pdf", an expected
     // file path will have a filename, "test-expected-with-pdf-searchify.txt",
     // when OCR is available.
-    // `expected_file_suffix` will be created based on whether OCR is available
-    // and it has a separate output for Windows.
+    // `expected_file_suffix` will be created based on whether heuristic
+    // enhancements are enabled, whether OCR is available, and whether there is
+    // a separate output for Windows.
     base::FilePath::StringType expected_file_suffix;
+    if (UseHeuristicEnhancements()) {
+      expected_file_suffix = FILE_PATH_LITERAL("-heuristics");
+    }
 
     if (is_ocr_available) {
-      expected_file_suffix = FILE_PATH_LITERAL("-expected-with-pdf-searchify");
+      expected_file_suffix += FILE_PATH_LITERAL("-expected-with-pdf-searchify");
     } else {
-      expected_file_suffix =
+      expected_file_suffix +=
           FILE_PATH_LITERAL("-expected-without-pdf-searchify");
     }
 #if BUILDFLAG(IS_WIN)
@@ -1765,16 +1769,45 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest,
 #endif
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfSearchifyIntegrationTest,
-    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
-      return base::StringPrintf(
-          "OcrService_%s_Library_%s_%s",
-          std::get<0>(info.param) ? "Enabled" : "Disabled",
-          std::get<1>(info.param) ? "Available" : "Unavailable",
-          std::get<2>(info.param) ? "OOPIF" : "GuestView");
-    });
+struct PdfSearchifyIntegrationTestParamToString {
+  std::string operator()(
+      const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) const {
+    return base::StringPrintf(
+        "OcrService_%s_Library_%s_%s",
+        std::get<0>(info.param) ? "Enabled" : "Disabled",
+        std::get<1>(info.param) ? "Available" : "Unavailable",
+        std::get<2>(info.param) ? "OOPIF" : "GuestView");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfSearchifyIntegrationTest,
+                         ::testing::Combine(testing::Bool(),
+                                            testing::Bool(),
+                                            testing::Bool()),
+                         PdfSearchifyIntegrationTestParamToString());
+
+class PdfSearchifyHeuristicsIntegrationTest
+    : public PdfSearchifyIntegrationTest {
+ public:
+  PdfSearchifyHeuristicsIntegrationTest() = default;
+  ~PdfSearchifyHeuristicsIntegrationTest() override = default;
+
+ protected:
+  bool UseHeuristicEnhancements() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(PdfSearchifyHeuristicsIntegrationTest, ThreePagePDF) {
+  RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf", "Page 3");
+}
+
+// Only instantiate with OCR available. Without OCR there is no text for the
+// heuristics to change.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfSearchifyHeuristicsIntegrationTest,
+                         ::testing::Combine(testing::Values(true),
+                                            testing::Values(true),
+                                            testing::Bool()),
+                         PdfSearchifyIntegrationTestParamToString());
 
 #endif  // defined(PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED)
