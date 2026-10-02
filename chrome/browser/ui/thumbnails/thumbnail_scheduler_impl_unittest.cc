@@ -194,3 +194,20 @@ TEST_F(ThumbnailSchedulerImplTest, CaptureStopsOnPriorityNone) {
       &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kNone);
   EXPECT_THAT(TabScheduledStates(), ElementsAre(false, false, false, false));
 }
+
+// Ensures that removing a tab won't crash.
+TEST_F(ThumbnailSchedulerImplTest, RemoveTabWithPriorityNone) {
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kNone);
+  scheduler_.RemoveTab(&tabs_[0]);
+}
+
+// Ensures that removing a tab which has been prioritized won't crash, and that
+// removing it deprioritizes it.
+TEST_F(ThumbnailSchedulerImplTest, RemoveTabWithPriorityHigh) {
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(true, false, false, false));
+  scheduler_.RemoveTab(&tabs_[0]);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(false, false, false, false));
+}
