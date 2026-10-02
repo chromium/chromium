@@ -17,13 +17,17 @@
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-forward.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace offline_pages {
 
@@ -51,18 +55,27 @@ enum class OfflinePageTrustedState {
 // to facilitate the synchronous access to offline information.
 class OfflinePageTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<OfflinePageTabHelper>,
       public offline_pages::mojom::MhtmlPageNotifier {
  public:
+  DECLARE_USER_DATA(OfflinePageTabHelper);
+
   static void BindHtmlPageNotifier(
       mojo::PendingAssociatedReceiver<offline_pages::mojom::MhtmlPageNotifier>
           receiver,
       content::RenderFrameHost* rfh);
 
+  // Note: `web_contents` is passed explicitly because `tab.GetContents()` still
+  // returns the old `WebContents` during `TabFeatures::WillDiscardContents`.
+  OfflinePageTabHelper(tabs::TabInterface& tab,
+                       content::WebContents* web_contents);
   OfflinePageTabHelper(const OfflinePageTabHelper&) = delete;
   OfflinePageTabHelper& operator=(const OfflinePageTabHelper&) = delete;
 
   ~OfflinePageTabHelper() override;
+
+  static OfflinePageTabHelper* From(tabs::TabInterface* tab);
+  static OfflinePageTabHelper* FromWebContents(
+      content::WebContents* web_contents);
 
   // MhtmlPageNotifier overrides.
   void NotifyMhtmlPageLoadAttempted(blink::mojom::MHTMLLoadResult result,
@@ -122,8 +135,6 @@ class OfflinePageTabHelper
                               const std::string& request_origin);
 
  private:
-  friend class content::WebContentsUserData<OfflinePageTabHelper>;
-
   // Contains the info about the offline page being loaded.
   struct LoadedOfflinePageInfo {
     LoadedOfflinePageInfo();
@@ -158,8 +169,6 @@ class OfflinePageTabHelper
 
     void Clear();
   };
-
-  explicit OfflinePageTabHelper(content::WebContents* web_contents);
 
   // Overridden from content::WebContentsObserver:
   void DidStartNavigation(
@@ -210,9 +219,9 @@ class OfflinePageTabHelper
   content::RenderFrameHostReceiverSet<mojom::MhtmlPageNotifier>
       mhtml_page_notifier_receivers_;
 
-  base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_{this};
+  ui::ScopedUnownedUserData<OfflinePageTabHelper> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

@@ -48,6 +48,7 @@
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
+#include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -445,6 +446,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
             *tab, *tab, web_contents);
   }
+
+  offline_page_tab_helper_ =
+      GetUserDataFactory().CreateInstance<offline_pages::OfflinePageTabHelper>(
+          *tab, *tab, web_contents);
 
   recent_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(

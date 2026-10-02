@@ -276,7 +276,11 @@ std::string OfflinePageBridge::GetEncodedOriginApp(
     return "";
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_OfflinePageBridge_getEncodedOriginApp(env, tab->GetJavaObject());
+  ScopedJavaLocalRef<jobject> j_tab = tab->GetJavaObject();
+  if (!j_tab) {
+    return "";
+  }
+  return Java_OfflinePageBridge_getEncodedOriginApp(env, j_tab);
 }
 
 OfflinePageBridge::OfflinePageBridge(JNIEnv* env,

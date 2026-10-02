@@ -335,6 +335,7 @@ class ChromeComposeClient;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 namespace offline_pages {
+class OfflinePageTabHelper;
 class RecentTabHelper;
 }  // namespace offline_pages
 #endif
@@ -975,6 +976,7 @@ class TabFeatures {
       supervised_user_navigation_observer_;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  std::unique_ptr<offline_pages::OfflinePageTabHelper> offline_page_tab_helper_;
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
 #endif
 

@@ -29,6 +29,7 @@
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -39,6 +40,8 @@
 #include "ui/base/page_transition_types.h"
 
 namespace offline_pages {
+
+DEFINE_USER_DATA(OfflinePageTabHelper);
 
 using blink::mojom::MHTMLLoadResult;
 
@@ -100,14 +103,29 @@ bool OfflinePageTabHelper::LoadedOfflinePageInfo::IsValid() const {
   return offline_page != nullptr;
 }
 
-OfflinePageTabHelper::OfflinePageTabHelper(content::WebContents* web_contents)
+OfflinePageTabHelper::OfflinePageTabHelper(tabs::TabInterface& tab,
+                                           content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<OfflinePageTabHelper>(*web_contents),
-      mhtml_page_notifier_receivers_(web_contents, this) {
+      mhtml_page_notifier_receivers_(web_contents, this),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 }
 
 OfflinePageTabHelper::~OfflinePageTabHelper() = default;
+
+// static
+OfflinePageTabHelper* OfflinePageTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+OfflinePageTabHelper* OfflinePageTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
 
 void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
     MHTMLLoadResult load_result,
@@ -425,7 +443,5 @@ void OfflinePageTabHelper::DoDownloadPageLater(
     OfflinePageUtils::ShowDownloadingToast();
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinePageTabHelper);
 
 }  // namespace offline_pages

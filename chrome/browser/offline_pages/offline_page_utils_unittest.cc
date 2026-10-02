@@ -40,6 +40,8 @@
 #include "components/offline_pages/core/offline_page_test_archiver.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/test_scoped_offline_clock.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -179,7 +181,9 @@ class OfflinePageUtilsTest : public testing::Test,
   TestScopedOfflineClock clock_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  tabs::MockTabInterface mock_tab_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<OfflinePageTabHelper> offline_page_tab_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_ANDROID)
   android::MockDownloadController download_controller_;
@@ -199,7 +203,10 @@ void OfflinePageUtilsTest::SetUp() {
   // Create a test web contents.
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
-  OfflinePageTabHelper::CreateForWebContents(web_contents_.get());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_.get(),
+                                                       &mock_tab_);
+  offline_page_tab_helper_ =
+      std::make_unique<OfflinePageTabHelper>(mock_tab_, web_contents_.get());
   // Reset the value of the test clock.
   clock_.SetNow(base::Time::Now());
 
@@ -224,6 +231,7 @@ void OfflinePageUtilsTest::SetUp() {
 }
 
 void OfflinePageUtilsTest::TearDown() {
+  offline_page_tab_helper_.reset();
 #if BUILDFLAG(IS_ANDROID)
   DownloadControllerBase::SetDownloadControllerBase(nullptr);
 #endif

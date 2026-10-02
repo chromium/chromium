@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_item.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -58,28 +59,30 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
                                base::Time mhtml_creation_time,
                                MHTMLLoadResult load_result);
 
-  OfflinePageTabHelper* tab_helper() const { return tab_helper_; }
+  OfflinePageTabHelper* tab_helper() const { return tab_helper_.get(); }
   content::NavigationSimulator* navigation_simulator() {
     return navigation_simulator_.get();
   }
 
  private:
-  raw_ptr<OfflinePageTabHelper> tab_helper_;  // Owned by WebContents.
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<OfflinePageTabHelper> tab_helper_;
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   base::WeakPtrFactory<OfflinePageTabHelperTest> weak_ptr_factory_{this};
 };
 
-OfflinePageTabHelperTest::OfflinePageTabHelperTest() : tab_helper_(nullptr) {}
+OfflinePageTabHelperTest::OfflinePageTabHelperTest() = default;
 
 void OfflinePageTabHelperTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
 
-  OfflinePageTabHelper::CreateForWebContents(web_contents());
-  tab_helper_ = OfflinePageTabHelper::FromWebContents(web_contents());
+  tab_helper_ =
+      std::make_unique<OfflinePageTabHelper>(mock_tab_, web_contents());
 }
 
 void OfflinePageTabHelperTest::TearDown() {
+  tab_helper_.reset();
   content::RenderViewHostTestHarness::TearDown();
 }
 

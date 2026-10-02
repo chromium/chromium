@@ -283,6 +283,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+#include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #endif
 
@@ -1075,6 +1076,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  offline_page_tab_helper_ =
+      GetUserDataFactory().CreateInstance<offline_pages::OfflinePageTabHelper>(
+          tab, tab, tab.GetContents());
   recent_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
           tab, tab, tab.GetContents());
@@ -1525,6 +1529,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  offline_page_tab_helper_.reset();
+  offline_page_tab_helper_ =
+      GetUserDataFactory().CreateInstance<offline_pages::OfflinePageTabHelper>(
+          *tab, *tab, new_contents);
   recent_tab_helper_.reset();
   recent_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(

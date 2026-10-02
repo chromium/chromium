@@ -38,6 +38,8 @@
 #include "components/offline_pages/core/offline_page_test_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -339,7 +341,7 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   Profile* profile() { return profile_; }
   content::WebContents* web_contents() const { return web_contents_.get(); }
   OfflinePageTabHelper* offline_page_tab_helper() const {
-    return offline_page_tab_helper_;
+    return offline_page_tab_helper_.get();
   }
   int request_status() const { return response_.request_status; }
   int bytes_read() const { return response_.data_received.length(); }
@@ -375,9 +377,10 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  tabs::MockTabInterface mock_tab_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  raw_ptr<OfflinePageTabHelper> offline_page_tab_helper_;  // Not owned.
+  std::unique_ptr<OfflinePageTabHelper> offline_page_tab_helper_;
   int64_t last_offline_id_;
   ResponseInfo response_;
   bool is_offline_page_set_in_navigation_data_;
@@ -427,9 +430,10 @@ void OfflinePageRequestHandlerTest::SetUp() {
 
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_));
-  OfflinePageTabHelper::CreateForWebContents(web_contents_.get());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_.get(),
+                                                       &mock_tab_);
   offline_page_tab_helper_ =
-      OfflinePageTabHelper::FromWebContents(web_contents_.get());
+      std::make_unique<OfflinePageTabHelper>(mock_tab_, web_contents_.get());
 
   // Set up the factory for testing.
   // Note: The extra dir into the temp folder is needed so that the helper
@@ -482,6 +486,7 @@ void OfflinePageRequestHandlerTest::SetUp() {
 }
 
 void OfflinePageRequestHandlerTest::TearDown() {
+  offline_page_tab_helper_.reset();
   EXPECT_TRUE(private_archives_temp_base_dir_.Delete());
   EXPECT_TRUE(public_archives_temp_base_dir_.Delete());
 }

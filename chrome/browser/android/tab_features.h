@@ -85,6 +85,7 @@ class WebContentsTopSitesObserver;
 
 namespace offline_pages {
 class AutoFetchNavigationObserver;
+class OfflinePageTabHelper;
 class RecentTabHelper;
 }  // namespace offline_pages
 
@@ -291,6 +292,7 @@ class TabFeatures {
   std::unique_ptr<chrome_browser_net::NetErrorTabHelper> net_error_tab_helper_;
   std::unique_ptr<SupervisedUserNavigationObserver>
       supervised_user_navigation_observer_;
+  std::unique_ptr<offline_pages::OfflinePageTabHelper> offline_page_tab_helper_;
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
   std::unique_ptr<AutoPictureInPictureTabHelper>
       auto_picture_in_picture_tab_helper_;
