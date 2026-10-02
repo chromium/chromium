@@ -9,18 +9,18 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {getCss} from './favicons_app.css.js';
-import {getHtml} from './favicons_app.html.js';
+import {getCss} from './context_library.css.js';
+import {getHtml} from './context_library.html.js';
 
-export interface FaviconsAppElement {
+export interface ContextLibraryElement {
   $: {
     faviconGroup: ComposeboxFaviconGroupElement,
   };
 }
 
-export class FaviconsAppElement extends CrLitElement {
+export class ContextLibraryElement extends CrLitElement {
   static get is() {
-    return 'favicons-app';
+    return 'context-library';
   }
 
   static override get styles(): CSSResultGroup {
@@ -38,10 +38,6 @@ export class FaviconsAppElement extends CrLitElement {
     };
   }
 
-  // TODO(crbug.com/): Populate from the browser once the extension page
-  // handler exposes tab context. `ContextualTasksExtensionHandler::
-  // GetRecentTabs()` is currently stubbed to return an empty list, so this
-  // stays empty until a real data source is wired up.
   accessor tabs: TabInfo[] = [];
   accessor submittedTabIds: Set<number> = new Set();
 
@@ -90,8 +86,8 @@ declare global {
   }
 
   interface HTMLElementTagNameMap {
-    'favicons-app': FaviconsAppElement;
+    'context-library': ContextLibraryElement;
   }
 }
 
-customElements.define(FaviconsAppElement.is, FaviconsAppElement);
+customElements.define(ContextLibraryElement.is, ContextLibraryElement);

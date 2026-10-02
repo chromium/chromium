@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://contextual-tasks/contextual_tasks_extension/favicons_app.js';
+import 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 
-import type {FaviconsAppElement} from 'chrome://contextual-tasks/contextual_tasks_extension/favicons_app.js';
+import type {ContextLibraryElement} from 'chrome://contextual-tasks/contextual_tasks_extension/context_library.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,8 +21,8 @@ function createTab(tabId: number, url: string): TabInfo {
   };
 }
 
-suite('FaviconsAppTest', () => {
-  let app: FaviconsAppElement;
+suite('ContextLibraryTest', () => {
+  let app: ContextLibraryElement;
 
   // Resolves the next time the element asks the embedder to re-measure it.
   let nextRequestResize: Promise<void>;
@@ -42,7 +42,7 @@ suite('FaviconsAppTest', () => {
       resolveRequestResize();
     };
 
-    app = document.createElement('favicons-app');
+    app = document.createElement('context-library');
     document.body.appendChild(app);
     await microtasksFinished();
   });
