@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">മറ്റൊരു ടാസ്‌കിൽ ഡീബഗ്ഗർ താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു, ആ ടാബിലേക്ക് മാറാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="1171774979989969504">ദയവായി ഒരു ഇമെയില്‍ വിലാസം നല്‍കുക.</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="1254779809141342904">ഈ CAP മുന്നറിയിപ്പ് XSLT എന്ന സാങ്കേതികവിദ്യ ഉപയോഗിക്കുന്നു; ആ ഫംഗ്ഷണാലിറ്റി <ph name="REMOVAL_LINK" />. അത് സംഭവിക്കുമ്പോൾ, ഈ മുന്നറിയിപ്പ് റോ XML ഡാറ്റയായി കാണിക്കും. നിങ്ങൾക്ക് അത് തുടർന്നും കാണാൻ അനുവദിക്കുന്ന <ph name="EXTENSION_LINK" /> ഇൻസ്റ്റാൾ ചെയ്യാനാകും.</translation>
 <translation id="1306460908038601864">ഓഫാണ്</translation>
 <translation id="1311894908970423688">മൂല്യം <ph name="VALUE_DATE_OR_TIME" /> ആയിരിക്കണം.</translation>
 <translation id="1588438908519853928">സാധാരണം</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2746543609216772311">മൂല്യം <ph name="MINIMUM_DATE_OR_TIME" /> എന്നതോ അതിനുശേഷമുള്ള തീയതിയോ ആയിരിക്കണം.</translation>
 <translation id="2761667185364618470">നിങ്ങള്‍ തുടരാന്‍ താല്‍പ്പര്യപ്പെടുന്നെങ്കില്‍ ഈ ബോക്സ് ദയവായി പരിശോധിക്കുക.</translation>
+<translation id="2854734116215697908">ഈ ബ്രൗസറിൽ നിന്ന് നീക്കം ചെയ്യും</translation>
 <translation id="2908441821576996758">ഇമെയില്‍ വിലാസങ്ങളുടെ കോമയാല്‍ വേര്‍തിരിച്ച ഒരു പട്ടിക ദയവായി നല്‍കുക.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ഒരു സാധുതയുള്ള മൂല്യം നൽകുക. ഫീൽഡ് പൂർണ്ണമല്ല അല്ലെങ്കിൽ അസാധുവായ തീയതിയിലുള്ളതാണ്.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="5630795885300617244">10 സെക്കൻഡ് ഒഴിവാക്കാൻ ഇടത്തോ വലത്തോ ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
+<translation id="5855560023261018690">ഈ ബ്രൗസറിൽ നിന്ന് ഉടൻ തന്നെ നീക്കം ചെയ്യും</translation>
 <translation id="5868587040512539609">വീഡിയോ ട്രാക്കുകൾ</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> എന്ന ഉപകരണത്തിലേക്ക് കാസ്‌റ്റുചെയ്യുന്നു</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ചിത്രത്തിനുള്ളിലെ ചിത്രത്തിന് പുറത്ത് കടക്കുക</translation>
 <translation id="6484738902856791350">പ്രെറ്റി പ്രിന്റ്</translation>
 <translation id="6550675742724504774">ഓപ്ഷനുകൾ</translation>
+<translation id="65574987622079584">ഒരു ബ്രൗസർ വിപുലീകരണം ഇൻസ്റ്റാൾ ചെയ്യാൻ</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6661136971638885481">ട്രാക്ക് #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">മറ്റുള്ളവ...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">ഈ ആഴ്‌ച</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">വർഷം</translation>
+<translation id="8243989288843872594">ഈ മുന്നറിയിപ്പ് ഒരിക്കലും കാണിക്കരുത്</translation>
 <translation id="8284326494547611709">സബ്ടൈറ്റിലുകൾ</translation>
 <translation id="835897206747267392">അസാധുവായ മൂല്യം.</translation>
 <translation id="839593075537728968">മൂല്യം <ph name="MINIMUM_TIME" />-നും <ph name="MAXIMUM_TIME" />-നും ഇടയിലായിരിക്കണം.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ലൈൻ റാപ്പ്</translation>
 <translation id="8750798805984357768">ഈ ഓപ്ഷനുകളിലൊന്ന് ദയവായി തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="8753001114009816390">ഈ സൈറ്റ് XSLT ഉപയോഗിക്കുന്നു; ആ ഫംഗ്ഷണാലിറ്റി <ph name="REMOVAL_LINK" />. അത് സംഭവിക്കുമ്പോൾ, ഈ പേജ് ഇനി ശരിയായി പ്രദർശിപ്പിക്കാൻ സാധ്യതയില്ല. നിങ്ങൾക്ക് അത് കാണുന്നത് തുടരാൻ അനുവദിക്കുന്ന <ph name="EXTENSION_LINK" /> ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിഞ്ഞേക്കും. അല്ലെങ്കിൽ, കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങൾ സൈറ്റിന്റെ മെയിന്റനറെ ബന്ധപ്പെടണം.</translation>
 <translation id="8845239796550121995">ഇപ്പോൾ നിങ്ങളുടെ ടിവിയിൽ കാസ്‌റ്റുചെയ്യുന്നു</translation>
 <translation id="8875657656876809964">വീഡിയോ പ്ലേബാക്ക് പിശക്</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

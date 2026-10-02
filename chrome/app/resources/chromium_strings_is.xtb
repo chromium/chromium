@@ -45,6 +45,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="141901961143729572">Segðu skoðun þína</translation>
 <translation id="1465192221147974788">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
+<translation id="147870194906295621">Skráðu þig inn á Chromium til að fá vistuðu upplýsingarnar þínar og fleira í <ph name="DEVICE" /></translation>
 <translation id="1497802159252041924">Uppsetningarvilla: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Þessi síða er varin</translation>
 <translation id="1524282610922162960">Deila Chromium flipa</translation>
@@ -192,6 +193,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3012615494352020668">{count,plural, =1{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum (1 atriði) eytt.}one{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum ({count} atriði) eytt.}other{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum ({count} atriði) eytt.}}</translation>
 <translation id="3013473503895162900">Opna <ph name="URL" /> í nýjum flipa í Chromium.</translation>
 <translation id="302551344979399011">Gervigreindarnýjungar á borð við færni eru vistaðar á Google-reikningnum þínum og stjórnað sérstaklega í Chromium-samstillingu</translation>
+<translation id="3032219013429286568">Skráðu þig inn í Chromium til að sækja viðbæturnar þínar og fleira í öllum tækjunum þínum</translation>
 <translation id="3032787606318309379">Bætir við Chromium...</translation>
 <translation id="3038232873781883849">Bíður eftir uppsetningu...</translation>
 <translation id="3045032126857188731">Þýtt tungumál: <ph name="LANGUAGE" /></translation>
@@ -202,6 +204,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3068515742935458733">Hjálpaðu til við að bæta Chromium með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3071024987058544609">Notaðu Chromium-forritið til að tryggja þér öryggi Google á ferðinni</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 USB-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 USB-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tækjum}}</translation>
+<translation id="3090734884397229414">Skráðu þig inn á Chromium til að fá aðgang að leslistanum þínum og fleiru í <ph name="DEVICE" /></translation>
 <translation id="3095811995836568724">Chromium-ferill</translation>
 <translation id="3103660991484857065">Uppsetningarforritinu mistókst að afþjappa safnskránni. Sæktu Chromium aftur.</translation>
 <translation id="310459126943037700">Ekki tókst að ljúka verkefni/verkefnum.</translation>
@@ -223,6 +226,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Vertu með uppáhalds gervigreindarverkfæri Google með þér á ferðinni með Chromium í iOS.</translation>
+<translation id="3264761466044851269">Skráðu þig inn á Chromium til að sækja viðbæturnar þínar og fleira í <ph name="DEVICE" /></translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="328888136576916638">Lykla vantar fyrir forritaskil Google. Sumir eiginleikar Chromium verða óvirkir.</translation>
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
@@ -234,6 +238,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Skipta yfir í Chromium prófíl sem er til?</translation>
 <translation id="3412460710772753638">Í Aðgangsorðastjórnun í þessu tæki</translation>
+<translation id="3427159664004296878">Skráðu þig inn á Chromium til að fá aðgang að bókamerkjum og fleiru í <ph name="DEVICE" /></translation>
 <translation id="3438772217992559640">Leita á þessum flipa með myndaleit</translation>
 <translation id="3455907671758333080">Framlengdu Enn öruggari vefskoðun með Chromium í símanum þínum</translation>
 <translation id="3461644266919055473">Chromium gert að þínu...</translation>
@@ -266,6 +271,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 
           **Leggja til spurningar:** Búa til punktalista með 3-5 ögrandi spurningum sem notandi gæti spurt til að skilja skjámyndina betur. Þessar spurningar ættu að fela í sér minnst eina sem er sérstaklega um sjónrænt atriði, hönnun þess eða staðsetningu.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="386243222263310720">Skráðu þig inn á Chromium til að fá aðgang að bókamerkjunum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="3885770153807205175">Tungumálaval</translation>
 <translation id="388648406173476553">Sérsníða og stjórna Chromium. Eitthvað krefst athygli þinnar – smelltu til að sjá nánar.</translation>
 <translation id="3889543394854987837">Smelltu á nafnið þitt til að opna Chromium og byrja að vafra.</translation>
@@ -274,6 +280,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3909353120217047026">Þessi viðbót brýtur gegn reglum Vefverslunar Chrome og kann að vera óörugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="3941890832296813527">Uppsetningarvilla: Skráarheiti uppsetningarforrits er ógilt eða ekki stutt.</translation>
 <translation id="3945058413678539331">Chromium er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
+<translation id="3950481960271781644">Skráðu þig inn á Chromium til að fá aðgang að vistuðu upplýsingunum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="3954172517175569325">Aðgangsorðin þín, greiðslumátar og heimilisföng sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chromium skaltu skrá þig aftur inn.</translation>
 <translation id="395904275706073188">Ekki er hægt að lesa varðar síður. Prófaðu aðra síðu.</translation>
 <translation id="3962647064319009959">Kynntu þér hvernig Chromium gætir að öryggi þínu</translation>
@@ -362,6 +369,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4893347770495441059">Endurræstu til að uppfæra &amp;Chromium</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4918844574251943176">Mynd afrituð</translation>
+<translation id="4919431996536326528">Skráðu þig inn á Chromium til að fá aðgang að leslistanum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="4943838377383847465">Chromium er í bakgrunnsstillingu.</translation>
 <translation id="494490797786467921">Smelltu til að loka innskráningarglugga Chromium</translation>
 <translation id="4950660488495335294">Þú getur aðskilið allt efnið þitt á Chromium með Chromium-prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
@@ -791,6 +799,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="904366664621834601">Chromium lokaði á þetta niðurhal vegna þess að safnskráin getur innihaldið aðrar skrár sem geta falið spilliforrit</translation>
 <translation id="9053882453960391422">Haltu aðgangsorðunum þínum, bókamerkjum og ferli fullkomlega samstilltum á milli tækja. Fáðu greiðan aðgang að eiginleikunum sem þú þekkir og elskar með því að uppfæra sjálfgefna vafrann þinn í Chromium. Chromium verður festur við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="9056398481763999048">Notaðu bestu gervigreindarverkfæri Google með Chromium-forritinu í símanum þínum</translation>
+<translation id="9057625473949801035">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum og fleiru í <ph name="DEVICE" /></translation>
 <translation id="9062666675513499497">Skráðu þig inn í Chromium þegar þú skráir þig inn í aðrar Google-þjónustur</translation>
 <translation id="9078733879136747090">Chromium var lokað sjálfkrafa</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>

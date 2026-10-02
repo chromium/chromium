@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">调试程序已在另一个标签页中暂停，点击可切换到该标签页。</translation>
 <translation id="1171774979989969504">请输入电子邮件地址。</translation>
 <translation id="1178581264944972037">暂停</translation>
+<translation id="1254779809141342904">此 CAP 提醒使用了名为 XSLT 的技术；该功能<ph name="REMOVAL_LINK" />。届时，此提醒将显示为原始 XML 数据。您或许可以<ph name="EXTENSION_LINK" />，以便继续查看。</translation>
 <translation id="1306460908038601864">已关闭</translation>
 <translation id="1311894908970423688">值必须为 <ph name="VALUE_DATE_OR_TIME" />。</translation>
 <translation id="1588438908519853928">正常</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2746543609216772311">指定的值不得早于<ph name="MINIMUM_DATE_OR_TIME" />。</translation>
 <translation id="2761667185364618470">如果要继续，请选中此框。</translation>
+<translation id="2854734116215697908">将从此浏览器中移除</translation>
 <translation id="2908441821576996758">请输入用逗号分隔的电子邮件地址的列表。</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">请输入一个有效值。该字段不完整或存在无效日期。</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5630795885300617244">在左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="57838592816432529">静音</translation>
+<translation id="5855560023261018690">很快就会从此浏览器中移除</translation>
 <translation id="5868587040512539609">视频轨道</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5888666972993069672">现正投放至“<ph name="DEVICE_FRIENDLY_NAME" />”</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">退出“画中画”模式</translation>
 <translation id="6484738902856791350">美观输出</translation>
 <translation id="6550675742724504774">选项</translation>
+<translation id="65574987622079584">安装浏览器扩展程序</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6661136971638885481">第 <ph name="TRACK_NUMBER" /> 个轨道</translation>
 <translation id="668171684555832681">其他...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">本周</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405"> 年 </translation>
+<translation id="8243989288843872594">一律不显示此警告</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="835897206747267392">值无效。</translation>
 <translation id="839593075537728968">数值必须介于<ph name="MINIMUM_TIME" /> 和<ph name="MAXIMUM_TIME" /> 之间。</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">自动换行</translation>
 <translation id="8750798805984357768">请从这些选项中选择一个。</translation>
+<translation id="8753001114009816390">此网站使用了 XSLT；该功能<ph name="REMOVAL_LINK" />。届时，此页面可能无法再正常显示。您或许可以<ph name="EXTENSION_LINK" />，以便继续查看。否则，您应与网站维护人员联系，了解更多信息。</translation>
 <translation id="8845239796550121995">现在正投放到您的电视上</translation>
 <translation id="8875657656876809964">视频播放出错</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

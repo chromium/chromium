@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">ਡੀਬੱਗਰ ਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ ਵਿੱਚ ਰੋਕਿਆ ਗਿਆ, ਉਸ ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1171774979989969504">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
+<translation id="1254779809141342904">ਇਹ CAP ਅਲਰਟ XSLT ਨਾਮਕ ਤਕਨਾਲੋਜੀ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ; ਉਸ ਪ੍ਰਕਾਰਜਾਤਮਕਤਾ ਨੂੰ <ph name="REMOVAL_LINK" /> ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਜਦੋਂ ਅਜਿਹਾ ਹੁੰਦਾ ਹੈ, ਤਾਂ ਇਹ ਅਲਰਟ ਰਾਅ XML ਡਾਟੇ ਵਜੋਂ ਦਿਖਾਇਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਸ਼ਾਇਦ <ph name="EXTENSION_LINK" /> ਕਰ ਸਕੋ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਇਸਨੂੰ ਦੇਖਣਾ ਜਾਰੀ ਰੱਖ ਸਕੋਗੇ।</translation>
 <translation id="1306460908038601864">ਬੰਦ</translation>
 <translation id="1311894908970423688">ਮੁੱਲ <ph name="VALUE_DATE_OR_TIME" /> ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2746543609216772311">ਵੈਲਯੂ <ph name="MINIMUM_DATE_OR_TIME" /> ਜਾਂ ਇਸਤੋਂ ਬਾਅਦ ਦੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="2761667185364618470">ਜੇਕਰ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਬੌਕਸ ਵਿੱਚ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
+<translation id="2854734116215697908">ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="2908441821576996758">ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਪਤਿਆਂ ਦੀ ਇੱਕ ਕਾਮਾ ਵੱਖ ਕੀਤੀ ਸੂਚੀ ਦਰਜ ਕਰੋ।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ਕਿਰਪਾ ਕਰਕੇ ਵੈਧ ਮੁੱਲ ਦਾਖਲ ਕਰੋ। ਇਹ ਖੇਤਰ ਅਧੂਰਾ ਹੈ ਜਾਂ ਇਸ ਵਿੱਚ ਅਵੈਧ ਤਾਰੀਖ ਹੈ।</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="5630795885300617244">10 ਸਕਿੰਟ ਅੱਗੇ/ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
+<translation id="5855560023261018690">ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਜਲਦ ਹੀ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5868587040512539609">ਵੀਡੀਓ ਟਰੈਕ</translation>
 <translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
 <translation id="5888666972993069672">ਹੁਣ <ph name="DEVICE_FRIENDLY_NAME" /> 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="6484738902856791350">ਪ੍ਰਿਟੀ ਪ੍ਰਿੰਟ</translation>
 <translation id="6550675742724504774">ਚੋਣਾਂ</translation>
+<translation id="65574987622079584">ਬ੍ਰਾਊਜ਼ਰ ਐਕਸਟੈਂਸ਼ਨ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6661136971638885481">ਟਰੈਕ #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ਹੋਰ...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">ਇਸ ਹਫ਼ਤੇ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">ਇਹ ਚਿਤਾਵਨੀ ਕਦੇ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="8284326494547611709">ਸੁਰਖੀਆਂ</translation>
 <translation id="835897206747267392">ਅਵੈਧ ਮੁੱਲ।</translation>
 <translation id="839593075537728968">ਮੁੱਲ <ph name="MINIMUM_TIME" /> ਅਤੇ <ph name="MAXIMUM_TIME" /> ਦੇ ਵਿਚਕਾਰ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ਲਾਈਨ ਨੂੰ ਸੀਮਾਬੱਧ ਕਰੋ</translation>
 <translation id="8750798805984357768">ਕਿਰਪਾ ਕਰਕੇ ਇਹਨਾਂ ਚੋਣਾਂ ਵਿੱਚੋਂ ਇੱਕ ਚੁਣੋ।</translation>
+<translation id="8753001114009816390">ਇਹ ਸਾਈਟ XSLT ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ; ਉਸ ਪ੍ਰਕਾਰਜਾਤਮਕਤਾ ਨੂੰ <ph name="REMOVAL_LINK" /> ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਜਦੋਂ ਅਜਿਹਾ ਹੁੰਦਾ ਹੈ, ਤਾਂ ਇਹ ਪੰਨਾ ਸ਼ਾਇਦ ਸਹੀ ਢੰਗ ਨਾਲ ਦਿਖਾਈ ਨਾ ਦੇਵੇ। ਤੁਸੀਂ ਸ਼ਾਇਦ <ph name="EXTENSION_LINK" /> ਕਰ ਸਕੋ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਇਸਨੂੰ ਦੇਖਣਾ ਜਾਰੀ ਰੱਖ ਸਕੋਗੇ। ਨਹੀਂ ਤਾਂ, ਤੁਹਾਨੂੰ ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਸਾਈਟ ਦੇ ਸੰਭਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="8845239796550121995">ਹੁਣ ਤੁਹਾਡੇ ਟੀਵੀ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8875657656876809964">ਵੀਡੀਓ ਚਲਾਉਣ ਵੇਲੇ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

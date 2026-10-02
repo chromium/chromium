@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chromium ने इस डाउनलोड को ब्लॉक किया है, क्योंकि इस तरह की फ़ाइल आम तौर पर डाउनलोड नहीं की जाती और यह खतरनाक हो सकती है</translation>
 <translation id="1197860368385086056">अगली बार अपने <ph name="DEVICE_TYPE" /> पर Chrome खोलने पर, आपको कीमतों को ट्रैक करने की सूचनाएं पाने की सुविधा चालू करने का प्रॉम्प्ट दिखेगा.</translation>
 <translation id="1203500561924088507">इंस्टॉल करने के लिए धन्यवाद. <ph name="BUNDLE_NAME" /> का इस्तेमाल करने से पहले, ब्राउज़र को रीस्टार्ट करना ज़रूरी है.</translation>
+<translation id="1226003169284463347">अपने सभी डिवाइसों पर बुकमार्क वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="1278833599417554002">&amp;Chrome को अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="1289911795790071537">'Chrome की मदद से खोजें' सुविधा खोलें</translation>
 <translation id="1290883685122687410">सेटअप करने में गड़बड़ी हुई: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">आपने हाल ही में इस वेबसाइट का इस्तेमाल नहीं किया है. Chrome ने <ph name="PERMISSION" /> की अनुमति हटा दी है.</translation>
 <translation id="2106831557840787829">ChromeOS Flex को <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेवलपमेंट एनवायरमेंट<ph name="END_LINK_LINUX_OSS" /> की तरह, अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="2108778574543343055">ऐप्लिकेशन चलने के दौरान, Chrome को बैकग्राउंड में चलने से रोकें</translation>
+<translation id="2111985952714409792">अपने सभी डिवाइसों पर एक्सटेंशन वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="2120620239521071941">ऐसा करने से इस डिवाइस से <ph name="ITEMS_COUNT" /> आइटम मिट जाएंगे. बाद में अपना डेटा पाने के लिए, Chrome में <ph name="USER_EMAIL" /> के रूप में साइन इन करें.</translation>
 <translation id="2121284319307530122">&amp;Chrome को अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />मौजूदा सेटिंग<ph name="END_LINK" /> की रिपोर्ट करके Chrome को बेहतर बनाने में मदद करें</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">डॉक में रखें</translation>
 <translation id="2309047409763057870">यह Google Chrome का द्वितीयक इंस्टॉलेशन है और इसे आपका डिफ़ॉल्ट ब्राउज़र नहीं बनाया जा सकता.</translation>
 <translation id="2345992953227471816">Chrome को पता चला है कि इन आइटम में मैलवेयर है:</translation>
+<translation id="2358140144860869442">अपने सभी डिवाइसों पर रीडिंग लिस्ट वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2403703063067034158">स्टार्टअप में गड़बड़ी: फ़िलहाल, कोई दूसरी चीज़ सेटअप हो रही है. कृपया बाद में कोशिश करें.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{एक या उससे ज़्यादा Chrome एक्सटेंशन, 1 एचआईडी डिवाइस को ऐक्सेस कर रहे थे}=1{एक या उससे ज़्यादा Chrome एक्सटेंशन, 1 एचआईडी डिवाइस को ऐक्सेस कर रहे हैं}one{एक या उससे ज़्यादा Chrome एक्सटेंशन, # एचआईडी डिवाइस को ऐक्सेस कर रहे हैं}other{एक या उससे ज़्यादा Chrome एक्सटेंशन, # एचआईडी डिवाइसों को ऐक्सेस कर रहे हैं}}</translation>
@@ -172,6 +175,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome, समय-समय पर जांच करके यह पक्का करता है कि आपके ब्राउज़र की सेटिंग सबसे सुरक्षित हैं. अगर किसी चीज़ की समीक्षा ज़रूरी होगी, तो हम आपको इसकी सूचना देंगे.</translation>
 <translation id="2652691236519827073">नए Chrome &amp;टैब में लिंक खोलें</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" /> में मौजूद अपने एक्सटेंशन वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="2665296953892887393">Google को क्रैश रिपोर्ट और <ph name="UMA_LINK" /> भेजकर Google Chrome को बेहतर बनाने में मदद करें</translation>
 <translation id="2668094785979141847">Google Lens से बाहर निकलने के लिए क्लिक करें</translation>
 <translation id="2674238339205910678">ChromeOS Flex आपके Google खाते में Chrome का डेटा सेव नहीं कर सका, क्योंकि आपके खाते में साइन-इन करने से जुड़ी जानकारी पुरानी हो चुकी है</translation>
@@ -243,6 +247,7 @@
 <translation id="3242486428260808857">अपने <ph name="DEVICE_TYPE" /> पर Chrome ऐप्लिकेशन का इस्तेमाल करें और ऑनलाइन खरीदारी करने का बेहतर अनुभव बेहतर पाएं</translation>
 <translation id="3245429137663807393">अगर Chrome के इस्तेमाल से जुड़ी जानकारी देने वाली रिपोर्ट भी शेयर की जाती हैं, तो याद रखें कि आपके देखे गए पेजों के यूआरएल उनमें शामिल होते हैं</translation>
 <translation id="3249558306861350254">Windows की सेटिंग में जाकर, <ph name="BEGIN_BOLD" />डिफ़ॉल्ट के तौर पर सेट करें<ph name="END_BOLD" /> पर क्लिक करें.</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" /> में मौजूद अपने बुकमार्क वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="3259748324892322072">Chrome ऐप्लिकेशन को इंस्टॉल करें</translation>
 <translation id="3282568296779691940">Chrome में साइन इन करें</translation>
 <translation id="3286538390144397061">अभी फिर से प्रारंभ करें</translation>
@@ -341,6 +346,7 @@
 <translation id="4280647692742956593">अपने फ़ोन पर Chrome डाउनलोड करें, ताकि आप कभी भी, कहीं भी टैब ग्रुप खोल सकें या नए टैब ग्रुप बना सकें.</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="430327780270213103">Chrome टूलबार में ऐक्सेस के अनुरोध दिखाने के लिए, एक्सटेंशन को अनुमति दें</translation>
+<translation id="4312908933392839680">अपने सभी डिवाइसों पर सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome का सुझाव है कि आप उस टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहा है}one{Chrome का सुझाव है कि आप उस टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहा है}other{Chrome का सुझाव है कि आप उन टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहे हैं}}</translation>
 <translation id="4328355335528187361">Google Chrome डेवलपर (mDNS-In)</translation>
 <translation id="4329315893554541805">मनमुताबिक अनुभव और अन्य सुविधाएं पाने के लिए, Chrome को 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग और लिंक की गई Google की सेवाओं में शामिल करें</translation>
@@ -510,7 +516,9 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="6046028983725193307">Chrome में सिस्टम ऑडियो शेयर करने के लिए, सिस्टम सेटिंग खोलें और 'सिर्फ़ सिस्टम ऑडियो रिकॉर्ड करने की अनुमति' को चालू करें. इसके बाद, आपको Chrome रीस्टार्ट करना होगा.</translation>
 <translation id="6069027071882229820">इमेज के तौर पर कॉपी करें</translation>
 <translation id="6070348360322141662">ज़्यादा सुरक्षा के लिए, Google Chrome आपका डेटा एनक्रिप्ट करेगा</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" /> में मौजूद अपने पासवर्ड वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="6075300983329039771">आपके संगठन <ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप Chrome में साइन इन करें</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" /> पर मौजूद अपनी रीडिंग लिस्ट वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="6113794647360055231">Chrome पहले से बेहतर हो गया है</translation>
 <translation id="6116004140911290070">Chrome में स्किल की सुविधा चालू करें</translation>
 <translation id="6116252277240876590">Chrome में, इस भाषा का इस्तेमाल मेन्यू, सेटिंग, चेतावनी, और अन्य टेक्स्ट दिखाने के लिए किया जाता है</translation>
@@ -708,6 +716,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7804947029129221742">आपके सर्च इंजन को Chrome के बाहर से बदला गया था. आपकी सुरक्षा के लिए, Chrome ने इसे वापस डिफ़ॉल्ट पर सेट कर दिया है. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome से नि‍कालें...</translation>
 <translation id="7827099906024714326">आपके Google खाते में डेटा सेव करने और सभी डिवाइसों पर उसका इस्तेमाल करने से पहले, Chrome को आपकी पहचान की पुष्टि करनी होगी. अभी साइन आउट करने पर यह डेटा मिट जाएगा.</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" /> में सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="7832314606810669113">अपने सभी डिवाइसों पर बुकमार्क वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें. साइन इन करने के बाद, यह बुकमार्क आपके Google खाते में सेव हो जाएगा.</translation>
 <translation id="7845233973568007926">इंस्टॉल करने के लिए धन्यवाद. <ph name="BUNDLE_NAME" /> का इस्तेमाल करने से पहले, कंप्यूटर को रीस्टार्ट करना ज़रूरी है.</translation>
 <translation id="7847170235260850604">Windows के चालू होते ही Chrome को लॉन्च करें</translation>

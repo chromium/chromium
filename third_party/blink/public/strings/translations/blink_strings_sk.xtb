@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Ladiaci nástroj je pozastavený na inej karte, kliknutím prepnete na danú kartu.</translation>
 <translation id="1171774979989969504">Zadajte e-mailovú adresu.</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
+<translation id="1254779809141342904">Toto upozornenie CAP používa technológiu s názvom XSLT. Táto funkcia <ph name="REMOVAL_LINK" />. Keď sa to stane, toto upozornenie sa zobrazí ako nespracované údaje XML. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať si ho ďalej.</translation>
 <translation id="1306460908038601864">vypnuté</translation>
 <translation id="1311894908970423688">Hodnota musí byť <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normálny</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2746543609216772311">Hodnota musí byť <ph name="MINIMUM_DATE_OR_TIME" /> alebo neskôr.</translation>
 <translation id="2761667185364618470">Ak chcete pokračovať, začiarknite toto políčko.</translation>
+<translation id="2854734116215697908">bude z tohto prehliadača odstránená</translation>
 <translation id="2908441821576996758">Zadajte zoznam e-mailových adries oddelených čiarkou.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Zadajte platnú hodnotu. Pole obsahuje neúplnú hodnotu alebo neplatný dátum.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Prenášať</translation>
 <translation id="5630795885300617244">Dvojitým klepnutím doľava alebo doprava preskočíte o 10 s</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
+<translation id="5855560023261018690">bude z tohto prehliadača čoskoro odstránená</translation>
 <translation id="5868587040512539609">Videostopy</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5888666972993069672">Prenáša sa do zariadenia <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Ukončiť obraz v obraze</translation>
 <translation id="6484738902856791350">Formátovať komplexný kód</translation>
 <translation id="6550675742724504774">Možnosti</translation>
+<translation id="65574987622079584">nainštalovať rozšírenie prehliadača</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6661136971638885481">Stopa č. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Iný...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Tento týždeň</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">rrrr</translation>
+<translation id="8243989288843872594">Toto upozornenie už nikdy nezobrazovať</translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="835897206747267392">Neplatná hodnota.</translation>
 <translation id="839593075537728968">Hodnota musí byť v rozsahu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zalomiť riadok</translation>
 <translation id="8750798805984357768">Vyberte jednu z týchto možností.</translation>
+<translation id="8753001114009816390">Tento web používa XSLT. Táto funkcia <ph name="REMOVAL_LINK" />. Keď sa to stane, táto stránka sa už pravdepodobne nebude zobrazovať správne. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať si ju ďalej. V opačnom prípade by ste mali kontaktovať správcu webu a požiadať ho o ďalšie informácie.</translation>
 <translation id="8845239796550121995">Prenáša sa do televízora</translation>
 <translation id="8875657656876809964">Chyba prehrávania videa</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

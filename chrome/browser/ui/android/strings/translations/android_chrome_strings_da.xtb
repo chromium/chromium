@@ -1696,6 +1696,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7630202231528827509">Udbyderens webadresse</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
 <translation id="764047009170754705">Tilvalg af Chrome Finds er lukket</translation>
+<translation id="7645712301713737707">Tilpas dit fanelayout, så det vises øverst i eller langs siden af din browser.</translation>
 <translation id="7646499124171960488">Advarer dig om usikre offentlige websites</translation>
 <translation id="7655240423373329753">de seneste 7 dage</translation>
 <translation id="7656721520530864426">Ingen websites</translation>
@@ -2002,6 +2003,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8816556050903368450">Inklusiv link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
+<translation id="8822533681006532064">Hvis du vil tale med Gemini, skal du give den tilladelse til at bruge din mikrofon. Du kan også administrere dette i <ph name="BEGIN_LINK" />indstillingerne.<ph name="END_LINK" /></translation>
 <translation id="8840953339110955557">Denne side kan afvige fra onlineversionen.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skjult</translation>

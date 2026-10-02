@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome menyekat muat turun ini kerana jenis fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="1197860368385086056">Apabila anda membuka Chrome pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk mendayakan makluman penjejakan harga.</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Untuk mendapatkan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
 <translation id="1289911795790071537">Buka carian dengan Chrome</translation>
 <translation id="1290883685122687410">Ralat persediaan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" />tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Lumpuhkan Chrome yang Berjalan pada Latar untuk Apl</translation>
+<translation id="2111985952714409792">Untuk mendapatkan sambungan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="2120620239521071941">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Lancarkan Semula untuk Mengemas Kini &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Kekalkan dalam Dok</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="2345992953227471816">Chrome mendapati bahawa item ini mengandungi perisian hasad:</translation>
+<translation id="2358140144860869442">Untuk mendapatkan senarai bacaan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2403703063067034158">Ralat permulaan: terdapat tika persediaan lain sedang dijalankan pada masa ini, sila cuba sebentar lagi.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chrome}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}}</translation>
@@ -172,6 +175,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
+<translation id="2661616016316841783">Untuk mendapatkan sambungan anda dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chrome</translation>
 <translation id="2665296953892887393">Bantu jadikan Google Chrome lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="2668094785979141847">Klik untuk keluar daripada Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex tidak dapat menyimpan data Chrome dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
@@ -243,6 +247,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="3242486428260808857">Manfaatkan lebih banyak ciri membeli-belah dalam talian apabila anda menggunakan apl Chrome pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3245429137663807393">Jika anda turut berkongsi laporan penggunaan Chrome, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Tetapkan sebagai Lalai<ph name="END_BOLD" /> dalam tetapan Windows anda.</translation>
+<translation id="3258706751219502154">Untuk mendapatkan penanda halaman anda dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chrome</translation>
 <translation id="3259748324892322072">Dapatkan Apl Chrome</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3286538390144397061">Mulakan Semula Sekarang</translation>
@@ -342,6 +347,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4280647692742956593">Muat turun Chrome pada telefon anda untuk membuka atau membuat kumpulan tab baharu semasa dalam perjalanan.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="430327780270213103">Benarkan sambungan menunjukkan permintaan akses pada bar alat Chrome</translation>
+<translation id="4312908933392839680">Untuk mendapatkan maklumat anda yang disimpan dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome Mengesyorkan Penjedaan Tab yang Memperlahankan Penyemak Imbas Anda}other{Chrome Mengesyorkan Penjedaan Tab yang Memperlahankan Penyemak Imbas Anda}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chrome dalam Aktiviti Web &amp; Apl dan perkhidmatan Google terpaut</translation>
@@ -507,7 +513,9 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6046028983725193307">Untuk berkongsi audio sistem, buka Tetapan Sistem dan benarkan 'Rakaman Audio Sistem Sahaja' untuk Chrome. Kemudian, anda perlu memulakan semula Chrome.</translation>
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
+<translation id="6071642418303142778">Untuk mendapatkan kata laluan anda dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chrome</translation>
 <translation id="6075300983329039771">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chrome</translation>
+<translation id="6077365059401096066">Untuk mendapatkan senarai bacaan anda dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chrome</translation>
 <translation id="6113794647360055231">Chrome kini lebih baik</translation>
 <translation id="6116004140911290070">Dayakan Kemahiran dalam Chrome</translation>
 <translation id="6116252277240876590">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chrome</translation>
@@ -705,6 +713,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7804947029129221742">Enjin carian anda telah ditukar dari luar Chrome. Untuk melindungi anda, Chrome telah menetapkan semula tetapan tersebut kepada enjin carian lalai asal. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Alih keluar daripada Chrome...</translation>
 <translation id="7827099906024714326">Chrome perlu mengesahkan identiti anda sebelum sesetengah data boleh disimpan dalam Google Account anda dan digunakan pada semua peranti anda. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
+<translation id="7829850924999627855">Untuk mendapatkan maklumat anda yang disimpan dan pelbagai lagi daripada <ph name="DEVICE" />, log masuk ke Chrome</translation>
 <translation id="7832314606810669113">Untuk mendapatkan penanda halaman anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome. Penanda halaman ini akan disimpan dalam Google Account anda selepas anda log masuk.</translation>
 <translation id="7845233973568007926">Terima kasih kerana memasang. Anda perlu memulakan semula komputer anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Lancarkan Chrome apabila Windows dimulakan</translation>

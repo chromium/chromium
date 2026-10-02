@@ -30,6 +30,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1194807384646768652">Den här nedladdningen blockerades av Chrome eftersom filtypen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="1197860368385086056">Nästa gång du öppnar Chrome på din <ph name="DEVICE_TYPE" /> visas en uppmaning om att aktivera prisbevakningsaviseringar.</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera på alla dina enheter</translation>
 <translation id="1278833599417554002">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="1289911795790071537">Öppna sökning med Chrome</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2096213354152647998">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Inaktivera att Chrome körs i bakgrunden för appar</translation>
+<translation id="2111985952714409792">Logga in i Chrome om du vill få tillgång till dina tillägg med mera på alla dina enheter</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2121284319307530122">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjälp oss att förbättra Chrome genom att rapportera <ph name="BEGIN_LINK" />dina aktuella inställningar<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2307973900865360088">Behåll i dockan</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig kod:</translation>
+<translation id="2358140144860869442">Logga in i Chrome om du vill få tillgång till din läslista med mera på alla dina enheter</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2403703063067034158">Startfel: En annan instans av konfigurationen körs för närvarande. Försök igen senare.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Minst ett Chrome-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chrome-tillägg har åtkomst till 1 styrdon}other{Minst ett Chrome-tillägg har åtkomst till # styrdon}}</translation>
@@ -176,6 +179,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>
+<translation id="2661616016316841783">Logga in i Chrome om du vill få tillgång till dina tillägg med mera från <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">Hjälp oss att göra Google Chrome bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google.</translation>
 <translation id="2668094785979141847">Klicka för att avsluta Google Lens</translation>
 <translation id="2674238339205910678">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
@@ -247,6 +251,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3242486428260808857">Få ut mer av onlineshopping när du använder Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Om du även delar Chrome-användningsrapporter ingår webbadresserna du besöker i dessa rapporter</translation>
 <translation id="3249558306861350254">Klicka på <ph name="BEGIN_BOLD" />Ange som standard<ph name="END_BOLD" /> i Windows-inställningarna.</translation>
+<translation id="3258706751219502154">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera från <ph name="DEVICE" /></translation>
 <translation id="3259748324892322072">Skaffa Chrome-appen</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
@@ -346,6 +351,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4280647692742956593">Ladda ned Chrome på telefonen för att öppna eller skapa nya flikgrupper när du är på språng.</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="430327780270213103">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chrome</translation>
+<translation id="4312908933392839680">Logga in i Chrome om du vill få tillgång till din sparade information med mera på alla dina enheter</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome rekommenderar att du pausar fliken som saktar ned webbläsaren}other{Chrome rekommenderar att du pausar flikarna som saktar ned webbläsaren}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
 <translation id="4329315893554541805">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i webb- och appaktiviteten och de länkade Google-tjänsterna</translation>
@@ -515,7 +521,9 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6046028983725193307">Om du vill dela systemljud öppnar du systeminställningarna och tillåter endast systemljud spelas in för Chrome. Du måste sedan starta om Chrome.</translation>
 <translation id="6069027071882229820">Kopiera som bild</translation>
 <translation id="6070348360322141662">Din data krypteras i Google Chrome för att öka säkerheten</translation>
+<translation id="6071642418303142778">Logga in i Chrome om du vill få tillgång till dina lösenord med mera från <ph name="DEVICE" /></translation>
 <translation id="6075300983329039771">Organisationen, <ph name="MANAGER" />, kräver att du loggar in i Chrome</translation>
+<translation id="6077365059401096066">Logga in i Chrome om du vill få tillgång till din läslista med mera från <ph name="DEVICE" /></translation>
 <translation id="6113794647360055231">Vi har gjort Chrome ännu bättre</translation>
 <translation id="6116004140911290070">Aktivera färdigheter i Chrome</translation>
 <translation id="6116252277240876590">Menyer, inställningar, varningar och annan text i Chrome visas på det här språket</translation>
@@ -713,6 +721,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7804947029129221742">Din sökmotor har ändrats utanför Chrome. Chrome har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Ta bort från Chrome …</translation>
 <translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
+<translation id="7829850924999627855">Logga in i Chrome om du vill få tillgång till din sparade information med mera från <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera på alla dina enheter. Bokmärket sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Starta Chrome när Windows startas</translation>

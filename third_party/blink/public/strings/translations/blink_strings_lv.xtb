@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Atkļūdotāja darbība ir pārtraukta citā cilnē. Noklikšķiniet, lai pārslēgtos uz šo cilni.</translation>
 <translation id="1171774979989969504">Ievadiet e-pasta adresi.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
+<translation id="1254779809141342904">Šajā CAP brīdinājumā tiek izmantota tehnoloģija XSLT; šī funkcija <ph name="REMOVAL_LINK" />. Kad tas notiks, šis brīdinājums tiks parādīts kā neapstrādāti XML dati. Iespējams, varēsiet <ph name="EXTENSION_LINK" />, lai turpinātu to skatīt.</translation>
 <translation id="1306460908038601864">Izsl.</translation>
 <translation id="1311894908970423688">Jābūt šādai vērtībai: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Parasts</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2746543609216772311">Vērtībai ir jābūt “<ph name="MINIMUM_DATE_OR_TIME" />” vai vēlākam datumam vai laikam.</translation>
 <translation id="2761667185364618470">Lai turpinātu, atzīmējiet šo izvēles rūtiņu.</translation>
+<translation id="2854734116215697908">tiek noņemta no šī pārlūka</translation>
 <translation id="2908441821576996758">Lūdzu, ievadiet ar komatu atdalītu e-pasta adrešu sarakstu.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Lūdzu, ievadiet derīgu vērtību. Šis lauks nav pabeigts, vai tajā ir norādīts nederīgs datums.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Apraidīt</translation>
 <translation id="5630795885300617244">Veiciet dubultskārienu pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
+<translation id="5855560023261018690">ļoti drīz tiks noņemta no šī pārlūka</translation>
 <translation id="5868587040512539609">Video ieraksti</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5888666972993069672">Notiek apraide šajā ierīcē: <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Aizvērt režīmu “Attēls attēlā”</translation>
 <translation id="6484738902856791350">Lietot struktūrdruku</translation>
 <translation id="6550675742724504774">Opcijas</translation>
+<translation id="65574987622079584">instalēt pārlūka paplašinājumu</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6661136971638885481"><ph name="TRACK_NUMBER" />. ieraksts</translation>
 <translation id="668171684555832681">Cits</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Šī nedēļa</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">gggg</translation>
+<translation id="8243989288843872594">Nekad nerādīt šo brīdinājumu</translation>
 <translation id="8284326494547611709">Subtitri</translation>
 <translation id="835897206747267392">Nederīga vērtība.</translation>
 <translation id="839593075537728968">Vērtībai ir jābūt no <ph name="MINIMUM_TIME" /> līdz <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Līniju apvienojums</translation>
 <translation id="8750798805984357768">Lūdzu, atlasiet vienu no šīm opcijām.</translation>
+<translation id="8753001114009816390">Šajā vietnē tiek izmantots XSLT; šī funkcija <ph name="REMOVAL_LINK" />. Kad tas notiks, šī lapa, visticamāk, vairs netiks attēlota pareizi. Iespējams, varēsiet <ph name="EXTENSION_LINK" />, lai turpinātu to skatīt. Pretējā gadījumā sazinieties ar vietnes uzturētāju, lai iegūtu plašāku informāciju.</translation>
 <translation id="8845239796550121995">Pašlaik notiek apraide uz jūsu TV</translation>
 <translation id="8875657656876809964">Videoklipa atskaņošanas kļūda</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome blokeeris selle allalaadimise, kuna seda faili tüüpi ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="1197860368385086056">Järgmisel korral, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chrome'i, kuvatakse teile hinnajälgimise märguannete lubamise viip.</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
+<translation id="1226003169284463347">Kõigis oma seadmetes järjehoidjatele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="1278833599417554002">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="1289911795790071537">Ava otsing Chrome'iga</translation>
 <translation id="1290883685122687410">Seadistuse viga: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2096213354152647998">Te pole hiljuti külastanud. Chrome eemaldas loa <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Keela Chrome'i akendeta taustal käitamine</translation>
+<translation id="2111985952714409792">Kõigis oma seadmetes laiendustele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="2120620239521071941">See kustutab sellest seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="2123055963409958220">Aidake Chrome paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@
 <translation id="2307973900865360088">Hoia dokis</translation>
 <translation id="2309047409763057870">See on Google Chrome'i sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
 <translation id="2345992953227471816">Chrome leidis, et need laiendused sisaldavad pahavara:</translation>
+<translation id="2358140144860869442">Kõigis oma seadmetes lugemisloendile ja muule sisule juurdepääsemiseks kasutamiseks logige sisse Chrome'i.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu ühele HID-seadmele}other{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu # HID-seadmele}}</translation>
@@ -174,6 +177,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
 <translation id="2652691236519827073">Ava link Chrome'i uuel &amp;vahelehel</translation>
+<translation id="2661616016316841783">Seadmes <ph name="DEVICE" /> oma laiendustele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="2665296953892887393">Aidake Google Chrome'i täiustada, saates Google'ile krahhiaruandeid ja lingi <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Klõpsake Google Lensist väljumiseks</translation>
 <translation id="2674238339205910678">ChromeOS Flex ei saanud Chrome'i andmeid teie Google'i kontole salvestada, kuna teie konto sisselogimisandmed on aegunud.</translation>
@@ -245,6 +249,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3242486428260808857">Saate veebis ostlemisel rohkem võimalusi, kui kasutate oma seadmes <ph name="DEVICE_TYPE" /> Chrome'i rakendust</translation>
 <translation id="3245429137663807393">Kui jagate ka Chrome'i kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
 <translation id="3249558306861350254">Klõpsake Windowsi seadetes valikul <ph name="BEGIN_BOLD" />Määra vaikeväärtus<ph name="END_BOLD" />.</translation>
+<translation id="3258706751219502154">Seadmes <ph name="DEVICE" /> oma järjehoidjatele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="3259748324892322072">Hankige Chrome'i rakendus</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
@@ -344,6 +349,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="4280647692742956593">Laadige oma telefoni alla Chrome, et liikvel olles uusi vahelehegruppe avada või luua.</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="430327780270213103">Lubage laiendus, et juurdepääsutaotlused Chrome'i tööriistaribal kuvada</translation>
+<translation id="4312908933392839680">Kõigis oma seadmetes salvestatud teabele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome soovitab teie brauserit aeglustava vahelehe peatada}other{Chrome soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Isikupärastatud kasutuskogemuse saamiseks ja muude funktsioonide kasutamiseks kaasake Chrome veebi- ja rakendustegevustesse ning lingitud Google'i teenustesse</translation>
@@ -511,7 +517,9 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6046028983725193307">Süsteemiheli jagamiseks avage System Settings ja lubage Chrome'i jaoks valik „System Audio Recording Only“. Seejärel peate Chrome'i taaskäivitama.</translation>
 <translation id="6069027071882229820">Kopeeri pildina</translation>
 <translation id="6070348360322141662">Turvalisuse suurendamiseks krüpteerib Google Chrome teie andmed</translation>
+<translation id="6071642418303142778">Seadmes <ph name="DEVICE" /> paroolidele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="6075300983329039771">Teie organisatsioon (<ph name="MANAGER" />) nõuab, et logiksite Chrome'i sisse</translation>
+<translation id="6077365059401096066">Seadme <ph name="DEVICE" /> lugemisloendile ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="6113794647360055231">Chrome muutus just paremaks</translation>
 <translation id="6116004140911290070">Luba Oskused Chrome'is</translation>
 <translation id="6116252277240876590">Selles keeles kuvatakse Chrome’i menüüd, seaded, hoiatused ja muu tekst</translation>
@@ -709,6 +717,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7804947029129221742">Teie otsingumootorit muudeti väljaspool Chrome'i. Chrome lähtestas selle teie kaitsmiseks algsele vaikeväärtusele. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome'ist eemaldamine ...</translation>
 <translation id="7827099906024714326">Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chrome teie isiku kinnitama. Kui logite praegu välja, siis need andmed kustutatakse.</translation>
+<translation id="7829850924999627855">Seadmes <ph name="DEVICE" /> oma salvestatud teabele ja muule sisule juurdepääsemiseks logige sisse Chrome'i.</translation>
 <translation id="7832314606810669113">Kõigis seadmetes oma järjehoidjate ja muu sisu kasutamiseks logige Chrome’i sisse. See järjehoidja salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7847170235260850604">Käivita Chrome Windowsi käivitamisel</translation>

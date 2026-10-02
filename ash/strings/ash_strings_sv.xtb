@@ -685,7 +685,6 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3039491566278747710">Det gick inte att installera offlinepolicyn på enheten.</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="304097922505898963">Öppna appen Kortkommandon</translation>
-<translation id="3040982432432547149">Hjälp oss att förbättra Steam för Chromebook</translation>
 <translation id="304417730895741346">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
 <translation id="3045670165536837541">Du har valt handtaget uppe till höger – använd piltangenterna för att flytta det</translation>
 <translation id="3046178388369461825">Mycket ont om utrymme på Linux-disken</translation>
@@ -1079,7 +1078,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4147911968024186208">Försök igen. Kontakta supporten om det här felet återkommer.</translation>
 <translation id="4150201353443180367">Skärm</translation>
 <translation id="4151054805501931758">Förbättra porträtt</translation>
-<translation id="4151449637210235443">Berätta om din senaste spelupplevelse</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />).
 Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4158003972857765638">Organisera på ett nytt skrivbord</translation>

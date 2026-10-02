@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome đã chặn tệp tải xuống này vì loại tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="1197860368385086056">Lần tới, khi mở Chrome trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc bật thông báo theo dõi giá.</translation>
 <translation id="1203500561924088507">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="1278833599417554002">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="1289911795790071537">Mở tính năng tìm kiếm bằng Chrome</translation>
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2096213354152647998">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Tắt Chrome đối với các ứng dụng chạy trong nền</translation>
+<translation id="2111985952714409792">Để sử dụng tiện ích và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="2120620239521071941">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="2123055963409958220">Giúp cải thiện Chrome bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
+<translation id="2358140144860869442">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2403703063067034158">Lỗi khi khởi động: một phiên bản thiết lập khác đang chạy, vui lòng thử lại sau.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích của Chrome đã truy cập vào 1 thiết bị HID}=1{Một hoặc nhiều tiện ích của Chrome đang truy cập vào 1 thiết bị HID}other{Một hoặc nhiều tiện ích của Chrome đang truy cập vào # thiết bị HID}}</translation>
@@ -174,6 +177,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo cho bạn biết nếu có nội dung nào cần bạn xem xét.</translation>
 <translation id="2652691236519827073">Mở đường liên kết trong &amp;tab mới của Chrome</translation>
+<translation id="2661616016316841783">Để sử dụng tiện ích và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chrome</translation>
 <translation id="2665296953892887393">Giúp cải thiện Google Chrome bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="2668094785979141847">Nhấp để thoát Google Ống kính</translation>
 <translation id="2674238339205910678">ChromeOS Flex không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn vì thông tin đăng nhập tài khoản đã lỗi thời</translation>
@@ -245,6 +249,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3242486428260808857">Tận hưởng nhiều lợi ích hơn khi mua sắm trực tuyến bằng ứng dụng Chrome trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chrome, các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
 <translation id="3249558306861350254">Nhấp vào <ph name="BEGIN_BOLD" />Đặt làm mặc định<ph name="END_BOLD" /> trong phần cài đặt Windows.</translation>
+<translation id="3258706751219502154">Để sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chrome</translation>
 <translation id="3259748324892322072">Tải ứng dụng Chrome</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
@@ -344,6 +349,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="4280647692742956593">Tải Chrome xuống điện thoại để mở hoặc tạo nhóm thẻ mới trong khi di chuyển.</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="430327780270213103">Cho phép tiện ích hiện các yêu cầu truy cập trong thanh công cụ của Chrome</translation>
+<translation id="4312908933392839680">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}other{Chrome đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Để sử dụng chế độ cá nhân hoá và các tính năng khác, hãy thêm Chrome vào mục Hoạt động trên web và ứng dụng cũng như các dịch vụ của Google được liên kết</translation>
@@ -511,7 +517,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6046028983725193307">Để chia sẻ âm thanh hệ thống, hãy mở phần Cài đặt hệ thống rồi bật chế độ "Chỉ ghi âm thanh hệ thống" cho Chrome. Sau đó, bạn cần khởi động lại Chrome.</translation>
 <translation id="6069027071882229820">Sao chép dưới dạng hình ảnh</translation>
 <translation id="6070348360322141662">Để tăng cường bảo mật, Google Chrome sẽ mã hoá dữ liệu của bạn</translation>
+<translation id="6071642418303142778">Để sử dụng mật khẩu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chrome</translation>
 <translation id="6075300983329039771">Tổ chức <ph name="MANAGER" /> của bạn yêu cầu bạn đăng nhập vào Chrome</translation>
+<translation id="6077365059401096066">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chrome</translation>
 <translation id="6113794647360055231">Chrome được cải tiến hơn</translation>
 <translation id="6116004140911290070">Bật tính năng Kỹ năng trong Chrome</translation>
 <translation id="6116252277240876590">Ngôn ngữ này dùng để hiển thị trình đơn, chế độ cài đặt, cảnh báo và các nội dung khác trong Chrome</translation>
@@ -709,6 +717,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7804947029129221742">Công cụ tìm kiếm của bạn đã bị thay đổi từ bên ngoài Chrome. Để bảo vệ bạn, Chrome đã đặt lại công cụ này về chế độ mặc định ban đầu. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Xóa khỏi Chrome...</translation>
 <translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
+<translation id="7829850924999627855">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chrome</translation>
 <translation id="7832314606810669113">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Khởi chạy Chrome khi Windows khởi động</translation>

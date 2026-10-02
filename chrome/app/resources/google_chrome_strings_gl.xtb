@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Chrome bloqueou esta descarga porque este tipo de ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="1197860368385086056">A próxima vez que abras Chrome no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para activar as alertas de seguimento de prezos.</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
+<translation id="1226003169284463347">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir busca con Chrome</translation>
 <translation id="1290883685122687410">Produciuse un erro durante a configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">Levas un tempo sen entrar. Chrome quitou o seguinte permiso: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Desactivar execución de Chrome en segundo plano para as aplicacións</translation>
+<translation id="2111985952714409792">Para poder acceder ás túas extensións e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">Manter na barra de aplicacións</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectou que estas extensións conteñen software malicioso:</translation>
+<translation id="2358140144860869442">Para poder acceder á lista de lectura e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chrome estaban accedendo a # dispositivos de interface humana}}</translation>
@@ -176,6 +179,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
+<translation id="2661616016316841783">Para poder acceder ás túas extensións e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2668094785979141847">Fai clic para saír de Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
@@ -247,6 +251,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3242486428260808857">Tira máis proveito das compras en liña coa aplicación Chrome no teu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Se, ademais, compartes os informes de uso de Chrome, neles inclúense os URL que visitas</translation>
 <translation id="3249558306861350254">Fai clic en <ph name="BEGIN_BOLD" />Definir como predeterminado<ph name="END_BOLD" /> na configuración de Windows.</translation>
+<translation id="3258706751219502154">Para poder acceder aos teus marcadores e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chrome</translation>
 <translation id="3259748324892322072">Descargar a aplicación Chrome</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
@@ -346,6 +351,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4280647692742956593">Descarga Chrome no teléfono para abrir ou crear grupos de pestanas esteas onde esteas.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="430327780270213103">Permitir que a extensión mostre solicitudes de acceso na barra de ferramentas de Chrome</translation>
+<translation id="4312908933392839680">Para poder acceder á túa información gardada e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chrome recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para beneficiarte da personalización e doutras función, inclúe Chrome en Actividade web e das aplicacións e servizos de Google vinculados</translation>
@@ -515,7 +521,9 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6046028983725193307">Para compartir o audio do sistema, abre a configuración do sistema e activa o permiso System Audio Recording Only (Só gravación de audio do sistema) para Chrome. Terás que reiniciar Chrome.</translation>
 <translation id="6069027071882229820">Copiar como imaxe</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
+<translation id="6071642418303142778">Para poder acceder aos teus contrasinais e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chrome</translation>
 <translation id="6075300983329039771">A túa organización, <ph name="MANAGER" />, esixe que inicies sesión en Chrome</translation>
+<translation id="6077365059401096066">Para poder acceder á túa lista de lectura e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chrome</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
 <translation id="6116004140911290070">Activar Skills en Chrome</translation>
 <translation id="6116252277240876590">Este é o idioma no que se mostran os menús, as opcións de configuración, as alertas e outros textos en Chrome</translation>
@@ -713,6 +721,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7804947029129221742">O teu buscador cambiouse desde fóra de Chrome. Para protexerte, Chrome restableceu a configuración predeterminada orixinal. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Eliminar de Chrome...</translation>
 <translation id="7827099906024714326">Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
+<translation id="7829850924999627855">Para poder acceder á túa información gardada e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chrome</translation>
 <translation id="7832314606810669113">Para poder acceder aos teus marcadores e outros datos en todos os teus dispositivos, inicia sesión en Chrome Despois de facelo, este marcador gardarase na túa Conta de Google.</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
 <translation id="7847170235260850604">Abrir Chrome cando se inicie Windows</translation>

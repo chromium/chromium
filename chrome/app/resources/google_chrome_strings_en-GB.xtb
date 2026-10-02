@@ -30,6 +30,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1197860368385086056">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to enable price tracking alerts.</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">To get your bookmarks and more on all your devices, sign in to Chrome</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1289911795790071537">Open search with Chrome</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2096213354152647998">You haven't visited recently. Chrome removed <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Disable Chrome running in background for apps</translation>
+<translation id="2111985952714409792">To get your extensions and more on all your devices, sign in to Chrome</translation>
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2307973900865360088">Keep in Dock</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
+<translation id="2358140144860869442">To get your reading list and more on all your devices, sign in to Chrome</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chrome extensions}=1{1 HID device is being accessed by one or more Chrome extensions}other{# HID devices are being accessed by one or more Chrome extensions}}</translation>
@@ -176,6 +179,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
+<translation id="2661616016316841783">To get your extensions and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
@@ -247,6 +251,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3242486428260808857">Get more out of online shopping when you use the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3249558306861350254">Click <ph name="BEGIN_BOLD" />Set default<ph name="END_BOLD" /> in your Windows settings.</translation>
+<translation id="3258706751219502154">To get your bookmarks and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="3259748324892322072">Get the Chrome app</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
@@ -346,6 +351,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4280647692742956593">Download Chrome on your phone to open or create new tab groups on the go.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="430327780270213103">Allow extension to show access requests in the Chrome toolbar</translation>
+<translation id="4312908933392839680">To get your saved info and more on all your devices, sign in to Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
@@ -515,7 +521,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6046028983725193307">To share system audio, open system settings and allow 'System audio recording only' for Chrome. You'll then need to restart Chrome.</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
+<translation id="6071642418303142778">To get your passwords and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
+<translation id="6077365059401096066">To get your reading list and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
 <translation id="6116004140911290070">Enable skills in Chrome</translation>
 <translation id="6116252277240876590">This language is used to display menus, settings, alerts and other text in Chrome</translation>
@@ -713,6 +721,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7804947029129221742">Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7827099906024714326">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
+<translation id="7829850924999627855">To get your saved info and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="7832314606810669113">To get your bookmarks and more on all your devices, sign in to Chrome. This bookmark will be saved in your Google Account after you sign in.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Launch Chrome when Windows starts</translation>

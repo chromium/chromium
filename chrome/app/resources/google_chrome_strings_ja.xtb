@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">このダウンロードは Chrome でブロックされました。ファイル形式が一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="1197860368385086056">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、価格トラッキングのアラートを有効にするよう促すメッセージが表示されます。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
+<translation id="1226003169284463347">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1289911795790071537">「Chrome で検索」を開く</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">最近アクセスしていないため、Chrome で<ph name="PERMISSION" />の権限を削除しました。</translation>
 <translation id="2106831557840787829">ChromeOS Flex も <ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="2108778574543343055">Chrome のアプリ向けのバックグラウンドでの実行を無効にする</translation>
+<translation id="2111985952714409792">すべてのデバイスで同じ拡張機能などを使用するには、Chrome にログインしてください</translation>
 <translation id="2120620239521071941">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="2121284319307530122">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chrome の品質向上にご協力ください</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Dock に追加</translation>
 <translation id="2309047409763057870">この Google Chrome はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="2345992953227471816">Chrome で次の拡張機能に不正なソフトウェアが含まれていることが検出されました。</translation>
+<translation id="2358140144860869442">すべてのデバイスで同じリーディング リストなどを使用するには、Chrome にログインしてください</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2403703063067034158">起動エラー: 現在、別のインスタンスのセットアップが実行中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 つ以上の Chrome 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chrome 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chrome 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
@@ -170,6 +173,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。お客様による確認が必要な項目がありましたらお知らせします。</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" /> の拡張機能などを使用するには、Chrome にログインしてください</translation>
 <translation id="2665296953892887393">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Google Chrome の機能向上に役立てる</translation>
 <translation id="2668094785979141847">クリックして Google レンズを終了</translation>
 <translation id="2674238339205910678">アカウントのログイン情報が最新でないため、ChromeOS Flex は Google アカウントに Chrome データを保存できませんでした</translation>
@@ -241,6 +245,7 @@
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" /> の Chrome アプリで、オンライン ショッピングをさらに便利に利用できます</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3249558306861350254">Windows の設定で [<ph name="BEGIN_BOLD" />デフォルトに設定<ph name="END_BOLD" />] をクリックします。</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" /> のブックマークなどを使用するには、Chrome にログインしてください</translation>
 <translation id="3259748324892322072">Chrome アプリを入手</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
@@ -339,6 +344,7 @@
 <translation id="4280647692742956593">スマートフォンに Chrome をダウンロードして、外出先でタブグループを開いたり、新しいタブグループを作成したりできます。</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="430327780270213103">拡張機能に Chrome ツールバーへのアクセス リクエストの表示を許可する</translation>
+<translation id="4312908933392839680">すべてのデバイスで保存した情報などを使用するには、Chrome にログインしてください</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
 <translation id="4329315893554541805">パーソナライズなどの機能を利用するには、Chrome をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
@@ -504,7 +510,9 @@
 <translation id="6046028983725193307">システム音声を共有するには、[システム設定] を開き、Chrome に [システムオーディオ録音のみ] を許可してください。その後、Chrome を再起動する必要があります。</translation>
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" /> のパスワードなどを使用するには、Chrome にログインしてください</translation>
 <translation id="6075300983329039771">組織（<ph name="MANAGER" />）が Chrome にログインするよう求めています</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" /> のリーディング リストなどを使用するには、Chrome にログインしてください</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
 <translation id="6116004140911290070">Chrome でスキルを有効にする</translation>
 <translation id="6116252277240876590">この言語が Chrome のメニュー、設定、アラートなどのテキストの表示に使用されます</translation>
@@ -702,6 +710,7 @@
 <translation id="7804947029129221742">検索エンジンが Chrome の外部から変更されました。ユーザーを保護するため、Chrome で元のデフォルトにリセットしました。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7827099906024714326">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" /> で保存した情報などを使用するには、Chrome にログインしてください</translation>
 <translation id="7832314606810669113">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください。このブックマークは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7847170235260850604">Windows の起動時に Chrome を自動で起動する</translation>

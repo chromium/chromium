@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{סיסמה אחת יובאה אל <ph name="BRAND" /> במכשיר הזה}one{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}two{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}other{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> במכשיר הזה}}</translation>
 <translation id="1046572983040892965">החלון הועבר למעלה ושמאלה</translation>
 <translation id="1047431265488717055">העתקת ט&amp;קסט קישור</translation>
+<translation id="104751728059674265">אי אפשר לשלוח משוב מהחשבון שלך. מבוגר יוכל לדווח על הבעיה בשמך מהמכשיר שלו.</translation>
 <translation id="1048986595386481879">הקצאה דינמית</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{מתקבל <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}one{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}two{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}other{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">אתרים יכולים לבקש הרשאה לתעד את קלט העכבר ולהשתמש בו</translation>
 <translation id="1232569758102978740">ללא שם</translation>
 <translation id="1233497634904001272">יש לגעת במפתח האבטחה שוב כדי להשלים את הבקשה.</translation>
+<translation id="1233566345244684257">‏כל מי שיש לו גישה לממשקי Gemini שלך יכול לשלוט בדפדפן Chrome שלך.</translation>
 <translation id="1233721473400465416">לוקאל</translation>
 <translation id="1233835246554936745">{0,plural, =1{שמירת פריט אחד בחשבון}one{שמירת # פריטים בחשבון}two{שמירת # פריטים בחשבון}other{שמירת # פריטים בחשבון}}</translation>
 <translation id="1234736487471201993">‏יצירת קוד QR לתמונה הזו</translation>
@@ -469,6 +471,7 @@
 <translation id="1341701348342335220">כל הכבוד!</translation>
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
+<translation id="1344216785734288669">סיסמאות אפל</translation>
 <translation id="1346630054604077329">אישור והפעלה מחדש</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1347512539447549782">‏נפח האחסון של Linux</translation>
@@ -552,6 +555,7 @@
 <translation id="1421514190500081936">עליך להזין סיבה להורדת הנתונים האלה:</translation>
 <translation id="1422159345171879700">טעינת סקריפטים לא בטוחים</translation>
 <translation id="1425040197660226913">‏לא ניתן להעלות את הקובץ. גודל התמונה צריך להיות פחות מ-20MB.</translation>
+<translation id="1426154609634610063">‏מידע על הסיכונים בשימוש ב-Gemini</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="142655739075382478">האפליקציה <ph name="APP_NAME" /> חסומה</translation>
 <translation id="1427179946227469514">‏גובה הקול של המרת טקסט לדיבור (TTS)</translation>
@@ -991,6 +995,7 @@
 <translation id="1755601632425835748">גודל טקסט</translation>
 <translation id="1756963401828337401">בחירת מסך לצילום</translation>
 <translation id="17584710573359123">‏הצגה בחנות האינטרנט של Chrome</translation>
+<translation id="1758845021884209593">שימוש בקיצור הדרך בכל האפליקציות של מערכת ההפעלה</translation>
 <translation id="1761402971842586829">בוצע מיפוי מחדש של <ph name="BUTTON_NAME" /> לאפשרות <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">החשבונות של <ph name="NAME" /></translation>
 <translation id="176272781006230109">הצעות לקניות</translation>
@@ -1563,6 +1568,7 @@
 <translation id="2198625180564913276">הוספת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="2198712775285959645">עריכה</translation>
 <translation id="2199298570273670671">שגיאה</translation>
+<translation id="2199546617947317537">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="220006241671843310">‏יש לך אפשרות לבחור אם Chrome ישתמש במודלים של AI שפועלים ישירות במכשיר שלך</translation>
 <translation id="2200094388063410062">אימייל</translation>
 <translation id="2200781749203116929">‏יומני המערכת של ChromeOS</translation>
@@ -1838,6 +1844,7 @@
 <translation id="2416435988630956212">מקשי פונקציה במקלדת</translation>
 <translation id="2419131370336513030">צפייה באפליקציות המותקנות</translation>
 <translation id="2419706071571366386">מטעמי אבטחה, יש לצאת מהחשבון כשהמחשב לא בשימוש.</translation>
+<translation id="2423226060967554289">הצגת סרגל הסימניות</translation>
 <translation id="2423506062824112361">התוכן לא ירד מסיבה לא ידועה.</translation>
 <translation id="2423578206845792524">שמ&amp;ירת תמונה בשם...</translation>
 <translation id="2424424966051154874">{0,plural, =1{מצב אורח}one{מצב אורח (#)}two{מצב אורח (#)}other{מצב אורח (#)}}</translation>
@@ -2075,6 +2082,7 @@
 <translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
 <translation id="2588636910004461974">מכשירים של <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
+<translation id="2595270892115552212">‏כשמתחילים משימה מממשקי Gemini אחרים, כולל gemini.google.com ואפליקציות Gemini לנייד, Gemini יכול להשתמש בתכונה "פעולות אוטומטיות בדפדפן" ב-Chrome במכשיר הזה כדי לבצע פעולות באתרים ולהשלים משימות בשמך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">‏התכונה 'שיתוף מהיר' מחפשת מכשירים קרובים באמצעות Bluetooth.</translation>
 <translation id="2598136842498757793">התאמה אישית של כפתורי סרגל הכלים</translation>
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
@@ -2292,6 +2300,7 @@
 <translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="274362947316498129">אפליקציה כלשהי מנסה לגשת אל <ph name="DEVICE_NAME" />. כדי לאפשר גישה, צריך להשבית את מתג הפרטיות של <ph name="DEVICE_NAME" />.</translation>
 <translation id="2744221223678373668">משותף</translation>
+<translation id="2744919074068076548">פתיחת תצוגה מפוצלת</translation>
 <translation id="2745080116229976798">‏שעבוד מוגדר של Microsoft</translation>
 <translation id="2749756011735116528">כניסה אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2343,6 +2352,7 @@
 <translation id="2777525873368474674">הדבקת הקישור לתמונה</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{נמצא אתר אחד עם הרבה התראות}one{נמצאו {NUM_SITES} אתרים עם הרבה התראות}two{נמצאו {NUM_SITES} אתרים עם הרבה התראות}other{נמצאו {NUM_SITES} אתרים עם הרבה התראות}}</translation>
 <translation id="2778471504622896352">‏הוספת אפליקציות מרוחקות למרכז האפליקציות של ChromeOS</translation>
+<translation id="2781037472881921606">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך לסנכרן את ההיסטוריה. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">שימוש במפתח האבטחה באפליקציה <ph name="APP_NAME" /></translation>
@@ -2405,6 +2415,7 @@
 <translation id="2826576843404243001">מקבלים אזהרה לפני שמבקרים באתרים שלא תומכים בחיבורים מאובטחים. לא ניתן לשנות את ההגדרה הזו כי ההגנה המתקדמת מופעלת.</translation>
 <translation id="2828375943530438449">חזרה מדף הכניסה</translation>
 <translation id="2828833307884755422">הנפח שהתפנה: <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">‏כדי להעביר את הכרטיסיות מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="2833144527504272627">ניווט באמצעות סמן הטקסט</translation>
 <translation id="2833727845850279275">הקובץ הזה מכיל תוכנה זדונית או מגיע מאתר חשוד.</translation>
 <translation id="2835177225987815960">הגדרת הסריקה הנוכחית שלך תאופס, לרבות העדפות למהירות הסריקה האוטומטית ומתגים שהוקצו.</translation>
@@ -2771,6 +2782,7 @@
 <translation id="3102309003841389927">בדיקת עדכון הלוגו</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
 <translation id="3103451787721578293">יש להזין סיבה להעלאת הנתונים האלה:</translation>
+<translation id="3105253709809514429">‏כדי להעביר את הכרטיסיות מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם התוספים ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3105339775057145050">העדכון האחרון נכשל</translation>
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
 <translation id="3105820656234755131">הסיסמה עודכנה</translation>
@@ -2782,6 +2794,7 @@
 <translation id="3109206895301430738">קבוצות כרטיסיות שמורות</translation>
 <translation id="3109724472072898302">מכווץ</translation>
 <translation id="3112292765614504292">גודל האפליקציה: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">‏כדי להעביר את הכרטיסיות מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="311347022006935575">הוסיף/ה את הכרטיסייה הזו</translation>
 <translation id="311394601889664316">לא לאפשר לאתרים לערוך קבצים או תיקיות במכשיר</translation>
 <translation id="3113970906450647715">הצמדת הכפתור בוטלה</translation>
@@ -2812,6 +2825,7 @@
 <translation id="3132996321662585180">רענון מדי יום</translation>
 <translation id="3134312457920437826">לא ניתן להתקין את התוסף כי הוא משתמש בגרסה של המניפסט שלא נתמכת.</translation>
 <translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">‏לתת רשות לאפליקציות אחרות של Gemini לגלוש מרחוק מכל מכשיר</translation>
 <translation id="3139925690611372679">אווטאר ברירת מחדל צהוב</translation>
 <translation id="314095642664111744">השבתת המיקוד</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
@@ -3097,6 +3111,7 @@
 <translation id="3355936511340229503">שגיאת חיבור</translation>
 <translation id="335678817537689040">סטטית</translation>
 <translation id="3359256513598016054">מגבלות מדיניות אישורים </translation>
+<translation id="3359465538772230055">אין משימות</translation>
 <translation id="3360297538363969800">ההדפסה נכשלה. בדוק את המדפסת ונסה שוב.</translation>
 <translation id="3360306038446926262">חלונות</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}one{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}two{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}}</translation>
@@ -3287,6 +3302,7 @@
 <translation id="3498138244916757538">השינוי בהגדרת המיקרופון מחייב את הכיבוי של <ph name="SPECIFIC_NAME" />. עליך לכבות את <ph name="SPECIFIC_NAME" /> כדי להמשיך.</translation>
 <translation id="3500417806337761827">‏אירעה שגיאה בטעינת השיתוף. כבר נטענו יותר מדי שיתופי SMB.</translation>
 <translation id="3500764001796099683">‏הפעלה של אפליקציות אינטרנט מבודדות (IWA)</translation>
+<translation id="3501134531169168291">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם התוספים ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
 <translation id="3507650052590605702">לפרטי הסיסמה</translation>
 <translation id="3507888235492474624">‏סריקה חוזרת לאיתור מכשירי Bluetooth</translation>
@@ -3363,6 +3379,7 @@
 <translation id="3562655211539199254">‏הצגת כרטיסיות Chrome אחרונות בטלפון</translation>
 <translation id="356268274299520831">שינוי הסיסמה באתר</translation>
 <translation id="3563392617245068355">אווירה</translation>
+<translation id="3564327838471533677">תצוגה מפוצלת שנסגרה לאחרונה</translation>
 <translation id="3564456410937306182">מידע נוסף על טעינה דינמית.</translation>
 <translation id="3564659095423213915">התיקייה הזו שמורה רק במכשיר הזה. אם התיקייה הזו תישמר ב-"<ph name="ACCOUNT_FOLDER" />", היא תישמר גם בחשבון שלך.</translation>
 <translation id="3564848315152754834">‏מפתח אבטחה בחיבור USB</translation>
@@ -3625,6 +3642,7 @@
 <translation id="3736487688526377259">צריך לבחור את המכשיר שאליו יישלח הקישור הזה.</translation>
 <translation id="3737058101969549870">לשמור את נתוני הגלישה הקיימים בנפרד מהפרופיל החדש?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">‏‫Gemini יכול להשתמש בפעולות אוטומטיות בדפדפן רק אם המכשיר לא במצב שינה ו-Chrome מופעל.</translation>
 <translation id="3739254215541673094">לפתוח את <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">אתרים יכולים לבקש הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן ולהשתמש בהן</translation>
 <translation id="3741056951918180319">תמיד אפשר ללחוץ על התוסף כדי להשתמש בו בכל אתר שהוא</translation>
@@ -3773,6 +3791,7 @@
 <translation id="3838085852053358637">טעינת התוסף נכשלה</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> נוספים</translation>
 <translation id="383891835335927981">באף אתר לא השתנה המרחק מהתצוגה</translation>
+<translation id="3839108710633244251">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3839516600093027468">יש למנוע תמיד מ-<ph name="HOST" /> לגשת אל הלוח</translation>
 <translation id="3840096463915153852">היסטוריית השיחות</translation>
 <translation id="3841319830220785495">קול טבעי בברירת מחדל</translation>
@@ -3980,6 +3999,7 @@
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3988124842897276887">‏הכרטיסייה הזו מחוברת להתקן USB</translation>
 <translation id="3989635538409502728">יציאה</translation>
+<translation id="399132041334931433">הוספת הכרטיסיות לקבוצה חדשה</translation>
 <translation id="399179161741278232">מיובאות</translation>
 <translation id="3992008114154328194">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />,‏ <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">‏מתן שליטה ל-<ph name="SPECIFIC_NAME" /> על התקני USB.</translation>
@@ -4295,6 +4315,7 @@
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{שמירת הקבוצה}one{שמירת הקבוצות}two{שמירת הקבוצות}other{שמירת הקבוצות}}</translation>
 <translation id="4261429981378979799">הרשאות של תוספים</translation>
 <translation id="4262004481148703251">סגירת האזהרה</translation>
+<translation id="4262060800239714974">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך לסנכרן את ההיסטוריה והכרטיסיות לחשבון <ph name="EMAIL" />. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4263470758446311292">חיסכון מקסימלי במשאבי הזיכרון. הכרטיסיות מושבתות אחרי פרק זמן קצר יותר.</translation>
 <translation id="4263824086525632">זוהר הקוטב הצפוני</translation>
 <translation id="4265096510956307240">אימות הזהות שלך</translation>
@@ -4771,6 +4792,7 @@
 <translation id="4631637535315947773">קיצורי הדרך לאתרים שביקרת בהם הכי הרבה הוסרו כי לא השתמשת בהם לאחרונה</translation>
 <translation id="4631955550884380853">קול ממוקד</translation>
 <translation id="4632655012900268062">התאמה אישית של הכרטיסים</translation>
+<translation id="4634719521235795064">‏לכניסה לחשבון, Gemini יכול להשתמש במנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />איך Gemini מטפל בנתונים שלך<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">‏הסרה של Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> לא זמין למשתמשים במצב אורח.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{אפשר לצרף לשאלה תמונה אחת}one{אפשר לצרף לשאלה עד # תמונות}two{אפשר לצרף לשאלה עד # תמונות}other{אפשר לצרף לשאלה עד # תמונות}}</translation>
@@ -4931,8 +4953,10 @@
 <translation id="4750185073185658673">‏יש לעבור לטלפון כדי לבדוק מספר הרשאות נוספות. חשוב לוודא שה‑Bluetooth וה‑Wi‑Fi פועלים בטלפון.</translation>
 <translation id="4750394297954878236">הצעות</translation>
 <translation id="475088594373173692">משתמש ראשון</translation>
+<translation id="4751925628341802838">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם התוספים ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4753084533826742808">הסיסמה חייבת להכיל תו אחד לפחות</translation>
 <translation id="4754590344707355551">משפרים את פעילות הדפדפן עם תוספים</translation>
+<translation id="4756130875344525429">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4756378406049221019">עצירה/טעינה מחדש</translation>
 <translation id="4756388243121344051">&amp;היסטוריה</translation>
 <translation id="4756627014339714615">כן</translation>
@@ -5209,6 +5233,7 @@
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4951966678293618079">אין לשמור סיסמאות לאתר הזה אף פעם</translation>
 <translation id="4952580838083306838">הסתרת המארגן</translation>
+<translation id="4952628481830269193">הצגת סרגל הסימניות</translation>
 <translation id="4953808748584563296">אווטאר ברירת מחדל כתום</translation>
 <translation id="4954652437333037880">קובץ</translation>
 <translation id="4954831709600868883">יש לך שאלה לגבי <ph name="TEXT" />?</translation>
@@ -5243,6 +5268,7 @@
 <translation id="497403230787583386">בדיקות האבטחה הסתיימו. המסמך יודפס.</translation>
 <translation id="4974442344472293753">תוצאת העדכון</translation>
 <translation id="4975771730019223894">תיוג אפליקציות</translation>
+<translation id="4976647810464861866">‏כדי להעביר את הכרטיסיות מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם רשימת הקריאה ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_LIMIT" />/<ph name="CHARACTER_COUNT" /></translation>
 <translation id="4977942889532008999">אישור גישה</translation>
 <translation id="4979263087381759787">אפשרויות למפתחים</translation>
@@ -5282,6 +5308,7 @@
 <translation id="5008936837313706385">שם הפעילות</translation>
 <translation id="5009463889040999939">שינוי שם הפרופיל מתבצע. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5010886807652684893">תצוגה מורחבת</translation>
+<translation id="5012016139642806466">אפשר לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="5012523644916800014">ניהול הסיסמאות ומפתחות הגישה</translation>
 <translation id="501394389332262641">הצליל להתראה על סוללה חלשה</translation>
 <translation id="5014286001996333986">להחליף את הקבוצה הקיימת או ליצור קבוצה חדשה?</translation>
@@ -5414,6 +5441,7 @@
 <translation id="511313294362309725">הפעלת ההתאמה המהירה</translation>
 <translation id="5113992879909788634">‏מידע נוסף על פעולות אוטומטיות בדפדפן Chrome</translation>
 <translation id="51143538739122961">צריך להכניס את מפתח האבטחה ולגעת בו</translation>
+<translation id="5114635223409082546">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">&amp;שמירת אודיו כ...</translation>
 <translation id="5117139026559873716">יש לנתק את הטלפון מה-<ph name="DEVICE_TYPE" />. הם לא יחוברו יותר באופן אוטומטי.</translation>
@@ -5461,6 +5489,7 @@
 <translation id="5149602533174716626">העתקת הפריים</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
 <translation id="5151354047782775295">אם לא מפנים שטח אחסון, ייבחרו נתונים למחיקה אוטומטית</translation>
+<translation id="5152719737931716272">‏המשימה הושלמה והוחזרה אל Gemini</translation>
 <translation id="5153074793829217329">אפשר לשלוט בסמן העכבר באמצעות המקלדת או במקלדת נומרית</translation>
 <translation id="5153234146675181447">מחיקת הטלפון</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5778,6 +5807,7 @@
 <translation id="5414836363063783498">בתהליך אימות…</translation>
 <translation id="5415497281076257439">ביטוי</translation>
 <translation id="5415871492522952905">ההיסטוריה והכרטיסיות יופיעו בכל המכשירים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
+<translation id="5417160551295347092">‏‫Gemini עלול לטעות. למשל, הוא עשוי לשתף מידע אישי או לבצע רכישות ללא רשות. <ph name="LINK_BEGIN" />כדאי לעיין בסיכונים<ph name="LINK_END" /></translation>
 <translation id="5417293056300086453">האתר הזה יכול להשתמש במזהים כדי להפעיל תוכן מוגן.</translation>
 <translation id="5417312524372586921">עיצובי דפדפן</translation>
 <translation id="541737483547792035">הגדלת המסך</translation>
@@ -5809,6 +5839,7 @@
 <translation id="5436211819997237281">התוסף הנוכחי שמנהל את הדף "כרטיסייה חדשה"</translation>
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">כדי לשמור את הסיסמאות ולמלא אותן אוטומטית בכל המכשירים, צריך להיכנס לחשבון <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616">עכשיו החלון בצד <ph name="WINDOW_SIDE" /> ברוחב <ph name="WINDOW_SIZE_PERCENT" />, והחלונית בצד <ph name="PANE_SIDE" /> ברוחב <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">חיפוש תוספים</translation>
 <translation id="5440240650630588012">‏כדי להתמקד בטקסט, אפשר להוסיף קו או חלון קריאה. צריך ללחוץ על ⌥L או לעבור להגדרות.</translation>
@@ -5838,6 +5869,7 @@
 <translation id="5457795687441958389">לא להיכנס לחשבון</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">הזנת קוד אימות שגוי יותר מדי פעמים. כדי לגשת למפתחות הגישה ולסיסמאות, עליך לשנות את קוד האימות.</translation>
+<translation id="5459251585760045919">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם התוספים ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="5459470938885464873">אירעה שגיאה בייבוא האישור</translation>
 <translation id="5459864179070366255">המשך להתקנה</translation>
 <translation id="5460861858595506978">להשראה</translation>
@@ -6009,6 +6041,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">לשמור את שם המשתמש?</translation>
 <translation id="5585019845078534178">כרטיסיות</translation>
+<translation id="5585064628683466904">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם רשימת הקריאה ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="5585118885427931890">לא ניתן ליצור תיקיית סימניות.</translation>
 <translation id="558563010977877295">פתיחה של דף מסוים או קבוצת דפים</translation>
 <translation id="5587592231724900065">ההגדרה הזו נקבעת על ידי תוסף</translation>
@@ -6082,6 +6115,7 @@
 <translation id="5641715878999557094">התוסף <ph name="EXTENSION_NAME" /> שינה את הדף שמוצג כשלוחצים על כפתור דף הבית.</translation>
 <translation id="5643191124441701136">קוד האבטחה מופיע בחזית הכרטיס</translation>
 <translation id="5643321261065707929">רשת עם חיוב לפי שימוש בנתונים</translation>
+<translation id="5645369002069651355">כתובת האימייל בתהליך אימות</translation>
 <translation id="5646376287012673985">מיקום</translation>
 <translation id="5646558797914161501">איש עסקים</translation>
 <translation id="564670806635578888">‏חיפוש של "<ph name="SEARCH_TERMS" />" ב-Google</translation>
@@ -6120,6 +6154,7 @@
 <translation id="5687340364605915800">לכל אתר יש דרך ושיקולים משלו בתגובה לבקשה הזו</translation>
 <translation id="5689233503102158537">‏Alt + מקש Backspace</translation>
 <translation id="5689516760719285838">מיקום</translation>
+<translation id="568984110402742489">אי אפשר לשלוח משוב</translation>
 <translation id="56907980372820799">קישור נתונים</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
@@ -6530,6 +6565,7 @@
 <translation id="6003143259071779217">‏הסרת הרשת הסלולרית של eSIM</translation>
 <translation id="6003479444341796444">סרגל הכותרת לא מוצג</translation>
 <translation id="6003582434972667631">העיצוב מוגדר על ידי הארגון שלך</translation>
+<translation id="600407115562756795">‏‫Gemini יחליט אילו פעולות לבצע על סמך המשימות שמתחילים או מעדכנים.</translation>
 <translation id="6005045517426700202">בניין לבנים</translation>
 <translation id="6006484371116297560">קלאסי</translation>
 <translation id="6007053304250788613">ניתן לא לכלול רק מסך אחד במצב השתקפות במראה</translation>
@@ -6744,6 +6780,7 @@
 <translation id="6175910054050815932">קבלת קישור</translation>
 <translation id="6177478397823976397">לא נמצאו מכשירים. אפשר לפתוח מאמר במרכז העזרה בכרטיסייה חדשה.</translation>
 <translation id="6177779807714496775">פתיחת הקישור בתצוגה השמאלית</translation>
+<translation id="6178186430790239237">‏כדי להעביר את הכרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את ההיסטוריה והכרטיסיות לחשבון <ph name="EMAIL" />. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="6178664161104547336">בחירת אישור</translation>
 <translation id="6178682841350631965">פרטי הכניסה שלך עודכנו</translation>
 <translation id="6179830757749383456">הדפדפן מנוהל על ידי <ph name="BROWSER_DOMAIN" />, הפרופיל מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
@@ -6873,6 +6910,7 @@
 <translation id="6273677812470008672">איכות</translation>
 <translation id="6274089201566806618">מתבצע חיבור אל <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">הקלטת מסך</translation>
+<translation id="6276246115230302286">כדי להגיע במהירות לאתרים שהוספת לסימניות בכל המכשירים שלך, עליך להתחבר בתור <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">תם הזמן הקצוב לתפוגה של הרשת</translation>
 <translation id="6277518330158259200">צ&amp;ילום מסך</translation>
 <translation id="6278428485366576908">עיצוב</translation>
@@ -7054,6 +7092,7 @@
 <translation id="6430202563517028640">הוספת הקישור לרשימת הקריאה</translation>
 <translation id="6430814529589430811">‏ASCII בקידוד Base64, אישור יחיד</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> יגדיר עדכונים אוטומטיים לכל המשתמשים במחשב זה.</translation>
+<translation id="6431970976661940755">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם רשימת הקריאה ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="6434104957329207050">מהירות סריקה של נקודות</translation>
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6434755719322447931">כאוטי</translation>
@@ -7218,6 +7257,7 @@
 <translation id="6556903358015358733">עיצוב וטפט</translation>
 <translation id="6557199166823345360">כדי לשפר את החיפוש, אפשר להוסיף עוד פרטים או לשאול שאלה לגבי הבחירה</translation>
 <translation id="6557290421156335491">קיצורי הדרך שלי</translation>
+<translation id="655745275895381718">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="6558098963164662391">&amp;הסרה מהמילון</translation>
 <translation id="6560061709899140565">‏הצגת סשנים אחרים של הפעלת Cast</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
@@ -7296,6 +7336,7 @@
 <translation id="6607831829715835317">כלים &amp;נוספים</translation>
 <translation id="6608166463665411119">‏איפוס ה-eSIM</translation>
 <translation id="660846213831377756">מקשי העכבר</translation>
+<translation id="6608725880745776452">רוצה לקבל את הסיסמאות שלך ונתונים נוספים מ-<ph name="DEVICE" />?</translation>
 <translation id="6609478180749378879">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי. מאוחר יותר תהיה לך אפשרות להיכנס שוב לחשבון באתר הזה באמצעות המכשיר.</translation>
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
 <translation id="6611432349566876829">כרטיסייה אחת (<ph name="NUM" />)</translation>
@@ -7909,6 +7950,7 @@
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{סיסמה אחת יובאה אל <ph name="BRAND" /> עבור <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> עבור <ph name="USER_EMAIL" />}two{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> עבור <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} סיסמאות יובאו אל <ph name="BRAND" /> עבור <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">על המערכת</translation>
 <translation id="706626672220389329">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. ההתקן שצוין כבר נטען.</translation>
+<translation id="7066357648902789011">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7067396782363924830">צבעי הסביבה</translation>
 <translation id="7067725467529581407">אין להציג זאת שוב.</translation>
 <translation id="7068539819344620805">‏עכשיו אפשר לשנות את המראה של הדפדפן בכל שלב דרך התפריט "התאמה אישית של Chrome"</translation>
@@ -8094,6 +8136,7 @@
 <translation id="7214047272988222011">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למצלמת המערכת<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{כרטיסייה חדשה בכרטיסייה אחת}one{כרטיסייה חדשה ב-# כרטיסיות}two{כרטיסייה חדשה ב-# כרטיסיות}other{כרטיסייה חדשה ב-# כרטיסיות}}</translation>
 <translation id="721490496276866468">ייבוא סיסמאות</translation>
+<translation id="7216638029417040861">‏כדי להעביר את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7217208603285112910">הקטע שבחרת הוא לא ב<ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">אפשר להוסיף טקסט, תגובות והערות באמצעות הכלי החדש להוספת הערות לטקסט</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
@@ -8104,6 +8147,7 @@
 <translation id="7222232353993864120">כתובת אימייל</translation>
 <translation id="7222335051802562841">סיום העדכון</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם רשימת הקריאה ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7223027547122518521">בחירת קובץ שהאתר הזה יכול לקרוא</translation>
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
@@ -8474,6 +8518,7 @@
 <translation id="7501957181231305652">או</translation>
 <translation id="7502220299952823578">הוספה לרשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="7502528909759062987">השהיה של העברת הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">‏חזרה ל-Gemini</translation>
 <translation id="7502804472671406749">ניתן לגלול ולשנות את מרחק התצוגה בכרטיסיות המשותפות</translation>
 <translation id="750314150962284310">התמקדות בשורה</translation>
 <translation id="7503191893372251637">‏סוג אישור Netscape</translation>
@@ -8501,6 +8546,7 @@
 <translation id="7517292544534877198">‏שימוש בברירת המחדל של Google להצפנת הסיסמאות בחשבון Google</translation>
 <translation id="7517959947270534934">‏בן המשפחה שלך לא יכול לקבל סיסמאות כרגע. צריך לבקש ממנו לעדכן את Chrome ולסנכרן את הסיסמאות.</translation>
 <translation id="7518079994230200553">האפשרות הזו לא זמינה כרגע.</translation>
+<translation id="7519506357537394422">‏רוצה לתת ל-Gemini הרשאה להכניס אותך לחשבון ב-<ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">כדי לקבל גישה למידע השמור ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">פורטל אנונימי: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">הצגת קיצורי דרך</translation>
@@ -8509,6 +8555,7 @@
 <translation id="7523117833414447032">בהקראת אותיות רישיות</translation>
 <translation id="7523585675576642403">שינוי שם הפרופיל</translation>
 <translation id="7525067979554623046">יצירה</translation>
+<translation id="7526083414913154899">‏מידע נוסף על משימות ב-Gemini</translation>
 <translation id="7528224636098571080">לא לפתוח</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{לבטל את קבוצת הכרטיסיות?}one{לבטל את קבוצות הכרטיסיות?}two{לבטל את קבוצות הכרטיסיות?}other{לבטל את קבוצות הכרטיסיות?}}</translation>
 <translation id="7529411698175791732">יש לבדוק את חיבור האינטרנט. אם הבעיה לא נפתרת, יש לנסות לצאת מהחשבון ולהיכנס אליו שוב.</translation>
@@ -8713,6 +8760,7 @@
 <translation id="7684718995427157417">‏כדי ליצור ולבדוק אפליקציות, יש להפעיל את ממשק הגישור של Android‏ (ADB). הערה: לאחר ביצוע הפעולה הזו יתאפשר להתקין אפליקציות ל-Android שלא אומתו על-ידי Google. כמו כן, כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות היצרן.</translation>
 <translation id="7684803937028953000">הארגון שלך חסם את ההורדה המקומית של הקובץ הזה.</translation>
 <translation id="7684913007876670600">כדי להציג תצוגה פשוטה יותר של הדף הזה, פותחים את החלונית הצדדית ובוחרים באפשרות 'מצב קריאה'</translation>
+<translation id="7684957383619170952">רוצה להשתמש בסימניות שלך ובפריטים נוספים שבמכשיר <ph name="DEVICE" />?</translation>
 <translation id="7685038817958445325">‏לא ניתן להפעיל Cast</translation>
 <translation id="7685049629764448582">‏זיכרון JavaScript</translation>
 <translation id="7685087414635069102">נדרש קוד אימות</translation>
@@ -8990,6 +9038,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">ביטול ההגדרה</translation>
 <translation id="7912974581251770345">תרגום</translation>
+<translation id="7913805372428124107">‏כדי להעביר את הכרטיסיות מ<ph name="DEVICE" />, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. גם הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
 <translation id="7916364730877325865">בהתאם למדיניות הארגון שלך, אי אפשר להפעיל סנכרון עם החשבון הזה</translation>
@@ -9093,6 +9142,7 @@
 <translation id="7978450511781612192">‏הפעולה הזאת תוציא אותך מחשבונות Google שלך. הסימניות, ההיסטוריה, הסיסמאות ופרטים אחרים יפסיקו לעבור סנכרון.</translation>
 <translation id="7980066177668669492">‏‫ASCII בקידוד Base64, אישורים מרובים</translation>
 <translation id="7981410461060625406">שימוש במפתח הגישה השמור ל-<ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">לא הצלחנו לאמת את כתובת האימייל</translation>
 <translation id="7981662863948574132">‏הצגת החלון הקופץ של מספר ה-EID וקוד ה-QR של המכשיר</translation>
 <translation id="7982578888426609524">העדכונים האחרונים לגבי הקבוצה הזו</translation>
 <translation id="7982789257301363584">רשת</translation>
@@ -9269,6 +9319,7 @@
 <translation id="810362914482827094">חיפוש מפתחות גישה</translation>
 <translation id="8104088837833760645">‏הורדת פרופיל eSIM</translation>
 <translation id="8104388155778519213">‏שיתוף של מה שמוצג במסך באמצעות Google Lens</translation>
+<translation id="8104412594956510627">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך לסנכרן את ההיסטוריה. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="8104778744208707085">נדרש טיפול</translation>
 <translation id="8105273883928376822">צריך להיכנס לחשבון כדי להמשיך.</translation>
 <translation id="8106114112474206597">‏משתמשים במקש I כדי ללחוץ על כפתור העכבר</translation>
@@ -9279,6 +9330,7 @@
 <translation id="8109991406044913868">‏עיצוב שנוצר באמצעות AI</translation>
 <translation id="8110393529211831722">המינוי מותקן רק במכשיר הזה ולא מסונכרן עם מכשירים אחרים שרשומים בחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">מתבצעת הורדה של רשימת אנשי קשר…</translation>
+<translation id="8110781914702267195">‏כדי לשלוט ב<ph name="BEGIN_LINK1" />העדפות הנתונים והפרטיות<ph name="END_LINK1" /> או לנהל <ph name="BEGIN_LINK2" />אמצעי תשלום<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />כרטיסים<ph name="END_LINK3" /> כמו כרטיסי מועדון לקוחות, עליך לעבור אל Google Wallet</translation>
 <translation id="8114925369073821854">הרשאת גישה למיקרופון לאפליקציה <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">צריך לבקש אישור של הורה</translation>
 <translation id="8118276691321086429">דרך הכניסה לחשבון נשמרת ב<ph name="PASSWORD_MANAGER_BRAND" />, והכניסה מתבצעת באופן אוטומטי מתי שאפשר. כשהאפשרות הזו מושבתת, מוצגת בקשה לאישור בכל פעם.</translation>
@@ -9298,6 +9350,7 @@
 <translation id="8124313775439841391">‏ONC מנוהל</translation>
 <translation id="8125651784723647184">שיתוף הסיסמאות מנוהל על ידי האדמין</translation>
 <translation id="8126355825906412872">מחייכים</translation>
+<translation id="8126498026310640675">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך להיכנס לחשבון <ph name="EMAIL" /> ולסנכרן אליו את ההיסטוריה והכרטיסיות. גם הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8133297578569873332">‏סביר – FM</translation>
@@ -9359,6 +9412,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. מדפסת <ph name="ITEM_POSITION" /> מתוך <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">מצב החיסכון באנרגיה פועל</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" יכול לקרוא ולמחוק קובצי תמונות, וידאו ואודיו במיקומים המסומנים.</translation>
+<translation id="8181132988581553950">‏ל-Gemini תהיה גישה לאותם אתרים כמוך, כולל אתרים שהתחברת אליהם. הוא ישתף מידע נחוץ עם צדדים שלישיים, כולל פרטים אישיים שעשויים להיחשב כרגישים.</translation>
 <translation id="8183703640399301650">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" /> וה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
 <translation id="8184288427634747179">מעבר אל <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">מידע נוסף</translation>
@@ -10261,6 +10315,7 @@
 <translation id="8874341931345877644">‏הפעלת Cast למכשיר:</translation>
 <translation id="8874647982044395866">אורגני</translation>
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
+<translation id="8874864294955002500">אי אפשר לשלוח משוב מהחשבון שלך. האדמין בארגון יכול להשתמש במכשיר או בפרופיל שלו כדי לדווח על בעיות בשמך.</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
 <translation id="8876307312329369159">לא ניתן לשנות את ההגדרה הזו בסשן להדגמה.</translation>
 <translation id="8876965259056847565">‏ב<ph name="FEATURE_NAME" /> מתבצע חיפוש של מכשירים קרובים באמצעות Bluetooth.</translation>

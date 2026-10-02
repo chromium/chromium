@@ -685,7 +685,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3039491566278747710">Failed to install offline policy on the device.</translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="304097922505898963">Open Key Shortcuts app</translation>
-<translation id="3040982432432547149">Help us improve Steam for Chromebook</translation>
 <translation id="304417730895741346">Your pinned and open apps are on the shelf. To pin an app to the shelf, right-click an app or tap your touchpad with two fingers.</translation>
 <translation id="3045670165536837541">Selected top-right handle, use arrow keys to move</translation>
 <translation id="3046178388369461825">Linux disk space critically low</translation>
@@ -1079,7 +1078,6 @@ Connect your device to power.</translation>
 <translation id="4147911968024186208">Please retry. If you see this error again, please contact your support representative.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4151054805501931758">Portrait touch-up</translation>
-<translation id="4151449637210235443">Tell us about your recent gameplay</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />).
 Some features are limited to increase battery life.</translation>
 <translation id="4158003972857765638">Organise in a new desk</translation>

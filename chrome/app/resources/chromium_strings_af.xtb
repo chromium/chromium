@@ -45,6 +45,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="141901961143729572">Deel jou gedagtes</translation>
 <translation id="1465192221147974788">Om jou venster te deel, moet jy skermopname vir Chromium in Stelselinstellings toelaat.</translation>
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
+<translation id="147870194906295621">Meld aan by Chromium om jou gestoorde inligting en meer van <ph name="DEVICE" /> af te kry</translation>
 <translation id="1497802159252041924">Installeerfout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Hierdie bladsy is beskermd</translation>
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
@@ -192,6 +193,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3012615494352020668">{count,plural, =1{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data (1 item) uitgevee word.}other{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data ({count} items) uitgevee word.}}</translation>
 <translation id="3013473503895162900">Maak <ph name="URL" /> in 'n nuwe oortjie in Chromium oop.</translation>
 <translation id="302551344979399011">KI-innovasies soos vaardighede word in jou Google-rekening gestoor en apart van Chromium-sinkronisering bestuur</translation>
+<translation id="3032219013429286568">Meld aan by Chromium om jou uitbreidings en meer op al jou toestelle te kry</translation>
 <translation id="3032787606318309379">Voeg tans by Chromium …</translation>
 <translation id="3038232873781883849">Wag tans om te installeer...</translation>
 <translation id="3045032126857188731">Vertaalde taal: <ph name="LANGUAGE" /></translation>
@@ -202,6 +204,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3068515742935458733">Help om Chromium beter te maak deur omvalverslae en <ph name="UMA_LINK" /> na Google te stuur</translation>
 <translation id="3071024987058544609">Gebruik die Chromium-app om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 USB-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 USB-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # USB-toestelle}}</translation>
+<translation id="3090734884397229414">Meld aan by Chromium om jou leeslys en meer van <ph name="DEVICE" /> af te kry</translation>
 <translation id="3095811995836568724">Chromium-geskiedenis</translation>
 <translation id="3103660991484857065">Die installeerder kon nie die argief se saampersing omkeer nie. Laai Chromium asseblief weer af.</translation>
 <translation id="310459126943037700">Kon nie taak(take) beëindig nie.</translation>
@@ -223,6 +226,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Gebruik Chromium op iOS om jou gunsteling-KI-nutsgoed van Google saam te neem terwyl jy aan die beweeg is.</translation>
+<translation id="3264761466044851269">Meld aan by Chromium om jou uitbreidings en meer van <ph name="DEVICE" /> af te kry</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreek. Sommige funksies van Chromium sal gedeaktiveer word.</translation>
 <translation id="3296368748942286671">Hou aan om agtergrondprogramme te laat loop wanneer Chromium toe is</translation>
@@ -234,6 +238,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
 <translation id="3412460710772753638">In Wagwoordbestuurder op hierdie toestel</translation>
+<translation id="3427159664004296878">Meld aan by Chromium om jou boekmerke en meer van <ph name="DEVICE" /> af te kry</translation>
 <translation id="3438772217992559640">Soek hierdie oortjie met prentsoektog</translation>
 <translation id="3455907671758333080">Verleng Verbeterde Veiligblaai met Chromium op jou foon</translation>
 <translation id="3461644266919055473">Maak tans Chromium joune …</translation>
@@ -266,6 +271,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 
           **Stel vrae voor:** Genereer ’n koeëlpuntlys met 3-5 besinningswaardige vrae wat ’n gebruiker kan vra om die skermskoot beter te verstaan. Hierdie vrae moet ten minste een vraag wat spesifiek oor ’n visuele objek, sy ontwerp of sy plasing gaan, insluit.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="386243222263310720">Meld aan by Chromium om jou boekmerke en meer op al jou toestelle te kry</translation>
 <translation id="3885770153807205175">Taalkieser</translation>
 <translation id="388648406173476553">Pasmaak en beheer Chromium. Iets verg jou aandag – klik vir besonderhede.</translation>
 <translation id="3889543394854987837">Klik jou naam om Chromium oop te maak en te begin blaai.</translation>
@@ -274,6 +280,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3909353120217047026">Hierdie uitbreiding oortree Chrome Webwinkel se beleid, en kan onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="3941890832296813527">Installeerfout: Die installeerderlêernaam is ongeldig of word nie ondersteun nie.</translation>
 <translation id="3945058413678539331">Chromium probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
+<translation id="3950481960271781644">Meld aan by Chromium om jou gestoorde inligting en meer op al jou toestelle te kry</translation>
 <translation id="3954172517175569325">Jou wagwoorde, betaalmetodes en adresse wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chromium wil gebruik.</translation>
 <translation id="395904275706073188">Beskermde bladsye kan nie gelees word nie. Probeer ’n ander bladsy.</translation>
 <translation id="3962647064319009959">Vind uit hoe Chromium jou veilig hou</translation>
@@ -362,6 +369,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4893347770495441059">Begin weer om &amp;Chromium op te dateer</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4918844574251943176">Prent is gekopieer</translation>
+<translation id="4919431996536326528">Meld aan by Chromium om jou leeslys en meer op al jou toestelle te kry</translation>
 <translation id="4943838377383847465">Chromium is in agtergrondmodus.</translation>
 <translation id="494490797786467921">Klik om die Chromium-aanmeldingdialoog toe te maak</translation>
 <translation id="4950660488495335294">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
@@ -792,6 +800,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="904366664621834601">Chromium het hierdie aflaai geblokkeer omdat die argieflêer ander lêers insluit wat wanware kan versteek</translation>
 <translation id="9053882453960391422">Hou jou wagwoorde, boekmerke en geskiedenis perfek gesinkroniseer op alle toestelle. Kry maklik toegang tot die kenmerke wat jy ken en van hou deur jou verstekblaaier na Chromium op te dateer. Chromium sal vir kitstoegang op jou taakbalk vasgespeld word.</translation>
 <translation id="9056398481763999048">Gebruik Google se beste KI-nutsgoed met die Chromium-app op jou foon</translation>
+<translation id="9057625473949801035">Meld aan by Chromium om jou wagwoorde en meer van <ph name="DEVICE" /> af te kry</translation>
 <translation id="9062666675513499497">Meld aan by Chromium wanneer jy by ander Google-dienste aanmeld</translation>
 <translation id="9078733879136747090">Chromium is outomaties toegemaak</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>

@@ -121,11 +121,6 @@ Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https:/
 <translation id="1076751984131277498">Elenco di dispositivi USB che è consentito scollegare</translation>
 <translation id="1077675271127011209">Disattiva i report sull'utilizzo e sui dati relativi agli arresti anomali</translation>
 <translation id="1079498696402787191">Usa il valore predefinito per gli hash consentiti in handshake TLS.</translation>
-<translation id="1081263326166769685">Se la policy viene impostata su Attivata, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se la policy viene impostata su Disattivata, la segnalazione di metriche e dati diagnostici viene disattivata.
-
-Per i dispositivi gestiti, questa policy è attiva per impostazione predefinita e invia le metriche a Google.
-
-Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche se la policy non viene configurata.</translation>
 <translation id="1081470306474387129">L'API Controlled Frame, disponibile per determinati contesti isolati come le app web isolate (IWA), consente a un'app di incorporare e manipolare contenuti arbitrari.
 Per informazioni dettagliate, visita la pagina https://github.com/WICG/controlled-frame.
 
@@ -964,7 +959,6 @@ La soglia minima è di 1 minuto.
 <translation id="1625700732886306811">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi su tutti gli indirizzi IP</translation>
 <translation id="1626379196197114720">Consenti uso della cache back-forward</translation>
 <translation id="1628974048137236820">La pagina Nuova scheda non mostra schede</translation>
-<translation id="1628984674324273832">Non consentire Trova e Completa con Gemini.</translation>
 <translation id="163200210584085447">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente. Se viene trovata una corrispondenza, l'accesso ai dispositivi di acquisizione video verrà concesso sulle pagine di accesso SAML. In caso contrario, l'accesso verrà automaticamente negato. Non sono consentite sequenze con caratteri jolly.</translation>
 <translation id="1634770710106162474">Se la policy viene impostata su Attivata, viene eliminato l'avviso visualizzato quando <ph name="PRODUCT_NAME" /> è in esecuzione su un computer o un sistema operativo non supportato.
 
@@ -1749,7 +1743,6 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="2107601598727098402">
         La norma è obsoleta in M72. Utilizza invece CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">Consenti Trova e Completa con Gemini senza migliorare i modelli di AI.</translation>
 <translation id="2112656109118682849">Consenti agli utenti di attivare/disattivare la visualizzazione delle informazioni di sistema nella schermata di accesso</translation>
 <translation id="2113068765175018713">Limita il tempo di attività del dispositivo riavviandolo automaticamente</translation>
 <translation id="211386002920955760">Controlla se un utente aziendale può accedere alla funzionalità di condivisione dei gruppi di schede in Chrome.
@@ -1842,6 +1835,7 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
       Se questa policy non viene impostata, il browser farà dei tentativi per risparmiare memoria solo una volta rilevato che la memoria fisica del computer è in esaurimento.</translation>
 <translation id="2161348910646846717">Consenti agli utenti di modificare il canale di rilascio</translation>
 <translation id="2162703823039992020">Integrazioni contestuali dei servizi Google su <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">L'URL dell'applicazione web dell'istanza di <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> per questa organizzazione. Deve essere un URL HTTPS valido.</translation>
 <translation id="2166155400701622446">Esiste un elenco di porte limitate integrate a <ph name="PRODUCT_NAME" />. Non sarà possibile eseguire collegamenti a tali porte. Questa impostazione consente di bypassare tale elenco. Il valore è un elenco separato da virgole di nessuna porta o di più porte tramite le quali saranno consentiti collegamenti in uscita.
 
       Le porte sono limitate per impedire l'utilizzo di <ph name="PRODUCT_NAME" /> come vettore per sfruttare varie vulnerabilità di rete. La configurazione di questa policy potrebbe esporre la tua rete a eventuali attacchi. Questa policy è intesa come soluzione alternativa temporanea per gli errori con codice "ERR_UNSAFE_PORT" durante la migrazione a una porta standard (ossia 80 o 443) di un servizio in esecuzione tramite una porta bloccata.
@@ -2230,9 +2224,6 @@ Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialm
 <translation id="2421779938235645781">Il colore della retroilluminazione della tastiera corrisponde allo sfondo corrente</translation>
 <translation id="2423255396068675416">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono eseguire <ph name="PRODUCT_CROSTINI_NAME" />, finché <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sono impostate su Attivata. Se la policy viene impostata su Disattivata, <ph name="PRODUCT_CROSTINI_NAME" /> viene disattivata per l'utente. Impostando la policy su Disattivata, questa viene applicata all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="2423654977291507457">Disattiva integrazioni</translation>
-<translation id="2424141395604579502">Se la policy viene impostata su True o se non viene configurata, gli utenti possono aggiungere, rimuovere, modificare o caricare i preferiti.
-
-      Se viene impostata su False, gli utenti non possono aggiungere, rimuovere, modificare o caricare i preferiti, ma possono comunque utilizzare quelli esistenti.</translation>
 <translation id="242521047682347997">Non consentire agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="2426782419955104525">Consente di attivare la funzione Instant di <ph name="PRODUCT_NAME" /> e di impedire agli utenti di modificare l'impostazione.
 
@@ -5614,6 +5605,11 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
 <translation id="4561940244682063697">Non consentire ai siti di richiedere all'utente la condivisione di un video stream del suo schermo</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456450545863578630">Attiva il trasferimento di file nelle connessioni di assistenza da remoto da parte degli amministratori aziendali</translation>
+<translation id="4567614489737189156">Se la policy viene impostata su Attivata, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se la policy viene impostata su Disattivata, la segnalazione di metriche e dati diagnostici viene disattivata.
+
+Per i dispositivi gestiti, se la policy non viene impostata, la segnalazione di metriche e dati diagnostici rimane attiva per impostazione predefinita.
+
+Per i dispositivi non gestiti, questa policy non si applica e gli utenti possono scegliere come gestire la segnalazione delle metriche e dei dati diagnostici durante l'impostazione del dispositivo o in un secondo momento tramite le impostazioni.</translation>
 <translation id="4570859815763368584">Policy ritirata nella versione M68. Usa la policy DefaultPopupsSetting.
 
       Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.
@@ -6325,13 +6321,6 @@ La configurazione della policy consente di controllare la presentazione dei cont
 <translation id="494924690085329212">Riavvia all'uscita dell'utente se Android è stato avviato.</translation>
 <translation id="4950447493143157880">Non utilizzare mai il client DNS integrato</translation>
 <translation id="4953541641325278286">Non consentire ad alcun sito di rilevare lo stato di inattività dell'utente</translation>
-<translation id="4954185885991137927">Se la policy viene impostata su Attivata, i rapporti estesi su Navigazione sicura di <ph name="PRODUCT_NAME" /> vengono attivati, il che comporta l'invio di alcune informazioni di sistema e di contenuti di pagina ai server Google per contribuire a rilevare app e siti pericolosi.
-
-      Se la policy viene impostata su Disattivata, i rapporti non vengono mai inviati.
-
-      Se la policy viene configurata, gli utenti non possono modificarla. Se non viene configurata, gli utenti possono decidere se inviare o meno i rapporti.
-
-      Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="4954352279763128540">Consente di aggiungere un dominio precompilato alla finestra di dialogo dell'autenticazione Kerberos.
 
           Se questa policy viene impostata, nel campo "Nome utente di Kerberos", a destra, viene visualizzato il dominio precompilato. Se l'utente inserisce il proprio nome utente, questo verrà concatenato con il dominio precompilato. Se il valore inserito dall'utente contiene "@", il dominio precompilato non viene visualizzato e non influisce sul valore.
@@ -6502,7 +6491,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">Consenti Trova e Completa con Gemini e migliora i modelli di AI.</translation>
 <translation id="5071303485174858500">Viene disattivata la sessione Ospite gestita limitata.</translation>
 <translation id="5073788301065423829">Questa policy attiva o disattiva la funzionalità "Aiutami a scrivere" per ChromeOS.
 
@@ -10038,7 +10026,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="7136237405361383549">Utilizza il renderer predefinito in base alla configurazione della prova sul campo.</translation>
 <translation id="7138762292550697459">Controlla il timeout minimo della funzione JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Segue le normali tempistiche di ritiro dell'API PrefixedVideoFullscreen</translation>
-<translation id="7140755255968613921">Impostazioni per Trova e Completa con Gemini</translation>
 <translation id="7140760943584613237">Provider di identità cloud Microsoft®</translation>
 <translation id="714219487865269980">Attiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="7144022711746703451">
@@ -10459,19 +10446,6 @@ Non vengono raccolti i valori effettivi dei dati sensibili (come cookie o valori
 <translation id="7402257017733669351">Impedisci al processo del browser di creare codice dinamico</translation>
 <translation id="7406039009275722824">Se disattivi <ph name="CHROME_SYNC_NAME" />, il servizio di backup e ripristino di Android non funzionerà correttamente.</translation>
 <translation id="7406276857470642718">Consente di gestire le impostazioni degli utenti autenticati tramite SAML con un IdP esterno</translation>
-<translation id="7407431811343706437">Consente di stabilire se gli utenti possono usare la funzionalità "Trova e Completa con Gemini" in <ph name="PRODUCT_NAME" />.
-
-0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). Il valore predefinito è 1 per gli utenti Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Non consente di utilizzare la funzionalità.
-
-Questa policy non si applica quando l'app Gemini è disattivata. Ad esempio, l'app Gemini può essere disattivata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Questa policy consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.
 
       Se la policy viene configurata, gli utenti non possono modificarla. Se non viene configurata, la previsione di rete viene attivata, ma gli utenti possono modificarla.</translation>
@@ -11594,6 +11568,7 @@ Se questa policy non viene impostata, la Schermata sulla privacy viene inizialme
 <translation id="8164687848393015214">Se la policy viene impostata su Attivata, i pacchetti di rete di monitoraggio (<ph name="HEARTBEATS_TERM" />) vengono inviati al server di gestione per monitorare lo stato online e consentire al server di rilevare se il dispositivo è offline.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, i pacchetti non vengono inviati.</translation>
+<translation id="8165152191100365965">Invia metriche a Google sui dispositivi gestiti o consenti all'utente di decidere sui dispositivi non gestiti</translation>
 <translation id="8168359201203671567">Colore della retroilluminazione della tastiera arcobaleno</translation>
 <translation id="8169452762291746260">Disattiva il monitoraggio dello stato di integrità del dispositivo</translation>
 <translation id="8170359860920320269">Filtra i siti di contenuti per adulti</translation>
@@ -12994,6 +12969,9 @@ Se la policy non viene configurata, per impostazione predefinita <ph name="PRODU
       Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
 
       I modelli con formato errato verranno ignorati.</translation>
+<translation id="9066972193987544412">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono aggiungere, rimuovere, modificare o caricare i preferiti.
+
+      Se la policy viene impostata su Disattivata, gli utenti non possono aggiungere, rimuovere, modificare o caricare i preferiti, ma possono comunque utilizzare quelli esistenti.</translation>
 <translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="9069432851455606924">Impostazioni di localizzazione</translation>
 <translation id="9069503402414011061">La configurazione della policy consente di specificare la durata in ore dei dati di autenticazione nella cache. La cache include dati relativi alle aree di autenticazione ritenute attendibili dall'area di autenticazione della macchina (aree di autenticazione affiliate). Pertanto, la memorizzazione nella cache dei dati di autenticazione consente di velocizzare l'accesso. I dati specifici degli utenti e quelli per le aree di autenticazione non affiliate non vengono memorizzati nella cache.
@@ -13067,6 +13045,21 @@ ma che possono essere usati come suggerimenti per la creazione di percorsi. I ce
 <translation id="9122865885571719292">Consente di stabilire se e come <ph name="PRODUCT_OS_NAME" /> ripristina l'ultima sessione all'accesso.
 Questa policy ha effetto soltanto se la policy <ph name="FULL_RESTORE_ENABLED_NAME" /> viene impostata su true.</translation>
 <translation id="9123464369663964441">Consenti agli utenti di aggiungere eccezioni per consentire contenuti misti</translation>
+<translation id="9123738611041078443">Configura le impostazioni di connessione per <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Per configurare <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, gli amministratori devono fornire:
+* L'URL dell'applicazione web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OPPURE
+* Tutti e tre i parametri legacy insieme: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> e <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Se specifichi solo un sottoinsieme parziale di questi tre parametri senza un URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+
+Il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> deve essere un URL valido che utilizzi il protocollo https, faccia riferimento a un dominio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e non contenga né nome utente né password. Se non soddisfa questi requisiti, la policy viene ignorata e <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+
+Se sono configurati sia il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> sia i parametri legacy, il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> ha la precedenza.
+
+Se questa policy viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> verrà configurato per gli utenti che hanno fatto l'accesso con un account gestito o un browser gestito.
+
+Se questa policy non viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non verrà configurato.
+
+Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere controllata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Non inviare mai a Google dati relativi all'attendibilità dei domini</translation>
 <translation id="9126331659955304300">Consenti la selezione di avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
 <translation id="9126694586349976283">Consenti l'utilizzo delle API AI integrate.</translation>
@@ -13247,6 +13240,13 @@ Per mantenere il comportamento attuale di disattivazione di <ph name="AUTOFILL_C
 Se la policy è impostata su True o se non viene configurata, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
 
 Se la policy è impostata su False, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul web.</translation>
+<translation id="963375545567956229">Questa policy è deprecata e non ha alcun effetto a partire dalla versione M145. La funzionalità Segnalazioni estese di Navigazione sicura è stata rimossa da <ph name="PRODUCT_NAME" />, pertanto <ph name="PRODUCT_NAME" /> non invia più questi report, indipendentemente da come è impostata questa policy, e l'impostazione corrispondente non viene più mostrata agli utenti.
+
+      Per fare in modo che <ph name="PRODUCT_NAME" /> invii informazioni aggiuntive per contribuire a migliorare la Navigazione sicura, attiva la Protezione avanzata con la policy <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+      Prima della versione M145, l'impostazione della policy su Attivata attivava la funzionalità Segnalazioni estese di Navigazione sicura di <ph name="PRODUCT_NAME" />, che inviava alcune informazioni di sistema e contenuti delle pagine ai server di Google per contribuire a rilevare app e siti pericolosi. Se la policy veniva impostata su Disattivata, le segnalazioni non venivano mai inviate. Se la policy veniva impostata, gli utenti non potevano modificarla; se non veniva impostata, gli utenti potevano decidere se inviare o meno le segnalazioni.
+
+      Scopri di più su Navigazione sicura ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>

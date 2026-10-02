@@ -121,11 +121,6 @@
 <translation id="1076751984131277498">USB 분리 가능 기기 허용 목록</translation>
 <translation id="1077675271127011209">사용 및 비정상 종료 관련 데이터 보고 사용 안함</translation>
 <translation id="1079498696402787191">TLS 핸드셰이크에서 허용되는 해시에 기본값을 사용합니다.</translation>
-<translation id="1081263326166769685">정책을 사용 설정하면 <ph name="PRODUCT_OS_NAME" />에서 비정상 종료 보고서 등 사용 측정항목과 진단 데이터를 Google에 보고합니다. 정책을 사용 중지하면 측정항목 및 진단 데이터 보고가 사용 중지됩니다.
-
-관리 기기의 경우 이 정책은 기본적으로 사용 설정되며 측정항목이 Google에 전송됩니다.
-
-관리되지 않는 기기의 경우 정책이 설정되지 않으면 사용자가 측정항목 전송 여부를 결정할 수 있습니다.</translation>
 <translation id="1081470306474387129">분리형 웹 앱(IWA)과 같은 특정 분리형 컨텍스트에서 사용할 수 있는 Controlled Frame API를 사용하면 앱에서 임의의 콘텐츠를 삽입하고 조작할 수 있습니다.
 자세한 내용은 https://github.com/WICG/controlled-frame을 참고하세요.
 
@@ -949,7 +944,6 @@ URL은 http://example.com 또는 https://example.com과 같은 표준 스킴이�
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" />에서 모든 IP 주소의 기기에 연결하도록 허용</translation>
 <translation id="1626379196197114720">뒤로-앞으로 캐시 사용 허용</translation>
 <translation id="1628974048137236820">새 탭 페이지에 카드 표시 안함</translation>
-<translation id="1628984674324273832">Gemini로 정보 찾기 및 자동 완성을 허용하지 않습니다.</translation>
 <translation id="163200210584085447">이 목록의 패턴을 요청 URL의 보안 출처와 비교합니다.
       일치하는 항목이 확인되는 경우 SAML 로그인 페이지에서
       동영상 캡처 기기에 액세스할 수 있는 권한이 부여됩니다.
@@ -1733,7 +1727,6 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2107601598727098402">
         이 정책은 M72부터 지원이 중단되었습니다. 대신 CloudManagementEnrollmentToken을 사용하세요.
         </translation>
-<translation id="2111355600078097861">AI 모델을 개선하지 않고 Gemini로 정보 찾기 및 자동 완성을 허용합니다.</translation>
 <translation id="2112656109118682849">사용자가 로그인 화면의 시스템 정보 표시를 전환하도록 허용</translation>
 <translation id="2113068765175018713">자동으로 재부팅하여 기기 가동 시간 제한</translation>
 <translation id="211386002920955760">기업 사용자가 Chrome에서 탭 그룹 공유 기능에 액세스할 수 있는지 설정합니다.
@@ -2212,9 +2205,6 @@ False로 설정하면 개인 정보 보호 화면은 항상 사용 중지됩니�
 <translation id="2421779938235645781">키보드 백라이트 색상이 현재 배경화면과 일치함</translation>
 <translation id="2423255396068675416">정책을 사용으로 설정하거나 설정하지 않으면 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 및 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />가 사용으로 설정되어 있는 한 사용자가 <ph name="PRODUCT_CROSTINI_NAME" />를 실행할 수 있습니다. 사용 안함으로 설정하면 사용자의 <ph name="PRODUCT_CROSTINI_NAME" />가 사용 중지됩니다. 사용 안함으로 변경하면 기존에 실행 중이던 컨테이너가 아닌 새로 시작되는 <ph name="PRODUCT_CROSTINI_NAME" /> 컨테이너에 정책 적용이 시작됩니다.</translation>
 <translation id="2423654977291507457">통합 사용 중지</translation>
-<translation id="2424141395604579502">정책을 True로 설정하거나 설정하지 않으면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 있습니다.
-
-      정책을 False로 설정하면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 없습니다. 사용자는 계속해서 기존 북마크를 사용할 수 있습니다.</translation>
 <translation id="242521047682347997">사용자가 휴대전화와 Chromebook 간에 SMS 메시지를 동기화하도록 허용 안함</translation>
 <translation id="2426782419955104525"><ph name="PRODUCT_NAME" />의 순간 검색 기능을 사용하도록 설정하고 사용자가 이 설정을 변경하지 못하게 합니다.
 
@@ -5602,6 +5592,11 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
 <translation id="4561940244682063697">사이트에서 사용자에게 화면의 동영상 스트림을 공유하라는 메시지를 표시하도록 허용 안함</translation>
 <translation id="4562165737444703281">사용자가 Crostini 포트 전달을 [사용 설정/구성]할 수 있도록 허용</translation>
 <translation id="456450545863578630">엔터프라이즈 관리자의 원격 지원 연결에서 파일 전송 사용 설정</translation>
+<translation id="4567614489737189156">정책을 사용 설정하면 <ph name="PRODUCT_OS_NAME" />에서 비정상 종료 보고서 등 사용 측정항목과 진단 데이터를 Google에 보고합니다. 정책을 사용 중지하면 측정항목 및 진단 데이터 보고가 사용 중지됩니다.
+
+관리 기기의 경우 정책을 설정하지 않으면 측정항목 및 진단 데이터 보고가 기본적으로 사용 설정된 상태로 유지됩니다.
+
+비관리 기기의 경우 이 정책이 적용되지 않으며, 사용자는 기기 설정 중에 또는 나중에 설정을 통해 측정항목 및 진단 데이터 보고 동작을 선택할 수 있습니다.</translation>
 <translation id="4570859815763368584">M68에서 지원 중단되었습니다. 대신 DefaultPopupsSetting을 사용하세요.
 
       자세한 내용은 https://www.chromestatus.com/feature/5675755719622656 페이지를 참고하시기 바랍니다.
@@ -6327,13 +6322,6 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="494924690085329212">Android가 시작되었을 때 사용자가 로그아웃하면 재부팅</translation>
 <translation id="4950447493143157880">내장 DNS 클라이언트 사용 안함</translation>
 <translation id="4953541641325278286">모든 사이트에서 사용자의 유휴 상태를 감지하도록 허용 안 함</translation>
-<translation id="4954185885991137927">이 정책을 사용으로 설정하면 <ph name="PRODUCT_NAME" />의 세이프 브라우징 확장 보고서가 사용 설정되어 일부 시스템 정보 및 페이지 콘텐츠가 Google 서버로 전송되어 위험한 앱 및 사이트를 감지하는 데 사용됩니다.
-
-      정책을 사용 안함으로 설정하면 보고서가 전송되지 않습니다.
-
-      설정된 정책은 사용자가 변경할 수 없습니다. 정책을 설정하지 않으면 사용자가 보고서 전송 여부를 결정할 수 있습니다.
-
-      세이프 브라우징에 관해 자세히 알아보세요(https://developers.google.com/safe-browsing).</translation>
 <translation id="4954352279763128540">미리 입력된 도메인을 Kerberos 인증 대화상자에 추가합니다.
 
           정책이 설정되면 'Kerberos username'(Kerberos 사용자 이름) 입력란의 오른쪽에 미리 입력된 도메인이 표시됩니다. 사용자가 사용자 이름을 입력하면 미리 입력된 도메인과 연결됩니다. 사용자가 '@'을 포함하여 입력하면 미리 입력된 도메인은 표시되지 않으며 사용자의 입력에 영향을 미치지 않습니다.
@@ -6500,7 +6488,6 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
 
 생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
-<translation id="5070539335358964387">Gemini로 정보 찾기 및 자동 완성을 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="5071303485174858500">제한된 관리 게스트 세션을 사용 중지합니다.</translation>
 <translation id="5073788301065423829">이 정책은 ChromeOS에서 '작성 지원 기능'을 사용 설정하거나 사용 중지합니다.
 
@@ -10024,7 +10011,6 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <translation id="7136237405361383549">필드 체험판 구성에 따라 기본 렌더기를 사용합니다.</translation>
 <translation id="7138762292550697459">자바스크립트 setTimeout() 함수의 최소 시간 초과를 제어합니다.</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API의 일반적인 지원 중단 타임라인을 따릅니다.</translation>
-<translation id="7140755255968613921">Gemini로 정보 찾기 및 자동 완성 설정</translation>
 <translation id="7140760943584613237">Microsoft® 클라우드 ID 공급업체</translation>
 <translation id="714219487865269980">키보드 포커스 강조표시 사용 설정</translation>
 <translation id="7144022711746703451">
@@ -10470,19 +10456,6 @@ URL 패턴은 <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책과 
 <translation id="7402257017733669351">브라우저 프로세스에서 동적 코드를 만들지 못하도록 방지</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" />를 사용 중지하면 Android 백업 및 복원이 제대로 작동하지 않게 됩니다.</translation>
 <translation id="7406276857470642718">외부 IdP로 SAML을 통해 인증된 사용자를 위한 설정을 관리합니다.</translation>
-<translation id="7407431811343706437">사용자가 <ph name="PRODUCT_NAME" />에서 'Gemini로 정보 찾기 및 자동 완성' 기능을 사용할 수 있는지를 제어합니다.
-
-0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
-
-1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
-
-2 = 기능을 허용하지 않습니다.
-
-Gemini 앱이 사용 중지되면 이 정책은 아무런 영향을 미치지 않습니다. 예를 들어 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 Gemini 앱을 사용 중지할 수 있습니다.
-
-정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
-
-생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="7407441173422042771">이 정책은 <ph name="PRODUCT_NAME" />의 네트워크 예측을 제어합니다. 또한 DNS 미리 가져오기, TCP 및 SSL 사전 연결, 웹페이지 사전 렌더링을 제어합니다.
 
       정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 네트워크 예측이 사용 설정되지만 사용자가 이를 변경할 수 있습니다.</translation>
@@ -10885,21 +10858,6 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 
 정책을 설정하지 않으면 브라우저에서 PDF 렌더러를 선택합니다.</translation>
 <translation id="7704244074621846004">SharedWorker에 수명 연장 사용 설정</translation>
-<translation id="7705886216383850895"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
-
-<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
-* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수는 https 스키마를 사용하고 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
-
-이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
-
-정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
-
-이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="7707869387893611318">충전음 기능을 사용 설정합니다.
 
           이 기능은 충전음을 재생합니다.
@@ -11625,6 +11583,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 <translation id="8164687848393015214">정책을 사용 설정하면 관리 서버에 모니터링 네트워크 패킷(<ph name="HEARTBEATS_TERM" />)을 전송하여 온라인 상태를 모니터링하고, 기기가 오프라인일 때 서버에서 감지할 수 있도록 합니다.
 
       정책을 사용 중지하거나 설정하지 않으면 패킷을 전송하지 않습니다.</translation>
+<translation id="8165152191100365965">관리 기기에서 Google에 측정항목을 전송하거나, 비관리 기기에서 사용자가 결정하도록 허용</translation>
 <translation id="8168359201203671567">키보드 백라이트 색상: 무지개</translation>
 <translation id="8169452762291746260">기기 상태 모니터링 사용 중지</translation>
 <translation id="8170359860920320269">사이트에 성인용 콘텐츠 필터링을 적용함</translation>
@@ -13025,6 +12984,9 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
       URI 템플릿에 <ph name="HTTP_VARIABLE_DNS" /> 변수가 포함된 경우 리졸버에 관한 요청에서 <ph name="HTTP_METHOD_GET" /> 메서드를 사용하며, 그 외의 경우에는 <ph name="HTTP_METHOD_POST" /> 메서드를 사용합니다.
 
       잘못된 형식의 템플릿은 무시됩니다.</translation>
+<translation id="9066972193987544412">정책을 사용 설정하거나 설정하지 않으면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 있습니다.
+
+      정책을 사용 중지하면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 없습니다. 사용자는 계속해서 기존 북마크를 사용할 수 있습니다.</translation>
 <translation id="9068629430243705879">포트 6566(2021년 10월 15일까지 차단 해제될 수 있음)</translation>
 <translation id="9069432851455606924">위치정보 설정</translation>
 <translation id="9069503402414011061">정책을 설정하면 인증 데이터 캐시의 전체 기간이 시간 단위로 지정됩니다. 캐시에는 기기 영역에서 신뢰되는 영역(연결 영역)에 관한 데이터가 포함되어 있습니다. 따라서 인증 데이터를 캐시하면 로그인 속도가 빨라집니다. 사용자별 데이터 및 연결되지 않은 영역의 데이터는 캐시되지 않습니다.
@@ -13097,6 +13059,21 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9122865885571719292">로그인 시 <ph name="PRODUCT_OS_NAME" />에서 마지막 세션 복원 여부 및 복원 방법을 제어합니다.
 이 정책은 <ph name="FULL_RESTORE_ENABLED_NAME" /> 정책이 True로 설정된 경우에만 적용됩니다.</translation>
 <translation id="9123464369663964441">사용자가 혼합 콘텐츠를 허용하는 예외를 추가하도록 허용</translation>
+<translation id="9123738611041078443"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
+
+<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
+* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수는 https 스키마를 사용하고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리키며 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
+
+이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
+
+정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
+
+이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="9124770007620653639">Google에 도메인 안정성 데이터를 전송하지 않음</translation>
 <translation id="9126331659955304300">로컬 파일 시스템, 카메라, Google 프로필에서 사용자 아바타 선택을 허용합니다.</translation>
 <translation id="9126694586349976283">내장된 AI API를 사용하도록 허용</translation>
@@ -13284,6 +13261,13 @@ HTTPS 우선 모드는 처음에는 엄격 또는 균형 모드로 설정되지�
 정책을 True로 설정하거나 설정하지 않으면 사용자가 UI에서 신용카드의 자동 완성 추천을 제어할 수 있습니다.
 
 정책을 False로 설정하면 자동 완성에서 신용카드 정보를 추천하거나 입력하지 않으며, 사용자가 웹 탐색 중 제출할 수 있는 추가 신용카드 정보를 저장하지도 않습니다.</translation>
+<translation id="963375545567956229">이 정책은 지원 중단되었으며 M145부터는 영향을 미치지 않습니다. 세이프 브라우징 확장 보고가 <ph name="PRODUCT_NAME" />에서 삭제되었으므로 이 정책의 설정 방식과 관계없이 <ph name="PRODUCT_NAME" />에서 더 이상 이러한 보고서를 전송하지 않으며 해당 설정이 더 이상 사용자에게 표시되지 않습니다.
+
+      <ph name="PRODUCT_NAME" />에서 세이프 브라우징 개선에 도움이 되는 추가 정보를 전송하도록 하려면 대신 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 정책으로 향상된 보호 모드를 사용 설정하세요.
+
+      M145 이전에는 정책을 사용 설정하면 <ph name="PRODUCT_NAME" />의 세이프 브라우징 확장 보고가 사용 설정되므로 일부 시스템 정보와 페이지 콘텐츠가 Google 서버로 전송되어 위험한 앱과 사이트를 감지하는 데 도움이 되었습니다. 정책을 사용 중지하면 보고서가 전송되지 않습니다. 정책이 설정된 경우 사용자가 변경할 수 없으며, 설정되지 않은 경우에는 사용자가 보고서 전송 여부를 결정할 수 있습니다.
+
+      세이프 브라우징에 관해 자세히 알아보세요(https://developers.google.com/safe-browsing).</translation>
 <translation id="966425658642788645">기본 동작 적용</translation>
 <translation id="971677226939413180">사용자가 이미지로 인쇄 옵션을 선택할 수 없음</translation>
 <translation id="974349541138387272">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿 지정</translation>

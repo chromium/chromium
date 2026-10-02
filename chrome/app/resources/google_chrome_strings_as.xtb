@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">এই ফাইলৰ প্ৰকাৰটো সাধাৰণতে ডাউনল’ড কৰা নহয় আৰু ই বিপজ্জনক হ’ব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="1197860368385086056">পৰৱৰ্তী সময়ত আপুনি নিজৰ <ph name="DEVICE_TYPE" />ত Chrome খুলিলে, আপুনি মূল্য ট্ৰেক কৰাৰ সতৰ্কবাৰ্তা সক্ষম কৰিবলৈ কোৱা এটা প্ৰ’ম্পট্‌ দেখা পাব।</translation>
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
+<translation id="1226003169284463347">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="1278833599417554002">&amp;Chrome আপডে'ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="1289911795790071537">Chromeৰ জৰিয়তে সন্ধান কৰাৰ সুবিধাটো খোলক</translation>
 <translation id="1290883685122687410">ছেটআপ সম্পৰ্কীয় আসোঁৱাহ: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromeএ <ph name="PERMISSION" /> আঁতৰাইছে।</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে ChromeOS Flexক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="2108778574543343055">এপৰ বাবে পটভূমিত চলি থকা Chrome অক্ষম কৰক</translation>
+<translation id="2111985952714409792">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ এক্সটেনশ্বন আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="2120620239521071941">ইয়াৰ ফলত এই ডিভাইচৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচা হ'ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="2121284319307530122">&amp;Chrome আপডে'ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />বর্তমানৰ ছেটিংসমূহ<ph name="END_LINK" />ৰ সম্পর্কে প্ৰতিবেদন দি Chromeক উন্নত কৰাত সহায় কৰক</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">ড’কত ৰাখক</translation>
 <translation id="2309047409763057870">এয়া Google Chromeৰ এক গৌণ ইনষ্টলেশ্বন আৰু ইয়াক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিব নোৱাৰি।</translation>
 <translation id="2345992953227471816">Chromeএ এই বস্তুবোৰত মালৱেৰ থকাটো পাইছে:</translation>
+<translation id="2358140144860869442">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2403703063067034158">ষ্টাৰ্টআপৰ আসোঁৱাহ: ছেটআপৰ আন এটা উদাহৰণ বৰ্তমানে চলি আছে, অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{এক বা একাধিক Chromeৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছিল}=1{এক বা একাধিক Chromeৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছে}one{এক বা একাধিক Chromeৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{এক বা একাধিক Chromeৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">আপোনাৰ ব্ৰাউজাৰত আটাইতকৈ সুৰক্ষিত ছেটিং আছে নে নাই সেয়া নিশ্চিত কৰিবলৈ Chromeএ নিয়মিতভাৱে পৰীক্ষা কৰে। যদি আপুনি কিবা পৰ্যালোচনা কৰাৰ প্ৰয়োজন হয় তেন্তে আমি আপোনাক জনাম।</translation>
 <translation id="2652691236519827073">Chromeৰ নতুন &amp;টেবত লিংক খোলক</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" />ৰ পৰা আপোনাৰ এক্সটেনশ্বন আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="2665296953892887393">Googleলৈ ক্ৰেশ্ব ৰিপ’ৰ্ট আৰু <ph name="UMA_LINK" /> পঠিয়াই Google Chrome আৰু উন্নত কৰাত সহায় কৰক</translation>
 <translation id="2668094785979141847">Google Lensৰ পৰা বাহিৰ ওলাবলৈ ক্লিক কৰক</translation>
 <translation id="2674238339205910678">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে ChromeOS Flexএ আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ছেভ কৰিব নোৱাৰিলে</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">আপোনাৰ <ph name="DEVICE_TYPE" />ত Chrome এপ্‌টো ব্যৱহাৰ কৰি অনলাইন ক্ৰয়ৰ পৰা অধিক উপকৃত হওক</translation>
 <translation id="3245429137663807393">যদি আপুনি Chrome ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
 <translation id="3249558306861350254">আপোনাৰ Windowsৰ ছেটিঙত <ph name="BEGIN_BOLD" />ডিফ’ল্ট হিচাপে ছেট কৰক<ph name="END_BOLD" />ত ক্লিক কৰক।</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" />ৰ পৰা আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="3259748324892322072">Chrome এপ্‌টো লাভ কৰক</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
@@ -346,6 +351,7 @@
 <translation id="4280647692742956593">অন্য কামৰ মাজতো নতুন টেবৰ গোট খুলিবলৈ বা সৃষ্টি কৰিবলৈ আপোনাৰ ফ’নত Chrome ডাউনল’ড কৰক।</translation>
 <translation id="4281844954008187215">সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="430327780270213103">Chrome টুলবাৰত এক্সেছৰ অনুৰোধসমূহ দেখুৱাবলৈ এক্সটেনশ্বনক অনুমতি দিয়ক</translation>
+<translation id="4312908933392839680">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ ছেভ কৰা তথ্য আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chromeএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবটো পজ কৰাটো চুপাৰিছ কৰে}one{Chromeএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}other{Chromeএ আপোনাৰ ব্ৰাউজাৰ লেহেমীয়া কৰি টেবসমূহ পজ কৰাটো চুপাৰিছ কৰে}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ব্যক্তিগতকৰণ আৰু অন্য সুবিধাসমূহ পাবলৈ, ৱেব আৰু এপৰ কাৰ্যকলাপত Chrome আৰু লিংক কৰি থোৱা Google সেৱাসমূহক অন্তৰ্ভুক্ত কৰক</translation>
@@ -515,7 +521,9 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="6046028983725193307">ছিষ্টেমৰ অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ছিষ্টেমৰ ছেটিং খোলক আৰু Chromeৰ বাবে 'কেৱল ছিষ্টেমৰ অডিঅ’ ৰেকৰ্ডিঙৰ অনুমতি দিয়ক'। আপুনি তাৰ পাছত Chrome ৰিষ্টাৰ্ট কৰিব লাগিব।</translation>
 <translation id="6069027071882229820">প্ৰতিচ্ছবি হিচাপে প্ৰতিলিপি কৰক</translation>
 <translation id="6070348360322141662">অতিৰিক্ত সুৰক্ষাৰ বাবে Google Chromeএ আপোনাৰ ডেটা এনক্ৰিপ্ট কৰিব</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" />ৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="6075300983329039771">আপোনাৰ প্ৰতিষ্ঠান, <ph name="MANAGER" />ৰ বাবে আপুনি Chromeত ছাইন ইন কৰাৰ আৱশ্যক</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" />ৰ পৰা আপোনাৰ পঢ়াৰ সূচী আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="6113794647360055231">Chrome অধিক ব্যৱহাৰৰ উপযোগী হৈছে</translation>
 <translation id="6116004140911290070">Chromeত দক্ষতা সক্ষম কৰক</translation>
 <translation id="6116252277240876590">Chromeত মেনু, ছেটিং, সতৰ্কবাৰ্তা আৰু অন্য পাঠ দেখুৱাবলৈ এই ভাষাটো ব্যৱহাৰ কৰা হয়</translation>
@@ -713,6 +721,7 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="7804947029129221742">আপোনাৰ সন্ধানৰ ইঞ্জিনটো Chromeৰ বাহিৰৰ পৰা সলনি কৰা হৈছে। আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeএ এইটোৰ মূল ডিফ’ল্টলৈ ৰিছেট কৰিছে। <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chromeৰ পৰা আঁতৰাওক...</translation>
 <translation id="7827099906024714326">আপোনাৰ Google একাউণ্টত কিছুমান ডেটা ছেভ কৰা আৰু আপোনাৰ আটাইবোৰ ডিভাইচত ব্যৱহাৰ কৰাৰ আগতে Chromeএ এয়া আপুনিয়েই বুলি সত্যাপন কৰিব লাগিব। যদি আপুনি এতিয়াই ছাইন আউট কৰে, এই ডেটা মচি পেলোৱা হ’ব।</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" />ৰ পৰা আপোনাৰ ছেভ কৰা তথ্য আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক</translation>
 <translation id="7832314606810669113">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক। এই বুকমাৰ্কটো আপোনাৰ Google একাউণ্টত আপুনি ছাইন ইন কৰাৰ পাছত ছেভ কৰা হ’ব।</translation>
 <translation id="7845233973568007926">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="7847170235260850604">Windows ষ্টাৰ্ট হোৱাৰ লগে লগে Chrome লঞ্চ কৰক</translation>

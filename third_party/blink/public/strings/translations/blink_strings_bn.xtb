@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">অন্য একটি ট্যাবে ডিবাগার পজ হয়ে গেছে, ওই ট্যাবে যেতে করতে ক্লিক করুন।</translation>
 <translation id="1171774979989969504">অনুগ্রহ করে কোন ইমেল আইডি লিখুন:</translation>
 <translation id="1178581264944972037">বিরতি</translation>
+<translation id="1254779809141342904">এই CAP অ্যালার্ট XSLT নামের প্রযুক্তি ব্যবহার করে; সেই কার্যকারিতা <ph name="REMOVAL_LINK" />। এটি হলে, এই সতর্কতাটি 'র' XML ডেটা হিসেবে দেখানো হবে। আপনি হয়ত <ph name="EXTENSION_LINK" /> করতে পারবেন যা আপনাকে এটি দেখা চালিয়ে যেতে দেয়।</translation>
 <translation id="1306460908038601864">বন্ধ করা আছে</translation>
 <translation id="1311894908970423688">তারিখ অবশ্যই <ph name="VALUE_DATE_OR_TIME" /> হতে হবে।</translation>
 <translation id="1588438908519853928">সাধারণ</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2746543609216772311">মানকে অবশ্যই <ph name="MINIMUM_DATE_OR_TIME" /> বা পরবর্তী হতে হবে৷</translation>
 <translation id="2761667185364618470">আপনি এগিয়ে যেতে চাইলে এই বাক্সটি পরীক্ষা করুন৷</translation>
+<translation id="2854734116215697908">এই ব্রাউজার থেকে সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="2908441821576996758">অনুগ্রহ করে কমা দিয়ে আলাদা করা ইমেল আইডির তালিকা লিখুন৷</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এমবি</translation>
 <translation id="3075154866155599887">অনুগ্রহ করে একটি সঠিক মান লিখুন৷ ফিল্ডটি অসম্পূর্ণ অথবা একটি ভুল তারিখ আছে৷</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">কাস্ট করুন</translation>
 <translation id="5630795885300617244">১০ সেকেন্ড আগে পরে করার জন্য বাঁ অথবা ডান দিকে ডবল ট্যাপ করুন</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
+<translation id="5855560023261018690">এই ব্রাউজার থেকে খুব শীঘ্রই সরিয়ে দেওয়া হবে</translation>
 <translation id="5868587040512539609">ভিডিও ট্র্যাক</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> এ কাস্ট করা হচ্ছে</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ছবির-মধ্যে-ছবি মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="6484738902856791350">সুন্দর প্রিন্ট</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
+<translation id="65574987622079584">ব্রাউজার এক্সটেনশন ইনস্টল করুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6661136971638885481">ট্র্যাক #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">অন্যান্য...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">এই সপ্তাহ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">এই সতর্কতা কখনও দেখাতে চাই না</translation>
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="835897206747267392">ভুল মান৷</translation>
 <translation id="839593075537728968">সময়ের মান অবশ্যই <ph name="MINIMUM_TIME" /> থেকে <ph name="MAXIMUM_TIME" />-এর মধ্যে হতে হবে।</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">লাইন র‍্যাপ করা</translation>
 <translation id="8750798805984357768">দয়া করে বিকল্পগুলির একটি নির্বাচন করুন৷</translation>
+<translation id="8753001114009816390">এই সাইট XSLT ব্যবহার করে; সেই কার্যকারিতা <ph name="REMOVAL_LINK" />। এটি হলে, এই পৃষ্ঠাটি সম্ভবত আর সঠিকভাবে দেখা যাবে না। আপনি হয়ত <ph name="EXTENSION_LINK" /> করতে পারবেন যা আপনাকে এটি দেখা চালিয়ে যেতে দেয়। অন্যথায়, আরও তথ্যের জন্য আপনাকে সাইটের রক্ষণাবেক্ষণকারীর সাথে যোগাযোগ করতে হবে।</translation>
 <translation id="8845239796550121995">এখন আপনার TV তে কাস্ট করা হচ্ছে</translation>
 <translation id="8875657656876809964">ভিডিও প্লেব্যাকে সমস্যা</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> কেবি</translation>

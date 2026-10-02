@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Файл түрү аз жүктөлүп алынып, кооптуу болушу мүмкүн болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>
 <translation id="1197860368385086056">Кийинки жолу <ph name="DEVICE_TYPE" /> түзмөгүңүздө Chrome'ду ачканыңызда бааларга көз салуу эскертүүлөрүн иштетүү сунушталат.</translation>
 <translation id="1203500561924088507">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда серепчини өчүрүп күйгүзүңүз.</translation>
+<translation id="1226003169284463347">Бардык түзмөктөрүңүздө кыстармаларды жана башка нерселерди алуу үчүн Chrome'го кириңиз</translation>
 <translation id="1278833599417554002">&amp;Chrome'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="1289911795790071537">Chrome менен издөө</translation>
 <translation id="1290883685122687410">Тууралоо катасы: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION" /> өчүрдү.</translation>
 <translation id="2106831557840787829">ChromeOS Flex тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="2108778574543343055">Колдонмолор үчүн фондо иштеген Chrome'ду өчүрүү</translation>
+<translation id="2111985952714409792">Кеңейтүүлөрдү жана башкаларды бардык түзмөктөрүңүздө колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="2120620239521071941">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2121284319307530122">&amp;Chrome'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chrome'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">Dock панелине кадап коюу</translation>
 <translation id="2309047409763057870">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="2345992953227471816">Chrome төмөнкү кеңейтүүлөрдө кесепеттүү программанын болгонун аныктады:</translation>
+<translation id="2358140144860869442">Окуу тизмеңизди жана башка нерселерди бардык түзмөктөрүңүздө көрүү үчүн Chrome'го кириңиз</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2403703063067034158">Ишке киргизүү катасы: Башка тууралоо процесси жүрүп жатат. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID түзмөгүн бир же бир нече Chrome кеңейтүүсү пайдаланды}=1{1 HID түзмөгүн бир же бир нече Chrome кеңейтүүсү пайдаланууда}other{# HID түзмөгүн бир же бир нече Chrome кеңейтүүсү пайдаланууда}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome серепчинин параметрлеринин коопсуздугун такай текшерип турат. Бир нерсеге көңүл бурушуңуз керек болсо, кабарлап коёбуз.</translation>
 <translation id="2652691236519827073">Шилтемени жаңы Chrome &amp;өтмөгүндө ачуу</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" /> кеңейтүүлөрдү жана башкаларды колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="2665296953892887393">Google'га автоматтык түрдө каталар жана <ph name="UMA_LINK" /> жөнүндө кабар берип, Google Chrome'ду өркүндөткөнгө кол кабыш кылыңыз!</translation>
 <translation id="2668094785979141847">Google Lens'тен чыгуу үчүн чыкылдатыңыз</translation>
 <translation id="2674238339205910678">Аккаунтка кирүүчү маалымат эскирип калгандыктан, ChromeOS Flex Google аккаунтуңузга Chrome'догу нерселерди сактай алган жок</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" /> түзмөгүңүздөгү Chrome колдонмосу менен Интернетте пайдалуу соода кылыңыз</translation>
 <translation id="3245429137663807393">Chrome'дун колдонулушу тууралуу кабарларды да бөлүшсөңүз, ал кабарларда сиз баш баккан URL даректери камтылат</translation>
 <translation id="3249558306861350254">Windows параметрлеринен <ph name="BEGIN_BOLD" />Демейки катары коюу<ph name="END_BOLD" /> баскычын чыкылдатыңыз.</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" /> кыстармаларды жана башкаларды колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="3259748324892322072">Chrome колдонмосун жүктөп алуу</translation>
 <translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
@@ -346,6 +351,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4280647692742956593">Жолдо баратканда жаңы өтмөк топторун ачуу же түзүү үчүн телефонуңузга Chrome'ду жүктөп алыңыз.</translation>
 <translation id="4281844954008187215">Тейлөө шарттары</translation>
 <translation id="430327780270213103">Кеңейтүүгө Chrome'дун куралдар тилкесинде мүмкүнчүлүк алуу сурамдарын көрсөтүүгө уруксат берүү</translation>
+<translation id="4312908933392839680">Бардык түзмөктөрүңүздө сакталган маалыматты жана башка нерселерди алуу үчүн Chrome'го кириңиз</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome браузерди жайлаткан өтмөктү тындырууну сунуштайт}other{Chrome браузерди жайлаткан өтмөктөрдү тындырууну сунуштайт}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Жекелештирүүнү жана башка функцияларды пайдалануу үчүн Chrome'ду Колдонмолор жана Интернеттеги аракеттер таржымалына жана байланышкан Google кызматтарына кошуңуз</translation>
@@ -515,7 +521,9 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6046028983725193307">Cистеманын аудиосун бөлүшүү үчүн Системанын параметрлерин ачып, Chrome үчүн "Системанын аудиосун гана жаздыруу" уруксатын күйгүзүңүз. Андан кийин Chrome'ду өчүрүп күйгүзүшүңүз керек болот.</translation>
 <translation id="6069027071882229820">Сүрөт катары көчүрүү</translation>
 <translation id="6070348360322141662">Кошумча коопсуздук максатында, Google Chrome дайын-даректериңизди шифрлеп коёт</translation>
+<translation id="6071642418303142778">Сырсөздөрдү жана башка маалыматтарды <ph name="DEVICE" /> алуу үчүн Chrome'го кириңиз</translation>
 <translation id="6075300983329039771">Уюмуңуз, <ph name="MANAGER" />, Chrome'го кирүүнү талап кылат</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" /> окуу тизмесин жана башкаларды колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="6113794647360055231">Chrome жаңы эле жакшыртылды</translation>
 <translation id="6116004140911290070">Chrome'до жөндөмдөрдү иштетүү</translation>
 <translation id="6116252277240876590">Chrome'до менюлар, параметрлер, эскертүүлөр жана башка текст ушул тилде иштейт</translation>
@@ -713,6 +721,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7804947029129221742">Издөө куралыңыз Chrome'дон тышкары өзгөртүлдү. Коопсуздугуңуз үчүн Chrome аны баштапкы абалга келтирди. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome'дон чыгарып салуу…</translation>
 <translation id="7827099906024714326">Айрым маалыматтар Google аккаунтуңузга сакталып, бардык түзмөктөрүңүздө колдонулушу үчүн Chrome сиз экениңизди ырасташы керек. Эгер азыр чыгып кетсеңиз, бул маалымат өчүрүлөт.</translation>
+<translation id="7829850924999627855">Сакталган маалыматты жана <ph name="DEVICE" /> колдонмосундагы башка нерселерди колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="7832314606810669113">Бардык түзмөктөрүңүздө кыстармаларды жана башка нерселерди алуу үчүн Chrome'го кириңиз. Киргенден кийин бул кыстарма Google аккаунтуңузда сакталат.</translation>
 <translation id="7845233973568007926">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда компьютерди өчүрүп күйгүзүңүз.</translation>
 <translation id="7847170235260850604">Windows күйгүзүлгөндө Chrome иштетилсин</translation>

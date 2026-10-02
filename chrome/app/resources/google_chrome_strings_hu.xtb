@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">A Chrome letiltotta ezt a letöltést, mert ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="1197860368385086056">Amikor legközelebb megnyitja a Chrome-ot <ph name="DEVICE_TYPE" /> eszközén, megjelenik az árfigyelési értesítések engedélyezésével kapcsolatos üzenet.</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
+<translation id="1226003169284463347">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez, könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="1278833599417554002">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="1289911795790071537">A Keresés a Chrome-mal megnyitása</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Nem látogatta meg mostanában. A Chrome eltávolította a következőt: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">A ChromeOS Flex létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, például a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">A Chrome háttérben való futtatásának letiltása az alkalmazásoknál</translation>
+<translation id="2111985952714409792">Ha az összes eszközén hozzá szeretne férni a bővítményeihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="2120620239521071941">Ezzel <ph name="ITEMS_COUNT" /> elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="2123055963409958220">Segítsen a Chrome fejlesztésében a <ph name="BEGIN_LINK" />jelenlegi beállítások<ph name="END_LINK" /> elküldésével</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
 <translation id="2309047409763057870">Ez a Google Chrome második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="2345992953227471816">A Chrome kártékony programokat talált a következő bővítményekben:</translation>
+<translation id="2358140144860869442">Ha az összes eszközén szeretne hozzáférni az olvasólistájához és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2403703063067034158">Indítási hiba: jelenleg a beállítás egy másik példánya fut; próbálkozzon újra később.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chrome-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chrome-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chrome-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
@@ -172,6 +175,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">A Chrome rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>
+<translation id="2661616016316841783">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő bővítményeihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="2665296953892887393">Segítse a Google Chrome fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Kattintson a Google Lensből való kilépéshez</translation>
 <translation id="2674238339205910678">A ChromeOS Flex nem tudta menteni a Chrome-adatokat az Ön Google-fiókjába, mert a fiók bejelentkezési adatai elavultak.</translation>
@@ -243,6 +247,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3242486428260808857">A Chrome app használatával többet hozhat ki az online vásárlásból <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="3245429137663807393">Ha a Chrome használati jelentéseit is megosztja, ezek a jelentések tartalmazzák az Ön által felkeresett URL-eket.</translation>
 <translation id="3249558306861350254">Kattintson a <ph name="BEGIN_BOLD" />Beállítás alapértelmezettként<ph name="END_BOLD" /> lehetőségre a Windows beállításaiban.</translation>
+<translation id="3258706751219502154">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="3259748324892322072">A Chrome app letöltése</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
@@ -342,6 +347,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4280647692742956593">Töltse le a Chrome-ot a telefonjára, hogy útközben is megnyithasson vagy létrehozhasson új lapcsoportokat.</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="430327780270213103">A bővítmény megjeleníthet hozzáférési kérelmeket a Chrome eszköztárán</translation>
+<translation id="4312908933392839680">Ha az összes eszközén szeretne hozzáférni mentett adataihoz és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{A Chrome a böngészőt lassító lap szüneteltetését javasolja}other{A Chrome a böngészőt lassító lapok szüneteltetését javasolja}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">A személyre szabás és az egyéb funkciók használatához vegye fel a Chrome-ot az Internetes és alkalmazástevékenységek közé, valamint az összekapcsolt Google-szolgáltatásokba</translation>
@@ -507,7 +513,9 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6046028983725193307">A rendszerhang megosztásához nyissa meg a Rendszerbeállításokat, és engedélyezze a „System Audio Recording Only” (Csak a rendszerhang rögzítése) beállítást a Chrome-ra vonatkozóan. Ezután újra kell indítania a Chrome-ot.</translation>
 <translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
+<translation id="6071642418303142778">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön tárolt jelszavaihoz és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="6075300983329039771">Szervezete (<ph name="MANAGER" />) megköveteli a Chrome-ba történő bejelentkezést</translation>
+<translation id="6077365059401096066">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő olvasólistájához és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
 <translation id="6116004140911290070">Készségek engedélyezése a Chrome-ban</translation>
 <translation id="6116252277240876590">A Chrome ezt a nyelvet használja a menük, beállítások, figyelmeztetések és egyéb szövegek megjelenítésére</translation>
@@ -705,6 +713,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7804947029129221742">A keresőmotor a Chrome-on kívülről lett módosítva. A Chrome visszaállította az eredeti, alapértelmezett motort az Ön biztonsága érdekében. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Eltávolítás a Chrome-ból…</translation>
 <translation id="7827099906024714326">A Chrome-nak ellenőriznie kell az Ön személyazonosságát, mielőtt bizonyos adatokat menthetne az Ön Google-fiókjába, és minden eszközén használhatná őket. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
+<translation id="7829850924999627855">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő mentett adataihoz és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="7832314606810669113">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba Ezt a könyvjelzőt a rendszer az Ön Google-fiókjába menti a bejelentkezés után.</translation>
 <translation id="7845233973568007926">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a számítógépet.</translation>
 <translation id="7847170235260850604">A Chrome indítása a Windows indulásakor</translation>

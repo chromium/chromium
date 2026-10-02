@@ -30,6 +30,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1194807384646768652">Na-block ng Chrome ang pag-download na ito dahil hindi karaniwang dina-download ang uri ng file at posibleng mapanganib ito</translation>
 <translation id="1197860368385086056">Sa susunod na buksan mo ang Chrome sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt para i-enable ang mga alerto sa pagsubaybay sa presyo.</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
 <translation id="1289911795790071537">Buksan ang paghahanap gamit ang Chrome</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2096213354152647998">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">I-disable ang Pagtakbo ng Chrome sa Background para sa Mga App</translation>
+<translation id="2111985952714409792">Para makuha ang iyong mga extension at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="2120620239521071941">Magde-delete ito ng <ph name="ITEMS_COUNT" /> (na) item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chrome bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ilunsad Ulit para Ma-update ang Chrome</translation>
 <translation id="2123055963409958220">Tulungang pahusayin ang Chrome sa pamamagitan ng pag-ulat sa <ph name="BEGIN_LINK" />mga kasalukuyang setting<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2309047409763057870">Pangalawang pag-install ito ng Google Chrome at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="2345992953227471816">Napag-alaman ng Chrome na naglalaman ng malware ang mga extension na ito:</translation>
+<translation id="2358140144860869442">Para makuha ang iyong listahan ng babasahin at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2403703063067034158">Nagkaroon ng error sa startup: May tumatakbo nang isa pang instance ng pag-set up, pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device ang ina-access ng isa o higit pang extension ng Chrome}=1{1 HID device ang ina-access ng isa o higit pang extension ng Chrome}one{# HID device ang ina-access ng isa o higit pang extension ng Chrome}other{# na HID device ang ina-access ng isa o higit pang extension ng Chrome}}</translation>
@@ -176,6 +179,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Regular na nagsusuri ang Chrome para tiyaking may mga pinakaligtas na setting ang iyong browser. Ipapaalam namin sa iyo kung may anumang nangangailangan ng iyong pagsusuri.</translation>
 <translation id="2652691236519827073">Buksan ang Link sa Bagong &amp;tab ng Chrome</translation>
+<translation id="2661616016316841783">Para makuha ang iyong mga extension at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chrome</translation>
 <translation id="2665296953892887393">Tumulong na gawing mas mahusay ang Google Chrome sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
 <translation id="2668094785979141847">I-click para lumabas sa Google Lens</translation>
 <translation id="2674238339205910678">Hindi ma-save ng ChromeOS Flex ang data ng Chrome sa iyong Google Account dahil luma na ang mga detalye sa pag-sign in sa account mo</translation>
@@ -247,6 +251,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3242486428260808857">Sulitin ang online na pamimili kapag ginamit mo ang Chrome app sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Kung nagbabahagi ka rin ng mga ulat ng paggamit sa Chrome, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
 <translation id="3249558306861350254">I-click ang <ph name="BEGIN_BOLD" />Itakda ang Default<ph name="END_BOLD" /> sa iyong mga setting ng Windows.</translation>
+<translation id="3258706751219502154">Para makuha ang iyong mga bookmark at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chrome</translation>
 <translation id="3259748324892322072">Kunin ang Chrome App</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
@@ -346,6 +351,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4280647692742956593">I-download ang Chrome sa iyong telepono para magbukas o gumawa ng mga bagong grupo ng tab nang on the go.</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="430327780270213103">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
+<translation id="4312908933392839680">Para makuha ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Inirerekomenda ng Chrome na I-pause ang Tab na Nagpapabagal sa Iyong Browser}one{Inirerekomenda ng Chrome na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}other{Inirerekomenda ng Chrome na I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para makuha ang pag-personalize at iba pang feature, isama ang Chrome sa Aktibidad sa Web at App at mga naka-link na serbisyo ng Google</translation>
@@ -515,7 +521,9 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6046028983725193307">Para i-share ang audio ng system, buksan ang Mga Setting ng System at payagan ang 'Pag-record Lang ng Audio ng System' para sa Chrome. Pagkatapos, kakailanganin mong i-restart ang Chrome.</translation>
 <translation id="6069027071882229820">Kopyahin bilang larawan</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>
+<translation id="6071642418303142778">Para makuha ang iyong mga password at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chrome</translation>
 <translation id="6075300983329039771">Nire-require ka ng iyong organisasyong <ph name="MANAGER" /> na mag-sign in sa Chrome</translation>
+<translation id="6077365059401096066">Para makuha ang iyong listahan ng babasahin at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chrome</translation>
 <translation id="6113794647360055231">Mas mahusay na ang Chrome</translation>
 <translation id="6116004140911290070">I-enable ang Mga Kasanayan sa Chrome</translation>
 <translation id="6116252277240876590">Ginagamit ang wikang ito para magpakita ng mga menu, setting, alerto, at iba pang text sa Chrome</translation>
@@ -713,6 +721,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7804947029129221742">Binago ang iyong search engine mula sa labas ng Chrome. Para protektahan ka, ni-reset ito ng Chrome sa orihinal na default nito. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Alisin sa Chrome...</translation>
 <translation id="7827099906024714326">Kailangang i-verify ng Chrome na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
+<translation id="7829850924999627855">Para makuha ang iyong naka-save na impormasyon at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chrome</translation>
 <translation id="7832314606810669113">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang bookmark na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Ilunsad ang Chrome kapag nagsimula na ang Windows</translation>

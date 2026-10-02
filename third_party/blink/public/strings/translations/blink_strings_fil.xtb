@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Na-pause ang debugger sa ibang tab, mag-click para lumipat sa tab na iyon.</translation>
 <translation id="1171774979989969504">Mangyaring magpasok ng email address.</translation>
 <translation id="1178581264944972037">I-pause</translation>
+<translation id="1254779809141342904">Gumagamit ang alerto ng CAP na ito ng teknolohiyang tinatawag na XSLT; <ph name="REMOVAL_LINK" /> ang functionality na iyon. Kapag nangyari iyon, ipapakita ang alertong ito bilang raw na XML data. Posibleng magawa mong <ph name="EXTENSION_LINK" /> na magbibigay-daan sa iyong patuloy na tingnan ito.</translation>
 <translation id="1306460908038601864">I-off</translation>
 <translation id="1311894908970423688">Dapat ay <ph name="VALUE_DATE_OR_TIME" /> ang value.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2746543609216772311">Dapat <ph name="MINIMUM_DATE_OR_TIME" /> o mas bago ang value.</translation>
 <translation id="2761667185364618470">Pakitingnan ang kahon na ito kung gusto mong magpatuloy.</translation>
+<translation id="2854734116215697908">aalisin sa browser na ito</translation>
 <translation id="2908441821576996758">Mangyaring magpasok ng listahan ng email address na pinaghihiwalay ng kuwit.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> (na) MB</translation>
 <translation id="3075154866155599887">Mangyaring maglagay ng wastong halaga. Hindi kumpleto ang field o may isang di-wastong petsa.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="5630795885300617244">Mag-double tap sa kaliwa o kanan upang lumaktaw nang 10s</translation>
 <translation id="57838592816432529">I-mute</translation>
+<translation id="5855560023261018690">aalisin sa browser na ito sa lalong madaling panahon</translation>
 <translation id="5868587040512539609">Mga Video Track</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5888666972993069672">Nagka-cast na sa <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Lumabas sa Picture-in-Picture</translation>
 <translation id="6484738902856791350">I-pretty print</translation>
 <translation id="6550675742724504774">Mga Pagpipilian</translation>
+<translation id="65574987622079584">mag-install ng extension ng browser</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6661136971638885481">Track #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Iba pa...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Linggong ito</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">Huwag kailanman ipakita ang babalang ito</translation>
 <translation id="8284326494547611709">Mga Caption</translation>
 <translation id="835897206747267392">Di-wastong halaga.</translation>
 <translation id="839593075537728968">Dapat na nasa pagitan ng <ph name="MINIMUM_TIME" /> at <ph name="MAXIMUM_TIME" /> ang value.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Line wrap</translation>
 <translation id="8750798805984357768">Mangyaring pumili ng isa sa mga opsyong ito.</translation>
+<translation id="8753001114009816390">Gumagamit ang site na ito ng XSLT; <ph name="REMOVAL_LINK" /> ang functionality na iyon. Kapag nangyari iyon, malamang na hindi na ipapakita nang tama ang page na ito. Posibleng magawa mong <ph name="EXTENSION_LINK" /> na magbibigay-daan sa iyong patuloy na tingnan ito. Kung hindi, dapat kang makipag-ugnayan sa maintainer ng site para sa higit pang impormasyon.</translation>
 <translation id="8845239796550121995">Ikina-cast ngayon sa iyong TV</translation>
 <translation id="8875657656876809964">Error sa pag-playback ng video</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Pobieranie zostało zablokowane przez Chrome, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1197860368385086056">Gdy następnym razem otworzysz Chrome na urządzeniu <ph name="DEVICE_TYPE" />, pojawi się komunikat przypominający o włączeniu alertów funkcji śledzenia cen.</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
+<translation id="1226003169284463347">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="1278833599417554002">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="1289911795790071537">Otwórz wyszukiwanie w Chrome</translation>
 <translation id="1290883685122687410">Błąd konfiguracji: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Opracowanie ChromeOS Flex było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Wyłącz działanie Chrome w tle w przypadku aplikacji</translation>
+<translation id="2111985952714409792">Aby korzystać z rozszerzeń oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="2120620239521071941">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomóż udoskonalić Chrome, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Zachowaj w Docku</translation>
 <translation id="2309047409763057870">To jest druga instalacja Google Chrome. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="2345992953227471816">Przeglądarka Chrome wykryła w tych rozszerzeniach złośliwe oprogramowanie:</translation>
+<translation id="2358140144860869442">Aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2403703063067034158">Błąd podczas uruchamiania: obecnie działa inna instancja konfiguracji. Spróbuj ponownie później.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chrome uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzenia HID}}</translation>
@@ -172,6 +175,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>
+<translation id="2661616016316841783">Aby korzystać z rozszerzeń oraz innych ustawień i danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chrome</translation>
 <translation id="2665296953892887393">Pomóż nam ulepszyć Google Chrome, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Kliknij, aby zamknąć Obiektyw Google</translation>
 <translation id="2674238339205910678">ChromeOS Flex nie może zapisać danych Chrome na Twoim koncie Google, ponieważ dane logowania na Twoje konto są nieaktualne</translation>
@@ -243,6 +247,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3242486428260808857">Wykorzystaj w pełni zakupy online dzięki aplikacji Chrome na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Jeśli udostępnisz także raporty o użytkowaniu Chrome, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
 <translation id="3249558306861350254">W ustawieniach systemu Windows kliknij <ph name="BEGIN_BOLD" />Ustaw jako domyślną<ph name="END_BOLD" />.</translation>
+<translation id="3258706751219502154">Aby mieć dostęp do zakładek oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chrome</translation>
 <translation id="3259748324892322072">Pobierz aplikację Chrome</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
@@ -341,6 +346,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4280647692742956593">Pobierz Chrome na telefon, aby otwierać lub tworzyć nowe grupy kart, gdziekolwiek jesteś.</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="430327780270213103">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chrome</translation>
+<translation id="4312908933392839680">Aby mieć dostęp do zapisanych informacji oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome zaleca wstrzymanie karty, która spowalnia przeglądarkę}few{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}many{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}other{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}}</translation>
 <translation id="4328355335528187361">Wersja deweloperska Google Chrome (mDNS-In)</translation>
 <translation id="4329315893554541805">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
@@ -506,7 +512,9 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6046028983725193307">Aby udostępnić dźwięk systemowy, otwórz ustawienia systemu i zezwól Chrome na „Nagrywanie tylko dźwięku systemowego”. Następnie musisz ponownie uruchomić Chrome.</translation>
 <translation id="6069027071882229820">Skopiuj jako obraz</translation>
 <translation id="6070348360322141662">Dla większego bezpieczeństwa Google Chrome szyfruje dane</translation>
+<translation id="6071642418303142778">Aby mieć dostęp do haseł oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chrome</translation>
 <translation id="6075300983329039771">Twoja organizacja (<ph name="MANAGER" />) wymaga od Ciebie zalogowania się w Chrome</translation>
+<translation id="6077365059401096066">Aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chrome</translation>
 <translation id="6113794647360055231">Chrome jest jeszcze lepszy</translation>
 <translation id="6116004140911290070">Włącz umiejętności w Chrome</translation>
 <translation id="6116252277240876590">Ten język jest używany do wyświetlania menu, ustawień, alertów i innego tekstu w Chrome</translation>
@@ -704,6 +712,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7804947029129221742">Twoja wyszukiwarka została zmieniona poza Chrome. Aby Cię chronić, przeglądarka Chrome zresetowała to ustawienie do pierwotnej wartości domyślnej. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7827099906024714326">Aby niektóre dane mogły być zapisywane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chrome musi zweryfikować Twoją tożsamość. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
+<translation id="7829850924999627855">Aby mieć dostęp do zapisanych informacji oraz innych ustawień i danych z urządzenia <ph name="DEVICE" />, zaloguj się w Chrome</translation>
 <translation id="7832314606810669113">Aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. Ta zakładka zostanie zapisana na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
 <translation id="7847170235260850604">Uruchamiaj Chrome po uruchomieniu systemu Windows</translation>

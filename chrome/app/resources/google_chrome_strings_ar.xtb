@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">‏حَظَر Chrome عملية التنزيل هذه لأنّ نوع الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
 <translation id="1197860368385086056">‏عند فتح Chrome على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك تفعيل تنبيهات ميزة "تتبُّع الأسعار".</translation>
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى الإشارات المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="1289911795790071537">‏فتح ميزة "البحث في Chrome"</translation>
 <translation id="1290883685122687410">حدث خطأ أثناء الإعداد: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2096213354152647998">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذن <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير نظام التشغيل Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">‏إيقاف تشغيل Chrome في الخلفية أثناء عمل التطبيقات</translation>
+<translation id="2111985952714409792">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى الإضافات وغيرها على جميع أجهزتك</translation>
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="2123055963409958220">‏يمكنك المساعدة في تحسين Chrome بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@
 <translation id="2307973900865360088">‏إبقاء التطبيق في شريط التطبيقات (Dock)</translation>
 <translation id="2309047409763057870">‏هذا تثبيت ثانوي من Google Chrome، ولا يمكن جعله متصفحك التلقائي.</translation>
 <translation id="2345992953227471816">‏رصد Chrome أنّ هذه الإضافات تحتوي على برامج ضارة:</translation>
+<translation id="2358140144860869442">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى قائمة القراءة وغيرها على جميع أجهزتك</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2403703063067034158">خطأ في بدء التشغيل: هناك عملية إعداد أخرى قيد التشغيل حاليًا. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chrome تصل إلى جهاز HID واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى جهاز HID واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى جهازَي HID}few{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # أجهزة HID}many{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # جهاز HID}other{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # جهاز HID}}</translation>
@@ -174,6 +177,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏يتحقّق Chrome بانتظام من استخدام الإعدادات الأكثر أمانًا في متصفِّحك. وسنُعلمك في حال كان عليك اتخاذ إجراء.</translation>
 <translation id="2652691236519827073">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
+<translation id="2661616016316841783">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى الإضافات وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="2665296953892887393">‏يمكنك المساعدة في تحسين Google Chrome عن طريق إرسال تقارير الأعطال و<ph name="UMA_LINK" /> إلى Google</translation>
 <translation id="2668094785979141847">‏انقر للخروج من "عدسة Google"</translation>
 <translation id="2674238339205910678">‏تعذّر على ChromeOS Flex حفظ بيانات Chrome في حسابك على Google لأنّ تفاصيل تسجيل الدخول إلى حسابك قديمة</translation>
@@ -245,6 +249,7 @@
 <translation id="3242486428260808857">‏تجربة تسوّق أكثر تميزًا على الإنترنت بانتظارك مع تطبيق Chrome على "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="3245429137663807393">‏في حال شاركت أيضًا تقارير استخدام Chrome، ستتضمّن عناوين URL التي تنتقل إليها.</translation>
 <translation id="3249558306861350254">‏انقر على <ph name="BEGIN_BOLD" />الضبط كمتصفّح تلقائي<ph name="END_BOLD" /> في إعدادات Windows.</translation>
+<translation id="3258706751219502154">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى الإشارات المرجعية وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="3259748324892322072">‏تنزيل تطبيق Chrome</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
@@ -344,6 +349,7 @@
 <translation id="4280647692742956593">‏يكفي تنزيل Chrome على هاتفك لفتح مجموعات علامات التبويب أو إنشائها أثناء التنقل.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="430327780270213103">‏السماح للإضافة بعرض طلبات الوصول في شريط أدوات Chrome</translation>
+<translation id="4312908933392839680">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى معلوماتك المحفوظة وغيرها على جميع أجهزتك</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{‏ينصح Chrome بإيقاف علامة التبويب التي تبطئ المتصفّح مؤقتًا}zero{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}two{‏ينصح Chrome بإيقاف علامتَي التبويب اللتين تبطئان المتصفّح مؤقتًا}few{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}many{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}other{‏ينصح Chrome بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}}</translation>
 <translation id="4328355335528187361">‏إصدار مطوّري البرامج من Google Chrome ‏(mDNS-In)</translation>
 <translation id="4329315893554541805">‏للحصول على خيارات مخصَّصة والاستفادة من ميزات أخرى، يمكنك تضمين متصفّح Chrome في "النشاط على الويب وفي التطبيقات" وخدمات Google المرتبطة</translation>
@@ -511,7 +517,9 @@
 <translation id="6046028983725193307">‏لمشاركة صوت النظام، افتح "إعدادات النظام" (System Settings) وفعِّل خيار "تسجيل صوت النظام فقط" (System Audio Recording Only) لمتصفّح Chrome، ثم أعِد تشغيل المتصفّح.</translation>
 <translation id="6069027071882229820">نسخ كصورة</translation>
 <translation id="6070348360322141662">‏لمزيد من الأمان، سيشفِّر Google Chrome بياناتك</translation>
+<translation id="6071642418303142778">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى كلمات المرور وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="6075300983329039771">‏تطلُب المؤسسة (<ph name="MANAGER" />) منك تسجيل الدخول إلى Chrome</translation>
+<translation id="6077365059401096066">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى قائمة القراءة وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="6113794647360055231">‏Chrome أصبح أفضل</translation>
 <translation id="6116004140911290070">‏تفعيل "المهارات" في Chrome</translation>
 <translation id="6116252277240876590">‏تُستخدم هذه اللغة لعرض القوائم والإعدادات والتنبيهات والنصوص الأخرى في Chrome</translation>
@@ -709,6 +717,7 @@
 <translation id="7804947029129221742">‏تم تغيير محرك البحث من مصدر خارج Chrome. ولحمايتك، أعاد Chrome ضبطه على الخيار التلقائي الأصلي. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
 <translation id="7827099906024714326">‏يحتاج Chrome إلى إثبات هويتك قبل حفظ بعض البيانات في حسابك على Google واستخدامها على جميع أجهزتك. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
+<translation id="7829850924999627855">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى معلوماتك المحفوظة وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="7832314606810669113">‏يتيح لك تسجيل الدخول إلى Chrome الوصول إلى الإشارات المرجعية وغيرها على جميع أجهزتك. وسيتم حفظ هذه الإشارة المرجعية في حسابك على Google بعد تسجيل الدخول إليه.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">‏فتح Chrome تلقائيًا عند بدء تشغيل Windows</translation>

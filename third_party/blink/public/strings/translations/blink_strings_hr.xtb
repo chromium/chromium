@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Program za otklanjanje pogrešaka pauziran je na drugoj kartici, kliknite da biste se prebacili na tu karticu.</translation>
 <translation id="1171774979989969504">Unesite e-adresu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
+<translation id="1254779809141342904">Ovo upozorenje u skladu sa standardnim protokolom za upozorenja (CAP) upotrebljava tehnologiju XSLT; ta će se funkcija <ph name="REMOVAL_LINK" />. U tom slučaju upozorenje će se prikazati kao neobrađeni XML podaci. Možda možete <ph name="EXTENSION_LINK" />, što će vam omogućiti da nastavite s pregledom.</translation>
 <translation id="1306460908038601864">Isključeno</translation>
 <translation id="1311894908970423688">Vrijednost mora biti <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Uobičajeno</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2746543609216772311">Vrijednost mora biti <ph name="MINIMUM_DATE_OR_TIME" /> ili nakon toga.</translation>
 <translation id="2761667185364618470">Označite taj okvir ako želite ići dalje.</translation>
+<translation id="2854734116215697908">ukloniti iz ovog preglednika</translation>
 <translation id="2908441821576996758">Unesite popis adresa e-pošte odijeljen zarezima.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Unesite važeću vrijednost. Ovo je polje nepotpuno ili sadrži nevažeći datum.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="5630795885300617244">Dvaput dodirnite lijevo ili desno za preskakanje od 10 s</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
+<translation id="5855560023261018690">uskoro ukloniti iz ovog preglednika</translation>
 <translation id="5868587040512539609">Videozapisi</translation>
 <translation id="588258955323874662">Puni zaslon</translation>
 <translation id="5888666972993069672">Trenutačno se emitira na uređaju <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Izlaz iz načina slika u slici</translation>
 <translation id="6484738902856791350">Lijepi ispis</translation>
 <translation id="6550675742724504774">Opcije</translation>
+<translation id="65574987622079584">instalirati proširenje preglednika</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6661136971638885481">Zapis <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Ostalo...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Ovaj tjedan</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">gggg</translation>
+<translation id="8243989288843872594">Nikad ne prikazuj to upozorenje</translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="835897206747267392">Nevažeća vrijednost.</translation>
 <translation id="839593075537728968">Vrijednost mora biti između <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Prenesi u novi redak</translation>
 <translation id="8750798805984357768">Izaberite jednu od tih opcija.</translation>
+<translation id="8753001114009816390">Ova web-lokacija upotrebljava XSLT; ta će se funkcija <ph name="REMOVAL_LINK" />. Kad se to dogodi, ova se stranica vjerojatno više neće ispravno prikazivati. Možda možete <ph name="EXTENSION_LINK" />, što će vam omogućiti da nastavite s pregledom. U suprotnom, obratite se održavatelju web-lokacije za više informacija.</translation>
 <translation id="8845239796550121995">Emitira se na televizoru</translation>
 <translation id="8875657656876809964">Pogreška pri reprodukciji videozapisa</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

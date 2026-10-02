@@ -43,6 +43,7 @@
 <translation id="141901961143729572">Chia sẻ suy nghĩ của bạn</translation>
 <translation id="1465192221147974788">Để chia sẻ cửa sổ, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="1478370723027452770">Nhận trợ giúp về Chrome for Testing</translation>
+<translation id="147870194906295621">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
 <translation id="1524282610922162960">Chia sẻ một thẻ Chromium</translation>
@@ -190,6 +191,7 @@
 <translation id="3012615494352020668">{count,plural, =1{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
 <translation id="3013473503895162900">Mở <ph name="URL" /> trong một thẻ mới trên Chromium.</translation>
 <translation id="302551344979399011">Các phát kiến về AI, chẳng hạn như kỹ năng, được lưu vào Tài khoản Google của bạn và được quản lý riêng với tính năng đồng bộ hoá Chromium</translation>
+<translation id="3032219013429286568">Để sử dụng tiện ích và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="3032787606318309379">Đang thêm vào Chromium...</translation>
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
 <translation id="3045032126857188731">Ngôn ngữ dịch: <ph name="LANGUAGE" /></translation>
@@ -200,6 +202,7 @@
 <translation id="3068515742935458733">Giúp cải thiện Chromium bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="3071024987058544609">Dùng ứng dụng Chromium để mang theo các tính năng an toàn của Google mọi lúc, mọi nơi</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị USB}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị USB}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị USB}}</translation>
+<translation id="3090734884397229414">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="3095811995836568724">Nhật ký duyệt web trên Chromium</translation>
 <translation id="3103660991484857065">Trình cài đặt không thể giải nén tệp lưu trữ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="310459126943037700">Chưa thể kết thúc nhiệm vụ.</translation>
@@ -221,6 +224,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Mang theo các công cụ AI của Google mà bạn yêu thích mọi lúc, mọi nơi nhờ Chromium trên iOS.</translation>
+<translation id="3264761466044851269">Để sử dụng tiện ích và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
 <translation id="328888136576916638">Khóa API của Google bị thiếu. Một số chức năng của Chromium sẽ bị tắt.</translation>
 <translation id="3296368748942286671">Tiếp tục chạy các ứng dụng dưới nền khi Chromium bị đóng</translation>
@@ -232,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chuyển sang hồ sơ hiện có trên Chromium?</translation>
 <translation id="3412460710772753638">Trong Trình quản lý mật khẩu trên thiết bị này</translation>
+<translation id="3427159664004296878">Để sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="3438772217992559640">Tìm kiếm thẻ này bằng tính năng Tìm kiếm hình ảnh</translation>
 <translation id="3455907671758333080">Mở rộng phạm vi của tính năng Duyệt web an toàn có tăng cường bảo vệ với Chromium trên điện thoại</translation>
 <translation id="3461644266919055473">Đang tuỳ chỉnh Chromium cho phù hợp với bạn...</translation>
@@ -264,6 +269,7 @@
 
           **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="3885770153807205175">Bộ chọn ngôn ngữ</translation>
 <translation id="388648406173476553">Tùy chỉnh và kiểm soát Chromium. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="3889543394854987837">Nhấp vào tên của bạn để mở Chromium và bắt đầu duyệt web.</translation>
@@ -272,6 +278,7 @@
 <translation id="3909353120217047026">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến và có thể không an toàn. Hãy xoá khỏi Chromium để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
 <translation id="3941890832296813527">Lỗi cài đặt: Tên tệp của trình cài đặt không hợp lệ hoặc không được hỗ trợ.</translation>
 <translation id="3945058413678539331">Chromium đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
+<translation id="3950481960271781644">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="3954172517175569325">Mật khẩu, phương thức thanh toán và địa chỉ mà bạn đã lưu trong Tài khoản Google sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
 <translation id="395904275706073188">Không thể đọc các trang được bảo vệ. Hãy thử đọc một trang khác.</translation>
 <translation id="3962647064319009959">Tìm hiểu cách Chromium bảo vệ bạn</translation>
@@ -360,6 +367,7 @@
 <translation id="4893347770495441059">Chạy lại để cập nhật &amp;Chromium</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4918844574251943176">Đã sao chép hình ảnh</translation>
+<translation id="4919431996536326528">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="4943838377383847465">Chromium đang chạy trong nền.</translation>
 <translation id="494490797786467921">Nhấp để đóng hộp thoại đăng nhập vào Chromium</translation>
 <translation id="4950660488495335294">Với các hồ sơ trên Chromium, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
@@ -790,6 +798,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="904366664621834601">Chromium đã chặn tệp tải xuống này vì tệp lưu trữ gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
 <translation id="9053882453960391422">Mật khẩu, dấu trang và nhật ký của bạn sẽ được đồng bộ hoá liền mạch trên mọi thiết bị. Hãy cập nhật trình duyệt mặc định thành Chromium để dễ dàng sử dụng các tính năng bạn quen thuộc và yêu thích. Chromium sẽ được ghim vào thanh tác vụ để bạn có thể truy cập nhanh chóng.</translation>
 <translation id="9056398481763999048">Sử dụng các công cụ AI tốt nhất của Google nhờ ứng dụng Chromium trên điện thoại</translation>
+<translation id="9057625473949801035">Để sử dụng mật khẩu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="9062666675513499497">Đăng nhập vào Chromium khi bạn đăng nhập vào các dịch vụ khác của Google</translation>
 <translation id="9078733879136747090">Chromium đã tự động đóng</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>

@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome ha bloquejat aquesta baixada perquè el tipus de fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="1197860368385086056">La propera vegada que obris Chrome al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per activar les alertes de seguiment de preus.</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="1278833599417554002">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="1289911795790071537">Obre la cerca amb Chrome</translation>
 <translation id="1290883685122687410">Error de configuració: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l'<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Desactiva l'execució de Chrome en segon pla per a les aplicacions</translation>
+<translation id="2111985952714409792">Per obtenir les teves extensions i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="2120620239521071941">Amb aquesta acció, se suprimiran <ph name="ITEMS_COUNT" /> elements d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Mantén al Dock</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="2345992953227471816">Chrome ha detectat que aquestes extensions contenen programari maliciós:</translation>
+<translation id="2358140144860869442">Per obtenir la teva llista de lectura i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2403703063067034158">Error d'inici: s'està executant una altra instància de la configuració. Torna-ho a provar més tard.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o més extensions de Chrome estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chrome estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chrome estan accedint a # dispositius d'interfície humana}}</translation>
@@ -172,6 +175,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
+<translation id="2661616016316841783">Per obtenir les teves extensions i altres dades de <ph name="DEVICE" />, inicia la sessió a Chrome</translation>
 <translation id="2665296953892887393">Ajudeu a millorar Google Chrome; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2668094785979141847">Fes clic per sortir de Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex no ha pogut desar les dades de Chrome al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
@@ -243,6 +247,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3242486428260808857">Treu més profit de les compres en línia quan utilitzis l'aplicació Chrome al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
 <translation id="3249558306861350254">Fes clic a <ph name="BEGIN_BOLD" />Defineix com a predeterminat<ph name="END_BOLD" /> a la configuració de Windows.</translation>
+<translation id="3258706751219502154">Per obtenir les teves adreces d'interès i altres dades de <ph name="DEVICE" />, inicia la sessió a Chrome</translation>
 <translation id="3259748324892322072">Obtén l'aplicació Chrome</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
@@ -342,6 +347,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4280647692742956593">Baixa Chrome al telèfon per obrir o crear grups de pestanyes nous siguis on siguis.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="430327780270213103">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chrome</translation>
+<translation id="4312908933392839680">Per obtenir la teva informació desada i més en tots els teus dispositius, inicia la sessió a Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomana posar en pausa la pestanya que està alentint el navegador}other{Chrome recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Per obtenir personalització i altres funcions, inclou Chrome a Activitat al web i en aplicacions i als serveis de Google enllaçats</translation>
@@ -507,7 +513,9 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6046028983725193307">Per compartir l'àudio del sistema, obre Configuració del sistema i permet l'opció Només gravació d'àudio del sistema per a Chrome. Després hauràs de reiniciar Chrome.</translation>
 <translation id="6069027071882229820">Copia com a imatge</translation>
 <translation id="6070348360322141662">Per a més seguretat, Google Chrome encriptarà les teves dades</translation>
+<translation id="6071642418303142778">Per obtenir les teves contrasenyes i altres dades de <ph name="DEVICE" />, inicia la sessió a Chrome</translation>
 <translation id="6075300983329039771">La teva organització, <ph name="MANAGER" />, requereix que iniciïs la sessió a Chrome</translation>
+<translation id="6077365059401096066">Per obtenir la teva llista de lectura i altres dades de <ph name="DEVICE" />, inicia la sessió a Chrome</translation>
 <translation id="6113794647360055231">Chrome és millor que mai</translation>
 <translation id="6116004140911290070">Activa les habilitats a Chrome</translation>
 <translation id="6116252277240876590">Aquest idioma s'utilitza per mostrar menús, opcions de configuració, alertes i altres textos a Chrome</translation>
@@ -705,6 +713,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7804947029129221742">El motor de cerca s'ha canviat des de fora de Chrome. Per protegir-te, Chrome l'ha restablert a la configuració predeterminada original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Suprimeix de Chrome...</translation>
 <translation id="7827099906024714326">Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
+<translation id="7829850924999627855">Per obtenir la teva informació desada i altres dades de <ph name="DEVICE" />, inicia la sessió a Chrome</translation>
 <translation id="7832314606810669113">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chrome. Aquesta adreça d'interès es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Obre Chrome quan s'iniciï Windows</translation>

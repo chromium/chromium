@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">另一個分頁已將偵錯工具暫停，按一下即可切換至該分頁。</translation>
 <translation id="1171774979989969504">請輸入電子郵件地址。</translation>
 <translation id="1178581264944972037">暫停</translation>
+<translation id="1254779809141342904">這則 CAP 警示採用 XSLT 技術，但該功能<ph name="REMOVAL_LINK" />。屆時，這則警示會顯示為原始 XML 資料。如果<ph name="EXTENSION_LINK" />，或許可以繼續查看這類警示。</translation>
 <translation id="1306460908038601864">關閉</translation>
 <translation id="1311894908970423688">值必須是 <ph name="VALUE_DATE_OR_TIME" />。</translation>
 <translation id="1588438908519853928">一般</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2746543609216772311">必須輸入 <ph name="MINIMUM_DATE_OR_TIME" /> 或之後的值。</translation>
 <translation id="2761667185364618470">如果你要繼續執行，請勾選這個核取方塊。</translation>
+<translation id="2854734116215697908">將從這個瀏覽器移除</translation>
 <translation id="2908441821576996758">請輸入以逗號分隔的電子郵件地址清單。</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">欄位內容不完整或日期無效，請輸入有效的值。</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5630795885300617244">輕觸兩下左側或右側可跳過 10 秒</translation>
 <translation id="57838592816432529">靜音</translation>
+<translation id="5855560023261018690">即將從這個瀏覽器移除</translation>
 <translation id="5868587040512539609">視訊軌</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5888666972993069672">正在投放到「<ph name="DEVICE_FRIENDLY_NAME" />」</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">離開子母畫面</translation>
 <translation id="6484738902856791350">美化排版</translation>
 <translation id="6550675742724504774">選項</translation>
+<translation id="65574987622079584">安裝瀏覽器擴充功能</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6661136971638885481">媒體軌 #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">其他...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">本週</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405"> 年 </translation>
+<translation id="8243989288843872594">一律不顯示這項警告</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="835897206747267392">無效的值。</translation>
 <translation id="839593075537728968">值必須介於<ph name="MINIMUM_TIME" /> 到<ph name="MAXIMUM_TIME" /> 之間。</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">自動換行</translation>
 <translation id="8750798805984357768">請選取其中一個選項。</translation>
+<translation id="8753001114009816390">這個網站採用 XSLT 技術，但該功能<ph name="REMOVAL_LINK" />。屆時，這個網頁可能再也無法正常顯示。如果<ph name="EXTENSION_LINK" />，或許可以繼續查看；否則，請與網站維護人員聯絡，進一步瞭解詳情。</translation>
 <translation id="8845239796550121995">正在投放到電視上</translation>
 <translation id="8875657656876809964">影片播放錯誤</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

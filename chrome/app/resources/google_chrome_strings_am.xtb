@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">የፋይል ዓይነቱ በተለምዶ ስላማይወርድ እና አደገኛ ሊሆን ስለሚችል Chrome ይህን ውርድ አግዷል</translation>
 <translation id="1197860368385086056">በሚቀጥለው ጊዜ Chromeን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ፣ የዋጋ ክትትል ማንቂያዎችን ለማንቃት ጥያቄ ያያሉ።</translation>
 <translation id="1203500561924088507">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት አሳሽዎን እንደገና ማስጀመር አለብዎት።</translation>
+<translation id="1226003169284463347">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን ዕልባቶች እና ሌሎችንም ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="1278833599417554002">&amp;Chromeን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="1289911795790071537">ፍለጋን በChrome ክፈት</translation>
 <translation id="1290883685122687410">የውቅረት ስህተት፦ <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">በቅርብ ጊዜ አልጎበኙም። Chrome <ph name="PERMISSION" />ን አስወግዷል።</translation>
 <translation id="2106831557840787829">ChromeOS Flex እና <ph name="BEGIN_LINK_LINUX_OSS" />የLinux ግንባታ አካባቢ<ph name="END_LINK_LINUX_OSS" /> ሊሠሩ የቻሉት በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />የክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> ነው።</translation>
 <translation id="2108778574543343055">Chrome ለመተግበሪያዎች በዳራ ውስጥ እንዳያሄድ አሰናክል</translation>
+<translation id="2111985952714409792">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን ቅጥያዎች እና ሌሎችንም ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="2120620239521071941">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="2121284319307530122">&amp;Chromeን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />የአሁኖቹን ቅንብሮች<ph name="END_LINK" /> ሪፖርት በማድረግ Chromium የተሻለ እንዲሆን ያግዙ።</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">መትከያ ውስጥ አቆይ</translation>
 <translation id="2309047409763057870">ይሄ ሁለተኛ የGoogle Chrome ጭነት ነው፣ እና ነባሪ አሳሽዎ ማድረግ አይቻልም።</translation>
 <translation id="2345992953227471816">Chrome እነዚህ ቅጥያዎች ተንኮል አዘል ዌርን እንደያዙ አግኝቷል</translation>
+<translation id="2358140144860869442">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የንባብ ዝርዝር እና ሌሎችንም ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2403703063067034158">የማስነሻ ስህተት፦ ሌላ የማዋቀር አብነት አሁን እያሄደ ነው፣ እባክዎ በኋላ እንደገና ይሞክሩ።</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChrome ቅጥያዎች እየተደረሰበት ነበር}=1{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChrome ቅጥያዎች እየተደረሰበት ነው}one{# የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChrome ቅጥያዎች እየተደረሰበት ነው}other{# የኤችአይዲ መሣሪያዎች በአንድ ወይም ከዚያ በላይ በሆኑ የChrome ቅጥያዎች እየተደረሰባቸው ናቸው}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome የእርስዎ አሳሽ ደህንነታቸው የተጠበቁ ቅንብሮች እንዳለው ለማረጋገጥ በመደበኛነት ይፈትሻል። ማንኛውም ነገር የእርስዎ ግምገማ ካስፈለገው እናሳውቅዎታለን።</translation>
 <translation id="2652691236519827073">አገናኝ በአዲስ የChrome &amp;ትር ውስጥ ክፈት</translation>
+<translation id="2661616016316841783">የእርስዎን ቅጥያዎች እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="2665296953892887393">የብልሽት ሪፖርቶችን እና <ph name="UMA_LINK" /> ወደ Google በመላክ Google Chromeን የተሻለ ለማድረግ እገዛ ያድርጉ</translation>
 <translation id="2668094785979141847">ከGoogle ሌንስ ለመውጣት ጠቅ ያድርጉ</translation>
 <translation id="2674238339205910678">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromeOS Flex የChrome ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">የChrome መተግበሪያን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲጠቀሙ ከመስመር ላይ ግዢ የበለጠ ያግኙ</translation>
 <translation id="3245429137663807393">እንዲሁም የChrome አጠቃቀም ሪፖርቶችን ካጋሩ፣ እነዚያ ሪፖርቶች እርስዎ የሚጎበኟቸውን ዩአርኤሎች ያካትታሉ</translation>
 <translation id="3249558306861350254">በWindows ቅንብሮችዎ ውስጥ <ph name="BEGIN_BOLD" />ነባሪ አድርግ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ።</translation>
+<translation id="3258706751219502154">የእርስዎን ዕልባቶች እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="3259748324892322072">የChrome መተግበሪያን ያግኙ</translation>
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3286538390144397061">አሁን ዳግም አስጀምር</translation>
@@ -346,6 +351,7 @@
 <translation id="4280647692742956593">በመሄድ ላይ ሳሉ አዲስ የትር ቡድኖችን ለመክፈት ወይም ለመፍጠር Chromeን በስልክዎ ላይ ያውርዱ።</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="430327780270213103">ቅጥያ በChrome የመሳሪያ አሞሌ ውስጥ የመዳረሻ ጥያቄዎችን እንዲያሳይ ፍቀድ</translation>
+<translation id="4312908933392839680">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የተቀመጠ መረጃ እና ሌሎችንም ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome አሳሽዎን እያዘገየ ያለውን ትር ባለበት እንዲያቆሙ ይመክራል}one{Chrome አሳሽዎን እያዘገየ ያለውን ትር ባለበት እንዲያቆሙ ይመክራል}other{Chrome አሳሽዎን እያዘገዩ ያሉትን ትሮች ባሉበት እንዲያቆሙ ይመክራል}}</translation>
 <translation id="4328355335528187361">Google Chrome ገንቢ (mDNS-In)</translation>
 <translation id="4329315893554541805">ግላዊነት ማላበስን እና ሌሎች ባህሪያትን ለማግኘት Chromeን በድር እና በመተግበሪያ እንቅስቃሴ እና በተገናኙ የGoogle አገልግሎቶች ውስጥ ያካትቱ</translation>
@@ -515,7 +521,9 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6046028983725193307">የሥርዓት ኦዲዮን ለማጋራት የሥርዓት ቅንብሮችን ይክፈቱ እና ለChrome «የሥርዓት ኦዲዮ ቀረጻ ብቻ» ይፍቀዱ። ከዚያ Chromeን እንደገና ማስጀመር ይኖርብዎታል።</translation>
 <translation id="6069027071882229820">እንደ ምስል ቅዳ</translation>
 <translation id="6070348360322141662">ለተጨማሪ ደህንነት ሲባል Google Chrome ውሂብዎን ያመሰጥረዋል</translation>
+<translation id="6071642418303142778">የእርስዎን የይለፍ ቃላት እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="6075300983329039771">ድርጅትዎ፣ <ph name="MANAGER" /> ወደ Chrome እንዲገቡ ይጠይቃል።</translation>
+<translation id="6077365059401096066">የእርስዎን የንባብ ዝርዝር እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="6113794647360055231">Chrome አሁን ይበልጥ ተሻሽሏል</translation>
 <translation id="6116004140911290070">Chrome ውስጥ ክህሎቶችን ያንቁ</translation>
 <translation id="6116252277240876590">ይህ ቋንቋ Chrome ውስጥ ምናሌዎች፣ ቅንብሮች፣ ማንቂያዎች እና ሌላ ጽሁፍ ለማሳየት ጥቅም ላይ ይውላል</translation>
@@ -713,6 +721,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7804947029129221742">የፍለጋ ፕሮግራምዎ ከChrome ውጭ ተለውጧል። እርስዎን ለመጠበቅ Chrome ወደ መጀመሪያው ነባሪ ዳግም አስጀምሮታል። <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">ከChrome አስወግድ...</translation>
 <translation id="7827099906024714326">የተወሰነ ውሂብ በGoogle መለያዎ ውስጥ መቀመጥ እና በሁሉም መሣሪያዎችዎ ላይ ስራ ላይ መዋል ከመቻሉ በፊት Chrome ማንነትዎን ማረጋገጥ አለበት። አሁን ዘግተው ከወጡ ይህ ውሂብ ይሰረዛል።</translation>
+<translation id="7829850924999627855">የእርስዎን የተቀመጠ መረጃ እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="7832314606810669113">የእርስዎን ዕልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chrome ይግቡ። በመለያ ከገቡ በኋላ ይህ ዕልባት Google መለያዎ ውስጥ ይቀመጣል።</translation>
 <translation id="7845233973568007926">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ኮምፒውተርዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="7847170235260850604">Windows ሲጀምር Chromeን አስጀምር</translation>

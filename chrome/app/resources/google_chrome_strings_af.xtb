@@ -30,6 +30,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1194807384646768652">Chrome het hierdie aflaai geblokkeer omdat die lêertipe nie algemeen afgelaai word nie en dit gevaarlik kan wees</translation>
 <translation id="1197860368385086056">Jy sal ’n porboodskap sien om prysnasporingopletberigte te aktiveer wanneer jy volgende keer Chrome op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
+<translation id="1226003169284463347">Meld aan by Chrome om jou boekmerke en meer op al jou toestelle te kry</translation>
 <translation id="1278833599417554002">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="1289911795790071537">Maak Search met Chrome oop</translation>
 <translation id="1290883685122687410">Opstellingfout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2096213354152647998">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION" /> verwyder.</translation>
 <translation id="2106831557840787829">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Deaktiveer Chrome wat op die agtergrond vir apps loop</translation>
+<translation id="2111985952714409792">Meld aan by Chrome om jou uitbreidings en meer op al jou toestelle te kry</translation>
 <translation id="2120620239521071941">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="2121284319307530122">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
@@ -148,6 +150,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2307973900865360088">Hou gedok</translation>
 <translation id="2309047409763057870">Dit is 'n sekondêre installering van Chrome en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="2345992953227471816">Chrome het bevind dat hierdie uitbreidings wanware bevat:</translation>
+<translation id="2358140144860869442">Meld aan by Chrome om jou leeslys en meer op al jou toestelle te kry</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2403703063067034158">Aanskakelingsfout: ’n ander geval of opstelling word tans gebruik; probeer weer later.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Een of meer Chrome-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chrome-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chrome-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
@@ -176,6 +179,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontroleer gereeld om seker te maak jou blaaier het die veiligste instellings. Ons sal jou laat weet as jy enigiets moet nagaan.</translation>
 <translation id="2652691236519827073">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
+<translation id="2661616016316841783">Meld aan by Chrome om jou uitbreidings en meer vanaf <ph name="DEVICE" /> te kry</translation>
 <translation id="2665296953892887393">Help om Google Chrome beter te maak deur omvalverslae en <ph name="UMA_LINK" /> na Google te stuur</translation>
 <translation id="2668094785979141847">Klik om uit Google Lens te gaan</translation>
 <translation id="2674238339205910678">ChromeOS Flex kon nie Chrome-data in jou Google-rekening stoor nie omdat jou rekening se aanmeldbesonderhede verouderd is</translation>
@@ -247,6 +251,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3242486428260808857">Kry meer uit aanlyn inkopies wanneer jy die Chrome-app op jou <ph name="DEVICE_TYPE" /> gebruik</translation>
 <translation id="3245429137663807393">As jy ook Chrome-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Stel as verstek<ph name="END_BOLD" /> in jou Windows-instellings.</translation>
+<translation id="3258706751219502154">Meld aan by Chrome om jou boekmerke en meer vanaf <ph name="DEVICE" /> te kry</translation>
 <translation id="3259748324892322072">Kry die Chrome-app</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
@@ -346,6 +351,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="4280647692742956593">Laai Chrome op jou foon af om nuwe oortjiegroepe oop te maak of te skep terwyl jy aan die beweeg is.</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
 <translation id="430327780270213103">Laat uitbreiding toe om toegangversoeke op die Chrome-nutsbalk te wys</translation>
+<translation id="4312908933392839680">Meld aan by Chrome om jou gestoorde inligting en meer op al jou toestelle te kry</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome beveel aan dat jy die oortjie wat jou blaaier stadig maak, onderbreek}other{Chrome beveel aan dat jy die oortjies wat jou blaaier stadig maak, onderbreek}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Sluit Chrome by Web- en Appaktiwiteit en gekoppelde Google-dienste in om personalisering en ander kenmerke te kry</translation>
@@ -515,7 +521,9 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6046028983725193307">Maak Stelselinstellings oop en laat “Slegs stelseloudio-opname” vir Chrome toe om stelseloudio te deel. Jy sal dan Chrome moet herbegin.</translation>
 <translation id="6069027071882229820">Kopieer as prent</translation>
 <translation id="6070348360322141662">Google Chrome sal jou data enkripteer vir bykomende sekuriteit</translation>
+<translation id="6071642418303142778">Meld aan by Chrome om jou wagwoorde en meer vanaf <ph name="DEVICE" /> te kry</translation>
 <translation id="6075300983329039771">Jou organisasie, <ph name="MANAGER" />, vereis dat jy by Chrome aanmeld</translation>
+<translation id="6077365059401096066">Meld aan by Chrome om jou leeslys en meer vanaf <ph name="DEVICE" /> te kry</translation>
 <translation id="6113794647360055231">Chrome het pas beter geword</translation>
 <translation id="6116004140911290070">Aktiveer Vaardighede in Chrome</translation>
 <translation id="6116252277240876590">Hierdie taal word gebruik om kieslyste, instellings, opletberigte en ander teks in Chrome te vertoon</translation>
@@ -713,6 +721,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7804947029129221742">Jou soekenjin is van buite Chrome af verander. Chrome het dit na die oorspronklike verstek teruggestel om jou te beskerm. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Verwyder uit Chrome …</translation>
 <translation id="7827099906024714326">Chrome moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
+<translation id="7829850924999627855">Meld aan by Chrome om jou gestoorde inligting en meer vanaf <ph name="DEVICE" /> te kry</translation>
 <translation id="7832314606810669113">Meld aan by Chrome om jou boekmerke en meer op al jou toestelle te kry. Hierdie boekmerk sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
 <translation id="7845233973568007926">Dankie dat jy geïnstalleer het. Jy moet jou rekenaar herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="7847170235260850604">Begin Chrome wanneer Windows begin</translation>

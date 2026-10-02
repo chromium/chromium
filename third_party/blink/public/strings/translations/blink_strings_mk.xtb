@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Отстранувачот на грешки е паузиран во друга картичка. Кликнете за да се префрлите на таа картичка.</translation>
 <translation id="1171774979989969504">Внесете адреса на е-пошта.</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="1254779809141342904">Ова предупредување за CAP користи технологија наречена XSLT; таа функционалност <ph name="REMOVAL_LINK" />. Кога ќе се случи тоа, предупредувањево ќе се прикажува како необработени XML-податоци. Можеби ќе може <ph name="EXTENSION_LINK" /> што ќе ви овозможи да продолжите да го гледате.</translation>
 <translation id="1306460908038601864">Исклучени</translation>
 <translation id="1311894908970423688">Вредноста мора да биде <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Нормален</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2746543609216772311">Вредноста мора да биде <ph name="MINIMUM_DATE_OR_TIME" /> или подоцна.</translation>
 <translation id="2761667185364618470">Означете го полето ако сакате да продолжите.</translation>
+<translation id="2854734116215697908">ќе се отстрани од прелистувачов</translation>
 <translation id="2908441821576996758">Внесете листа на адреси на е-пошта одвоени со запирка.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Внесете важечка вредност. Полето е нецелосно или има неважечки датум.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Емитувај</translation>
 <translation id="5630795885300617244">Допрете двапати лево или десно за да прескокнете 10 секунди</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
+<translation id="5855560023261018690">ќе се отстрани од прелистувачов наскоро</translation>
 <translation id="5868587040512539609">Видеозаписи</translation>
 <translation id="588258955323874662">Цел екран</translation>
 <translation id="5888666972993069672">Сега се емитува на <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Излези од „слика во слика“</translation>
 <translation id="6484738902856791350">Форматиран приказ</translation>
 <translation id="6550675742724504774">Опции</translation>
+<translation id="65574987622079584">да инсталирате екстензија за прелистувач</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6661136971638885481">Запис #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Друго...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Оваа седмица</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">Никогаш не прикажувај го предупредувањево</translation>
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="835897206747267392">Неважечка вредност.</translation>
 <translation id="839593075537728968">Вредноста мора да биде помеѓу <ph name="MINIMUM_TIME" /> и <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Прелом на ред</translation>
 <translation id="8750798805984357768">Изберете една од опциите.</translation>
+<translation id="8753001114009816390">Сајтов користи XSLT; таа функционалност <ph name="REMOVAL_LINK" />. Кога ќе се случи тоа, страницава веројатно веќе нема да се прикажува правилно. Можеби ќе може <ph name="EXTENSION_LINK" /> што ќе ви овозможи да продолжите да ја гледате. Во спротивно, треба да контактирате со одржувачот на сајтот за дополнителни информации.</translation>
 <translation id="8845239796550121995">Сега се емитува на вашиот TV</translation>
 <translation id="8875657656876809964">Грешка при репродукција на видео</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -252,7 +252,7 @@
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
-<translation id="2022369817198611683">Лучшее от Gemini на панели инструментов Chrome. Нажмите и удерживайте, чтобы настроить.</translation>
+<translation id="2022369817198611683">Лучшее от Gemini на панели инструментов Chrome. Чтобы настроить, нажмите и удерживайте.</translation>
 <translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2029669011553795746">Нижний экран с предложением включить уведомления открыт наполовину</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
@@ -1696,6 +1696,7 @@
 <translation id="7630202231528827509">URL поставщика</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="764047009170754705">Нижний экран с предложением разрешить Автопоиск в Chrome закрыт</translation>
+<translation id="7645712301713737707">Настройте расположение вкладок в браузере: вверху или сбоку.</translation>
 <translation id="7646499124171960488">Предупреждать о незащищенных общедоступных сайтах</translation>
 <translation id="7655240423373329753">за последние 7 дней</translation>
 <translation id="7656721520530864426">0 сайтов</translation>
@@ -2002,6 +2003,7 @@
 <translation id="8816556050903368450">Добавить ссылку: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
 <translation id="8820817407110198400">Закладки</translation>
+<translation id="8822533681006532064">Чтобы разговаривать с Gemini, разрешите ему использовать микрофон. Вы также можете сделать это в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скрытые</translation>

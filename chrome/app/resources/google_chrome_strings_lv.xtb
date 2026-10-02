@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo šī tipa faili parasti netiek lejupielādēti un var būt bīstami.</translation>
 <translation id="1197860368385086056">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chrome, tiks parādīts aicinājums iespējot brīdinājumus par cenu izsekošanu.</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
+<translation id="1226003169284463347">Lai piekļūtu grāmatzīmēm un citiem datiem visās savās ierīcēs, pierakstieties pārlūkā Chrome.</translation>
 <translation id="1278833599417554002">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="1289911795790071537">Atvērt meklēšanu pārlūkā Chrome</translation>
 <translation id="1290883685122687410">Iestatīšanas kļūda: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2096213354152647998">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chrome tika noņemta šāda atļauja: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Atspējot Chrome darbību fonā lietotnēm</translation>
+<translation id="2111985952714409792">Lai piekļūtu paplašinājumiem un citiem datiem visās savās ierīcēs, pierakstieties pārlūkā Chrome.</translation>
 <translation id="2120620239521071941">Veicot šo darbību, no šīs ierīces tiks dzēsts(-i) <ph name="ITEMS_COUNT" /> vienums(-i). Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="2123055963409958220">Palīdziet uzlabot pārlūku Chrome, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" />.</translation>
@@ -146,6 +148,7 @@
 <translation id="2307973900865360088">Paturēt dokā</translation>
 <translation id="2309047409763057870">Šī ir Google Chrome papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="2345992953227471816">Pārlūkā Chrome tika konstatēts, ka tālāk norādītie paplašinājumi satur ļaunprātīgu programmatūru:</translation>
+<translation id="2358140144860869442">Pierakstieties pārlūkā Chrome, lai piekļūtu lasīšanas sarakstam un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2403703063067034158">Palaišanas kļūda: pašlaik ir aktīvs cits iestatīšanas process. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Vismaz viens Chrome paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chrome paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcēm}}</translation>
@@ -174,6 +177,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regulāri pārbauda, vai jūsu pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
+<translation id="2661616016316841783">Lai iegūtu paplašinājumus un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="2665296953892887393">Palīdzēt uzlabot pārlūku Google Chrome, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Noklikšķiniet, lai izietu no Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex nevarēja saglabāt Chrome datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
@@ -245,6 +249,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="3242486428260808857">Izmantojiet lietotni Chrome savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūtu vairāk iespējām, iepērkoties tiešsaistē</translation>
 <translation id="3245429137663807393">Ja kopīgojat arī Chrome lietojuma pārskatus, šajos pārskatos tiek iekļauti jūsu apmeklētie vietrāži URL.</translation>
 <translation id="3249558306861350254">Windows iestatījumos noklikšķiniet uz <ph name="BEGIN_BOLD" />Iestatīt kā noklusējumu<ph name="END_BOLD" />.</translation>
+<translation id="3258706751219502154">Lai iegūtu grāmatzīmes un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="3259748324892322072">Iegūt lietotni Chrome</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
@@ -343,6 +348,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4280647692742956593">Lejupielādējiet pārlūku Chrome savā tālrunī, lai atvērtu vai izveidotu jaunas ciļņu grupas, atrodoties ceļā.</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="430327780270213103">Atļaut paplašinājumam rādīt piekļuves pieprasījumus Chrome rīkjoslā</translation>
+<translation id="4312908933392839680">Lai visās savās ierīcēs iegūtu saglabāto informāciju un citus datus, pierakstieties pārlūkā Chrome.</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome iesaka pārtraukt tās cilnes darbību, kas palēnina pārlūka darbību}zero{Chrome iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}one{Chrome iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}other{Chrome iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Lai varētu izmantot personalizēšanu un citas funkcijas, iekļaujiet pārlūku Chrome iestatījumos “Darbības tīmeklī un lietotnēs” un “Saistītie Google pakalpojumi”.</translation>
@@ -510,7 +516,9 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6046028983725193307">Lai kopīgotu sistēmas audio, pārejiet uz sistēmas iestatījumiem un iespējojiet iestatījumu “Tikai sistēmas audio ierakstīšana” pārlūkam Chrome. Pēc tam jums būs jārestartē pārlūks Chrome.</translation>
 <translation id="6069027071882229820">Kopēt kā attēlu</translation>
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>
+<translation id="6071642418303142778">Lai iegūtu savas paroles un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="6075300983329039771">Saskaņā ar jūsu organizācijas (<ph name="MANAGER" />) politiku jums ir jāpierakstās pārlūkā Chrome.</translation>
+<translation id="6077365059401096066">Lai iegūtu lasīšanas sarakstu un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="6113794647360055231">Pārlūkā Chrome ir veikti uzlabojumi</translation>
 <translation id="6116004140911290070">Prasmju iespējošana pārlūkā Chrome</translation>
 <translation id="6116252277240876590">Šī valoda tiek izmantota, lai rādītu izvēlnes, iestatījumus, brīdinājumus un citu tekstu pārlūkā Chrome.</translation>
@@ -708,6 +716,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7804947029129221742">Jūsu meklētājprogramma tika mainīta ārpus pārlūka Chrome. Lai jūs aizsargātu, pārlūkā Chrome tā tika atiestatīta uz sākotnējo noklusējuma meklētājprogrammu. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Noņemšana no pārlūka Chrome...</translation>
 <translation id="7827099906024714326">Pārlūkā Chrome ir jāverificē jūsu identitāte, lai noteiktus datus varētu saglabāt jūsu Google kontā un izmantot visās jūsu ierīcēs. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
+<translation id="7829850924999627855">Lai iegūtu saglabāto informāciju un citus datus no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chrome.</translation>
 <translation id="7832314606810669113">Pierakstieties pārlūkā Chrome, lai varētu piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs. Šī grāmatzīme tiks saglabāta jūsu Google kontā pēc pierakstīšanās.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
 <translation id="7847170235260850604">Palaist pārlūku Chrome, kad tiek palaista operētājsistēma Windows</translation>

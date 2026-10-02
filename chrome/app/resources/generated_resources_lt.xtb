@@ -332,6 +332,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1231572247662419826">Svetainėse gali būti prašoma užfiksuoti ir naudoti pelės įvestį</translation>
 <translation id="1232569758102978740">Be pavadinimo</translation>
 <translation id="1233497634904001272">Norėdami baigti užklausą dar kartą palieskite saugos raktą.</translation>
+<translation id="1233566345244684257">Bet kas, turintis prieigą prie jūsų „Gemini Apps“, galėtų valdyti jūsų „Chrome“ naršyklę.</translation>
 <translation id="1233721473400465416">Lokalė</translation>
 <translation id="1233835246554936745">{0,plural, =1{Išsaugoti 1 elementą paskyroje}one{Išsaugoti # elementą paskyroje}few{Išsaugoti # elementus paskyroje}many{Išsaugoti # elemento paskyroje}other{Išsaugoti # elementų paskyroje}}</translation>
 <translation id="1234736487471201993">Sukurti šio vaizdo QR kodą</translation>
@@ -554,6 +555,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1421514190500081936">Įveskite šių duomenų atsisiuntimo priežastį.</translation>
 <translation id="1422159345171879700">Įkelti nesaugius scenarijus</translation>
 <translation id="1425040197660226913">Įkelti nepavyko. Naudokite mažesnį nei 20 MB vaizdą.</translation>
+<translation id="1426154609634610063">Peržiūrėkite „Gemini“ naudojimo riziką</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="142655739075382478">„<ph name="APP_NAME" />“ užblokuota</translation>
 <translation id="1427179946227469514">Teksto į kalbą pristatymas</translation>
@@ -1567,6 +1569,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2198625180564913276">Pridedamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="2198712775285959645">Redaguoti</translation>
 <translation id="2199298570273670671">Klaida</translation>
+<translation id="2199546617947317537">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="220006241671843310">Pasirinkite, ar „Chrome“ naudoja DI modelius, kurie veikia tiesiogiai jūsų įrenginyje</translation>
 <translation id="2200094388063410062">El. paštas</translation>
 <translation id="2200781749203116929">„ChromeOS“ sistemos žurnalai</translation>
@@ -1842,6 +1845,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2416435988630956212">Klaviatūros funkcijų klavišai</translation>
 <translation id="2419131370336513030">Žr. įdiegtas programas</translation>
 <translation id="2419706071571366386">Saugos sumetimais baigę naudoti kompiuterį atsijunkite.</translation>
+<translation id="2423226060967554289">Rodyti žymių juostą</translation>
 <translation id="2423506062824112361">Nepavyko atsisiųsti turinio dėl nežinomos priežasties.</translation>
 <translation id="2423578206845792524">Iš&amp;saugoti paveikslėlį kaip...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Svečias}one{Svečias (#)}few{Svečias (#)}many{Svečias (#)}other{Svečias (#)}}</translation>
@@ -2079,6 +2083,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2588271083332682494">Tvarkykite naudodami skirtukų grupes</translation>
 <translation id="2588636910004461974">Įrenginiai iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="2589658397149952302">Niekada nerodyti Disko failų</translation>
+<translation id="2595270892115552212">Kai pradedate užduotį iš kitų „Gemini“ programų, įskaitant gemini.google.com ir „Gemini“ programas mobiliesiems, „Gemini“ gali naudoti „Chrome“ automatinį naršymą šiame įrenginyje, kad galėtų sąveikauti su svetainėmis ir atlikti užduotis jūsų vardu. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Bendrinimo netoliese funkcija naudoja „Bluetooth“ nuskaitymą, kad rastų įrenginius netoliese.</translation>
 <translation id="2598136842498757793">Tinkinti įrankių juostos mygtukus</translation>
 <translation id="2598710988533271874">Pasiekiama nauja „Chrome“</translation>
@@ -2296,6 +2301,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2743387203779672305">Kopijuoti į iškarpinę</translation>
 <translation id="274362947316498129">Programa bando pasiekti įrenginį (<ph name="DEVICE_NAME" />). Išjunkite įrenginio (<ph name="DEVICE_NAME" />) privatumo jungiklį, kad leistumėte pasiekti.</translation>
 <translation id="2744221223678373668">Bendrinama</translation>
+<translation id="2744919074068076548">Atidaryti padalytą rodinį</translation>
 <translation id="2745080116229976798">„Microsoft“ tinkamas pavaldumas</translation>
 <translation id="2749756011735116528">Prisijungti prie „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="2749836841884031656">SIM kortelė</translation>
@@ -2347,6 +2353,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2777525873368474674">Įklijuoti vaizdo nuorodą</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Rasta viena svetainė su daug pranešimų}one{Rasta {NUM_SITES} svetainė su daug pranešimų}few{Rastos {NUM_SITES} svetainės su daug pranešimų}many{Rasta {NUM_SITES} svetainės su daug pranešimų}other{Rasta {NUM_SITES} svetainių su daug pranešimų}}</translation>
 <translation id="2778471504622896352">Pridėkite nuotolinių programų prie „ChromeOS“ paleidimo priemonės</translation>
+<translation id="2781037472881921606">Jei norite gauti istoriją iš kitų įrenginių, sinchronizuokite istoriją. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Saugos rakto naudojimas su programa „<ph name="APP_NAME" />“</translation>
@@ -2409,6 +2416,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2826576843404243001">Jei svetainė nepalaiko saugių ryšių, esate įspėjami prieš apsilankydami svetainėje. Šio nustatymo pakeisti negalima, nes esate įgalinę papildomą apsaugą.</translation>
 <translation id="2828375943530438449">Grįžti iš prisijungimo puslapio</translation>
 <translation id="2828833307884755422">Atlaisvinta <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">Jei norite gauti skirtukus iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="2833144527504272627">Naršykite naudodami teksto žymeklį</translation>
 <translation id="2833727845850279275">Šiame faile yra kenkėjiška programa arba jis gautas iš įtartinos svetainės.</translation>
 <translation id="2835177225987815960">Dabartinė nuskaitymo sąranka bus nustatyta iš naujo, įskaitant visus priskirtus jungiklius ir automatinio nuskaitymo spartos nuostatas.</translation>
@@ -2775,6 +2783,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3102309003841389927">Logotipo atnaujinimo peržiūra</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3103451787721578293">Įveskite šių duomenų įkėlimo priežastį.</translation>
+<translation id="3105253709809514429">Jei norite gauti skirtukus iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, plėtinius ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="3105339775057145050">Pastarasis nesėkmingas atnaujinimas</translation>
 <translation id="3105796011181310544">Pakeisti atgal į „Google“?</translation>
 <translation id="3105820656234755131">Slaptažodis atnaujintas</translation>
@@ -2786,6 +2795,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3109206895301430738">Išsaugotos skirtukų grupės</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="3112292765614504292">Programos dydis: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Jei norite gauti skirtukus iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="311347022006935575">Pridėjo šį skirtuką</translation>
 <translation id="311394601889664316">Neleisti svetainėms redaguoti failų ar aplankų jūsų įrenginyje</translation>
 <translation id="3113970906450647715">Mygtukas atsegtas</translation>
@@ -2816,6 +2826,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
 <translation id="3134312457920437826">Nepavyko įdiegti plėtinio, nes jame naudojama nepalaikoma aprašo versija.</translation>
 <translation id="3134393957315651797">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“. Eksperimento aprašas: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Leiskite kitoms „Gemini“ programoms naršyti nuotoliniu būdu iš bet kurio įrenginio</translation>
 <translation id="3139925690611372679">Numatytasis geltonas pseudoportretas</translation>
 <translation id="314095642664111744">Išjungti paryškinimą</translation>
 <translation id="3141093262818886744">Vis tiek atidaryti</translation>
@@ -3292,6 +3303,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3498138244916757538">Norint pritaikyti mikrofono nustatymų pakeitimą, reikia išjungti „<ph name="SPECIFIC_NAME" />“. Išjunkite „<ph name="SPECIFIC_NAME" />“, kad galėtumėte tęsti.</translation>
 <translation id="3500417806337761827">Montuojant bendrinimą įvyko klaida. Jau sumontuota per daug mažų ir vidutinių įmonių bendrinimų.</translation>
 <translation id="3500764001796099683">Įgalinti izoliuotas žiniatinklio programas</translation>
+<translation id="3501134531169168291">Jei norite gauti skirtukus iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją. Be to, plėtinius ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="3505100368357440862">Apsipirkimo pasiūlymai</translation>
 <translation id="3507650052590605702">Tvarkyti slaptažodį</translation>
 <translation id="3507888235492474624">Pakartotinai nuskaityti ieškant „Bluetooth“ įrenginių</translation>
@@ -3368,6 +3380,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3562655211539199254">Peržiūrėkite pastaruosius „Chrome“ skirtukus telefonu</translation>
 <translation id="356268274299520831">Pakeisti tai svetainėje</translation>
 <translation id="3563392617245068355">Nuotaika</translation>
+<translation id="3564327838471533677">Neseniai uždarytas padalytas rodinys</translation>
 <translation id="3564456410937306182">Sužinokite daugiau apie Prisitaikantį įkrovimą.</translation>
 <translation id="3564659095423213915">Šis aplankas išsaugotas tik šiame įrenginyje. Jei išsaugosite jį aplanke „<ph name="ACCOUNT_FOLDER" />“, šis aplankas taip pat bus išsaugotas paskyroje.</translation>
 <translation id="3564848315152754834">USB saugos raktas</translation>
@@ -3630,6 +3643,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3736487688526377259">Pasirinkite įrenginį, kuriame norite gauti šią nuorodą.</translation>
 <translation id="3737058101969549870">Esamus naršymo duomenis saugoti atskirai nuo šio naujo profilio?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">„Gemini“ gali naudoti automatinio naršymo funkciją šiame įrenginyje tik tada, kai įrenginys yra pažadintas ir veikia „Chrome“.</translation>
 <translation id="3739254215541673094">Atidaryti „<ph name="APPLICATION" />“?</translation>
 <translation id="3739349485749941749">Svetainėse gali būti prašoma ieškoti įrenginiui pasiekiamų spausdintuvų ir juos naudoti</translation>
 <translation id="3741056951918180319">Visada galite spustelėti plėtinį ir naudoti jį bet kurioje svetainėje</translation>
@@ -3778,6 +3792,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3838085852053358637">Nepavyko įkelti plėtinio</translation>
 <translation id="3838486795898716504">Daugiau <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Nėra svetainių, kurių turinys priartintas arba atitolintas</translation>
+<translation id="3839108710633244251">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="3839516600093027468">Niekada neleisti <ph name="HOST" /> peržiūrėti iškarpinės</translation>
 <translation id="3840096463915153852">Pokalbių istorija</translation>
 <translation id="3841319830220785495">Numatytasis natūralus balsas</translation>
@@ -3985,6 +4000,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3988124842897276887">Šis skirtukas susietas su USB įrenginiu</translation>
 <translation id="3989635538409502728">Atsijungti</translation>
+<translation id="399132041334931433">Pridėkite skirtukų prie naujos grupės</translation>
 <translation id="399179161741278232">Importuota</translation>
 <translation id="3992008114154328194">Atsisiunčiama: <ph name="FILE_NAME" /> (<ph name="STATUS" />)</translation>
 <translation id="3994075804072562819">Suteikite „<ph name="SPECIFIC_NAME" />“ USB įrenginių valdymo teisę.</translation>
@@ -4300,6 +4316,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Išsaugoti grupę}one{Išsaugoti grupes}few{Išsaugoti grupes}many{Išsaugoti grupes}other{Išsaugoti grupes}}</translation>
 <translation id="4261429981378979799">Plėtinių leidimai</translation>
 <translation id="4262004481148703251">Atsisakyti perspėjimo</translation>
+<translation id="4262060800239714974">Jei norite gauti skirtukus iš <ph name="DEVICE" />, sinchronizuokite istoriją ir skirtukus su <ph name="EMAIL" />. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4263470758446311292">Sutaupote daugiausia atminties. Skirtukai tampa neaktyvūs po trumpesnio laikotarpio.</translation>
 <translation id="4263824086525632">Šiaurės pašvaistė</translation>
 <translation id="4265096510956307240">Patvirtinkite savo tapatybę</translation>
@@ -4936,8 +4953,10 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4750185073185658673">Telefone peržiūrėkite dar kelis leidimus. Įsitikinkite, kad telefone įjungtas „Bluetooth“ ir „Wi-Fi“ ryšys.</translation>
 <translation id="4750394297954878236">Pasiūlymai</translation>
 <translation id="475088594373173692">Pirmas naudotojas</translation>
+<translation id="4751925628341802838">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, plėtinius ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4753084533826742808">Turi būti bent vienas simbolis</translation>
 <translation id="4754590344707355551">Naršyklės tobulinimas naudojant plėtinius</translation>
+<translation id="4756130875344525429">Jei norite gauti istoriją iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4756378406049221019">Stabdyti / įkelti iš naujo</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
 <translation id="4756627014339714615">Peradresuoti</translation>
@@ -5214,6 +5233,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="495170559598752135">Veiksmai</translation>
 <translation id="4951966678293618079">Niekada neišsaugoti šios svetainės slaptažodžių</translation>
 <translation id="4952580838083306838">Slėpti rengėją</translation>
+<translation id="4952628481830269193">Rodyti žymių juostą</translation>
 <translation id="4953808748584563296">Numatytasis oranžinis pseudoportretas</translation>
 <translation id="4954652437333037880">Failas</translation>
 <translation id="4954831709600868883">Paklauskite apie <ph name="TEXT" /></translation>
@@ -5248,6 +5268,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="497403230787583386">Saugos patikros atliktos. Dokumentas bus atspausdintas.</translation>
 <translation id="4974442344472293753">Atnaujinti rezultatą</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
+<translation id="4976647810464861866">Jei norite gauti skirtukus iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, skaitymo sąrašą ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> iš <ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Patvirtinti prieigą</translation>
 <translation id="4979263087381759787">Kūrėjo parinktys</translation>
@@ -5287,6 +5308,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5008936837313706385">Veiklos pavadinimas</translation>
 <translation id="5009463889040999939">Pervardijamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="5010886807652684893">Vizualinis rodinys</translation>
+<translation id="5012016139642806466">Gaukite slaptažodžius ir kitus duomenis visuose įrenginiuose</translation>
 <translation id="5012523644916800014">Tvarkyti slaptažodžius ir „passkey“</translation>
 <translation id="501394389332262641">Senkančio akumuliatoriaus garsas</translation>
 <translation id="5014286001996333986">Pakeisti arba sukurti naują grupę?</translation>
@@ -5419,6 +5441,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="511313294362309725">Įjungti spartųjį susiejimą</translation>
 <translation id="5113992879909788634">Sužinokite daugiau apie „Chrome“ automatinį naršymą</translation>
 <translation id="51143538739122961">Įdėkite saugos raktą ir jį palieskite</translation>
+<translation id="5114635223409082546">Jei norite gauti skirtukus iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Iš&amp;saugoti garso įrašą kaip...</translation>
 <translation id="5117139026559873716">Atjunkite telefoną nuo „<ph name="DEVICE_TYPE" />“. Įrenginiai nebebus susiejami automatiškai.</translation>
@@ -5466,6 +5489,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5149602533174716626">Kopijuot&amp;i vaizdo įrašo rėmelį</translation>
 <translation id="5150254825601720210">„Netscape“ sertifikato SSL serverio pavadinimas</translation>
 <translation id="5151354047782775295">Atlaisvinkite vietos diske arba pasirinkite duomenis, kuriuos galima automatiškai ištrinti</translation>
+<translation id="5152719737931716272">Užduotis atlikta ir grįžta į „Gemini“</translation>
 <translation id="5153074793829217329">Naudokite klaviatūrą arba skaitmenų klaviatūrą, kad galėtumėte valdyti pelės žymeklį</translation>
 <translation id="5153234146675181447">Pamiršti telefoną</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5783,6 +5807,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5414836363063783498">Patvirtinama…</translation>
 <translation id="5415497281076257439">Frazė</translation>
 <translation id="5415871492522952905">Istorija ir skirtukai bus rodomi visuose jūsų įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>
+<translation id="5417160551295347092">„Gemini“ gali klysti, pvz., bendrinti jūsų informaciją ar atlikti pirkimo veiksmus nepaprašiusi jūsų leidimo. <ph name="LINK_BEGIN" />Peržiūrėkite riziką<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Ši svetainė gali naudoti identifikatorius apsaugotam turiniui leisti.</translation>
 <translation id="5417312524372586921">Naršyklės temos</translation>
 <translation id="541737483547792035">Ekrano didinimas</translation>
@@ -5814,6 +5839,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5436211819997237281">Dabartinis plėtinys, valdantis jūsų naujo skirtuko puslapį</translation>
 <translation id="5436492226391861498">Laukiama, kol bus nustatytas tarpinio serverio tunelis...</translation>
 <translation id="5436510242972373446">Ieškoti <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Jei norite automatiškai pildyti ir išsaugoti slaptažodžius įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> langas dabar <ph name="WINDOW_SIZE_PERCENT" /> pločio, <ph name="PANE_SIDE" /> sritis dabar <ph name="PANE_SIZE_PERCENT" /> pločio.</translation>
 <translation id="5438060324827306856">Rasti &amp;plėtinių</translation>
 <translation id="5440240650630588012">Pritaikykite skaitymo eilutę arba langą, kad būtų lengviau sutelkti dėmesį. Paspauskite ⌥L arba eikite į skiltį „Nustatymai“.</translation>
@@ -5843,6 +5869,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5457795687441958389">Likti atsijungus</translation>
 <translation id="5458214261780477893">Dvorako</translation>
 <translation id="5458716506062529991">Per daug kartų įvedėte netinkamą PIN kodą. Jei norite pasiekti prieigos raktus ir slaptažodžius, pakeiskite PIN kodą.</translation>
+<translation id="5459251585760045919">Jei norite gauti istoriją iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, plėtinius ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="5459470938885464873">Klaida importuojant sertifikatą</translation>
 <translation id="5459864179070366255">Tęsti ir įdiegti</translation>
 <translation id="5460861858595506978">Įkvėpimas</translation>
@@ -6014,6 +6041,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5584088138253955452">Išsaugoti naudotojo vardą?</translation>
 <translation id="5585019845078534178">Kortelės</translation>
+<translation id="5585064628683466904">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, skaitymo sąrašą ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="5585118885427931890">Žymės aplanko sukurti nepavyko.</translation>
 <translation id="558563010977877295">Atidarykite konkretų puslapį ar puslapių rinkinį</translation>
 <translation id="5587592231724900065">Plėtinys valdo šį nustatymą</translation>
@@ -6538,6 +6566,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6003143259071779217">Pašalinti „eSIM“ kortelės mobiliojo ryšio tinklą</translation>
 <translation id="6003479444341796444">Rodoma pavadinimo juosta</translation>
 <translation id="6003582434972667631">Temą nustatė jūsų organizacija</translation>
+<translation id="600407115562756795">„Gemini“ nuspręs, kokių veiksmų imtis, atsižvelgdama į užduotis, kurias pradedate arba atnaujinate.</translation>
 <translation id="6005045517426700202">Plytų pastatas</translation>
 <translation id="6006484371116297560">Klasikinė</translation>
 <translation id="6007053304250788613">Atvaizdavimo režimu galima išskirti tik vieną ekraną</translation>
@@ -6752,6 +6781,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6175910054050815932">Gauti nuorodą</translation>
 <translation id="6177478397823976397">Įrenginių nerasta. Atidarykite pagalbos centro straipsnį naujame skirtuke</translation>
 <translation id="6177779807714496775">Nuorodos atidarymas kairiajame rodinyje</translation>
+<translation id="6178186430790239237">Jei norite gauti skirtukus iš kitų įrenginių, sinchronizuokite istoriją ir skirtukus su <ph name="EMAIL" />. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="6178664161104547336">Pasirinkite sertifikatą</translation>
 <translation id="6178682841350631965">Prisijungimo duomenys atnaujinti</translation>
 <translation id="6179830757749383456">Naršyklę tvarko <ph name="BROWSER_DOMAIN" />, profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
@@ -6881,6 +6911,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6273677812470008672">Kokybė</translation>
 <translation id="6274089201566806618">Jungiamasi prie „<ph name="HOST_DEVICE_NAME" />“</translation>
 <translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
+<translation id="6276246115230302286">Jei norite sparčiai pasiekti mėgstamiausias svetaines naudodami žymes iš visų įrenginių, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">Baigėsi tinklo skirtasis laikas</translation>
 <translation id="6277518330158259200">S&amp;ukurti ekrano kopiją</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7062,6 +7093,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6430202563517028640">Pridėti nuorodą prie skaitymo sąrašo</translation>
 <translation id="6430814529589430811">„Base64“ užkoduotas ASCII, vienas sertifikatas</translation>
 <translation id="6431347207794742960">„<ph name="PRODUCT_NAME" />“ nustatys automatinius naujinius visiems šio kompiuterio naudotojams.</translation>
+<translation id="6431970976661940755">Jei norite gauti skirtukus iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją. Be to, skaitymo sąrašą ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="6434104957329207050">Taško nuskaitymo sparta</translation>
 <translation id="6434309073475700221">Išmesti</translation>
 <translation id="6434755719322447931">Chaotiška</translation>
@@ -7226,6 +7258,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6556903358015358733">Tema ir ekrano fonas</translation>
 <translation id="6557199166823345360">Pridėkite daugiau išsamios informacijos arba užduokite klausimą apie pasirinkimą, kad galėtumėte patobulinti paiešką</translation>
 <translation id="6557290421156335491">Mano spartieji klavišai</translation>
+<translation id="655745275895381718">Jei norite gauti skirtukus iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="6558098963164662391">&amp;Pašalinti iš žodyno</translation>
 <translation id="6560061709899140565">Rodyti kitus „Cast“ seansus</translation>
 <translation id="656065428026159829">Žr. daugiau</translation>
@@ -7306,6 +7339,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6607831829715835317">Daugiau įrank&amp;ių</translation>
 <translation id="6608166463665411119">Nustatyti „eSIM“ kortelę iš naujo</translation>
 <translation id="660846213831377756">Pelės klavišai</translation>
+<translation id="6608725880745776452">Gaukite slaptažodžius ir kt. iš <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Prisijungimo duomenys bus saugomi šiame įrenginyje, kai išjungsite inkognito režimą. Vėl galėsite prisijungti prie šios svetainės naudodami savo įrenginį vėliau.</translation>
 <translation id="6610002944194042868">Vertimo parinktys</translation>
 <translation id="6611432349566876829">Skirtukų: <ph name="NUM" /></translation>
@@ -7919,6 +7953,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Vienas <ph name="USER_EMAIL" /> slaptažodis importuotas į „<ph name="BRAND" />“}one{{NUM_PASSWORDS} <ph name="USER_EMAIL" /> slaptažodis importuotas į „<ph name="BRAND" />“}few{{NUM_PASSWORDS} <ph name="USER_EMAIL" /> slaptažodžiai importuoti į „<ph name="BRAND" />“}many{{NUM_PASSWORDS} <ph name="USER_EMAIL" /> slaptažodžio importuota į „<ph name="BRAND" />“}other{{NUM_PASSWORDS} <ph name="USER_EMAIL" /> slaptažodžių importuota į „<ph name="BRAND" />“}}</translation>
 <translation id="7065534935986314333">Apie sistemą</translation>
 <translation id="706626672220389329">Klaida įdedant bendrinamą objektą. Nurodytas bendrinamas objektas jau įdėtas.</translation>
+<translation id="7066357648902789011">Jei norite gauti istoriją iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="7067396782363924830">Aplinkos spalvos</translation>
 <translation id="7067725467529581407">Niekada daugiau nerodyti.</translation>
 <translation id="7068539819344620805">Dabar galite bet kuriuo metu pakeisti naršyklės išvaizdą iš tinkinimo meniu „Tinkinti „Chrome“</translation>
@@ -8104,6 +8139,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7214047272988222011">Leidžiama – <ph name="PERMISSION_DETAILS" />. Įjunkite <ph name="LINK_BEGIN" />sistemos prieigą prie vaizdo kameros<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Naujas skirtukas viename skirtuke}one{Naujas skirtukas # skirtuke}few{Naujas skirtukas # skirtukuose}many{Naujas skirtukas # skirtuko}other{Naujas skirtukas # skirtukų}}</translation>
 <translation id="721490496276866468">Slaptažodžių importavimas</translation>
+<translation id="7216638029417040861">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="7217208603285112910">Pasirinkto teksto kalba nėra <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Pridėkite teksto, komentarų ir pastabų naudodami naują teksto komentarų įrankį</translation>
 <translation id="7219254577985949841">Ištrinti svetainės duomenis?</translation>
@@ -8114,6 +8150,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7222232353993864120">El. pašto adresas</translation>
 <translation id="7222335051802562841">Baigti atnaujinimą</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Jei norite gauti istoriją iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, skaitymo sąrašą ir kitus duomenis pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="7223027547122518521">Pasirinkite failą, kurį ši svetainė gali skaityti</translation>
 <translation id="7223952304612664117">Tai leidžia sistemos paslaugoms naudoti Vietovės nustatymo tikslumo nustatymą, kad būtų nustatyta jūsų vietovė. Siekiant aptikti įrenginio vietovę, Vietovės nustatymo tikslumui naudojama informacija apie belaidžius signalus ir jutiklius.</translation>
 <translation id="7225082563376899794">Naudoti „Windows Hello“ pildant slaptažodžius</translation>
@@ -8484,6 +8521,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7501957181231305652">arba</translation>
 <translation id="7502220299952823578">Pridėti prie sąrašo „Visada suaktyvinti šias svetaines“</translation>
 <translation id="7502528909759062987">Pristabdyti skirtuko perdavimą į „<ph name="DEVICE_NAME" />“</translation>
+<translation id="750275011730776314">Grįžti į „Gemini“</translation>
 <translation id="7502804472671406749">Bendrinamais skirtukais galima slinkti ir keisti jų mastelį</translation>
 <translation id="750314150962284310">Eilutės paryškinimas</translation>
 <translation id="7503191893372251637">„Netscape“ sertifikato tipas</translation>
@@ -8520,6 +8558,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7523117833414447032">Skaitant didžiąsias raides</translation>
 <translation id="7523585675576642403">Pervardyti profilį</translation>
 <translation id="7525067979554623046">Sukurti</translation>
+<translation id="7526083414913154899">Sužinokite daugiau apie „Gemini“ užduotis</translation>
 <translation id="7528224636098571080">Neatidaryti</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Išgrupuoti skirtukų grupę?}one{Išgrupuoti skirtukų grupes?}few{Išgrupuoti skirtukų grupes?}many{Išgrupuoti skirtukų grupes?}other{Išgrupuoti skirtukų grupes?}}</translation>
 <translation id="7529411698175791732">Patikrinkite interneto ryšį. Jei problema kartosis, pabandykite atsijungti ir vėl prisijungti.</translation>
@@ -8724,6 +8763,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
 <translation id="7684803937028953000">Jūsų organizacija užblokavo vietinį šio failo atsisiuntimą.</translation>
 <translation id="7684913007876670600">Jei norite, kad būtų rodomas supaprastintas šio puslapio rodinys, atidarykite šoninį skydelį ir pasirinkite skaitymo režimą</translation>
+<translation id="7684957383619170952">Gaukite žymes ir kt. iš <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Nepavyksta perduoti</translation>
 <translation id="7685049629764448582">„JavaScript“ atmintis</translation>
 <translation id="7685087414635069102">Reikia PIN kodo</translation>
@@ -9001,6 +9041,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Atšaukti sąranką</translation>
 <translation id="7912974581251770345">Vertimas</translation>
+<translation id="7913805372428124107">Jei norite gauti skirtukus iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="7914399737746719723">Programa įdiegta</translation>
 <translation id="7915457674565721553">Prisijunkite prie interneto, kad galėtumėte nustatyti tėvų kontrolę</translation>
 <translation id="7916364730877325865">Jūsų organizacijoje neleidžiama įjungti sinchronizavimo su šia paskyra</translation>
@@ -9249,6 +9290,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8081989000209387414">Išjungti ADB derinimą?</translation>
 <translation id="8082132721957920509">Kortelė išsaugota</translation>
 <translation id="8082390128630131497">Išjungus ADB derinimą bus iš naujo nustatyti šio „<ph name="DEVICE_TYPE" />“ gamykliniai nustatymai. Bus ištrintos visos naudotojo paskyros ir vietiniai duomenys.</translation>
+<translation id="8082737802704584539">Organizacija išjungė istorijos išsaugojimą „Google“ paskyroje</translation>
 <translation id="8084114998886531721">Išsaugotas slaptažodis</translation>
 <translation id="8084417885464859041">Naudokite „Gemini“ saugiai</translation>
 <translation id="8084429490152575036">Mobiliojo ryšio APN nustatymai</translation>
@@ -9281,6 +9323,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="810362914482827094">Ieškoti slaptažodžių</translation>
 <translation id="8104088837833760645">Atsisiųsti „eSIM“ kortelės profilį</translation>
 <translation id="8104388155778519213">Bendrinkite ekrane esantį turinį su „Google Lens“</translation>
+<translation id="8104412594956510627">Jei norite gauti istoriją iš <ph name="DEVICE" />, sinchronizuokite istoriją. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="8104778744208707085">Reikia atkreipti dėmesį</translation>
 <translation id="8105273883928376822">Prisijunkite, kad galėtumėte tęsti.</translation>
 <translation id="8106114112474206597">Naudokite „i“, kad paspaustumėte pelės mygtuką</translation>
@@ -9311,6 +9354,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8124313775439841391">Tvarkoma ONC</translation>
 <translation id="8125651784723647184">Slaptažodžio bendrinimą tvarko administratorius</translation>
 <translation id="8126355825906412872">Nusišypsoti</translation>
+<translation id="8126498026310640675">Jei norite gauti istoriją iš <ph name="DEVICE" />, prisijunkite ir sinchronizuokite istoriją bei skirtukus su <ph name="EMAIL" />. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8133297578569873332">Priimtina – FM</translation>
@@ -9372,6 +9416,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. <ph name="ITEM_POSITION" /> spausdintuvas iš <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energijos taupymo priemonė įjungta</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />“ patikrintose vietovėse gali nuskaityti ir ištrinti vaizdus, vaizdo įrašus ir garso failus.</translation>
+<translation id="8181132988581553950">„Gemini“ galės pasiekti tas pačias svetaines kaip ir jūs, įskaitant svetaines, prie kurių esate prisijungę. Paslauga su trečiosiomis šalimis bendrins reikiamą informaciją, kuri gali apimti asmens informaciją, kuri jums gali atrodyti neskelbtina.</translation>
 <translation id="8183703640399301650">Jūsų įrenginio EID yra <ph name="EID_NUMBER" />, o įrenginio IMEI – <ph name="IMEI_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="8184288427634747179">Perjungti į <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Daugiau informacijos</translation>

@@ -1696,6 +1696,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7630202231528827509">URL davatelja usluga</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="764047009170754705">Tablica za uključivanje značajke Chrome preporuke je zatvorena</translation>
+<translation id="7645712301713737707">Prilagodite izgled kartica tako da se prikazuju pri vrhu ili uz bočnu stranu preglednika.</translation>
 <translation id="7646499124171960488">Upozorava vas za nesigurne javne web-lokacije</translation>
 <translation id="7655240423373329753">posljednjih 7 dana</translation>
 <translation id="7656721520530864426">Nema web-lokacija</translation>
@@ -2002,6 +2003,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8816556050903368450">Uključujući vezu: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Sadržaj kartice pregleda nije vidljiv.</translation>
 <translation id="8820817407110198400">Oznake</translation>
+<translation id="8822533681006532064">Da biste mogli razgovarati s Geminijem, odobrite mu pristup mikrofonu. Time možete upravljati i u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
 <translation id="8840953339110955557">Ta se stranica možda razlikuje od online verzije.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skriveno</translation>

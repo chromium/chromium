@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Debugger is onderbroken op een ander tabblad. Klik om over te schakelen naar dat tabblad.</translation>
 <translation id="1171774979989969504">Geef een e-mailadres op.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
+<translation id="1254779809141342904">Deze CAP-melding gebruikt een technologie die XSLT wordt genoemd. Die functionaliteit wordt <ph name="REMOVAL_LINK" />. Als dat gebeurt, wordt deze melding getoond als onbewerkte XML-gegevens. Je kunt misschien <ph name="EXTENSION_LINK" /> waarmee je de waarschuwing kunt blijven bekijken.</translation>
 <translation id="1306460908038601864">Uit</translation>
 <translation id="1311894908970423688">Waarde moet <ph name="VALUE_DATE_OR_TIME" /> zijn.</translation>
 <translation id="1588438908519853928">Normaal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later zijn.</translation>
 <translation id="2761667185364618470">Vink dit selectievakje aan als je wilt doorgaan.</translation>
+<translation id="2854734116215697908">verwijderd uit deze browser</translation>
 <translation id="2908441821576996758">Voer een door komma's gescheiden lijst met e-mailadressen in.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Voer een geldige waarde in. Het veld is onvolledig of bevat een ongeldige datum.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Casten</translation>
 <translation id="5630795885300617244">Dubbeltik links of rechts om 10 seconden over te slaan</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
+<translation id="5855560023261018690">binnenkort uit deze browser verwijderd</translation>
 <translation id="5868587040512539609">Videotracks</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5888666972993069672">Wordt nu gecast naar <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Scherm-in-scherm afsluiten</translation>
 <translation id="6484738902856791350">Pretty-print</translation>
 <translation id="6550675742724504774">Opties</translation>
+<translation id="65574987622079584">een browserextensie installeren</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6661136971638885481">Track <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Anders...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Deze week</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
+<translation id="8243989288843872594">Deze waarschuwing nooit tonen</translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
 <translation id="835897206747267392">Ongeldige waarde.</translation>
 <translation id="839593075537728968">Waarde moet tussen <ph name="MINIMUM_TIME" /> en <ph name="MAXIMUM_TIME" /> liggen.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Regelterugloop</translation>
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>
+<translation id="8753001114009816390">Deze site gebruikt XSLT. Die functionaliteit wordt <ph name="REMOVAL_LINK" />. Als dat gebeurt, wordt deze pagina waarschijnlijk niet meer correct weergegeven. Je kunt misschien <ph name="EXTENSION_LINK" /> waarmee je de waarschuwing kunt blijven bekijken. Neem anders contact op met de beheerder van de site voor meer informatie.</translation>
 <translation id="8845239796550121995">Wordt nu gecast naar je tv</translation>
 <translation id="8875657656876809964">Fout bij afspelen video</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

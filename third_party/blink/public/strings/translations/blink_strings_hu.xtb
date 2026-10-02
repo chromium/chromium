@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">A hibaelhárító szüneteltetve van egy másik lapon. Kattintson az adott lapra való váltáshoz.</translation>
 <translation id="1171774979989969504">Kérjük, adjon meg egy e-mail címet.</translation>
 <translation id="1178581264944972037">Szünet</translation>
+<translation id="1254779809141342904">Ez a CAP-riasztás az XSLT nevű technológiát használja; ez a funkció <ph name="REMOVAL_LINK" />. Amikor ez megtörténik, ez a riasztás nyers XML-adatként jelenik meg. Előfordulhat, hogy <ph name="EXTENSION_LINK" />, amely lehetővé teszi a megtekintés folytatását.</translation>
 <translation id="1306460908038601864">Ki</translation>
 <translation id="1311894908970423688">Ilyen érték szükséges: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normál</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2746543609216772311">Az érték <ph name="MINIMUM_DATE_OR_TIME" /> vagy azt követő kell, hogy legyen.</translation>
 <translation id="2761667185364618470">Kérjük, jelölje be ezt a jelölőnégyzetet, ha tovább kíván haladni.</translation>
+<translation id="2854734116215697908">eltávolításra kerül ebből a böngészőből</translation>
 <translation id="2908441821576996758">Kérjük, adjon meg egy vesszőkkel elválasztott e-mail címlistát.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Kérjük, adjon meg érvényes értéket. A mező hiányos, vagy érvénytelen dátum van megadva.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Küldés</translation>
 <translation id="5630795885300617244">A jobb/bal oldalon duplán koppintva ugorhat előre/vissza 10 másodpercet</translation>
 <translation id="57838592816432529">Némítás</translation>
+<translation id="5855560023261018690">hamarosan eltávolításra kerül ebből a böngészőből</translation>
 <translation id="5868587040512539609">Videósávok</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5888666972993069672">Átküldés ide: <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Kilépés a kép a képben funkcióból</translation>
 <translation id="6484738902856791350">Olvashatóra formázás</translation>
 <translation id="6550675742724504774">Beállítások</translation>
+<translation id="65574987622079584">telepíthet egy böngészőbővítményt</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6661136971638885481"><ph name="TRACK_NUMBER" />. sáv</translation>
 <translation id="668171684555832681">Egyéb...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Ezen a héten</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">éééé</translation>
+<translation id="8243989288843872594">Soha ne jelenjen meg ez a figyelmeztetés</translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="835897206747267392">Érvénytelen érték.</translation>
 <translation id="839593075537728968">Az értéknek <ph name="MINIMUM_TIME" /> és <ph name="MAXIMUM_TIME" /> között kell lennie.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Sorok tördelése</translation>
 <translation id="8750798805984357768">Kérjük, válassza ki az egyik opciót.</translation>
+<translation id="8753001114009816390">Ez a webhely XSLT-t használ; ez a funkció <ph name="REMOVAL_LINK" />. Ha ez megtörténik, akkor ez az oldal valószínűleg már nem fog megfelelően megjelenni. Előfordulhat, hogy <ph name="EXTENSION_LINK" />, amely lehetővé teszi a megtekintés folytatását. Egyéb esetben további információért forduljon a webhely karbantartójához.</translation>
 <translation id="8845239796550121995">Átküldés a tévére folyamatban</translation>
 <translation id="8875657656876809964">Videólejátszási hiba</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">O Chrome bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1197860368385086056">Na próxima vez que você abrir o Chrome no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para ativar os alertas de monitoramento de preços.</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="1278833599417554002">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir a pesquisa com o Chrome</translation>
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de desenvolvimento do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Desativar o Chrome em segundo plano para apps</translation>
+<translation id="2111985952714409792">Para acessar extensões e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="2120620239521071941">Essa ação excluirá <ph name="ITEMS_COUNT" /> itens desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Manter no Dock</translation>
 <translation id="2309047409763057870">Como esta é uma instalação secundária do Google Chrome, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="2345992953227471816">O Chrome encontrou malware nestas extensões:</translation>
+<translation id="2358140144860869442">Para acessar sua lista de leitura e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Erro de inicialização: outra instância de configuração está sendo executada. Tente de novo mais tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{unused plural form}=1{Uma ou mais extensões do Chrome estavam acessando 1 dispositivo HID}one{Uma ou mais extensões do Chrome estavam acessando # dispositivo HID}other{Uma ou mais extensões do Chrome estavam acessando # dispositivos HID}}</translation>
@@ -172,6 +175,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
+<translation id="2661616016316841783">Para acessar suas extensões e muito mais do <ph name="DEVICE" />, faça login no Chrome</translation>
 <translation id="2665296953892887393">Ajude a melhorar o Google Chrome. Envie relatórios de erros e  <ph name="UMA_LINK" /> para o Google</translation>
 <translation id="2668094785979141847">Clique para sair do Google Lens</translation>
 <translation id="2674238339205910678">O ChromeOS Flex não pôde salvar dados do Chrome na sua Conta do Google porque as informações de login dela estão desatualizadas</translation>
@@ -243,6 +247,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3242486428260808857">Aproveite ainda mais as compras on-line usando o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Se você também compartilhar os relatórios de uso do Chrome, eles vão incluir os URLs acessados</translation>
 <translation id="3249558306861350254">Clique em <ph name="BEGIN_BOLD" />Definir como padrão<ph name="END_BOLD" /> nas configurações do Windows.</translation>
+<translation id="3258706751219502154">Para acessar seus favoritos e muito mais do <ph name="DEVICE" />, faça login no Chrome</translation>
 <translation id="3259748324892322072">Baixar o app do Chrome</translation>
 <translation id="3282568296779691940">Fazer login no Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
@@ -342,6 +347,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4280647692742956593">Baixe o Chrome no seu celular para abrir ou criar novos grupos de guias em qualquer lugar.</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="430327780270213103">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chrome</translation>
+<translation id="4312908933392839680">Para acessar as informações salvas e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}one{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}other{O Chrome recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para acessar a personalização e outros recursos, inclua o Chrome na Atividade na Web e de apps e os Serviços do Google vinculados</translation>
@@ -507,7 +513,9 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6046028983725193307">Para compartilhar o áudio, abra os Ajustes do Sistema e permita a opção "Somente gravação do áudio do sistema" para o Chrome. Depois, é necessário reiniciar o Chrome.</translation>
 <translation id="6069027071882229820">Copiar como imagem</translation>
 <translation id="6070348360322141662">Para aumentar a segurança, seus dados serão criptografados pelo Google Chrome</translation>
+<translation id="6071642418303142778">Para acessar suas senhas e muito mais do <ph name="DEVICE" />, faça login no Chrome</translation>
 <translation id="6075300983329039771">Sua organização, <ph name="MANAGER" />, exige o login no Chrome</translation>
+<translation id="6077365059401096066">Para acessar sua lista de leitura e muito mais do <ph name="DEVICE" />, faça login no Chrome</translation>
 <translation id="6113794647360055231">O Chrome ficou ainda melhor</translation>
 <translation id="6116004140911290070">Ativar Habilidades no Chrome</translation>
 <translation id="6116252277240876590">Este idioma é usado para mostrar menus, configurações, alertas e outros textos no Chrome</translation>
@@ -705,6 +713,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7804947029129221742">Seu mecanismo de pesquisa foi alterado fora do Chrome. Para sua segurança, o Chrome redefiniu essa configuração para o padrão original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Remover do Chrome</translation>
 <translation id="7827099906024714326">O Chrome precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
+<translation id="7829850924999627855">Para acessar suas informações salvas e muito mais do <ph name="DEVICE" />, faça login no Chrome</translation>
 <translation id="7832314606810669113">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome. Este favorito será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Iniciar o Chrome junto com o Windows</translation>

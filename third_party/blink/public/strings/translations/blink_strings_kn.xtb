@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">ಡೀಬಗರ್ ಅನ್ನು ಮತ್ತೊಂದು ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವಿರಾಮಗೊಳಿಸಿದರೆ, ಆ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="1171774979989969504">ದಯವಿಟ್ಟು ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
+<translation id="1254779809141342904">ಈ CAP ಅಲರ್ಟ್ XSLT ಎಂಬ ತಂತ್ರಜ್ಞಾನವನ್ನು ಬಳಸುತ್ತದೆ; ಆ ಫಂಕ್ಷನಾಲಿಟಿಯನ್ನು <ph name="REMOVAL_LINK" />. ಹಾಗಾದಾಗ, ಈ ಅಲರ್ಟ್ ಅನ್ನು RAW XML ಡೇಟಾ ಆಗಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ಅದನ್ನು ವೀಕ್ಷಿಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ನಿಮಗೆ ಅನುವು ಮಾಡಿಕೊಡುವ <ph name="EXTENSION_LINK" /> ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="1306460908038601864">ಆಫ್</translation>
 <translation id="1311894908970423688">ಮೌಲ್ಯವು <ph name="VALUE_DATE_OR_TIME" /> ಇರಬೇಕು.</translation>
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2746543609216772311">ಮೌಲ್ಯವು <ph name="MINIMUM_DATE_OR_TIME" /> ಅಥವಾ ನಂತರದ್ದಾಗಿರಬೇಕು.</translation>
 <translation id="2761667185364618470">ನೀವು ಮುಂದುವರೆಯಬೇಕಾದರೆ ದಯವಿಟ್ಟು ಈ ಬಾಕ್ಸ್ ಅನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
+<translation id="2854734116215697908">ಈ ಬ್ರೌಸರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2908441821576996758">ದಯವಿಟ್ಟು ಅಲ್ಪ ವಿರಾಮದಿಂದ ಬೇರ್ಪಡಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳ ಪಟ್ಟಿಯನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ದಯವಿಟ್ಟು ಮಾನ್ಯ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. ಕ್ಷೇತ್ರವು ಅಪೂರ್ಣವಾಗಿದೆ ಅಥವಾ ಅಮಾನ್ಯ ದಿನಾಂಕವನ್ನು ಹೊಂದಿದೆ.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="5630795885300617244">10ಸೆ ಸ್ಕಿಪ್ ಮಾಡಲು ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
+<translation id="5855560023261018690">ಈ ಬ್ರೌಸರ್‌ನಿಂದ ಶೀಘ್ರದಲ್ಲೇ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="5868587040512539609">ವೀಡಿಯೊ ಟ್ರ್ಯಾಕ್‌ಗಳು</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5888666972993069672">ಈಗ <ph name="DEVICE_FRIENDLY_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರದಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="6484738902856791350">ಅಂದವಾದ ಪ್ರಿಂಟ್</translation>
 <translation id="6550675742724504774">ಆಯ್ಕೆಗಳು</translation>
+<translation id="65574987622079584">ಬ್ರೌಸರ್ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6661136971638885481">ಟ್ರ್ಯಾಕ್ #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ಇತರೆ...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">ಈ ವಾರ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ವವವವ</translation>
+<translation id="8243989288843872594">ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="835897206747267392">ಅಮಾನ್ಯ ಮೌಲ್ಯ.</translation>
 <translation id="839593075537728968">ಮೌಲ್ಯವು, <ph name="MINIMUM_TIME" /> ಮತ್ತು <ph name="MAXIMUM_TIME" /> ನಡುವೆ ಇರಬೇಕು.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ಲೈನ್ ವ್ರ್ಯಾಪ್</translation>
 <translation id="8750798805984357768">ದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಆರಿಸಿ.</translation>
+<translation id="8753001114009816390">ಈ ಸೈಟ್ XSLT ಅನ್ನು ಬಳಸುತ್ತದೆ; ಆ ಫಂಕ್ಷನಾಲಿಟಿಯನ್ನು <ph name="REMOVAL_LINK" />. ಹಾಗಾದಾಗ, ಈ ಪುಟವು ಸರಿಯಾಗಿ ಕಾಣಿಸದೇ ಇರುವ ಸಾಧ್ಯತೆಯಿದೆ. ಅದನ್ನು ವೀಕ್ಷಿಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ನಿಮಗೆ ಅನುವು ಮಾಡಿಕೊಡುವ <ph name="EXTENSION_LINK" /> ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗಬಹುದು. ಇಲ್ಲದಿದ್ದರೆ, ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನೀವು ಸೈಟ್‌ನ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಬೇಕು.</translation>
 <translation id="8845239796550121995">ಈಗ ನಿಮ್ಮ ಟಿವಿಯನ್ನು ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8875657656876809964">ವೀಡಿಯೊ ಪ್ಲೇಬ್ಯಾಕ್ ದೋಷ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

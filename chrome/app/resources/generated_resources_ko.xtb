@@ -332,6 +332,7 @@
 <translation id="1231572247662419826">사이트에서 마우스 입력을 캡처하고 사용하도록 요청할 수 있음</translation>
 <translation id="1232569758102978740">제목 없음</translation>
 <translation id="1233497634904001272">보안 키를 다시 탭하여 요청을 완료하세요.</translation>
+<translation id="1233566345244684257">사용자의 Gemini 앱에 액세스할 수 있는 모든 사람이 Chrome 브라우저를 제어할 수 있습니다.</translation>
 <translation id="1233721473400465416">언어</translation>
 <translation id="1233835246554936745">{0,plural, =1{계정에 항목 1개 저장}other{계정에 항목 #개 저장}}</translation>
 <translation id="1234736487471201993">이 이미지의 QR 코드 생성</translation>
@@ -554,6 +555,7 @@
 <translation id="1421514190500081936">이 데이터를 다운로드하는 이유를 입력하세요.</translation>
 <translation id="1422159345171879700">안전하지 않은 스크립트 로드</translation>
 <translation id="1425040197660226913">업로드할 수 없습니다. 20MB보다 작은 이미지를 사용하세요.</translation>
+<translation id="1426154609634610063">Gemini 사용 시의 위험 검토</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> 앱이 차단됨</translation>
 <translation id="1427179946227469514">텍스트 음성 변환 음조</translation>
@@ -1568,6 +1570,7 @@
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="2198712775285959645">수정</translation>
 <translation id="2199298570273670671">오류</translation>
+<translation id="2199546617947317537">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 비밀번호 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="220006241671843310">Chrome이 기기에서 직접 실행되는 AI 모델을 사용할지 여부를 선택합니다</translation>
 <translation id="2200094388063410062">이메일</translation>
 <translation id="2200781749203116929">ChromeOS 시스템 로그</translation>
@@ -1843,6 +1846,7 @@
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2419131370336513030">설치된 앱 보기</translation>
 <translation id="2419706071571366386">보안을 위해 컴퓨터를 사용하지 않을 때는 로그아웃하세요.</translation>
+<translation id="2423226060967554289">북마크바 표시</translation>
 <translation id="2423506062824112361">알 수 없는 이유로 콘텐츠를 다운로드할 수 없습니다.</translation>
 <translation id="2423578206845792524">이미지를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{게스트}other{게스트(#)}}</translation>
@@ -2080,6 +2084,7 @@
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />의 기기</translation>
 <translation id="2589658397149952302">Drive 파일 표시 안함</translation>
+<translation id="2595270892115552212">gemini.google.com 및 Gemini 모바일 앱을 비롯한 다른 Gemini 앱에서 작업을 시작하면, Gemini가 이 기기의 Chrome 자동 탐색 기능을 사용하여 사이트를 방문하고 사용자를 대신해 작업을 완료할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Nearby Share는 블루투스 검색을 사용하여 근처 기기를 찾습니다.</translation>
 <translation id="2598136842498757793">툴바 버튼 맞춤설정</translation>
 <translation id="2598710988533271874">새로운 Chrome 사용 가능</translation>
@@ -2297,6 +2302,7 @@
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="274362947316498129">앱에서 <ph name="DEVICE_NAME" /> 액세스를 시도합니다. 액세스를 허용하려면 <ph name="DEVICE_NAME" /> 개인 정보 보호 스위치를 끄세요.</translation>
 <translation id="2744221223678373668">공유</translation>
+<translation id="2744919074068076548">열려 있는 분할 뷰</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2348,6 +2354,7 @@
 <translation id="2777525873368474674">이미지 링크 붙여넣기</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{알림이 많은 사이트 1개를 찾음}other{알림이 많은 사이트 {NUM_SITES}개를 찾음}}</translation>
 <translation id="2778471504622896352">Chrome OS 런처에 원격 앱 추가</translation>
+<translation id="2781037472881921606">다른 기기에서 방문 기록을 가져오려면 방문 기록을 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> 앱에서 보안 키 사용</translation>
@@ -2410,6 +2417,7 @@
 <translation id="2826576843404243001">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
 <translation id="2828375943530438449">이전 페이지로 돌아가기</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> 확보됨</translation>
+<translation id="2828851448902426206">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="2833144527504272627">텍스트 커서로 탐색</translation>
 <translation id="2833727845850279275">멀웨어가 포함되어 있거나 의심스러운 사이트에서 가져온 파일입니다.</translation>
 <translation id="2835177225987815960">할당된 스위치 및 자동 스캔 속도 환경설정을 포함하여 현재의 스캔 설정이 재설정됩니다.</translation>
@@ -2776,6 +2784,7 @@
 <translation id="3102309003841389927">로고 업데이트 검토</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3103451787721578293">이 데이터를 업로드하는 이유를 입력하세요</translation>
+<translation id="3105253709809514429">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="3105339775057145050">최근 업데이트 실패</translation>
 <translation id="3105796011181310544">Google로 되돌리시겠습니까?</translation>
 <translation id="3105820656234755131">비밀번호가 업데이트됨</translation>
@@ -2787,6 +2796,7 @@
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="311347022006935575">이 탭이 추가되었습니다.</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
 <translation id="3113970906450647715">버튼이 고정 해제되었습니다</translation>
@@ -2817,6 +2827,7 @@
 <translation id="3132996321662585180">매일 새로고침</translation>
 <translation id="3134312457920437826">지원되지 않는 매니페스트 버전을 사용하고 있으므로 확장 프로그램을 설치할 수 없습니다.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">다른 Gemini 앱이 모든 기기에서 원격으로 탐색하도록 허용</translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
 <translation id="314095642664111744">집중 모드 사용 중지</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
@@ -3293,6 +3304,7 @@
 <translation id="3498138244916757538">마이크 설정을 변경하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료해야 합니다. 계속하려면 <ph name="SPECIFIC_NAME" /> 환경을 종료하세요.</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3500764001796099683">분리형 웹 앱 사용 설정</translation>
+<translation id="3501134531169168291"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="3505100368357440862">쇼핑 추천</translation>
 <translation id="3507650052590605702">비밀번호 관리</translation>
 <translation id="3507888235492474624">블루투스 기기 다시 검색</translation>
@@ -3369,6 +3381,7 @@
 <translation id="3562655211539199254">휴대전화의 최근 Chrome 탭을 봅니다.</translation>
 <translation id="356268274299520831">사이트에서 변경</translation>
 <translation id="3563392617245068355">분위기</translation>
+<translation id="3564327838471533677">최근에 닫힌 분할 뷰</translation>
 <translation id="3564456410937306182">자동 조절 충전에 관해 자세히 알아봅니다.</translation>
 <translation id="3564659095423213915">이 폴더가 이 기기에만 저장됩니다. '<ph name="ACCOUNT_FOLDER" />'에 저장하면 이 폴더가 계정에도 저장됩니다</translation>
 <translation id="3564848315152754834">USB 보안 키</translation>
@@ -3631,6 +3644,7 @@
 <translation id="3736487688526377259">이 링크를 가져올 기기를 선택하세요</translation>
 <translation id="3737058101969549870">기존 인터넷 사용 기록을 이 새 프로필과 분리하여 유지하시겠습니까?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini는 기기가 켜져 있는 상태이고 Chrome이 실행 중인 경우에만 이 기기에서 자동 탐색을 사용할 수 있습니다.</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />을(를) 여시겠습니까?</translation>
 <translation id="3739349485749941749">사이트에서 기기에 액세스할 수 있는 프린터를 찾고 사용하도록 요청할 수 있음</translation>
 <translation id="3741056951918180319">확장 프로그램을 클릭하면 모든 사이트에서 사용할 수 있습니다</translation>
@@ -3779,6 +3793,7 @@
 <translation id="3838085852053358637">확장 프로그램을 로드하지 못함</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> 더보기</translation>
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
+<translation id="3839108710633244251">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
 <translation id="3840096463915153852">대화 기록</translation>
 <translation id="3841319830220785495">기본 자연 음성</translation>
@@ -3986,6 +4001,7 @@
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="3988124842897276887">이 탭이 USB 기기에 연결되었습니다</translation>
 <translation id="3989635538409502728">로그아웃</translation>
+<translation id="399132041334931433">새 그룹에 탭 추가</translation>
 <translation id="399179161741278232">가져온 북마크</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> 다운로드 중, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />에 USB 기기 제어 권한을 부여합니다.</translation>
@@ -4299,6 +4315,7 @@
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{그룹 유지}other{그룹 유지}}</translation>
 <translation id="4261429981378979799">확장 프로그램 권한</translation>
 <translation id="4262004481148703251">경고 닫기</translation>
+<translation id="4262060800239714974"><ph name="DEVICE" />에서 탭을 가져오려면 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4263470758446311292">메모리를 최대로 절약할 수 있습니다. 좀 더 짧은 시간이 지나면 탭이 비활성화됩니다.</translation>
 <translation id="4263824086525632">북극광</translation>
 <translation id="4265096510956307240">본인 인증</translation>
@@ -4935,8 +4952,10 @@
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
+<translation id="4751925628341802838">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4753084533826742808">1자 이상(영문 기준)이어야 합니다.</translation>
 <translation id="4754590344707355551">확장 프로그램을 사용해 브라우저를 개선하세요</translation>
+<translation id="4756130875344525429"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756627014339714615">리디렉션</translation>
@@ -5213,6 +5232,7 @@
 <translation id="495170559598752135">작업</translation>
 <translation id="4951966678293618079">이 사이트의 비밀번호를 저장하지 않습니다</translation>
 <translation id="4952580838083306838">주최자 숨기기</translation>
+<translation id="4952628481830269193">북마크바 표시</translation>
 <translation id="4953808748584563296">기본 주황색 아바타</translation>
 <translation id="4954652437333037880">파일</translation>
 <translation id="4954831709600868883"><ph name="TEXT" />에 관해 묻기</translation>
@@ -5247,6 +5267,7 @@
 <translation id="497403230787583386">보안 확인이 완료되었습니다. 문서가 인쇄됩니다.</translation>
 <translation id="4974442344472293753">결과 업데이트</translation>
 <translation id="4975771730019223894">앱 배지 설정</translation>
+<translation id="4976647810464861866">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">액세스 확인</translation>
 <translation id="4979263087381759787">개발자 옵션</translation>
@@ -5286,6 +5307,7 @@
 <translation id="5008936837313706385">활동 이름</translation>
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5010886807652684893">시각 뷰</translation>
+<translation id="5012016139642806466">모든 기기에서 비밀번호 등을 가져오세요.</translation>
 <translation id="5012523644916800014">비밀번호 및 패스키 관리</translation>
 <translation id="501394389332262641">배터리 잔량 낮음 알림음</translation>
 <translation id="5014286001996333986">그룹을 바꾸거나 새로 만드시겠어요?</translation>
@@ -5418,6 +5440,7 @@
 <translation id="511313294362309725">빠른 페어링 사용 설정</translation>
 <translation id="5113992879909788634">Chrome 자동 탐색에 대해 자세히 알아보기</translation>
 <translation id="51143538739122961">보안 키를 삽입하고 터치하세요.</translation>
+<translation id="5114635223409082546"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">오디오를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" />에서 휴대전화를 연결 해제합니다. 더 이상 자동으로 연결되지 않습니다.</translation>
@@ -5465,6 +5488,7 @@
 <translation id="5149602533174716626">동영상 프레임 복사(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">디스크 저장 공간을 확보하지 않으면 일부 데이터가 자동으로 삭제됩니다.</translation>
+<translation id="5152719737931716272">작업이 완료되어 Gemini로 돌아왔습니다</translation>
 <translation id="5153074793829217329">키보드 또는 숫자 키패드를 사용하여 마우스 커서를 제어합니다.</translation>
 <translation id="5153234146675181447">휴대전화 지우기</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5782,6 +5806,7 @@
 <translation id="5414836363063783498">인증 중...</translation>
 <translation id="5415497281076257439">구문</translation>
 <translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
+<translation id="5417160551295347092">Gemini는 사용자의 허락을 구하지 않고 사용자의 정보를 공유하거나 구매를 진행하는 등의 실수를 할 수 있습니다. <ph name="LINK_BEGIN" />위험 요소 검토하기<ph name="LINK_END" /></translation>
 <translation id="5417293056300086453">이 사이트에서 식별자를 사용하여 보호된 콘텐츠를 재생할 수 있습니다.</translation>
 <translation id="5417312524372586921">브라우저 테마</translation>
 <translation id="541737483547792035">화면 확대</translation>
@@ -5813,6 +5838,7 @@
 <translation id="5436211819997237281">현재 새 탭 페이지를 관리하는 확장 프로그램</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
+<translation id="5437406591808823366">여러 기기에서 비밀번호를 자동 완성하고 저장하려면 <ph name="EMAIL" /> 계정으로 로그인하세요.</translation>
 <translation id="5438014818441491616">이제 <ph name="WINDOW_SIDE" /> 창의 너비가 <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> 창의 너비가 <ph name="PANE_SIZE_PERCENT" />입니다.</translation>
 <translation id="5438060324827306856">확장 프로그램 찾기(&amp;E)</translation>
 <translation id="5440240650630588012">읽기 선이나 창을 적용하여 집중력을 높여 보세요. ⌥L을 누르거나 설정으로 이동하세요.</translation>
@@ -5842,6 +5868,7 @@
 <translation id="5457795687441958389">로그아웃 상태 유지</translation>
 <translation id="5458214261780477893">드보락</translation>
 <translation id="5458716506062529991">잘못된 PIN을 너무 많이 입력했습니다. 패스키 및 비밀번호에 액세스하려면 PIN을 변경하세요.</translation>
+<translation id="5459251585760045919"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 내 확장 프로그램 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="5459470938885464873">인증서를 가져오는 중에 오류가 발생했습니다</translation>
 <translation id="5459864179070366255">설치 계속</translation>
 <translation id="5460861858595506978">영감</translation>
@@ -6013,6 +6040,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">사용자 이름을 저장하시겠습니까?</translation>
 <translation id="5585019845078534178">카드</translation>
+<translation id="5585064628683466904">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="5585118885427931890">북마크 폴더를 만들지 못했습니다.</translation>
 <translation id="558563010977877295">특정 페이지 또는 페이지 모음 열기</translation>
 <translation id="5587592231724900065">확장 프로그램이 이 설정을 제어하고 있습니다</translation>
@@ -6536,6 +6564,7 @@
 <translation id="6003143259071779217">eSIM 셀룰러 네트워크 삭제</translation>
 <translation id="6003479444341796444">제목 표시줄 표시 중</translation>
 <translation id="6003582434972667631">테마는 조직에서 설정합니다</translation>
+<translation id="600407115562756795">Gemini는 사용자가 시작하거나 업데이트하는 작업을 기반으로 수행할 작업을 결정합니다.</translation>
 <translation id="6005045517426700202">벽돌 건물</translation>
 <translation id="6006484371116297560">기본</translation>
 <translation id="6007053304250788613">거울 모드에서는 디스플레이 1개만 제외할 수 있습니다.</translation>
@@ -6750,6 +6779,7 @@
 <translation id="6175910054050815932">링크 가져오기</translation>
 <translation id="6177478397823976397">발견된 기기가 없습니다. 새 탭에서 고객센터 도움말을 엽니다</translation>
 <translation id="6177779807714496775">왼쪽 뷰에서 링크 열기</translation>
+<translation id="6178186430790239237">다른 기기의 탭을 가져오려면 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
 <translation id="6178682841350631965">로그인 데이터가 업데이트되었습니다.</translation>
 <translation id="6179830757749383456"><ph name="BROWSER_DOMAIN" />에서 관리하는 브라우저, <ph name="PROFILE_DOMAIN" />에서 관리하는 프로필</translation>
@@ -6879,6 +6909,7 @@
 <translation id="6273677812470008672">품질</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />에 연결 중</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
+<translation id="6276246115230302286">모든 기기에서 북마크를 사용하여 즐겨찾는 사이트에 빠르게 액세스하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="6277105963844135994">네트워크 시간 초과</translation>
 <translation id="6277518330158259200">스크린샷 캡쳐하기(&amp;A)</translation>
 <translation id="6278428485366576908">테마</translation>
@@ -7060,6 +7091,7 @@
 <translation id="6430202563517028640">읽기 목록에 링크 추가</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />에서 이 컴퓨터의 모든 사용자에 대해 자동 업데이트를 설정합니다.</translation>
+<translation id="6431970976661940755"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="6434104957329207050">지점 스캔 속도</translation>
 <translation id="6434309073475700221">삭제</translation>
 <translation id="6434755719322447931">혼란</translation>
@@ -7224,6 +7256,7 @@
 <translation id="6556903358015358733">테마 및 배경화면</translation>
 <translation id="6557199166823345360">검색 범위를 좁히려면 세부정보를 추가하거나 선택한 항목에 대해 질문하세요.</translation>
 <translation id="6557290421156335491">내 바로가기</translation>
+<translation id="655745275895381718"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="6558098963164662391">사전에서 삭제(&amp;R)</translation>
 <translation id="6560061709899140565">다른 전송 세션 표시</translation>
 <translation id="656065428026159829">더보기</translation>
@@ -7298,6 +7331,7 @@
 <translation id="6607831829715835317">도구 더보기</translation>
 <translation id="6608166463665411119">eSIM 재설정</translation>
 <translation id="660846213831377756">마우스 키</translation>
+<translation id="6608725880745776452"><ph name="DEVICE" />에서 비밀번호 등을 가져오세요</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6611432349566876829">탭 <ph name="NUM" />개</translation>
@@ -7911,6 +7945,7 @@
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" />의 비밀번호 1개를 <ph name="BRAND" />에 가져왔습니다.}other{<ph name="USER_EMAIL" />의 비밀번호 {NUM_PASSWORDS}개를 <ph name="BRAND" />에 가져왔습니다.}}</translation>
 <translation id="7065534935986314333">시스템 정보</translation>
 <translation id="706626672220389329">공유를 마운트하는 중에 오류가 발생했습니다. 지정된 공유가 이미 마운트되었습니다.</translation>
+<translation id="7066357648902789011"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 비밀번호 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="7067396782363924830">주변 색상</translation>
 <translation id="7067725467529581407">다시 표시하지 않음</translation>
 <translation id="7068539819344620805">이제 Chrome 맞춤설정 메뉴에서 언제든지 브라우저를 새로운 디자인으로 변경할 수 있습니다</translation>
@@ -8096,6 +8131,7 @@
 <translation id="7214047272988222011">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 카메라 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{탭 1개에 새 탭}other{탭 #개에 새 탭}}</translation>
 <translation id="721490496276866468">비밀번호 가져오기</translation>
+<translation id="7216638029417040861">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="7217208603285112910">선택 항목이 <ph name="LANGUAGE" />로 제공되지 않음</translation>
 <translation id="7217317914610152390">새로운 텍스트 주석 도구를 사용하여 텍스트, 댓글, 메모를 추가하세요.</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
@@ -8106,6 +8142,7 @@
 <translation id="7222232353993864120">이메일 주소</translation>
 <translation id="7222335051802562841">업데이트 완료</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="7223027547122518521">이 사이트에서 읽을 수 있는 파일을 선택하세요</translation>
 <translation id="7223952304612664117">이렇게 하면 시스템 서비스에서 위치 정확도를 사용하여 내 위치를 파악할 수 있습니다. 위치 정확도는 무선 신호 및 센서에 관한 정보를 사용하여 기기 위치를 추정합니다.</translation>
 <translation id="7225082563376899794">Windows Hello를 사용하여 비밀번호 입력</translation>
@@ -8475,6 +8512,7 @@
 <translation id="7501957181231305652">또는</translation>
 <translation id="7502220299952823578">'항상 사이트를 활성 상태로 유지' 목록에 추가</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> 기기로의 탭 전송 일시중지</translation>
+<translation id="750275011730776314">Gemini로 돌아가기</translation>
 <translation id="7502804472671406749">공유한 탭을 스크롤 및 확대/축소할 수 있음</translation>
 <translation id="750314150962284310">선 포커스</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
@@ -8511,6 +8549,7 @@
 <translation id="7523117833414447032">대문자 읽는 방식</translation>
 <translation id="7523585675576642403">프로필 이름 바꾸기</translation>
 <translation id="7525067979554623046">만들기</translation>
+<translation id="7526083414913154899">Gemini 작업에 관해 자세히 알아보기</translation>
 <translation id="7528224636098571080">열지 않음</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{탭 그룹을 그룹화 해제하시겠습니까?}other{탭 그룹을 그룹화 해제하시겠습니까?}}</translation>
 <translation id="7529411698175791732">인터넷 연결 상태를 확인하세요. 문제가 계속되면 로그아웃한 뒤 다시 로그인해보세요.</translation>
@@ -8715,6 +8754,7 @@
 <translation id="7684718995427157417">앱을 만들고 테스트하려면 Android 디버그 브리지(ADB)를 사용 설정하세요. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
 <translation id="7684803937028953000">조직에서 이 파일의 로컬 다운로드를 차단했습니다.</translation>
 <translation id="7684913007876670600">이 페이지를 간략하게 표시하려면 측면 패널을 열고 읽기 모드를 선택하세요.</translation>
+<translation id="7684957383619170952"><ph name="DEVICE" />에서 북마크 등의 항목을 가져오세요</translation>
 <translation id="7685038817958445325">전송할 수 없습니다</translation>
 <translation id="7685049629764448582">자바스크립트 메모리</translation>
 <translation id="7685087414635069102">PIN 필요</translation>
@@ -8992,6 +9032,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">설정 취소</translation>
 <translation id="7912974581251770345">번역</translation>
+<translation id="7913805372428124107"><ph name="DEVICE" />에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 비밀번호 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>
 <translation id="7915457674565721553">자녀 보호 기능을 설정하려면 인터넷에 연결하세요.</translation>
 <translation id="7916364730877325865">조직에서 이 계정과의 동기화를 사용 설정하도록 허용하지 않습니다.</translation>
@@ -9240,6 +9281,7 @@
 <translation id="8081989000209387414">ADB 디버깅을 사용 중지하시겠습니까?</translation>
 <translation id="8082132721957920509">카드가 저장되었습니다</translation>
 <translation id="8082390128630131497">ADB 디버깅을 사용 중지하면 이 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
+<translation id="8082737802704584539">조직에서 Google 계정에 방문 기록 저장을 사용 중지했습니다</translation>
 <translation id="8084114998886531721">저장된 비밀번호</translation>
 <translation id="8084417885464859041">Gemini를 안전하게 사용</translation>
 <translation id="8084429490152575036">셀룰러 APN 설정</translation>
@@ -9272,6 +9314,7 @@
 <translation id="810362914482827094">패스키 검색</translation>
 <translation id="8104088837833760645">eSIM 프로필 다운로드</translation>
 <translation id="8104388155778519213">Google 렌즈로 화면 내용 공유하기</translation>
+<translation id="8104412594956510627"><ph name="DEVICE" />에서 방문 기록을 가져오려면 방문 기록을 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="8104778744208707085">확인이 필요합니다</translation>
 <translation id="8105273883928376822">계속하려면 로그인하세요</translation>
 <translation id="8106114112474206597">마우스 버튼을 누르려면 'i' 키를 사용하세요.</translation>
@@ -9302,6 +9345,7 @@
 <translation id="8124313775439841391">관리되는 ONC</translation>
 <translation id="8125651784723647184">비밀번호 공유는 관리자가 관리합니다.</translation>
 <translation id="8126355825906412872">미소 짓기</translation>
+<translation id="8126498026310640675"><ph name="DEVICE" />에서 방문 기록을 가져오려면 로그인하고 방문 기록과 탭을 <ph name="EMAIL" /> 계정과 동기화하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8133297578569873332">양호함 - FM</translation>
@@ -9363,6 +9407,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />(<ph name="PRINTER_STATUS" />). 프린터 <ph name="NUM_PRINTERS" />개 중 <ph name="ITEM_POSITION" />번째</translation>
 <translation id="8180785270975217276">에너지 절약 모드 사용 설정됨</translation>
 <translation id="8180786512391440389">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽고 삭제할 수 있습니다.</translation>
+<translation id="8181132988581553950">Gemini는 사용자가 로그인한 사이트를 비롯해 사용자와 동일한 사이트에 액세스할 수 있습니다. Gemini는 필요한 정보를 서드 파티에 공유하며, 여기에는 사용자가 민감하다고 생각할 수 있는 개인 정보가 포함될 수 있습니다.</translation>
 <translation id="8183703640399301650">기기 EID는 <ph name="EID_NUMBER" />이며 기기 IMEI는 <ph name="IMEI_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />(으)로 전환</translation>
 <translation id="8184318863960255706">추가 정보</translation>

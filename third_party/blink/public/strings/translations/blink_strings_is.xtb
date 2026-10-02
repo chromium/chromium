@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Hlé var gert á villuleit á öðrum flipa, smelltu til að skipta yfir á þann flipa.</translation>
 <translation id="1171774979989969504">Sláðu inn netfang.</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
+<translation id="1254779809141342904">Þessi CAP-viðvörun notar tækni sem kallast XSLT; sú virkni verður <ph name="REMOVAL_LINK" />. Þegar það gerist verður þessi viðvörun sýnd sem óunnin XML-gögn. Þú getur mögulega <ph name="EXTENSION_LINK" /> sem gerir þér kleift að halda áfram að birta þetta.</translation>
 <translation id="1306460908038601864">Slökkt</translation>
 <translation id="1311894908970423688">Gildi verður að vera <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Venjuleg</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2746543609216772311">Gildið verður að vera <ph name="MINIMUM_DATE_OR_TIME" /> eða síðar.</translation>
 <translation id="2761667185364618470">Merktu í þennan gátreit ef þú vilt halda áfram.</translation>
+<translation id="2854734116215697908">fjarlægð úr þessum vafra</translation>
 <translation id="2908441821576996758">Sláðu inn lista yfir netföng, aðskilin með kommum.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Sláðu inn gilt gildi. Reiturinn er auður eða dagsetningin er ekki gild.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5630795885300617244">Ýttu tvisvar vinstra eða hægra megin til að sleppa 10 sek.</translation>
 <translation id="57838592816432529">Þagga</translation>
+<translation id="5855560023261018690">fjarlægð úr þessum vafra fljótlega</translation>
 <translation id="5868587040512539609">Vídeórásir</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5888666972993069672">Sendir út á <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Loka mynd í mynd</translation>
 <translation id="6484738902856791350">Fagurprenta</translation>
 <translation id="6550675742724504774">Valkostir</translation>
+<translation id="65574987622079584">sett upp vafraviðbót</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6661136971638885481">Rás #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Annað...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Þessi vika</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">áááá</translation>
+<translation id="8243989288843872594">Aldrei sýna þessa viðvörun</translation>
 <translation id="8284326494547611709">Skjátextar</translation>
 <translation id="835897206747267392">Ógilt gildi.</translation>
 <translation id="839593075537728968">Gildið verður að vera á milli <ph name="MINIMUM_TIME" /> og <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Línuskrið</translation>
 <translation id="8750798805984357768">Veldu einn af þessum valkostum.</translation>
+<translation id="8753001114009816390">Þetta vefsvæði notar XSLT. Sú virkni verður <ph name="REMOVAL_LINK" />. Þegar það gerist mun þessi síða líklega ekki lengur birtast rétt. Þú getur mögulega <ph name="EXTENSION_LINK" /> sem gerir þér kleift að halda áfram að birta þetta. Annars skaltu hafa samband við umsjónaraðila vefsvæðisins til að fá frekari upplýsingar.</translation>
 <translation id="8845239796550121995">Sendir nú út í sjónvarpið</translation>
 <translation id="8875657656876809964">Villa í spilun myndskeiðs</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

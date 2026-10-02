@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">અન્ય ટૅબમાં ડિબગર થોભાવ્યું, તે ટૅબ પર સ્વિચ કરવા માટે ક્લિક કરો.</translation>
 <translation id="1171774979989969504">કૃપા કરી કોઈ ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1178581264944972037">થોભો</translation>
+<translation id="1254779809141342904">આ CAP અલર્ટ XSLT નામની ટેક્નોલોજીનો ઉપયોગ કરે છે; તે કાર્યક્ષમતા <ph name="REMOVAL_LINK" /> છે. જ્યારે આવું થાય, ત્યારે આ અલર્ટને અસંશોધિત XML ડેટા તરીકે બતાવવામાં આવશે. તમે કદાચ <ph name="EXTENSION_LINK" /> કરી શકશો, જે તમને તેને જોવાનું ચાલુ રાખવાની મંજૂરી આપે છે.</translation>
 <translation id="1306460908038601864">બંધ</translation>
 <translation id="1311894908970423688">મૂલ્ય <ph name="VALUE_DATE_OR_TIME" /> હોવું આવશ્યક છે.</translation>
 <translation id="1588438908519853928">સામાન્ય</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2746543609216772311">મૂલ્ય <ph name="MINIMUM_DATE_OR_TIME" /> અથવા પછીનું હોવું આવશ્યક છે.</translation>
 <translation id="2761667185364618470">જો તમે આગળ વધવા માંગતા હો તો કૃપા કરીને આ બૉક્સને ચેક કરો.</translation>
+<translation id="2854734116215697908">આ બ્રાઉઝરમાંથી કાઢી નાખ્યું</translation>
 <translation id="2908441821576996758">કૃપા કરીને અલ્પવિરામથી વિભાજિત ઇમેઇલ સરનામાંઓની સૂચિ દાખલ કરો.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
 <translation id="3075154866155599887">કૃપા કરીને માન્ય કિંમત દાખલ કરો. ફીલ્ડ અપૂર્ણ છે અથવા અમાન્ય તારીખ ધરાવે છે.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
 <translation id="5630795885300617244">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
+<translation id="5855560023261018690">ખૂબ જ ટૂંક સમયમાં આ બ્રાઉઝરમાંથી કાઢી નાખવામાં આવશે</translation>
 <translation id="5868587040512539609">વીડિયો ટ્રૅક</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
 <translation id="5888666972993069672">હવે <ph name="DEVICE_FRIENDLY_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ચિત્ર-માં-ચિત્રમાંથી બહાર નીકળો</translation>
 <translation id="6484738902856791350">પ્રિટી-પ્રિન્ટ</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
+<translation id="65574987622079584">બ્રાઉઝર એક્સ્ટેન્શન ઇન્સ્ટૉલ કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6661136971638885481">ટ્રૅક #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">અન્ય...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">આ અઠવાડિયે</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">આ ચેતવણી ક્યારેય બતાવશો નહીં</translation>
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
 <translation id="835897206747267392">અમાન્ય મૂલ્ય.</translation>
 <translation id="839593075537728968">મૂલ્ય <ph name="MINIMUM_TIME" /> અને <ph name="MAXIMUM_TIME" />ની વચ્ચેનું હોવું જોઈએ.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">લાઇન વીંટો</translation>
 <translation id="8750798805984357768">કૃપા કરીને આ વિકલ્પોમાંથી કોઈ એક પસંદ કરો.</translation>
+<translation id="8753001114009816390">આ સાઇટ XSLTનો ઉપયોગ કરે છે; તે કાર્યક્ષમતા <ph name="REMOVAL_LINK" /> છે. જ્યારે આવું થાય, ત્યારે આ પેજ કદાચ હવેથી યોગ્ય રીતે ડિસ્પ્લે થશે નહીં. તમે કદાચ <ph name="EXTENSION_LINK" /> કરી શકશો, જે તમને તેને જોવાનું ચાલુ રાખવાની મંજૂરી આપે છે. અન્યથા, તમારે વધુ માહિતી માટે સાઇટના મેન્ટેનરનો સંપર્ક કરવો જોઈએ.</translation>
 <translation id="8845239796550121995">હમણાં તમારા TV પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8875657656876809964">વીડિયો પ્લેબૅક ભૂલ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

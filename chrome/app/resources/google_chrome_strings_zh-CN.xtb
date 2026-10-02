@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chrome 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1226003169284463347">如需在您的所有设备上获取书签等内容，请登录 Chrome</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1289911795790071537">使用 Chrome 打开搜索功能</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION" />权限。</translation>
 <translation id="2106831557840787829">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="2108778574543343055">为应用停用 Chrome 后台运行功能</translation>
+<translation id="2111985952714409792">如需在您的所有设备上获取扩展程序等内容，请登录 Chrome</translation>
 <translation id="2120620239521071941">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="2121284319307530122">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="2123055963409958220">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chrome</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">保留在程序坞中</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
+<translation id="2358140144860869442">如需在您的所有设备上获取阅读清单等内容，请登录 Chrome</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
@@ -172,6 +175,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 会定期检查，确保您的浏览器采用了最优安全设置。如需审核任何事项，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
+<translation id="2661616016316841783">如需获取<ph name="DEVICE" />中的扩展程序等内容，请登录 Chrome</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
 <translation id="2674238339205910678">由于您的账号登录详细信息已过期，ChromeOS Flex 无法将 Chrome 数据保存到您的 Google 账号</translation>
@@ -243,6 +247,7 @@
 <translation id="3242486428260808857">网购更尽兴，尽在 <ph name="DEVICE_TYPE" /> 版 Chrome 应用</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3249558306861350254">在 Windows 设置中点击<ph name="BEGIN_BOLD" />设为默认<ph name="END_BOLD" />。</translation>
+<translation id="3258706751219502154">如需获取<ph name="DEVICE" />中的书签等内容，请登录 Chrome</translation>
 <translation id="3259748324892322072">获取 Chrome 应用</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
@@ -342,6 +347,7 @@
 <translation id="4280647692742956593">在手机上下载 Chrome，随时随地打开现有标签页分组或创建新标签页分组。</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="430327780270213103">允许扩展程序在 Chrome 工具栏中显示访问请求</translation>
+<translation id="4312908933392839680">如需在您的所有设备上获取保存的信息等内容，请登录 Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome 建议您暂停导致浏览器运行缓慢的标签页}other{Chrome 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="4328355335528187361">Google Chrome 开发者版 (mDNS-In)</translation>
 <translation id="4329315893554541805">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chrome</translation>
@@ -507,7 +513,9 @@
 <translation id="6046028983725193307">如需分享系统音频，请打开“系统设置”，并为 Chrome 启用“仅系统录音”。然后，您需要重启 Chrome。</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
+<translation id="6071642418303142778">如需获取<ph name="DEVICE" />中的密码等内容，请登录 Chrome</translation>
 <translation id="6075300983329039771">您的组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
+<translation id="6077365059401096066">如需获取<ph name="DEVICE" />中的阅读清单等内容，请登录 Chrome</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6116004140911290070">在 Chrome 中启用技能</translation>
 <translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
@@ -705,6 +713,7 @@
 <translation id="7804947029129221742">搜索引擎已被 Chrome 之外的其他应用更改。为保护您的安全，Chrome 已将其重置为原始默认设置。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
+<translation id="7829850924999627855">如需获取<ph name="DEVICE" />中保存的信息等内容，请登录 Chrome</translation>
 <translation id="7832314606810669113">如需在您的所有设备上获取书签等信息，请登录 Chrome。登录后，此书签将保存到您的 Google 账号。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7847170235260850604">在 Windows 启动时启动 Chrome</translation>

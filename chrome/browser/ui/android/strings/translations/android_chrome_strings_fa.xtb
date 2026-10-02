@@ -1696,6 +1696,7 @@
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="764047009170754705">‏موافقت کردن با یافته‌های Chrome بسته شده است</translation>
+<translation id="7645712301713737707">چیدمان زبانه را سفارشی‌سازی کنید تا در بالا یا در کنار مرورگر نشان داده شود.</translation>
 <translation id="7646499124171960488">برای سایت‌های عمومی ناامن به شما هشدار می‌دهد</translation>
 <translation id="7655240423373329753">۷ روز گذشته</translation>
 <translation id="7656721520530864426">سایتی وجود ندارد</translation>
@@ -1866,7 +1867,7 @@
 <translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
 <translation id="8266753737658117282">ادامه دادن با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">مکان بارگیری</translation>
-<translation id="8271267069224406035">گزارش هرزنامه</translation>
+<translation id="8271267069224406035">گزارش کردن به‌عنوان هرزنامه</translation>
 <translation id="8277710303010772444">شروع جستجو</translation>
 <translation id="8279945625179116733">تأمین امنیت با <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">رد شدن</translation>
@@ -2002,6 +2003,7 @@
 <translation id="8816556050903368450">ازجمله پیوند: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">محتوای زبانه پیش‌نمایش قابل‌مشاهده نیست.</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
+<translation id="8822533681006532064">‏برای صحبت کردن با Gemini، اجازه دهید از میکروفون شما استفاده کند. می‌توانید این را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> نیز مدیریت کنید.</translation>
 <translation id="8840953339110955557">ممکن است این صفحه با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">پنهان</translation>

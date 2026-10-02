@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Инструментът за откриване и отстраняване на грешки е поставен на пауза в друг раздел. Кликнете, за да превключите към него.</translation>
 <translation id="1171774979989969504">Моля, въведете имейл адрес.</translation>
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="1254779809141342904">Този сигнал от CAP използва технология, наречена XSLT. Тази функционалност ще бъде <ph name="REMOVAL_LINK" />. Когато това се случи, този сигнал ще се показва като необработени XML данни. Възможно е да можете да <ph name="EXTENSION_LINK" />, за да продължите да го преглеждате.</translation>
 <translation id="1306460908038601864">Изключване</translation>
 <translation id="1311894908970423688">Стойността трябва да е <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Нормално</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2746543609216772311">Стойността трябва да е <ph name="MINIMUM_DATE_OR_TIME" /> или по-късно.</translation>
 <translation id="2761667185364618470">Моля, поставете отметка в това квадратче, ако искате да продължите.</translation>
+<translation id="2854734116215697908">премахната от този браузър</translation>
 <translation id="2908441821576996758">Моля, въведете списък с имейл адреси, разделени със запетаи.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Моля, въведете валидна стойност. Данните в полето са непълни или датата е невалидна.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5630795885300617244">Докоснете два пъти стрелката наляво или надясно, за да пропуснете 10 сек</translation>
 <translation id="57838592816432529">Заглушаване</translation>
+<translation id="5855560023261018690">премахната от този браузър много скоро</translation>
 <translation id="5868587040512539609">Видеозаписи</translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5888666972993069672">В момента се предава към „<ph name="DEVICE_FRIENDLY_NAME" />“</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Изход от „Картина в картината“</translation>
 <translation id="6484738902856791350">Отпечатване с форматиране</translation>
 <translation id="6550675742724504774">Опции</translation>
+<translation id="65574987622079584">инсталирате разширение за браузъра</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6661136971638885481">Запис №<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Друг...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Тази седмица</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
+<translation id="8243989288843872594">Никога да не се показва това предупреждение</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="835897206747267392">Невалидна стойност.</translation>
 <translation id="839593075537728968">Стойността трябва да бъде между <ph name="MINIMUM_TIME" /> и <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пренасяне на нов ред</translation>
 <translation id="8750798805984357768">Моля, изберете една от тези опции.</translation>
+<translation id="8753001114009816390">Този сайт използва XSLT. Тази функционалност ще бъде <ph name="REMOVAL_LINK" />. Когато това се случи, тази страница вероятно вече няма да се показва правилно. Възможно е да можете да <ph name="EXTENSION_LINK" />, за да продължите да я преглеждате. В противен случай трябва да се свържете с човека, който поддържа сайта, за допълнителна информация.</translation>
 <translation id="8845239796550121995">В момента се предава към телевизора ви</translation>
 <translation id="8875657656876809964">Грешка при възпроизвеждането на видеоклипа</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KБ</translation>

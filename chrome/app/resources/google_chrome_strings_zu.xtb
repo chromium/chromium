@@ -30,6 +30,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1194807384646768652">I-Chrome ivimbele lokhu kudawunilodwa ngoba uhlobo lwefayela alivamile ukudawunilodwa futhi lingase libe yingozi</translation>
 <translation id="1197860368385086056">Ngokuzayo uma uvula iChrome ku-<ph name="DEVICE_TYPE" /> yakho, uzobona umyalelo wokusebenzisa izexwayiso zokulandelela intengo.</translation>
 <translation id="1203500561924088507">Siyabonga ngokufaka. Kufanele uqale kabusha ibhrawuza yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Ukuze uthole amabhukhimakhi akho nokunye kuwo wonke amadivayisi akho, ngena ngemvume kuChrome.</translation>
 <translation id="1278833599417554002">Qalisa kabusha ukuze ubuyekeze i-&amp;Chrome</translation>
 <translation id="1289911795790071537">Vula usesho ngeChrome</translation>
 <translation id="1290883685122687410">Iphutha lesethaphu: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2096213354152647998">Awukavakashi kamuva nje. IChrome isuse i-<ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">I-ChromeOS Flex yenzeka <ph name="BEGIN_LINK_CROS_OSS" />ngenxa yesofthiwe yomthombo ovulekile eyengeziwe<ph name="END_LINK_CROS_OSS" />, njengoba kunjalo <ph name="BEGIN_LINK_LINUX_OSS" />ngendawo yokuthuthukiswa kwe-Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Vala iChrome Esebenza Ngemuva kuma-App</translation>
+<translation id="2111985952714409792">Ukuze uthole izandiso zakho nokunye kuwo wonke amadivayisi akho, ngena ngemvume kuChrome</translation>
 <translation id="2120620239521071941">Lokhu kuzosusa izinto ezingu-<ph name="ITEMS_COUNT" /> kusuka kule divayisi. kuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Qalisa kabusha ukuze Ubuyekeze i-&amp;Chrome</translation>
 <translation id="2123055963409958220">Siza ukwenza i-Chrome ibengcono ngokubika <ph name="BEGIN_LINK" />izilungiselelo zamanje<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2307973900865360088">Kugcine Edokhini</translation>
 <translation id="2309047409763057870">Lokhu ukufakwa kwesibili kwe-Google Chrome, futhi akukwazi ukwenziwa isiphequluli sakho esizenzakalelayo.</translation>
 <translation id="2345992953227471816">I-Chrome ithole ukuthi lezi zandiso zinohlelo olungayilungele ikhompyutha:</translation>
+<translation id="2358140144860869442">Ukuze uthole uhlu lokufundayo nokunye kuwo wonke amadivayisi akho, ngena ngemvume kuChrome</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2403703063067034158">Iphutha lokuqala: esinye isenzakalo sokusetha siyaqalisa okwamanje, sicela uzame futhi ngokuhamba kwesikhathi.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Idivayisi e-1 ye-HID ibifinyelelwa yisandiso se-Chrome esisodwa noma eziningi}=1{Idivayisi e-1 ye-HID ifinyelelwa yisandiso se-Chrome esisodwa noma eziningi}one{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chrome esisodwa noma eziningi}other{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chrome esisodwa noma eziningi}}</translation>
@@ -176,6 +179,7 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="2645435784669275700">I-ChromeOS</translation>
 <translation id="2649768380733403658">I-Chrome ihlale ihlola ukuze iqinisekise ukuthi ibhrawuza inamasethingi aphephe kakhulu. Sizokwazisa uma kukhona okudinga ukubuyekezwa.</translation>
 <translation id="2652691236519827073">Vula isixhumanisi ku&amp;thebhu entsha ye-Chrome</translation>
+<translation id="2661616016316841783">Ukuze uthole izandiso zakho nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="2665296953892887393">Siza wenze i-Google Chrome ibe ngcono ngokuthumela imibiko yokuphahlazeka ne-<ph name="UMA_LINK" /> ku-Google</translation>
 <translation id="2668094785979141847">Chofoza ukuze uphume ku-Google Lens</translation>
 <translation id="2674238339205910678">IChromeOS Flex ayikwazanga ukulondoloza idatha yeChrome kuGoogle Account yakho ngoba imininingwane yakho yokungena ngemvume ku-akhawunti iphelelwe yisikhathi</translation>
@@ -247,6 +251,7 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3242486428260808857">Thola okwengeziwe ngokuthenga ku-inthanethi uma usebenzisa i-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="3245429137663807393">Uma futhi wabelana ngemibiko yokusetshenziswa kwe-Chrome, leyo mibiko ihlanganisa nama-URL owavakashelayo</translation>
 <translation id="3249558306861350254">Chofoza okuthi <ph name="BEGIN_BOLD" />Setha Okuzenzakalelayo<ph name="END_BOLD" /> kumasethingi akho eWindows.</translation>
+<translation id="3258706751219502154">Ukuze uthole amabhukhimakhi akho nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="3259748324892322072">Thola i-App yeChrome</translation>
 <translation id="3282568296779691940">Ngena ngemvume ku-Chrome</translation>
 <translation id="3286538390144397061">Qala kabusha manje</translation>
@@ -345,6 +350,7 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4280647692742956593">Dawuniloda iChrome efonini yakho ukuze uvule noma usungule amaqembu amasha amathebhu usendleleni.</translation>
 <translation id="4281844954008187215">Imigomo yesevisi</translation>
 <translation id="430327780270213103">Vumela isandiso ukuze ubonise izicelo zokufinyelela kubha yamathuluzi ye-Chrome</translation>
+<translation id="4312908933392839680">Ukuze uthole imininingwane oyigcinile nokunye kuwo wonke amadivayisi akho, ngena ngemvume kuChrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{IChromium Incoma Ukumisa Ithebhu Enciphisa Ijubane Lebhrawuza Yakho}one{IChromium Incoma Ukumisa Amathebhu Anciphisa Ijubane Lebhrawuza Yakho}other{IChromium Incoma Ukumisa Amathebhu Anciphisa Ijubane Lebhrawuza Yakho}}</translation>
 <translation id="4328355335528187361">I-Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Ukuze uthole ukwenza ngokomuntu ngamunye nezinye izakhi, ezifaka i-Chrome Kumsebenzi wewebhu nowe-app nakumasevisi alinkiwe e-Google</translation>
@@ -514,7 +520,9 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6046028983725193307">Ukuze wabelane ngomsindo wohlelo, vula Amasethingi Ohlelo bese uvumela okuthi 'Ukurekhodwa Komsindo Wohlelo Kuphela' kuChrome. Ngemva kwalokho kuzodingeka uqale kabusha iChrome.</translation>
 <translation id="6069027071882229820">Kopisha njengesithombe</translation>
 <translation id="6070348360322141662">Ngokuvikela okungeziwe, i-Google Chromium izobethela idatha yakho</translation>
+<translation id="6071642418303142778">Ukuze uthole amaphasiwedi akho nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="6075300983329039771">Inhlangano yakho, ebizwa <ph name="MANAGER" />, ifuna ungene ngemvume kuChrome</translation>
+<translation id="6077365059401096066">Ukuze uthole uhlu lokufundayo nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="6113794647360055231">I-Chrome isanda kuba ngcono</translation>
 <translation id="6116004140911290070">Sebenzisa Amakhono kuChrome</translation>
 <translation id="6116252277240876590">Lolu limi lusetshenziselwa ukubonisa amamenyu, amasethingi, izexwayiso, nomunye umbhalo kuChrome</translation>
@@ -712,6 +720,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7804947029129221742">Injini yakho yokusesha ishintshwe ngaphandle kweChrome. Ukuze ikuvikele, iChrome iyisethe kabusha ibuyele kokuzenzakalelayo kwayo kwasekuqaleni. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Susa kusuka ku-Chrome...</translation>
 <translation id="7827099906024714326">IChrome idinga ukuqinisekisa ukuthi uwena ngaphambi kokuthi idatha ethile ilondolozwe kuGoogle Account yakho futhi isetshenziswe kuwo wonke amadivayisi akho. Uma uphuma ngemvume manje, le datha izosulwa.</translation>
+<translation id="7829850924999627855">Ukuze uthole imininingwane oyigcinile nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="7832314606810669113">Ukuze uthole amabhukhimakhi nokuningi kuwo wonke amadivayisi akho, ngena ngemvume kuChrome. Le bhokhimakhi izolondolozwa kuGoogle Account yakho ngemva kokungena ngemvume.</translation>
 <translation id="7845233973568007926">Siyabonga ngokufaka. Kufanele uqalise kabusha ikhompyutha yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Qalisa iChrome uma iWindows iqala</translation>

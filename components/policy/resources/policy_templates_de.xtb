@@ -121,11 +121,6 @@ Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter http
 <translation id="1076751984131277498">Zulassungsliste von trennbaren USB-Geräten</translation>
 <translation id="1077675271127011209">Berichte mit Nutzungs- und Absturzdaten deaktivieren</translation>
 <translation id="1079498696402787191">Standardwert für Hashes verwenden, die in TLS-Handshakes zulässig sind.</translation>
-<translation id="1081263326166769685">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden Messwerte und Diagnosedaten nicht gemeldet.
-
-Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
-
-Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="1081470306474387129">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
 Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
 
@@ -942,7 +937,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" /> erlauben, Verbindungen zu Geräten unter allen IP-Adressen herzustellen</translation>
 <translation id="1626379196197114720">Verwendung des Back-Forward-Cache zulassen</translation>
 <translation id="1628974048137236820">Die „Neuer Tab“-Seite zeigt keine Karten an</translation>
-<translation id="1628984674324273832">„Mit Gemini suchen und ausfüllen“ nicht zulassen.</translation>
 <translation id="163200210584085447">Muster in dieser Liste werden mit der Sicherheitsherkunft
       der anfragenden URL abgeglichen. Bei einer Übereinstimmung wird der Zugriff
       auf Videoaufnahmegeräte auf SAML-Log-in-Seiten gestattet. Wird keine Übereinstimmung
@@ -1710,7 +1704,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="2107601598727098402">
         Diese Richtlinie wird in M72 eingestellt. Verwenden sie stattdessen CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">„Mit Gemini suchen und ausfüllen“ zulassen, ohne KI-Modelle zu verbessern.</translation>
 <translation id="2112656109118682849">Nutzern erlauben, das Einblenden von Systeminformationen auf dem Anmeldebildschirm ein- oder auszuschalten</translation>
 <translation id="2113068765175018713">Betriebsdauer der Geräte durch automatische Neustarts begrenzen</translation>
 <translation id="211386002920955760">Damit lässt sich festlegen, ob ein Nutzer in einer Unternehmensumgebung auf die Chrome-Funktion zum Teilen von Tabgruppen zugreifen kann.
@@ -1803,6 +1796,7 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Browser versuchen, Arbeitsspeicher zu leeren, wenn der verfügbare Arbeitsspeicher auf dem jeweiligen Gerät gering ist.</translation>
 <translation id="2161348910646846717">Nutzern erlauben, die Release-Version zu ändern</translation>
 <translation id="2162703823039992020">Kontextbezogene Integrationen von Google-Diensten in <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">Die Webanwendungs-URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz für diese Organisation. Muss eine gültige HTTPS-URL sein.</translation>
 <translation id="2166155400701622446">Es gibt eine in <ph name="PRODUCT_NAME" /> integrierte Liste beschränkter Ports. Verbindungen zu diesen Ports schlagen fehl. Mit dieser Einstellung wird das Umgehen dieser Liste erlaubt. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
 
       Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann dein Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient der vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
@@ -2188,9 +2182,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2421779938235645781">Hintergrundbeleuchtung der Tastatur auf aktuellen Hintergrund abgestimmt</translation>
 <translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2423654977291507457">Integrationen deaktivieren</translation>
-<translation id="2424141395604579502">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen, ändern oder hochladen.
-
-      Ist sie auf „False“ gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen, ändern oder hochladen. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="242521047682347997">Nutzern nicht erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="2426782419955104525">Hiermit wird die Instant-Funktion von <ph name="PRODUCT_NAME" /> aktiviert und verhindert, dass Nutzer diese Einstellung ändern können.
 
@@ -6237,13 +6228,6 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
 <translation id="4950447493143157880">Integrierten DNS-Client nie verwenden</translation>
 <translation id="4953541641325278286">Keiner Website erlauben, den Inaktivitätsstatus des Nutzers zu erkennen</translation>
-<translation id="4954185885991137927">Wenn diese Richtlinie aktiviert ist, wird die erweiterte Berichterstellung bei der Verwendung von Safe Browsing in <ph name="PRODUCT_NAME" /> aktiviert. Einige Systeminformationen und Seiteninhalte werden dadurch an Google gesendet, um bei der Erkennung schädlicher Apps und Websites zu helfen.
-
-      Ist die Richtlinie deaktiviert, werden keine Berichte gesendet.
-
-      Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob sie Berichte senden möchten.
-
-      Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="4954352279763128540">Dadurch wird dem Dialogfeld für die Kerberos-Authentifizierung eine vorausgefüllte Domain hinzugefügt.
 
           Wenn diese Richtlinie konfiguriert ist, wird rechts im Feld „Kerberos-Nutzername“ die vorausgefüllte Domain angezeigt. Gibt der Nutzer seinen Nutzernamen ein, wird er mit der vorausgefüllten Domain verkettet. Falls die Eingabe des Nutzers „@“ enthält, wird die vorausgefüllte Domain nicht angezeigt und hat keine Auswirkungen auf die Eingabe.
@@ -6408,7 +6392,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">„Mit Gemini suchen und ausfüllen“ zulassen und KI-Modelle verbessern.</translation>
 <translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
 <translation id="5073788301065423829">Mit dieser Richtlinie wird „Formuliere für mich“ für ChromeOS aktiviert oder deaktiviert.
 
@@ -9867,7 +9850,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="7136237405361383549">Standard-Renderer basierend auf der Konfiguration des Feldtests verwenden.</translation>
 <translation id="7138762292550697459">Mindestzeitlimit für JavaScript-Funktion setTimeout() steuern.</translation>
 <translation id="7138792262152376158">Die für die Einstellung der PrefixedVideoFullscreen API vorgesehene Zeitfenster werden eingehalten</translation>
-<translation id="7140755255968613921">Einstellungen für „Mit Gemini suchen und ausfüllen“</translation>
 <translation id="7140760943584613237">Microsoft®-Cloud-Identitätsanbieter</translation>
 <translation id="714219487865269980">„Objekt mit Tastaturfokus hervorheben“ aktivieren</translation>
 <translation id="7144022711746703451">
@@ -10285,19 +10267,6 @@ Tatsächliche Werte sensibler Daten (z. B. Cookies oder Eingabewerte) werden NI
 <translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7406039009275722824">Wenn du die <ph name="CHROME_SYNC_NAME" /> deaktivierst, funktioniert der Android-Dienst „Sichern und wiederherstellen“ nicht mehr richtig.</translation>
 <translation id="7406276857470642718">Legt die Einstellungen für Nutzer fest, die über SAML mit einer externen IdP authentifiziert sind</translation>
-<translation id="7407431811343706437">Steuert, ob Nutzer die Funktion „Mit Gemini suchen und ausfüllen“ in <ph name="PRODUCT_NAME" /> verwenden können.
-
-„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellenmaterial und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellenmaterial und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Diese Richtlinie hat keine Auswirkungen, wenn die Gemini App deaktiviert ist. Beispielsweise kann die Gemini App durch die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ deaktiviert werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Mit dieser Richtlinie wird die Netzwerkvorhersage bei <ph name="PRODUCT_NAME" /> gesteuert. Mit ihr werden der DNS-Vorabruf, die TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, wird die Netzwerkvorhersage aktiviert, aber sie kann von Nutzern nicht geändert werden.</translation>
@@ -12775,6 +12744,9 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
       Wenn die URI-Vorlage eine <ph name="HTTP_VARIABLE_DNS" />-Variable enthält, verwenden Anfragen an den Resolver <ph name="HTTP_METHOD_GET" />; andernfalls verwenden Anfragen <ph name="HTTP_METHOD_POST" />.
 
       Inkorrekt formatierte Vorlagen werden ignoriert.</translation>
+<translation id="9066972193987544412">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen, ändern oder hochladen.
+
+      Ist sie deaktiviert, können Nutzer keine Lesezeichen hinzufügen, entfernen, ändern oder hochladen. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="9068629430243705879">Port 6566 (Blockierung kann bis 15.10.2021 aufgehoben werden)</translation>
 <translation id="9069432851455606924">Einstellungen für die Standortbestimmung</translation>
 <translation id="9069503402414011061">Wenn die Richtlinie konfiguriert ist, wird die Cache-Lebensdauer für Authentifizierungsdaten in Stunden festgelegt. Im Cache befinden sich Daten zu Bereichen, die der Computer als vertrauenswürdig einstuft, d. h. verwandte Bereiche. Das Speichern von Authentifizierungsdaten im Cache beschleunigt die Anmeldung. Im Cache werden keine nutzerspezifischen Daten und auch keine Daten zu nicht verwandten Bereichen gespeichert.

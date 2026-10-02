@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">โปรแกรมแก้ไขข้อบกพร่องหยุดชั่วคราวในแท็บอื่น คลิกเพื่อเปลี่ยนไปยังแท็บนั้น</translation>
 <translation id="1171774979989969504">โปรดป้อนที่อยู่อีเมล</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
+<translation id="1254779809141342904">การแจ้งเตือน CAP นี้ใช้เทคโนโลยีที่เรียกว่า XSLT ซึ่งฟังก์ชันการทำงานดังกล่าวถูก<ph name="REMOVAL_LINK" /> เมื่อเกิดเหตุการณ์ดังกล่าว การแจ้งเตือนนี้จะแสดงเป็นข้อมูล XML แบบ RAW คุณอาจ<ph name="EXTENSION_LINK" />ที่ช่วยให้ดูต่อไปได้</translation>
 <translation id="1306460908038601864">ปิด</translation>
 <translation id="1311894908970423688">ค่าต้องเป็น <ph name="VALUE_DATE_OR_TIME" /></translation>
 <translation id="1588438908519853928">ปกติ</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2746543609216772311">ค่าต้องเป็น <ph name="MINIMUM_DATE_OR_TIME" /> หรือหลังจากนั้น</translation>
 <translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
+<translation id="2854734116215697908">นำออกจากเบราว์เซอร์นี้แล้ว</translation>
 <translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">โปรดป้อนค่าที่ถูกต้อง ฟิลด์นี้ไม่สมบูรณ์หรือมีวันที่ที่ไม่ถูกต้อง</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">แคสต์</translation>
 <translation id="5630795885300617244">แตะ 2 ครั้งที่ด้านขวาหรือซ้ายเพื่อข้ามทีละ 10 วินาที</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
+<translation id="5855560023261018690">นำออกจากเบราว์เซอร์นี้ในเร็วๆ นี้</translation>
 <translation id="5868587040512539609">แทร็กวิดีโอ</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5888666972993069672">ขณะนี้กำลังแคสต์ไปที่ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ออกจากการแสดงภาพซ้อนภาพ</translation>
 <translation id="6484738902856791350">จัดรูปแบบ</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
+<translation id="65574987622079584">ติดตั้งส่วนขยายเบราว์เซอร์</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6661136971638885481">แทร็ก #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">อื่นๆ...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">สัปดาห์นี้</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ปปปป</translation>
+<translation id="8243989288843872594">ไม่ต้องแสดงคำเตือนนี้อีก</translation>
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="835897206747267392">ค่าไม่ถูกต้อง</translation>
 <translation id="839593075537728968">ค่าต้องอยู่ระหว่าง <ph name="MINIMUM_TIME" /> ถึง <ph name="MAXIMUM_TIME" /></translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">การตัดขึ้นบรรทัดใหม่</translation>
 <translation id="8750798805984357768">โปรดเลือกตัวเลือกอย่างหนึ่งอย่างใดเหล่านี้</translation>
+<translation id="8753001114009816390">เว็บไซต์นี้ใช้ XSLT ซึ่งเป็นฟังก์ชันการทำงานที่กำลังจะ<ph name="REMOVAL_LINK" /> เมื่อถึงเวลานั้น หน้านี้อาจแสดงผลไม่ถูกต้องอีกต่อไป คุณอาจ<ph name="EXTENSION_LINK" />ที่ช่วยให้ดูต่อไปได้ มิเช่นนั้น คุณควรติดต่อผู้ดูแลเว็บไซต์เพื่อขอข้อมูลเพิ่มเติม</translation>
 <translation id="8845239796550121995">ตอนนี้กำลังแคสต์ไปยัง TV</translation>
 <translation id="8875657656876809964">ข้อผิดพลาดในการเล่นวิดีโอ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

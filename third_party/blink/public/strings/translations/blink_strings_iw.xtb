@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">הכלי לניפוי באגים מושהה בכרטיסייה אחרת. צריך ללחוץ כדי לעבור לכרטיסייה הזו.</translation>
 <translation id="1171774979989969504">הזנת כתובת אימייל.</translation>
 <translation id="1178581264944972037">השהיה</translation>
+<translation id="1254779809141342904">‏בהתראה הזו של CAP נעשה שימוש בטכנולוגיה שנקראת XSLT. הפונקציונליות הזו <ph name="REMOVAL_LINK" />. אחרי ההסרה, ההתראה הזו תוצג כנתוני XML גולמיים. יכול להיות שתהיה לך אפשרות <ph name="EXTENSION_LINK" /> כדי להמשיך לראות אותה.</translation>
 <translation id="1306460908038601864">כבוי</translation>
 <translation id="1311894908970423688">הערך חייב להיות <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">רגיל</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2746543609216772311">על הערך להיות <ph name="MINIMUM_DATE_OR_TIME" /> ומעלה.</translation>
 <translation id="2761667185364618470">יש לסמן את התיבה הזאת כדי להמשיך.</translation>
+<translation id="2854734116215697908">הוסרה מהדפדפן הזה</translation>
 <translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל המופרדות באמצעות פסיקים.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">‏הפעלת Cast</translation>
 <translation id="5630795885300617244">לחיצה כפולה בצד ימין או שמאל מדלגת על 10 שניות</translation>
 <translation id="57838592816432529">השתקה</translation>
+<translation id="5855560023261018690">תוסר מהדפדפן הזה בקרוב מאוד</translation>
 <translation id="5868587040512539609">טראקים של וידאו</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5888666972993069672">מתבצעת העברה אל <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">יציאה ממצב 'תמונה בתוך תמונה'</translation>
 <translation id="6484738902856791350">הדפסה יפה</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
+<translation id="65574987622079584">התקנת תוסף לדפדפן</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6661136971638885481">‏טראק ‎#<ph name="TRACK_NUMBER" />‎</translation>
 <translation id="668171684555832681">אחר...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">השבוע</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">אני לא רוצה לראות את האזהרה הזו שוב</translation>
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="835897206747267392">ערך לא חוקי.</translation>
 <translation id="839593075537728968">יש להזין ערך בין <ph name="MINIMUM_TIME" /> לבין <ph name="MAXIMUM_TIME" /></translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">גלישת שורות</translation>
 <translation id="8750798805984357768">יש לבחור אחת מהאפשרויות הבאות.</translation>
+<translation id="8753001114009816390">‏באתר הזה נעשה שימוש בטכנולוגיית XSLT. הפונקציונליות הזו <ph name="REMOVAL_LINK" />. אחרי שהיא תוסר, יכול להיות שהדף הזה לא יוצג בצורה תקינה. יכול להיות שתהיה לך אפשרות <ph name="EXTENSION_LINK" /> כדי להמשיך לראות אותה. אם לא, עליך לפנות למנהל האתר כדי לקבל מידע נוסף.</translation>
 <translation id="8845239796550121995">העברת תוכן לטלוויזיה מתבצעת</translation>
 <translation id="8875657656876809964">שגיאה בהפעלת הסרטון</translation>
 <translation id="8901569739625249689">‏<ph name="QUANTITY" />KB‏</translation>

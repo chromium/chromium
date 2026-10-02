@@ -44,6 +44,7 @@
 <translation id="141901961143729572">의견 공유</translation>
 <translation id="1465192221147974788">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
+<translation id="147870194906295621"><ph name="DEVICE" />에서 저장된 정보 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">보호된 페이지입니다</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
@@ -191,6 +192,7 @@
 <translation id="3012615494352020668">{count,plural, =1{일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chromium에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터(항목 1개)가 삭제됩니다}other{일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chromium에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터(항목 {count}개)가 삭제됩니다}}</translation>
 <translation id="3013473503895162900">Chromium의 새 탭에서 <ph name="URL" /> 주소가 열립니다.</translation>
 <translation id="302551344979399011">스킬과 같은 AI 혁신 기술은 Google 계정에 저장되며 Chromium 동기화와 별도로 관리됩니다</translation>
+<translation id="3032219013429286568">모든 기기에서 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
 <translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
@@ -201,6 +203,7 @@
 <translation id="3068515742935458733">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chromium 개선에 참여합니다.</translation>
 <translation id="3071024987058544609">Chromium 앱을 사용하여 이동 중에도 Google의 안전 기능을 활용하세요.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 USB 기기 #대에 액세스 중}}</translation>
+<translation id="3090734884397229414"><ph name="DEVICE" />에서 읽기 목록 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3095811995836568724">Chromium 방문 기록</translation>
 <translation id="3103660991484857065">설치 프로그램이 보관 파일 압축 풀기에 실패했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="310459126943037700">작업을 종료할 수 없습니다.</translation>
@@ -222,6 +225,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS에서 Chromium을 사용하여 이동 중에도 즐겨 사용하는 Google AI 도구를 활용하세요.</translation>
+<translation id="3264761466044851269"><ph name="DEVICE" />에서 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="328888136576916638">Google API 키가 누락되었습니다. Chromium의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="3296368748942286671">Chromium 종료 후에도 백그라운드 앱을 계속 실행</translation>
@@ -233,6 +237,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3412460710772753638">기기의 비밀번호 관리자에 업데이트합니다.</translation>
+<translation id="3427159664004296878"><ph name="DEVICE" />에서 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3438772217992559640">이미지 검색으로 이 탭 검색</translation>
 <translation id="3455907671758333080">휴대전화에서 Chromium으로 향상된 세이프 브라우징을 확장하세요</translation>
 <translation id="3461644266919055473">나만의 Chromium 만들기...</translation>
@@ -265,6 +270,7 @@
 
           **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">모든 기기에서 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
@@ -273,6 +279,7 @@
 <translation id="3909353120217047026">이 확장 프로그램은 Chrome 웹 스토어 정책을 위반하며, 안전하지 않을 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chromium에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="3945058413678539331">Chromium에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="3950481960271781644">모든 기기에서 저장된 정보 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3954172517175569325">Google 계정에 저장된 비밀번호, 결제 수단, 주소가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="395904275706073188">보호된 페이지는 읽을 수 없습니다. 다른 페이지를 사용해 보세요.</translation>
 <translation id="3962647064319009959">Chromium이 사용자를 안전하게 보호하는 방법 알아보기</translation>
@@ -361,6 +368,7 @@
 <translation id="4893347770495441059">다시 실행하여 Chromium 업데이트</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4918844574251943176">이미지 복사됨</translation>
+<translation id="4919431996536326528">모든 기기에서 읽기 목록 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="4943838377383847465">Chromium이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="494490797786467921">클릭하여 Chromium 로그인 대화상자 닫기</translation>
 <translation id="4950660488495335294">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요</translation>
@@ -791,6 +799,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="904366664621834601">보관 파일에 멀웨어를 숨길 수 있는 다른 파일이 포함되어 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
 <translation id="9053882453960391422">비밀번호, 북마크, 방문 기록을 모든 기기에서 완벽하게 동기화하세요. 기본 브라우저를 Chromium으로 업데이트하면 즐겨 사용하는 기능을 간편하게 이용할 수 있습니다. 빠른 액세스를 위해 Chromium이 작업 표시줄에 고정됩니다.</translation>
 <translation id="9056398481763999048">휴대전화에서 Chromium 앱을 사용하여 Google 최고의 AI 도구를 사용하세요</translation>
+<translation id="9057625473949801035"><ph name="DEVICE" />에서 비밀번호 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="9062666675513499497">다른 Google 서비스에 로그인할 때 Chromium에 로그인</translation>
 <translation id="9078733879136747090">Chromium이 자동으로 종료되었습니다</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>

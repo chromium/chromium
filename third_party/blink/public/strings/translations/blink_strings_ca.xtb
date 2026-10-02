@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">El depurador s'ha posat en pausa en una altra pestanya. Fes clic per canviar a aquesta pestanya.</translation>
 <translation id="1171774979989969504">Introduïu una adreça electrònica.</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
+<translation id="1254779809141342904">Aquesta alerta de CAP utilitza una tecnologia anomenada XSLT. Aquesta funcionalitat se <ph name="REMOVAL_LINK" />. Quan això passi, aquesta alerta es mostrarà com a dades XML sense processar. És possible que puguis <ph name="EXTENSION_LINK" /> que et permeti continuar mirant-lo.</translation>
 <translation id="1306460908038601864">Desactivat</translation>
 <translation id="1311894908970423688">El valor ha de ser <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2746543609216772311">El valor ha de ser <ph name="MINIMUM_DATE_OR_TIME" /> o posterior.</translation>
 <translation id="2761667185364618470">Marqueu aquesta casella si voleu continuar.</translation>
+<translation id="2854734116215697908">suprimirà d'aquest navegador</translation>
 <translation id="2908441821576996758">Introduïu una llista d'adreces electròniques separades per comes.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Introduïu un valor vàlid. El camp està incomplet o conté una data no vàlida.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5630795885300617244">Fes doble toc a l'esquerra o a la dreta per saltar 10 s</translation>
 <translation id="57838592816432529">Silencia</translation>
+<translation id="5855560023261018690">suprimirà d'aquest navegador molt aviat</translation>
 <translation id="5868587040512539609">Pistes de vídeo</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5888666972993069672">S'està emetent a <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Surt d'imatge sobre imatge</translation>
 <translation id="6484738902856791350">Aplica estils de format</translation>
 <translation id="6550675742724504774">Opcions</translation>
+<translation id="65574987622079584">instal·lar una extensió del navegador</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6661136971638885481">Pista núm. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Altres...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Aquesta setmana</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">aaaa</translation>
+<translation id="8243989288843872594">No mostris mai aquest advertiment</translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="835897206747267392">Valor no vàlid.</translation>
 <translation id="839593075537728968">El valor ha d'estar entre <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Unió de línies</translation>
 <translation id="8750798805984357768">Seleccioneu una d'aquestes opcions.</translation>
+<translation id="8753001114009816390">Aquest lloc web utilitza XSLT; aquesta funcionalitat se <ph name="REMOVAL_LINK" />. Quan això passi, és probable que aquesta pàgina ja no es mostri correctament. És possible que puguis <ph name="EXTENSION_LINK" /> que et permeti continuar mirant-lo. En cas contrari, contacta amb el mantenidor del lloc web per obtenir més informació.</translation>
 <translation id="8845239796550121995">S'està emetent al televisor</translation>
 <translation id="8875657656876809964">Error de reproducció del vídeo</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

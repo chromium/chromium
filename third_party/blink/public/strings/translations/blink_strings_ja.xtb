@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">デバッガが別のタブで一時停止しています。クリックするとそのタブに切り替わります。</translation>
 <translation id="1171774979989969504">メール アドレスを入力してください。</translation>
 <translation id="1178581264944972037">一時停止</translation>
+<translation id="1254779809141342904">この CAP アラートでは XSLT という技術が使用されていますが、この機能は<ph name="REMOVAL_LINK" />。その場合、このアラートは未加工の XML データとして表示されます。<ph name="EXTENSION_LINK" />すると、引き続き表示できる場合があります。</translation>
 <translation id="1306460908038601864">オフ</translation>
 <translation id="1311894908970423688">値は <ph name="VALUE_DATE_OR_TIME" /> とする必要があります。</translation>
 <translation id="1588438908519853928">ノーマル</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">送信</translation>
 <translation id="2746543609216772311"><ph name="MINIMUM_DATE_OR_TIME" /> 以降の値を指定する必要があります。</translation>
 <translation id="2761667185364618470">次に進むにはこのチェックボックスをオンにしてください。</translation>
+<translation id="2854734116215697908">このブラウザから削除されます</translation>
 <translation id="2908441821576996758">メール アドレスのカンマ区切りリストを入力してください。</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">有効な値を入力してください。フィールドの入力が不完全か、日付が無効です。</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5630795885300617244">左または右をダブルタップして 10 秒スキップします</translation>
 <translation id="57838592816432529">ミュート</translation>
+<translation id="5855560023261018690">まもなくこのブラウザから削除されます</translation>
 <translation id="5868587040512539609">動画トラック</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5888666972993069672">現在 <ph name="DEVICE_FRIENDLY_NAME" /> にキャストしています</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ピクチャー イン ピクチャーを終了</translation>
 <translation id="6484738902856791350">プリティ プリント</translation>
 <translation id="6550675742724504774">オプション</translation>
+<translation id="65574987622079584">ブラウザ拡張機能をインストール</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6661136971638885481">トラック <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">その他...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">今週</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405"> 年 </translation>
+<translation id="8243989288843872594">この警告を今後表示しない</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="835897206747267392">値が無効です。</translation>
 <translation id="839593075537728968">値は <ph name="MINIMUM_TIME" />～<ph name="MAXIMUM_TIME" /> の範囲で指定してください。</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">行を折り返す</translation>
 <translation id="8750798805984357768">これらのオプションから 1 つ選択してください。</translation>
+<translation id="8753001114009816390">このサイトでは XSLT が使用されていますが、この機能は<ph name="REMOVAL_LINK" />。その場合、このページは正しく表示されなくなる可能性があります。<ph name="EXTENSION_LINK" />すると、引き続き表示できる場合があります。それ以外の場合は、サイトの管理者にお問い合わせください。</translation>
 <translation id="8845239796550121995">テレビにキャストしています</translation>
 <translation id="8875657656876809964">動画再生エラー</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

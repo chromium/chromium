@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">تم مؤقتًا إيقاف برنامج تصحيح الأخطاء في علامة تبويب أخرى. انقر للتبديل إلى علامة التبويب تلك.</translation>
 <translation id="1171774979989969504">يُرجى إدخال عنوان البريد الإلكتروني.</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
+<translation id="1254779809141342904">‏يستخدم تنبيه CAP هذا تكنولوجيا تُعرف باسم XSLT، وهي وظيفة <ph name="REMOVAL_LINK" />. عندما يحدث ذلك، سيظهر هذا التنبيه في شكل بيانات XML أولية. وقد يتسنى لك <ph name="EXTENSION_LINK" /> لمواصلة عرض التنبيه.</translation>
 <translation id="1306460908038601864">غير مفعّل</translation>
 <translation id="1311894908970423688">يجب أن تكون القيمة <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">عادي</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
+<translation id="2854734116215697908">ستتم إزالتها من هذا المتصفّح</translation>
 <translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
 <translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
@@ -61,6 +63,7 @@
 <translation id="5537725057119320332">بث</translation>
 <translation id="5630795885300617244">انقر مرّتين جهة اليمين أو اليسار لتخطي 10 ثوانٍ.</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
+<translation id="5855560023261018690">ستتم إزالتها من هذا المتصفّح قريبًا جدًا</translation>
 <translation id="5868587040512539609">مقاطع الفيديو</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5888666972993069672">يتم الإرسال الآن إلى <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -70,6 +73,7 @@
 <translation id="6310801910862476708">الخروج من وضع "نافذة ضمن نافذة"</translation>
 <translation id="6484738902856791350">عرض النص بتنسيق محسّن</translation>
 <translation id="6550675742724504774">خيارات</translation>
+<translation id="65574987622079584">تثبيت إضافة في المتصفّح</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6661136971638885481">المقطع رقم <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ملف تعريف آخر...</translation>
@@ -92,6 +96,7 @@
 <translation id="8117451130807776954">هذا الأسبوع</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">سنة</translation>
+<translation id="8243989288843872594">عدم عرض هذا التحذير مطلقًا</translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="835897206747267392">قيمة غير صحيحة</translation>
 <translation id="839593075537728968">يجب أن تتراوح القيمة بين <ph name="MINIMUM_TIME" /> و<ph name="MAXIMUM_TIME" />.</translation>
@@ -100,6 +105,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">لفّ السطر</translation>
 <translation id="8750798805984357768">يُرجى اختيار أحد هذه الخيارات.</translation>
+<translation id="8753001114009816390">‏يستخدم هذا الموقع الإلكتروني تكنولوجيا XSLT، وهي وظيفة <ph name="REMOVAL_LINK" />. عندما يحدث ذلك، من المحتمل ألا تظهر هذه الصفحة بشكل صحيح. وقد يتسنى لك <ph name="EXTENSION_LINK" /> لمواصلة عرض الصفحة. وفي حال تعذّر ذلك، عليك التواصل مع مسؤول الموقع الإلكتروني للحصول على مزيد من المعلومات.</translation>
 <translation id="8845239796550121995">يتم الآن الإرسال إلى جهاز التلفزيون</translation>
 <translation id="8875657656876809964">خطأ في تشغيل الفيديو.</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> كيلوبايت</translation>
