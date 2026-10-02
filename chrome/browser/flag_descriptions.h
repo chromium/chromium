@@ -7171,6 +7171,10 @@ inline constexpr char kNtpShortcutsRedesignName[] = "NTP Shortcuts Redesign";
 inline constexpr char kNtpShortcutsRedesignDescription[] =
     "Enables the redesigned shortcuts on the New Tab Page.";
 
+inline constexpr char kNtpShortcutsReorderName[] = "NTP Shortcuts Reorder";
+inline constexpr char kNtpShortcutsReorderDescription[] =
+    "Enables shortcut reordering entrypoint on the New Tab Page.";
+
 inline constexpr char kNtpEnableInstantApiAndroidName[] =
     "Enable Instant API on Android";
 inline constexpr char kNtpEnableInstantApiAndroidDescription[] =

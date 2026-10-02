@@ -9510,6 +9510,7 @@ from previous Chrome versions.
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1643872451"
       label="CustomizeChromeWallpaperSearchButton:disabled"/>
+  <int value="-1643317988" label="NtpShortcutsReorder:enabled"/>
   <int value="-1643227464"
       label="AutofillEnableUpdateVirtualCardEnrollment:disabled"/>
   <int value="-1643224308"
@@ -17601,6 +17602,7 @@ from previous Chrome versions.
   <int value="807723668" label="(Obsolete) TranslateAssistContent:enabled"/>
   <int value="807734471" label="tab-management-experiment-type-disabled"/>
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
+  <int value="809169666" label="NtpShortcutsReorder:disabled"/>
   <int value="809404981" label="CrosBatterySaver:enabled"/>
   <int value="810556985" label="NtpAnimatedDoodles:disabled"/>
   <int value="811057677" label="ConfirmNtpSuggestionRemovals:disabled"/>

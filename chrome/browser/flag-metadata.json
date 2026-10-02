@@ -7461,6 +7461,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-shortcuts-reorder",
+    "owners": [ "jennserrano@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-simplification-bookmark-bar",
     "owners": ["jennserrano@google.com"],
     "expiry_milestone": 151

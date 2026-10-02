@@ -7657,6 +7657,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpShortcutsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsRedesign)},
 
+    {"ntp-shortcuts-reorder", flag_descriptions::kNtpShortcutsReorderName,
+     flag_descriptions::kNtpShortcutsReorderDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsReorder)},
+
     {"ntp-threads-rail", flag_descriptions::kNtpThreadsRailName,
      flag_descriptions::kNtpThreadsRailDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpThreadsRail)},
