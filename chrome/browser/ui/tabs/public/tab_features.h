@@ -210,6 +210,7 @@ class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
 class SelectionOverlayController;
+class SelectionSuggestionTool;
 class GlicPageFeaturesManager;
 }  // namespace glic
 
@@ -673,6 +674,8 @@ class TabFeatures {
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
   std::unique_ptr<selection::SuggestionService>
       selection_suggestion_service_;
+  std::unique_ptr<glic::SelectionSuggestionTool>
+      glic_selection_suggestion_tool_;
   std::unique_ptr<glic::SelectionOverlayController>
       glic_selection_overlay_controller_;
 

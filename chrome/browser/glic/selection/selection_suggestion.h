@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_SELECTION_PROMPT_SUGGESTION_H_
-#define CHROME_BROWSER_GLIC_SELECTION_PROMPT_SUGGESTION_H_
+#ifndef CHROME_BROWSER_GLIC_SELECTION_SELECTION_SUGGESTION_H_
+#define CHROME_BROWSER_GLIC_SELECTION_SELECTION_SUGGESTION_H_
 
 #include <string>
 
@@ -16,12 +16,12 @@ class TabInterface;
 
 namespace glic {
 
-class PromptSuggestion : public ::selection::Suggestion {
+class SelectionSuggestion : public ::selection::Suggestion {
  public:
-  PromptSuggestion(tabs::TabInterface& tab,
-                   std::u16string label,
-                   std::string prompt = "");
-  ~PromptSuggestion() override;
+  SelectionSuggestion(tabs::TabInterface& tab,
+                      std::u16string label,
+                      std::string prompt = "");
+  ~SelectionSuggestion() override;
 
   // ::selection::Suggestion:
   const std::u16string& GetLabel() const override;
@@ -39,4 +39,4 @@ class PromptSuggestion : public ::selection::Suggestion {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_SELECTION_PROMPT_SUGGESTION_H_
+#endif  // CHROME_BROWSER_GLIC_SELECTION_SELECTION_SUGGESTION_H_

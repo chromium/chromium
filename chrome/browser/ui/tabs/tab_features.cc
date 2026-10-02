@@ -192,6 +192,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/selection_suggestion_tool.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
@@ -522,6 +523,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<selection::SuggestionService>(
               tab, &tab,
               OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      if (base::FeatureList::IsEnabled(features::kGlicSelectionSuggestions)) {
+        glic_selection_suggestion_tool_ =
+            std::make_unique<glic::SelectionSuggestionTool>(tab);
+      }
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());

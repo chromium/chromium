@@ -16,16 +16,16 @@ source_set("selection") {
     "explain_suggestion.h",
     "inline_cue_blocklist_utils.cc",
     "inline_cue_blocklist_utils.h",
-    "prompt_suggestion.cc",
-    "prompt_suggestion.h",
     "quick_answers_tool.cc",
     "quick_answers_tool.h",
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",
     "selection_overlay_untrusted_ui.h",
-    "static_selection_suggestion_tool.cc",
-    "static_selection_suggestion_tool.h",
+    "selection_suggestion.cc",
+    "selection_suggestion.h",
+    "selection_suggestion_tool.cc",
+    "selection_suggestion_tool.h",
   ]
 
   public_deps = [
@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "explain_selection_trigger_unittest.cc",
     "inline_cue_blocklist_utils_unittest.cc",
     "quick_answers_tool_unittest.cc",
+    "selection_suggestion_tool_unittest.cc",
   ]
   deps = [
     ":selection",
@@ -155,6 +156,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -247,9 +247,6 @@ class SelectionOverlayController
   // Subscription for `OverlayBaseController::overlay_web_view_` taking focus.
   // Scoped to the lifetime of that WebView.
   base::CallbackListSubscription overlay_web_view_focus_subscription_;
-  // The static suggestion tool is only temporary, and will be removed once
-  // suggestions are served from the server endpoint.
-  std::unique_ptr<::selection::SuggestionTool> static_suggestion_tool_;
   std::unique_ptr<::selection::SuggestionTool> quick_answers_tool_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>

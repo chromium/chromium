@@ -21,7 +21,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
-#include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
+#include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -231,13 +231,6 @@ SelectionOverlayController::SelectionOverlayController(
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
-  if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
-    static_suggestion_tool_ =
-        std::make_unique<StaticSelectionSuggestionTool>(CHECK_DEREF(tab_));
-    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
-      suggestion_service->RegisterTool(static_suggestion_tool_.get());
-    }
-  }
   if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions)) {
     quick_answers_tool_ = std::make_unique<QuickAnswersTool>(CHECK_DEREF(tab_));
     if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
@@ -263,11 +256,6 @@ SelectionOverlayController::SelectionOverlayController(
 }
 
 SelectionOverlayController::~SelectionOverlayController() {
-  if (static_suggestion_tool_) {
-    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
-      suggestion_service->UnregisterTool(static_suggestion_tool_.get());
-    }
-  }
   if (quick_answers_tool_) {
     if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
       suggestion_service->UnregisterTool(quick_answers_tool_.get());
@@ -898,6 +886,14 @@ void SelectionOverlayController::RequestNewSuggestions(
   uint64_t generation = ++region_data.generation;
   base::UnguessableToken region_id = region_data.region->id;
 
+  if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
+    std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
+    static_suggestions.emplace_back(std::make_unique<SelectionSuggestion>(
+        CHECK_DEREF(tab_), u"Ask Gemini"));
+    OnSuggestionsReceived(region_id, generation, std::move(static_suggestions),
+                          /*complete=*/false);
+  }
+
   ::selection::AreaOfInterest aoi;
   aoi.screenshot = redacted_screenshot_;
   aoi.selected_text = region_data.selected_text;
@@ -945,14 +941,6 @@ void SelectionOverlayController::OnSuggestionsReceived(
     region_data->suggestions_complete = true;
   }
 
-  if (suggestions.empty()) {
-    if (complete && active_region_id_ == region_id &&
-        suggested_actions_listener_.is_bound()) {
-      suggested_actions_listener_->OnSuggestedActionsAvailable({});
-    }
-    return;
-  }
-
   region_data->suggestions.reserve(region_data->suggestions.size() +
                                    suggestions.size());
   std::vector<selection::SuggestedActionPtr> actions;
@@ -970,7 +958,8 @@ void SelectionOverlayController::OnSuggestionsReceived(
   // This appends the new ones. The `suggested_actions_listener_` will be
   // unbound when the user makes a new selection.
   if (active_region_id_ == region_id &&
-      suggested_actions_listener_.is_bound()) {
+      suggested_actions_listener_.is_bound() &&
+      (complete || !suggestions.empty())) {
     suggested_actions_listener_->OnSuggestedActionsAvailable(
         std::move(actions));
   }

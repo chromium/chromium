@@ -18,14 +18,14 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
-#include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
+#include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/selection/suggestion_tool.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -43,6 +43,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
@@ -205,6 +206,31 @@ class SelectionOverlayInteractiveTestWithPolyline
   base::test::ScopedFeatureList feature_list_;
 };
 
+namespace {
+
+class FakePromptSuggestionTool : public ::selection::SuggestionTool {
+ public:
+  explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {}
+  ~FakePromptSuggestionTool() override = default;
+
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    suggestions.push_back(
+        std::make_unique<SelectionSuggestion>(*tab_, u"Ask Gemini"));
+    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+ private:
+  raw_ptr<tabs::TabInterface> tab_;
+};
+
+}  // namespace
+
 class SelectionOverlayInteractiveTestWithPrompt
     : public SelectionOverlayInteractiveTest {
  public:
@@ -218,27 +244,26 @@ class SelectionOverlayInteractiveTestWithPrompt
   void SetUpOnMainThread() override {
     SelectionOverlayInteractiveTest::SetUpOnMainThread();
     tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-    static_tool_ =
-        std::make_unique<StaticSelectionSuggestionTool>(CHECK_DEREF(tab));
+    fake_tool_ = std::make_unique<FakePromptSuggestionTool>(tab);
     if (auto* service = ::selection::SuggestionService::From(tab)) {
-      service->RegisterTool(static_tool_.get());
+      service->RegisterTool(fake_tool_.get());
     }
   }
 
   void TearDownOnMainThread() override {
     tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-    if (tab && static_tool_) {
+    if (tab && fake_tool_) {
       if (auto* service = ::selection::SuggestionService::From(tab)) {
-        service->UnregisterTool(static_tool_.get());
+        service->UnregisterTool(fake_tool_.get());
       }
     }
-    static_tool_.reset();
+    fake_tool_.reset();
     SelectionOverlayInteractiveTest::TearDownOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<StaticSelectionSuggestionTool> static_tool_;
+  std::unique_ptr<FakePromptSuggestionTool> fake_tool_;
 };
 
 class SelectionOverlayInteractiveTestWithPromptWithoutBox

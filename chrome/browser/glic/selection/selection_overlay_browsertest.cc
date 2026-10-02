@@ -8,8 +8,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/explain_suggestion.h"
-#include "chrome/browser/glic/selection/prompt_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -196,11 +196,11 @@ class FakeStaticSelectionSuggestionTool
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Explain", "Explain the selection in a few sentences."));
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Summarize", "Summarize the selection in a few sentences."));
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Create Image",
         "Create a cartoon styled image from the selection."));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
@@ -225,10 +225,10 @@ class FakeSelectionSuggestionTool
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Translate to Spanish",
         "Translate the selected text to Spanish."));
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Fact check", "Fact check the claims in this section."));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
@@ -537,7 +537,7 @@ class CountingSelectionSuggestionTool
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
     std::u16string label = u"Action " + base::NumberToString16(request_count_);
     suggestions.push_back(
-        std::make_unique<PromptSuggestion>(*tab_, label, "Prompt"));
+        std::make_unique<SelectionSuggestion>(*tab_, label, "Prompt"));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
 
@@ -741,7 +741,7 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<PromptSuggestion>(
+    suggestions.push_back(std::make_unique<SelectionSuggestion>(
         *tab_, u"Explain", "Explain the selection in a few sentences."));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }

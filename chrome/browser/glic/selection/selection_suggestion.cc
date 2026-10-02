@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/selection/prompt_suggestion.h"
+#include "chrome/browser/glic/selection/selection_suggestion.h"
 
 #include <utility>
 
@@ -15,20 +15,20 @@
 
 namespace glic {
 
-PromptSuggestion::PromptSuggestion(tabs::TabInterface& tab,
-                                   std::u16string label,
-                                   std::string prompt)
+SelectionSuggestion::SelectionSuggestion(tabs::TabInterface& tab,
+                                         std::u16string label,
+                                         std::string prompt)
     : tab_(tab), label_(std::move(label)), prompt_(std::move(prompt)) {}
 
-PromptSuggestion::~PromptSuggestion() = default;
+SelectionSuggestion::~SelectionSuggestion() = default;
 
-const std::u16string& PromptSuggestion::GetLabel() const {
+const std::u16string& SelectionSuggestion::GetLabel() const {
   return label_;
 }
 
-void PromptSuggestion::OnSuggestionPresented() {}
+void SelectionSuggestion::OnSuggestionPresented() {}
 
-void PromptSuggestion::OnSuggestionExecuted() {
+void SelectionSuggestion::OnSuggestionExecuted() {
   if (!tab_->GetProfile()) {
     return;
   }
@@ -47,7 +47,7 @@ void PromptSuggestion::OnSuggestionExecuted() {
   }
 }
 
-::selection::mojom::ActionPtr PromptSuggestion::GetAction() const {
+::selection::mojom::ActionPtr SelectionSuggestion::GetAction() const {
   return ::selection::mojom::Action::NewHandoff(
       ::selection::mojom::Handoff::New());
 }
