@@ -327,6 +327,69 @@ export class ComposeboxInputElement extends I18nMixinLit
     this.dispatchEvent(new CustomEvent('input-focusin', {detail: e}));
   }
 
+  protected onInputCopy_(e: ClipboardEvent) {
+    if (!this.composeboxSkillsEnabled || !e.clipboardData) {
+      return;
+    }
+    const sel = this.shadowRoot.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+      return;
+    }
+    const range = sel.getRangeAt(0).cloneRange();
+
+    // Expand range boundaries if they fall inside a chip element so the full
+    // chip is copied.
+    const startElement = range.startContainer instanceof Element ?
+        range.startContainer :
+        range.startContainer.parentElement;
+    const startChip = startElement?.closest(`.${CHIP_CLASS}`);
+    if (startChip) {
+      range.setStartBefore(startChip);
+    }
+    const endElement = range.endContainer instanceof Element ?
+        range.endContainer :
+        range.endContainer.parentElement;
+    const endChip = endElement?.closest(`.${CHIP_CLASS}`);
+    if (endChip) {
+      range.setEndAfter(endChip);
+    }
+
+    const fragment = range.cloneContents();
+    const tempContainer = document.createElement('div');
+    tempContainer.appendChild(fragment);
+
+    const plainText = `${getPlainText(tempContainer).trimEnd()} `;
+    const html =
+        `${tempContainer.innerHTML.replace(/(&nbsp;|\s)+$/, '')}&nbsp;`;
+    e.clipboardData.setData('text/plain', plainText);
+    e.clipboardData.setData('text/html', html);
+    e.preventDefault();
+  }
+
+  protected onInputCut_(e: ClipboardEvent) {
+    this.onInputCopy_(e);
+    if (e.defaultPrevented) {
+      document.execCommand('delete');
+    }
+  }
+
+  protected onInputPaste_(e: ClipboardEvent) {
+    if (!this.composeboxSkillsEnabled || !e.clipboardData ||
+        e.clipboardData.files.length > 0) {
+      return;
+    }
+    const html = e.clipboardData.getData('text/html');
+    // Only intercept paste when the clipboard HTML contains a chip; otherwise
+    // let `contenteditable="plaintext-only"` handle plain text and external
+    // rich text natively.
+    if (!html || !html.includes(CHIP_CLASS)) {
+      return;
+    }
+
+    e.preventDefault();
+    this.insertHtmlWithChips_(html);
+  }
+
   protected onCancelClick_(e: Event) {
     this.dispatchEvent(new CustomEvent('cancel-click', {detail: e}));
   }
@@ -458,11 +521,10 @@ export class ComposeboxInputElement extends I18nMixinLit
   insertSkillChip(chip: ComposeboxChip) {
     const chipElement = createChipElement(chip);
     const rawHtml = `${chipElement.outerHTML}&nbsp;`;
-    let trustedHtml: TrustedHTML|string = rawHtml;
-    if (window.trustedTypes) {
-      ensureChipPolicy();
-      trustedHtml = chipPolicy!.createHTML(rawHtml);
-    }
+    this.insertHtmlWithChips_(rawHtml);
+  }
+
+  private focusAndEnsureSelection_() {
     this.$.input.focus();
     const sel = this.shadowRoot.getSelection();
     const isSelectionInside =
@@ -470,12 +532,21 @@ export class ComposeboxInputElement extends I18nMixinLit
     if (!isSelectionInside) {
       setCaretToEnd(this.$.input, this.shadowRoot);
     }
+  }
+
+  private insertHtmlWithChips_(rawHtml: string) {
+    let trustedHtml: TrustedHTML|string = rawHtml;
+    if (window.trustedTypes) {
+      ensureChipPolicy();
+      trustedHtml = chipPolicy!.createHTML(rawHtml);
+    }
+    this.focusAndEnsureSelection_();
     // Temporarily switch to 'true' so that Blink does not strip HTML tags
     // (such as .aim-chip spans) during execCommand('insertHTML'), while still
     // preserving the native undo/redo stack. Revert immediately to
     // 'plaintext-only' to keep user input and paste operations unformatted.
     this.$.input.contentEditable = 'true';
-    document.execCommand('insertHTML', false, trustedHtml as unknown as string);
+    document.execCommand('insertHTML', false, trustedHtml);
     this.$.input.contentEditable = 'plaintext-only';
   }
 
@@ -802,6 +873,12 @@ function getPlainText(container: Node): string {
 }
 
 declare global {
+  interface Document {
+    execCommand(
+        commandId: string, showUI?: boolean,
+        value?: string|TrustedHTML): boolean;
+  }
+
   interface SetHtmlOptions {
     sanitizer?: Sanitizer|SanitizerConfig;
   }

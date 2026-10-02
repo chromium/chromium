@@ -542,6 +542,7 @@ suite('ComposeboxCaretGeometry', () => {
 
     // Force focus to make the caret visible (display: block)
     input.focus();
+    input.dispatchEvent(new FocusEvent('focus'));
     await inputElement.updateComplete;
     await microtasksFinished();
 
@@ -574,6 +575,7 @@ suite('ComposeboxCaretGeometry', () => {
     await inputElement.updateComplete;
 
     input.focus();
+    input.dispatchEvent(new FocusEvent('focus'));
     await inputElement.updateComplete;
     await microtasksFinished();
 
@@ -606,6 +608,7 @@ suite('ComposeboxCaretGeometry', () => {
     await inputElement.updateComplete;
 
     input.focus();
+    input.dispatchEvent(new FocusEvent('focus'));
     await inputElement.updateComplete;
     await microtasksFinished();
 
@@ -640,6 +643,7 @@ suite('ComposeboxCaretGeometry', () => {
     await inputElement.updateComplete;
 
     input.focus();
+    input.dispatchEvent(new FocusEvent('focus'));
     await inputElement.updateComplete;
     await microtasksFinished();
 
@@ -1076,5 +1080,107 @@ suite('ComposeboxSkills', () => {
 
     chip = inputElement.$.input.querySelector(`.${CHIP_CLASS}`);
     assertTrue(isVisible(chip));
+  });
+
+  test('CopyAndPasteChipWithUndoRedo', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const inputDiv = inputElement.$.input;
+    inputElement.insertSkillChip({
+      id: 'chip1',
+      text: '/Search',
+      emoji: '🔍',
+      iconUrl: 'https://example.com/icon.png',
+    });
+    await inputElement.updateComplete;
+
+    // Select only the chip element (without its trailing space) and copy.
+    const chipEl = inputDiv.querySelector(`.${CHIP_CLASS}`)!;
+    const range = document.createRange();
+    range.selectNode(chipEl);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+
+    const clipboardData = new DataTransfer();
+    inputDiv.dispatchEvent(new ClipboardEvent('copy', {
+      clipboardData,
+      bubbles: true,
+      cancelable: true,
+    }));
+
+    assertEquals('/Search ', clipboardData.getData('text/plain'));
+    assertTrue(clipboardData.getData('text/html').includes(CHIP_CLASS));
+    assertTrue(clipboardData.getData('text/html').endsWith('&nbsp;'));
+
+    // Clear input and paste the copied content.
+    inputElement.input = '';
+    await inputElement.updateComplete;
+    assertEquals(0, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+
+    inputDiv.dispatchEvent(new ClipboardEvent('paste', {
+      clipboardData,
+      bubbles: true,
+      cancelable: true,
+    }));
+    await inputElement.updateComplete;
+
+    let pastedChip = inputDiv.querySelector<HTMLElement>(`.${CHIP_CLASS}`);
+    assertTrue(!!pastedChip);
+    assertEquals('chip1', pastedChip.dataset['chipId']);
+    assertEquals('/Search', pastedChip.dataset['chipText']);
+    assertEquals('🔍', pastedChip.dataset['chipEmoji']);
+    assertEquals(
+        'https://example.com/icon.png', pastedChip.dataset['chipIconUrl']);
+    assertEquals('/Search ', inputElement.input);
+
+    // Undo should remove the pasted chip.
+    document.execCommand('undo');
+    await inputElement.updateComplete;
+    assertEquals(0, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+    assertEquals('', inputElement.input);
+
+    // Redo should restore the pasted chip.
+    document.execCommand('redo');
+    await inputElement.updateComplete;
+    pastedChip = inputDiv.querySelector<HTMLElement>(`.${CHIP_CLASS}`);
+    assertTrue(!!pastedChip);
+    assertEquals('/Search ', inputElement.input);
+  });
+
+  test('PasteSanitizesMaliciousHtmlAndPreservesChip', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    // Inline event handlers (e.g. onclick) are excluded because setHTML()
+    // triggers a CSP violation report when parsing them, which crashes the
+    // WebUI test runner.
+    const inputDiv = inputElement.$.input;
+    const clipboardData = new DataTransfer();
+    clipboardData.setData(
+        'text/html',
+        '<script>console.log("xss")</script><iframe src="about:blank"></iframe>' +
+            '<span class="aim-chip" contenteditable="false" tabindex="-1" ' +
+            'style="color: red;" invalid-attr="bad" ' +
+            'data-chip-id="chip1" data-chip-text="/Search">' +
+            '<span class="chip-label">/Search</span></span> hello');
+
+    inputDiv.dispatchEvent(new ClipboardEvent('paste', {
+      clipboardData,
+      bubbles: true,
+      cancelable: true,
+    }));
+    await inputElement.updateComplete;
+
+    assertEquals(0, inputDiv.querySelectorAll('script').length);
+    assertEquals(0, inputDiv.querySelectorAll('iframe').length);
+    const chip = inputDiv.querySelector<HTMLElement>(`.${CHIP_CLASS}`);
+    assertTrue(!!chip);
+    assertFalse(chip.hasAttribute('style'));
+    assertFalse(chip.hasAttribute('invalid-attr'));
+    assertEquals('chip1', chip.dataset['chipId']);
+    assertEquals('/Search', chip.dataset['chipText']);
+    assertEquals('/Search hello', inputElement.input);
   });
 });
