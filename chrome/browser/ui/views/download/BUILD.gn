@@ -110,3 +110,87 @@ source_set("download") {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "download_in_progress_dialog_view_unittest.cc" ]
+  deps = [
+    ":download",
+    "//base/test:test_support",
+    "//chrome/browser/ui/views:chrome_constrained_window_views_client",
+    "//chrome/test/views",
+    "//components/constrained_window",
+    "//testing/gtest",
+  ]
+  if (!is_chromeos) {
+    sources += [
+      "bubble/download_bubble_contents_view_unittest.cc",
+      "bubble/download_bubble_row_view_unittest.cc",
+      "bubble/download_bubble_security_view_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/download:test_support",
+      "//chrome/browser/download/bubble",
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/download",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/test/base:testing_browser_process",
+      "//chrome/test/base:testing_profile",
+      "//components/download/public/common:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/base/clipboard:clipboard_test_support",
+      "//ui/events:test_support",
+      "//ui/views:test_support",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+  if (!is_chromeos) {
+    sources += [
+      "bubble/download_bubble_row_list_view_browsertest.cc",
+      "bubble/download_toolbar_ui_controller_browsertest.cc",
+    ]
+    deps += [
+      ":download",
+      "//chrome/browser/download:test_support",
+      "//chrome/browser/download/bubble",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+  if (!is_chromeos) {
+    sources += [ "bubble/download_bubble_interactive_uitest.cc" ]
+    deps += [
+      ":download",
+      "//chrome/browser/download:test_support",
+      "//chrome/browser/download/bubble",
+      "//chrome/browser/ui/exclusive_access:test_support",
+      "//chrome/browser/ui/views/exclusive_access",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/user_education",
+      "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+      "//testing/gtest",
+    ]
+  }
+}

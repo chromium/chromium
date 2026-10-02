@@ -2075,6 +2075,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/data_sharing:browser_tests",
       "//chrome/browser/ui/views/digital_credentials:browser_tests",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/download:browser_tests",
       "//chrome/browser/ui/views/eye_dropper:browser_tests",
       "//chrome/browser/ui/views/file_system_access:browser_tests",
       "//chrome/browser/ui/views/frame",
@@ -3166,8 +3167,6 @@ if (!is_android) {
         "../browser/ui/views/controls/label_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/slider/slider_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/textfield/textfield_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
-        "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
       ]
 
       if (is_win) {
@@ -6144,6 +6143,7 @@ test("unit_tests") {
       "//chrome/browser/ui/toasts/api:unit_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/download:unit_tests",
       "//chrome/browser/ui/views/picture_in_picture:unit_tests",
       "//chrome/browser/ui/views/tabs/organizer:unit_tests",
       "//chrome/browser/ui/webui/content_settings:unit_tests",
@@ -6968,12 +6968,6 @@ test("unit_tests") {
     deps += [ "//chrome/browser/rlz:unit_tests" ]
   }
   if (!is_android && !is_chromeos) {
-    sources += [
-      "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
-      "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
-      "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
-    ]
-
     deps += [
       "//chrome/browser/download/bubble",
 
@@ -7157,7 +7151,6 @@ test("unit_tests") {
       "../browser/ui/views/content_setting_bubble_contents_unittest.cc",
       "../browser/ui/views/content_setting_site_row_view_unittest.cc",
       "../browser/ui/views/device_chooser_content_view_unittest.cc",
-      "../browser/ui/views/download/download_in_progress_dialog_view_unittest.cc",
       "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",
       "../browser/ui/views/intent_picker_bubble_view_unittest.cc",
@@ -7945,6 +7938,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/download:interactive_ui_tests",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/extensions:interactive_ui_tests",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
@@ -8456,8 +8450,6 @@ if (!is_android && !is_chromeos_device) {
           deps += [ "//chrome/browser/ui/ash/gemini_app:interactive_ui_tests" ]
         }
       } else {
-        sources += [ "../browser/ui/views/download/bubble/download_bubble_interactive_uitest.cc" ]
-
         deps += [
           "../browser/media/router:test_support",
           "../browser/ui/views/global_media_controls:interactive_ui_tests",
