@@ -498,23 +498,18 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       return sanitizeInnerHtml('');
     }
 
-    // Public Pass Handling:
-    if (loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass') &&
-        this.isPublicPass_(entityInstance.type)) {
-      if (!entityInstance.guid && upsertPassDetails) {
-        return this.formatLegalMessageLines_(
-            upsertPassDetails.legalMessageLines);
-      }
-      return sanitizeInnerHtml(
-          this.i18n('autofillAiSaveOrUpdateLocalEntitySourceNotice'));
-    }
+    const isPublicPassWithDisclosure =
+        loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass') &&
+        this.isPublicPass_(entityInstance.type);
 
-    if (!entityInstance.type.supportsWalletStorage || entityInstance.guid) {
+    if (!entityInstance.type.supportsWalletStorage || entityInstance.guid ||
+        (isPublicPassWithDisclosure && !upsertPassDetails)) {
       return sanitizeInnerHtml(
           this.i18n('autofillAiSaveOrUpdateLocalEntitySourceNotice'));
     }
 
     const walletTitle = this.i18n('googleWalletTitle');
+    let walletNotice: TrustedHTML;
     if (loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
       // Show footer only when it is a new entity and type supports Wallet
       // storage. This is sufficient because the entities stored in Wallet are
@@ -522,24 +517,36 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       const manageYourInfoLink = `<a target=_blank href=${
           this.walletManageYourInfoUrl_(entityInstance.type)}>${
           this.i18n('autofillAiManageYourInfo')}</a>`;
-      return this.i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
-        substitutions:
-            [walletTitle, manageYourInfoLink, walletTitle, userEmail],
-        tags: ['a'],
-        attrs: ['href', 'target'],
-      });
+      walletNotice =
+          this.i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
+            substitutions:
+                [walletTitle, manageYourInfoLink, walletTitle, userEmail],
+            tags: ['a'],
+            attrs: ['href', 'target'],
+          });
+    } else {
+      // Show footer only when it is a new entity and type supports Wallet
+      // storage. This is sufficient because the entities stored in Wallet are
+      // not editable from the settings.
+      walletNotice = sanitizeInnerHtml(
+          this.i18n('saveInfoToWalletAccountNotice', walletTitle, userEmail));
     }
 
-    // Show footer only when it is a new entity and type supports Wallet
-    // storage. This is sufficient because the entities stored in Wallet are not
-    // editable from the settings.
-    return sanitizeInnerHtml(
-        this.i18n('saveInfoToWalletAccountNotice', walletTitle, userEmail));
+    if (isPublicPassWithDisclosure && upsertPassDetails) {
+      const legalMessage =
+          this.formatLegalMessageLines_(upsertPassDetails.legalMessageLines);
+      if (legalMessage) {
+        return sanitizeInnerHtml(
+            `<div>${walletNotice.toString()}</div><div>${legalMessage}</div>`);
+      }
+    }
+
+    return walletNotice;
   }
   // LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api.cc)
 
   private formatLegalMessageLines_(
-      lines: chrome.autofillPrivate.LegalMessageLine[]): TrustedHTML {
+      lines: chrome.autofillPrivate.LegalMessageLine[]): string {
     let html = '';
     for (let i = 0; i < lines.length; ++i) {
       const line = lines[i];
@@ -555,7 +562,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       lineHtml += line.text.substring(lastIndex);
       html += (i > 0 ? '<br>' : '') + lineHtml;
     }
-    return sanitizeInnerHtml(html);
+    return html;
   }
 
   private isExistingYearOutOfBounds_(

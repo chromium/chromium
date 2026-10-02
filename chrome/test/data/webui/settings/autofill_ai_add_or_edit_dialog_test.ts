@@ -1168,9 +1168,16 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     });
 
     loadTimeData.overrideValues({
+      autofillAiManageYourInfo: 'manage your info',
       autofillAiSaveOrUpdateLocalEntitySourceNotice:
           'Your info is saved to your device',
+      enableAutofillAiWalletPrivatePasses: true,
       enableWalletDisclosureNoticePublicPass: true,
+      googleWalletTitle: 'Google Wallet',
+      managePublicPassesUrl: 'https://wallet.google.com',
+      saveInfoToWalletSettingsAccountNotice:
+          'Save your info in $1 and get things done faster, like filling ' +
+          'forms across Google products. You can $2 in $3 for $4.',
     });
 
     dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
@@ -1189,15 +1196,22 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
         assertTrue(!!footer);
         assertFalse(footer.hidden);
+        assertTrue(footer.innerText.includes('test@example.com'));
+        assertTrue(footer.innerText.includes(
+            'By saving this pass to Google Wallet, you agree to the Google ' +
+            'Privacy Policy and Google Wallet Settings.'));
 
         const links = footer.querySelectorAll<HTMLAnchorElement>('a');
-        assertEquals(2, links.length);
-        assertEquals('https://policies.google.com/privacy', links[0]!.href);
+        assertEquals(3, links.length);
+        assertEquals('https://wallet.google.com/', links[0]!.href);
         assertEquals('_blank', links[0]!.target);
-        assertEquals('Google Privacy Policy', links[0]!.textContent);
-        assertEquals('https://wallet.google.com/settings', links[1]!.href);
+        assertEquals('manage your info', links[0]!.textContent);
+        assertEquals('https://policies.google.com/privacy', links[1]!.href);
         assertEquals('_blank', links[1]!.target);
-        assertEquals('Google Wallet Settings', links[1]!.textContent);
+        assertEquals('Google Privacy Policy', links[1]!.textContent);
+        assertEquals('https://wallet.google.com/settings', links[2]!.href);
+        assertEquals('_blank', links[2]!.target);
+        assertEquals('Google Wallet Settings', links[2]!.textContent);
       });
 
   test(
@@ -1329,7 +1343,7 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         assertTrue(!!footer);
         assertFalse(footer.hidden);
         const links = footer.querySelectorAll<HTMLAnchorElement>('a');
-        assertEquals(2, links.length);
+        assertEquals(3, links.length);
       });
 
   test('Vehicle_EndToEndFlow_FetchRenderAndSave', async function() {
@@ -1342,14 +1356,16 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     // 1. Details are fetched and assigned.
     assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
 
-    // 2. Legal message lines and links are rendered in the footer.
+    // 2. Static Wallet notice and legal message lines/links are rendered in
+    // the footer.
     const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
     assertTrue(!!footer);
     assertFalse(footer.hidden);
     const links = footer.querySelectorAll<HTMLAnchorElement>('a');
-    assertEquals(2, links.length);
-    assertEquals('https://policies.google.com/privacy', links[0]!.href);
-    assertEquals('https://wallet.google.com/settings', links[1]!.href);
+    assertEquals(3, links.length);
+    assertEquals('https://wallet.google.com/', links[0]!.href);
+    assertEquals('https://policies.google.com/privacy', links[1]!.href);
+    assertEquals('https://wallet.google.com/settings', links[2]!.href);
 
     // 3. Save button is clicked and entity is saved to Wallet with token.
     const saveButton =
