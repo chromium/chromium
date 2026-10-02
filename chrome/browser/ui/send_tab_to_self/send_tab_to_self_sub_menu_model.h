@@ -74,9 +74,6 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
   // Populates the submenu items appropriate for `display_reason_`.
   void BuildMenu();
 
-  // Returns the label to show for a device in the context menu.
-  static std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device);
-
   base::WeakPtr<content::WebContents> primary_web_contents_;
   std::vector<base::WeakPtr<content::WebContents>> web_contents_list_;
   const EntryPointDisplayReason display_reason_;

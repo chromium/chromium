@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
@@ -180,6 +179,14 @@ bool ShouldShowSubmenu(ShareEntryPoint entry_point,
       return false;
 #endif
   }
+  NOTREACHED();
+}
+
+// Returns the label to show for a device in the context menu.
+std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device) {
+  return l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_LABEL,
+                                    base::UTF8ToUTF16(device.device_name),
+                                    device.GetLastActiveTimeForDisplay());
 }
 
 }  // namespace
@@ -248,14 +255,6 @@ SendTabToSelfSubMenuModel::SendTabToSelfSubMenuModel(
 }
 
 SendTabToSelfSubMenuModel::~SendTabToSelfSubMenuModel() = default;
-
-// static
-std::u16string SendTabToSelfSubMenuModel::GetDeviceItemLabel(
-    const TargetDeviceInfo& device) {
-  return l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_LABEL,
-                                    base::UTF8ToUTF16(device.device_name),
-                                    device.GetLastActiveTimeForDisplay());
-}
 
 void SendTabToSelfSubMenuModel::BuildMenu() {
   switch (display_reason_) {
