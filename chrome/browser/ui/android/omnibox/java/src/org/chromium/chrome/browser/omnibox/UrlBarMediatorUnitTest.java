@@ -22,8 +22,6 @@ import android.graphics.Color;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 
-import com.google.android.material.color.MaterialColors;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -556,7 +554,7 @@ public class UrlBarMediatorUnitTest {
     public void setUrlBarHintTextColorForNtp_auroraEnabled() {
         mMediator.setUrlBarHintTextColorForNtp();
         assertEquals(
-                MaterialColors.getColor(mContext, R.attr.colorOutline, "UrlBarMediator"),
+                SemanticColorUtils.getDefaultTextColorSecondary(mContext),
                 mModel.get(UrlBarProperties.HINT_TEXT_COLOR));
     }
 
