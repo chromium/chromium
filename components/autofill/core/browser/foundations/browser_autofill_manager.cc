@@ -87,6 +87,7 @@
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -790,6 +791,16 @@ FilterSuggestionsByPrioritization(
   return prioritized_suggestions;
 }
 
+std::unique_ptr<OtpManager> CreateOtpManager(
+    BrowserAutofillManager& owner,
+    one_time_tokens::OneTimeTokenService* service) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowGmailOtpSuggestions)) {
+    return std::make_unique<OtpManagerImpl>(owner, service);
+  }
+  return std::make_unique<OtpManagerLegacyImpl>(owner, service);
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -814,8 +825,7 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
       autofill_ai_access_manager_(
           std::make_unique<AutofillAiAccessManager>(this)),
-      otp_manager_(
-          new OtpManagerImpl(*this, client().GetOneTimeTokenService())),
+      otp_manager_(CreateOtpManager(*this, client().GetOneTimeTokenService())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
       address_on_typing_manager_(client()) {}
@@ -1838,50 +1848,49 @@ void BrowserAutofillManager::FillOrPreviewForm(
   if (!form || !trigger_field) {
     return;
   }
-  std::visit(
-      absl::Overload{[&](const AutofillProfile*) {
-                       form_filler_->FillOrPreviewForm(
-                           action_persistence, filling_payload,
-                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
-                           trigger_source, blocked_fields, FillId::Create(),
-                           /*forced_fill_values=*/{},
-                           FormFiller::RefillOptions::NotRefill());
-                     },
-                     [&](const CreditCard* credit_card) {
-                       // We still need to take care of authentication
-                       // flows, which is why we do not forward right
-                       // away to FormFiller.
-                       FillOrPreviewCreditCardForm(
-                           action_persistence, CHECK_DEREF(form),
-                           CHECK_DEREF(trigger_field), *credit_card,
-                           trigger_source, require_user_confirmation,
-                           blocked_fields);
-                     },
-                     [&](const EntityInstance*) {
-                       form_filler_->FillOrPreviewForm(
-                           action_persistence, filling_payload,
-                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
-                           trigger_source, blocked_fields, FillId::Create(),
-                           /*forced_fill_values=*/{},
-                           FormFiller::RefillOptions::NotRefill());
-                     },
-                     [&](const VerifiedProfile*) {
-                       form_filler_->FillOrPreviewForm(
-                           action_persistence, filling_payload,
-                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
-                           trigger_source, blocked_fields, FillId::Create(),
-                           /*forced_fill_values=*/{},
-                           FormFiller::RefillOptions::NotRefill());
-                     },
-                     [&](const OtpFillData*) {
-                       form_filler_->FillOrPreviewForm(
-                           action_persistence, filling_payload,
-                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
-                           trigger_source, blocked_fields, FillId::Create(),
-                           /*forced_fill_values=*/{},
-                           FormFiller::RefillOptions::NotRefill());
-                     }},
-      filling_payload);
+  std::visit(absl::Overload{
+                 [&](const AutofillProfile*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, filling_payload, CHECK_DEREF(form),
+                       CHECK_DEREF(trigger_field), trigger_source,
+                       blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
+                 },
+                 [&](const CreditCard* credit_card) {
+                   // We still need to take care of authentication
+                   // flows, which is why we do not forward right
+                   // away to FormFiller.
+                   FillOrPreviewCreditCardForm(
+                       action_persistence, CHECK_DEREF(form),
+                       CHECK_DEREF(trigger_field), *credit_card, trigger_source,
+                       require_user_confirmation, blocked_fields);
+                 },
+                 [&](const EntityInstance*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, filling_payload, CHECK_DEREF(form),
+                       CHECK_DEREF(trigger_field), trigger_source,
+                       blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
+                 },
+                 [&](const VerifiedProfile*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, filling_payload, CHECK_DEREF(form),
+                       CHECK_DEREF(trigger_field), trigger_source,
+                       blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
+                 },
+                 [&](const OtpFillData*) {
+                   form_filler_->FillOrPreviewForm(
+                       action_persistence, filling_payload, CHECK_DEREF(form),
+                       CHECK_DEREF(trigger_field), trigger_source,
+                       blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
+                 }},
+             filling_payload);
 }
 void BrowserAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
@@ -2780,10 +2789,9 @@ void BrowserAutofillManager::Reset() {
           client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager()) {
     promo_code_manager->Reset();
   }
-  // Forget stored data (e.g. active subscriptions and pending callbacks) after
-  // a navigation.
-  otp_manager_ = std::make_unique<OtpManagerImpl>(
-      *this, client().GetOneTimeTokenService());
+  // Re-create the OtpManager in order to forget stored data (e.g. active
+  // subscriptions and pending callbacks) after a navigation.
+  otp_manager_ = CreateOtpManager(*this, client().GetOneTimeTokenService());
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();
