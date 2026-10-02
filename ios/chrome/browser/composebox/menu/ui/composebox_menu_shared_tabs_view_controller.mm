@@ -10,9 +10,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -149,13 +149,36 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 - (void)setUpDisclaimerTextView {
   _disclaimerTextView = CreateUITextViewWithTextKit1();
   _disclaimerTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  _disclaimerTextView.accessibilityIdentifier =
+      kComposeboxSharedTabsDisclaimerAccessibilityIdentifier;
   _disclaimerTextView.editable = NO;
   _disclaimerTextView.scrollEnabled = NO;
   _disclaimerTextView.textContainerInset = UIEdgeInsetsZero;
   _disclaimerTextView.textContainer.lineFragmentPadding = 0;
   _disclaimerTextView.backgroundColor = [UIColor clearColor];
   _disclaimerTextView.delegate = self;
+  [self updateDisclaimerText];
 
+  // The font is part of the attributed text, which UIKit doesn't update when
+  // the text size changes (`adjustsFontForContentSizeCategory` doesn't reliably
+  // apply to attributed text), so rebuild the text on every change.
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(updateDisclaimerText)];
+
+  [self.view addSubview:_disclaimerTextView];
+
+  AddSameConstraintsToSidesWithInsets(
+      _disclaimerTextView, self.view, LayoutSides::kHorizontal,
+      NSDirectionalEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin));
+  [_disclaimerTextView.topAnchor
+      constraintEqualToAnchor:_navigationBar.bottomAnchor
+                     constant:kDisclaimerTopPadding]
+      .active = YES;
+}
+
+// Sets the disclaimer's attributed text, with fonts matching the current
+// content size category.
+- (void)updateDisclaimerText {
   NSString* description = l10n_util::GetNSString(
       IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION);
   NSString* learnMore = l10n_util::GetNSString(
@@ -163,9 +186,12 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   NSString* fullText = [NSString
       stringWithFormat:@"%@ BEGIN_LINK%@END_LINK", description, learnMore];
 
+  // Resolve the font for this view controller's traits rather than the app's,
+  // so that it also follows content size category overrides.
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
-        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular),
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote
+            compatibleWithTraitCollection:self.traitCollection],
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
 
@@ -179,16 +205,6 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 
   _disclaimerTextView.attributedText = AttributedStringFromStringWithLink(
       fullText, textAttributes, linkAttributes);
-
-  [self.view addSubview:_disclaimerTextView];
-
-  AddSameConstraintsToSidesWithInsets(
-      _disclaimerTextView, self.view, LayoutSides::kHorizontal,
-      NSDirectionalEdgeInsetsMake(0, kHorizontalMargin, 0, kHorizontalMargin));
-  [_disclaimerTextView.topAnchor
-      constraintEqualToAnchor:_navigationBar.bottomAnchor
-                     constant:kDisclaimerTopPadding]
-      .active = YES;
 }
 
 // Creates the compositional layout for the shared tabs collection view.

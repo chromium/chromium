@@ -70,4 +70,7 @@ extern NSString* const
 // Accessibility identifier for the tabs accordion in cobrowse mode.
 extern NSString* const kComposeboxTabsAccordionAccessibilityIdentifier;
 
+// Accessibility identifier for the disclaimer in the Shared Tabs sheet.
+extern NSString* const kComposeboxSharedTabsDisclaimerAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_UI_CONSTANTS_H_

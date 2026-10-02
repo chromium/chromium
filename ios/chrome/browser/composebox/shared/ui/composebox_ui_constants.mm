@@ -57,3 +57,5 @@ NSString* const kComposeboxInputItemCellCloseButtonAccessibilityIdentifier =
     @"kComposeboxInputItemCellCloseButtonAccessibilityIdentifier";
 NSString* const kComposeboxTabsAccordionAccessibilityIdentifier =
     @"kComposeboxTabsAccordionAccessibilityIdentifier";
+NSString* const kComposeboxSharedTabsDisclaimerAccessibilityIdentifier =
+    @"kComposeboxSharedTabsDisclaimerAccessibilityIdentifier";
