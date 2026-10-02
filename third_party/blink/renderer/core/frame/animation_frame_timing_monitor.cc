@@ -66,18 +66,24 @@ constexpr base::TimeDelta kCongestionIdleGap = base::Milliseconds(5);
 
 AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
                                                          CoreProbeSink* sink)
-    : client_(&client) {
+    : client_(&client), probe_sink_(sink) {
   Thread::Current()->AddTaskTimeObserver(this);
   if (!IsMainThread()) {
     CHECK(RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled());
   }
-  sink->AddAnimationFrameTimingMonitor(this);
+  if (probe_sink_) {
+    probe_sink_->AddAnimationFrameTimingMonitor(this);
+  }
   enabled_ = true;
 }
 
 void AnimationFrameTimingMonitor::Shutdown() {
   enabled_ = false;
   frame_handling_input_ = nullptr;
+  if (probe_sink_) {
+    probe_sink_->RemoveAnimationFrameTimingMonitor(this);
+    probe_sink_ = nullptr;
+  }
   Thread::Current()->RemoveTaskTimeObserver(this);
 }
 
@@ -390,6 +396,9 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     LocalFrame* frame) {
+  if (!enabled_) {
+    return;
+  }
   HeapVector<Member<ScriptTimingInfo>> scripts;
 
   bool did_pause = false;
@@ -764,6 +773,7 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(task_attributed_window_);
   visitor->Trace(congestion_scripts_);
   visitor->Trace(client_);
+  visitor->Trace(probe_sink_);
 }
 
 BASE_FEATURE(kAlwaysLogLOAFURL, base::FEATURE_DISABLED_BY_DEFAULT);

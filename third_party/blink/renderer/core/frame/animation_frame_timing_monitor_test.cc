@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -121,6 +122,27 @@ TEST_F(AnimationFrameTimingMonitorTest,
 TEST_F(AnimationFrameTimingMonitorTest,
        CustomProtocolHasScriptAttributionWithFeatureFlag) {
   TestAttributionWithFeatureFlag("custom://example.com", true);
+}
+
+TEST_F(AnimationFrameTimingMonitorTest,
+       DetachChildLocalRootDuringFrameRelatedTask) {
+  InitializeRemote();
+  LocalFrame* frame = LocalFrameRoot().GetFrame();
+  CoreProbeSink* probe_sink = frame->GetProbeSink();
+  ASSERT_TRUE(probe_sink->HasAnimationFrameTimingMonitors());
+
+  {
+    probe::FrameRelatedTask probe(frame->DomWindow());
+    constexpr char kLongScript[] = R"JS(
+      const start = performance.now();
+      while (performance.now() - start < 60) {}
+    )JS";
+    LocalFrameRoot().ExecuteScript(
+        WebScriptSource(WebString::FromUtf8(kLongScript)));
+
+    LocalFrameRoot().Detach();
+    EXPECT_FALSE(probe_sink->HasAnimationFrameTimingMonitors());
+  }
 }
 
 }  // namespace blink

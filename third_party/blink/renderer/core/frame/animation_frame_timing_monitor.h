@@ -196,6 +196,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   std::optional<PendingScriptInfo> pending_script_info_;
   HashMap<size_t, PendingScriptInfo> user_entry_points_;
   const Member<Client> client_;
+  Member<CoreProbeSink> probe_sink_;
 
   enum class State {
     // No task running, no pending frames.
