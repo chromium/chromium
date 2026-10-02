@@ -2587,6 +2587,9 @@ ci.builder(
             "base_unittests_android_death_tests": targets.mixin(
                 ci_only = True,
             ),
+            "blink_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--disable-field-trial-config",
