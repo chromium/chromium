@@ -1243,12 +1243,28 @@ void SharedContextState::PessimisticallyResetGrContext() const {
 }
 
 void SharedContextState::StoreVkPipelineCacheIfNeeded() {
-  // GrShaderCache::StoreVkPipelineCacheIfNeeded() must be called only for gpu
-  // main thread. Hence using |created_on_compositor_gpu_thread_| to avoid
+  // Serializing the VkPipelineCache must be done by one gpu thread only, which
+  // is the gpu main thread. Doing it from multiple gpu threads, and hence
+  // multiple contexts, is redundant and expensive since each GrContext produces
+  // the same data. Hence using |created_on_compositor_gpu_thread_| to avoid
   // calling it for CompositorGpuThread when DrDc is enabled. See
   // GrShaderCache::StoreVkPipelineCacheIfNeeded for more details.
-  if (gr_context_ && gr_shader_cache_ && GrContextIsVulkan() &&
-      !created_on_compositor_gpu_thread_) {
+  if (!gr_context_ || !GrContextIsVulkan() ||
+      created_on_compositor_gpu_thread_) {
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_THREAD(context_thread_checker_);
+
+  // Skia writes the serialized cache to whichever cache was installed as
+  // GrContextOptions::fPersistentCache, so these branches must be ordered the
+  // same way as in InitializeGanesh().
+  if (persistent_cache_) {
+    // GpuPersistentCache doesn't track whether new pipelines were created, so
+    // ask Skia directly.
+    if (gr_context_->hasNewVkPipelineCacheData()) {
+      gr_context_->storeVkPipelineCacheData();
+    }
+  } else if (gr_shader_cache_) {
     gpu::raster::GrShaderCache::ScopedCacheUse use(gr_shader_cache_,
                                                    kDisplayCompositorClientId);
     gr_shader_cache_->StoreVkPipelineCacheIfNeeded(gr_context_);

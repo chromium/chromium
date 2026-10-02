@@ -223,16 +223,41 @@ void GpuPersistentCacheTest::RunStoreAndLoadDataMultiThreaded(int num_threads) {
   }
 }
 
-// Tests that storing Dawn/Vulkan monolithic VkPipelineCache data doesn't store
-// anything in the memory cache.
+// Tests that storing Dawn/Vulkan monolithic VkPipelineCache or Ganesh
+// VkPipelineCache data doesn't store anything in the memory cache, and loading
+// it records the VkPipelineCache.LoadedSize histogram.
 TEST_F(GpuPersistentCacheTest, StoreVkPersistentCache) {
   InitializeCache();
+  base::HistogramTester histogram_tester;
 
   const std::string key = "my_keyMonolithicVkPipelineCache";
   const std::string value = "my_value";
   cache_->StoreData(key, base::as_byte_span(value));
 
   EXPECT_FALSE(memory_cache_->Find(key));
+
+  constexpr uint32_t kGaneshVkPipelineCacheKey = 1;
+  sk_sp<SkData> ganesh_key = SkData::MakeWithoutCopy(
+      &kGaneshVkPipelineCacheKey, sizeof(kGaneshVkPipelineCacheKey));
+  const std::string ganesh_value(2048, 'x');
+  sk_sp<SkData> ganesh_value_data =
+      SkData::MakeWithoutCopy(ganesh_value.data(), ganesh_value.size());
+  cache_->store(*ganesh_key, *ganesh_value_data);
+
+  std::string_view ganesh_key_str(
+      reinterpret_cast<const char*>(&kGaneshVkPipelineCacheKey),
+      sizeof(kGaneshVkPipelineCacheKey));
+  EXPECT_FALSE(memory_cache_->Find(ganesh_key_str));
+
+  sk_sp<SkData> loaded = cache_->load(*ganesh_key);
+  ASSERT_TRUE(loaded);
+  EXPECT_EQ(loaded->size(), ganesh_value.size());
+  histogram_tester.ExpectUniqueSample(
+      "GPU.PersistentCache.Test.VkPipelineCache.LoadedSize", 2, 1);
+
+  // Loading from the disk cache must not put the entry in the memory cache
+  // either.
+  EXPECT_FALSE(memory_cache_->Find(ganesh_key_str));
 }
 
 // Tests that the cache can be safely written to and read from by multiple
