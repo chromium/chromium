@@ -36,6 +36,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
@@ -44,6 +45,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Tests for {@link OmniboxResourceProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -444,6 +446,7 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void getFuseboxPopupIconSize() {
         Resources res = mContext.getResources();
         int expectedBottomSheetSize =
@@ -458,6 +461,52 @@ public class OmniboxResourceProviderUnitTest {
                 expectedPlusMenuSize,
                 OmniboxResourceProvider.getFuseboxPopupIconSize(
                         mContext, /* isBottomSheet= */ false));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getFuseboxPopupIconSize_variationsEnabled() {
+        Resources res = mContext.getResources();
+        int expectedBottomSheetSize =
+                res.getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
+        int expectedPlusMenuSize =
+                res.getDimensionPixelSize(R.dimen.fusebox_popup_item_large_icon_size);
+
+        assertEquals(
+                expectedBottomSheetSize,
+                OmniboxResourceProvider.getFuseboxPopupIconSize(
+                        mContext, /* isBottomSheet= */ true));
+        assertEquals(
+                expectedPlusMenuSize,
+                OmniboxResourceProvider.getFuseboxPopupIconSize(
+                        mContext, /* isBottomSheet= */ false));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getPopupItemTextRes_variationsDisabled() {
+        int expected = IncognitoColors.getTextMediumPrimary(/* isIncognito= */ false);
+
+        assertEquals(
+                expected,
+                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+        assertEquals(
+                expected,
+                OmniboxResourceProvider.getAttachmentButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getPopupItemTextRes_variationsEnabled() {
+        assertEquals(
+                IncognitoColors.getTextLargePrimary(/* isIncognito= */ false),
+                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+        assertEquals(
+                IncognitoColors.getTextMediumPrimary(/* isIncognito= */ false),
+                OmniboxResourceProvider.getAttachmentButtonTextRes(BrandedColorScheme.APP_DEFAULT));
+        assertEquals(
+                IncognitoColors.getTextLargePrimary(/* isIncognito= */ true),
+                OmniboxResourceProvider.getPopupButtonTextRes(BrandedColorScheme.INCOGNITO));
     }
 
     @Test

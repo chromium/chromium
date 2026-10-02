@@ -43,10 +43,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
@@ -60,6 +63,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
@@ -805,12 +809,12 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup group = mPopup.mAccordionContainer;
         int headerIndex = group.indexOfChild(mPopup.mModelsHeader);
         assertEquals(2, group.getChildCount() - (headerIndex + 1));
-        assertEquals(6, mPopup.mAttachmentButtons.size());
+        assertEquals(6, mPopup.mListAttachmentButtons.size());
         assertEquals(2, mPopup.mDynamicThemedButtons.size());
 
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1));
         assertEquals(1, group.getChildCount() - (headerIndex + 1));
-        assertEquals(6, mPopup.mAttachmentButtons.size());
+        assertEquals(6, mPopup.mListAttachmentButtons.size());
         assertEquals(1, mPopup.mDynamicThemedButtons.size());
     }
 
@@ -1116,6 +1120,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void popupIconSize_plusMenuUses20dp() {
         Resources res = mActivityController.get().getResources();
         int expectedSize = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
@@ -1135,6 +1140,22 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup.LayoutParams dynamicLayoutParams = dynamicIcon.getLayoutParams();
         assertEquals(expectedSize, dynamicLayoutParams.width);
         assertEquals(expectedSize, dynamicLayoutParams.height);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void popupIconSize_variationsEnabled_plusMenuUses24dp() {
+        Resources res = mActivityController.get().getResources();
+        int expectedSize = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_large_icon_size);
+
+        ImageView tabIcon = mPopup.mTabButton.findViewById(R.id.start_icon);
+        assertEquals(expectedSize, tabIcon.getLayoutParams().width);
+        assertEquals(expectedSize, tabIcon.getLayoutParams().height);
+
+        addModelButton();
+        ImageView dynamicIcon = getDynamicButton(0).findViewById(R.id.start_icon);
+        assertEquals(expectedSize, dynamicIcon.getLayoutParams().width);
+        assertEquals(expectedSize, dynamicIcon.getLayoutParams().height);
     }
 
     @Test
@@ -1161,6 +1182,34 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup.LayoutParams dynamicLayoutParams = dynamicIcon.getLayoutParams();
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.width);
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.height);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void popupText_bottomSheetCarousel_tilesUseTileText() {
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        mBinder.bind(createBottomSheetModel(), viewHolder, FuseboxProperties.COLOR_SCHEME);
+        assertFalse(viewHolder.popup.mCarouselTiles.isEmpty());
+
+        for (View tile : viewHolder.popup.mCarouselTiles) {
+            TextView text = tile.findViewById(R.id.action_text);
+            assertEquals(
+                    mResourceProvider.getAttachmentButtonTextRes(),
+                    Shadows.shadowOf(text).getTextAppearanceId());
+        }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void popupText_plusMenu_rowsUsePopupText() {
+        assertFalse(mPopup.mListAttachmentButtons.isEmpty());
+
+        for (View row : mPopup.mListAttachmentButtons) {
+            TextView text = row.findViewById(R.id.action_text);
+            assertEquals(
+                    mResourceProvider.getPopupButtonTextRes(),
+                    Shadows.shadowOf(text).getTextAppearanceId());
+        }
     }
 
     @Test

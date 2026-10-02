@@ -67,6 +67,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.List;
 import java.util.Locale;
 
 /** Unit tests for FuseboxPopup. */
@@ -327,7 +328,7 @@ public class FuseboxPopupUnitTest {
                 CurrentTabPlacement.ABOVE_ATTACHMENTS);
         assertEquals(R.id.fusebox_add_current_tab_top, mFuseboxPopup.mAddCurrentTab.getId());
         assertNotNull(mFuseboxPopup.mCurrentTabTopDivider);
-        assertTrue(mFuseboxPopup.mAttachmentButtons.contains(mFuseboxPopup.mAddCurrentTab));
+        assertTrue(mFuseboxPopup.mListAttachmentButtons.contains(mFuseboxPopup.mAddCurrentTab));
         assertTrue(mFuseboxPopup.mDividers.contains(mFuseboxPopup.mCurrentTabTopDivider));
     }
 
@@ -375,6 +376,59 @@ public class FuseboxPopupUnitTest {
                 CurrentTabPlacement.WITH_ATTACHMENTS);
         assertEquals(R.id.fusebox_pick_file_button_accordion, mFuseboxPopup.mFileButton.getId());
         assertEquals(R.id.fusebox_pick_drive_button_accordion, mFuseboxPopup.mDriveButton.getId());
+    }
+
+    @Test
+    public void attachmentGroups_vertical_allListRows() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(List.of(), mFuseboxPopup.mCarouselTiles);
+        assertEquals(allAttachmentButtons(), mFuseboxPopup.mListAttachmentButtons);
+    }
+
+    @Test
+    public void attachmentGroups_carouselWithAttachments_allTiles() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(allAttachmentButtons(), mFuseboxPopup.mCarouselTiles);
+        assertEquals(List.of(), mFuseboxPopup.mListAttachmentButtons);
+    }
+
+    private List<View> allAttachmentButtons() {
+        return List.of(
+                mFuseboxPopup.mAddCurrentTab,
+                mFuseboxPopup.mTabButton,
+                mFuseboxPopup.mGalleryButton,
+                mFuseboxPopup.mCameraButton,
+                mFuseboxPopup.mFileButton,
+                mFuseboxPopup.mDriveButton);
+    }
+
+    @Test
+    public void attachmentGroups_carouselBelowAttachments_splitsTilesAndRows() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.BELOW_ATTACHMENTS);
+        assertEquals(
+                List.of(
+                        mFuseboxPopup.mTabButton,
+                        mFuseboxPopup.mGalleryButton,
+                        mFuseboxPopup.mCameraButton),
+                mFuseboxPopup.mCarouselTiles);
+        assertEquals(
+                List.of(
+                        mFuseboxPopup.mAddCurrentTab,
+                        mFuseboxPopup.mFileButton,
+                        mFuseboxPopup.mDriveButton),
+                mFuseboxPopup.mListAttachmentButtons);
     }
 
     @Test

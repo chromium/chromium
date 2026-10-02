@@ -1390,13 +1390,16 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /**
      * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
-     * menu).
+     * menu, or 24dp for both when popup variations are enabled).
      */
     public static @Px int getFuseboxPopupIconSize(Context context, boolean isBottomSheet) {
         Resources res = context.getResources();
+        if (isBottomSheet) {
+            return res.getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
+        }
         return res.getDimensionPixelSize(
-                isBottomSheet
-                        ? R.dimen.fusebox_bottom_sheet_attachment_icon_size
+                OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                        ? R.dimen.fusebox_popup_item_large_icon_size
                         : R.dimen.fusebox_popup_item_icon_size);
     }
 
@@ -1442,15 +1445,20 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     public static @StyleRes int getPopupButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextMediumPrimary(isIncognito);
+        return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                ? IncognitoColors.getTextLargePrimary(isIncognito)
+                : IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
-    /** Resolves the text appearance for attachment buttons in the popup. */
+    /**
+     * Resolves the text appearance for the label underneath carousel tiles in the popup. Unlike
+     * list rows, this stays medium when popup variations enlarge the list text.
+     */
     public static @StyleRes int getAttachmentButtonTextRes(
             @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextSmallSecondary(isIncognito);
+        return IncognitoColors.getTextMediumPrimary(isIncognito);
     }
 
     /** Resolves the text appearance for header visibility text in the popup. */

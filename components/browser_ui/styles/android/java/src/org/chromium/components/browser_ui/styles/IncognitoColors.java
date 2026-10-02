@@ -127,6 +127,13 @@ public class IncognitoColors {
                 : R.style.TextAppearance_Headline_Primary;
     }
 
+    /** Returns the correct text appearance style res for primary colored large text. */
+    public static @StyleRes int getTextLargePrimary(boolean isIncognito) {
+        return isIncognito
+                ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                : R.style.TextAppearance_TextLarge_Primary;
+    }
+
     /** Returns the correct text appearance style res for primary colored medium text. */
     public static @StyleRes int getTextMediumPrimary(boolean isIncognito) {
         return isIncognito

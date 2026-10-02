@@ -684,7 +684,7 @@ class FuseboxViewBinder {
                 iconBackgroundTint,
                 iconSize);
 
-        for (View button : popup.mAttachmentButtons) {
+        for (View button : popup.mListAttachmentButtons) {
             themeButton(
                     button,
                     textAppearance,
@@ -692,6 +692,19 @@ class FuseboxViewBinder {
                     iconTint,
                     iconBackgroundTint,
                     iconSize);
+        }
+
+        if (!popup.mCarouselTiles.isEmpty()) {
+            @StyleRes int tileTextAppearance = mResourceProvider.getAttachmentButtonTextRes();
+            for (View tile : popup.mCarouselTiles) {
+                themeButton(
+                        tile,
+                        tileTextAppearance,
+                        smallTextAppearance,
+                        iconTint,
+                        iconBackgroundTint,
+                        iconSize);
+            }
         }
 
         for (View button : popup.mDynamicThemedButtons) {

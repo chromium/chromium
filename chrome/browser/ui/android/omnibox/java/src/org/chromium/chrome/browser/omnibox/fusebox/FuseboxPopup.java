@@ -74,7 +74,13 @@ class FuseboxPopup {
     /* package */ final TextView mRecentTabsHeader;
     /* package */ final ViewGroup mRecentTabsContainer;
     /* package */ final View mRecentTabsDivider;
-    /* package */ final List<View> mAttachmentButtons;
+
+    /** Attachment buttons laid out as carousel tiles; empty when there is no carousel. */
+    /* package */ final List<View> mCarouselTiles;
+
+    /** Attachment buttons laid out as list rows; disjoint from {@link #mCarouselTiles}. */
+    /* package */ final List<View> mListAttachmentButtons;
+
     /* package */ final Set<View> mDynamicThemedButtons = new HashSet<>();
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
@@ -243,7 +249,7 @@ class FuseboxPopup {
         mRecentTabsHeader = contentView.findViewById(R.id.fusebox_recent_tabs_header);
         mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);
 
-        mAttachmentButtons =
+        List<View> allAttachments =
                 List.of(
                         mAddCurrentTab,
                         mTabButton,
@@ -251,6 +257,20 @@ class FuseboxPopup {
                         mCameraButton,
                         mFileButton,
                         mDriveButton);
+
+        // TODO(crbug.com/568855804): Clean up the carousel and attachment list split logic after a
+        // variation is chosen.
+        if (!useCarousel) {
+            mCarouselTiles = List.of();
+            mListAttachmentButtons = allAttachments;
+        } else if (fileAndDriveInCarousel) {
+            // The current tab shares the carousel with file/drive under the same placement.
+            mCarouselTiles = allAttachments;
+            mListAttachmentButtons = List.of();
+        } else {
+            mCarouselTiles = List.of(mTabButton, mGalleryButton, mCameraButton);
+            mListAttachmentButtons = List.of(mAddCurrentTab, mFileButton, mDriveButton);
+        }
 
         mDividers =
                 mCurrentTabTopDivider != null
@@ -395,8 +415,8 @@ class FuseboxPopup {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_scrollable_carousel_tile_size);
-        for (View button : mAttachmentButtons) {
-            button.findViewById(R.id.start_icon_background).getLayoutParams().height = tileSize;
+        for (View tile : mCarouselTiles) {
+            tile.findViewById(R.id.start_icon_background).getLayoutParams().height = tileSize;
         }
     }
 
