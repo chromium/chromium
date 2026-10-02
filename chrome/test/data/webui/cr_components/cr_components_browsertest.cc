@@ -463,7 +463,13 @@ class CrComponentsWithPixelOutputTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrComponentsWithPixelOutputTest, CrLottie) {
+// TODO(crbug.com/568716335): Re-enable this test once fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CrLottie DISABLED_CrLottie
+#else
+#define MAYBE_CrLottie CrLottie
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsWithPixelOutputTest, MAYBE_CrLottie) {
   RunTest("cr_components/cr_lottie/cr_lottie_test.js", "mocha.run()");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
