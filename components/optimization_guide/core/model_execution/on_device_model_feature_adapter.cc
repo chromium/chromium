@@ -95,33 +95,6 @@ void OnDeviceModelFeatureAdapter::ParseResponse(
                       std::move(callback));
 }
 
-std::optional<proto::TextSafetyRequest>
-OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
-    MultimodalMessageReadView request,
-    const std::string& text) const {
-  if (!config_.has_text_safety_fallback_config()) {
-    return std::nullopt;
-  }
-
-  auto& text_safety_fallback_config = config_.text_safety_fallback_config();
-
-  proto::TextSafetyRequest text_safety_request;
-  text_safety_request.set_text(text);
-
-  if (text_safety_fallback_config.has_input_url_proto_field()) {
-    std::optional<proto::Value> input_url_value =
-        request.GetValue(text_safety_fallback_config.input_url_proto_field());
-    if (input_url_value) {
-      const std::string string_value = GetStringFromValue(*input_url_value);
-      text_safety_request.set_url(string_value);
-    } else {
-      return std::nullopt;
-    }
-  }
-
-  return text_safety_request;
-}
-
 SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
     const {
   std::string feature_name =

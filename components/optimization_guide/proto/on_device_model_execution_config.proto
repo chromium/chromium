@@ -39,6 +39,8 @@ enum OnDeviceModelCapability {
 }
 
 message OnDeviceModelExecutionFeatureConfig {
+  reserved 4;
+
   // The feature this configuration is for.
   optional ModelExecutionFeature feature = 1;
 
@@ -47,10 +49,6 @@ message OnDeviceModelExecutionFeatureConfig {
 
   // The config used to construct the output for on-device model execution.
   optional OnDeviceModelExecutionOutputConfig output_config = 3;
-
-  // The config used to construct the request for server fallback text safety
-  // evaluation.
-  optional TextSafetyFallbackConfig text_safety_fallback_config = 4;
 
   // Whether text safety can be skipped for this feature, if not configured.
   optional bool can_skip_text_safety = 5;
@@ -144,12 +142,6 @@ message OnDeviceModelExecutionOutputConfig {
 
   // The response constraint to use when generating output.
   optional ResponseConstraint response_constraint = 9;
-}
-
-message TextSafetyFallbackConfig {
-  // The proto field in the input request that contains the URL this request was
-  // activated on, if any.
-  optional ProtoField input_url_proto_field = 1;
 }
 
 message OnDeviceModelValidationConfig {

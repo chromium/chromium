@@ -21,7 +21,6 @@
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
-#include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-forward.h"
 
@@ -63,12 +62,6 @@ class OnDeviceModelFeatureAdapter final
                      const std::string& model_response,
                      size_t previous_response_pos,
                      ResponseParser::ResultCallback callback) const;
-
-  // Constructs the request for text safety server fallback.
-  // Will return std::nullopt on error or if the config does not allow for it.
-  std::optional<proto::TextSafetyRequest> ConstructTextSafetyRequest(
-      MultimodalMessageReadView request,
-      const std::string& text) const;
 
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
 

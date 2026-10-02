@@ -63,7 +63,7 @@ enum ErrorState {
 }
 
 enum ModelExecutionFeature {
-  reserved 2, 9, 10, 11, 16, 19, 21, 22, 25;
+  reserved 2, 5, 9, 10, 11, 16, 19, 21, 22, 25;
 
   MODEL_EXECUTION_FEATURE_UNSPECIFIED = 0;
   MODEL_EXECUTION_FEATURE_COMPOSE = 1;
@@ -72,10 +72,6 @@ enum ModelExecutionFeature {
   // prototyping. Please reach out to optimization_guide OWNERS when looking to
   // use this enum or want to go beyond prototyping.
   MODEL_EXECUTION_FEATURE_TEST = 4;
-  // This feature does not map to a user-visible feature that is being
-  // launched, but instead is an internal detail to support other model
-  // execution features.
-  MODEL_EXECUTION_FEATURE_TEXT_SAFETY = 5;
   MODEL_EXECUTION_FEATURE_PROMPT_API = 6;
   MODEL_EXECUTION_FEATURE_HISTORY_SEARCH = 7;
   MODEL_EXECUTION_FEATURE_SUMMARIZE = 8;
