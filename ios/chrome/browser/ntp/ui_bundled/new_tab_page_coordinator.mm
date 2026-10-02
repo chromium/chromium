@@ -1652,7 +1652,6 @@ using ntp_tiles::AimButtonRefactorArm;
   RecordMagicStackClick(ContentSuggestionsModuleType::kTips,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kTips, [self isStartSurface]);
-  [self dismissCustomizationMenu];
 }
 
 - (void)shopCardOpened {

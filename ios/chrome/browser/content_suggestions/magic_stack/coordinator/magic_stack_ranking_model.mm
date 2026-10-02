@@ -734,6 +734,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {
+        if (tipIdentifier == TipIdentifier::kNTPTheme &&
+            segmentation_platform::features::
+                IsMagicStackTipsV2IosActionableEnabled()) {
+          // TODO(crbug.com/566960072): Configure the actionable NTP Theme tip
+          // module when the actionable variation is enabled.
+          break;
+        }
         BOOL shouldShowTipsWithProductImage =
             tipIdentifier == TipIdentifier::kLensShop &&
             _tipsMediator.config.productImageData.length > 0;
