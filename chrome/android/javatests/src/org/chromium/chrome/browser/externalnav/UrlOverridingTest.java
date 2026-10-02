@@ -110,6 +110,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -117,8 +119,10 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -131,6 +135,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -177,6 +182,8 @@ public class UrlOverridingTest {
 
     private static final String BASE_PATH = "/chrome/test/data/android/url_overriding/";
     private static final String HELLO_PAGE = BASE_PATH + "hello.html";
+    // Real installed test WebAPK (JavatestsWebApk.apk), passes WebApkValidator.
+    private static final String TEST_WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
             BASE_PATH + "navigation_from_timer.html";
     private static final String NAVIGATION_FROM_TIMEOUT_WITH_FALLBACK_PAGE =
@@ -336,6 +343,10 @@ public class UrlOverridingTest {
         private String mSchemeToMatch;
         private IntentFilter mFilterForHostMatch;
         private IntentFilter mFilterForSchemeMatch;
+        private String mNonDefaultOnlyHostToMatch;
+        private IntentFilter mFilterForNonDefaultOnlyHostMatch;
+        private String mNonDefaultOnlyTargetPackage;
+        private String mNonDefaultOnlyPathToMatch;
 
         TestContext(Context baseContext, String nonBrowserPackageName) {
             super(baseContext);
@@ -369,6 +380,14 @@ public class UrlOverridingTest {
             mFilterForSchemeMatch = filter;
         }
 
+        private void setNonDefaultOnlyIntentFilterForHost(
+                String host, String path, IntentFilter filter, String targetPackage) {
+            mNonDefaultOnlyHostToMatch = host;
+            mNonDefaultOnlyPathToMatch = path;
+            mFilterForNonDefaultOnlyHostMatch = filter;
+            mNonDefaultOnlyTargetPackage = targetPackage;
+        }
+
         @Override
         public PackageManager getPackageManager() {
             return new PackageManagerWrapper(super.getPackageManager()) {
@@ -389,9 +408,25 @@ public class UrlOverridingTest {
 
                     if (mHostToMatch != null
                             && intent.getData() != null
-                            && intent.getData().getHost().equals(mHostToMatch)) {
+                            && mHostToMatch.equals(intent.getData().getHost())) {
                         ResolveInfo info = newResolveInfo(targetPackage);
                         info.filter = mFilterForHostMatch;
+                        return Arrays.asList(info);
+                    }
+
+                    if ((flags & PackageManager.MATCH_DEFAULT_ONLY) == 0
+                            && mNonDefaultOnlyHostToMatch != null
+                            && intent.getData() != null
+                            && mNonDefaultOnlyHostToMatch.equals(intent.getData().getHost())
+                            && (mNonDefaultOnlyPathToMatch == null
+                                    || mNonDefaultOnlyPathToMatch.equals(
+                                            intent.getData().getPath()))) {
+                        String nonDefaultPackage =
+                                mNonDefaultOnlyTargetPackage != null
+                                        ? mNonDefaultOnlyTargetPackage
+                                        : targetPackage;
+                        ResolveInfo info = newResolveInfo(nonDefaultPackage);
+                        info.filter = mFilterForNonDefaultOnlyHostMatch;
                         return Arrays.asList(info);
                     }
 
@@ -474,6 +509,30 @@ public class UrlOverridingTest {
             InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
             mActivityMonitor = null;
         }
+        // Tests that register a WebAPK (e.g. testNonDefaultOnlyWebApkLaunchesOnRendererNavigation)
+        // leave it in WebappRegistry's in-memory map, which would leak into subsequent batched
+        // tests. Reset the registry so each test starts from a clean state.
+        ThreadUtils.runOnUiThreadBlocking(WebappRegistry::refreshSharedPrefsForTesting);
+    }
+
+    private void registerTestWebApk(String webappId, String startUrl, String scope)
+            throws Exception {
+        TestFetchStorageCallback callback = new TestFetchStorageCallback();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebappRegistry.refreshSharedPrefsForTesting();
+                    WebappRegistry.getInstance().register(webappId, callback);
+                });
+        callback.waitForCallback(0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    callback.getStorage()
+                            .updateFromWebappIntentDataProvider(
+                                    new WebApkIntentDataProviderBuilder(
+                                                    TEST_WEBAPK_PACKAGE_NAME, startUrl)
+                                            .setScope(scope)
+                                            .build());
+                });
     }
 
     private Origin createExampleOrigin() {
@@ -1394,6 +1453,76 @@ public class UrlOverridingTest {
         filter.addDataAuthority("127.0.0.1", null);
         filter.addDataPath(HELLO_PAGE, PatternMatcher.PATTERN_LITERAL);
         return filter;
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH_NAME)
+    // Same-tab navigations are not overridden in desktop windowing mode, so the WebAPK is not
+    // launched and the navigation does not fail as this test expects. See crbug.com/481445778.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    public void testNonDefaultOnlyWebApkLaunchesOnRendererNavigation() throws Exception {
+        runWebApkLaunchesOnRendererNavigationTest(/* targetBlankNotSelf= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH_NAME)
+    public void testNonDefaultOnlyWebApkLaunchesOnRendererNavigationInNewTab() throws Exception {
+        runWebApkLaunchesOnRendererNavigationTest(/* targetBlankNotSelf= */ true);
+    }
+
+    // Shared body for the self-owned WebAPK renderer-navigation launch tests. Verifies that a
+    // same-host renderer navigation from an out-of-scope page to an in-scope URL whose sole handler
+    // is an unverified WebAPK (present only on the non-default resolve list, as on Android S+)
+    // launches the WebAPK. The sole handler resolves to a real installed WebAPK
+    // (org.chromium.webapk.test) so it passes WebApkValidator; the link-handling user toggle is
+    // stubbed because the device has not verified the domain on Android S+. The non-default mock is
+    // path-specific so the WebAPK resolves ONLY for the destination path (hello.html), NOT for the
+    // source page path, making isNewSoleSelfOwnedWebApk true.
+    //
+    // When targetBlankNotSelf is true a new-tab (target=_blank) navigation is used instead of a
+    // same-tab (target=_self) one. New-tab navigations remain capturable in desktop windowing
+    // mode, whereas same-tab ones are not, which is why the same-tab variant is disabled on
+    // desktop. See crbug.com/481445778.
+    private void runWebApkLaunchesOnRendererNavigationTest(boolean targetBlankNotSelf)
+            throws Exception {
+        WebApkValidator.setDisableValidationForTesting(true);
+        ExternalNavigationDelegateImpl.setIsWebApkLinkHandlingAllowedForTesting(true);
+        registerTestWebApk("webapk-test", mTestServer.getURL(HELLO_PAGE), mTestServer.getURL("/"));
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme(UrlConstants.HTTPS_SCHEME);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("127.0.0.1", null);
+        filter.addDataPath(HELLO_PAGE, PatternMatcher.PATTERN_LITERAL);
+        mActivityMonitor =
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                filter,
+                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
+                                true);
+        mTestContext.setNonDefaultOnlyIntentFilterForHost(
+                "127.0.0.1", HELLO_PAGE, filter, TEST_WEBAPK_PACKAGE_NAME);
+
+        WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
+        String urlExternal = mTestServer.getURL(HELLO_PAGE);
+        String linkPage =
+                targetBlankNotSelf
+                        ? NAVIGATION_FROM_TARGET_BLANK_LINK
+                        : NAVIGATION_FROM_TARGET_SELF_LINK;
+        String url = getUrlWithParam(linkPage, urlExternal);
+        TestParams testParams = new TestParams(url, true, true);
+        testParams.createsNewTab = targetBlankNotSelf;
+        testParams.expectedFinalUrl = null;
+        loadUrlAndWaitForIntentUrl(testParams, ctaPage);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+                },
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
