@@ -21,8 +21,13 @@ import {AcceleratorState} from 'chrome://shortcut-customization/js/shortcut_type
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+type SearchBoxElementInternal = SearchBoxElement&{
+  searchResults: MojoSearchResult[],
+  shouldShowDropdown: boolean,
+};
+
 suite('searchBoxTest', function() {
-  let searchBoxElement: SearchBoxElement|null = null;
+  let searchBoxElement: SearchBoxElementInternal|null = null;
   let searchFieldElement: CrToolbarSearchFieldElement|null = null;
   let dropdownElement: IronDropdownElement|null = null;
   let resultsListElement: IronListElement|null = null;
@@ -68,10 +73,11 @@ suite('searchBoxTest', function() {
   });
 
   function initSearchBoxElement(): [
-    SearchBoxElement, CrToolbarSearchFieldElement, IronDropdownElement,
+    SearchBoxElementInternal, CrToolbarSearchFieldElement, IronDropdownElement,
     IronListElement
   ] {
-    const searchBoxElement_ = document.createElement('search-box');
+    const searchBoxElement_ =
+        document.createElement('search-box') as SearchBoxElementInternal;
     document.body.appendChild(searchBoxElement_);
     flush();
 

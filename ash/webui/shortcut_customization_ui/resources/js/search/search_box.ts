@@ -107,23 +107,34 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     };
   }
 
-  declare hasSearchQuery: boolean;
-  declare searchResults: MojoSearchResult[];
-  declare shouldShowDropdown: boolean;
-  declare private lastFocused: HTMLElement|null;
-  declare private listBlurred: boolean;
-  private resizeObserver: ResizeObserver;
-  private searchInputElement: HTMLInputElement;
-  declare private searchResultsExist: boolean;
-  declare private selectedItem: MojoSearchResult;
-  private shortcutSearchHandler: ShortcutSearchHandlerInterface;
-  declare private spinnerActive: boolean;
+  declare protected hasSearchQuery: boolean;
+  declare protected searchResults: MojoSearchResult[];
+  declare protected shouldShowDropdown: boolean;
+  declare protected lastFocused: HTMLElement|null;
+  declare protected listBlurred: boolean;
+  declare protected searchResultsExist: boolean;
+  declare protected selectedItem: MojoSearchResult;
+  declare protected spinnerActive: boolean;
+  private shortcutSearchHandler_: ShortcutSearchHandlerInterface;
+
+  private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
+    const ironListElement =
+        (this.shadowRoot?.querySelector('iron-list') as IronListElement);
+    if (ironListElement) {
+      ironListElement.notifyResize();
+    }
+  });
+
+  private get searchInputElement_(): HTMLInputElement {
+    return strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
+        .getSearchInput();
+  }
 
   constructor() {
     super();
-    this.shortcutSearchHandler = getShortcutSearchHandler();
+    this.shortcutSearchHandler_ = getShortcutSearchHandler();
     const receiver = new SearchResultsAvailabilityObserverReceiver(this);
-    this.shortcutSearchHandler.addSearchResultsAvailabilityObserver(
+    this.shortcutSearchHandler_.addSearchResultsAvailabilityObserver(
         receiver.$.bindNewPipeAndPassRemote());
   }
 
@@ -149,39 +160,32 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     searchFieldElement.addEventListener(
         'transitionend', this.onSearchFieldTransitionEnd.bind(this));
 
-    this.searchInputElement = searchFieldElement.getSearchInput();
+    const searchInputElement = searchFieldElement.getSearchInput();
 
     // Focus the search bar when the app opens.
     afterNextRender(this, () => {
-      this.searchInputElement.focus();
+      searchInputElement.focus();
     });
 
-    this.searchInputElement.addEventListener(
+    searchInputElement.addEventListener(
         'focus', this.onSearchInputFocused.bind(this));
-    this.searchInputElement.addEventListener(
+    searchInputElement.addEventListener(
         'mousedown', this.onSearchInputMousedown.bind(this));
 
-    this.searchInputElement.maxLength = MAX_QUERY_LENGTH_CHARACTERS;
+    searchInputElement.maxLength = MAX_QUERY_LENGTH_CHARACTERS;
 
     // This is a required work around to get the iron-list to display correctly
     // on the first search query. Currently iron-list won't generate item
     // elements on attach if the element is not visible. To work around this, we
     // listen for resize events and manually call notifyResize on the iron-list
     // when the iron-dropdown state changes.
-    this.resizeObserver = new ResizeObserver(() => {
-      const ironListElement =
-          (this.shadowRoot?.querySelector('iron-list') as IronListElement);
-      if (ironListElement) {
-        ironListElement.notifyResize();
-      }
-    });
-    this.resizeObserver.observe(
+    this.resizeObserver_.observe(
         strictQuery('iron-dropdown', this.shadowRoot, HTMLElement));
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.resizeObserver.disconnect();
+    this.resizeObserver_.disconnect();
   }
 
   private onBlur(event: UIEvent): void {
@@ -202,7 +206,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
   }
 
   private getCurrentQuery(): string {
-    return this.searchInputElement.value;
+    return this.searchInputElement_.value;
   }
 
   private onSearchChanged(): void {
@@ -229,7 +233,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
   private onSearchIconClicked(): void {
     // Select the query text.
-    this.searchInputElement.select();
+    this.searchInputElement_.select();
 
     if (this.getCurrentQuery()) {
       this.shouldShowDropdown = true;
@@ -256,7 +260,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     // |shouldShowDropdown| changes.
     if (!this.shouldShowDropdown) {
       // Select all search input text once the initial state is set.
-      afterNextRender(this, () => this.searchInputElement.select());
+      afterNextRender(this, () => this.searchInputElement_.select());
     }
   }
 
@@ -395,7 +399,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     // cap the number of search results to MAX_NUM_RESULTS.
     const maxNumberOfSearchResults = MAX_NUM_RESULTS * 3;
 
-    this.shortcutSearchHandler.search(query, maxNumberOfSearchResults)
+    this.shortcutSearchHandler_.search(query, maxNumberOfSearchResults)
         .then((response) => {
           this.onSearchResultsReceived(query, response.results);
           this.dispatchEvent(new CustomEvent(
