@@ -21,6 +21,7 @@ android_library("java") {
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/omnibox:util_java",
+    "//components/omnibox/browser:browser_java",
     "//components/search_engines/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_java",

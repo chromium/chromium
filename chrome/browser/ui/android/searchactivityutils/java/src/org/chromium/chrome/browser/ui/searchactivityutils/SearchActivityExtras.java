@@ -33,6 +33,9 @@ public @interface SearchActivityExtras {
     String EXTRA_RESOLUTION_TYPE =
             "org.chromium.chrome.browser.ui.searchactivityutils.resolution_type";
 
+    /** The requested AutocompleteRequestType, e.g. Search or AI Mode. */
+    String EXTRA_REQUEST_TYPE = "org.chromium.chrome.browser.ui.searchactivityutils.request_type";
+
     // Only alphanumeric characters, dots and dashes.
     // Must be at least 2 characters long, and begin and end with an alphanumeric character.
     String REFERRER_VALIDATION_REGEX = "^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$";

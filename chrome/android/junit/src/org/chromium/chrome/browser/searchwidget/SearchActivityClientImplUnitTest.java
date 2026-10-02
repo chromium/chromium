@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
@@ -85,7 +86,10 @@ public class SearchActivityClientImplUnitTest {
         for (int origin : origins) {
             String action =
                     String.format(
-                            SearchActivityClientImpl.ACTION_SEARCH_FORMAT, origin, SearchType.TEXT);
+                            SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
+                            origin,
+                            SearchType.TEXT,
+                            AutocompleteRequestType.SEARCH);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -122,7 +126,8 @@ public class SearchActivityClientImplUnitTest {
                     String.format(
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
                             origin,
-                            SearchType.VOICE);
+                            SearchType.VOICE,
+                            AutocompleteRequestType.SEARCH);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -157,7 +162,10 @@ public class SearchActivityClientImplUnitTest {
         for (int origin : origins) {
             String action =
                     String.format(
-                            SearchActivityClientImpl.ACTION_SEARCH_FORMAT, origin, SearchType.LENS);
+                            SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
+                            origin,
+                            SearchType.LENS,
+                            AutocompleteRequestType.SEARCH);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -177,6 +185,23 @@ public class SearchActivityClientImplUnitTest {
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
         }
+    }
+
+    @Test
+    public void intentBuilder_forAiModeRequest() {
+        var intent =
+                mClient.newIntentBuilder().setRequestType(AutocompleteRequestType.AI_MODE).build();
+
+        assertEquals(
+                AutocompleteRequestType.AI_MODE, SearchActivityUtils.getIntentRequestType(intent));
+        // PendingIntent equality ignores extras, so the action must carry the request type.
+        assertEquals(
+                String.format(
+                        SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
+                        IntentOrigin.CUSTOM_TAB,
+                        SearchType.TEXT,
+                        AutocompleteRequestType.AI_MODE),
+                intent.getAction());
     }
 
     @Test

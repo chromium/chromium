@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
@@ -141,6 +142,18 @@ public class SearchActivityUtils {
         }
 
         return SearchType.TEXT;
+    }
+
+    /** Returns the requested AutocompleteRequestType, or SEARCH if the intent is untrusted. */
+    /* package */ static @AutocompleteRequestType int getIntentRequestType(Intent intent) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
+            return IntentUtils.safeGetIntExtra(
+                    intent,
+                    SearchActivityExtras.EXTRA_REQUEST_TYPE,
+                    AutocompleteRequestType.SEARCH);
+        }
+
+        return AutocompleteRequestType.SEARCH;
     }
 
     /**

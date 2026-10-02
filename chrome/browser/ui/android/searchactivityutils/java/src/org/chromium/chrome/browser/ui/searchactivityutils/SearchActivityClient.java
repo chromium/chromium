@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -70,6 +71,15 @@ public interface SearchActivityClient {
          * @return The IntentBuilder instance for method chaining.
          */
         IntentBuilder setResolutionType(@ResolutionType int resolutionType);
+
+        /**
+         * Sets the request type for the intent. The default value is
+         * AutocompleteRequestType.SEARCH.
+         *
+         * @param requestType The type of request to start the search session with.
+         * @return The IntentBuilder instance for method chaining.
+         */
+        IntentBuilder setRequestType(@AutocompleteRequestType int requestType);
 
         /** Returns the intent capturing all the relevant details. */
         Intent build();

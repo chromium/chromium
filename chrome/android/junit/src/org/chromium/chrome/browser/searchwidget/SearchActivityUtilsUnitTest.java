@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -150,6 +151,31 @@ public class SearchActivityUtilsUnitTest {
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
         assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+    }
+
+    @Test
+    public void getIntentRequestType_trustedIntent() {
+        var intent =
+                mClient.newIntentBuilder().setRequestType(AutocompleteRequestType.AI_MODE).build();
+        assertEquals(
+                AutocompleteRequestType.AI_MODE, SearchActivityUtils.getIntentRequestType(intent));
+    }
+
+    @Test
+    public void getIntentRequestType_untrustedIntent() {
+        var intent =
+                mClient.newIntentBuilder().setRequestType(AutocompleteRequestType.AI_MODE).build();
+        intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+        assertEquals(
+                AutocompleteRequestType.SEARCH, SearchActivityUtils.getIntentRequestType(intent));
+    }
+
+    @Test
+    public void getIntentRequestType_webSearch() {
+        Intent intent = buildWebSearchIntent("query");
+        intent.putExtra(SearchActivityExtras.EXTRA_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
+        assertEquals(
+                AutocompleteRequestType.SEARCH, SearchActivityUtils.getIntentRequestType(intent));
     }
 
     @Test

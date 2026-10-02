@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
@@ -46,7 +47,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     // offer complimentary default values.
     @VisibleForTesting
     /* package */ static final String ACTION_SEARCH_FORMAT =
-            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d";
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d:%d";
 
     private final Context mContext;
     private final @IntentOrigin int mOrigin;
@@ -55,6 +56,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         private final Intent mIntent;
         private final @IntentOrigin int mOrigin;
         private @SearchType int mSearchType;
+        private @AutocompleteRequestType int mRequestType;
 
         IntentBuilderImpl(Context context, int origin) {
             mOrigin = origin;
@@ -67,6 +69,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
             // Initialize defaults.
             setSearchType(SearchType.TEXT);
             setResolutionType(ResolutionType.OPEN_IN_CHROME);
+            setRequestType(AutocompleteRequestType.SEARCH);
         }
 
         @Override
@@ -116,12 +119,24 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         }
 
         @Override
+        public IntentBuilder setRequestType(@AutocompleteRequestType int requestType) {
+            mIntent.putExtra(SearchActivityExtras.EXTRA_REQUEST_TYPE, requestType);
+            mRequestType = requestType;
+            return this;
+        }
+
+        @Override
         public Intent build() {
             // Ensure `action` is unique especially across different Widget implementations.
             // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
             // triggering functionality we might not want to activate.
             mIntent.setAction(
-                    String.format(Locale.getDefault(), ACTION_SEARCH_FORMAT, mOrigin, mSearchType));
+                    String.format(
+                            Locale.getDefault(),
+                            ACTION_SEARCH_FORMAT,
+                            mOrigin,
+                            mSearchType,
+                            mRequestType));
             // Ensure a copy is made so that the builder can be reused, producing variations of an
             // intent.
             var intent = new Intent(mIntent);
