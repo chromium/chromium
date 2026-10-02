@@ -382,10 +382,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // frame.
   void OnLiveResizeToFrame(NSRect new_window_frame);
 
-  // Update `host_` and its compositor with a new NSWindow frame size. This
+  // Update `host_` and its compositor with a new NSWindow frame size.
   // can be done in response to the -[NSWindow frame] attribute changing, or
-  // in anticipation of a live-resize step.
-  void SendWindowFrameChangeToHost(NSRect new_window_frame);
+  // in anticipation of a live-resize, in which case
+  // `live_resize_.pending_window_frame` may be set to `pending_window_frame`.
+  // Returns true if `content_dip_size_` changed.
+  bool SendWindowFrameChangeToHost(
+      std::optional<NSRect> pending_window_frame = std::nullopt);
 
  private:
   friend class views::test::BridgedNativeWidgetTestApi;

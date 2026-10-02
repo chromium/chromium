@@ -381,7 +381,7 @@ void InstallSwizzlers() {
     headless_info->headless_frame = gfx::ScreenRectFromNSRect(frameRect);
     NativeWidgetMacNSWindow* window = (NativeWidgetMacNSWindow*)self;
     if (window.bridge) {
-      window.bridge->SendWindowFrameChangeToHost(frameRect);
+      window.bridge->UpdateWindowGeometry();
     }
     if (!NSEqualPoints(old_frame.origin, frameRect.origin)) {
       [[NSNotificationCenter defaultCenter]

@@ -2071,20 +2071,19 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
   // If this frame is in response to a live-resize, then update the NSWindow's
   // frame now.
   if (live_resize_.pending_window_frame.has_value()) {
+    // The calls to OnWindowGeometryChanged that this triggers will early-out
+    // because `live_resize_.pending_window_frame` is still set (we already sent
+    // the new geometry to the host).
     [window_ setFrame:live_resize_.pending_window_frame.value()
               display:YES
               animate:NO];
 
-    // If a subsequent resize came in, send the new size to the compositor now.
-    live_resize_.pending_window_frame =
+    // If a subsequent resize came in, send the new size to the host now.
+    live_resize_.pending_window_frame = std::nullopt;
+    auto pending_frame =
         std::exchange(live_resize_.queued_pending_window_frame, std::nullopt);
-    if (live_resize_.pending_window_frame.has_value()) {
-      // The pending size must be different from the current size (otherwise we
-      // will never un-set `live_resize_.pending_window_frame`) and hang the
-      // resize.
-      DCHECK_NE(gfx::Size(live_resize_.pending_window_frame->size),
-                content_dip_size_);
-      SendWindowFrameChangeToHost(live_resize_.pending_window_frame.value());
+    if (pending_frame.has_value()) {
+      SendWindowFrameChangeToHost(pending_frame);
     }
   }
 }
@@ -2250,29 +2249,13 @@ void NativeWidgetNSWindowBridge::OnLiveResizeToFrame(NSRect new_window_frame) {
   // the compositor to produce a frame of the previously-requested size before
   // asking it for a new one).
   if (live_resize_.pending_window_frame.has_value()) {
-    if (gfx::Size(new_window_frame.size) ==
-        gfx::Size(live_resize_.pending_window_frame->size)) {
-      // If this request is the same as the pending live resize request, just
-      // discard it.
-      live_resize_.queued_pending_window_frame = std::nullopt;
-    } else {
-      live_resize_.queued_pending_window_frame = new_window_frame;
-    }
-    return;
-  }
-
-  // If we already have a compositor frame of the expected size, then we will
-  // not get re-notified of frames of the current size, which will cause us to
-  // never un-set `live_resize_.pending_window_frame` and hang the resize.
-  // http://crbug.com/510621306
-  if (gfx::Size(new_window_frame.size) == content_dip_size_) {
+    live_resize_.queued_pending_window_frame = new_window_frame;
     return;
   }
 
   // Tell the compositor about the new frame, so it can produce the right
   // sized frame. We will call -[NSWindow setFrame:] when the compositor
   // produces the frame.
-  live_resize_.pending_window_frame = new_window_frame;
   SendWindowFrameChangeToHost(new_window_frame);
 }
 
@@ -2282,10 +2265,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   if (live_resize_.pending_window_frame.has_value()) {
     return;
   }
-
-  const auto content_dip_size_before = content_dip_size_;
-  SendWindowFrameChangeToHost([window_ frame]);
-  bool content_resized = content_dip_size_before != content_dip_size_;
+  bool content_resized = SendWindowFrameChangeToHost();
 
   CheckAndNotifyZoomedStateChanged();
   CheckAndNotifyAllWorkspacesStateChanged();
@@ -2302,13 +2282,36 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
     invalidate_shadow_on_frame_swap_ = true;
 }
 
-void NativeWidgetNSWindowBridge::SendWindowFrameChangeToHost(
-    NSRect new_window_frame) {
-  gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect(new_window_frame);
+bool NativeWidgetNSWindowBridge::SendWindowFrameChangeToHost(
+    std::optional<NSRect> pending_window_frame) {
+  NSRect current_window_frame = [window_ frame];
+  NSRect window_frame_for_compositor =
+      pending_window_frame.value_or(current_window_frame);
+
+  gfx::Rect window_in_screen =
+      gfx::ScreenRectFromNSRect(window_frame_for_compositor);
   gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
-      [window_ contentRectForFrameRect:new_window_frame]);
+      [window_ contentRectForFrameRect:window_frame_for_compositor]);
+
+  bool content_dip_size_changed = content_dip_size_ != content_in_screen.size();
   content_dip_size_ = content_in_screen.size();
+
+  if (pending_window_frame.has_value()) {
+    DCHECK(!live_resize_.pending_window_frame.has_value());
+    // Store the new frame to apply when the compositor frame arrives.
+    live_resize_.pending_window_frame = pending_window_frame.value();
+
+    // If this did not trigger a content resize, then set the window's frame
+    // size to the new value now, with live_resize_.pending_window_frame
+    // temporarily still set, to avoid recursing.
+    if (!content_dip_size_changed) {
+      [window_ setFrame:pending_window_frame.value() display:YES animate:NO];
+      live_resize_.pending_window_frame = std::nullopt;
+    }
+  }
+
   host_->OnWindowGeometryChanged(window_in_screen, content_in_screen);
+  return content_dip_size_changed;
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
