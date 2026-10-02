@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -62,6 +64,17 @@ public class VerticalPinnedTabListRecyclerViewUnitTest {
         Resources res = mActivity.getResources();
         mMinPinnedTabGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         mMinPinnedTabWidth = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
+    }
+
+    @Test
+    public void testOnInterceptHoverEvent_ReturnsFalse() {
+        for (int action :
+                new int[] {MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE}) {
+            MotionEvent event = MotionEvent.obtain(0, 0, action, 10f, 10f, 0);
+            event.setSource(InputDevice.SOURCE_MOUSE);
+            assertFalse(mRecyclerView.onInterceptHoverEvent(event));
+            event.recycle();
+        }
     }
 
     @Test

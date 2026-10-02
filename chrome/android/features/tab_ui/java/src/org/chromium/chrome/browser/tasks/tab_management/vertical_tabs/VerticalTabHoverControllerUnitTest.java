@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -89,6 +90,8 @@ public class VerticalTabHoverControllerUnitTest {
 
     @Mock private VerticalTabRailLayout mContainerView;
     @Mock private VerticalTabListRecyclerView mRecyclerView;
+    @Mock private VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
+    @Mock private GridLayoutManager mPinnedLayoutManager;
     @Mock private ViewGroup mRootView;
     @Mock private View mTabView1;
     @Mock private View mTabView2;
@@ -125,6 +128,9 @@ public class VerticalTabHoverControllerUnitTest {
 
         when(mContainerView.getContext()).thenReturn(activity);
         when(mContainerView.getRecyclerView()).thenReturn(mRecyclerView);
+        when(mContainerView.getPinnedTabsRecyclerView()).thenReturn(mPinnedTabsRecyclerView);
+        when(mPinnedTabsRecyclerView.getLayoutManager()).thenReturn(mPinnedLayoutManager);
+        when(mPinnedLayoutManager.getSpanCount()).thenReturn(2);
         when(mContainerView.getRootView()).thenReturn(mRootView);
         when(mRootView.getHeight()).thenReturn(ROOT_VIEW_HEIGHT_PX);
         when(mTabHoverCardView.getContext()).thenReturn(activity);
@@ -483,15 +489,14 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ false,
-                        /* isRailCollapsed= */ true);
+                        /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
         assertEquals(
                 COLLAPSED_CONTAINER_WIDTH_PX - mCardShadowOffset + mHoverCardMarginToRail,
                 position[0],
                 0.01f);
-        assertEquals(TAB_VIEW_Y_PX - mCardShadowOffset, position[1], 0.01f);
+        assertEquals(TAB_VIEW_Y_PX + mBackgroundInset - mCardShadowOffset, position[1], 0.01f);
     }
 
     @Test
@@ -503,8 +508,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ false,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
         assertEquals(
@@ -534,8 +538,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ false,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
         assertEquals(
@@ -574,8 +577,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ false,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
         assertEquals(
@@ -598,15 +600,14 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ true,
-                        /* isRailCollapsed= */ true);
+                        /* shouldShowCardBelowTab= */ false);
 
         assertEquals(2, position.length);
         assertEquals(
                 COLLAPSED_CONTAINER_WIDTH_PX - mCardShadowOffset + mHoverCardMarginToRail,
                 position[0],
                 0.01f);
-        assertEquals(TAB_VIEW_Y_PX - mCardShadowOffset, position[1], 0.01f);
+        assertEquals(TAB_VIEW_Y_PX + mBackgroundInset - mCardShadowOffset, position[1], 0.01f);
     }
 
     @Test
@@ -616,8 +617,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ true,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
         assertEquals(PINNED_TAB_VIEW_X_PX - mCardShadowOffset, position[0], 0.01f);
@@ -649,8 +649,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ true,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
         // Should show on the right of the rail container, top-aligned with the pinned tab.
@@ -683,8 +682,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
-                        /* isPinnedTab= */ true,
-                        /* isRailCollapsed= */ false);
+                        /* shouldShowCardBelowTab= */ true);
 
         assertEquals(2, position.length);
         assertEquals(
@@ -699,6 +697,19 @@ public class VerticalTabHoverControllerUnitTest {
                         - HOVER_CARD_VIEW_HEIGHT_PX
                         + mCardShadowOffset;
         assertEquals(expectedY, position[1], 0.01f);
+    }
+
+    @Test
+    public void testShouldShowCardBelowTab() {
+        when(mPinnedLayoutManager.getSpanCount()).thenReturn(2);
+        assertTrue(mController.shouldShowCardBelowTab(mPinnedTab));
+        assertFalse(mController.shouldShowCardBelowTab(mTab1));
+
+        // The pinned grid has a single column while the rail is collapsed or expanded for
+        // hovering, so pinned tabs show the card next to the rail like regular tabs.
+        when(mPinnedLayoutManager.getSpanCount()).thenReturn(1);
+        assertFalse(mController.shouldShowCardBelowTab(mPinnedTab));
+        assertFalse(mController.shouldShowCardBelowTab(mTab1));
     }
 
     // =========================================================================================

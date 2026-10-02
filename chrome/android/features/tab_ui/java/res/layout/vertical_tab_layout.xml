@@ -91,6 +91,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/vertical_tab_pinned_tabs_padding_top"
         android:paddingBottom="@dimen/vertical_tab_pinned_tabs_padding_bottom"
+        android:layout_marginEnd="@dimen/vertical_tabs_scrollbar_margin_end"
+        android:paddingEnd="@dimen/vertical_tabs_scrollbar_padding_end"
         android:clipToPadding="false"
         app:layout_constrainedHeight="true"
         app:layout_constraintTop_toBottomOf="@id/vertical_tab_header_container"

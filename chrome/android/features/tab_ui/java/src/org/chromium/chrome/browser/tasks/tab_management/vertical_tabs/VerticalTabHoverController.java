@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -426,8 +427,7 @@ public class VerticalTabHoverController {
                         mCurrentHoveredView,
                         mContainerView,
                         mTabHoverCardView,
-                        tab.getIsPinned(),
-                        mContainerView.isCollapsed());
+                        shouldShowCardBelowTab(tab));
         mTabHoverCardView.setX(position[0]);
         mTabHoverCardView.setY(position[1]);
     }
@@ -561,11 +561,7 @@ public class VerticalTabHoverController {
 
         float[] position =
                 getHoverCardPosition(
-                        view,
-                        mContainerView,
-                        mTabHoverCardView,
-                        tab.getIsPinned(),
-                        mContainerView.isCollapsed());
+                        view, mContainerView, mTabHoverCardView, shouldShowCardBelowTab(tab));
         mTabHoverCardView.show(position[0], position[1]);
     }
 
@@ -590,9 +586,20 @@ public class VerticalTabHoverController {
                         view,
                         mContainerView,
                         mTabGroupHoverCardView,
-                        /* isPinnedTab= */ false,
-                        mContainerView.isCollapsed());
+                        /* shouldShowCardBelowTab= */ false);
         mTabGroupHoverCardView.show(position[0], position[1]);
+    }
+
+    /**
+     * Returns whether the hover card should show below the tab. This is only the case for pinned
+     * tabs laid out in a grid with multiple columns.
+     */
+    @VisibleForTesting
+    boolean shouldShowCardBelowTab(Tab tab) {
+        return tab.getIsPinned()
+                && mContainerView.getPinnedTabsRecyclerView().getLayoutManager()
+                        instanceof GridLayoutManager gridLayoutManager
+                && gridLayoutManager.getSpanCount() > 1;
     }
 
     private void cancelPendingHoverCard() {
@@ -618,8 +625,8 @@ public class VerticalTabHoverController {
      * @param anchorView The item view being hovered.
      * @param containerView The vertical tab container / parent view.
      * @param hoverCardView The hover card view instance.
-     * @param isPinnedTab True if the hovered item is a pinned tab.
-     * @param isRailCollapsed True if the vertical tab rail is currently collapsed.
+     * @param shouldShowCardBelowTab True to show the card below the hovered item if there is enough
+     *     space. Otherwise, the card is shown to the right of the rail, top-aligned with the item.
      * @return A float array specifying the x (array[0]) and y (array[1]) coordinates.
      */
     @VisibleForTesting
@@ -627,8 +634,7 @@ public class VerticalTabHoverController {
             View anchorView,
             View containerView,
             View hoverCardView,
-            boolean isPinnedTab,
-            boolean isRailCollapsed) {
+            boolean shouldShowCardBelowTab) {
         // 1. Calculate relative coordinates of the anchor view and rail container relative to the
         // hover card's parent container.
         View parentView =
@@ -657,24 +663,23 @@ public class VerticalTabHoverController {
         // 3. Offset for shadow length, background inset, and card margin.
         float cardShadowOffset = resources.getDimension(R.dimen.popup_menu_shadow_length);
         float backgroundInset =
-                (!isPinnedTab && !isRailCollapsed)
-                        ? resources.getDimension(
+                shouldShowCardBelowTab
+                        ? 0f
+                        : resources.getDimension(
                                 VerticalTabUtils.isTablet(context)
                                         ? R.dimen.vertical_tab_item_touch_target_inset_tablet
-                                        : R.dimen.vertical_tab_item_touch_target_inset)
-                        : 0f;
+                                        : R.dimen.vertical_tab_item_touch_target_inset);
         float hoverCardMarginToRail =
                 resources.getDimension(R.dimen.vertical_tab_hover_card_margin_to_rail);
         float parentHeight = parentView.getHeight();
         float visibleCardHeight = hoverCardHeight - 2 * cardShadowOffset;
 
-        // 4. Determine visible hover card position based on pinned and rail state.
+        // 4. Determine visible hover card position.
         float visibleX;
         float visibleY;
-        if (isPinnedTab
-                && !isRailCollapsed
+        if (shouldShowCardBelowTab
                 && relativeY + anchorView.getHeight() + visibleCardHeight <= parentHeight) {
-            // Show below the pinned tab.
+            // Show below the tab.
             visibleX = relativeX;
             visibleY = relativeY + anchorView.getHeight();
         } else {

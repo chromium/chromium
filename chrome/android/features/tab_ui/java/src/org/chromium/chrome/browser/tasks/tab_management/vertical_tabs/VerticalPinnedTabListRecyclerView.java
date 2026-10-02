@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +41,17 @@ public class VerticalPinnedTabListRecyclerView extends TabListRecyclerView {
 
     public VerticalPinnedTabListRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /**
+     * Never intercepts hover events, so they always reach the pinned tab items. By default, a
+     * scrollable view intercepts mouse hover events over its vertical scrollbar, whose hover area
+     * is widened to the minimum touch target. In the narrow collapsed rail, that area covers most
+     * of each pinned tab, which would prevent their hover cards from showing.
+     */
+    @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+        return false;
     }
 
     /**
