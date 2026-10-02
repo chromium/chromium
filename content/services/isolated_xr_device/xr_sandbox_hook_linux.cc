@@ -65,6 +65,15 @@ constexpr const char* kLibrarySearchDirs[] = {
     "/usr/local/lib",
 };
 
+// Flatpak runtimes ship the GPU drivers, with their Vulkan ICD and layer
+// manifests, in the GL extension mounted here, and the runtime's Vulkan
+// loader looks for manifests only under it.
+#if defined(ARCH_CPU_X86_64)
+constexpr char kFlatpakGlExtensionDir[] = "/usr/lib/x86_64-linux-gnu/GL";
+#elif defined(ARCH_CPU_ARM64)
+constexpr char kFlatpakGlExtensionDir[] = "/usr/lib/aarch64-linux-gnu/GL";
+#endif
+
 // The XDG config directories the OpenXR loader searches for the
 // active-runtime manifest when $XR_RUNTIME_JSON is unset, in loader order.
 std::vector<std::string> GetManifestSearchDirs() {
@@ -362,6 +371,12 @@ std::vector<BrokerFilePermission> GetOpenXrFilePermissions(
   // Vulkan ICD and implicit-layer manifests describing the installed driver.
   add_dir("/usr/share/vulkan");
   add_dir("/etc/vulkan");
+#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
+  if (access(kFlatpakGlExtensionDir, R_OK) == 0) {
+    add_dir(kFlatpakGlExtensionDir);
+    add_ancestor_dirs(std::string(kFlatpakGlExtensionDir) + "/vulkan");
+  }
+#endif
 
   // The runtime creates its own Vulkan instance here, so it needs the same GPU
   // access the GPU process has: the DRM nodes (read-write) plus the sysfs
