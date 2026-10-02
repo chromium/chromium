@@ -13,6 +13,7 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
@@ -67,6 +68,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.w
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -243,6 +246,11 @@ public class TabGridDialogTest {
     @Before
     public void setUp() {
         Intents.init();
+        // Keep ACTION_CHOOSER from launching the real system share sheet, which would background
+        // Chrome and leave the rest of the test (and tearDown) running against a non-resumed
+        // Activity. Tests still verify the Intent with intended().
+        intending(hasAction(Intent.ACTION_CHOOSER))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
         // Some of the tests may finish the activity using moveTaskToBack.
         ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         mPage = mActivityTestRule.startOnBlankPage();
