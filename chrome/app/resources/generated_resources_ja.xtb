@@ -5801,7 +5801,7 @@
 <translation id="5452716108542782563">「<ph name="NAME" />」拡張機能がこの設定を制御しています。既定の検索エンジンを変更するには、<ph name="BEGIN_LINK_DISABLE" />拡張機能を無効にする<ph name="END_LINK_DISABLE" />か、<ph name="BEGIN_LINK_MANAGE" />設定を管理<ph name="END_LINK_MANAGE" />します。</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（オフラインで利用可能）</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">検索に追加</translation>
+<translation id="5457082343331641453">検索に追加する</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
 <translation id="5457795687441958389">ログアウト状態を保持</translation>
 <translation id="5458214261780477893">Dvorak</translation>
