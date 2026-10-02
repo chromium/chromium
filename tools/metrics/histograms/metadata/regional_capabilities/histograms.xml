@@ -87,6 +87,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="RegionalCapabilities.Debug.DynamicCountryRegionalProgram{Profile}"
+    enum="ActiveRegionalProgram" expires_after="2027-03-07">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the regional program for each loaded profile, computed as if the
+    current profile country was used rather than the one persisted at profile
+    creation (i.e. as if the DynamicProfileCountry feature was enabled). This
+    does not affect the actual active program, see
+    RegionalCapabilities.ActiveRegionalProgram3 for that.
+
+    Emitted through ProvideCurrentSessionData(), when a UMA session record is
+    getting finalized.
+
+    {Profile}
+  </summary>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
     enum="Boolean" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>

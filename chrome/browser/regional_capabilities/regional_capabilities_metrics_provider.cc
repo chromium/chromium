@@ -35,10 +35,13 @@ void RegionalCapabilitiesMetricsProvider::ProvideCurrentSessionData(
         regional_capabilities->GetActiveProgramForMetrics();
     programs.insert(active_program);
 
-    metrics::ProfileMetricsService* profile_metrics_service =
-        ProfileMetricsServiceFactory::GetForProfile(profile);
+    metrics::ProfileMetricsService& profile_metrics_service =
+        CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile));
     RecordActiveRegionalProgramPerProfile(active_program,
-                                          CHECK_DEREF(profile_metrics_service));
+                                          profile_metrics_service);
+    RecordDynamicCountryRegionalProgram(
+        regional_capabilities->GetDynamicCountryProgramForMetrics(),
+        profile_metrics_service);
   }
 
   RecordActiveRegionalProgram(programs);

@@ -963,7 +963,88 @@ TEST_F(RegionalCapabilitiesServiceTest,
       "RegionalCapabilities.LoadedCountrySource",
       static_cast<int>(LoadedCountrySource::kPersistedPreferred), 1);
 }
+
+TEST_F(RegionalCapabilitiesServiceTest,
+       GetDynamicCountryProgramForMetrics_DynamicProfileCountryIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {switches::kDynamicProfileCountry});
+
+  // Persisted country in Waffle scope, current country out of scope.
+  {
+    std::unique_ptr<RegionalCapabilitiesService> service =
+        InitService(/*fallback_country_id=*/CountryId("US"));
+    client()->SetFetchedCountry(CountryId("US"));
+    SetPrefCountryIDAtInstall(kBelgiumCountryId);
+
+    EXPECT_EQ(service->GetActiveProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+    EXPECT_EQ(service->GetDynamicCountryProgramForMetrics(),
+              ActiveRegionalProgram::kDefault);
+  }
+
+  // Persisted country out of scope, current country in Waffle scope.
+  {
+    pref_service().ClearPref(prefs::kCountryIDAtInstall);
+    std::unique_ptr<RegionalCapabilitiesService> service =
+        InitService(/*fallback_country_id=*/CountryId("US"));
+    client()->SetFetchedCountry(kBelgiumCountryId);
+    SetPrefCountryIDAtInstall(CountryId("US"));
+
+    EXPECT_EQ(service->GetActiveProgramForMetrics(),
+              ActiveRegionalProgram::kDefault);
+    EXPECT_EQ(service->GetDynamicCountryProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+  }
+
+  // The current country is only available from the fallback: the persisted
+  // country is preferred in both cases.
+  {
+    pref_service().ClearPref(prefs::kCountryIDAtInstall);
+    std::unique_ptr<RegionalCapabilitiesService> service =
+        InitService(/*fallback_country_id=*/CountryId("US"));
+    SetPrefCountryIDAtInstall(kBelgiumCountryId);
+
+    EXPECT_EQ(service->GetActiveProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+    EXPECT_EQ(service->GetDynamicCountryProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+  }
+
+  // Command line overrides apply to both.
+  {
+    std::unique_ptr<RegionalCapabilitiesService> service =
+        InitService(/*fallback_country_id=*/CountryId("US"));
+    client()->SetFetchedCountry(CountryId("US"));
+    SetCommandLineCountry(kBelgiumCountryCode);
+
+    EXPECT_EQ(service->GetActiveProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+    EXPECT_EQ(service->GetDynamicCountryProgramForMetrics(),
+              ActiveRegionalProgram::kWaffle);
+    ClearCommandLineCountry();
+  }
+}
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+TEST_F(RegionalCapabilitiesServiceTest,
+       GetDynamicCountryProgramForMetrics_MatchesActiveProgram) {
+  // The dynamic profile country is enabled by the fixture (or always enabled
+  // on mobile), so the dynamic country program matches the active one.
+  std::unique_ptr<RegionalCapabilitiesService> service =
+      InitService(/*fallback_country_id=*/CountryId("US")
+#if BUILDFLAG(IS_ANDROID)
+                      ,
+                  /*device_program=*/Program::kDefault
+#endif  // BUILDFLAG(IS_ANDROID)
+      );
+  client()->SetFetchedCountry(CountryId("US"));
+  SetPrefCountryIDAtInstall(kBelgiumCountryId);
+
+  EXPECT_EQ(service->GetActiveProgramForMetrics(),
+            ActiveRegionalProgram::kDefault);
+  EXPECT_EQ(service->GetDynamicCountryProgramForMetrics(),
+            ActiveRegionalProgram::kDefault);
+}
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefChangesAfterReading) {
   const auto kFallbackCountryId = CountryId("FR");

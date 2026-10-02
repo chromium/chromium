@@ -200,6 +200,13 @@ class RegionalCapabilitiesService : public KeyedService {
   // logging only.
   ActiveRegionalProgram GetActiveProgramForMetrics();
 
+  // Returns the metrics enum for the regional program that would be active if
+  // the current profile country was used, rather than the one persisted at
+  // profile creation. I.e. what `GetActiveProgramForMetrics()` would return if
+  // the `kDynamicProfileCountry` feature was enabled. This is used for logging
+  // only.
+  ActiveRegionalProgram GetDynamicCountryProgramForMetrics();
+
   // Returns an opaque `int` value representing the program.
   int GetSerializedActiveProgram();
 
@@ -271,6 +278,9 @@ class RegionalCapabilitiesService : public KeyedService {
   // though).
   std::optional<country_codes::CountryId> country_id_cache_;
   std::optional<raw_ref<const ProgramSettings>> program_settings_cache_;
+  // Program that would be active if the current country was preferred over
+  // the persisted one. Used for metrics only.
+  std::optional<Program> dynamic_country_program_cache_;
   // -- cache end --
 
 #if BUILDFLAG(IS_ANDROID)

@@ -128,6 +128,14 @@ void RecordActiveRegionalProgramPerProfile(
     ActiveRegionalProgram program,
     metrics::ProfileMetricsService& profile_metrics_service);
 
+// Records, through `profile_metrics_service`, the program that would be active
+// for the profile if the current profile country was used instead of the one
+// persisted at profile creation (i.e. as if the dynamic profile country feature
+// was enabled).
+void RecordDynamicCountryRegionalProgram(
+    ActiveRegionalProgram program,
+    metrics::ProfileMetricsService& profile_metrics_service);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //

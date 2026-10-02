@@ -153,14 +153,16 @@ RegionalCapabilitiesService::Client::CountryIdCallback DispatchCountryId(
 
 // Selects CountryID and corresponding source based on the following rules:
 //
-// If kDynamicProfileCountry feature is disabled, then
+// If `prefer_current_country` is false (i.e. the kDynamicProfileCountry
+// feature is disabled), then
 //   1. return persisted CountryID if valid, otherwise
 //   2. return fetched current CountryID if valid, otherwise
 //   3. return fallback current CountryID if valid, otherwise
 //   4. return invalid CountryID
 // in other words, persisted > fetched > fallback.
 //
-// If kDynamicProfileCountry feature is enabled, then
+// If `prefer_current_country` is true (i.e. the kDynamicProfileCountry
+// feature is enabled), then
 //   1. return fetched current CountryID if valid, otherwise
 //   2. return persisted CountryID if valid, otherwise
 //   3. return fallback current CountryID if valid, otherwise
@@ -169,7 +171,8 @@ RegionalCapabilitiesService::Client::CountryIdCallback DispatchCountryId(
 std::pair<CountryId, LoadedCountrySource> SelectCountryId(
     CountryId persisted_country,
     CountryId current_country,
-    bool is_current_country_from_fallback) {
+    bool is_current_country_from_fallback,
+    bool prefer_current_country) {
   // Let's check first all possible combinations when `persisted_country`
   // and/or `current_country` might be invalid.
 
@@ -199,12 +202,9 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
 
   // If the dynamic profile country feature is disabled, it's preferred
   // to return persisted country ID first.
-  if (!switches::IsDynamicProfileCountryEnabled()) {
+  if (!prefer_current_country) {
     return {persisted_country, LoadedCountrySource::kPersistedPreferred};
   }
-
-  // At this point the `kDynamicProfileCountry` feature is enabled.
-  DCHECK(switches::IsDynamicProfileCountryEnabled());
 
   // Fetched current CountryID is preferred over persisted CountryID.
   if (!is_current_country_from_fallback) {
@@ -362,6 +362,20 @@ GetCountryIdResult GetCountryIdFromClient(
   // fallback value. If the fetch completes later, the persisted country will be
   // picked up at the next startup.
   return {client.GetFallbackCountryId(), /*is_country_from_fallback=*/true};
+}
+
+ActiveRegionalProgram ProgramToActiveRegionalProgram(Program program) {
+  switch (program) {
+    case Program::kDefault:
+      return ActiveRegionalProgram::kDefault;
+    case Program::kTaiyaki:
+      return ActiveRegionalProgram::kTaiyaki;
+    case Program::kWaffle:
+      return ActiveRegionalProgram::kWaffle;
+    case Program::kScone:
+      return ActiveRegionalProgram::kScone;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -641,9 +655,11 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   // flags are present.
   CHECK(!HasSearchEngineCountryListOverride());
 
-  // The regional scope cache is made of these 2 values, their presence has to
+  // The regional scope cache is made of these 3 values, their presence has to
   // be consistent.
   CHECK_EQ(country_id_cache_.has_value(), program_settings_cache_.has_value());
+  CHECK_EQ(country_id_cache_.has_value(),
+           dynamic_country_program_cache_.has_value());
   if (country_id_cache_.has_value() && program_settings_cache_.has_value()) {
     return;
   }
@@ -671,7 +687,8 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
 
   const std::pair<CountryId, LoadedCountrySource> selected_country_and_source =
       SelectCountryId(persisted_country_id, country_id_result.country_id,
-                      country_id_result.is_country_from_fallback);
+                      country_id_result.is_country_from_fallback,
+                      switches::IsDynamicProfileCountryEnabled());
 
   country_id_cache_ = selected_country_and_source.first;
 
@@ -689,8 +706,25 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
     RecordAndroidProgramResolution(
         AndroidProgramResolution::kDefaultForOutOfProgramCountry);
   }
+
+  // The dynamic profile country is always enabled on Android.
+  static_assert(switches::IsDynamicProfileCountryEnabled());
+  dynamic_country_program_cache_ = program;
 #else
   program = CountryIdToProgram(country_id_cache_.value());
+
+  if (switches::IsDynamicProfileCountryEnabled()) {
+    dynamic_country_program_cache_ = program;
+  } else {
+    // For metrics only: compute the program that would be selected if the
+    // dynamic profile country was enabled, i.e. if the current country was
+    // preferred over the persisted one.
+    dynamic_country_program_cache_ = CountryIdToProgram(
+        SelectCountryId(persisted_country_id, country_id_result.country_id,
+                        country_id_result.is_country_from_fallback,
+                        /*prefer_current_country=*/true)
+            .first);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   program_settings_cache_ = GetSettingsForProgram(program);
@@ -706,17 +740,18 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
 
 ActiveRegionalProgram
 RegionalCapabilitiesService::GetActiveProgramForMetrics() {
-  switch (GetActiveProgramSettings().program) {
-    case Program::kDefault:
-      return ActiveRegionalProgram::kDefault;
-    case Program::kTaiyaki:
-      return ActiveRegionalProgram::kTaiyaki;
-    case Program::kWaffle:
-      return ActiveRegionalProgram::kWaffle;
-    case Program::kScone:
-      return ActiveRegionalProgram::kScone;
+  return ProgramToActiveRegionalProgram(GetActiveProgramSettings().program);
+}
+
+ActiveRegionalProgram
+RegionalCapabilitiesService::GetDynamicCountryProgramForMetrics() {
+  if (GetSearchEngineCountryOverride().has_value()) {
+    // Overrides apply regardless of the profile country.
+    return GetActiveProgramForMetrics();
   }
-  NOTREACHED();
+
+  EnsureRegionalScopeCacheInitialized();
+  return ProgramToActiveRegionalProgram(dynamic_country_program_cache_.value());
 }
 
 int RegionalCapabilitiesService::GetSerializedActiveProgram() {
@@ -727,6 +762,7 @@ void RegionalCapabilitiesService::ClearCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();
   program_settings_cache_.reset();
+  dynamic_country_program_cache_.reset();
 }
 
 void RegionalCapabilitiesService::SetCacheForTesting(
@@ -737,6 +773,7 @@ void RegionalCapabilitiesService::SetCacheForTesting(
   ClearCacheForTesting();
   country_id_cache_ = country_id;
   program_settings_cache_ = program_settings;
+  dynamic_country_program_cache_ = program_settings.program;
 }
 
 void RegionalCapabilitiesService::SetCacheForTesting(

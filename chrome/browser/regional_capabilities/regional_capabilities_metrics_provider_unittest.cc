@@ -99,6 +99,11 @@ TEST_F(RegionalCapabilitiesMetricsProviderTest, NoProfiles_Default) {
       "RegionalCapabilities.ActiveRegionalProgram3", 0);
   histogram_tester_.ExpectTotalCount(
       "RegionalCapabilities.ActiveRegionalProgram3.Profile1", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "RegionalCapabilities.Debug.DynamicCountryRegionalProgram", 0);
+  histogram_tester_.ExpectTotalCount(
+      "RegionalCapabilities.Debug.DynamicCountryRegionalProgram.Profile1", 0);
 }
 
 TEST_F(RegionalCapabilitiesMetricsProviderTest, SingleDefault_Default) {
@@ -134,6 +139,15 @@ TEST_F(RegionalCapabilitiesMetricsProviderTest, SingleWaffle_Waffle) {
       ActiveRegionalProgram::kWaffle, 1);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram3.Profile1",
+      ActiveRegionalProgram::kWaffle, 1);
+
+  // The persisted and current countries match, so the dynamic country program
+  // is the same as the active one.
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.Debug.DynamicCountryRegionalProgram",
+      ActiveRegionalProgram::kWaffle, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.Debug.DynamicCountryRegionalProgram.Profile1",
       ActiveRegionalProgram::kWaffle, 1);
 }
 
