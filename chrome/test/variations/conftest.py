@@ -36,6 +36,13 @@ def pytest_addoption(parser: pytest.Parser):
   )
 
   parser.addoption(
+    '--bypass-skia-gold-functionality',
+    action='store_true',
+    default=False,
+    help='Bypass all interaction with Skia Gold.',
+  )
+
+  parser.addoption(
     '--isolated-script-test-output',
     '--write-full-results-to',
     '--json-results-file',

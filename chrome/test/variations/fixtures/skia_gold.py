@@ -34,6 +34,12 @@ _CORPUS = 'finch-smoke-tests'
 def _get_skia_gold_args() -> argparse.Namespace:
   parser = argparse.ArgumentParser()
   sgp.SkiaGoldProperties.AddCommandLineArguments(parser)
+  parser.add_argument(
+    '--bypass-skia-gold-functionality',
+    action='store_true',
+    default=False,
+    help='Bypass all interaction with Skia Gold.',
+  )
   skia_options, _ = parser.parse_known_args()
   return skia_options
 
