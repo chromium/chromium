@@ -276,6 +276,11 @@ bool GlicInvokeHandler::RequiresClientInvoke(const GlicInvokeOptions& options,
 }
 
 void GlicInvokeHandler::Invoke() {
+  // Ensure the invocation source is set so that any following events are
+  // properly logged to the corresponding source.
+  instance_->instance_metrics().MaybeSetInitialInvocationSource(
+      options_.GetInvocationSource());
+
   timeout_timer_.Start(FROM_HERE, options_.timeout.value_or(kDefaultTimeout),
                        base::BindOnce(&GlicInvokeHandler::OnError,
                                       weak_ptr_factory_.GetWeakPtr(),

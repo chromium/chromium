@@ -464,6 +464,8 @@ void GlicInstanceImpl::Show(ShowOptions options) {
   TRACE_EVENT("glic", "GlicInstanceImpl::Show",
               perfetto::Flow::FromPointer(this));
 
+  instance_metrics().MaybeSetInitialInvocationSource(options.invocation_source);
+
   if (tab_group_binding_ && options.propagate_to_group) {
     ShowForTabGroup(tab_group_binding_->id, options);
     return;
@@ -478,7 +480,6 @@ void GlicInstanceImpl::Show(ShowOptions options) {
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options) {
     if (ShouldShowInactiveSidePanel(*side_panel_options)) {
-      instance_metrics().OnShowInactiveSidePanel(options.invocation_source);
       ShowInactiveSidePanelEmbedderFor(*side_panel_options);
       return;
     }

@@ -475,11 +475,9 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
-  if (!initial_invocation_source_.has_value()) {
-    // If a side panel is opened outside of the ToggleFlow (e.g. for daisy
-    // chaining on new tab) we would log the default value "Unsupported".
-    initial_invocation_source_ = last_invocation_source_;
-  }
+  // Invocation source should always already be set by the time this is
+  // called. Left as defensive measure.
+  MaybeSetInitialInvocationSource(last_invocation_source_);
 
   if (side_panel_open_times_.contains(tab->GetHandle())) {
     base::UmaHistogramEnumeration(
@@ -516,10 +514,10 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   }
 }
 
-void GlicInstanceMetrics::OnShowInactiveSidePanel(
-    mojom::InvocationSource invocation_source) {
+void GlicInstanceMetrics::MaybeSetInitialInvocationSource(
+    mojom::InvocationSource source) {
   if (!initial_invocation_source_.has_value()) {
-    initial_invocation_source_ = invocation_source;
+    initial_invocation_source_ = source;
   }
 }
 
@@ -804,20 +802,18 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   }
   last_invocation_source_ = source;
 
-  // 1. Log Events
-  LogEvent(GlicInstanceEvent::kOpen);
-
-  // 2. Log Initial Invocation Source
+  // 1. Log Initial Invocation Source
   if (!did_open_) {
     did_open_ = true;
     // Don't overwrite initial invocation source if it was set due to being
     // invoked in the background.
-    if (!initial_invocation_source_.has_value()) {
-      initial_invocation_source_ = source;
-    }
+    MaybeSetInitialInvocationSource(source);
     base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
                                   *initial_invocation_source_);
   }
+
+  // 2. Log Events
+  LogEvent(GlicInstanceEvent::kOpen);
 
   // 3. Record Actions
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -335,6 +337,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
       mojom::InvocationSource::kDetachAttachButton,
       mojom::InvocationSource::kTabRestore,
       mojom::InvocationSource::kNavigationCapture,
+      mojom::InvocationSource::kPdfSummarizeButton,
   };
 
   for (mojom::InvocationSource source : kSources) {
@@ -352,6 +355,19 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
                                         source, 1);
     histogram_tester.ExpectUniqueSample("Glic.Instance.InitialInvocationSource",
                                         source, 1);
+    const std::string source_str = GetInvocationSourceString(source);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"}),
+        GlicInstanceEvent::kTabBound, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"}),
+        GlicInstanceEvent::kTabBound, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"}),
+        GlicInstanceEvent::kOpen, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"}),
+        GlicInstanceEvent::kOpen, 1);
   }
 }
 

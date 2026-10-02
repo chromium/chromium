@@ -110,9 +110,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when this instance is shown in the side panel.
   void OnShowInSidePanel(tabs::TabInterface* tab);
 
-  // Called when this instance is shown in an inactive side panel.
-  void OnShowInactiveSidePanel(mojom::InvocationSource invocation_source);
-
   // Called when this instance is shown in a floaty.
   void OnShowInFloaty(const ShowOptions& options);
 
@@ -166,6 +163,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
                 bool is_showing,
                 std::unique_ptr<GlicWindowInvocationTracker>
                     invocation_tracker = nullptr);
+
+  // Sets `initial_invocation_source_` if it has not been set yet.
+  void MaybeSetInitialInvocationSource(mojom::InvocationSource source);
 
   // Called when the UI is shown and it was not already showing for this
   // instance.

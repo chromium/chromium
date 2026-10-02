@@ -348,19 +348,21 @@ TEST_F(GlicInstanceMetricsTest, OnOpen_DoesNotOverrideInitialEntrypoint) {
 }
 
 TEST_F(GlicInstanceMetricsTest,
-       OnShowInactiveSidePanel_SetsInitialInvocationSource) {
-  metrics_.OnShowInactiveSidePanel(mojom::InvocationSource::kTopChromeButton);
+       MaybeSetInitialInvocationSource_SetsInitialInvocationSource) {
+  metrics_.MaybeSetInitialInvocationSource(
+      mojom::InvocationSource::kTopChromeButton);
   EXPECT_EQ(metrics_.initial_invocation_source(),
             mojom::InvocationSource::kTopChromeButton);
 }
 
 TEST_F(GlicInstanceMetricsTest,
-       OnShowInactiveSidePanel_DoesNotOverrideInitialInvocationSource) {
-  metrics_.OnShowInactiveSidePanel(mojom::InvocationSource::kTopChromeButton);
+       MaybeSetInitialInvocationSource_DoesNotOverrideInitialInvocationSource) {
+  metrics_.MaybeSetInitialInvocationSource(
+      mojom::InvocationSource::kTopChromeButton);
   EXPECT_EQ(metrics_.initial_invocation_source(),
             mojom::InvocationSource::kTopChromeButton);
 
-  metrics_.OnShowInactiveSidePanel(mojom::InvocationSource::kOsButton);
+  metrics_.MaybeSetInitialInvocationSource(mojom::InvocationSource::kOsButton);
   EXPECT_EQ(metrics_.initial_invocation_source(),
             mojom::InvocationSource::kTopChromeButton);
 }
@@ -383,7 +385,7 @@ TEST_F(GlicInstanceMetricsTest,
        InitialInvocationSource_LoggedWhenStartingInactive) {
   // 1. Simulate opening the instance in an inactive side panel via a background
   // daisy-chain.
-  metrics_.OnShowInactiveSidePanel(
+  metrics_.MaybeSetInitialInvocationSource(
       mojom::InvocationSource::kDaisyChainOnFollowLink);
 
   // 2. Later, the user activates the background tab, promoting the instance to
@@ -563,6 +565,14 @@ TEST_F(GlicInstanceMetricsTest, InstanceEvents_Open) {
 
   histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
                                       GlicInstanceEvent::kOpen, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.HadEvent",
+                                      GlicInstanceEvent::kOpen, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.InvocationSource.TopChromeButton.EventCounts",
+      GlicInstanceEvent::kOpen, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.InvocationSource.TopChromeButton.HadEvent",
+      GlicInstanceEvent::kOpen, 1);
 
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Open"), 1);
 
@@ -573,6 +583,27 @@ TEST_F(GlicInstanceMetricsTest, InstanceEvents_Open) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Floaty.OpenSource",
       mojom::InvocationSource::kTopChromeButton, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       InstanceEvents_SidePanelShowOrder_LogsTabBoundAndOpen) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+
+  metrics_.MaybeSetInitialInvocationSource(
+      mojom::InvocationSource::kPdfSummarizeButton);
+  metrics_.OnBind();
+  metrics_.OnOpen(mojom::InvocationSource::kPdfSummarizeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  for (GlicInstanceEvent event :
+       {GlicInstanceEvent::kTabBound, GlicInstanceEvent::kOpen,
+        GlicInstanceEvent::kSidePanelShown, GlicInstanceEvent::kShown}) {
+    histogram_tester_.ExpectBucketCount(
+        "Glic.InvocationSource.PdfSummarizeButton.EventCounts", event, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Glic.InvocationSource.PdfSummarizeButton.HadEvent", event, 1);
+  }
 }
 
 TEST_F(GlicInstanceMetricsTest,
