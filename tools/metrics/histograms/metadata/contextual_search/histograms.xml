@@ -85,6 +85,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/actions/actions.xml:PopupType) -->
 
+<!-- LINT.IfChange(TabPickerSurface) -->
+
+<variants name="TabPickerSurface">
+  <variant name="ContextualTasksExtension"
+      summary="the tab picker page served by the Contextual Tasks component
+               extension and embedded by the AI Mode web page, used by the
+               rearchitected side panel"/>
+  <variant name="ContextualTasksWebUi"
+      summary="the tab picker flyout embedded in the in-WebUI composebox
+               action menu in Contextual Tasks"/>
+  <variant name="NewTabPage"
+      summary="the tab picker flyout embedded in the in-WebUI composebox
+               action menu on the New Tab Page"/>
+  <variant name="Omnibox"
+      summary="the tab picker flyout embedded in the composebox action menu
+               in the Omnibox (native Views and WebUI)"/>
+</variants>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:TabPickerSurface) -->
+
 <histogram
     name="ContextualSearch.ActiveTabsCountOnContextMenuOpen.{ContextualSearchSource}"
     units="count" expires_after="2027-02-14">
@@ -1071,6 +1091,54 @@ chromium-metrics-reviews@google.com.
     whether or not a query was issued with the tab.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.TabPicker.SelectedTabIsActive.{TabPickerSurface}"
+    enum="Boolean" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a user attaches a tab from the tab picker on
+    {TabPickerSurface}. True if the attached tab was the tab the user was
+    already viewing.
+
+    This is derived from TabInfo.show_in_current_tab_chip, which the browser
+    computes by comparing the candidate tab's URL against the active tab's URL.
+    Note that it is a URL comparison rather than a tab identity comparison, so a
+    duplicate tab showing the same URL as the active tab also counts as true.
+
+    Only recorded when an eligible active tab is present in the suggestion list,
+    so modes where no candidate is active (such as full tab mode or New Tab
+    Page, where the active tab is an internal chrome:// page) do not record
+    samples.
+
+    Split out by surface to compare usage across surfaces and implementations.
+  </summary>
+  <token key="TabPickerSurface" variants="TabPickerSurface"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.TabPicker.SelectedTabPosition.{TabPickerSurface}"
+    units="index" expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a user attaches a tab from the tab picker on
+    {TabPickerSurface}. Records the zero-based position of the attached tab
+    within the suggestion list, which the browser sorts by descending recency.
+    Position 0 is therefore the most recently active eligible tab, and is the
+    entry the UI badges as &quot;Recent&quot;. Used to judge how well the
+    recency ranking matches user intent.
+
+    Positions at or beyond 20 are bucketed into the final overflow bucket. In
+    practice the list is capped by the NtpComposeboxContextMenuMaxTabSuggestions
+    feature param, which defaults to 3. Not recorded if the attached tab is no
+    longer present in the suggestion list.
+
+    Split out by surface to compare usage across surfaces and implementations.
+  </summary>
+  <token key="TabPickerSurface" variants="TabPickerSurface"/>
 </histogram>
 
 <histogram

@@ -702,3 +702,83 @@ export enum SmartTabSharingSurface {
   CONTEXTUAL_SEARCHBOX = 1,
   MAX_VALUE = CONTEXTUAL_SEARCHBOX,
 }
+
+// LINT.IfChange(TabPickerSurface)
+
+// Histogram name suffix identifying which tab picker implementation recorded
+// the sample.
+export enum TabPickerSurface {
+  // The tab picker page served by the Contextual Tasks component extension
+  // (tab_picker.html, a web-accessible resource the AIM web page embeds).
+  CONTEXTUAL_TASKS_EXTENSION = 'ContextualTasksExtension',
+  // The tab picker flyout embedded in the in-WebUI composebox action menu in
+  // Contextual Tasks.
+  CONTEXTUAL_TASKS_WEB_UI = 'ContextualTasksWebUi',
+  // The tab picker flyout embedded in the in-WebUI composebox action menu on
+  // the New Tab Page.
+  NEW_TAB_PAGE = 'NewTabPage',
+  // The tab picker flyout embedded in the in-WebUI composebox action menu in
+  // the Omnibox.
+  OMNIBOX = 'Omnibox',
+}
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:TabPickerSurface)
+
+export function mapMetricsSourceToTabPickerSurface(metricsSource: string):
+    TabPickerSurface|null {
+  switch (metricsSource) {
+    case 'ContextualTasks':
+      return TabPickerSurface.CONTEXTUAL_TASKS_WEB_UI;
+    case 'NewTabPage':
+      return TabPickerSurface.NEW_TAB_PAGE;
+    case 'Omnibox':
+    case 'OmniboxEverywhere':
+      return TabPickerSurface.OMNIBOX;
+    default:
+      return null;
+  }
+}
+
+// Largest position the tab picker position histogram records explicitly; higher
+// positions land in the overflow bucket. This is a histogram bound, not a limit
+// on the suggestion list -- that is driven by the
+// NtpComposeboxContextMenuMaxTabSuggestions Finch param, which currently
+// defaults to 3. The bound is deliberately generous so that raising the param
+// does not require changing the histogram.
+const TAB_PICKER_POSITION_HISTOGRAM_MAX = 20;
+
+/**
+ * Records which tab the user attached from the tab picker, along two
+ * independent axes.
+ *
+ * These are deliberately separate histograms rather than one enum, because the
+ * two properties are orthogonal and frequently co-occur:
+ *  - `isActiveTab` comes from TabInfo.showInCurrentTabChip, which the browser
+ *    computes by comparing the tab's URL against the active tab's URL.
+ *  - `index` is the tab's position in the suggestion list, which the browser
+ *    sorts by descending recency. Index 0 is the most recently active eligible
+ *    tab, and is the entry the UI badges as "Recent".
+ *
+ * `SelectedTabIsActive` is only recorded when an active tab candidate is
+ * present in the suggestion list (`hasActiveTabCandidate` is true, or
+ * `isActiveTab` is true). In full tab mode or on the New Tab Page, the active
+ * tab is an internal chrome:// page and is excluded from the list, so no sample
+ * is recorded to avoid skewing the metric.
+ */
+export function recordTabPickerTabSelected(
+    surface: TabPickerSurface, isActiveTab: boolean, index: number,
+    hasActiveTabCandidate: boolean = false) {
+  if (hasActiveTabCandidate || isActiveTab) {
+    recordBoolean(
+        `ContextualSearch.TabPicker.SelectedTabIsActive.${surface}`,
+        isActiveTab);
+  }
+  if (index < 0) {
+    // The tab is no longer in the suggestion list; position is meaningless.
+    return;
+  }
+  recordEnumerationValue(
+      `ContextualSearch.TabPicker.SelectedTabPosition.${surface}`,
+      Math.min(index, TAB_PICKER_POSITION_HISTOGRAM_MAX),
+      TAB_PICKER_POSITION_HISTOGRAM_MAX + 1);
+}

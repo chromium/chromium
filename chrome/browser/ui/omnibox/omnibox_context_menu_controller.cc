@@ -1664,6 +1664,17 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           base::UmaHistogramBoolean(
               "ContextualSearch.AddTabsFlyout.TabSelected.Omnibox", true);
         }
+        bool has_active_tab =
+            std::any_of(tabs.begin(), tabs.end(),
+                        [](const auto& tab) { return tab.is_active_tab; });
+        if (has_active_tab) {
+          base::UmaHistogramBoolean(
+              "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox",
+              tab_info.is_active_tab);
+        }
+        base::UmaHistogramExactLinear(
+            "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox",
+            std::min(tab_index_in_menu, 20), 21);
         AddTabContext(tab_info);
       }
     }

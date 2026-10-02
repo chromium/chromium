@@ -24,7 +24,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {getLoadTimeBoolean, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, SmartTabSharingSurface, TabUploadOrigin} from './common.js';
+import {getLoadTimeBoolean, mapMetricsSourceToTabPickerSurface, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordTabPickerTabSelected, SmartTabSharingSurface, TabUploadOrigin} from './common.js';
 import {getCss} from './contextual_action_menu.css.js';
 import {getHtml} from './contextual_action_menu.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -918,17 +918,26 @@ export class ContextualActionMenuElement extends
         return;
       }
     }
-    this.recordTabSelectedMetric_();
+    this.recordTabSelectedMetric_(tabInfo);
     this.addTabContext_(tabInfo);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.metricsSource_);
   }
 
-  private recordTabSelectedMetric_() {
+  private recordTabSelectedMetric_(tabInfo: TabInfo) {
     if (this.contextManagementInComposeboxEnabled) {
       recordBoolean(
           'ContextualSearch.AddTabsFlyout.TabSelected.' + this.metricsSource_,
           true);
+    }
+    const surface = mapMetricsSourceToTabPickerSurface(this.metricsSource_);
+    if (surface) {
+      const hasActiveTab =
+          this.tabSuggestions.some(tab => tab.showInCurrentTabChip);
+      recordTabPickerTabSelected(
+          surface, tabInfo.showInCurrentTabChip,
+          this.tabSuggestions.findIndex(tab => tab.tabId === tabInfo.tabId),
+          hasActiveTab);
     }
   }
 
