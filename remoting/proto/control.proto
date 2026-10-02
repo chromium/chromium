@@ -293,7 +293,23 @@ message TerminalControl {
       enum Reason {
         // The reason is unknown.
         UNKNOWN = 0;
-        FAILED = 1;
+
+        // An unexpected error occurred on the host.
+        INTERNAL_ERROR = 1;
+
+        // The host is temporarily unable to create a terminal (for example,
+        // because it is still restoring persistent terminals). The request may
+        // be retried later.
+        BUSY = 2;
+
+        // The host failed to allocate a pseudo-terminal.
+        PTY_ERROR = 3;
+
+        // tmux is not installed on the host.
+        TMUX_MISSING = 4;
+
+        // The host failed to launch the terminal process.
+        LAUNCH_FAILED = 5;
       }
 
       optional Reason reason = 1;

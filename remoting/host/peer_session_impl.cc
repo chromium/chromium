@@ -23,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -31,6 +32,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/base/capabilities.h"
@@ -67,6 +69,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
+#include "remoting/host/terminal_error.h"
 #include "remoting/host/terminal_session.h"
 #include "remoting/host/terminal_session_manager.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
@@ -130,6 +133,38 @@ void LogVideoTrack(int index,
            << "', pos=" << track.position_x() << "," << track.position_y()
            << ", " << track.width() << "x" << track.height() << ", dpi=["
            << track.x_dpi() << "," << track.y_dpi() << "]";
+}
+
+remoting::protocol::TerminalControl::CreateTerminalResponse::Error::Reason
+ToProtoReason(remoting::TerminalError::Reason reason) {
+  using ProtoError =
+      remoting::protocol::TerminalControl::CreateTerminalResponse::Error;
+  switch (reason) {
+    case remoting::TerminalError::Reason::kInternalError:
+      return ProtoError::INTERNAL_ERROR;
+    case remoting::TerminalError::Reason::kBusy:
+      return ProtoError::BUSY;
+    case remoting::TerminalError::Reason::kPtyError:
+      return ProtoError::PTY_ERROR;
+  }
+  NOTREACHED();
+}
+
+void SetCreateTerminalError(
+    const remoting::TerminalError& error,
+    remoting::protocol::TerminalControl::CreateTerminalResponse::Error*
+        proto_error) {
+  proto_error->set_reason(ToProtoReason(error.reason));
+  if (error.system_error_code.has_value()) {
+    proto_error->set_code(*error.system_error_code);
+  }
+  // A default-constructed base::Location has no file name (and an invalid line
+  // number), so only report the location if it is valid.
+  if (const char* file_name = error.location.file_name()) {
+    proto_error->set_file_name(file_name);
+    proto_error->set_line_number(error.location.line_number());
+  }
+  proto_error->set_error_message(error.message);
 }
 
 }  // namespace
@@ -632,15 +667,15 @@ void PeerSessionImpl::ControlTerminal(
     // identify the terminal session when sending output to the client. Bind the
     // callbacks to the weak factory to ensure that the callbacks are not
     // called after the client session is disconnected.
-    int32_t id = terminal_session_manager_->CreateTerminal();
+    base::expected<int32_t, TerminalError> result =
+        terminal_session_manager_->CreateTerminal();
 
     protocol::TerminalControl response;
     auto* create_response = response.mutable_create_response();
-    if (id != -1) {
-      create_response->set_terminal_id(id);
+    if (result.has_value()) {
+      create_response->set_terminal_id(*result);
     } else {
-      create_response->mutable_error()->set_reason(
-          protocol::TerminalControl::CreateTerminalResponse::Error::FAILED);
+      SetCreateTerminalError(result.error(), create_response->mutable_error());
     }
     connection_->client_stub()->DeliverTerminalControl(response);
 

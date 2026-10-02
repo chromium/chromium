@@ -13,6 +13,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "remoting/host/terminal_error.h"
 
 namespace remoting {
 
@@ -59,8 +61,9 @@ class TerminalSessionManager {
              ProcessInfoCallback process_info_callback);
 
   // Spawns a new terminal session using the stored output and exit callbacks.
-  // Returns the ID of the new session, or -1 if the terminal could not be created.
-  int32_t CreateTerminal();
+  // Returns the ID of the new session, or an error describing why the terminal
+  // could not be created.
+  base::expected<int32_t, TerminalError> CreateTerminal();
 
   // Writes data to the terminal session.
   void WriteTerminal(const int32_t terminal_id, const std::string& data);

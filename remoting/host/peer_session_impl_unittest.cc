@@ -40,6 +40,7 @@
 #include "remoting/host/peer_session.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
+#include "remoting/host/terminal_error.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "remoting/host/security_key/security_key_auth_handler_posix.h"
@@ -285,6 +286,8 @@ void PeerSessionImplTest::SetUp() {
 
   // Suppress spammy "uninteresting call" logs.
   EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(testing::AnyNumber());
+
+  FakeTerminalSession::ResetStaticState();
 }
 
 void PeerSessionImplTest::TearDown() {
@@ -768,6 +771,54 @@ TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminal) {
   // We should have a valid terminal ID returned.
   ASSERT_TRUE(create_response.has_create_response());
   EXPECT_EQ(create_response.create_response().terminal_id(), 1);
+
+  peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  peer_session_.reset();
+}
+
+TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminalFailure) {
+  CreatePeerSession();
+  ConnectPeerSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  peer_session_->SetCapabilities(capabilities);
+  // Wait for terminal restoration to finish: flush the ThreadPool task, then
+  // wait for its reply, which is queued on the main thread ahead of `future`.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::test::TestFuture<void> future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const TerminalError error(FROM_HERE, TerminalError::Reason::kPtyError,
+                            "start failed", 42);
+  FakeTerminalSession::SetNextStartError(error);
+
+  // Expect client_stub to receive the create response.
+  protocol::TerminalControl create_response;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&create_response](const protocol::TerminalControl& control) {
+        create_response = control;
+      });
+
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+
+  // The error details should be forwarded to the client.
+  ASSERT_TRUE(create_response.has_create_response());
+  ASSERT_TRUE(create_response.create_response().has_error());
+  const auto& error_proto = create_response.create_response().error();
+  EXPECT_EQ(
+      error_proto.reason(),
+      protocol::TerminalControl::CreateTerminalResponse::Error::PTY_ERROR);
+  EXPECT_EQ(error_proto.code(), 42);
+  EXPECT_EQ(error_proto.error_message(), "start failed");
+  EXPECT_EQ(error_proto.file_name(), error.location.file_name());
+  EXPECT_EQ(error_proto.line_number(),
+            static_cast<uint32_t>(error.location.line_number()));
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
 
   peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   peer_session_.reset();

@@ -5,16 +5,21 @@
 #include "remoting/host/terminal_session_manager.h"
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "remoting/host/fake_terminal_session.h"
+#include "remoting/host/terminal_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,9 +50,9 @@ class TerminalSessionManagerTest : public testing::Test {
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
-  int32_t id2 = manager_.CreateTerminal();
-  int32_t id3 = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id2, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id3, manager_.CreateTerminal());
   ASSERT_EQ(id, 1);
   ASSERT_EQ(id2, 2);
   ASSERT_EQ(id3, 3);
@@ -63,17 +68,35 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
   EXPECT_EQ(manager_.GetTerminalSession(id3), sessions[2].get());
 }
 
-TEST_F(TerminalSessionManagerTest, StartFailureReturnsMinusOne) {
+TEST_F(TerminalSessionManagerTest, StartFailureReturnsError) {
   StartManager();
-  FakeTerminalSession::SetNextStartFail(true);
-  int32_t id = manager_.CreateTerminal();
-  EXPECT_EQ(id, -1);
+  FakeTerminalSession::SetNextStartError(TerminalError(
+      FROM_HERE, TerminalError::Reason::kPtyError, "start failed", 42));
+  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().reason, TerminalError::Reason::kPtyError);
+  EXPECT_EQ(result.error().message, "start failed");
+  EXPECT_EQ(result.error().system_error_code, 42);
   EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+}
+
+TEST_F(TerminalSessionManagerTest, CreateTerminalFailsWhenMaxIdReached) {
+  FakeTerminalSession::SetPersistentTerminalIds(
+      {std::numeric_limits<int32_t>::max()});
+  StartManager();
+
+  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().reason, TerminalError::Reason::kInternalError);
+  EXPECT_FALSE(result.error().message.empty());
+  EXPECT_FALSE(result.error().system_error_code.has_value());
+  EXPECT_THAT(result.error().location.file_name(),
+              testing::HasSubstr("terminal_session_manager.cc"));
 }
 
 TEST_F(TerminalSessionManagerTest, WriteTerminalRoutesCorrectly) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -87,7 +110,7 @@ TEST_F(TerminalSessionManagerTest, WriteTerminalRoutesCorrectly) {
 
 TEST_F(TerminalSessionManagerTest, ResizeTerminalRoutesCorrectly) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -102,7 +125,7 @@ TEST_F(TerminalSessionManagerTest, ResizeTerminalRoutesCorrectly) {
 
 TEST_F(TerminalSessionManagerTest, CloseTerminalDestroysAndTerminates) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -119,8 +142,8 @@ TEST_F(TerminalSessionManagerTest, GetTerminalSessionAndIds) {
   StartManager();
   EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
 
-  int32_t id1 = manager_.CreateTerminal();
-  int32_t id2 = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id1, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id2, manager_.CreateTerminal());
 
   std::vector<int32_t> ids = manager_.GetTerminalSessionIds();
   ASSERT_EQ(ids.size(), 2u);
@@ -130,7 +153,7 @@ TEST_F(TerminalSessionManagerTest, GetTerminalSessionAndIds) {
 
 TEST_F(TerminalSessionManagerTest, DetachAllSessionsDetachesSessions) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -161,7 +184,7 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   EXPECT_NE(manager_.GetTerminalSession(10), nullptr);
   EXPECT_NE(manager_.GetTerminalSession(20), nullptr);
 
-  int32_t post_restore_id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, manager_.CreateTerminal());
   EXPECT_EQ(post_restore_id, 21);
 }
 
@@ -189,21 +212,24 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
   manager_.Start(output_callback_.Get(), exit_callback_.Get(),
                  process_info_callback_.Get());
 
-  // Calling CreateTerminal while restore is in flight should return -1.
-  EXPECT_EQ(manager_.CreateTerminal(), -1);
+  // Calling CreateTerminal while restore is in flight should return an error.
+  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().reason, TerminalError::Reason::kBusy);
+  EXPECT_FALSE(result.error().message.empty());
+  EXPECT_FALSE(result.error().system_error_code.has_value());
 
   ASSERT_TRUE(base::test::RunUntil(
       [this] { return manager_.GetTerminalSessionIds().size() == 2u; }));
 
   // After restoration completes, CreateTerminal should succeed without collision.
-  int32_t post_restore_id = manager_.CreateTerminal();
+  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, manager_.CreateTerminal());
   EXPECT_EQ(post_restore_id, 21);
 }
 
 TEST_F(TerminalSessionManagerTest, ProcessInfoRoutesCorrectly) {
   StartManager();
-  int32_t id = manager_.CreateTerminal();
-  ASSERT_NE(id, -1);
+  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
   ASSERT_EQ(sessions.size(), 1u);

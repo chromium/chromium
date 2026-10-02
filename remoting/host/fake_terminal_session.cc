@@ -6,10 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "base/types/expected.h"
+#include "remoting/host/terminal_error.h"
 
 namespace remoting {
 
@@ -29,10 +32,12 @@ std::vector<int32_t>& GetPersistentSessionIdList() {
   static base::NoDestructor<std::vector<int32_t>> persistent_session_id_list;
   return *persistent_session_id_list;
 }
-}  // namespace
 
-// static
-bool FakeTerminalSession::next_start_fail_ = false;
+std::optional<TerminalError>& GetNextStartError() {
+  static base::NoDestructor<std::optional<TerminalError>> next_start_error;
+  return *next_start_error;
+}
+}  // namespace
 
 // static
 std::vector<base::WeakPtr<FakeTerminalSession>>
@@ -59,14 +64,15 @@ void FakeTerminalSession::ResetTerminatedIds() {
 
 // static
 void FakeTerminalSession::ResetStaticState() {
-  next_start_fail_ = false;
+  GetNextStartError().reset();
   ResetTerminatedIds();
   GetPersistentSessionIdList().clear();
 }
 
 // static
-void FakeTerminalSession::SetNextStartFail(bool fail) {
-  next_start_fail_ = fail;
+void FakeTerminalSession::SetNextStartError(
+    std::optional<TerminalError> error) {
+  GetNextStartError() = std::move(error);
 }
 
 // static
@@ -116,13 +122,15 @@ FakeTerminalSession::~FakeTerminalSession() {
   std::erase(active_session_list, this);
 }
 
-bool FakeTerminalSession::Start() {
-  if (next_start_fail_) {
-    next_start_fail_ = false;
-    return false;
+base::expected<void, TerminalError> FakeTerminalSession::Start() {
+  std::optional<TerminalError>& next_start_error = GetNextStartError();
+  if (next_start_error.has_value()) {
+    TerminalError error = std::move(*next_start_error);
+    next_start_error.reset();
+    return base::unexpected(std::move(error));
   }
   is_started_ = true;
-  return true;
+  return base::ok();
 }
 
 void FakeTerminalSession::Write(const std::string& data) {

@@ -4,6 +4,7 @@
 
 #include "remoting/host/terminal_session.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -38,7 +39,9 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/terminal_error.h"
 #include "remoting/host/terminal_process_monitor_linux.h"
 #include "remoting/host/terminal_session_manager.h"
 
@@ -52,6 +55,11 @@ constexpr std::string_view kTmuxSocketName = "chrome-remote-desktop";
 
 std::string GetTmuxSessionName(int32_t id) {
   return base::StrCat({kTmuxSessionPrefix, base::NumberToString(id)});
+}
+
+base::unexpected<TerminalError> LogAndReturnError(TerminalError error) {
+  LOG(ERROR) << error;
+  return base::unexpected(std::move(error));
 }
 
 base::FilePath FindTmx2Path() {
@@ -225,35 +233,39 @@ class TerminalSessionLinux : public TerminalSession {
 
   // Start the terminal session. This will start a new PTY session and launch a
   // bash process in the subsidiary end of the PTY.
-  bool Start() override {
+  base::expected<void, TerminalError> Start() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::ScopedFD pty_fd(
         HANDLE_EINTR(posix_openpt(O_RDWR | O_NOCTTY | O_CLOEXEC)));
     if (!pty_fd.is_valid()) {
-      PLOG(ERROR) << "posix_openpt failed";
-      return false;
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "posix_openpt", errno));
     }
     if (grantpt(pty_fd.get()) != 0) {
-      PLOG(ERROR) << "grantpt failed";
-      return false;
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "grantpt", errno));
     }
     if (unlockpt(pty_fd.get()) != 0) {
-      PLOG(ERROR) << "unlockpt failed";
-      return false;
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "unlockpt", errno));
     }
 
     char subsidiary_name[TTY_NAME_MAX];
-    if (ptsname_r(pty_fd.get(), subsidiary_name, sizeof(subsidiary_name)) !=
-        0) {
-      PLOG(ERROR) << "ptsname_r failed";
-      return false;
+    int ptsname_result =
+        ptsname_r(pty_fd.get(), subsidiary_name, sizeof(subsidiary_name));
+    if (ptsname_result != 0) {
+      // ptsname_r returns the error code rather than setting errno.
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "ptsname_r",
+          ptsname_result));
     }
 
     base::ScopedFD subsidiary_fd(
         HANDLE_EINTR(open(subsidiary_name, O_RDWR | O_NOCTTY | O_CLOEXEC)));
     if (!subsidiary_fd.is_valid()) {
-      PLOG(ERROR) << "open subsidiary_fd failed";
-      return false;
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "open subsidiary PTY",
+          errno));
     }
 
     struct termios ios;
@@ -280,7 +292,7 @@ class TerminalSessionLinux : public TerminalSession {
               }
             },
             weak_factory_.GetWeakPtr(), writer_task_runner_));
-    return true;
+    return base::ok();
   }
 
   void OnProcessLaunched(base::Process process) {

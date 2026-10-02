@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
+#include "remoting/host/terminal_error.h"
 #include "remoting/host/terminal_session_manager.h"
 
 namespace remoting {
@@ -32,7 +34,9 @@ class TerminalSession {
   // Must be called on a thread that allows blocking.
   static std::vector<int32_t> GetPersistentTerminalIds();
 
-  virtual bool Start() = 0;
+  // Starts the terminal session. Returns an error describing the failure if the
+  // session could not be started.
+  virtual base::expected<void, TerminalError> Start() = 0;
 
   // Write terminal input.
   virtual void Write(const std::string& data) = 0;

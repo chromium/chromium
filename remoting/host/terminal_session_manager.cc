@@ -43,14 +43,20 @@ void TerminalSessionManager::Start(OutputCallback output_callback,
                      weak_factory_.GetWeakPtr()));
 }
 
-int32_t TerminalSessionManager::CreateTerminal() {
+base::expected<int32_t, TerminalError>
+TerminalSessionManager::CreateTerminal() {
   if (is_restoring_) {
-    LOG(ERROR) << "Cannot create terminal while restoring persistent terminals";
-    return -1;
+    TerminalError error(
+        FROM_HERE, TerminalError::Reason::kBusy,
+        "Cannot create terminal while restoring persistent terminals");
+    LOG(ERROR) << error;
+    return base::unexpected(std::move(error));
   }
   if (next_id_ == std::numeric_limits<int32_t>::max()) {
-    LOG(ERROR) << "Maximum terminal ID reached";
-    return -1;
+    TerminalError error(FROM_HERE, TerminalError::Reason::kInternalError,
+                        "Maximum terminal ID reached");
+    LOG(ERROR) << error;
+    return base::unexpected(std::move(error));
   }
   int32_t id = next_id_++;
 
@@ -62,16 +68,20 @@ int32_t TerminalSessionManager::CreateTerminal() {
       output_callback_, std::move(wrapped_exit_callback),
       process_info_callback_, id);
   if (!session) {
-    return -1;
+    TerminalError error(FROM_HERE, TerminalError::Reason::kInternalError,
+                        "Terminal sessions are not supported on this platform");
+    LOG(ERROR) << error;
+    return base::unexpected(std::move(error));
   }
   auto* session_ptr = session.get();
   terminal_sessions_[id] = std::move(session);
   base::WeakPtr<TerminalSessionManager> weak_this = weak_factory_.GetWeakPtr();
-  if (!session_ptr->Start()) {
+  base::expected<void, TerminalError> start_result = session_ptr->Start();
+  if (!start_result.has_value()) {
     if (weak_this) {
       weak_this->terminal_sessions_.erase(id);
     }
-    return -1;
+    return base::unexpected(std::move(start_result).error());
   }
   return id;
 }
@@ -207,7 +217,8 @@ void TerminalSessionManager::RestoreTerminal(int32_t terminal_id) {
   base::WeakPtr<TerminalSessionManager> weak_this = weak_factory_.GetWeakPtr();
   // Start the terminal session. If it fails, remove the session from the
   // terminal sessions map.
-  if (!session_ptr->Start()) {
+  base::expected<void, TerminalError> start_result = session_ptr->Start();
+  if (!start_result.has_value()) {
     if (weak_this) {
       weak_this->terminal_sessions_.erase(terminal_id);
     }

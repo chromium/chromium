@@ -6,12 +6,15 @@
 #define REMOTING_HOST_FAKE_TERMINAL_SESSION_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "remoting/host/terminal_error.h"
 #include "remoting/host/terminal_session.h"
 
 namespace remoting {
@@ -25,7 +28,9 @@ class FakeTerminalSession : public TerminalSession {
   static void ResetTerminatedIds();
   static void ResetStaticState();
 
-  static void SetNextStartFail(bool fail);
+  // Causes the next call to Start() to fail with `error`. Pass std::nullopt to
+  // clear a previously set error.
+  static void SetNextStartError(std::optional<TerminalError> error);
   static void SetPersistentTerminalIds(std::vector<int32_t> ids);
   static std::vector<int32_t> GetPersistentIds();
 
@@ -37,7 +42,7 @@ class FakeTerminalSession : public TerminalSession {
   ~FakeTerminalSession() override;
 
   // TerminalSession implementation:
-  bool Start() override;
+  base::expected<void, TerminalError> Start() override;
   void Write(const std::string& data) override;
   void Resize(uint32_t width, uint32_t height) override;
   void Terminate() override;
@@ -58,9 +63,6 @@ class FakeTerminalSession : public TerminalSession {
                           std::string_view process_name = "test-process");
 
  private:
-  // If true, the next call to Start() will fail.
-  static bool next_start_fail_;
-
   TerminalSessionManager::OutputCallback output_cb_;
   TerminalSessionManager::ExitCallback exit_cb_;
   TerminalSessionManager::ProcessInfoCallback process_info_cb_;
