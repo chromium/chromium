@@ -2212,6 +2212,7 @@ if (!is_android) {
       "//chrome/browser/webid",
       "//chrome/browser/webid:browser_tests",
       "//chrome/browser/window_management:browser_tests",
+      "//chrome/common:browser_tests",
       "//chrome/common:version_header",
       "//chrome/renderer",
       "//chrome/renderer:browser_tests",
@@ -2788,8 +2789,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_launch_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/web_apps/web_ui_web_app_browsertest.cc",
-      "../common/chrome_paths_browsertest.cc",
-      "../common/time_format_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
@@ -3123,7 +3122,6 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
-        "../common/mac/app_mode_chrome_locator_browsertest.mm",
         "../common/profiler/thread_profiler_browsertest.cc",
       ]
 
@@ -4049,10 +4047,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/captive_portal:browser_tests" ]
     }
 
-    if (!is_posix || is_chromeos) {
-      sources -= [ "../common/time_format_browsertest.cc" ]
-    }
-
     if (is_mac || is_win || is_linux) {
       deps += [
         "//chrome/browser/browser_switcher:browser_tests",
@@ -4520,13 +4514,6 @@ test("unit_tests") {
     "../app/llvm_profile_util.cc",
     "../app/llvm_profile_util.h",
     "../app/llvm_profile_util_unittest.cc",
-    "../common/chrome_content_client_unittest.cc",
-    "../common/chrome_paths_unittest.cc",
-    "../common/crash_keys_unittest.cc",
-    "../common/google_url_loader_throttle_unittest.cc",
-    "../common/ini_parser_unittest.cc",
-    "../common/pref_names_util_unittest.cc",
-    "../common/webui_util_unittest.cc",
   ]
 
   if (enable_webui_certificate_viewer) {
@@ -4966,6 +4953,7 @@ test("unit_tests") {
     "//chrome/browser/webid",
     "//chrome/browser/webid:unit_tests",
     "//chrome/common:test_support",
+    "//chrome/common:unit_tests",
     "//chrome/common:version_header",
     "//chrome/common/notifications",
     "//chrome/common/profiler:unit_tests",
@@ -5434,9 +5422,6 @@ test("unit_tests") {
     assert(toolkit_views)
     sources += [
       "../browser/ui/views/uninstall_view_unittest.cc",
-      "../common/chrome_constants_win_unittest.cc",
-      "../common/conflicts/module_watcher_win_unittest.cc",
-      "../common/conflicts/remote_module_watcher_win_unittest.cc",
       "../common/win/delay_load_failure_hook_unittest.cc",
       "../common/win/delay_load_notify_hook_unittest.cc",
     ]
@@ -5524,7 +5509,6 @@ test("unit_tests") {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
       "../app_shim/app_shim_controller_unittest.mm",
-      "../common/mac/app_mode_common_unittest.mm",
     ]
 
     data_deps += [ "//chrome:chrome_framework" ]
@@ -6333,7 +6317,6 @@ test("unit_tests") {
       "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
-      "../common/chrome_constants_ash_unittest.cc",
       "../test/base/ash/v8_unit_test.cc",
       "../test/base/ash/v8_unit_test.h",
     ]
@@ -6937,7 +6920,6 @@ test("unit_tests") {
   }
 
   if (enable_pdf) {
-    sources += [ "../common/pdf_util_unittest.cc" ]
     deps += [
       "//base",
       "//chrome/browser/extensions/api/pdf_viewer_private:unit_tests",
@@ -6992,7 +6974,6 @@ test("unit_tests") {
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
-      "../common/channel_info_unittest.cc",
     ]
 
     deps += [
@@ -7250,16 +7231,6 @@ test("unit_tests") {
   }
   if (!is_android && use_nss_certs) {
     sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
-  }
-
-  if (enable_widevine_cdm_component && is_linux) {
-    sources +=
-        [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
-  }
-
-  if (enable_widevine && is_linux) {
-    sources += [ "../common/media/cdm_registration_unittest.cc" ]
-    data_deps += [ "//third_party/widevine/cdm" ]
   }
 
   if (enable_lens_desktop_google_branded_features) {

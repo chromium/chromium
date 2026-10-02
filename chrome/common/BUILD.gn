@@ -845,3 +845,68 @@ mojom("offline_page_auto_fetcher_mojom") {
   sources = [ "offline_page_auto_fetcher.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_paths_browsertest.cc" ]
+    deps = [
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+    if (is_posix && !is_chromeos) {
+      sources += [ "time_format_browsertest.cc" ]
+    }
+    if (is_mac) {
+      sources += [ "mac/app_mode_chrome_locator_browsertest.mm" ]
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_content_client_unittest.cc",
+    "chrome_paths_unittest.cc",
+    "crash_keys_unittest.cc",
+    "google_url_loader_throttle_unittest.cc",
+    "ini_parser_unittest.cc",
+    "pref_names_util_unittest.cc",
+    "webui_util_unittest.cc",
+  ]
+  deps = [
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (is_win) {
+    sources += [
+      "chrome_constants_win_unittest.cc",
+      "conflicts/module_watcher_win_unittest.cc",
+      "conflicts/remote_module_watcher_win_unittest.cc",
+    ]
+  }
+  if (is_mac) {
+    sources += [ "mac/app_mode_common_unittest.mm" ]
+  }
+  if (is_chromeos) {
+    sources += [ "chrome_constants_ash_unittest.cc" ]
+  }
+  if (enable_pdf) {
+    sources += [ "pdf_util_unittest.cc" ]
+    deps += [ "//pdf:content_restriction" ]
+  }
+  if (!is_android && !is_chromeos) {
+    sources += [ "channel_info_unittest.cc" ]
+  }
+  if (enable_widevine_cdm_component && is_linux) {
+    sources += [ "media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
+  }
+  if (enable_widevine && is_linux) {
+    sources += [ "media/cdm_registration_unittest.cc" ]
+    data_deps = [ "//third_party/widevine/cdm" ]
+  }
+}
