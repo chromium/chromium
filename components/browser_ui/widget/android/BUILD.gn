@@ -19,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/CoordinatorLayoutForPointer.java",
     "java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java",
+    "java/src/org/chromium/components/browser_ui/widget/DialogListItemDecoration.java",
     "java/src/org/chromium/components/browser_ui/widget/DualControlLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/FadingEdgeScrollView.java",
     "java/src/org/chromium/components/browser_ui/widget/FadingShadow.java",

@@ -9,7 +9,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/multiwindow/CloseConfirmationDialogView.java",
     "java/src/org/chromium/chrome/browser/multiwindow/CrashRecoveryWindowInfo.java",
-    "java/src/org/chromium/chrome/browser/multiwindow/DialogListItemDecoration.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceInfo.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherActionsDelegate.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
@@ -80,8 +79,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/color/instance_switcher_item_foreground_color_list.xml",
     "java/res/color/instance_switcher_item_secondary_text_color_list.xml",
-    "java/res/drawable/checkmark_circle_24dp.xml",
-    "java/res/drawable/single_list_item_background.xml",
     "java/res/layout/close_confirmation_dialog.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",
@@ -130,6 +127,7 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/util:java",
+    "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",

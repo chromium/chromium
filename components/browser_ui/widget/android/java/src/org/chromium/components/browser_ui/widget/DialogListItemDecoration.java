@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.multiwindow;
+package org.chromium.components.browser_ui.widget;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * Class to define the {@link RecyclerView.ItemDecoration} for the instance lists on the instance
- * switcher and target selector dialogs.
+ * Class to define the {@link RecyclerView.ItemDecoration} for rounded list items in dialogs and
+ * task lists.
  */
 @NullMarked
 public class DialogListItemDecoration extends RecyclerView.ItemDecoration {
