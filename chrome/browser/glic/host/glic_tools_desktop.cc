@@ -45,9 +45,8 @@ std::unique_ptr<GlicToolsHolder> CreateAiOverlayToolsForGlic(
         }
         return true;
       });
-  return std::make_unique<GlicToolsHolderImpl>(
-      std::make_unique<ttc::AiOverlayTools>(std::move(receiver), active_browser,
-                                            /*page_context_monitor=*/nullptr));
+  return std::make_unique<GlicToolsHolderImpl>(ttc::AiOverlayTools::Create(
+      std::move(receiver), active_browser, /*page_context_monitor=*/nullptr));
 }
 
 }  // namespace glic

@@ -29,6 +29,7 @@ source_set("ai_overlay_dialog") {
   ]
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ttc/app",
     "//chrome/browser/ttc/core",
@@ -91,6 +92,10 @@ source_set("impl") {
     "//url",
   ]
   if (!is_android) {
+    sources += [
+      "tools/tools_views.cc",
+      "tools/tools_views.h",
+    ]
     deps += [
       # This target includes //chrome/browser/ui:ui's headers, but :ui depends
       # back on this target (it owns the desktop interface-binders parts file
@@ -100,6 +105,11 @@ source_set("impl") {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  } else {
+    sources += [
+      "tools/tools_android.cc",
+      "tools/tools_android.h",
     ]
   }
   if (is_desktop_android) {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,75 +17,33 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/glic_passkeys.h"
-#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
-#include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/input/native_web_keyboard_event.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/base/base_window.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/events/types/scroll_types.h"
+#include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace {
-
-content::WebContents* GetActiveWebContentsFromBrowser(
-    BrowserWindowInterface* browser) {
-#if !BUILDFLAG(IS_ANDROID)
-  return browser->GetTabStripModel()->GetActiveWebContents();
-#else
-  return nullptr;
-#endif
-}
-
-void RecordToolCallInvoked(std::string_view tool_name) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"AI.OverlayDialog.ToolCallInvoked.", tool_name}), true);
-}
 
 std::optional<base::TimeDelta> ParseTimecode(const std::string& timecode) {
   std::vector<std::string> parts = base::SplitString(
@@ -111,15 +68,6 @@ std::optional<base::TimeDelta> ParseTimecode(const std::string& timecode) {
   return std::nullopt;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-std::string FormatDate(base::Time time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 namespace ttc {
@@ -140,25 +88,15 @@ void AiOverlayTools::BindRegistryReceiver(
   registry_receiver_.Bind(std::move(registry_receiver));
 }
 
-void AiOverlayTools::OpenUrl(const std::string& url_string,
-                             bool new_tab,
-                             OpenUrlCallback callback) {
-  RecordToolCallInvoked("OpenUrl");
-  GURL url(url_string);
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run(base::unexpected("Invalid URL"));
-    return;
-  }
+// static
+void AiOverlayTools::RecordToolCallInvoked(std::string_view tool_name) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"AI.OverlayDialog.ToolCallInvoked.", tool_name}), true);
+}
 
-#if !BUILDFLAG(IS_ANDROID)
-  WindowOpenDisposition disposition =
-      new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-              : WindowOpenDisposition::CURRENT_TAB;
-  browser_->OpenGURL(url, disposition);
-  std::move(callback).Run(std::monostate());
-#else
-  std::move(callback).Run(base::unexpected("OpenUrl not yet ported to Clank"));
-#endif
+// static
+glic::InvokeWithAutoSubmitPasskey AiOverlayTools::GetGlicPassKey() {
+  return glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
 }
 
 void AiOverlayTools::FollowLink(const std::string& id,
@@ -200,59 +138,9 @@ void AiOverlayTools::PerformSearch(const std::string& query,
   OpenUrl(url.spec(), new_tab, std::move(callback));
 }
 
-void AiOverlayTools::SwitchTab(const std::string& query,
-                               SwitchTabCallback callback) {
-  RecordToolCallInvoked("SwitchTab");
-#if !BUILDFLAG(IS_ANDROID)
-  std::string query_lower = base::ToLowerASCII(query);
-  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    if (!contents || !contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    std::string title =
-        base::ToLowerASCII(base::UTF16ToUTF8(contents->GetTitle()));
-    std::string url = base::ToLowerASCII(contents->GetURL().spec());
-    if (title.find(query_lower) != std::string::npos ||
-        url.find(query_lower) != std::string::npos) {
-      tab_strip_model->ActivateTabAt(i);
-      browser_->GetWindow()->Activate();
-
-      auto result = ai_overlay_dialog::mojom::SwitchTabResult::New();
-      result->title = base::UTF16ToUTF8(contents->GetTitle());
-      result->url = contents->GetURL();
-      result->tab_id = sessions::SessionTabHelper::IdForTab(contents).id();
-
-      std::move(callback).Run(std::move(result));
-      return;
-    }
-  }
-  std::move(callback).Run(base::unexpected("No matching tab found"));
-#else
-  std::move(callback).Run(
-      base::unexpected("SwitchTab not yet ported to Clank"));
-#endif
-}
-
-void AiOverlayTools::CloseCurrentTab(CloseCurrentTabCallback callback) {
-  RecordToolCallInvoked("CloseCurrentTab");
-#if !BUILDFLAG(IS_ANDROID)
-  if (browser_->GetTabStripModel()->count() > 0) {
-    browser_->GetTabStripModel()->CloseSelectedTabs();
-    std::move(callback).Run(std::monostate());
-  } else {
-    std::move(callback).Run(base::unexpected("No active tab to close"));
-  }
-#else
-  std::move(callback).Run(
-      base::unexpected("CloseCurrentTab not yet ported to Clank"));
-#endif
-}
-
 void AiOverlayTools::GoBack(GoBackCallback callback) {
   RecordToolCallInvoked("GoBack");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (contents && contents->GetController().CanGoBack()) {
     contents->GetController().GoBack();
     std::move(callback).Run(std::monostate());
@@ -263,7 +151,7 @@ void AiOverlayTools::GoBack(GoBackCallback callback) {
 
 void AiOverlayTools::GoForward(GoForwardCallback callback) {
   RecordToolCallInvoked("GoForward");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (contents && contents->GetController().CanGoForward()) {
     contents->GetController().GoForward();
     std::move(callback).Run(std::monostate());
@@ -274,7 +162,7 @@ void AiOverlayTools::GoForward(GoForwardCallback callback) {
 
 void AiOverlayTools::ReloadPage(ReloadPageCallback callback) {
   RecordToolCallInvoked("ReloadPage");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (contents) {
     contents->GetController().Reload(content::ReloadType::NORMAL, true);
     std::move(callback).Run(std::monostate());
@@ -319,7 +207,7 @@ void AiOverlayTools::OnAnnotationAgentDisconnected() {
 void AiOverlayTools::FindAndHighlight(const std::string& query,
                                       FindAndHighlightCallback callback) {
   RecordToolCallInvoked("FindAndHighlight");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -357,54 +245,9 @@ void AiOverlayTools::FindAndHighlight(const std::string& query,
       /*search_range_start_node_id=*/std::nullopt);
 }
 
-void AiOverlayTools::Scroll(
-    ai_overlay_dialog::mojom::ScrollGranularity granularity,
-    double magnitude,
-    ScrollCallback callback) {
-  RecordToolCallInvoked("Scroll");
-#if !BUILDFLAG(IS_ANDROID)
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
-  if (!contents || !contents->GetRenderWidgetHostView()) {
-    std::move(callback).Run(base::unexpected("No active tab or view"));
-    return;
-  }
-
-  content::RenderWidgetHost* widget_host =
-      contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-
-  auto get_key_code =
-      [](ai_overlay_dialog::mojom::ScrollGranularity granularity,
-         double magnitude) {
-        switch (granularity) {
-          case ai_overlay_dialog::mojom::ScrollGranularity::kPage:
-            return (magnitude > 0) ? ui::VKEY_NEXT : ui::VKEY_PRIOR;
-          case ai_overlay_dialog::mojom::ScrollGranularity::kDocument:
-            return (magnitude > 0) ? ui::VKEY_END : ui::VKEY_HOME;
-        }
-      };
-
-  ui::KeyboardCode key_code = get_key_code(granularity, magnitude);
-
-  // For Document granularity, we only need to send the key once to reach the
-  // end or start. For Page granularity, we send it for each page requested.
-  ui::KeyEvent pressed_event(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
-  ui::KeyEvent released_event(ui::EventType::kKeyReleased, key_code,
-                              ui::EF_NONE);
-  widget_host->ForwardKeyboardEvent(
-      input::NativeWebKeyboardEvent(pressed_event));
-  widget_host->ForwardKeyboardEvent(
-      input::NativeWebKeyboardEvent(released_event));
-
-  std::move(callback).Run(std::monostate());
-#else
-  NOTIMPLEMENTED();
-  std::move(callback).Run(base::unexpected("Scroll not yet ported to Clank"));
-#endif
-}
-
 void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
   RecordToolCallInvoked("PlayVideo");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -422,7 +265,7 @@ void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
 
 void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
   RecordToolCallInvoked("PauseVideo");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -438,76 +281,10 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
   }
 }
 
-void AiOverlayTools::OpenGeminiPanel(const std::string& prompt,
-                                     OpenGeminiPanelCallback callback) {
-  RecordToolCallInvoked("OpenGeminiPanel");
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          browser_->GetProfile());
-
-  if (!glic_service) {
-    std::move(callback).Run(base::unexpected("Glic service not available"));
-    return;
-  }
-
-#if !BUILDFLAG(IS_ANDROID)
-  auto* active_tab = browser_->GetTabStripModel()->GetActiveTab();
-#else
-  tabs::TabInterface* active_tab = nullptr;
-#endif
-  if (!active_tab) {
-    std::move(callback).Run(base::unexpected("No active tab"));
-    return;
-  }
-  glic::GlicInvokeOptions options(glic::Target(*active_tab),
-                                  glic::mojom::InvocationSource::kOsButton);
-  options.prompts.push_back(prompt);
-
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-
-  options.on_success = base::BindOnce(
-      [](OpenGeminiPanelCallback cb) {
-        std::move(cb).Run(base::ok("Gemini panel opened."));
-      },
-      std::move(split_callback.first));
-
-  options.on_error = base::BindOnce(
-      [](OpenGeminiPanelCallback cb, glic::GlicInvokeError error) {
-        std::move(cb).Run(base::unexpected("Failed to open Gemini panel"));
-      },
-      std::move(split_callback.second));
-
-  glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      std::move(options));
-}
-
-void AiOverlayTools::CloseGeminiPanel(CloseGeminiPanelCallback callback) {
-  RecordToolCallInvoked("CloseGeminiPanel");
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          browser_->GetProfile());
-
-  if (!glic_service) {
-    std::move(callback).Run(base::unexpected("Glic service not available"));
-    return;
-  }
-
-  if (glic_service->instance_coordinator().IsPanelShowingForBrowser(
-          *browser_)) {
-    // TODO(gklassen): Use a dedicated invocation source for tool calls when
-    // productionizing.
-    glic_service->instance_coordinator().Toggle(
-        browser_, /*prevent_close=*/false,
-        glic::mojom::InvocationSource::kOsButton);
-  }
-  std::move(callback).Run(std::monostate());
-}
-
 void AiOverlayTools::SeekToTimestamp(const std::string& timecode,
                                      SeekToTimestampCallback callback) {
   RecordToolCallInvoked("SeekToTimestamp");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -531,7 +308,7 @@ void AiOverlayTools::SeekToTimestamp(const std::string& timecode,
 
 void AiOverlayTools::TranslatePage(const std::string& target_language,
                                    TranslatePageCallback callback) {
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -579,8 +356,7 @@ void AiOverlayTools::AddBookmark(AddBookmarkCallback callback) {
     return;
   }
 
-  content::WebContents* active_contents =
-      GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* active_contents = GetActiveWebContents();
   if (!active_contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -605,8 +381,7 @@ void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
     return;
   }
 
-  content::WebContents* active_contents =
-      GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* active_contents = GetActiveWebContents();
   if (!active_contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -628,247 +403,13 @@ void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
   std::move(callback).Run(std::monostate());
 }
 
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-
-bool HasOpenTabWithUrl(const TabStripModel& tab_strip, const GURL& url) {
-  // TODO(crbug.com/540589868): Consider parameter/fragment-insensitive URL
-  // comparison to avoid duplicate candidates when session tokens differ.
-  for (int i = 0; i < tab_strip.count(); ++i) {
-    content::WebContents* contents = tab_strip.GetWebContentsAt(i);
-    if (contents && contents->GetLastCommittedURL() == url) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void FinishOpenPage(base::DictValue response,
-                    TabStripModel& tab_strip,
-                    AiOverlayTools::OpenPageCallback callback) {
-  const base::ListValue* open_tabs = response.FindList("open_tabs");
-  const base::ListValue* bookmarks = response.FindList("bookmarks");
-  const base::ListValue* history = response.FindList("history");
-
-  size_t open_tabs_count = open_tabs ? open_tabs->size() : 0;
-  size_t bookmarks_count = bookmarks ? bookmarks->size() : 0;
-  size_t history_count = history ? history->size() : 0;
-  size_t total_matches = open_tabs_count + bookmarks_count + history_count;
-
-  if (total_matches == 1) {
-    if (open_tabs_count == 1) {
-      const base::DictValue& tab_dict = (*open_tabs)[0].GetDict();
-      int tab_id = tab_dict.FindInt("tab_id").value_or(0);
-      const std::string* title = tab_dict.FindString("title");
-
-      tab_strip.ActivateTabAt(tab_id);
-      base::DictValue auto_response;
-      auto_response.Set("action", "switched_tab");
-      auto_response.Set("tab_id", tab_id);
-      if (title) {
-        auto_response.Set("title", *title);
-      }
-      std::optional<std::string> auto_json = base::WriteJson(auto_response);
-      if (!auto_json) {
-        std::move(callback).Run(
-            base::unexpected("Failed to format search result response JSON"));
-        return;
-      }
-      std::move(callback).Run(base::ok(std::move(*auto_json)));
-      return;
-    }
-
-    if (bookmarks_count == 1) {
-      const base::DictValue& bm_dict = (*bookmarks)[0].GetDict();
-      const std::string* url_str = bm_dict.FindString("url");
-      const std::string* title = bm_dict.FindString("title");
-
-      content::WebContents* active_contents = tab_strip.GetActiveWebContents();
-      if (active_contents && url_str) {
-        active_contents->GetController().LoadURL(
-            GURL(*url_str), content::Referrer(),
-            ui::PAGE_TRANSITION_AUTO_BOOKMARK, std::string());
-      }
-      base::DictValue auto_response;
-      auto_response.Set("action", "opened_bookmark");
-      if (title) {
-        auto_response.Set("title", *title);
-      }
-      std::optional<std::string> auto_json = base::WriteJson(auto_response);
-      if (!auto_json) {
-        std::move(callback).Run(
-            base::unexpected("Failed to format search result response JSON"));
-        return;
-      }
-      std::move(callback).Run(base::ok(std::move(*auto_json)));
-      return;
-    }
-
-    if (history_count == 1) {
-      const base::DictValue& hist_dict = (*history)[0].GetDict();
-      const std::string* url_str = hist_dict.FindString("url");
-      const std::string* title = hist_dict.FindString("title");
-
-      content::WebContents* active_contents = tab_strip.GetActiveWebContents();
-      if (active_contents && url_str) {
-        active_contents->GetController().LoadURL(
-            GURL(*url_str), content::Referrer(),
-            ui::PAGE_TRANSITION_TYPED, std::string());
-      }
-      base::DictValue auto_response;
-      auto_response.Set("action", "opened_history");
-      if (title) {
-        auto_response.Set("title", *title);
-      }
-      std::optional<std::string> auto_json = base::WriteJson(auto_response);
-      if (!auto_json) {
-        std::move(callback).Run(
-            base::unexpected("Failed to format search result response JSON"));
-        return;
-      }
-      std::move(callback).Run(base::ok(std::move(*auto_json)));
-      return;
-    }
-  }
-
-  std::optional<std::string> json_str = base::WriteJson(response);
-  if (!json_str) {
-    std::move(callback).Run(
-        base::unexpected("Failed to format search results response JSON"));
-    return;
-  }
-  std::move(callback).Run(base::ok(std::move(*json_str)));
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
-void AiOverlayTools::OpenPage(const std::string& query,
-                              OpenPageCallback callback) {
-  RecordToolCallInvoked("OpenPage");
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip = browser_ ? browser_->GetTabStripModel() : nullptr;
-  if (!tab_strip) {
-    std::move(callback).Run(base::unexpected("No tab strip model available"));
-    return;
-  }
-
-  Profile* profile = browser_->GetProfile();
-  std::string lower_query = base::ToLowerASCII(query);
-
-  base::DictValue response;
-  int target_id_counter = 1;
-
-  // 1. Search Open Tabs
-  base::ListValue open_tabs_list;
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    content::WebContents* contents = tab_strip->GetWebContentsAt(i);
-    if (!contents || !contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-
-    std::string title = base::UTF16ToUTF8(contents->GetTitle());
-    std::string url_str = contents->GetVisibleURL().spec();
-    if (base::ToLowerASCII(title).find(lower_query) != std::string::npos ||
-        base::ToLowerASCII(url_str).find(lower_query) != std::string::npos) {
-      base::DictValue tab_dict;
-      tab_dict.Set("target_id", target_id_counter++);
-      tab_dict.Set("title", title);
-      tab_dict.Set("url", url_str);
-      tab_dict.Set("tab_id", i);
-      open_tabs_list.Append(std::move(tab_dict));
-    }
-  }
-  response.Set("open_tabs", std::move(open_tabs_list));
-
-  // 2. Search Bookmarks
-  base::ListValue bookmarks_list;
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-  if (bookmark_model && bookmark_model->loaded()) {
-    bookmarks::QueryFields query_fields;
-    query_fields.word_phrase_query =
-        std::make_unique<std::u16string>(base::UTF8ToUTF16(query));
-    std::vector<const bookmarks::BookmarkNode*> matches =
-        bookmarks::GetBookmarksMatchingProperties(bookmark_model, query_fields, 10);
-
-    for (const auto* node : matches) {
-      if (!node->url().SchemeIsHTTPOrHTTPS()) {
-        continue;
-      }
-      base::DictValue bm_dict;
-      bm_dict.Set("target_id", target_id_counter++);
-      bm_dict.Set("title", node->GetTitle());
-      bm_dict.Set("url", node->url().spec());
-      if (node->parent()) {
-        bm_dict.Set("folder", node->parent()->GetTitle());
-      }
-      bm_dict.Set("date_added", FormatDate(node->date_added()));
-      bookmarks_list.Append(std::move(bm_dict));
-    }
-  }
-  response.Set("bookmarks", std::move(bookmarks_list));
-
-  // 3. Search History
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS);
-  if (!history_service) {
-    FinishOpenPage(std::move(response), *tab_strip, std::move(callback));
-    return;
-  }
-
-  history::QueryOptions options;
-  options.max_count = 10;
-  history_service->QueryHistory(
-      base::UTF8ToUTF16(query), options,
-      base::BindOnce(
-          [](base::DictValue res, OpenPageCallback cb,
-             base::WeakPtr<AiOverlayTools> self,
-             int start_target_id, history::QueryResults results) {
-            if (!self || !self->browser_) {
-              std::move(cb).Run(base::unexpected("Browser closed"));
-              return;
-            }
-            TabStripModel* tab_strip = self->browser_->GetTabStripModel();
-            CHECK(tab_strip);
-            base::ListValue history_list;
-            int current_target_id = start_target_id;
-
-            for (const history::URLResult& result : results) {
-              if (!result.url().SchemeIsHTTPOrHTTPS() ||
-                  HasOpenTabWithUrl(*tab_strip, result.url())) {
-                continue;
-              }
-
-              base::DictValue hist_dict;
-              hist_dict.Set("target_id", current_target_id++);
-              hist_dict.Set("title", result.title());
-              hist_dict.Set("url", result.url().spec());
-              hist_dict.Set("date_visited", FormatDate(result.visit_time()));
-              history_list.Append(std::move(hist_dict));
-            }
-            res.Set("history", std::move(history_list));
-
-            FinishOpenPage(std::move(res), *tab_strip, std::move(cb));
-          },
-          std::move(response), std::move(callback), weak_factory_.GetWeakPtr(),
-          target_id_counter),
-      &task_tracker_);
-#else
-  std::move(callback).Run(base::unexpected("OpenPage not yet ported to Clank"));
-#endif
-}
-
 void AiOverlayTools::SetText(const blink::DOMNodeIdType& dom_node_id,
                              const std::string& text,
                              SetTextCallback callback) {
   RecordToolCallInvoked("SetText");
   // TODO(crbug.com/540575255): Scope form editing actions to the target
   // WebContents active when tool invocation was requested.
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -916,7 +457,7 @@ void AiOverlayTools::SetText(const blink::DOMNodeIdType& dom_node_id,
 void AiOverlayTools::ClickElement(const blink::DOMNodeIdType& dom_node_id,
                                   ClickElementCallback callback) {
   RecordToolCallInvoked("ClickElement");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
@@ -960,30 +501,11 @@ void AiOverlayTools::ClickElement(const blink::DOMNodeIdType& dom_node_id,
           std::move(chrome_render_frame), std::move(callback)));
 }
 
-void AiOverlayTools::SetFullscreen(bool fullscreen,
-                                   SetFullscreenCallback callback) {
-  RecordToolCallInvoked("SetFullscreen");
-#if !BUILDFLAG(IS_ANDROID)
-  if (!browser_ || !browser_->GetWindow()) {
-    std::move(callback).Run(base::unexpected("No active browser window"));
-    return;
-  }
-  bool is_fullscreen = browser_->GetWindow()->IsFullscreen();
-  if (fullscreen != is_fullscreen) {
-    chrome::ToggleFullscreenMode(browser_.get());
-  }
-  std::move(callback).Run(base::ok(std::monostate()));
-#else
-  std::move(callback).Run(
-      base::unexpected("SetFullscreen not yet ported to Clank"));
-#endif
-}
-
 void AiOverlayTools::SelectOption(const blink::DOMNodeIdType& dom_node_id,
                                   const std::string& value,
                                   SelectOptionCallback callback) {
   RecordToolCallInvoked("SelectOption");
-  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
+  content::WebContents* contents = GetActiveWebContents();
   if (!contents) {
     std::move(callback).Run(base::unexpected("No active tab"));
     return;
