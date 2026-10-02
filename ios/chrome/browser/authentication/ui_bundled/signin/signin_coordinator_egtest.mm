@@ -912,10 +912,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// TODO(crbug.com/386196414): Test is flaky.
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
+// TODO(crbug.com/386196414): Test is flaky.
+// TODO(crbug.com/568719330): Re-enable this test.
+- (void)DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];

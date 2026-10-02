@@ -405,6 +405,7 @@
 }
 
 // A test designed to fail, to verify test expectations.
+// TODO(crbug.com/568719330): This test is currently crashing instead of failing.
 - (void)testFailingMethod {
   GREYAssertTrue(NO, @"This test is expected to fail.");
 }
@@ -416,6 +417,7 @@
 }
 
 // A test designed to fail (or pass), to verify flaky expectations.
+// TODO(crbug.com/568719330): This test is currently crashing instead of failing.
 - (void)testFlakyFailureMethod {
   GREYAssertTrue(NO, @"This test is expected to fail flakily.");
 }

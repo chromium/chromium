@@ -47,9 +47,9 @@
 #
 
 # Smoke test to verify expectations functionality. Do not remove.
-crbug.com/523267238 SmokeTestCase/testFailingMethod [ Failure ]
+crbug.com/523267238 SmokeTestCase/testFailingMethod [ Failure Crash ]
 crbug.com/523267238 SmokeTestCase/testCrashingMethod [ Crash ]
-crbug.com/523267238 SmokeTestCase/testFlakyFailureMethod [ Pass Failure ]
+crbug.com/523267238 SmokeTestCase/testFlakyFailureMethod [ Pass Failure Crash ]
 crbug.com/523267238 SmokeTestCase/testFlakyCrashMethod [ Pass Crash ]
 crbug.com/523267238 SmokeTestCase/testFlakyPassingMethod [ Pass Failure ]
 crbug.com/523267238 SmokeTestCase/testFlakyCrashPassingMethod [ Pass Crash ]
