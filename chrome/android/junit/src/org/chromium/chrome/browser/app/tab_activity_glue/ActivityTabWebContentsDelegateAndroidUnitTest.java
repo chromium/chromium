@@ -21,8 +21,12 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -38,6 +42,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -60,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -803,5 +809,31 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.handleKeyboardEvent(escapeEvent);
 
         verify(mWebContents, never()).stop();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testIsPictureInPictureEnabled_suppressedWhenAndroidAutoProjected() {
+        PackageManager packageManager = mock(PackageManager.class);
+        AppOpsManager appOpsManager = mock(AppOpsManager.class);
+        ApplicationInfo applicationInfo = new ApplicationInfo();
+        applicationInfo.uid = 1000;
+
+        when(mActivity.getApplicationContext()).thenReturn(mActivity);
+        when(mActivity.getPackageManager()).thenReturn(packageManager);
+        when(packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE))
+                .thenReturn(true);
+        when(mActivity.getSystemService(Context.APP_OPS_SERVICE)).thenReturn(appOpsManager);
+        when(mActivity.getApplicationInfo()).thenReturn(applicationInfo);
+        when(mActivity.getPackageName()).thenReturn("org.chromium.chrome");
+        when(appOpsManager.checkOpNoThrow(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE, 1000, "org.chromium.chrome"))
+                .thenReturn(AppOpsManager.MODE_ALLOWED);
+
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
+        assertTrue(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());
+
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        assertFalse(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());
     }
 }

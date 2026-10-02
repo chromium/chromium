@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -219,6 +220,11 @@ public class FullscreenVideoPictureInPictureController {
         // Only auto-PiP if there is a playing fullscreen video that allows PiP.
         if (!webContents.hasActiveEffectivelyFullscreenVideo()
                 || !webContents.isPictureInPictureAllowedForFullscreenVideo()) {
+            return false;
+        }
+
+        if (BrowserUiUtils.isAndroidAutoProjected(mActivity)) {
+            Log.d(TAG, "Block PiP in Android Auto Projected mode.");
             return false;
         }
 

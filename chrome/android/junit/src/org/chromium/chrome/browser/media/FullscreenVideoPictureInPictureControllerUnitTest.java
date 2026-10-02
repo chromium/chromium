@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.MetricsEndReason;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.PipEntered;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
@@ -144,6 +145,18 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Test
     public void pictureInPictureFailsWithoutVideo() {
         setHasFullscreenVideo(false);
+        mController.attemptPictureInPicture();
+        verify(mActivity, times(0)).enterPictureInPictureMode(any());
+    }
+
+    /**
+     * Verify that Picture in Picture is blocked for the car display when running in Android Auto
+     * Projected mode.
+     */
+    @Test
+    public void pictureInPictureBlockedWhenCarDisplayAndroidAutoProjected() {
+        setHasFullscreenVideo(true);
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
         mController.attemptPictureInPicture();
         verify(mActivity, times(0)).enterPictureInPictureMode(any());
     }

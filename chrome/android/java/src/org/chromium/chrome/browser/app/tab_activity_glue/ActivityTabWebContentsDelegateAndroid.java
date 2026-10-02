@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
@@ -711,9 +712,13 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean isPictureInPictureEnabled() {
-        return mActivity != null
-                ? PictureInPicture.isEnabled(mActivity.getApplicationContext())
-                : false;
+        // Pass mActivity rather than mActivity.getApplicationContext() because the Activity
+        // context is tied to the specific display's UI mode, whereas the global Application
+        // context is shared across all displays.
+        if (mActivity == null || BrowserUiUtils.isAndroidAutoProjected(mActivity)) {
+            return false;
+        }
+        return PictureInPicture.isEnabled(mActivity.getApplicationContext());
     }
 
     private boolean hasRepositionWindowsPermission() {
