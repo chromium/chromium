@@ -225,7 +225,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool RequiresSslInterstitials() const final;
   bool IsPermissionRequestable(ContentSettingsType type) const final;
   std::optional<content::PermissionResult> OverridePermissionResult(
-      ContentSettingsType type) const final;
+      ContentSettingsType type,
+      const url::Origin& requesting_origin) const final;
   void GuestViewDocumentOnLoadCompleted() final;
   void GuestViewDidChangeLoadProgress(double progress) final;
   void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;

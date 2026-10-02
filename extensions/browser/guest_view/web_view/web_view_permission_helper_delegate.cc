@@ -31,7 +31,8 @@ bool WebViewPermissionHelperDelegate::
 
 std::optional<content::PermissionResult>
 WebViewPermissionHelperDelegate::OverridePermissionResult(
-    ContentSettingsType type) {
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) {
   return std::nullopt;
 }
 

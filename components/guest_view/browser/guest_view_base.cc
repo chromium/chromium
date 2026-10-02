@@ -1398,7 +1398,9 @@ bool GuestViewBase::IsPermissionRequestable(ContentSettingsType type) const {
 }
 
 std::optional<content::PermissionResult>
-GuestViewBase::OverridePermissionResult(ContentSettingsType type) const {
+GuestViewBase::OverridePermissionResult(
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) const {
   return std::nullopt;
 }
 

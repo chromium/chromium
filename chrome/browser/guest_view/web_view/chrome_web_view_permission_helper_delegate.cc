@@ -331,13 +331,14 @@ void ChromeWebViewPermissionHelperDelegate::RequestMediaPermission(
     }
   }
 
+  url::Origin origin = url::Origin::Create(requesting_frame_origin);
   base::DictValue request_info;
   request_info.Set(guest_view::kUrl, requesting_frame_origin.spec());
 
   WebViewPermissionHelper::PermissionResponseCallback permission_callback =
       base::BindOnce(
           &ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse,
-          weak_factory_.GetWeakPtr(), type, user_gesture,
+          weak_factory_.GetWeakPtr(), type, origin, user_gesture,
           base::BindOnce(&CallbackWrapper, std::move(callback)));
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_MEDIA, std::move(request_info),
@@ -346,6 +347,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestMediaPermission(
 
 void ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse(
     ContentSettingsType type,
+    const url::Origin& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(content::PermissionResult)> callback,
     bool allow,
@@ -353,6 +355,8 @@ void ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse(
   CHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
         type == ContentSettingsType::MEDIASTREAM_CAMERA);
   if (!allow) {
+    web_view_permission_helper()->RevokeMediaPermission(type,
+                                                        requesting_origin);
     std::move(callback).Run(content::PermissionResult(
         blink::mojom::PermissionStatus::DENIED,
         content::PermissionStatusSource::UNSPECIFIED));
@@ -364,8 +368,26 @@ void ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse(
           ? blink::PermissionType::AUDIO_CAPTURE
           : blink::PermissionType::VIDEO_CAPTURE;
 
-  RequestEmbedderFramePermission(user_gesture, std::move(callback),
-                                 permission_type);
+  RequestEmbedderFramePermission(
+      user_gesture,
+      base::BindOnce(
+          [](base::WeakPtr<ChromeWebViewPermissionHelperDelegate> delegate,
+             ContentSettingsType type, const url::Origin& requesting_origin,
+             content::PermissionResult result) {
+            if (delegate) {
+              if (result.status == blink::mojom::PermissionStatus::GRANTED) {
+                delegate->web_view_permission_helper()->GrantMediaPermission(
+                    type, requesting_origin);
+              } else {
+                delegate->web_view_permission_helper()->RevokeMediaPermission(
+                    type, requesting_origin);
+              }
+            }
+            return result;
+          },
+          weak_factory_.GetWeakPtr(), type, requesting_origin)
+          .Then(std::move(callback)),
+      permission_type);
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
@@ -659,7 +681,8 @@ bool ChromeWebViewPermissionHelperDelegate::
 
 std::optional<content::PermissionResult>
 ChromeWebViewPermissionHelperDelegate::OverridePermissionResult(
-    ContentSettingsType type) {
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) {
   const url::Origin& origin =
       web_view_guest()->owner_rfh()->GetLastCommittedOrigin();
   // chrome://glic and chrome://contextual-tasks requires additional

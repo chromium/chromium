@@ -1680,8 +1680,10 @@ bool WebViewGuest::IsPermissionRequestable(ContentSettingsType type) const {
 }
 
 std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
-    ContentSettingsType type) const {
-  auto result = web_view_permission_helper_->OverridePermissionResult(type);
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) const {
+  auto result = web_view_permission_helper_->OverridePermissionResult(
+      type, requesting_origin);
   if (result) {
     return result;
   }
@@ -1699,8 +1701,9 @@ std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
 
   if (IsOwnedByControlledFrameEmbedder()) {
     // Permission of content within a Controlled Frame is isolated.
-    // Therefore, Controlled Frame decides what the immediate permission result
-    // is.
+    // If not overridden above (e.g. by an active ephemeral grant), Controlled
+    // Frame returns ASK so that permissions never leak from the profile's
+    // HostContentSettingsMap.
     if (permission_type == blink::PermissionType::AUDIO_CAPTURE ||
         permission_type == blink::PermissionType::VIDEO_CAPTURE ||
         permission_type == blink::PermissionType::CLIPBOARD_READ_WRITE ||

@@ -128,8 +128,16 @@ class WebViewPermissionHelper {
   void GrantClipboardPermission(WebViewPermissionType type,
                                 const url::Origin& requesting_origin);
 
+  bool HasMediaPermission(ContentSettingsType type,
+                          const url::Origin& requesting_origin) const;
+  void GrantMediaPermission(ContentSettingsType type,
+                            const url::Origin& requesting_origin);
+  void RevokeMediaPermission(ContentSettingsType type,
+                             const url::Origin& requesting_origin);
+
   std::optional<content::PermissionResult> OverridePermissionResult(
-      ContentSettingsType type);
+      ContentSettingsType type,
+      const url::Origin& requesting_origin);
 
   enum PermissionResponseAction { DENY, ALLOW, DEFAULT };
 
@@ -169,6 +177,8 @@ class WebViewPermissionHelper {
 
   std::set<url::Origin> granted_clipboard_read_write_origins_;
   std::set<url::Origin> granted_clipboard_sanitized_write_origins_;
+  std::set<std::pair<url::Origin, ContentSettingsType>>
+      granted_media_permissions_;
 
   const raw_ptr<WebViewGuest> web_view_guest_;
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -14,15 +15,24 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
+#include "components/permissions/permission_util.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using base::UserMetricsAction;
@@ -417,9 +427,90 @@ void WebViewPermissionHelper::GrantClipboardPermission(
   }
 }
 
+bool WebViewPermissionHelper::HasMediaPermission(
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) const {
+  return granted_media_permissions_.contains(
+      std::make_pair(requesting_origin, type));
+}
+
+void WebViewPermissionHelper::GrantMediaPermission(
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) {
+  CHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  granted_media_permissions_.insert(std::make_pair(requesting_origin, type));
+}
+
+void WebViewPermissionHelper::RevokeMediaPermission(
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) {
+  CHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  granted_media_permissions_.erase(std::make_pair(requesting_origin, type));
+}
+
 std::optional<content::PermissionResult>
-WebViewPermissionHelper::OverridePermissionResult(ContentSettingsType type) {
-  return web_view_permission_helper_delegate_->OverridePermissionResult(type);
+WebViewPermissionHelper::OverridePermissionResult(
+    ContentSettingsType type,
+    const url::Origin& requesting_origin) {
+  if (HasMediaPermission(type, requesting_origin)) {
+    // TODO(crbug.com/513228207): Add firing a change event when the embedder's
+    // permission is revoked.
+    content::RenderFrameHost* embedder_rfh = web_view_guest()->embedder_rfh();
+    if (!web_view_guest()->attached() || !embedder_rfh) {
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::UNSPECIFIED);
+    }
+    blink::PermissionType permission_type;
+    if (!permissions::PermissionUtil::GetPermissionType(type,
+                                                        &permission_type)) {
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::UNSPECIFIED);
+    }
+    content::PermissionResult embedder_result =
+        embedder_rfh->GetBrowserContext()
+            ->GetPermissionController()
+            ->GetPermissionResultForCurrentDocument(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        permission_type),
+                embedder_rfh);
+    if (embedder_result.status == blink::mojom::PermissionStatus::DENIED) {
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::DENIED,
+          content::PermissionStatusSource::UNSPECIFIED);
+    }
+    if (embedder_result.status == blink::mojom::PermissionStatus::GRANTED) {
+      return content::PermissionResult(
+          blink::mojom::PermissionStatus::GRANTED,
+          content::PermissionStatusSource::UNSPECIFIED);
+    }
+    // For Chrome platform apps, Permissions API queries return 'prompt'
+    // (crbug.com/40215363) even when media permissions are declared in the
+    // manifest. Check the manifest if the embedder is a platform app.
+    const Extension* extension =
+        ExtensionRegistry::Get(embedder_rfh->GetBrowserContext())
+            ->enabled_extensions()
+            .GetExtensionOrAppByURL(
+                embedder_rfh->GetLastCommittedOrigin().GetURL());
+    if (extension && extension->is_platform_app()) {
+      mojom::APIPermissionID permission_id =
+          (type == ContentSettingsType::MEDIASTREAM_MIC)
+              ? mojom::APIPermissionID::kAudioCapture
+              : mojom::APIPermissionID::kVideoCapture;
+      if (extension->permissions_data()->HasAPIPermission(permission_id)) {
+        return content::PermissionResult(
+            blink::mojom::PermissionStatus::GRANTED,
+            content::PermissionStatusSource::UNSPECIFIED);
+      }
+    }
+    return embedder_result;
+  }
+  return web_view_permission_helper_delegate_->OverridePermissionResult(
+      type, requesting_origin);
 }
 
 void WebViewPermissionHelper::RequestPermission(

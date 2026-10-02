@@ -7,7 +7,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/guest_view/web_view/web_view_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -15,6 +18,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -306,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(WebViewMediaAccessPEPCParameterizedTest, TestPEPC) {
 
   ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
 
-  // Verify backend permission statuses are ASK (not persisted).
+  // Verify backend permission statuses for the guest document.
   content::RenderFrameHost* guest_rfh =
       GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_rfh);
@@ -318,13 +322,49 @@ IN_PROC_BROWSER_TEST_P(WebViewMediaAccessPEPCParameterizedTest, TestPEPC) {
   mic_descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
   EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
                 mic_descriptor, guest_rfh),
-            blink::mojom::PermissionStatus::ASK);
+            blink::mojom::PermissionStatus::GRANTED);
+
+  EXPECT_EQ(content::EvalJs(guest_rfh,
+                            "navigator.permissions.query({name: 'microphone'})"
+                            ".then(p => p.state)"),
+            "granted");
 
   auto camera_descriptor = blink::mojom::PermissionDescriptor::New();
   camera_descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
-  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
-                camera_descriptor, guest_rfh),
-            blink::mojom::PermissionStatus::ASK);
+  // Camera is only requested when legacy mode is disabled (which requests both
+  // mic and camera). When legacy mode is enabled, only mic is requested.
+  if (!param.legacy_enabled && param.app_has_video_capture) {
+    EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                  camera_descriptor, guest_rfh),
+              blink::mojom::PermissionStatus::GRANTED);
+    EXPECT_EQ(content::EvalJs(guest_rfh,
+                              "navigator.permissions.query({name: 'camera'})"
+                              ".then(p => p.state)"),
+              "granted");
+  } else {
+    EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                  camera_descriptor, guest_rfh),
+              blink::mojom::PermissionStatus::ASK);
+    EXPECT_EQ(content::EvalJs(guest_rfh,
+                              "navigator.permissions.query({name: 'camera'})"
+                              ".then(p => p.state)"),
+              "prompt");
+  }
+
+  // Verify that permissions were NOT persisted into HostContentSettingsMap.
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
+          embedder_web_contents_->GetBrowserContext()));
+  EXPECT_EQ(
+      host_content_settings_map->GetContentSetting(
+          guest_rfh->GetLastCommittedURL(), guest_rfh->GetLastCommittedURL(),
+          ContentSettingsType::MEDIASTREAM_MIC),
+      CONTENT_SETTING_ASK);
+  EXPECT_EQ(
+      host_content_settings_map->GetContentSetting(
+          guest_rfh->GetLastCommittedURL(), guest_rfh->GetLastCommittedURL(),
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      CONTENT_SETTING_ASK);
 
   StopTestServer();
 }
@@ -378,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCNoLegacyAPITest,
                                base::CompareCase::SENSITIVE))
       << "Actual message: " << test_run_listener.message();
 
-  // Verify backend permission statuses are ASK (not persisted).
+  // Verify backend permission statuses: Mic was granted ephemeral access,
+  // while Camera remains ASK.
   content::RenderFrameHost* guest_rfh =
       GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_rfh);
@@ -390,13 +431,110 @@ IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCNoLegacyAPITest,
   mic_descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
   EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
                 mic_descriptor, guest_rfh),
-            blink::mojom::PermissionStatus::ASK);
+            blink::mojom::PermissionStatus::GRANTED);
 
   auto camera_descriptor = blink::mojom::PermissionDescriptor::New();
   camera_descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
   EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
                 camera_descriptor, guest_rfh),
             blink::mojom::PermissionStatus::ASK);
+
+  // Verify that permissions were NOT persisted into HostContentSettingsMap.
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
+          embedder_web_contents_->GetBrowserContext()));
+  EXPECT_EQ(
+      host_content_settings_map->GetContentSetting(
+          guest_rfh->GetLastCommittedURL(), guest_rfh->GetLastCommittedURL(),
+          ContentSettingsType::MEDIASTREAM_MIC),
+      CONTENT_SETTING_ASK);
+  EXPECT_EQ(
+      host_content_settings_map->GetContentSetting(
+          guest_rfh->GetLastCommittedURL(), guest_rfh->GetLastCommittedURL(),
+          ContentSettingsType::MEDIASTREAM_CAMERA),
+      CONTENT_SETTING_ASK);
+
+  StopTestServer();
+}
+
+// Verifies that revoking the embedder's media permission transitions the
+// guest's permission status accordingly.
+IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCAPITest, TestPEPC_Revocation) {
+  std::string app_location = "web_view/media_access/allow_pepc";
+  StartTestServer(app_location);
+  LaunchApp(app_location);
+
+  auto mock = std::make_unique<MockWebContentsDelegate>();
+  embedder_web_contents_->SetDelegate(mock.get());
+
+  ExtensionTestMessageListener test_run_listener("TEST_PASSED");
+
+  EXPECT_TRUE(content::ExecJs(embedder_web_contents_.get(),
+                              "runTest('testAllowPEPC');"));
+
+  ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_rfh);
+
+  auto* permission_controller =
+      embedder_web_contents_->GetBrowserContext()->GetPermissionController();
+
+  auto mic_descriptor = blink::mojom::PermissionDescriptor::New();
+  mic_descriptor->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  // Revoke the embedder's media permission in HostContentSettingsMap to drive
+  // the real flow.
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
+          embedder_web_contents_->GetBrowserContext()));
+  host_content_settings_map->SetContentSettingDefaultScope(
+      embedder_web_contents_->GetLastCommittedURL(),
+      embedder_web_contents_->GetLastCommittedURL(),
+      ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_BLOCK);
+
+  // Even though the guest still has an ephemeral grant recorded, re-checking
+  // the embedder's permission ensures the guest is now denied.
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ("denied",
+            content::EvalJs(guest_rfh,
+                            "navigator.permissions.query({name: 'microphone'})"
+                            ".then(p => p.state);"));
+
+  // Unblocking the embedder restores the guest's permission.
+  host_content_settings_map->SetContentSettingDefaultScope(
+      embedder_web_contents_->GetLastCommittedURL(),
+      embedder_web_contents_->GetLastCommittedURL(),
+      ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_DEFAULT);
+
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ("granted",
+            content::EvalJs(guest_rfh,
+                            "navigator.permissions.query({name: 'microphone'})"
+                            ".then(p => p.state);"));
+
+  // Revoking the ephemeral media permission on the guest transitions the guest
+  // permission status back to ASK.
+  auto* helper = WebViewPermissionHelper::FromRenderFrameHost(guest_rfh);
+  ASSERT_TRUE(helper);
+  helper->RevokeMediaPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                                guest_rfh->GetLastCommittedOrigin());
+
+  EXPECT_EQ(permission_controller->GetPermissionStatusForCurrentDocument(
+                mic_descriptor, guest_rfh),
+            blink::mojom::PermissionStatus::ASK);
+  EXPECT_EQ("prompt",
+            content::EvalJs(guest_rfh,
+                            "navigator.permissions.query({name: 'microphone'})"
+                            ".then(p => p.state);"));
 
   StopTestServer();
 }

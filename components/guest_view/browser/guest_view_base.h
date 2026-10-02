@@ -37,6 +37,10 @@ class NavigationHandle;
 class RenderFrameHost;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace guest_view {
 
 class GuestViewEvent;
@@ -285,10 +289,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // permission requests of the given `type`.
   virtual bool IsPermissionRequestable(ContentSettingsType type) const;
 
-  // If the GuestView overrides |type|, returns the permission result of |type|.
-  // Otherwise, returns nullopt.
+  // If the GuestView overrides the permission result for `type` and
+  // `requesting_origin`, returns that result. Otherwise, returns nullopt.
   virtual std::optional<content::PermissionResult> OverridePermissionResult(
-      ContentSettingsType type) const;
+      ContentSettingsType type,
+      const url::Origin& requesting_origin) const;
 
   content::RenderFrameHost* GetGuestMainFrame() const;
 

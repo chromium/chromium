@@ -66,6 +66,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
@@ -420,7 +421,8 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
     // Content inside GuestView instances may have different permission
     // behavior.
     std::optional<content::PermissionResult> maybe_result =
-        guest->OverridePermissionResult(content_settings_type_);
+        guest->OverridePermissionResult(content_settings_type_,
+                                        url::Origin::Create(requesting_origin));
     if (maybe_result.has_value()) {
       return maybe_result.value();
     }

@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -54,17 +56,6 @@ network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
   DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
   return network::mojom::PermissionsPolicyFeature::kCamera;
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-void CallbackPermissionStatusWrapper(
-    base::OnceCallback<void(content::PermissionResult)> callback,
-    bool allowed) {
-  std::move(callback).Run(content::PermissionResult(
-      allowed ? blink::mojom::PermissionStatus::GRANTED
-              : blink::mojom::PermissionStatus::DENIED,
-      content::PermissionStatusSource::UNSPECIFIED));
-}
-#endif
 
 }  // namespace
 
@@ -310,22 +301,37 @@ void MediaStreamDevicePermissionContext::DecidePermission(
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_data->id.global_render_frame_host_id());
   if (rfh) {
+    url::Origin requesting_origin = rfh->GetLastCommittedOrigin();
     extensions::WebViewPermissionHelper* web_view_permission_helper =
         extensions::WebViewPermissionHelper::FromRenderFrameHost(rfh);
     if (web_view_permission_helper) {
       // TODO(crbug.com/521370750): This is part of the plumbing to support
       // PEPC inside <webview> guests. Track full support/enablement here.
       web_view_permission_helper->RequestMediaPermission(
-          content_settings_type_, request_data->requesting_origin,
+          content_settings_type_, requesting_origin.GetURL(),
           request_data->user_gesture,
-          base::BindOnce(&CallbackPermissionStatusWrapper,
-                         std::move(callback)));
+          base::BindOnce(
+              [](base::WeakPtr<MediaStreamDevicePermissionContext> context,
+                 const GURL& requesting_origin, bool allowed) {
+                if (context) {
+                  context->NotifyObservers(
+                      ContentSettingsPattern::FromURLNoWildcard(
+                          requesting_origin),
+                      ContentSettingsPattern::Wildcard(),
+                      ContentSettingsTypeSet(context->content_settings_type_));
+                }
+                return content::PermissionResult(
+                    allowed ? blink::mojom::PermissionStatus::GRANTED
+                            : blink::mojom::PermissionStatus::DENIED,
+                    content::PermissionStatusSource::UNSPECIFIED);
+              },
+              weak_ptr_factory_.GetWeakPtr(), requesting_origin.GetURL())
+              .Then(std::move(callback)));
       return;
     }
 
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(browser_context());
-    url::Origin requesting_origin = rfh->GetLastCommittedOrigin();
     const extensions::Extension* extension =
         extension_registry->enabled_extensions().GetExtensionOrAppByURL(
             requesting_origin.GetURL());

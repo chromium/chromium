@@ -97,7 +97,8 @@ class ChromeWebViewPermissionHelperDelegate
       const url::Origin& embedder_origin) override;
 
   std::optional<content::PermissionResult> OverridePermissionResult(
-      ContentSettingsType type) override;
+      ContentSettingsType type,
+      const url::Origin& requesting_origin) override;
 
  private:
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -122,6 +123,7 @@ class ChromeWebViewPermissionHelperDelegate
 
   void OnMediaPermissionResponse(
       ContentSettingsType type,
+      const url::Origin& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(content::PermissionResult)> callback,
       bool allow,

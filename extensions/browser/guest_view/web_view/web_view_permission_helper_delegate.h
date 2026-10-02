@@ -118,7 +118,8 @@ class WebViewPermissionHelperDelegate {
   // Allows the delegate to override the results of permission requests; useful
   // when custom handling is needed for specific webviews.
   virtual std::optional<content::PermissionResult> OverridePermissionResult(
-      ContentSettingsType type);
+      ContentSettingsType type,
+      const url::Origin& requesting_origin);
 
   WebViewPermissionHelper* web_view_permission_helper() const {
     return web_view_permission_helper_;
