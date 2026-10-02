@@ -10,6 +10,8 @@ source_set("ode") {
     "on_device_encryption_metrics_reporter.h",
     "on_device_encryption_state_tracker.cc",
     "on_device_encryption_state_tracker.h",
+    "passkey_trusted_vault_on_device_encryption_state_tracker.cc",
+    "passkey_trusted_vault_on_device_encryption_state_tracker.h",
     "password_trusted_vault_on_device_encryption_state_tracker.cc",
     "password_trusted_vault_on_device_encryption_state_tracker.h",
   ]
@@ -18,7 +20,9 @@ source_set("ode") {
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/sync/service",
+    "//components/trusted_vault",
   ]
 
   deps = [
@@ -43,6 +47,7 @@ source_set("unit_tests") {
     "on_device_encryption_data_type_specific_metrics_reporter_unittest.cc",
     "on_device_encryption_metrics_reporter_unittest.cc",
     "on_device_encryption_state_tracker_unittest.cc",
+    "passkey_trusted_vault_on_device_encryption_state_tracker_unittest.cc",
     "password_trusted_vault_on_device_encryption_state_tracker_unittest.cc",
   ]
   deps = [
@@ -51,6 +56,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//components/sync:test_support",
+    "//components/trusted_vault:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

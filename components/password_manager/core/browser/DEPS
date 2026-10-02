@@ -21,6 +21,7 @@ include_rules = [
   "+components/sync/service",
   "+components/sync/test",
   "+components/sync_preferences",
+  "+components/trusted_vault",
   "+components/ukm",
   "+components/undo",
   "+components/url_formatter",
