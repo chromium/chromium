@@ -8538,6 +8538,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                      "Math.ceil(performance.getEntriesByType('navigation')[0]."
                      "responseStart) >= 2000"));
+  EXPECT_EQ("", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       "performance.getEntriesByType('navigation')[0]."
+                       "deliveryType"));
+  EXPECT_LT(0, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                      "performance.getEntriesByType('navigation')[0]."
+                      "transferSize"));
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.SyntheticResponse.Eligibility",
       static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
@@ -8560,6 +8566,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                      "Math.ceil(performance.getEntriesByType('navigation')[0]."
                      "responseStart) < 2000"));
+  EXPECT_EQ("", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       "performance.getEntriesByType('navigation')[0]."
+                       "deliveryType"));
+  EXPECT_LT(0, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                      "performance.getEntriesByType('navigation')[0]."
+                      "transferSize"));
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.SyntheticResponse.Eligibility",
       static_cast<int>(

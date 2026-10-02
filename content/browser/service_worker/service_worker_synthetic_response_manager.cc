@@ -133,7 +133,7 @@ blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
   out_response->response_type = head.response_type;
   out_response->padding = head.padding;
   out_response->mime_type.emplace(head.mime_type);
-  out_response->response_source = head.service_worker_response_source;
+  out_response->response_source = network::mojom::FetchResponseSource::kNetwork;
   out_response->cache_storage_cache_name.emplace(head.cache_storage_cache_name);
   out_response->cors_exposed_header_names = head.cors_exposed_header_names;
   out_response->parsed_headers = head.parsed_headers.Clone();
