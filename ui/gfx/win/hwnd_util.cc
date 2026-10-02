@@ -8,6 +8,7 @@
 
 #include <dwmapi.h>  // DWMWA_CLOAKED
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 
@@ -164,6 +165,18 @@ bool IsWindowCloaked(HWND hwnd) {
          is_cloaked;
 }
 
+bool IsWindowLikelyTooltip(HWND hwnd, std::wstring_view classname) {
+  if (!(::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP)) {
+    return false;
+  }
+
+  return std::ranges::contains_subrange(
+      classname,
+      // NOTE: Without the explicit string construction, this would compile,
+      // but only match classnames containing the trailing '\0' as well.
+      std::wstring(L"tooltip"), base::CaseInsensitiveCompareASCII<wchar_t>());
+}
+
 bool IsWindowVisibleAndFullyOpaque(HWND hwnd, Rect* window_rect) {
   // Filter out windows that are not "visible", IsWindowVisible().
   if (!IsWindow(hwnd) || !IsWindowVisible(hwnd)) {
@@ -245,14 +258,10 @@ bool IsWindowVisibleAndFullyOpaque(HWND hwnd, Rect* window_rect) {
     return false;
   }
 
-  // Ignore popup windows since they're transient unless it is a Chrome Widget
-  // Window or the Windows Taskbar
-  if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
-    const std::wstring_view hwnd_class_name = class_name.Get();
-    if (!hwnd_class_name.starts_with(L"Chrome_WidgetWin_") &&
-        hwnd_class_name != L"Shell_TrayWnd") {
-      return false;
-    }
+  // Filter out popup windows with "tooltip" in the classname, since they're
+  // likely transient.
+  if (IsWindowLikelyTooltip(hwnd, class_name.Get())) {
+    return false;
   }
 
   if (window_rect) {

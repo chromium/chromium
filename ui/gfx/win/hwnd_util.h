@@ -12,6 +12,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 
@@ -40,10 +41,15 @@ COMPONENT_EXPORT(GFX) bool DoesWindowBelongToActiveWindow(HWND window);
 // displayed.
 COMPONENT_EXPORT(GFX) bool IsWindowCloaked(HWND hwnd);
 
+// Returns true if the window is likely a tooltip window, and thus should be
+// ignored for occlusion detection.
+COMPONENT_EXPORT(GFX)
+bool IsWindowLikelyTooltip(HWND hwnd, std::wstring_view class_name);
+
 // Returns true if we are interested in `hwnd` for purposes of occlusion
 // calculation. We are interested in `hwnd` if it is a window that is
-// visible, opaque, bounded, and not a popup or floating window. If we are
-// interested in `hwnd`, and `window_rect` is not null, stores the window
+// visible, opaque, bounded, and not certain popups or floating windows. If we
+// are interested in `hwnd`, and `window_rect` is not null, stores the window
 // rectangle in `window_rect`.
 COMPONENT_EXPORT(GFX)
 bool IsWindowVisibleAndFullyOpaque(HWND hwnd, gfx::Rect* window_rect);
