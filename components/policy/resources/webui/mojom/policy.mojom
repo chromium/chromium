@@ -128,6 +128,10 @@ struct PolicyGroup {
   // Name of this policy group/namespace.
   string name;
 
+  // Optional display ID (such as a serialized origin when multiple web apps
+  // share the same origin). Falls back to the map key in `policy_groups`.
+  string? id;
+
   // Maps policy name to its representation.
   map<string, Policy> policies;
 
@@ -138,7 +142,14 @@ struct PolicyGroup {
 
   // Indicates whether this policy group belongs to an installed Chrome
   // Extension.
+  // TODO(crbug.com/40897784): Replace `is_extension` and `is_web_app` with an
+  // enum.
   bool is_extension;
+
+  // Indicates whether this policy group belongs to a Web App.
+  // TODO(crbug.com/40897784): Replace `is_extension` and `is_web_app` with an
+  // enum.
+  bool is_web_app;
 
   // Indicates whether these policies apply to the ChromeOS sign-in screen.
   bool for_signin_screen;

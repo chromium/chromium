@@ -58,6 +58,10 @@
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/policy/value_provider/web_app_managed_configuration_value_provider.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -179,6 +183,13 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   // Add PolicyValueProviders.
   aggregator->AddPolicyValueProvider(
       std::make_unique<ChromePoliciesValueProvider>(profile));
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto web_app_managed_config_provider =
+          WebAppManagedConfigurationValueProvider::Create(profile)) {
+    aggregator->AddPolicyValueProvider(
+        std::move(web_app_managed_config_provider));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(
           policy::features::kEnableExtensionInstallPolicyFetching)) {

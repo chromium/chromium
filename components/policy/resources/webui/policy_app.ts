@@ -183,8 +183,12 @@ export class PolicyAppElement extends CrLitElement {
         name: group.forSigninScreen ?
             `${group.name} [${loadTimeData.getString('signinProfile')}]` :
             group.name,
-        id: id,
+        // For Web Apps (PWAs), multiple subpath PWAs sharing the same origin
+        // are keyed by scope URL in `policyGroups` so their map keys (`id`)
+        // don't collide, while `group.id` holds the display origin.
+        id: (group.isWebApp && group.id) ? group.id : id,
         isExtension: group.isExtension,
+        isWebApp: group.isWebApp,
         policies,
         ...(group.precedenceOrder && {precedenceOrder: group.precedenceOrder}),
       };

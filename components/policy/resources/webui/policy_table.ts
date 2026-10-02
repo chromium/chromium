@@ -17,6 +17,7 @@ import {getHtml} from './policy_table.html.js';
 export interface PolicyTableModel {
   id?: string;
   isExtension?: boolean;
+  isWebApp?: boolean;
   name: string;
   policies: NonNullable<Array<NonNullable<PolicyUiModel>>>;
   precedenceOrder?: string[];
@@ -115,6 +116,14 @@ export class PolicyTableElement extends CrLitElement {
 
   protected hasVisiblePolicies(): boolean {
     return this.sortedPolicies.some(policy => !this.isPolicyHidden(policy));
+  }
+
+  protected shouldShowId(): boolean {
+    if (!this.dataModel) {
+      return false;
+    }
+    return !!this.dataModel.isExtension ||
+        (!!this.dataModel.isWebApp && !!this.dataModel.name);
   }
 }
 

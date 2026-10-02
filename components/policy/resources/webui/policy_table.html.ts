@@ -11,7 +11,7 @@ export function getHtml(this: PolicyTableElement) {
   return html`<!--_html_template_start_-->
 <div class="policy-table" role="table" aria-labelledby="policy-header">
   <h2 class="header" id="policy-header">
-    ${this.dataModel?.name}
+    ${this.dataModel?.name || this.dataModel?.id}
     ${this.dataModel?.id === 'updater' ? html`
       <a href="chrome://updater" class="updater-link" target="_blank"
           rel="noopener noreferrer">
@@ -19,7 +19,7 @@ export function getHtml(this: PolicyTableElement) {
       </a>
     ` : ''}
   </h2>
-  <p class="id" ?hidden="${!this.dataModel?.isExtension}">
+  <p class="id" ?hidden="${!this.shouldShowId()}">
     ${this.dataModel?.id}
   </p>
   <div class="main">
