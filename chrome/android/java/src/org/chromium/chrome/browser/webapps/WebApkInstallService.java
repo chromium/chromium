@@ -55,6 +55,7 @@ public class WebApkInstallService {
             @JniType("std::string") String notificationId,
             @JniType("std::u16string") String shortName,
             @JniType("std::string") String url,
+            @JniType("std::string") String scope,
             Bitmap icon,
             boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
@@ -66,7 +67,7 @@ public class WebApkInstallService {
                 PendingIntentProvider.getActivity(
                         context, /* requestCode= */ 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        maybeLaunchWebApp(context, intent, originatingTab, webApkPackage, url);
+        maybeLaunchWebApp(context, intent, originatingTab, webApkPackage, url, scope);
 
         if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
@@ -87,13 +88,15 @@ public class WebApkInstallService {
             Intent intent,
             @Nullable Tab originatingTab,
             String webApkPackage,
-            String url) {
+            String url,
+            String scope) {
         if (!DeviceInfo.isDesktop()) return;
 
         try {
             if (originatingTab != null && !originatingTab.isDestroyed()) {
                 WebApkReparentingHandler.getInstance()
-                        .prepareIntentForReparenting(intent, originatingTab, webApkPackage, url);
+                        .prepareIntentForReparenting(
+                                intent, originatingTab, webApkPackage, url, scope);
             }
 
             // Auto-launch the installed WebAPK in its own standalone window on Desktop Android.

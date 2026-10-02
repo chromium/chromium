@@ -51,9 +51,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.url.GURL;
 
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
@@ -172,10 +174,14 @@ public class WebAppHeaderLayoutBrowserTest {
         mActivityTestRule.startCustomTabActivityWithIntent(intent);
         triggerDesktopWindowingModeChange(/* isInDesktopWindow= */ true);
 
+        // Initially, back button should be disabled when there is no history.
+        verifyBackButtonEnabled(false);
+
         // Verify that browser controls are shown for the page that's out of scope of the web app.
         var tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl(TEST_PAGE_OUT_OF_SCOPE);
         verifyBrowserControlsVisibility(true);
+        verifyBackButtonEnabled(true);
 
         // Click back and verify that previous page is shown that is in scope of the web app.
         ThreadUtils.runOnUiThreadBlocking(
@@ -189,6 +195,84 @@ public class WebAppHeaderLayoutBrowserTest {
 
         ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
         verifyBrowserControlsVisibility(false);
+        verifyBackButtonEnabled(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testMinUI_PrunePreScopeNavigationHistory_BackButtonState() throws TimeoutException {
+        Intent intent =
+                TrustedWebActivityTestUtil.createTrustedWebActivityIntentAndVerifiedSession(
+                        mTestPage, PACKAGE_NAME);
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mActivityTestRule.startCustomTabActivityWithIntent(intent);
+        triggerDesktopWindowingModeChange(/* isInDesktopWindow= */ true);
+        verifyHeaderVisibility(true);
+
+        var tab = mActivityTestRule.getActivity().getActivityTab();
+        String scopeUrl =
+                mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/google");
+        String outOfScopePage =
+                mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/about.html");
+        String inScopePage2 = mTestPage + "?page=2";
+
+        // Navigate out of scope and back to a single in-scope entry:
+        // [mTestPage, outOfScopePage, mTestPage].
+        // After pruning, only the final in-scope entry remains, so the back button must be
+        // disabled.
+        mActivityTestRule.loadUrl(outOfScopePage);
+        mActivityTestRule.loadUrl(mTestPage);
+        verifyBackButtonEnabled(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebappsUtils.prunePreScopeNavigationHistory(
+                            tab.getWebContents(), new GURL(scopeUrl));
+                });
+        verifyBackButtonEnabled(false);
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
+
+        // Navigate out of scope, then through two in-scope entries:
+        // [mTestPage, outOfScopePage, mTestPage, inScopePage2].
+        // After pruning, only [mTestPage, inScopePage2] remain, so the back button must be
+        // enabled for the in-app history and become disabled once we navigate back to the start
+        // of the app history.
+        mActivityTestRule.loadUrl(outOfScopePage);
+        mActivityTestRule.loadUrl(mTestPage);
+        mActivityTestRule.loadUrl(inScopePage2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebappsUtils.prunePreScopeNavigationHistory(
+                            tab.getWebContents(), new GURL(scopeUrl));
+                });
+        verifyBackButtonEnabled(true);
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebAppHeaderLayoutCoordinator()
+                            .getWebAppHeaderLayout()
+                            .findViewById(R.id.back_button)
+                            .performClick();
+                });
+
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
+        verifyBackButtonEnabled(false);
+        assertFalse(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
+    }
+
+    private void verifyBackButtonEnabled(boolean isEnabled) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var backButton =
+                            getWebAppHeaderLayoutCoordinator()
+                                    .getWebAppHeaderLayout()
+                                    .findViewById(R.id.back_button);
+                    Criteria.checkThat(backButton.isEnabled(), Matchers.is(isEnabled));
+                });
     }
 
     private @BrowserControlsState int getBrowserControlConstraints(Tab tab) {

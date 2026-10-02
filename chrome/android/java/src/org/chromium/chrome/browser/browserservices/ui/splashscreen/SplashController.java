@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -24,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -215,9 +217,15 @@ public class SplashController extends CustomTabTabObserver
 
     @Override
     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+        boolean isRestoredOrReparentedWithoutLoad =
+                mTabProvider.getInitialTabCreationMode() == TabCreationMode.RESTORED
+                        || IntentUtils.safeGetBooleanExtra(
+                                mActivity.getIntent(),
+                                IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING,
+                                false);
         if (!tab.isLoading()
                 && isInteractable
-                && mTabProvider.getInitialTabCreationMode() == TabCreationMode.RESTORED
+                && isRestoredOrReparentedWithoutLoad
                 && canHideSplashScreen()) {
             hideSplash(tab, /* loadFailed= */ false);
         }

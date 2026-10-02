@@ -407,6 +407,7 @@ public class WebappLauncherActivity extends Activity {
                     WebApkReparentingHandler.getInstance().detachAndRegisterTabAndClear(intent);
             if (reparentTabId != Tab.INVALID_TAB_ID) {
                 IntentHandler.setTabId(launchIntent, reparentTabId);
+                launchIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
                 IntentUtils.addTrustedIntentExtras(launchIntent);
             }
         } else {

@@ -5,18 +5,24 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.content.Intent;
+import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.security.SecureRandom;
@@ -47,6 +53,7 @@ public class WebApkReparentingHandler {
     private byte @Nullable [] mIntentToken;
     private @Nullable Tab mTab;
     private @Nullable String mUrl;
+    private @Nullable String mScope;
     private @Nullable String mPackageName;
 
     /** Get the singleton instance of this object. */
@@ -66,9 +73,10 @@ public class WebApkReparentingHandler {
      * @param tab The tab to reparent.
      * @param webApkPackage The WebAPK package name.
      * @param url The start URL for the WebAPK.
+     * @param scope The manifest scope of the WebAPK, as known at install time.
      */
     public void prepareIntentForReparenting(
-            Intent intent, Tab tab, String webApkPackage, String url) {
+            Intent intent, Tab tab, String webApkPackage, String url, String scope) {
         ThreadUtils.assertOnUiThread();
         clear();
 
@@ -78,6 +86,7 @@ public class WebApkReparentingHandler {
         mTab = tab;
         mPackageName = webApkPackage;
         mUrl = url;
+        mScope = scope;
 
         mTab.addObserver(mTabObserver);
     }
@@ -116,13 +125,25 @@ public class WebApkReparentingHandler {
                 && (mPackageName == null || mPackageName.equals(webApkPackage))
                 && (mUrl == null || mUrl.equals(url))
                 && !mTab.isDestroyed()) {
-            result = mTab.getId();
-            AsyncTabParamsManagerSingleton.getInstance()
-                    .add(result, new TabReparentingParams(mTab, null));
+            String scopeUrl = mScope;
+            if (TextUtils.isEmpty(scopeUrl) && mUrl != null) {
+                scopeUrl = ShortcutHelper.getScopeFromUrl(mUrl);
+            }
+            GURL tabUrl = mTab.getUrl();
+            if (!GURL.isEmptyOrInvalid(tabUrl)
+                    && !TextUtils.isEmpty(scopeUrl)
+                    && UrlUtilities.isUrlWithinScope(tabUrl.getSpec(), scopeUrl)) {
+                WebContents webContents = mTab.getWebContents();
+                if (webContents != null) {
+                    WebappsUtils.prunePreScopeNavigationHistory(webContents, new GURL(scopeUrl));
+                }
+                result = mTab.getId();
+                AsyncTabParamsManagerSingleton.getInstance()
+                        .add(result, new TabReparentingParams(mTab, null));
 
-            // Detach tab from old window
-            ReparentingTask.from(mTab).detach();
-
+                // Detach tab from old window
+                ReparentingTask.from(mTab).detach();
+            }
             clear();
         }
 
@@ -138,6 +159,7 @@ public class WebApkReparentingHandler {
         mIntentToken = null;
         mTab = null;
         mUrl = null;
+        mScope = null;
         mPackageName = null;
     }
 }

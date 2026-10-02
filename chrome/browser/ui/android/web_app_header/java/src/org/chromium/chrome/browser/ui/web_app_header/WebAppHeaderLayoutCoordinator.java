@@ -281,6 +281,7 @@ public class WebAppHeaderLayoutCoordinator
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
 
+        PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         model,
@@ -295,7 +296,6 @@ public class WebAppHeaderLayoutCoordinator
                         mDisplayMode,
                         mSetHeaderAsOverlayCallback,
                         mClientPackageName);
-        PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
         // Initial visibility state must be initialized after mediator is initialized.
         onAndroidControlsVisibilityChanged(
@@ -323,9 +323,6 @@ public class WebAppHeaderLayoutCoordinator
             }
         }
 
-        mMediator
-                .getUnoccludedWidthSupplier()
-                .addSyncObserverAndPostIfNonNull(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }
@@ -338,6 +335,11 @@ public class WebAppHeaderLayoutCoordinator
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
         // Determine width of initialized UI controls.
         mUIControlsMinWidthPx = calculateUIControlsMinWidth();
+        // Registered after controls and mUIControlsMinWidthPx are
+        // initialized so the initial width check updates control visibility.
+        mMediator
+                .getUnoccludedWidthSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnUnoccludedWidthCallback);
     }
 
     @SuppressLint("ClickableViewAccessibility")

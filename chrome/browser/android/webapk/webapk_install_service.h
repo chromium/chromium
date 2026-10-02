@@ -105,6 +105,7 @@ class WebApkInstallService : public KeyedService {
       content::WebContents* web_contents,
       const GURL& manifest_url,
       const GURL& url,
+      const GURL& scope,
       const std::u16string& short_name,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
@@ -126,6 +127,7 @@ class WebApkInstallService : public KeyedService {
       const GURL& manifest_url,
       const std::u16string& short_name,
       const GURL& url,
+      const GURL& scope,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
       const std::string& package_name);

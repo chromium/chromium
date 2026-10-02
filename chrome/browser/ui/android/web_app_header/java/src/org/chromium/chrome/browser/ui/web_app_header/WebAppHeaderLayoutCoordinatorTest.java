@@ -367,6 +367,53 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     @Test
+    public void testLazyInit_NoAppHeaderStateAtCreation_ControlsDoNotFit_HideControls() {
+        // Start with no app header state so the coordinator defers initialization.
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+        mShadowLooper.idle();
+        assertNull(
+                "Web app header should not be inflated before entering a desktop window",
+                mActivity.findViewById(R.id.web_app_header_layout));
+
+        // Enter desktop windowing with a header too narrow for the min-UI controls.
+        int flexibleAreaWidth = getMinButtonWidth(DisplayMode.MINIMAL_UI) - 1;
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Verify header was lazily inflated, buttons are hidden and whole header is draggable.
+        assertNotNull(
+                "Web app header should be inflated when in a desktop window",
+                mActivity.findViewById(R.id.web_app_header_layout));
+        verifyControlsVisibility(DisplayMode.MINIMAL_UI, View.GONE);
+        verifyWholeHeaderIsDraggable();
+    }
+
+    @Test
+    public void testLazyInit_NoAppHeaderStateAtCreation_ControlsFit_ShowControls() {
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+        mShadowLooper.idle();
+
+        // Enter desktop windowing with plenty of space.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Verify buttons visible and draggable area is updated.
+        verifyControlsVisibility(DisplayMode.MINIMAL_UI, View.VISIBLE);
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectControlPositions());
+    }
+
+    @Test
     public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
         // Init header in a window with enough space and wait for flexible area and layout updates
         // to propagate.

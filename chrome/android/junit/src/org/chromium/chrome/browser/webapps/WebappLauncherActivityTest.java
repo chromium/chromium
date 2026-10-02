@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.test.WebApkTestHelper;
 
@@ -97,6 +98,9 @@ public class WebappLauncherActivityTest {
         // WebAPKs.
         assertEquals("webapp://webapk-" + WEBAPK_PACKAGE_NAME, launchIntent.getDataString());
         assertTrue((launchIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
+        assertFalse(
+                IntentUtils.safeGetBooleanExtra(
+                        launchIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
         assertNotNull(WebApkIntentDataProviderFactory.create(launchIntent));
     }
 
@@ -123,13 +127,22 @@ public class WebappLauncherActivityTest {
         final int tabId = 10;
         Tab mockTab = mock(Tab.class);
         when(mockTab.getId()).thenReturn(tabId);
+        when(mockTab.getUrl()).thenReturn(new GURL(START_URL));
         when(mockTab.getUserDataHost()).thenReturn(new UserDataHost());
         Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
         WebApkReparentingHandler.getInstance()
-                .prepareIntentForReparenting(intent, mockTab, WEBAPK_PACKAGE_NAME, START_URL);
+                .prepareIntentForReparenting(
+                        intent,
+                        mockTab,
+                        WEBAPK_PACKAGE_NAME,
+                        START_URL,
+                        "https://www.google.com/scope/");
         Robolectric.buildActivity(WebappLauncherActivity.class, intent).create();
         Intent launchIntent = getNextStartedActivity();
         assertEquals(tabId, IntentHandler.getTabId(launchIntent));
+        assertTrue(
+                IntentUtils.safeGetBooleanExtra(
+                        launchIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
         AsyncTabParamsManagerSingleton.getInstance().remove(tabId);
     }
 
