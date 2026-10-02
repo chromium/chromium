@@ -76,6 +76,7 @@ class NADCAttributeTest;
 class Node;
 class OriginTrialsTest;
 class Page;
+class PassAsSpanTest;
 class Range;
 class ReadableStream;
 class RecordTest;
@@ -408,6 +409,7 @@ class Internals final : public ScriptWrappable {
   OriginTrialsTest* originTrialsTest() const;
   CallbackFunctionTest* callbackFunctionTest() const;
   NADCAttributeTest* nadcAttributeTest() const;
+  PassAsSpanTest* passAsSpanTest() const;
 
   Vector<String> getReferencedFilePaths() const;
   void disableReferencedFilePathsVerification() const;

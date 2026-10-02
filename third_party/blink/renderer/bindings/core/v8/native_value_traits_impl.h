@@ -1662,6 +1662,28 @@ bool CORE_EXPORT ThrowIfResizable(v8::Local<v8::ArrayBuffer> array_buffer,
 bool CORE_EXPORT
 ThrowIfResizable(v8::Local<v8::SharedArrayBuffer> shared_array_buffer,
                  ExceptionState& exception_state);
+bool CORE_EXPORT DoesExceedSizeLimitSlow(v8::Isolate* isolate,
+                                         ExceptionState& exception_state);
+
+namespace internal {
+template <PassAsSpanMarkerBase::Flags flags>
+inline base::span<const uint8_t> MaybeVerifySize(
+    v8::Isolate* isolate,
+    base::span<const uint8_t> span,
+    ExceptionState& exception_state) {
+  if constexpr (flags & PassAsSpanMarkerBase::Flags::kAllowUnlimitedSize) {
+    return span;
+  }
+  if (span.size() <=
+      static_cast<size_t>(::partition_alloc::MaxAllocationSize())) [[likely]] {
+    return span;
+  }
+  return DoesExceedSizeLimitSlow(isolate, exception_state)
+             ? base::span<const uint8_t>()
+             : span;
+}
+
+}  // namespace internal
 }  // namespace bindings
 
 template <typename T>
@@ -1676,6 +1698,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
                 int argument_index,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
+    using bindings::internal::GetArrayData;
+    using bindings::internal::MaybeVerifySize;
     bindings::internal::ByteSpanWithInlineStorage<T::perform_detach_check>
         result;
     if (value->IsArrayBuffer()) {
@@ -1685,7 +1709,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
         return result;
       }
       result.MaybeSetArrayBuffer(array_buffer);
-      result.Assign(bindings::internal::GetArrayData(array_buffer));
+      result.Assign(MaybeVerifySize<T::flags>(
+          isolate, GetArrayData(array_buffer), exception_state));
       return result;
     }
     if (T::allow_shared && value->IsSharedArrayBuffer()) {
@@ -1695,7 +1720,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
           [[unlikely]] {
         return result;
       }
-      result.Assign(bindings::internal::GetArrayData(shared_array_buffer));
+      result.Assign(MaybeVerifySize<T::flags>(
+          isolate, GetArrayData(shared_array_buffer), exception_state));
       return result;
     }
     if (value->IsArrayBufferView()) {
@@ -1714,7 +1740,9 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
         }
         result.MaybeSetArrayBuffer(array_buffer);
       }
-      result.Assign(view->GetContents(result.GetInlineStorage()));
+      result.Assign(MaybeVerifySize<T::flags>(
+          isolate, view->GetContents(result.GetInlineStorage()),
+          exception_state));
       return result;
     }
     exception_state.ThrowTypeError(
@@ -1754,7 +1782,9 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
         }
         result.MaybeSetArrayBuffer(array_buffer);
       }
-      result.Assign(view->GetContents(result.GetInlineStorage()));
+      result.Assign(bindings::internal::MaybeVerifySize<T::flags>(
+          isolate, view->GetContents(result.GetInlineStorage()),
+          exception_state));
       return result;
     }
     if constexpr (T::allow_sequence) {

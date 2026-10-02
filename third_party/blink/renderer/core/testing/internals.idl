@@ -325,9 +325,10 @@ interface Internals {
     InternalsUkmRecorder initializeUKMRecorder();
     CallbackFunctionTest callbackFunctionTest();
     // Creates and returns an `NADCAttributeTest` object, which provides test
-    // functions to test attributes with the IDL extended attributei
+    // functions to test attributes with the IDL extended attribute
     // `NoAllocDirectCall`.
     NADCAttributeTest nadcAttributeTest();
+    PassAsSpanTest passAsSpanTest();
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();

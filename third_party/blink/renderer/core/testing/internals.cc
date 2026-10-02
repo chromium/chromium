@@ -165,6 +165,7 @@
 #include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/core/testing/nadc_attribute_test.h"
 #include "third_party/blink/renderer/core/testing/origin_trials_test.h"
+#include "third_party/blink/renderer/core/testing/pass_as_span_test.h"
 #include "third_party/blink/renderer/core/testing/record_test.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/sequence_test.h"
@@ -2799,6 +2800,10 @@ CallbackFunctionTest* Internals::callbackFunctionTest() const {
 
 NADCAttributeTest* Internals::nadcAttributeTest() const {
   return MakeGarbageCollected<NADCAttributeTest>();
+}
+
+PassAsSpanTest* Internals::passAsSpanTest() const {
+  return MakeGarbageCollected<PassAsSpanTest>();
 }
 
 Vector<String> Internals::getReferencedFilePaths() const {

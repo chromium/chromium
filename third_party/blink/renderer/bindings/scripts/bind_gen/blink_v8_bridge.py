@@ -559,6 +559,15 @@ def _pass_as_span_conversion_arguments(idl_type):
     )
     if allow_shared:
         flags.append("PassAsSpanMarkerBase::Flags::kAllowShared")
+    allow_unlimited_size = (
+        "BufferSourceTypeNoSizeLimit" in idl_type.effective_annotations
+        or any(
+            "BufferSourceTypeNoSizeLimit" in t.effective_annotations
+            for t in types
+        )
+    )
+    if allow_unlimited_size:
+        flags.append("PassAsSpanMarkerBase::Flags::kAllowUnlimitedSize")
     # The actual value should be defined in the operation callback body according
     # to the needs of the particular operation.
     flags.append("${kPerformDetachCheckFlag}")

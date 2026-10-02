@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessSyncAccessHandleBrowserTest,
   // Allocate a >INT_MAX buffer via WebAssembly.Memory (which bypasses
   // PartitionAlloc's ~2GB cap on ArrayBuffer), then call write().
   // The write() must throw a TypeError and leave the file empty.
-  EXPECT_EQ(true, EvalJs(browser, R"(
+  EXPECT_EQ("RangeError", EvalJs(browser, R"(
     runOnWorkerAndWaitForResult(`
       const root = await navigator.storage.getDirectory();
       const fh = await root.getFileHandle(
@@ -65,16 +65,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessSyncAccessHandleBrowserTest,
       // 32769 Wasm pages * 64KiB = 2,147,549,184 bytes (INT_MAX + 65537).
       const mem = new WebAssembly.Memory({ initial: 32769 });
       const buffer = new Uint8Array(mem.buffer);
-      let threwTypeError = false;
+      let thrown_error = "did not throw";
       try {
         ah.write(buffer);
       } catch (e) {
-        if (e instanceof TypeError) threwTypeError = true;
+        thrown_error = e.constructor.name;
       }
       const size = ah.getSize();
       ah.close();
       await root.removeEntry('test_oversized_write');
-      return threwTypeError && size === 0;
+      if (size !== 0) {
+        return "size is not 0";
+      }
+      return thrown_error;
     `);
   )"));
 }

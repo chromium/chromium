@@ -15,20 +15,6 @@ namespace blink {
 
 namespace {
 
-bool DoesExceedSizeLimitSlow(v8::Isolate* isolate,
-                             ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          features::kDisableArrayBufferSizeLimitsForTesting)) {
-    return false;
-  }
-
-  UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
-                    WebFeature::kArrayBufferTooBigForWebAPI);
-  exception_state.ThrowRangeError(
-      "The ArrayBuffer/ArrayBufferView size exceeds the supported range.");
-  return true;
-}
-
 // Throws a RangeError and returns true if the given byte_length exceeds the
 // size limit.
 //
@@ -40,7 +26,7 @@ inline bool DoesExceedSizeLimit(v8::Isolate* isolate,
     return false;
   }
 
-  return DoesExceedSizeLimitSlow(isolate, exception_state);
+  return bindings::DoesExceedSizeLimitSlow(isolate, exception_state);
 }
 
 enum class Nullability {

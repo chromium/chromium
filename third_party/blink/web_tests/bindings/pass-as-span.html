@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/sab-polyfill.js"></script>
+<script>
+// Maximum allowed size of a buffer source in Blink (PartitionAlloc's
+// MaxAllocationSize(): (1 << 31) - (1 << 21)).
+const kMaxAllocationSize = 2145386496;
+const kLargeBufferByteLength = kMaxAllocationSize + 4;
+
+test(() => {
+  const passAsSpanTest = internals.passAsSpanTest();
+  const buffer = new ArrayBuffer(32);
+  const view = new Uint8Array(buffer, 4, 12);
+  const dataView = new DataView(buffer, 8, 16);
+
+  assert_equals(passAsSpanTest.testBufferSource(buffer), 32);
+  assert_equals(passAsSpanTest.testUnlimitedBufferSource(buffer), 32);
+  assert_equals(passAsSpanTest.testBufferSource(view), 12);
+  assert_equals(passAsSpanTest.testUnlimitedBufferSource(view), 12);
+  assert_equals(passAsSpanTest.testBufferSource(dataView), 16);
+  assert_equals(passAsSpanTest.testUnlimitedBufferSource(dataView), 16);
+
+  assert_equals(passAsSpanTest.testTypedArray(view), 12);
+  assert_equals(passAsSpanTest.testUnlimitedTypedArray(view), 12);
+
+  const int32View = new Int32Array(buffer, 4, 5);
+  assert_equals(passAsSpanTest.testTypedArrayOrSequence(int32View), 5);
+  assert_equals(passAsSpanTest.testUnlimitedTypedArrayOrSequence(int32View), 5);
+  assert_equals(passAsSpanTest.testTypedArrayOrSequence([1, 2, 3, 4]), 4);
+  assert_equals(passAsSpanTest.testUnlimitedTypedArrayOrSequence([1, 2, 3, 4]), 4);
+}, "PassAsSpan basic conversions for small buffers, views, and sequences");
+
+const largeBuffer = new ArrayBuffer(kLargeBufferByteLength);
+
+test(() => {
+  const passAsSpanTest = internals.passAsSpanTest();
+
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testBufferSource(largeBuffer);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedBufferSource(largeBuffer),
+      kLargeBufferByteLength);
+
+  // Exact size limit boundary on views of the large ArrayBuffer.
+  const maxAllowedU8 = new Uint8Array(largeBuffer, 0, kMaxAllocationSize);
+  const overLimitU8 = new Uint8Array(largeBuffer, 0, kMaxAllocationSize + 1);
+  assert_equals(passAsSpanTest.testBufferSource(maxAllowedU8), kMaxAllocationSize);
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testBufferSource(overLimitU8);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedBufferSource(overLimitU8),
+      kMaxAllocationSize + 1);
+
+  const overLimitDataView = new DataView(largeBuffer, 0, kMaxAllocationSize + 1);
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testBufferSource(overLimitDataView);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedBufferSource(overLimitDataView),
+      kMaxAllocationSize + 1);
+
+  // Small subview into an oversized ArrayBuffer is allowed without
+  // [BufferSourceTypeNoSizeLimit].
+  const smallView = new Uint8Array(largeBuffer, 10, 16);
+  assert_equals(passAsSpanTest.testBufferSource(smallView), 16);
+}, "BufferSourceTypeNoSizeLimit with [PassAsSpan] BufferSource");
+
+test(() => {
+  const passAsSpanTest = internals.passAsSpanTest();
+
+  const maxAllowedU8 = new Uint8Array(largeBuffer, 0, kMaxAllocationSize);
+  const overLimitU8 = new Uint8Array(largeBuffer, 0, kMaxAllocationSize + 1);
+  const smallU8 = new Uint8Array(largeBuffer, 10, 16);
+
+  assert_equals(passAsSpanTest.testTypedArray(smallU8), 16);
+  assert_equals(passAsSpanTest.testTypedArray(maxAllowedU8), kMaxAllocationSize);
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testTypedArray(overLimitU8);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedTypedArray(overLimitU8),
+      kMaxAllocationSize + 1);
+
+  const maxAllowedElements = kMaxAllocationSize / 4;
+  const maxAllowedI32 = new Int32Array(largeBuffer, 0, maxAllowedElements);
+  const overLimitI32 = new Int32Array(largeBuffer, 0, maxAllowedElements + 1);
+  const smallI32 = new Int32Array(largeBuffer, 16, 8);
+
+  assert_equals(passAsSpanTest.testTypedArrayOrSequence(smallI32), 8);
+  assert_equals(
+      passAsSpanTest.testTypedArrayOrSequence(maxAllowedI32),
+      maxAllowedElements);
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testTypedArrayOrSequence(overLimitI32);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedTypedArrayOrSequence(overLimitI32),
+      maxAllowedElements + 1);
+}, "BufferSourceTypeNoSizeLimit with typed [PassAsSpan] arguments");
+
+test(() => {
+  const largeSharedBuffer = new SharedArrayBuffer(kLargeBufferByteLength);
+  const passAsSpanTest = internals.passAsSpanTest();
+
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testSharedBufferSource(largeSharedBuffer);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedSharedBufferSource(largeSharedBuffer),
+      kLargeBufferByteLength);
+
+  const overLimitSharedU8 =
+      new Uint8Array(largeSharedBuffer, 0, kMaxAllocationSize + 1);
+  assert_throws_js(RangeError, () => {
+    passAsSpanTest.testSharedBufferSource(overLimitSharedU8);
+  });
+  assert_equals(
+      passAsSpanTest.testUnlimitedSharedBufferSource(overLimitSharedU8),
+      kMaxAllocationSize + 1);
+
+  const smallSharedU8 = new Uint8Array(largeSharedBuffer, 10, 16);
+  assert_equals(passAsSpanTest.testSharedBufferSource(smallSharedU8), 16);
+}, "BufferSourceTypeNoSizeLimit with [AllowShared, PassAsSpan] BufferSource");
+</script>

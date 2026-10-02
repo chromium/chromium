@@ -648,6 +648,7 @@ source_set("testing") {
     "testing/origin_trials_test.h",
     "testing/origin_trials_test_global.h",
     "testing/origin_trials_test_partial.h",
+    "testing/pass_as_span_test.h",
     "testing/record_test.cc",
     "testing/record_test.h",
     "testing/scoped_mock_overlay_scrollbars.h",

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface PassAsSpanTest {
+    unsigned long long testBufferSource([PassAsSpan] BufferSource buffer);
+    unsigned long long testUnlimitedBufferSource(
+        [PassAsSpan, BufferSourceTypeNoSizeLimit] BufferSource buffer);
+    unsigned long long testSharedBufferSource(
+        [AllowShared, PassAsSpan] BufferSource buffer);
+    unsigned long long testUnlimitedSharedBufferSource(
+        [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] BufferSource buffer);
+    unsigned long long testTypedArray([PassAsSpan] Uint8Array array);
+    unsigned long long testUnlimitedTypedArray(
+        [PassAsSpan, BufferSourceTypeNoSizeLimit] Uint8Array array);
+    unsigned long long testTypedArrayOrSequence(
+        [PassAsSpan] (Int32Array or sequence<long>) value);
+    unsigned long long testUnlimitedTypedArrayOrSequence(
+        [PassAsSpan] ([BufferSourceTypeNoSizeLimit] Int32Array or sequence<long>) value);
+};
