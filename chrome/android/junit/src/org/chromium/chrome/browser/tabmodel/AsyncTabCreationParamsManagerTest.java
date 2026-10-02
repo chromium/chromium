@@ -7,24 +7,23 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Tests that the AsyncTabCreationParamsManager works as expected. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class AsyncTabCreationParamsManagerTest {
+    @Before
+    public void setUp() {
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
+    }
+
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testBasicAddingAndRemoval() {
         AsyncTabParamsManager subject = AsyncTabParamsManagerSingleton.getInstance();
 
