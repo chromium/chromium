@@ -31,7 +31,18 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/password_manager/notification_cards/move_passwords_promo.h"
 #endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/password_manager/notification_cards/account_aware_password_signin_promo.h"
+#endif
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/memory/scoped_refptr.h"
@@ -112,6 +123,13 @@ void MarkCardShown(PrefService* prefs,
     update.Get().Append(std::move(entry));
   }
   base::UmaHistogramEnumeration("PasswordManager.PromoCard.Shown", type);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (type == NotificationCardType::kAccountAwarePasswordSignin) {
+    signin_metrics::LogSignInOffered(
+        signin_metrics::AccessPoint::kPasswordManagerCard,
+        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+  }
+#endif
 }
 
 void MarkCardDismissed(PrefService* prefs, const std::string& id) {
@@ -137,10 +155,7 @@ bool CompareNotificationCardCandidates(const NotificationCardCandidate& lhs,
   auto l_type = lhs.first->GetNotificationSeverity();
   auto r_type = rhs.first->GetNotificationSeverity();
   if (l_type != r_type) {
-    if (l_type == NotificationSeverity::kCritical) {
-      return true;
-    }
-    return false;
+    return l_type < r_type;
   }
 
   if (lhs.second.last_time_shown != rhs.second.last_time_shown) {
@@ -157,8 +172,15 @@ base::DictValue NotificationCardToValueDict(
   dict.Set("id", notification_card->GetCardID());
   dict.Set("title", notification_card->GetTitle());
   dict.Set("description", notification_card->GetDescription());
-  if (!notification_card->GetActionButtonText().empty()) {
-    dict.Set("actionButtonText", notification_card->GetActionButtonText());
+  if (std::u16string action_button_text =
+          notification_card->GetActionButtonText();
+      !action_button_text.empty()) {
+    dict.Set("actionButtonText", std::move(action_button_text));
+  }
+  if (std::string action_button_avatar_url =
+          notification_card->GetActionButtonAvatarUrl();
+      !action_button_avatar_url.empty()) {
+    dict.Set("actionButtonAvatarUrl", std::move(action_button_avatar_url));
   }
   dict.Set("isDismissible", notification_card->IsDismissible());
   return dict;
@@ -188,6 +210,10 @@ NotificationCardsHandler::NotificationCardsHandler(Profile* profile)
 #endif
   notification_cards_.push_back(std::make_unique<PasskeyUnlockPromo>(
       webauthn::PasskeyUnlockManagerFactory::GetForProfile(profile)));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  notification_cards_.push_back(
+      std::make_unique<AccountAwarePasswordSigninPromo>(profile));
+#endif
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -221,11 +247,32 @@ void NotificationCardsHandler::RegisterMessages() {
       "restartBrowser",
       base::BindRepeating(&NotificationCardsHandler::RestartChrome,
                           base::Unretained(this)));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  web_ui()->RegisterMessageCallback(
+      "signInFromNotificationCard",
+      base::BindRepeating(
+          &NotificationCardsHandler::HandleSignInFromNotificationCard,
+          base::Unretained(this)));
+#endif
 }
 
 void NotificationCardsHandler::RestartChrome(const base::ListValue& args) {
   chrome::AttemptRestart();
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void NotificationCardsHandler::HandleSignInFromNotificationCard(
+    const base::ListValue& args) {
+  AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(profile_),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
+  if (!account_info.IsEmpty()) {
+    signin_ui_util::SignInFromSingleAccountPromo(
+        profile_, account_info.GetCoreAccountInfo(),
+        signin_metrics::AccessPoint::kPasswordManagerCard);
+  }
+}
+#endif
 
 void NotificationCardsHandler::HandleGetAvailableNotificationCard(
     const base::ListValue& args) {

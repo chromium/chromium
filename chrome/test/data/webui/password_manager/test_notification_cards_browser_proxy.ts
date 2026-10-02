@@ -18,6 +18,7 @@ export class TestNotificationCardsProxy extends TestBrowserProxy implements
     super([
       'getAvailableNotificationCard',
       'recordNotificationDismissed',
+      'signInFromNotificationCard',
     ]);
 
     this.card = null;
@@ -30,5 +31,9 @@ export class TestNotificationCardsProxy extends TestBrowserProxy implements
 
   recordNotificationDismissed(id: string) {
     this.methodCalled('recordNotificationDismissed', id);
+  }
+
+  signInFromNotificationCard() {
+    this.methodCalled('signInFromNotificationCard');
   }
 }

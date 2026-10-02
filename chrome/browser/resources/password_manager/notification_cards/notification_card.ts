@@ -32,6 +32,7 @@ export enum NotificationCardId {
   MOVE_PASSWORDS = 'move_passwords_promo',
   // SCREENLOCK_REAUTH = 'screenlock_reauth_promo',  // Obsolete
   PASSKEY_UNLOCK = 'passkey_unlock_promo',
+  ACCOUNT_AWARE_PASSWORD_SIGNIN = 'account_aware_password_signin_promo',
 }
 // LINT.ThenChange(//chrome/browser/ui/webui/password_manager/notification_card.h:NotificationCardId)
 
@@ -51,8 +52,9 @@ enum NotificationCardMetricId {
   MOVE_PASSWORDS = 5,
   // SCREENLOCK_REAUTH = 6, Obsolete
   PASSKEY_UNLOCK = 7,
+  ACCOUNT_AWARE_PASSWORD_SIGNIN = 8,
   // Must be last.
-  COUNT = 8,
+  COUNT = 9,
 }
 // LINT.ThenChange(//chrome/browser/ui/webui/password_manager/notification_card.h:NotificationCardType)
 
@@ -114,6 +116,13 @@ export class NotificationCardElement extends NotificationCardElementBase {
     return sanitizeInnerHtml(this.card.description);
   }
 
+  private getBannerImageName_(): string {
+    if (this.card.id === NotificationCardId.ACCOUNT_AWARE_PASSWORD_SIGNIN) {
+      return NotificationCardId.ACCESS_ON_ANY_DEVICE;
+    }
+    return this.card.id;
+  }
+
   private onActionButtonClick_() {
     switch (this.card.id) {
       case NotificationCardId.CHECKUP:
@@ -138,6 +147,11 @@ export class NotificationCardElement extends NotificationCardElementBase {
       case NotificationCardId.PASSKEY_UNLOCK:
         SyncBrowserProxyImpl.getInstance().startPasskeyUnlockFlow();
         recordNotificationCardAction(NotificationCardMetricId.PASSKEY_UNLOCK);
+        break;
+      case NotificationCardId.ACCOUNT_AWARE_PASSWORD_SIGNIN:
+        NotificationCardsProxyImpl.getInstance().signInFromNotificationCard();
+        recordNotificationCardAction(
+            NotificationCardMetricId.ACCOUNT_AWARE_PASSWORD_SIGNIN);
         break;
       default:
         assertNotReached();

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/password_manager/notification_card.h"
 
-#include <limits>
-
 namespace password_manager {
 
 PasswordNotificationCardBase::PasswordNotificationCardBase() = default;
@@ -23,6 +21,10 @@ bool PasswordNotificationCardBase::IsDismissible() const {
 
 std::u16string PasswordNotificationCardBase::GetActionButtonText() const {
   return std::u16string();
+}
+
+std::string PasswordNotificationCardBase::GetActionButtonAvatarUrl() const {
+  return std::string();
 }
 
 }  // namespace password_manager

@@ -31,7 +31,9 @@ enum class NotificationCardType {
   // kScreenlockReauth = 6, Obsolete
   // Passkey unlock promo.
   kPasskeyUnlock = 7,
-  kMaxValue = kPasskeyUnlock,
+  // Account-aware sign-in promo.
+  kAccountAwarePasswordSignin = 8,
+  kMaxValue = kAccountAwarePasswordSignin,
 };
 // LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardMetricId)
 
@@ -49,7 +51,8 @@ inline constexpr char kPasskeyUnlockPromoId[] = "passkey_unlock_promo";
 
 enum class NotificationSeverity {
   kCritical = 0,
-  kPromo = 1,
+  kHighPriorityPromo = 1,
+  kPromo = 2,
 };
 
 struct NotificationCardPrefState {
@@ -98,6 +101,10 @@ class PasswordNotificationCardBase {
   // Text for an actionable button if one exists. Returns empty string by
   // default.
   virtual std::u16string GetActionButtonText() const;
+
+  // Avatar URL to display inside the actionable button if one exists. Returns
+  // empty string by default.
+  virtual std::string GetActionButtonAvatarUrl() const;
 
  protected:
   PasswordNotificationCardBase();

@@ -9,6 +9,7 @@ export interface NotificationCard {
   title: string;
   description: string;
   actionButtonText?: string;
+  actionButtonAvatarUrl?: string;
   isDismissible: boolean;
 }
 
@@ -24,6 +25,11 @@ export interface NotificationCardsProxy {
    * whether the notification should be shown in the future.
    */
   recordNotificationDismissed(id: string): void;
+
+  /**
+   * Triggers Chrome sign-in from the sign-in promo notification card.
+   */
+  signInFromNotificationCard(): void;
 }
 
 export class NotificationCardsProxyImpl implements NotificationCardsProxy {
@@ -34,6 +40,10 @@ export class NotificationCardsProxyImpl implements NotificationCardsProxy {
 
   recordNotificationDismissed(id: string) {
     chrome.send('recordNotificationDismissed', [id]);
+  }
+
+  signInFromNotificationCard() {
+    chrome.send('signInFromNotificationCard');
   }
 
   static getInstance(): NotificationCardsProxy {

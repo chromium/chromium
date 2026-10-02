@@ -123,7 +123,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       shouldShowNotificationCard_: {
         type: Boolean,
         computed: 'computeShouldShowNotificationCard_(' +
-            'notificationCard_, isAccountStoreUser, passwordsOnDevice_)',
+            'notificationCard_, isAccountStoreUser, accountEmail, ' +
+            'passwordsOnDevice_)',
       },
 
       /**
@@ -409,6 +410,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private computeShouldShowNotificationCard_(): boolean {
     if (!this.notificationCard_) {
       return false;
+    }
+    if (this.notificationCard_.id ===
+        NotificationCardId.ACCOUNT_AWARE_PASSWORD_SIGNIN) {
+      return !this.isAccountStoreUser && !this.accountEmail;
     }
     if (this.notificationCard_.id !== NotificationCardId.MOVE_PASSWORDS) {
       return true;

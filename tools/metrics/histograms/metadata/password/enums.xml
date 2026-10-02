@@ -1543,6 +1543,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Move passwords"/>
   <int value="6" label="(Obsolete) Enable screenlock reauth before filling"/>
   <int value="7" label="Passkey unlock promo"/>
+  <int value="8" label="Account-aware sign-in promo"/>
 </enum>
 
 <!-- LINT.IfChange(SaveWithTrustedVaultErrorOutcome) -->

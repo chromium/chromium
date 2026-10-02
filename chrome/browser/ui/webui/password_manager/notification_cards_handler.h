@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -53,6 +54,9 @@ class NotificationCardsHandler : public content::WebUIMessageHandler {
   void HandleGetAvailableNotificationCard(const base::ListValue& args);
   void FinishGetAvailableNotificationCard(const base::Value& callback_id);
   void HandleRecordNotificationDismissed(const base::ListValue& args);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void HandleSignInFromNotificationCard(const base::ListValue& args);
+#endif
 
   PasswordNotificationCardBase* GetNotificationCardToShowAndUpdatePref();
 

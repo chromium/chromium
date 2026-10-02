@@ -51,6 +51,19 @@ source_set("notification_cards") {
     deps += [ "//chrome/browser/profiles/batch_upload" ]
   }
 
+  if (enable_dice_support && is_chrome_branded) {
+    sources += [ "account_aware_password_signin_promo.cc" ]
+    public += [ "account_aware_password_signin_promo.h" ]
+    deps += [
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//components/signin/core/browser",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+    ]
+  }
+
   if (is_linux || is_mac) {
     sources += [ "relaunch_chrome_banner.cc" ]
     public += [ "relaunch_chrome_banner.h" ]
@@ -92,6 +105,24 @@ source_set("unit_tests") {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+    ]
+  }
+
+  if (enable_dice_support && is_chrome_branded) {
+    sources += [ "account_aware_password_signin_promo_unittest.cc" ]
+    deps += [
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:identity_test_support",
+      "//chrome/browser/sync",
+      "//components/signin/core/browser:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//components/sync/protocol",
+      "//components/sync/service",
+      "//services/network:test_support",
     ]
   }
 

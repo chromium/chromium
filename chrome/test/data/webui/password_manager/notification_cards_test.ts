@@ -249,4 +249,44 @@ suite('PasswordsSectionTest', function() {
     await syncProxy.whenCalled('startPasskeyUnlockFlow');
     await flushTasks();
   });
+
+  test('account aware sign in promo card', async function() {
+    syncProxy.accountInfo = {
+      email: '',
+    };
+    notificationCardsProxy.card = {
+      id: 'account_aware_password_signin_promo',
+      title: 'Get your passwords and more on all your devices',
+      description: 'To autofill and save your passwords across your devices, ' +
+          'sign in as user@gmail.com',
+      actionButtonText: 'Continue as User',
+      actionButtonAvatarUrl:
+          'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
+      isDismissible: true,
+    };
+
+    const section = await createPasswordsSection();
+    let cardElement = section.shadowRoot!.querySelector('notification-card');
+
+    assertTrue(!!cardElement);
+    assertTrue(isVisible(cardElement.$.actionButton));
+    const bannerImage =
+        cardElement.shadowRoot!.querySelector<HTMLImageElement>('img.banner');
+    assertTrue(!!bannerImage);
+    assertEquals(
+        'chrome://password-manager/images/access_on_any_device_promo.svg',
+        bannerImage.src);
+    const avatarImage =
+        cardElement.shadowRoot!.querySelector<HTMLImageElement>('#avatar');
+    assertTrue(!!avatarImage);
+    assertEquals(
+        notificationCardsProxy.card.actionButtonAvatarUrl, avatarImage.src);
+
+    cardElement.$.actionButton.click();
+    await notificationCardsProxy.whenCalled('signInFromNotificationCard');
+    await flushTasks();
+
+    cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
+  });
 });

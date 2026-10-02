@@ -35,6 +35,12 @@
     width: fit-content;
   }
 
+  #avatar {
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+  }
+
   #closeButton {
     margin-top: 10px;
     margin-right: 10px;
@@ -43,16 +49,18 @@
 </style>
 <picture id="image">
   <if expr="_google_chrome">
-    <source class="banner" srcset="./images/[[card.id]]_dark.svg"
+    <source class="banner"
+        srcset="./images/[[getBannerImageName_(card.id)]]_dark.svg"
         media="(prefers-color-scheme: dark)">
-    <img class="banner" alt="" src="./images/[[card.id]].svg">
+    <img class="banner" alt=""
+        src="./images/[[getBannerImageName_(card.id)]].svg">
   </if>
   <if expr="not _google_chrome">
     <source class="banner"
-        srcset="./images/[[card.id]]_dark_non_branded.svg"
+        srcset="./images/[[getBannerImageName_(card.id)]]_dark_non_branded.svg"
         media="(prefers-color-scheme: dark)">
     <img class="banner" alt=""
-        src="./images/[[card.id]]_non_branded.svg">
+        src="./images/[[getBannerImageName_(card.id)]]_non_branded.svg">
   </if>
 </picture>
 <div id="cardContent">
@@ -61,6 +69,10 @@
       inner-h-t-m-l="[[getDescription_(card)]]"></div>
   <cr-button id="actionButton" hidden="[[!card.actionButtonText]]"
       class="action-button" on-click="onActionButtonClick_">
+    <template is="dom-if" if="[[card.actionButtonAvatarUrl]]">
+      <img id="avatar" slot="prefix-icon"
+          src="[[card.actionButtonAvatarUrl]]" alt="">
+    </template>
     [[card.actionButtonText]]
   </cr-button>
 </div>

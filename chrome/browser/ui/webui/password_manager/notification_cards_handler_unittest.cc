@@ -9,6 +9,7 @@
 
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -65,6 +67,8 @@ class MockNotificationCard : public PasswordNotificationCardBase {
               (const NotificationCardPrefState&),
               (const, override));
   MOCK_METHOD(std::u16string, GetDescription, (), (const, override));
+  MOCK_METHOD(std::u16string, GetActionButtonText, (), (const, override));
+  MOCK_METHOD(std::string, GetActionButtonAvatarUrl, (), (const, override));
 };
 
 }  // namespace
@@ -283,6 +287,8 @@ TEST_F(NotificationCardsHandlerTest,
   MockNotificationCard* some_card = first_card();
   MockNotificationCard* relaunch_chrome_card = second_card();
 
+  ON_CALL(*some_card, GetNotificationSeverity)
+      .WillByDefault(Return(NotificationSeverity::kHighPriorityPromo));
   ON_CALL(*relaunch_chrome_card, GetNotificationSeverity)
       .WillByDefault(Return(NotificationSeverity::kCritical));
 
@@ -303,5 +309,72 @@ TEST_F(NotificationCardsHandlerTest,
   EXPECT_EQ(0, GetTimesShown(some_card->GetCardID()));
   EXPECT_EQ(1, GetTimesShown(relaunch_chrome_card->GetCardID()));
 }
+
+TEST_F(NotificationCardsHandlerTest,
+       HighPriorityPromoTakesPrecedenceOverGenericPromo) {
+  MockNotificationCard* generic_promo = first_card();
+  MockNotificationCard* high_priority_promo = second_card();
+
+  ON_CALL(*generic_promo, GetNotificationSeverity)
+      .WillByDefault(Return(NotificationSeverity::kPromo));
+  ON_CALL(*high_priority_promo, GetNotificationSeverity)
+      .WillByDefault(Return(NotificationSeverity::kHighPriorityPromo));
+
+  ASSERT_EQ(0, GetTimesShown(generic_promo->GetCardID()));
+  ASSERT_EQ(0, GetTimesShown(high_priority_promo->GetCardID()));
+
+  base::ListValue args;
+  args.Append(kTestCallbackId);
+
+  EXPECT_CALL(*generic_promo, ShouldShowCard).WillRepeatedly(Return(true));
+  EXPECT_CALL(*high_priority_promo, ShouldShowCard)
+      .WillRepeatedly(Return(true));
+
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
+                                std::move(args));
+
+  EXPECT_EQ(0, GetTimesShown(generic_promo->GetCardID()));
+  EXPECT_EQ(1, GetTimesShown(high_priority_promo->GetCardID()));
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(NotificationCardsHandlerTest,
+       AccountAwarePasswordSigninPromoCardShownAndReturned) {
+  base::HistogramTester histogram_tester;
+  base::ListValue args;
+  args.Append(kTestCallbackId);
+
+  EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(false));
+  EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(true));
+  EXPECT_CALL(*second_card(), GetNotificationCardType)
+      .WillRepeatedly(
+          Return(NotificationCardType::kAccountAwarePasswordSignin));
+  EXPECT_CALL(*second_card(), GetTitle).WillRepeatedly(Return(u"Title"));
+  EXPECT_CALL(*second_card(), GetDescription)
+      .WillRepeatedly(Return(u"Description"));
+  EXPECT_CALL(*second_card(), GetActionButtonText)
+      .WillRepeatedly(Return(u"Continue as User"));
+  EXPECT_CALL(*second_card(), GetActionButtonAvatarUrl)
+      .WillRepeatedly(Return("https://example.com/avatar.png"));
+
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
+                                std::move(args));
+
+  const base::DictValue& response = GetLastSuccessfulResponse();
+  EXPECT_EQ("Continue as User", *response.FindString("actionButtonText"));
+  EXPECT_EQ("https://example.com/avatar.png",
+            *response.FindString("actionButtonAvatarUrl"));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PromoCard.Shown",
+      NotificationCardType::kAccountAwarePasswordSignin, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kPasswordManagerCard, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::kPasswordManagerCard, 1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace password_manager
