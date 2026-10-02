@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.omnibox.fusebox.consent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
 import org.junit.After;
@@ -23,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +38,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.LoadingView;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link DriveConsentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -142,5 +146,16 @@ public class DriveConsentDialogUnitTest {
         verify(mModalDialogManager)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
         assertTrue(mSpinner.isObserverListEmpty());
+    }
+
+    @Test
+    public void shouldCreateWebContents_returnsFalseAndLaunchesCustomTabIntent() {
+        boolean result =
+                mDialog.getWebContentsDelegateForTesting()
+                        .shouldCreateWebContents(new GURL("https://policies.google.com/terms"));
+
+        assertFalse(result);
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertEquals("https://policies.google.com/terms", intent.getDataString());
     }
 }
