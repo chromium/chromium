@@ -17,6 +17,7 @@ export function getHtml(this: LocationIconElement) {
     tabindex="${this.state.isClickable ? '0' : '-1'}"
     @pointerdown="${this.onPointerdown_}"
     @click="${this.onClick_}"
+    @auxclick="${this.onAuxclick_}"
     @contextmenu="${this.onContextmenu_}">
   ${this.glowUpActive ? html`
     <cr-icon id="icon"

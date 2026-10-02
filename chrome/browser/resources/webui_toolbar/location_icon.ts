@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {isMac} from '//resources/js/platform.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
@@ -230,10 +231,15 @@ export class LocationIconElement extends LocationIconElementBase {
     BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipMousePressed(
         LhsChipIdentifier.kLocationIcon, isMiddleClick);
 
+    // `isDragging_` intentionally outlives pointerup so onClick_() can suppress
+    // the click that may follow a drag; it is only cleared on the next press.
+    // Reset it for every accepted press, not just left, so a right-click right
+    // after a drag still opens Page Info, as in native views.
+    this.isDragging_ = false;
+
     if (e.button === 0) {
       this.dragStartX_ = e.clientX;
       this.dragStartY_ = e.clientY;
-      this.isDragging_ = false;
       this.activePointerId_ = e.pointerId;
 
       PointerProxyImpl.getInstance().setPointerCapture(
@@ -243,7 +249,8 @@ export class LocationIconElement extends LocationIconElementBase {
           this.$.button, 'pointermove',
           (e: PointerEvent) => this.onContainerPointerMove_(e));
       this.eventTracker_.add(
-          this.$.button, 'pointerup', () => this.onContainerPointerUp_());
+          this.$.button, 'pointerup',
+          (e: PointerEvent) => this.onContainerPointerUp_(e));
       this.eventTracker_.add(
           this.$.button, 'pointercancel',
           () => this.onContainerPointerCancel_());
@@ -270,8 +277,17 @@ export class LocationIconElement extends LocationIconElementBase {
     }
   }
 
-  protected onContainerPointerUp_() {
+  protected onContainerPointerUp_(e: PointerEvent) {
     this.finishDrag_();
+
+    // Native Mac converts Ctrl+LeftClick into a right click, which opens Page
+    // Info on release. Blink instead treats it as a context menu gesture and
+    // suppresses both 'click' and 'auxclick' (the button is still 0), so handle
+    // it here. This mirrors Blink's suppression condition, which also checks
+    // the modifier on release, so it never double-fires with onClick_.
+    if (isMac && e.button === 0 && e.ctrlKey) {
+      this.onClick_(e);
+    }
   }
 
   protected onContainerPointerCancel_() {
@@ -293,27 +309,28 @@ export class LocationIconElement extends LocationIconElementBase {
 
   protected onClick_(e: PointerEvent) {
     if (this.clickable && !this.isDragging_) {
-      // Note: Both 'click' and 'contextmenu' events are dispatched using
-      // PointerEvents. Keyboard clicks (Enter/Space) also dispatch
-      // PointerEvents, but they have an empty pointerType (""). We only want
-      // to suppress true pointer interactions (mouse, touch, pen).
+      // Note: 'click' and 'auxclick' events are dispatched using PointerEvents.
+      // Keyboard clicks (Enter/Space) also dispatch PointerEvents, but they
+      // have an empty pointerType (""). We only want to suppress true pointer
+      // interactions (mouse, touch, pen).
       BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
           LhsChipIdentifier.kLocationIcon, e.pointerType !== '',
           /*state_token=*/ 0);
     }
   }
 
-  protected onContextmenu_(e: PointerEvent) {
-    // In Native Views, LocationIconView::IsTriggerableEvent overrides the base
-    // button behavior. It explicitly filters out middle-clicks (which trigger
-    // "Paste-and-Go" on Linux instead of opening the bubble), but it falls
-    // through to IconLabelBubbleView::IsTriggerableEvent, which intentionally
-    // returns true for all other mouse events (including right-clicks).
-    // Therefore, in Native Views, right-clicking the security chip legitimately
-    // triggers the Page Info bubble. We explicitly forward the contextmenu
-    // event to onClick_ here to maintain strict parity with that behavior.
+  protected onAuxclick_(e: PointerEvent) {
+    // Middle-click (button 1) is intentionally ignored here; it is handled on
+    // press via onLhsChipMousePressed() for Linux paste-and-go.
+    if (e.button === 2) {
+      // Right-clicking the security chip legitimately triggers the Page Info
+      // bubble.
+      this.onClick_(e);
+    }
+  }
+
+  protected onContextmenu_(e: Event) {
     e.preventDefault();
-    this.onClick_(e);
   }
 }
 

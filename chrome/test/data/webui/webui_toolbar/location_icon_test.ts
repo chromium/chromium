@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -203,6 +204,10 @@ suite('LocationIconTest', function() {
 
     container.click();
     assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+
+    container.dispatchEvent(
+        new PointerEvent('auxclick', {button: 2, pointerType: 'mouse'}));
+    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
   });
 
   test('Click events', async function() {
@@ -267,6 +272,106 @@ suite('LocationIconTest', function() {
         toolbarUiHandler.getArgs('onLhsChipClicked')[1][0]);
     assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[1][1]);
     assertEquals(0, toolbarUiHandler.getArgs('onLhsChipClicked')[1][2]);
+
+    // Middle click shouldn't trigger click action
+    container.dispatchEvent(
+        new PointerEvent('auxclick', {button: 1, pointerType: 'mouse'}));
+    assertEquals(2, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+
+    // Right click should trigger click action for Page Info parity
+    container.dispatchEvent(
+        new PointerEvent('auxclick', {button: 2, pointerType: 'mouse'}));
+    assertEquals(3, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    assertEquals(
+        LhsChipIdentifier.kLocationIcon,
+        toolbarUiHandler.getArgs('onLhsChipClicked')[2][0]);
+    assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[2][1]);
+
+    // Contextmenu events from touch long-press or the keyboard context-menu
+    // key (Shift+F10) should just be prevented without opening Page Info.
+    for (const pointerType of ['touch', '']) {
+      const contextMenuEvent =
+          new PointerEvent('contextmenu', {pointerType, cancelable: true});
+      container.dispatchEvent(contextMenuEvent);
+      assertTrue(contextMenuEvent.defaultPrevented);
+      assertEquals(3, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    }
+  });
+
+  test('Right click after drag', async function() {
+    locationIcon.state = {
+      icon: {handleId: 0n},
+      securityLevel: 0,
+      text: '',
+      tooltip: '',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      isContextMenuVisible: false,
+      accessibilityState: {
+        role: SecurityChipRole.kButton,
+        label: '',
+        description: '',
+      },
+    };
+    await microtasksFinished();
+
+    const container = locationIcon.$.button;
+
+    // Left press and drag past the threshold, which hands off to a native drag
+    // session. No click event follows.
+    container.dispatchEvent(new PointerEvent(
+        'pointerdown', {pointerId: 1, button: 0, clientX: 0, clientY: 0}));
+    container.dispatchEvent(new PointerEvent(
+        'pointermove', {pointerId: 1, clientX: 20, clientY: 0}));
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipDrag'));
+    container.dispatchEvent(
+        new PointerEvent('lostpointercapture', {pointerId: 1}));
+
+    // A subsequent right click should still open Page Info.
+    container.dispatchEvent(new PointerEvent(
+        'pointerdown', {pointerId: 1, button: 2, pointerType: 'mouse'}));
+    container.dispatchEvent(
+        new PointerEvent('auxclick', {button: 2, pointerType: 'mouse'}));
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+  });
+
+  test('Ctrl+click', async function() {
+    locationIcon.state = {
+      icon: {handleId: 0n},
+      securityLevel: 0,
+      text: '',
+      tooltip: '',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      isContextMenuVisible: false,
+      accessibilityState: {
+        role: SecurityChipRole.kButton,
+        label: '',
+        description: '',
+      },
+    };
+    await microtasksFinished();
+
+    const container = locationIcon.$.button;
+    const ctrlMouse = {
+      pointerId: 1,
+      button: 0,
+      ctrlKey: true,
+      pointerType: 'mouse',
+    };
+
+    // On Mac, Blink dispatches neither 'click' nor 'auxclick' for Ctrl+click,
+    // but native views treats it as a right click, so Page Info opens on
+    // release. On other platforms, the regular 'click' event handles it.
+    container.dispatchEvent(new PointerEvent('pointerdown', ctrlMouse));
+    container.dispatchEvent(new PointerEvent('pointerup', ctrlMouse));
+    assertEquals(
+        isMac ? 1 : 0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    if (isMac) {
+      assertTrue(toolbarUiHandler.getArgs('onLhsChipClicked')[0][1]);
+    }
   });
 
   test('Multi-touch scenario', async function() {
