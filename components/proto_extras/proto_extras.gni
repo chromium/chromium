@@ -170,10 +170,10 @@ template("proto_extras") {
                                "visibility",
                              ])
 
-      deps = [ ":$_to_value_target_name" ]
       if (defined(invoker.deps)) {
-        deps += invoker.deps
+        deps = invoker.deps
       }
+      link_public_deps = [ ":$_to_value_target_name" ]
       link_deps = [ "//base" ]
 
       generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
