@@ -150,7 +150,7 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
     return;
   }
 
-  if (IsGlassToolbarEnabled() && is_animating_) {
+  if (IsFullscreenEasedTransitionsEnabled() && is_animating_) {
     return;
   }
 
@@ -159,7 +159,7 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
   CGFloat pre_scroll_top_progress = top_progress_;
   CGFloat pre_scroll_bottom_progress = bottom_progress_;
 
-  if (IsGlassToolbarEnabled()) {
+  if (IsFullscreenEasedTransitionsEnabled()) {
     CGFloat effective_amount =
         ApplyResistance(amount, top_progress_, settled_state_);
     UpdateProgress(top_progress_, effective_amount,
@@ -305,7 +305,7 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   base::TimeDelta duration = base::Seconds(kMaterialDuration1);
   animation_initial_velocity_ = 0.0;
 
-  if (IsGlassToolbarEnabled()) {
+  if (IsFullscreenEasedTransitionsEnabled()) {
     auto params = CalculateSpringAnimationParams(
         transition, trigger, start_progress, scroll_velocity_);
     duration = params.duration;

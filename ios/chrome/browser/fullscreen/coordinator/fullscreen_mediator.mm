@@ -283,7 +283,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   CGFloat delta = contentOffset - _lastContentOffset;
   _lastContentOffset = contentOffset;
 
-  if (IsGlassToolbarEnabled() && _browserAgent->is_animating()) {
+  if (IsFullscreenEasedTransitionsEnabled() && _browserAgent->is_animating()) {
     return;
   }
 
@@ -322,7 +322,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   }
 
   CGFloat scrollVelocity = 0.0;
-  if (IsGlassToolbarEnabled()) {
+  if (IsFullscreenEasedTransitionsEnabled()) {
     CGPoint panVelocity = [scrollView.panGestureRecognizer
         velocityInView:scrollView.panGestureRecognizer.view];
     scrollVelocity = std::abs(panVelocity.y);
@@ -330,7 +330,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
   _browserAgent->IncrementalScroll(delta, scrollVelocity, PassKey());
 
-  if (IsGlassToolbarEnabled()) {
+  if (IsFullscreenEasedTransitionsEnabled()) {
     CGFloat progress = _browserAgent->top_progress();
     switch (_browserAgent->settled_state()) {
       case FullscreenState::kUIExpanded:
@@ -563,7 +563,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     }
   }
 
-  if (IsGlassToolbarEnabled()) {
+  if (IsFullscreenEasedTransitionsEnabled()) {
     switch (_browserAgent->settled_state()) {
       case FullscreenState::kUICollapsed:
         _browserAgent->EnterFullscreen(

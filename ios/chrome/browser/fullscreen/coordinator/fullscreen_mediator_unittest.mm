@@ -188,7 +188,8 @@ TEST_F(FullscreenMediatorTest, WebStateWasShownInvalidatesInsetsOnce) {
 // Tests that scrolling down past the threshold triggers EnterFullscreen.
 TEST_F(FullscreenMediatorTest, EnterFullscreenWhenThresholdHit) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kFullscreenRefactoring, kGlassToolbar}, {});
+  feature_list.InitWithFeatures(
+      {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
 
   auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
 
@@ -209,7 +210,8 @@ TEST_F(FullscreenMediatorTest, EnterFullscreenWhenThresholdHit) {
 // an animated fullscreen transition.
 TEST_F(FullscreenMediatorTest, IncrementalScrollBelowThreshold) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kFullscreenRefactoring, kGlassToolbar}, {});
+  feature_list.InitWithFeatures(
+      {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
 
   auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
 
@@ -231,7 +233,8 @@ TEST_F(FullscreenMediatorTest, IncrementalScrollBelowThreshold) {
 // Tests that scrolling up past the threshold triggers ExitFullscreen.
 TEST_F(FullscreenMediatorTest, ExitFullscreenWhenThresholdHit) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kFullscreenRefactoring, kGlassToolbar}, {});
+  feature_list.InitWithFeatures(
+      {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
 
   auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
 
