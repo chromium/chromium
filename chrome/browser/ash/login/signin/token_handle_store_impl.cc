@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -314,8 +315,8 @@ void TokenHandleStoreImpl::ReplyToTokenHandleCheck(
   }
 
   if (auto it = pending_checks_.find(account_id); it != pending_checks_.end()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(it->second));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(it->second)));
     pending_checks_.erase(it);
   }
 
