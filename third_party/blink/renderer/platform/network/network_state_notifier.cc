@@ -107,12 +107,17 @@ NetworkStateNotifier::ScopedNotifier::~ScopedNotifier() {
 
 NetworkStateNotifier::NetworkStateObserverHandle::NetworkStateObserverHandle(
     NetworkStateNotifier* notifier,
-    NetworkStateNotifier::ObserverType type)
-    : notifier_(notifier), type_(type) {}
+    NetworkStateNotifier::ObserverType type,
+    NetworkStateNotifier::NetworkStateObserver* observer,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : notifier_(notifier),
+      type_(type),
+      observer_(observer),
+      task_runner_(std::move(task_runner)) {}
 
 NetworkStateNotifier::NetworkStateObserverHandle::
     ~NetworkStateObserverHandle() {
-  notifier_->RemoveObserver(type_, this);
+  notifier_->RemoveObserver(type_, observer_, std::move(task_runner_));
 }
 
 void NetworkStateNotifier::SetOnLine(bool on_line) {
@@ -181,12 +186,9 @@ std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle>
 NetworkStateNotifier::AddConnectionObserver(
     NetworkStateObserver* observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  auto handle =
-      std::make_unique<NetworkStateNotifier::NetworkStateObserverHandle>(
-          this, ObserverType::kConnectionType);
-  AddObserverToMap(connection_observers_, handle.get(), observer,
-                   std::move(task_runner));
-  return handle;
+  AddObserverToMap(connection_observers_, observer, task_runner);
+  return std::make_unique<NetworkStateNotifier::NetworkStateObserverHandle>(
+      this, ObserverType::kConnectionType, observer, task_runner);
 }
 
 void NetworkStateNotifier::SetSaveDataEnabled(bool enabled) {
@@ -202,12 +204,9 @@ std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle>
 NetworkStateNotifier::AddOnLineObserver(
     NetworkStateObserver* observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  auto handle =
-      std::make_unique<NetworkStateNotifier::NetworkStateObserverHandle>(
-          this, ObserverType::kOnLineState);
-  AddObserverToMap(on_line_state_observers_, handle.get(), observer,
-                   std::move(task_runner));
-  return handle;
+  AddObserverToMap(on_line_state_observers_, observer, task_runner);
+  return std::make_unique<NetworkStateNotifier::NetworkStateObserverHandle>(
+      this, ObserverType::kOnLineState, observer, task_runner);
 }
 
 void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
@@ -285,33 +284,27 @@ void NetworkStateNotifier::NotifyObservers(ObserverListMap& map,
   DCHECK(IsMainThread());
   base::AutoLock locker(lock_);
   for (const auto& entry : map) {
-    entry.value->task_runner->PostTask(
+    entry.value->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &NetworkStateNotifier::NotifyObserverOnTaskRunner,
-            base::Unretained(this), base::UnsafeDangling(entry.key),
-            MakeUnwrappingCrossThreadWeakHandle(entry.value->observer), type,
-            state));
+        base::BindOnce(&NetworkStateNotifier::NotifyObserverOnTaskRunner,
+                       base::Unretained(this), base::UnsafeDangling(entry.key),
+                       type, state));
   }
 }
 
 void NetworkStateNotifier::NotifyObserverOnTaskRunner(
-    MayBeDangling<NetworkStateObserverHandle> handle,
-    NetworkStateObserver* observer,
+    MayBeDangling<NetworkStateObserver> observer,
     ObserverType type,
     const NetworkState& state) {
-  if (!observer) {
-    return;
-  }
   {
     base::AutoLock locker(lock_);
     ObserverListMap& map = GetObserverMapFor(type);
     // It's safe to pass a MayBeDangling pointer to find().
-    ObserverListMap::iterator it = map.find(handle);
+    ObserverListMap::iterator it = map.find(observer);
     if (map.end() == it) {
       return;
     }
-    DCHECK(it->value->task_runner->RunsTasksInCurrentSequence());
+    DCHECK(it->value->RunsTasksInCurrentSequence());
   }
 
   switch (type) {
@@ -343,30 +336,28 @@ NetworkStateNotifier::ObserverListMap& NetworkStateNotifier::GetObserverMapFor(
 
 void NetworkStateNotifier::AddObserverToMap(
     ObserverListMap& map,
-    NetworkStateObserverHandle* handle,
     NetworkStateObserver* observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(task_runner->RunsTasksInCurrentSequence());
-  DCHECK(handle);
   DCHECK(observer);
 
   base::AutoLock locker(lock_);
-  ObserverListMap::AddResult result = map.insert(
-      handle, std::make_unique<ObserverListEntry>(
-                  MakeCrossThreadWeakHandle(observer), std::move(task_runner)));
+  ObserverListMap::AddResult result =
+      map.insert(observer, std::move(task_runner));
   DCHECK(result.is_new_entry);
 }
 
-void NetworkStateNotifier::RemoveObserver(ObserverType type,
-                                          NetworkStateObserverHandle* handle) {
-  DCHECK(handle);
+void NetworkStateNotifier::RemoveObserver(
+    ObserverType type,
+    NetworkStateObserver* observer,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  DCHECK(observer);
 
   base::AutoLock locker(lock_);
   ObserverListMap& map = GetObserverMapFor(type);
-  ObserverListMap::iterator it = map.find(handle);
-  DCHECK_NE(it, map.end());
-  DCHECK(it->value->task_runner->RunsTasksInCurrentSequence());
-  map.erase(it);
+  DCHECK(map.Contains(observer));
+  map.erase(observer);
 }
 
 // static

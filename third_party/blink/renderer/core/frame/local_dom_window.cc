@@ -225,7 +225,6 @@ class LocalDOMWindow::NetworkStateObserver final
 
   void Trace(Visitor* visitor) const override {
     ExecutionContextLifecycleObserver::Trace(visitor);
-    NetworkStateNotifier::NetworkStateObserver::Trace(visitor);
   }
 
  private:
