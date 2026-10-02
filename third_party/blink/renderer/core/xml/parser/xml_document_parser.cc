@@ -2004,6 +2004,21 @@ bool XMLDocumentParser::ShouldMarkScriptAlreadyStarted() const {
       // XMLHTTPRequest.responseXML parses with XML scripting support disabled:
       // See: https://xhr.spec.whatwg.org/#document-response, step 6
       document_->IsXHRDocument() ||
+      // XSLTProcessor.transformToDocument (and any other XML document with a
+      // null browsing context) must mark script elements as already started
+      // and never execute them.
+      // See:
+      // https://html.spec.whatwg.org/multipage/scripting.html#scriptTagXSLT
+      // Documents without a frame (a null browsing context) do not have a
+      // `script_runner_` in XMLDocumentParser, so `EndElementNs()` returns
+      // early without calling `ScriptLoader::PrepareScript()` (which would
+      // otherwise mark scripts as already started and bail out before execution
+      // due to the null browsing context). Checking `!document_->GetFrame()`
+      // marks scripts as already started upon creation in frameless XML
+      // documents, covering `XSLTProcessor.transformToDocument()` (which
+      // creates a frameless Document and parses via `Document::SetContent()`
+      // without setting `IsDOMParserDocument()` or `IsXHRDocument()`):
+      !document_->GetFrame() ||
       // All XML parse results created as part of XML fragment parsing:
       // See:
       // https://html.spec.whatwg.org/multipage/xhtml.html#xml-scripting-support-disabled,
