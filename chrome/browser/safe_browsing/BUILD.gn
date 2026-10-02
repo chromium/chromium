@@ -1372,6 +1372,7 @@ source_set("browser_tests") {
       "sb_embedded_test_server_browsertest.cc",
       "tailored_security/chrome_tailored_security_service_browsertest.cc",
       "url_lookup_service_browsertest.cc",
+      "v5_local_database_browsertest.cc",
     ]
     deps += [
       ":blocking_page_platform_test_support",
@@ -1422,7 +1423,10 @@ source_set("browser_tests") {
       "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:sb_database",
+      "//components/safe_browsing/core/browser/db:sb_local_database_manager",
+      "//components/safe_browsing/core/browser/db:sb_update_protocol_manager",
       "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
+      "//components/safe_browsing/core/browser/db:v4_store_proto",
       "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
       "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
       "//components/safe_browsing/core/browser/realtime:url_lookup_service",

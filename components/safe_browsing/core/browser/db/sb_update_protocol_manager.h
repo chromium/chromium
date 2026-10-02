@@ -75,6 +75,7 @@ class SBUpdateProtocolManager {
   const base::Time& last_response_time() const;
 
  protected:
+  friend class V5LocalDatabaseBrowserTest;
   friend class V5UpdateProtocolManagerTest;
   friend class SBLocalDatabaseManagerTest_V4V5;
   FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest_V4V5,

@@ -102,6 +102,52 @@ std::unique_ptr<net::test_server::HttpResponse> HandleSearchHashesRequest(
   return http_response;
 }
 
+// This function listens for requests to /v5/hashLists:batchGet. It responds
+// with list updates from `hash_lists_map` for any matching lists and no-op
+// partial updates for any other requested lists.
+std::unique_ptr<net::test_server::HttpResponse> HandleBatchGetHashListsRequest(
+    const std::map<std::string, V5::HashList>& hash_lists_map,
+    const net::test_server::HttpRequest& request) {
+  if (!net::test_server::ShouldHandle(request, "/v5/hashLists:batchGet")) {
+    return nullptr;
+  }
+
+  std::string req;
+  CHECK(net::GetValueForKeyInQuery(request.GetURL(), "$req", &req));
+  std::string decoded_output;
+  CHECK(base::Base64UrlDecode(req, base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                              &decoded_output));
+  V5::BatchGetHashListsRequest batch_get_req;
+  CHECK(batch_get_req.ParseFromString(decoded_output));
+
+  V5::BatchGetHashListsResponse response;
+  for (const std::string& name : batch_get_req.names()) {
+    V5::HashList* list = response.add_hash_lists();
+    auto it = hash_lists_map.find(name);
+    if (it != hash_lists_map.end()) {
+      *list = it->second;
+    } else {
+      list->set_name(name);
+      list->mutable_minimum_wait_duration()->set_seconds(3600);
+      list->set_partial_update(true);
+    }
+  }
+
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content(serialized_response);
+  return http_response;
+}
+
+void SetV5UrlPrefixToTestServerForTesting(
+    net::test_server::EmbeddedTestServer* embedded_test_server) {
+  // Static so accessing the underlying buffer won't cause use-after-free.
+  static base::NoDestructor<std::string> url_prefix;
+  *url_prefix = embedded_test_server->GetURL("/v5").spec();
+  SetSbV5UrlPrefixForTesting(url_prefix->c_str());
+}
+
 }  // namespace
 
 void StartRedirectingV5RequestsForTesting(
@@ -109,12 +155,17 @@ void StartRedirectingV5RequestsForTesting(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     const std::map<GURL, base::TimeDelta>& delay_map,
     bool serve_cookies) {
-  // Static so accessing the underlying buffer won't cause use-after-free.
-  static base::NoDestructor<std::string> url_prefix;
-  *url_prefix = embedded_test_server->GetURL("/v5").spec();
-  SetSbV5UrlPrefixForTesting(url_prefix->c_str());
+  SetV5UrlPrefixToTestServerForTesting(embedded_test_server);
   embedded_test_server->RegisterRequestHandler(base::BindRepeating(
       &HandleSearchHashesRequest, response_map, delay_map, serve_cookies));
+}
+
+void StartRedirectingV5UpdateRequestsForTesting(
+    const std::map<std::string, V5::HashList>& hash_lists_map,
+    net::test_server::EmbeddedTestServer* embedded_test_server) {
+  SetV5UrlPrefixToTestServerForTesting(embedded_test_server);
+  embedded_test_server->RegisterRequestHandler(
+      base::BindRepeating(&HandleBatchGetHashListsRequest, hash_lists_map));
 }
 
 }  // namespace safe_browsing

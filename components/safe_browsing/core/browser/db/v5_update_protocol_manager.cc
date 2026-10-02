@@ -188,9 +188,8 @@ void V5UpdateProtocolManager::IssueUpdateRequest(
   std::string request_base64 =
       GetBase64SerializedUpdateRequestProto(list_identifier_to_version_mapping);
   std::string url = base::StringPrintf(
-      "https://safebrowsing.googleapis.com/v5/hashLists:batchGet"
-      "?$req=%s&$ct=application/x-protobuf",
-      request_base64.c_str());
+      "%s/hashLists:batchGet?$req=%s&$ct=application/x-protobuf",
+      GetSbV5UrlPrefix(), request_base64.c_str());
   auto api_key = google_apis::GetAPIKey();
   if (!api_key.empty()) {
     base::StringAppendF(&url, "&key=%s",
