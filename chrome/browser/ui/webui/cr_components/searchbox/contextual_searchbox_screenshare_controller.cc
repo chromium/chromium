@@ -481,10 +481,16 @@ void ContextualSearchboxScreenshareController::CaptureAndUploadScreenshot(
   is_capturing_ = true;
 
 #if BUILDFLAG(IS_WIN)
+  // Delay full-screen capture after the Chrome media picker dialog closes so
+  // DWM can finish its window-close animation and unmap the dialog. Direct
+  // region capture (`region_capture_source` present on Windows) does not open
+  // the media picker dialog, and window capture targets a specific HWND.
+  const bool needs_picker_close_delay =
+      source.type != content::DesktopMediaID::TYPE_WINDOW &&
+      !region_capture_source.has_value();
   base::TimeDelta delay = screen_capture_delay_for_testing_.value_or(
-      source.type == content::DesktopMediaID::TYPE_WINDOW
-          ? base::TimeDelta()
-          : kDefaultScreenCaptureDelay);
+      needs_picker_close_delay ? kDefaultScreenCaptureDelay
+                               : base::TimeDelta());
   if (!delay.is_zero()) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
