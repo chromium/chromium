@@ -28,13 +28,6 @@ source_set("reporting") {
     ]
   }
 
-  if (enterprise_telomere_reporting) {
-    sources += [
-      "telomere_event_router.h",
-      "telomere_reporting_context.h",
-    ]
-  }
-
   public_deps = [
     "//chrome/browser/profiles:profile",
     "//components/enterprise/common/proto:browser_events_proto",
@@ -80,13 +73,6 @@ source_set("impl") {
       "extension_install_event_router.cc",
       "extension_telemetry_event_router.cc",
       "extension_telemetry_event_router_factory.cc",
-    ]
-  }
-
-  if (enterprise_telomere_reporting) {
-    sources += [
-      "telomere_event_router.cc",
-      "telomere_reporting_context.cc",
     ]
   }
 

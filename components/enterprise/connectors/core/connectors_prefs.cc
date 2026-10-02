@@ -65,8 +65,6 @@ const char kOnSecurityEventScopePref[] =
 // Local State Prefs
 const char kLatestCrashReportCreationTime[] =
     "enterprise_connectors.latest_crash_report_creation_time";
-const char kLatestTelomereReportCreationTime[] =
-    "enterprise_connectors.latest_telomere_report_creation_time";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckMode,
@@ -117,7 +115,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
-  registry->RegisterInt64Pref(kLatestTelomereReportCreationTime, 0);
 
   client_certificates::RegisterLocalStatePrefs(registry);
 }

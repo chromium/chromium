@@ -15,7 +15,6 @@ buildflag_header("buildflags") {
     "ENTERPRISE_DATA_CONTROLS=$enterprise_data_controls",
     "ENTERPRISE_WATERMARK=$enterprise_watermark",
     "ENTERPRISE_SCREENSHOT_PROTECTION=$enterprise_screenshot_protection",
-    "ENTERPRISE_TELOMERE_REPORTING=$enterprise_telomere_reporting",
     "ENTERPRISE_CACHE_ENCRYPTION=$enterprise_cache_encryption",
     "ENTERPRISE_PROXY=$enterprise_proxy",
   ]
