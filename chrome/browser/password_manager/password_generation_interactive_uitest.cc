@@ -228,10 +228,8 @@ class PasswordGenerationAutofillPopupInteractiveTest
       autofill_client_injector_;
 };
 
-// TODO(https://crbug.com/501668599): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndPasswordSelected) {
+                       PopupShownAndPasswordSelected) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
   base::HistogramTester histogram_tester;
@@ -259,10 +257,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       1);
 }
 
-// TODO(http://crbug.com/382272011): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAutomaticallyAndPasswordErased) {
+                       PopupShownAutomaticallyAndPasswordErased) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
   NavigateToAndAcceptSuggestedPassword();
@@ -288,10 +284,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       1);
 }
 
-// TODO(https://crbug.com/501668599): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownManuallyAndPasswordErased) {
+                       PopupShownManuallyAndPasswordErased) {
   NavigateToFile("/password/password_form.html");
   FocusPasswordField();
   EXPECT_FALSE(GenerationPopupShowing());
@@ -385,10 +379,8 @@ IN_PROC_BROWSER_TEST_F(
   autofill_client().WaitForAutofillPopup();
 }
 
-// TODO(https://crbug.com/501668599): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndDismissed) {
+                       PopupShownAndDismissed) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
 
@@ -409,10 +401,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_FALSE(GenerationPopupShowing());
 }
 
-// TODO(https://crbug.com/501668599): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndDismissedByScrolling) {
+                       PopupShownAndDismissedByScrolling) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
 
@@ -526,10 +516,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_FALSE(GenerationPopupShowing());
 }
 
-// TODO(https://crbug.com/501668599): Re-enable this test after flakiness is
-// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_GenerationPopupNotShownAfterUserRejected) {
+                       GenerationPopupNotShownAfterUserRejected) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
 
