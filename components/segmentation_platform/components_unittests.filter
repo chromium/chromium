@@ -52,6 +52,7 @@
 *ModelManagerTest.*
 *ModelProviderFactoryImplTest.*
 *MostVisitedTilesUserTest.*
+*NTPThemeEphemeralModuleTest.*
 *NtpThemePromoTest.*
 *OptimizationGuideSegmentationModelProviderTest.*
 *OptimizationTargetSegmentationDummyTest.*

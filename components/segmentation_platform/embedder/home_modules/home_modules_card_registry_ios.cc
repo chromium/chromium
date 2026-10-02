@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
+#include "components/segmentation_platform/embedder/home_modules/ntp_theme_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/save_passwords_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
@@ -39,9 +40,6 @@ void AddCardForTip(TipIdentifier tip,
   switch (tip) {
     case TipIdentifier::kUnknown:
       return;  // Do nothing for unknown tips
-    case TipIdentifier::kNTPTheme:
-      // TODO(crbug.com/566958720): push back the NTP theme ephemeral module.
-      return;
     case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
     case TipIdentifier::kLensTranslate: {
@@ -74,6 +72,12 @@ void AddCardForTip(TipIdentifier tip,
       if (EnhancedSafeBrowsingEphemeralModule::IsEnabled(prefs)) {
         cards.push_back(
             std::make_unique<EnhancedSafeBrowsingEphemeralModule>(prefs));
+      }
+      break;
+    }
+    case TipIdentifier::kNTPTheme: {
+      if (NTPThemeEphemeralModule::IsEnabled(prefs)) {
+        cards.push_back(std::make_unique<NTPThemeEphemeralModule>(prefs));
       }
       break;
     }
@@ -174,6 +178,7 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   LensEphemeralModule::RegisterProfilePrefs(registry);
   SendTabNotificationPromo::RegisterProfilePrefs(registry);
   DefaultBrowserPromoEphemeralModule::RegisterProfilePrefs(registry);
+  NTPThemeEphemeralModule::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -183,7 +188,8 @@ bool HomeModulesCardRegistryIOS::IsEphemeralTipsModuleLabel(
          AutofillPasswordsEphemeralModule::IsModuleLabel(label) ||
          EnhancedSafeBrowsingEphemeralModule::IsModuleLabel(label) ||
          SavePasswordsEphemeralModule::IsModuleLabel(label) ||
-         LensEphemeralModule::IsModuleLabel(label);
+         LensEphemeralModule::IsModuleLabel(label) ||
+         NTPThemeEphemeralModule::IsModuleLabel(label);
 }
 
 void HomeModulesCardRegistryIOS::NotifyCardShown(std::string_view card_name) {
