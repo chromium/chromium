@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -24,6 +23,7 @@ constexpr int kSampleRate = 48000;
 constexpr int kChannels = 2;
 constexpr int kBufferSize = 960;  // 20ms at 48khz
 constexpr int kFrequency = 20;
+constexpr float kMaxAmplitude = 1.0f;
 const ChannelLayout kChannelLayout = ChannelLayout::CHANNEL_LAYOUT_STEREO;
 
 void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
@@ -38,12 +38,8 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
             AudioTimestampHelper::FramesToTime(number_frames, kSampleRate));
 
   for (int ch = 0; ch < kChannels; ++ch) {
-    const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
-    base::span<const uint8_t> input_span(base::as_byte_span(
-        base::allow_nonunique_obj, expected_data->channel(ch)));
-    base::span<uint8_t> UNSAFE_TODO(
-        output_span(buffer->channel_data()[ch].get(), kSpanSize));
-    EXPECT_EQ(input_span, output_span);
+    EXPECT_EQ(expected_data->channel(ch),
+              buffer->planar_channel_cast<const float>(ch));
   }
 }
 
@@ -104,7 +100,7 @@ TEST_F(LimitingAudioQueueTest, FlushClearFlush) {
   limiting_queue_->Flush();
 }
 
-// Makes sure inputs and outputs are bit-wise identical when the limiter isn't
+// Makes sure inputs and outputs are identical when the limiter isn't
 // adjusting gain.
 TEST_F(LimitingAudioQueueTest, NoLimiting_IsPassthrough) {
   FillWithSine(input_bus_.get());
@@ -150,12 +146,8 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
   limiting_queue_->Push(
       *input_bus_, kBufferSize, base::TimeDelta(),
       base::BindLambdaForTesting([&](scoped_refptr<AudioBuffer> buffer) {
-        const float* channel_data =
-            reinterpret_cast<const float*>(buffer->channel_data()[0].get());
-        for (int i = 0; i < buffer->frame_count(); ++i) {
-          has_values_from_first_buffer |=
-              UNSAFE_TODO(channel_data[i]) == kGuardValue;
-        }
+        has_values_from_first_buffer |= std::ranges::contains(
+            buffer->planar_channel_cast<const float>(0), kGuardValue);
         second_bufer_emitted = true;
       }));
 
@@ -166,7 +158,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
   EXPECT_FALSE(has_values_from_first_buffer);
 }
 
-// Makes sure inputs and outputs are bit-wise identical when the limiter isn't
+// Makes sure inputs and outputs are identical when the limiter isn't
 // adjusting gain.
 TEST_F(LimitingAudioQueueTest, NoLimiting_PartialBuffer_IsPassthrough) {
   FillWithSine(input_bus_.get());
@@ -197,11 +189,9 @@ TEST_F(LimitingAudioQueueTest, Limiting_CompressesGain) {
 
   auto verify_buffer = [&](scoped_refptr<AudioBuffer> buffer) {
     for (int ch = 0; ch < kChannels; ++ch) {
-      const float* channel_data =
-          reinterpret_cast<const float*>(buffer->channel_data()[ch].get());
-      for (int i = 0; i < kBufferSize; ++i) {
-        has_out_of_range_value |= std::abs(UNSAFE_TODO(channel_data[i])) > 1.0f;
-      }
+      has_out_of_range_value |= std::ranges::any_of(
+          buffer->planar_channel_cast<const float>(ch),
+          [](float sample) { return std::abs(sample) > kMaxAmplitude; });
     }
 
     result = std::move(buffer);

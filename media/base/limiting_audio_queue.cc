@@ -4,6 +4,7 @@
 
 #include "media/base/limiting_audio_queue.h"
 
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -41,10 +42,8 @@ void LimitingAudioQueue::Push(const AudioBus& input,
   buffer->set_timestamp(timestamp);
   buffer->TrimEnd(max_buffer_size_ - num_frames);
 
-  AudioLimiter::OutputChannels output_spans;
-  for (uint8_t* data : buffer->channel_data()) {
-    output_spans.emplace_back(data, num_frames * sizeof(float));
-  }
+  AudioLimiter::OutputChannels output_spans =
+      base::ToVector(buffer->planar_data());
 
   limiter_->LimitPeaksPartial(
       input, num_frames, output_spans,
