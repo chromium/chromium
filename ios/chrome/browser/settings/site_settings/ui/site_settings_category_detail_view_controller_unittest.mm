@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -290,6 +291,9 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   UITableViewCell* allowedCell =
       [view_controller tableView:view_controller.tableView
            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  ASSERT_NE(nil, allowedCell.selectedBackgroundView);
+  EXPECT_NSEQ([UIColor colorNamed:kGroupedSecondaryBackgroundColor],
+              allowedCell.selectedBackgroundView.backgroundColor);
   ASSERT_TRUE([allowedCell.accessoryView isKindOfClass:[UIButton class]]);
   UIButton* allowedButton = static_cast<UIButton*>(allowedCell.accessoryView);
   EXPECT_TRUE(allowedButton.showsMenuAsPrimaryAction);
@@ -314,6 +318,9 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   UITableViewCell* notAllowedCell =
       [view_controller tableView:view_controller.tableView
            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
+  ASSERT_NE(nil, notAllowedCell.selectedBackgroundView);
+  EXPECT_NSEQ([UIColor colorNamed:kGroupedSecondaryBackgroundColor],
+              notAllowedCell.selectedBackgroundView.backgroundColor);
   ASSERT_TRUE([notAllowedCell.accessoryView isKindOfClass:[UIButton class]]);
   UIButton* notAllowedButton =
       static_cast<UIButton*>(notAllowedCell.accessoryView);
@@ -420,6 +427,9 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
                             withObject:deleteButton];
 #pragma clang diagnostic pop
   EXPECT_OCMOCK_VERIFY(mutator_);
+  // When the mediator updates the consumer with the remaining sites, the
+  // view controller exits edit mode if no site exceptions remain.
+  [view_controller setAllowedSites:@[] notAllowedSites:@[]];
   EXPECT_FALSE(view_controller.editing);
 }
 

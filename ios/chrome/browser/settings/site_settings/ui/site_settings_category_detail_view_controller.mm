@@ -97,6 +97,7 @@ enum ItemType {
   self.tableView.accessibilityIdentifier =
       kSiteSettingsCategoryDetailTableViewId;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
+  self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
 
   _searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
@@ -189,7 +190,13 @@ enum ItemType {
 }
 
 - (void)updateUIForEditState {
-  [super updateUIForEditState];
+  // Do not call super. `SettingsRootTableViewController` calls `beginUpdates`
+  // and `endUpdates` to animate row height changes for cells that grow taller
+  // in edit mode. SiteSettings has no cells that change height in edit mode,
+  // and calling `beginUpdates`/`endUpdates` after `reloadData` corrupts
+  // self-sizing cell heights.
+  [self.navigationController setToolbarHidden:self.shouldHideToolbar
+                                     animated:YES];
   [self updatedToolbarForEditState];
 }
 
@@ -211,9 +218,14 @@ enum ItemType {
       [sitesToDelete addObject:siteException];
     }
   }
-  [self setEditing:NO animated:YES];
-  [self updateUIForEditState];
   [self.mutator deleteSettingsForSites:sitesToDelete];
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        if (weakSelf.editing) {
+          [weakSelf setEditing:NO animated:YES];
+        }
+      }));
 }
 
 #pragma mark - SiteSettingsCategoryDetailConsumer
@@ -305,6 +317,12 @@ enum ItemType {
     return isSiteExceptionSection ? superIndexPath : nil;
   }
   return isSiteExceptionSection ? nil : superIndexPath;
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  return [item isKindOfClass:[TableViewURLItem class]];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -423,12 +441,14 @@ enum ItemType {
 // change.
 - (void)reloadSitesAndUpdateEditState {
   [self reloadData];
+  [self.tableView layoutIfNeeded];
   if (self.isViewLoaded) {
     if (![self editButtonEnabled] && self.tableView.editing) {
       [self setEditing:NO animated:YES];
+    } else {
+      [self updatedToolbarForEditState];
     }
     [self updateNavigationBar];
-    [self updateUIForEditState];
   }
 }
 
@@ -618,6 +638,10 @@ enum ItemType {
 // for the site exception at `indexPath`.
 - (void)configureSiteExceptionCell:(UITableViewCell*)cell
                        atIndexPath:(NSIndexPath*)indexPath {
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  selectedBackgroundView.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  cell.selectedBackgroundView = selectedBackgroundView;
   SiteSettingsSiteException* siteException =
       [self siteExceptionForIndexPath:indexPath];
   if (!siteException) {
