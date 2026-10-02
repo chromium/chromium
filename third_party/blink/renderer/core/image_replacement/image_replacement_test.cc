@@ -1141,7 +1141,7 @@ TEST_F(ImageReplacementSimTest,
       #target { width: 50px; height: 50px; }
     </style>
     <img loading="lazy"
-         sizes="auto" srcset="foo.png 100w, bar.png 200w"
+         sizes="auto, 50px" srcset="foo.png 100w, bar.png 200w"
          src="foo.png"
          id="target">
     </img>
@@ -1193,7 +1193,9 @@ TEST_F(ImageReplacementSimTest,
   // Replacement should still be pending and not active.
   EXPECT_FALSE(img->HasImageReplacement());
 
-  // Finish loading the new size-changed image (bar.png).
+  // Finish both requests. The original request may remain alive while the
+  // size-changed image becomes the current request.
+  image_resource1.Complete(gif_data);
   image_resource2.Complete(gif_data);
   test::RunPendingTasks();
 

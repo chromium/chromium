@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -272,6 +273,84 @@ TEST_F(SizesAttributeParserTest, AutoSizesLazyImgLargePositiveWidth) {
 
   ASSERT_TRUE(parser.IsAuto());
   ASSERT_EQ(531, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesUsesExplicitFallbackWhenNotRendered) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531px" height="246px"
+         sizes="auto, 123px">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  // Parsing while rendered stores the last auto-sizes width; removal resets
+  // it, so the explicit fallback is used afterwards.
+  SizesAttributeParser rendered_parser(GetTestMediaValues(), "auto, 123px",
+                                       nullptr, img);
+  ASSERT_EQ(531, rendered_parser.Size());
+
+  img->remove();
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto, 123px", nullptr,
+                              img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  EXPECT_EQ(123, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesUsesLastWidthWhenNotRendered) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531px" height="246px"
+         sizes="auto, 123px">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser rendered_parser(GetTestMediaValues(), "auto, 123px",
+                                       nullptr, img);
+  ASSERT_EQ(531, rendered_parser.Size());
+
+  img->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(img->IsBeingRendered());
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto, 123px", nullptr,
+                              img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  EXPECT_EQ(531, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesNeverRenderedUsesFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: none">
+      <img id="target" loading="lazy" width="531px" height="246px"
+           sizes="auto, 123px">
+    </div>
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+  ASSERT_FALSE(img->IsBeingRendered());
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto, 123px", nullptr,
+                              img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  EXPECT_EQ(123, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesPrefersRenderedWidthToFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531px" height="246px"
+         sizes="auto, 123px">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+  SizesAttributeParser parser(GetTestMediaValues(), "auto, 123px", nullptr,
+                              img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  EXPECT_EQ(531, parser.Size());
 }
 
 }  // namespace blink

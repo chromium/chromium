@@ -37,7 +37,16 @@ bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
       // can be specified if desired."
       // For example: sizes="auto, (max-width: 30em) 100vw, ..."
       is_auto_ = true;
-      return true;
+      stream.Consume();
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        return true;
+      }
+      if (stream.Peek().GetType() != kCommaToken) {
+        return false;
+      }
+      stream.Consume();
+      continue;
     }
 
     CSSParserTokenStream::State savepoint = stream.Save();
@@ -136,16 +145,25 @@ float SizesAttributeParser::EffectiveSize() {
   // Spec:
   // https://html.spec.whatwg.org/#parsing-a-sizes-attribute
 
-  // 3.6 If size is not auto, then return size.
-  if (size_was_set_) {
-    return size_;
+  // 3.3 If size is auto, and img is not null, and img allows auto-sizes:
+  // if img is being rendered, use its concrete object size width and store
+  // it as the last auto-sizes width; otherwise use the last auto-sizes
+  // width if present.
+  if (is_auto_ && img_ && img_->AllowAutoSizes()) {
+    if (img_->IsBeingRendered()) {
+      float width = img_->LayoutBoxWidth();
+      img_->UpdateLastAutoSizesWidth(width);
+      return width;
+    }
+    if (std::optional<float> last_width = img_->LastAutoSizesWidth()) {
+      return *last_width;
+    }
   }
 
-  // 3.3 If size is auto, and img is not null, and img is being rendered, and
-  // img allows auto-sizes, then set size to the concrete object size width of
-  // img, in CSS pixels.
-  if (is_auto_ && img_ && img_->IsBeingRendered() && img_->AllowAutoSizes()) {
-    return img_->LayoutBoxWidth();
+  // 3.6 If size is not auto, then return size. This handles the explicit
+  // fallback after auto when the auto value is ignored.
+  if (size_was_set_) {
+    return size_;
   }
 
   // 4. Return 100vw.

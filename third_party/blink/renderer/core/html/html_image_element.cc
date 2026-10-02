@@ -665,6 +665,11 @@ void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
     GetDocument().View()->UnregisterFromLifecycleNotifications(this);
   }
   HTMLElement::RemovedFrom(insertion_point);
+  // https://html.spec.whatwg.org/#last-auto-sizes-width is reset by the
+  // removing steps, which a state-preserving atomic move does not run.
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    last_auto_sizes_width_.reset();
+  }
 }
 
 unsigned HTMLImageElement::width() {
@@ -762,9 +767,10 @@ bool HTMLImageElement::AllowAutoSizes() const {
   // its sizes attribute's value is "auto" (ASCII case-insensitive),
   // or starts with "auto," (ASCII case-insensitive).
   //
-  // Since this is only used by SizesAttributeParser when sizes starts with
-  // "auto" is already, it's unnecessary to check it again here.
-  return HasLazyLoadingAttribute();
+  const AtomicString& sizes = FastGetAttribute(html_names::kSizesAttr);
+  return HasLazyLoadingAttribute() &&
+         (EqualIgnoringAsciiCase(sizes, "auto") ||
+          sizes.StartsWithIgnoringAsciiCase("auto,"));
 }
 
 const String& HTMLImageElement::currentSrc() const {
@@ -897,7 +903,10 @@ bool HTMLImageElement::complete() const {
 }
 
 void HTMLImageElement::OnResize() {
-  if (is_auto_sized_ && HasLazyLoadingAttribute()) {
+  // Stopping being rendered (the observed size dropping to zero because the
+  // layout box went away) is not a relevant mutation:
+  // https://html.spec.whatwg.org/#relevant-mutations
+  if (is_auto_sized_ && HasLazyLoadingAttribute() && IsBeingRendered()) {
     SelectSourceURL(ImageLoader::kUpdateSizeChanged);
   }
 }

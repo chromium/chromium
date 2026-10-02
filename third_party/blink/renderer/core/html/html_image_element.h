@@ -86,6 +86,16 @@ class CORE_EXPORT HTMLImageElement
   bool IsBeingRendered() const;
   bool AllowAutoSizes() const;
 
+  // https://html.spec.whatwg.org/#last-auto-sizes-width
+  std::optional<float> LastAutoSizesWidth() const {
+    return last_auto_sizes_width_;
+  }
+  // Updated during sizes attribute parsing, which runs on const paths
+  // (e.g. GetResourceWidth()); the width is a cache of layout state.
+  void UpdateLastAutoSizesWidth(float width) const {
+    last_auto_sizes_width_ = width;
+  }
+
   const String& currentSrc() const;
 
   HTMLMapElement* GetImageMap() const;
@@ -305,6 +315,7 @@ class CORE_EXPORT HTMLImageElement
   bool is_auto_sized_ : 1;
   bool is_predicted_lcp_element_ : 1;
   bool is_lazy_load_issue_reported_ : 1;
+  mutable std::optional<float> last_auto_sizes_width_;
 
   HashSet<String> creator_scripts_;
 };
