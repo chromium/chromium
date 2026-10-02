@@ -1286,7 +1286,11 @@ void ContextualCueingController::OnCueHidden() {
 
 void ContextualCueingController::OnCueFormFactorShown(
     CueFormFactor form_factor) {
-  RecordCueFormFactorShown(form_factor);
+  std::string_view cuj;
+  if (active_cue_data_) {
+    cuj = active_cue_data_->cuj;
+  }
+  RecordCueFormFactorShown(cuj, form_factor);
   if (form_factor == CueFormFactor::kAnchoredMessage) {
     cue_shown_time_ = base::TimeTicks::Now();
   }
@@ -1308,7 +1312,11 @@ void ContextualCueingController::OnCueFormFactorShown(
 
 void ContextualCueingController::OnCueFormFactorHidden(
     CueFormFactor form_factor) {
-  RecordCueFormFactorHidden(form_factor);
+  std::string_view cuj;
+  if (active_cue_data_) {
+    cuj = active_cue_data_->cuj;
+  }
+  RecordCueFormFactorHidden(cuj, form_factor);
   if (form_factor == CueFormFactor::kAnchoredMessage) {
     cue_hidden_time_ = base::TimeTicks::Now();
 #if !BUILDFLAG(IS_ANDROID)

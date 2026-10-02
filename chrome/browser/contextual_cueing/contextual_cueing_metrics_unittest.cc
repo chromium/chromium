@@ -297,3 +297,50 @@ TEST(ContextualCueingMetricsTest, RecordContextualCueingInteraction_NonPdf) {
 
 }  // namespace
 }  // namespace contextual_cueing
+
+namespace contextual_cueing {
+
+TEST(ContextualCueingMetricsTest, RecordCueFormFactorShown_EmptyCuj) {
+  base::HistogramTester histogram_tester;
+  RecordCueFormFactorShown("", CueFormFactor::kChip);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueFormFactor.Shown",
+                                      CueFormFactor::kChip, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.V2.CueFormFactor.Shown.Chip", 0);
+}
+
+TEST(ContextualCueingMetricsTest, RecordCueFormFactorShown_WithCuj) {
+  base::HistogramTester histogram_tester;
+  RecordCueFormFactorShown("test_cuj", CueFormFactor::kIcon);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueFormFactor.Shown",
+                                      CueFormFactor::kIcon, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueFormFactor.Shown.Icon",
+      base::HashMetricName("test_cuj"), 1);
+}
+
+TEST(ContextualCueingMetricsTest, RecordCueFormFactorHidden_EmptyCuj) {
+  base::HistogramTester histogram_tester;
+  RecordCueFormFactorHidden("", CueFormFactor::kChip);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueFormFactor.Hidden", CueFormFactor::kChip, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.V2.CueFormFactor.Hidden.Chip", 0);
+}
+
+TEST(ContextualCueingMetricsTest, RecordCueFormFactorHidden_WithCuj) {
+  base::HistogramTester histogram_tester;
+  RecordCueFormFactorHidden("test_cuj", CueFormFactor::kAnchoredMessage);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueFormFactor.Hidden",
+      CueFormFactor::kAnchoredMessage, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueFormFactor.Hidden.AnchoredMessage",
+      base::HashMetricName("test_cuj"), 1);
+}
+
+}  // namespace contextual_cueing

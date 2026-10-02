@@ -195,6 +195,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualCueing.V2.CueFormFactor.Hidden.{FormFactor}"
+    units="hash" expires_after="2027-02-07">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    The hashed string of the CUJ for a contextual cue hidden from a specific
+    form factor.
+  </summary>
+  <token key="FormFactor">
+    <variant name="AnchoredMessage"/>
+    <variant name="Chip"/>
+    <variant name="Icon"/>
+  </token>
+</histogram>
+
 <histogram name="ContextualCueing.V2.CueFormFactor.Shown" enum="CueFormFactor"
     expires_after="2027-03-21">
   <owner>sophiechang@chromium.org</owner>
@@ -203,6 +218,21 @@ chromium-metrics-reviews@google.com.
     The form factor of a contextual cue that was shown. Recorded when a cue's
     icon, chip, or anchored message is shown.
   </summary>
+</histogram>
+
+<histogram name="ContextualCueing.V2.CueFormFactor.Shown.{FormFactor}"
+    units="hash" expires_after="2027-02-07">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    The hashed string of the CUJ for a contextual cue shown in a specific form
+    factor.
+  </summary>
+  <token key="FormFactor">
+    <variant name="AnchoredMessage"/>
+    <variant name="Chip"/>
+    <variant name="Icon"/>
+  </token>
 </histogram>
 
 <histogram name="ContextualCueing.V2.CueInteraction"

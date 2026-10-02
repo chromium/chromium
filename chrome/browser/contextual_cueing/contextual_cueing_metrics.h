@@ -50,8 +50,8 @@ void RecordContextualCueingDecision(
     ukm::SourceId source_id,
     ContextualCueingDecision contextual_cueing_decision);
 
-void RecordCueFormFactorShown(CueFormFactor form_factor);
-void RecordCueFormFactorHidden(CueFormFactor form_factor);
+void RecordCueFormFactorShown(std::string_view cuj, CueFormFactor form_factor);
+void RecordCueFormFactorHidden(std::string_view cuj, CueFormFactor form_factor);
 void RecordChipClickedCollapsedDuration(base::TimeDelta collapsed_duration);
 
 void RecordCueShownToPrivateInsights(
