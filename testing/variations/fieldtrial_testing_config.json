@@ -15653,22 +15653,6 @@
             ]
         }
     ],
-    "PrivateUserMetricsForRegionalCapabilities": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivateMetricsPuma",
-                        "PrivateMetricsPumaRc"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProactivePasswordProtection": [
         {
             "platforms": [
