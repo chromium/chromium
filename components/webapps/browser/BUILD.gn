@@ -131,6 +131,8 @@ source_set("browser") {
   public_deps = [
     ":constants",
     ":webapps_client",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
   ]
 
   if (is_android) {

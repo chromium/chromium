@@ -351,6 +351,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
 
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
+  CHECK(promoter);
   if (promoter->HasCurrentInstall()) {
     std::move(installed_callback)
         .Run(/*app_id=*/"",

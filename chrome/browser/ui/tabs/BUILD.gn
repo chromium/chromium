@@ -696,6 +696,7 @@ if (!is_android) {
       "//components/tab_groups",
       "//components/tabs:impl",
       "//components/wallet/core/common:features",
+      "//components/webapps/browser",
       "//net",
       "//ui/base/unowned_user_data",
       "//ui/webui",

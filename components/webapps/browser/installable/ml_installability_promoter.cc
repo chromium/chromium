@@ -21,6 +21,7 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -36,7 +37,6 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -49,6 +49,8 @@
 
 namespace webapps {
 
+DEFINE_USER_DATA(MLInstallabilityPromoter);
+
 namespace {
 const char kDisableGuardrailsSwitch[] = "disable-ml-install-history-guardrails";
 
@@ -60,6 +62,23 @@ enum class ManifestUrlInvalid {
 };
 
 }  // namespace
+
+// static
+MLInstallabilityPromoter* MLInstallabilityPromoter::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+MLInstallabilityPromoter* MLInstallabilityPromoter::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return From(tab);
+}
 
 MLInstallabilityPromoter::~MLInstallabilityPromoter() {
   if (service_worker_context_) {
@@ -150,13 +169,16 @@ void MLInstallabilityPromoter::StartPipeline(const GURL& validated_url) {
 }
 
 MLInstallabilityPromoter::MLInstallabilityPromoter(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<MLInstallabilityPromoter>(*web_contents),
       sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      storage_partition_(
-          web_contents->GetPrimaryMainFrame()->GetStoragePartition()),
-      service_worker_context_(nullptr) {
+      storage_partition_(nullptr),
+      service_worker_context_(nullptr),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  CHECK(web_contents);
+  storage_partition_ =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
   CHECK(storage_partition_);
   service_worker_context_ = storage_partition_->GetServiceWorkerContext();
   CHECK(service_worker_context_);
@@ -555,7 +577,5 @@ bool MLInstallabilityPromoter::IsTimeoutTaskOnlyPending() {
   return !site_manifest_metrics_task_ && !site_quality_metrics_task_ &&
          !is_timeout_complete_;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MLInstallabilityPromoter);
 
 }  // namespace webapps

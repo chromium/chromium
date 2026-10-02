@@ -20,6 +20,8 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -103,12 +105,21 @@ class WebInstallServiceImplTest : public WebAppTest {
     // Navigate to an HTTPS page so CreateIfAllowed succeeds.
     NavigateAndCommit(GURL(kDocumentUrl));
 
-    webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_);
+    ml_installability_promoter_ =
+        std::make_unique<webapps::MLInstallabilityPromoter>(mock_tab_,
+                                                            web_contents());
 
     // Mark the URL as loaded in the FakeWebContentsManager so data
     // retrievers know which page state to use.
     fake_web_contents_manager().SetUrlLoaded(web_contents(),
                                              GURL(kDocumentUrl));
+  }
+
+  void TearDown() override {
+    ml_installability_promoter_.reset();
+    WebAppTest::TearDown();
   }
 
   // Creates a WebInstallServiceImpl bound to `service_remote_` via the
@@ -201,6 +212,9 @@ class WebInstallServiceImplTest : public WebAppTest {
   }
 
  private:
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<webapps::MLInstallabilityPromoter>
+      ml_installability_promoter_;
   mojo::Remote<blink::mojom::WebInstallService> service_remote_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

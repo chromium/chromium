@@ -113,7 +113,6 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/installable/installable_manager.h"
-#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
@@ -156,9 +155,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app_utils.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -407,7 +403,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // --- Section 2: Platform-specific tab helpers ---
 
 #if BUILDFLAG(IS_ANDROID)
-  webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
   {
     // Remove after fixing https://crbug.com/41426655
     TRACE_EVENT0("browser", "AppBannerManagerAndroid::CreateForWebContents");
@@ -441,9 +436,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     }
   }
 #else   // BUILDFLAG(IS_ANDROID)
-  if (web_app::AreWebAppsUserInstallable(profile)) {
-    webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
-  }
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(

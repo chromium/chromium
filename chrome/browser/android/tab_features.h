@@ -122,6 +122,10 @@ namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
+namespace webapps {
+class MLInstallabilityPromoter;
+}  // namespace webapps
+
 class AboutThisSiteTabHelper;
 class AutoPictureInPictureTabHelper;
 class ChainedBackNavigationTracker;
@@ -289,6 +293,8 @@ class TabFeatures {
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
   std::unique_ptr<AutoPictureInPictureTabHelper>
       auto_picture_in_picture_tab_helper_;
+  std::unique_ptr<webapps::MLInstallabilityPromoter>
+      ml_installability_promoter_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

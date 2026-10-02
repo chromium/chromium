@@ -13,6 +13,7 @@ include_rules = [
   "+components/segmentation_platform",
   "+components/services/app_service/public/cpp",
   "+components/site_engagement",
+  "+components/tabs/public",
   "+components/user_prefs",
   "+components/variations",
   "+content/public/browser",
@@ -30,5 +31,6 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+third_party/skia/include",
+  "+ui/base/unowned_user_data",
   "+ui/gfx",
 ]

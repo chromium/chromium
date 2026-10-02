@@ -105,6 +105,7 @@
 #include "components/search/search.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -452,6 +453,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
             *tab, *tab, web_contents);
   }
+
+  ml_installability_promoter_ =
+      GetUserDataFactory().CreateInstance<webapps::MLInstallabilityPromoter>(
+          *tab, *tab, web_contents);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

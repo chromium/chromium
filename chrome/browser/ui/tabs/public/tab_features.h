@@ -237,6 +237,7 @@ class V8CompileHintsTabHelper;
 
 namespace webapps {
 class AppBannerManagerDesktop;
+class MLInstallabilityPromoter;
 }  // namespace webapps
 
 namespace web_app {
@@ -605,6 +606,9 @@ class TabFeatures {
   // PwaInstallPageAction observes the AppBannerManager, so the manager must
   // outlive it.
   std::unique_ptr<webapps::AppBannerManagerDesktop> app_banner_manager_;
+
+  std::unique_ptr<webapps::MLInstallabilityPromoter>
+      ml_installability_promoter_;
 
   // Responsible for managing all page actions of a tab. Other controllers
   // interact with this to have their feature's page action shown.

@@ -10,6 +10,7 @@
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -28,6 +29,12 @@ void InstallableDataFetcher::FetchManifest(FetcherCallback finish_callback) {
   if (page_data_->manifest_fetched()) {
     // Stop and run the callback if manifest is already fetched.
     std::move(finish_callback).Run(page_data_->manifest_error());
+    return;
+  }
+
+  if (!web_contents() ||
+      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    std::move(finish_callback).Run(InstallableStatusCode::RENDERER_EXITING);
     return;
   }
 
@@ -61,6 +68,12 @@ void InstallableDataFetcher::FetchWebPageMetadata(
   if (page_data_->web_page_metadata_fetched()) {
     // Stop and run the callback if metadata is already fetched.
     std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
+    return;
+  }
+
+  if (!web_contents() ||
+      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    std::move(finish_callback).Run(InstallableStatusCode::RENDERER_EXITING);
     return;
   }
 

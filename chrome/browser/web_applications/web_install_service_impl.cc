@@ -504,7 +504,8 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
       content::WebContents::FromRenderFrameHost(&render_frame_host());
 
   // Null in two cases: `AreWebAppsUserInstallable` is false (e.g.
-  // Incognito/OTR), OR `AttachTabHelpers` never ran on this WebContents.
+  // Incognito/OTR), OR `TabFeatures` was never initialized for this
+  // WebContents.
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
   if (promoter && promoter->HasCurrentInstall()) {
@@ -603,7 +604,7 @@ void WebInstallServiceImpl::InstallCurrentDocumentInternal(
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   // Null if `AreWebAppsUserInstallable` is false (e.g. Incognito/OTR), or
-  // `AttachTabHelpers` did not run on `web_contents`.
+  // `TabFeatures` was not initialized for `web_contents`.
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
   if (promoter && promoter->HasCurrentInstall()) {
@@ -1051,7 +1052,7 @@ void WebInstallServiceImpl::ContinueManifestInstall(
 
   // At this point, `AreWebAppsUserInstallable` is guaranteed true (false case
   // falls out in `OnManifestParsed`), but `install_tracker` may still be null
-  // if `AttachTabHelpers` was never called on this WebContents (e.g.
+  // if `TabFeatures` was never initialized for this WebContents (e.g.
   // background/offscreen WebContents, certain test-created WebContents,
   // non browser embedder-owned WebContents, etc.). These WebContents are not
   // expected to call the Web Install API, but must still be handled gracefully.

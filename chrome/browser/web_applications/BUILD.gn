@@ -1163,6 +1163,8 @@ source_set("web_applications_unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/component_updater:test_support",
     "//components/services/app_service",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//components/user_manager",
     "//components/web_package",

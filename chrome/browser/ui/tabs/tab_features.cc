@@ -214,6 +214,7 @@
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/common/wallet_features.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "net/base/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -334,6 +335,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                                              content::WebContents*>(
                 tab, &webapps::AppBannerManagerDesktop::Create, tab,
                 tab.GetContents());
+    ml_installability_promoter_ =
+        GetUserDataFactory().CreateInstance<webapps::MLInstallabilityPromoter>(
+            tab, tab, tab.GetContents());
   }
 
   // This block instantiate the page action controllers. They do not require any
@@ -1146,6 +1150,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   form_interaction_tab_helper_.reset();
   form_interaction_tab_helper_ =
       GetUserDataFactory().CreateInstance<FormInteractionTabHelper>(*tab, *tab);
+
+  if (ml_installability_promoter_) {
+    ml_installability_promoter_.reset();
+    ml_installability_promoter_ =
+        GetUserDataFactory().CreateInstance<webapps::MLInstallabilityPromoter>(
+            *tab, *tab, new_contents);
+  }
 
   if (app_banner_manager_) {
     // Observers of the old manager (e.g. PwaInstallPageAction, the
