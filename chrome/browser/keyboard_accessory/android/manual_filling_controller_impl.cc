@@ -35,7 +35,7 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::AddressAccessoryController;
-using autofill::NavigationDirection;
+using autofill::NavigationAction;
 using autofill::PaymentMethodAccessoryController;
 using autofill::mojom::FocusedFieldType;
 
@@ -158,9 +158,12 @@ void ManualFillingControllerImpl::SetSelectedSuggestion(
   view_->SetSelectedSuggestion(suggestion_index);
 }
 
-bool ManualFillingControllerImpl::NavigateSuggestions(
-    NavigationDirection direction) {
-  return view_->NavigateSuggestions(direction);
+bool ManualFillingControllerImpl::Navigate(NavigationAction action) {
+  return view_->Navigate(action);
+}
+
+bool ManualFillingControllerImpl::AcceptFallback() {
+  return view_->AcceptFallback();
 }
 
 void ManualFillingControllerImpl::UpdateSourceAvailability(

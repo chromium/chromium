@@ -195,13 +195,19 @@ public interface ManualFillingComponent extends BackPressHandler {
     void setSelectedSuggestion(@Nullable Integer suggestionIndex);
 
     /**
-     * Navigates to the next or previous suggestion in the accessory bar.
+     * Performs a keyboard navigation action in the accessory bar.
      *
-     * @param direction The {@link NavigationDirection} indicating whether to navigate forward or
-     *     backward.
-     * @return True if a suggestion was selected, false otherwise.
+     * @param action The {@link NavigationAction} to perform.
+     * @return Whether the action was handled, i.e. whether the key event should be consumed.
      */
-    boolean navigateSuggestions(@NavigationDirection int direction);
+    boolean navigate(@NavigationAction int action);
+
+    /**
+     * Clicks the keyboard-selected manual fallback icon.
+     *
+     * @return Whether a manual fallback icon was selected.
+     */
+    boolean acceptFallback();
 
     /**
      * Signals that the accessory has permission to show.

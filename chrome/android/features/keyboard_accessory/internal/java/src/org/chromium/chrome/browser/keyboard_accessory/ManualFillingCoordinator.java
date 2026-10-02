@@ -195,8 +195,13 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public boolean navigateSuggestions(@NavigationDirection int direction) {
-        return mMediator.navigateSuggestions(direction);
+    public boolean navigate(@NavigationAction int action) {
+        return mMediator.navigate(action);
+    }
+
+    @Override
+    public boolean acceptFallback() {
+        return mMediator.acceptFallback();
     }
 
     @Override

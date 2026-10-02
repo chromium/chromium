@@ -236,11 +236,18 @@ void ManualFillingViewAndroid::SetSelectedSuggestion(
   }
 }
 
-bool ManualFillingViewAndroid::NavigateSuggestions(
-    autofill::NavigationDirection direction) {
+bool ManualFillingViewAndroid::Navigate(autofill::NavigationAction action) {
   if (auto obj = GetOrCreateJavaObject()) {
-    return Java_ManualFillingComponentBridge_navigateSuggestions(
-        base::android::AttachCurrentThread(), obj, direction);
+    return Java_ManualFillingComponentBridge_navigate(
+        base::android::AttachCurrentThread(), obj, action);
+  }
+  return false;
+}
+
+bool ManualFillingViewAndroid::AcceptFallback() {
+  if (auto obj = GetOrCreateJavaObject()) {
+    return Java_ManualFillingComponentBridge_acceptFallback(
+        base::android::AttachCurrentThread(), obj);
   }
   return false;
 }

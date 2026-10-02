@@ -110,11 +110,16 @@ enum class AccessoryToggleType {
   COUNT,
 };
 
-// Direction for navigating suggestions in the keyboard accessory bar.
+// Keyboard navigation action in the keyboard accessory bar.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
-enum class NavigationDirection {
+enum class NavigationAction {
+  // Moves the selection to the next item.
   kForward = 0,
+  // Moves the selection to the previous item.
   kBackward = 1,
+  // Enters the navigation mode by selecting the first item, or exits it if it
+  // is active.
+  kToggle = 2,
 };
 
 }  // namespace autofill

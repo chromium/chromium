@@ -53,7 +53,8 @@ class ManualFillingControllerImpl
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
   void SetSelectedSuggestion(std::optional<int> suggestion_index) override;
-  bool NavigateSuggestions(autofill::NavigationDirection direction) override;
+  bool Navigate(autofill::NavigationAction action) override;
+  bool AcceptFallback() override;
   void OnFillingTriggered(
       autofill::AccessoryTabType type,
       const autofill::AccessorySheetField& selection) override;

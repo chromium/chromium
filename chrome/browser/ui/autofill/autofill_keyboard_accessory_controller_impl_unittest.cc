@@ -1414,7 +1414,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   auto& controller = client().suggestion_controller(manager());
 
-  EXPECT_CALL(*manual_filling_view(), NavigateSuggestions).Times(0);
+  EXPECT_CALL(*manual_filling_view(), Navigate).Times(0);
   EXPECT_FALSE(test_api(controller)
                    .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
   EXPECT_FALSE(test_api(controller)
@@ -1437,8 +1437,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   auto& controller = client().suggestion_controller(manager());
 
   // Arrow Down enters the navigation mode and selects the first suggestion.
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kForward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(test_api(controller)
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_DOWN)));
@@ -1448,7 +1447,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_UP)));
 
   // Arrow Left/Right are not handled anymore.
-  EXPECT_CALL(*manual_filling_view(), NavigateSuggestions).Times(0);
+  EXPECT_CALL(*manual_filling_view(), Navigate).Times(0);
   EXPECT_FALSE(test_api(controller)
                    .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
 }
@@ -1468,20 +1467,17 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   auto& controller = client().suggestion_controller(manager());
 
   // Enter the suggestion navigation mode.
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kForward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(test_api(controller)
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_DOWN)));
 
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kForward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(test_api(controller)
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
 
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kBackward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kBackward))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(test_api(controller)
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_LEFT)));
@@ -1500,15 +1496,14 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   auto& controller = client().suggestion_controller(manager());
 
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kForward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(test_api(controller)
                    .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_DOWN)));
 
   // Since the navigation mode was not entered, arrow Left/Right still move the
   // text caret.
-  EXPECT_CALL(*manual_filling_view(), NavigateSuggestions).Times(0);
+  EXPECT_CALL(*manual_filling_view(), Navigate).Times(0);
   EXPECT_FALSE(test_api(controller)
                    .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
 }
@@ -1698,8 +1693,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   controller.SelectSuggestion(1);
 
-  EXPECT_CALL(*manual_filling_view(),
-              NavigateSuggestions(NavigationDirection::kForward))
+  EXPECT_CALL(*manual_filling_view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(test_api(controller)
                   .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
@@ -1708,7 +1702,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // text caret again.
   controller.UnselectSuggestion();
 
-  EXPECT_CALL(*manual_filling_view(), NavigateSuggestions).Times(0);
+  EXPECT_CALL(*manual_filling_view(), Navigate).Times(0);
   EXPECT_FALSE(test_api(controller)
                    .HandleKeyPressEvent(CreateKeyPressEvent(ui::VKEY_RIGHT)));
 }

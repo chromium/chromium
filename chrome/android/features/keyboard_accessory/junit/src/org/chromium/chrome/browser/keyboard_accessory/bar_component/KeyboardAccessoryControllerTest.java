@@ -78,7 +78,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
-import org.chromium.chrome.browser.keyboard_accessory.NavigationDirection;
+import org.chromium.chrome.browser.keyboard_accessory.NavigationAction;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -1377,11 +1377,11 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testNavigateSuggestions() {
+    public void testNavigate() {
         // Navigation returns false when there are no suggestions.
         mCoordinator.setSuggestions(List.of(), mMockAutofillDelegate);
-        assertFalse(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
-        assertFalse(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        assertFalse(mCoordinator.navigate(NavigationAction.FORWARD));
+        assertFalse(mCoordinator.navigate(NavigationAction.BACKWARD));
 
         AutofillSuggestion suggestion1 =
                 new AutofillSuggestion.Builder()
@@ -1403,7 +1403,7 @@ public class KeyboardAccessoryControllerTest {
 
         // Navigate forward (Right arrow): notifies delegate for suggestion 1 (index 0).
         // Navigation does not update visual selection directly.
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
 
@@ -1412,7 +1412,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
 
         // Navigate forward again: notifies delegate for suggestion 2 (index 1).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(1, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
 
@@ -1421,7 +1421,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
 
         // Navigate forward again: wraps around to suggestion 1 (index 0).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(0, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
 
@@ -1430,13 +1430,13 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
 
         // Navigate backward (Left arrow): wraps around to suggestion 2 (index 1).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.BACKWARD));
         verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(1, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
 
         // Reset selection and navigate backward: selects first suggestion (suggestion 1, index 0).
         mCoordinator.setSelectedSuggestion(null);
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.BACKWARD));
         verify(mMockAutofillDelegate, times(3)).suggestionSelectionStateChanged(0, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
 
@@ -1446,7 +1446,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testNavigateSuggestionsInRtl() {
+    public void testNavigateInRtl() {
         LocalizationUtils.setRtlForTesting(true);
 
         AutofillSuggestion suggestion1 =
@@ -1480,19 +1480,19 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSelectedSuggestion(1);
 
         // In RTL, navigating forward (Right arrow) moves visually right towards index 0.
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         inOrder.verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
 
         // Reset to middle suggestion.
         mCoordinator.setSelectedSuggestion(1);
 
         // In RTL, navigating backward (Left arrow) moves visually left towards index 2.
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.BACKWARD));
         inOrder.verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
     }
 
     @Test
-    public void testNavigateSuggestionsWithFilteredSuggestions() {
+    public void testNavigateWithFilteredSuggestions() {
         AutofillSuggestion addressSuggestion1 =
                 new AutofillSuggestion.Builder()
                         .setLabel("Suggestion 1")
@@ -1516,7 +1516,7 @@ public class KeyboardAccessoryControllerTest {
 
         // Navigate forward: should notify Address1 (original index 1) without updating visual
         // selection.
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(1, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
 
@@ -1525,7 +1525,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
 
         // Navigate forward again: should notify Address2 (original index 2).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
 
@@ -1534,7 +1534,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(2));
 
         // Navigate forward again: wraps around to Address1 (original index 1).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(1, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(2));
 
@@ -1544,7 +1544,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testNavigateSuggestionsSkipsDisabledSuggestions() {
+    public void testNavigateSkipsDisabledSuggestions() {
         AutofillSuggestion suggestion1 =
                 new AutofillSuggestion.Builder()
                         .setLabel("Suggestion 1")
@@ -1574,7 +1574,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
 
         // Navigate forward: should notify Suggestion 1 (index 0) without updating visual selection.
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
 
@@ -1584,7 +1584,7 @@ public class KeyboardAccessoryControllerTest {
 
         // Navigate forward again: skips unselectable suggestion and notifies Suggestion 3 (index
         // 2).
-        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertTrue(mCoordinator.navigate(NavigationAction.FORWARD));
         verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
 
@@ -1677,6 +1677,15 @@ public class KeyboardAccessoryControllerTest {
     private void selectSuggestionAndBind(Integer suggestionIndex) {
         mCoordinator.setSelectedSuggestion(suggestionIndex);
         KeyboardAccessoryViewBinder.bind(mModel, mMockView, SELECTED_SUGGESTION_INDEX);
+    }
+
+    @Test
+    public void testAcceptFallbackDelegatesToTabSwitcher() {
+        when(mMockTabSwitchingDelegate.clickSelectedButton()).thenReturn(true);
+        assertTrue(mCoordinator.acceptFallback());
+
+        when(mMockTabSwitchingDelegate.clickSelectedButton()).thenReturn(false);
+        assertFalse(mCoordinator.acceptFallback());
     }
 
     private int getGenerationImpressionCount() {

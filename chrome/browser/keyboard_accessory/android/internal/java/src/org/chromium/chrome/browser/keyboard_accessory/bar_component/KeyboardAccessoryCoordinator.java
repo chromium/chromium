@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
-import org.chromium.chrome.browser.keyboard_accessory.NavigationDirection;
+import org.chromium.chrome.browser.keyboard_accessory.NavigationAction;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
@@ -594,11 +594,19 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      * direction, and notifies the {@link AutofillDelegate} so that the preview in the web content
      * is updated.
      *
-     * @param direction The {@link NavigationDirection} indicating whether to navigate forward or
-     *     backward.
+     * @param action The {@link NavigationAction} to perform.
      * @return True if a suggestion was selected; false otherwise.
      */
-    public boolean navigateSuggestions(@NavigationDirection int direction) {
-        return mMediator.navigateSuggestions(direction);
+    public boolean navigate(@NavigationAction int action) {
+        return mMediator.navigate(action);
+    }
+
+    /**
+     * Clicks the keyboard-selected manual fallback icon.
+     *
+     * @return Whether a manual fallback icon was selected.
+     */
+    public boolean acceptFallback() {
+        return mMediator.acceptFallback();
     }
 }

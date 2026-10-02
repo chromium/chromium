@@ -37,7 +37,7 @@ namespace autofill {
 
 class AutofillSuggestionDelegate;
 class AutofillKeyboardAccessoryView;
-enum class NavigationDirection;
+enum class NavigationAction;
 struct Suggestion;
 
 // Helper to record interaction milestones (shown, selected, accepted)
@@ -157,13 +157,14 @@ class AutofillKeyboardAccessoryControllerImpl
   // first use. Returns null if the WebContents is gone.
   base::WeakPtr<ManualFillingController> GetManualFillingController();
 
-  // Asks the keyboard accessory bar to move the selection one suggestion in
-  // `direction`, cycling at the ends of the list. Returns whether a suggestion
-  // was actually selected. This is false if the bar cannot navigate at all,
-  // i.e. if the accessory UI is unavailable or if the bar currently shows no
-  // enabled Autofill suggestions. Callers use this to decide whether to consume
-  // the key event or let it fall through to the renderer.
-  bool TryNavigateSuggestions(NavigationDirection direction);
+  // Asks the keyboard accessory bar to perform the navigation `action`, e.g.
+  // to move the selection one suggestion forward, cycling at the ends of the
+  // list. Returns whether the action was handled. This is false if the bar
+  // cannot navigate at all, i.e. if the accessory UI is unavailable or if the
+  // bar currently shows no enabled Autofill suggestions. Callers use this to
+  // decide whether to consume the key event or let it fall through to the
+  // renderer.
+  bool TryNavigate(NavigationAction action);
 
   // Handles a key press `event` of the frame the suggestions belong to. It is
   // called for as long as `key_press_registration_` is registered. Returns true

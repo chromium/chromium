@@ -30,7 +30,7 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessorySuggestionType;
 using autofill::AccessoryTabType;
-using autofill::NavigationDirection;
+using autofill::NavigationAction;
 using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
@@ -651,16 +651,27 @@ TEST_F(ManualFillingControllerTest, SetSelectedSuggestion) {
   controller()->SetSelectedSuggestion(std::nullopt);
 }
 
-// Tests that navigating suggestions forwards the call to the view.
-TEST_F(ManualFillingControllerTest, NavigateSuggestions) {
-  EXPECT_CALL(*view(), NavigateSuggestions(NavigationDirection::kForward))
+// Tests that navigation actions are forwarded to the view.
+TEST_F(ManualFillingControllerTest, Navigate) {
+  EXPECT_CALL(*view(), Navigate(NavigationAction::kForward))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(controller()->NavigateSuggestions(NavigationDirection::kForward));
+  EXPECT_TRUE(controller()->Navigate(NavigationAction::kForward));
 
-  EXPECT_CALL(*view(), NavigateSuggestions(NavigationDirection::kBackward))
+  EXPECT_CALL(*view(), Navigate(NavigationAction::kBackward))
       .WillOnce(testing::Return(false));
-  EXPECT_FALSE(
-      controller()->NavigateSuggestions(NavigationDirection::kBackward));
+  EXPECT_FALSE(controller()->Navigate(NavigationAction::kBackward));
+
+  EXPECT_CALL(*view(), Navigate(NavigationAction::kToggle))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller()->Navigate(NavigationAction::kToggle));
+}
+
+TEST_F(ManualFillingControllerTest, AcceptFallbackForwardsToView) {
+  EXPECT_CALL(*view(), AcceptFallback())
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(false));
+  EXPECT_TRUE(controller()->AcceptFallback());
+  EXPECT_FALSE(controller()->AcceptFallback());
 }
 
 }  // namespace

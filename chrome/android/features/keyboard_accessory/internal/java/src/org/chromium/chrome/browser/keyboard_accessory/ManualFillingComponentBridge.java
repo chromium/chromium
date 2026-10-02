@@ -158,13 +158,21 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    private boolean navigateSuggestions(
-            @JniType("autofill::NavigationDirection") @NavigationDirection int direction) {
+    private boolean navigate(@JniType("autofill::NavigationAction") @NavigationAction int action) {
         ManualFillingComponent component = getManualFillingComponent();
         if (component == null) {
             return false;
         }
-        return component.navigateSuggestions(direction);
+        return component.navigate(action);
+    }
+
+    @CalledByNative
+    private boolean acceptFallback() {
+        ManualFillingComponent component = getManualFillingComponent();
+        if (component == null) {
+            return false;
+        }
+        return component.acceptFallback();
     }
 
     @CalledByNative

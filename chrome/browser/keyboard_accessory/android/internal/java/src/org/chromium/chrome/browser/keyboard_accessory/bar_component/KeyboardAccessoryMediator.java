@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
-import org.chromium.chrome.browser.keyboard_accessory.NavigationDirection;
+import org.chromium.chrome.browser.keyboard_accessory.NavigationAction;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.BarVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.TabSwitchingDelegate;
@@ -229,21 +229,26 @@ class KeyboardAccessoryMediator
     }
 
     /**
-     * Navigates cyclically to the next or previous suggestion in the accessory bar.
+     * Navigates cyclically to the next or previous item in the accessory bar.
      *
      * <p>Unlike {@link #setSelectedSuggestion}, which performs absolute visual selection for a
      * known backend index, this method handles relative keyboard navigation (e.g. Arrow Left /
      * Right). Because the keyboard event originates externally without knowledge of the accessory
-     * bar's UI state (e.g. which suggestions are actually visible, filtered, or grouped), the
-     * mediator determines the next visible item and notifies {@link
+     * bar's UI state (e.g. which items are actually visible, filtered, or grouped), the mediator
+     * determines the next visible item and notifies {@link
      * AutofillDelegate#suggestionSelectionStateChanged} so that the Autofill backend updates the
      * preview on the web page.
      *
-     * @param direction The direction to navigate (FORWARD or BACKWARD).
-     * @return True if a suggestion was selected; false if there are no suggestions to navigate or
-     *     no delegate is attached.
+     * @param action The navigation action (FORWARD, BACKWARD or TOGGLE).
+     * @return Whether an item was selected; false if there are no items to navigate, no delegate
+     *     is attached, or the action is not supported yet (TOGGLE is a stub in this CL).
      */
-    boolean navigateSuggestions(@NavigationDirection int direction) {
+    boolean navigate(@NavigationAction int action) {
+        // Stub until the navigation toggle is implemented.
+        if (action == NavigationAction.TOGGLE) {
+            return false;
+        }
+
         AutofillDelegate delegate = mAutofillDelegate != null ? mAutofillDelegate.get() : null;
         if (delegate == null) {
             return false;
@@ -260,7 +265,7 @@ class KeyboardAccessoryMediator
         if (currentIndex == null) {
             targetIndex = 0;
         } else {
-            int step = (direction == NavigationDirection.FORWARD) ? 1 : -1;
+            int step = (action == NavigationAction.FORWARD) ? 1 : -1;
             if (isLayoutRtl()) {
                 step = -step;
             }
@@ -270,6 +275,11 @@ class KeyboardAccessoryMediator
         AutofillBarItem target = items.get(targetIndex);
         delegate.suggestionSelectionStateChanged(target.getOriginalIndex(), true);
         return true;
+    }
+
+    /** Clicks the keyboard-selected manual fallback icon. Returns whether one was selected. */
+    boolean acceptFallback() {
+        return mTabSwitcher.clickSelectedButton();
     }
 
     @Override

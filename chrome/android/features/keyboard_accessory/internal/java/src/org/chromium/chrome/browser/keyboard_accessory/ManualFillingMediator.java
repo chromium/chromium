@@ -414,11 +414,18 @@ class ManualFillingMediator
         mKeyboardAccessory.setSelectedSuggestion(suggestionIndex);
     }
 
-    boolean navigateSuggestions(@NavigationDirection int direction) {
+    boolean navigate(@NavigationAction int action) {
         if (!isInitialized() || mKeyboardAccessory == null) {
             return false;
         }
-        return mKeyboardAccessory.navigateSuggestions(direction);
+        return mKeyboardAccessory.navigate(action);
+    }
+
+    boolean acceptFallback() {
+        if (!isInitialized() || mKeyboardAccessory == null) {
+            return false;
+        }
+        return mKeyboardAccessory.acceptFallback();
     }
 
     void setFieldBounds(RectF bounds) {

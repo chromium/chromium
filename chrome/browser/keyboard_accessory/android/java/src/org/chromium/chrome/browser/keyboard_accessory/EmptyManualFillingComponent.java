@@ -83,7 +83,12 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
     public void setSelectedSuggestion(@Nullable Integer suggestionIndex) {}
 
     @Override
-    public boolean navigateSuggestions(@NavigationDirection int direction) {
+    public boolean navigate(@NavigationAction int action) {
+        return false;
+    }
+
+    @Override
+    public boolean acceptFallback() {
         return false;
     }
 

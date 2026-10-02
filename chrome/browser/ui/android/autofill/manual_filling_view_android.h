@@ -50,7 +50,8 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
   void SetSelectedSuggestion(std::optional<int> suggestion_index) override;
-  bool NavigateSuggestions(autofill::NavigationDirection direction) override;
+  bool Navigate(autofill::NavigationAction action) override;
+  bool AcceptFallback() override;
   // Called from Java via JNI:
   void OnFillingTriggered(JNIEnv* env,
                           autofill::AccessoryTabType tab_type,

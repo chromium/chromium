@@ -1105,12 +1105,12 @@ AutofillKeyboardAccessoryControllerImpl::GetManualFillingController() {
   return ManualFillingController::GetOrCreate(web_contents_.get());
 }
 
-bool AutofillKeyboardAccessoryControllerImpl::TryNavigateSuggestions(
-    NavigationDirection direction) {
+bool AutofillKeyboardAccessoryControllerImpl::TryNavigate(
+    NavigationAction action) {
   base::WeakPtr<ManualFillingController> manual_filling_controller =
       GetManualFillingController();
   return manual_filling_controller &&
-         manual_filling_controller->NavigateSuggestions(direction);
+         manual_filling_controller->Navigate(action);
 }
 
 void AutofillKeyboardAccessoryControllerImpl::
@@ -1165,7 +1165,7 @@ bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
       // accessory bar has nothing to navigate, the mode is not entered and the
       // event is propagated so that it keeps its default behavior.
       is_suggestion_navigation_active_ =
-          TryNavigateSuggestions(NavigationDirection::kForward);
+          TryNavigate(NavigationAction::kForward);
       return is_suggestion_navigation_active_;
     }
     case ui::VKEY_LEFT:
@@ -1175,9 +1175,9 @@ bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
       if (!is_suggestion_navigation_active_) {
         return false;
       }
-      return TryNavigateSuggestions(event.windows_key_code == ui::VKEY_RIGHT
-                                        ? NavigationDirection::kForward
-                                        : NavigationDirection::kBackward);
+      return TryNavigate(event.windows_key_code == ui::VKEY_RIGHT
+                             ? NavigationAction::kForward
+                             : NavigationAction::kBackward);
     }
     case ui::VKEY_TAB: {
       // We want TAB or Shift+TAB press to cause the selected suggestion to be
