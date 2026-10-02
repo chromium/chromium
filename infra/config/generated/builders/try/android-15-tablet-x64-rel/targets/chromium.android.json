@@ -385,7 +385,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -826,7 +825,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_test_apk.filter",
           "--emulator-debug-tags=all",
@@ -885,7 +883,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet.chrome_public_unit_test_apk.filter",
           "--skia-gold-consider-unsupported",

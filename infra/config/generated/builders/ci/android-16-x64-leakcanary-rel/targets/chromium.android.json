@@ -4,7 +4,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--enable-leak-checks",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--skia-gold-consider-unsupported",

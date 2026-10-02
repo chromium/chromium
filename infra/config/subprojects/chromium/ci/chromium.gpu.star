@@ -812,15 +812,6 @@ ci.thin_tester(
             "isolate_profile_data",
         ],
         per_test_modifications = {
-            # TODO(crbug.com/568399534): Remove once Skia Gold is
-            # re-enabled globally in the skia_gold_test mixin.
-            "gl_unittests": targets.per_test_modification(
-                replacements = targets.replacements(
-                    args = {
-                        "--bypass-skia-gold-functionality": None,
-                    },
-                ),
-            ),
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     args = [

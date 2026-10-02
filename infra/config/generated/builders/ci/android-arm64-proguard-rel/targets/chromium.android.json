@@ -319,7 +319,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -608,7 +607,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -687,7 +685,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

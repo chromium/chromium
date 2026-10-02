@@ -451,7 +451,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -902,7 +901,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--disable-field-trial-config",
           "--skia-gold-consider-unsupported",
@@ -962,7 +960,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--disable-field-trial-config",
           "--skia-gold-consider-unsupported",

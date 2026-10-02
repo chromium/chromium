@@ -268,7 +268,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland"

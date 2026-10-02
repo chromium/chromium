@@ -6,7 +6,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--target-platform=cros",
           "--board=betty",
           "--magic-vm-cache=magic_cros_vm_cache"
