@@ -64,10 +64,9 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   // convert pressure into a float [0, 1]. The range of the pressure is
   // [0, 1024] as specified on MSDN.
   float pressure = static_cast<float>(pointer_pen_info.pressure) / 1024;
-  int rotation_angle = static_cast<int>(pointer_pen_info.rotation) % 180;
-  if (rotation_angle < 0) {
-    rotation_angle += 180;
-  }
+  // The rotation is already normalized to [0, 359] as specified on MSDN. See
+  // https://learn.microsoft.com/windows/win32/api/winuser/ns-winuser-pointer_pen_info#members
+  int rotation_angle = static_cast<int>(pointer_pen_info.rotation);
   int tilt_x = pointer_pen_info.tiltX;
   int tilt_y = pointer_pen_info.tiltY;
 
