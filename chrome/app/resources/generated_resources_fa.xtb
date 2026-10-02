@@ -5076,7 +5076,7 @@
 <translation id="4852383141291180386">مدیریت اعلان‌های برنامه</translation>
 <translation id="4852916668365817106">رنگ موشواره</translation>
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
-<translation id="4853328060971905294">روشن (فعال کردن کانونی کردن خط)</translation>
+<translation id="4853328060971905294">روشن (فعال کردن تمرکز روی خط)</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
 <translation id="4854603338816296098">نشانی برداشته شد</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
@@ -6005,7 +6005,7 @@
 <translation id="5576472948015790634">‏اکنون می‌توانید گروه‌های زبانه و گپ‌های Gemini را در یک‌جا مدیریت کنید. هر زمان که بخواهید می‌توانید سنجاق این بردارید.</translation>
 <translation id="5578059481725149024">ورود به سیستم خودکار</translation>
 <translation id="5578387000057347457">برای ایجاد تصویر، پیام‌واره‌ای سفارشی وارد کنید یا نوشتار را برجسته کنید</translation>
-<translation id="557893471177655572">امتحان کردن کانونی کردن خط</translation>
+<translation id="557893471177655572">امتحان کردن تمرکز روی خط</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{‏‫۱ مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}one{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}other{‏‫{ITEM_COUNT} مورد فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، <ph name="BEGIN_LINK" />آن‌ها را در «حساب Google» خود ذخیره کنید<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">برداشتن <ph name="SITE" /> از فهرست <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">نمای دونیمه</translation>
@@ -8485,7 +8485,7 @@
 <translation id="7502220299952823578">افزودن به فهرست «این سایت‌ها همیشه فعال نگه داشته شود»</translation>
 <translation id="7502528909759062987">توقف موقت پخش محتوای زبانه در <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">می‌توان برگه‌های هم‌رسانی‌شده را پیمایش و بزرگ‌نمایی کرد</translation>
-<translation id="750314150962284310">کانونی کردن خط</translation>
+<translation id="750314150962284310">تمرکز روی خط</translation>
 <translation id="7503191893372251637">‏نوع گواهی Netscape</translation>
 <translation id="7503259455663961898">برایم تغییر داده شود</translation>
 <translation id="7503985202154027481">سابقه بازدیدتان از این سایت در کلید امنیتی‌تان نگه‌داری می‌شود.</translation>
@@ -10810,7 +10810,7 @@
 <translation id="987574372967138078">‫<ph name="WEBSITE_ORIGIN" /> می‌خواهد اطلاعات را از دستگاه همراهتان دریافت کند</translation>
 <translation id="988320949174893488">گیر کردن اتفاقی</translation>
 <translation id="988978206646512040">گذرعبارت خالی مجاز نیست</translation>
-<translation id="989111665033316622">خاموش (غیرفعال کردن تمرکز کانونی کردن خط)</translation>
+<translation id="989111665033316622">خاموش (غیرفعال کردن تمرکز روی خط)</translation>
 <translation id="992032470292211616">افزودنی‌ها، برنامه‌ها و طرح‌های زمینه می‌توانند به دستگاه شما آسیب برسانند. آیا مطمئن هستید که می‌خواهید ادامه دهید؟</translation>
 <translation id="992256792861109788">صورتی</translation>
 <translation id="994087375490600917">پانل‌های کناری</translation>
