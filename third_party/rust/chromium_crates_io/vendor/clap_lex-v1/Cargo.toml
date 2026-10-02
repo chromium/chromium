@@ -13,15 +13,16 @@
 edition = "2024"
 rust-version = "1.85"
 name = "clap_lex"
-version = "1.1.0"
+version = "1.1.1"
 build = false
 include = [
-    "build.rs",
-    "src/**/*",
-    "Cargo.toml",
-    "LICENSE*",
-    "README.md",
-    "examples/**/*",
+    "/build.rs",
+    "/src/**/*",
+    "/Cargo.toml",
+    "/Cargo.lock",
+    "/LICENSE*",
+    "/README.md",
+    "/examples/**/*",
 ]
 autolib = false
 autobins = false
@@ -97,8 +98,11 @@ assigning_clones = "allow"
 blocks_in_conditions = "allow"
 bool_assert_comparison = "allow"
 branches_sharing_code = "allow"
+byte_char_slices = "allow"
 checked_conversions = "warn"
 collapsible_else_if = "allow"
+collapsible_match = "allow"
+collection_is_never_read = "warn"
 create_dir = "warn"
 dbg_macro = "warn"
 debug_assert_with_mut_call = "warn"
@@ -111,9 +115,10 @@ explicit_into_iter_loop = "warn"
 fallible_impl_from = "warn"
 filter_map_next = "warn"
 flat_map_option = "warn"
+float_cmp = "warn"
 float_cmp_const = "warn"
 fn_params_excessive_bools = "warn"
-from_iter_instead_of_collect = "warn"
+fn_to_numeric_cast_any = "warn"
 if_same_then_else = "allow"
 implicit_clone = "warn"
 imprecise_flops = "warn"
@@ -129,11 +134,13 @@ linkedlist = "warn"
 lossy_float_literal = "warn"
 macro_use_imports = "warn"
 mem_forget = "warn"
+mismatching_type_param_order = "warn"
 multiple_bound_locations = "allow"
 mutex_integer = "warn"
 needless_continue = "allow"
 needless_for_each = "warn"
 negative_feature_names = "warn"
+partial_pub_fields = "warn"
 path_buf_push_overwrite = "warn"
 ptr_as_ptr = "warn"
 rc_mutex = "warn"
@@ -144,16 +151,23 @@ result_large_err = "allow"
 same_functions_in_if_condition = "warn"
 self_named_module_files = "warn"
 semicolon_if_nothing_returned = "warn"
+str_to_string = "warn"
+string_add = "warn"
 string_add_assign = "warn"
 string_lit_as_bytes = "warn"
 todo = "warn"
 trait_duplication_in_bounds = "warn"
 uninlined_format_args = "warn"
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+unseparated_literal_suffix = "warn"
+use_self = "warn"
 verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 
 [lints.rust]
-unnameable_types = "allow"
+non_ascii_idents = "warn"
+trivial_numeric_casts = "warn"
 unreachable_pub = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"
