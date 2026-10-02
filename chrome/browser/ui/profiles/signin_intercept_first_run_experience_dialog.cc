@@ -19,11 +19,11 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
@@ -661,7 +661,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
 
 void SigninInterceptFirstRunExperienceDialog::
     DoProfileSwitchIPHAndCloseModal() {
-  BrowserWindow::FromBrowser(browser_)->MaybeShowProfileSwitchIPH();
+  AvatarToolbarIphController::From(browser_)->MaybeShowProfileSwitchIPH();
   CloseModalDialog();
 }
 

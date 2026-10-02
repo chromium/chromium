@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -89,8 +89,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
                  InitialSessionState::kOutsideGracePeriod,
                  /*use_main_profile=*/true),
         scoped_iph_delay_(
-            AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-                base::Seconds(0))) {}
+            AvatarToolbarIphController::
+                SetScopedIPHMinDelayAfterCreationForTesting(base::Seconds(0))) {
+  }
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTestBase() override = default;
 

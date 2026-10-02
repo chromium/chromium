@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/default_browser_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_constants.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
@@ -559,12 +559,8 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     return PostHostClearedCallback(
         base::BindOnce([](BrowserWindowInterface* browser) {
           CHECK(browser);
-          BrowserView* browser_view =
-              BrowserView::GetBrowserViewForBrowser(browser);
-          if (!browser_view) {
-            return;
-          }
-          browser_view->MaybeShowSupervisedUserProfileSignInIPH();
+          AvatarToolbarIphController::From(browser)
+              ->MaybeShowSupervisedUserProfileSignInIPH();
         }));
   }
 

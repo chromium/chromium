@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -129,12 +130,9 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
 
 void MaybeShowProfileIPHs(BrowserWindowInterface* browser) {
   DCHECK(browser);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
-    return;
-  }
-  browser_view->MaybeShowSupervisedUserProfileSignInIPH();
-  browser_view->MaybeShowProfileSwitchIPH();
+  auto* iph_controller = AvatarToolbarIphController::From(browser);
+  iph_controller->MaybeShowSupervisedUserProfileSignInIPH();
+  iph_controller->MaybeShowProfileSwitchIPH();
 }
 
 // Class triggering the signed-in section of the profile management flow, most
@@ -813,7 +811,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
       std::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
   if (profile_count > 1 && !open_settings &&
       selected_profile_target_url_.is_empty()) {
-    BrowserWindow::FromBrowser(browser)->MaybeShowProfileSwitchIPH();
+    AvatarToolbarIphController::From(browser)->MaybeShowProfileSwitchIPH();
   }
 
   if (profile->IsGuestSession()) {

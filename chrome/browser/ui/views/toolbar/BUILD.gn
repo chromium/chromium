@@ -453,6 +453,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser:flags",
+      "//chrome/browser/signin",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",

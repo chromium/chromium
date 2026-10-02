@@ -410,19 +410,9 @@ bool AvatarToolbarButton::HasExplicitButtonState() const {
   return state_manager_.HasExplicitButtonState();
 }
 
-void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
-  state_manager_.MaybeShowProfileSwitchIPH();
+bool AvatarToolbarButton::IsReadyForIPH() const {
+  return true;
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
-  state_manager_.MaybeShowSupervisedUserSignInIPH();
-}
-
-void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
-  state_manager_.MaybeShowSignInBenefitsIPH();
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {

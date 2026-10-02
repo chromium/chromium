@@ -5132,8 +5132,6 @@ void BrowserView::AddedToWidget() {
   frame_view->UpdateMinimumSize();
   using_native_frame_ = browser_widget_->ShouldUseNativeFrame();
 
-  MaybeShowSignInBenefitsIPH();
-
   // Want to show this promo, but not right at startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -5320,15 +5318,6 @@ void BrowserView::CreateJumpList() {
   JumpListFactory::GetForProfile(browser_->GetProfile());
 }
 #endif
-
-bool BrowserView::ShouldShowAvatarToolbarIPH() {
-  if (GetGuestSession() || GetIncognito() || GetEnterpriseIsolatedMode()) {
-    return false;
-  }
-  AvatarToolbarButtonInterface* avatar_button =
-      ToolbarButtonProvider::From(browser_)->GetAvatarToolbarButtonInterface();
-  return avatar_button != nullptr;
-}
 
 BrowserFrameView* BrowserView::GetFrameView() {
   return browser_widget_ ? browser_widget_->GetFrameView() : nullptr;
@@ -5847,37 +5836,6 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
 
   // Default behavior -- show the profile menu.
   ProfileMenuCoordinator::From(browser())->Show(is_source_accelerator);
-}
-
-void BrowserView::MaybeShowProfileSwitchIPH() {
-  if (!ShouldShowAvatarToolbarIPH()) {
-    return;
-  }
-  ToolbarButtonProvider::From(browser_)
-      ->GetAvatarToolbarButtonInterface()
-      ->MaybeShowProfileSwitchIPH();
-}
-
-void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!ShouldShowAvatarToolbarIPH()) {
-    return;
-  }
-  ToolbarButtonProvider::From(browser_)
-      ->GetAvatarToolbarButtonInterface()
-      ->MaybeShowSupervisedUserSignInIPH();
-#endif
-}
-
-void BrowserView::MaybeShowSignInBenefitsIPH() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!ShouldShowAvatarToolbarIPH()) {
-    return;
-  }
-  ToolbarButtonProvider::From(browser_)
-      ->GetAvatarToolbarButtonInterface()
-      ->MaybeShowSignInBenefitsIPH();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 void BrowserView::ShowHatsDialog(

@@ -35,14 +35,6 @@ views::BubbleAnchor AvatarToolbarButtonInterface::GetBubbleAnchor(
 }
 
 // static
-base::AutoReset<base::TimeDelta> AvatarToolbarButtonInterface::
-    SetScopedIPHMinDelayAfterCreationForTesting(  // IN-TEST
-        base::TimeDelta delay) {
-  return AvatarToolbarButtonStateManager::
-      SetScopedIPHMinDelayAfterCreationForTesting(delay);  // IN-TEST
-}
-
-// static
 base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButtonInterface::
     CreateScopedInfiniteDelayOverrideForTesting(  // IN-TEST
         AvatarDelayType delay_type) {

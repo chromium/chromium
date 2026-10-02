@@ -59,17 +59,13 @@ class AvatarToolbarButton : public ToolbarButton,
           explicit_action,
       bool should_announce) override;
   bool HasExplicitButtonState() const override;
+  bool IsReadyForIPH() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   // void UpdateIcon() also overrides ToolbarButton
   void UpdateText() override;
   void SetAnnounceCallbackForTesting(
       base::OnceCallback<void(std::u16string)> callback) override;
-  void MaybeShowProfileSwitchIPH() override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  void MaybeShowSupervisedUserSignInIPH() override;
-  void MaybeShowSignInBenefitsIPH() override;
-#endif
   void ClearActiveStateForTesting() override;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void ForceShowingPromoForTesting() override;

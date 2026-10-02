@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
@@ -3756,12 +3757,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
   // Sign in a user after the sync-to-signin migration.
   Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
 
-  AvatarToolbarButtonInterface* avatar_toolbar_button =
-      GetAvatarToolbarButtonInterface(browser());
-  ASSERT_NE(avatar_toolbar_button, nullptr);
-
+  ASSERT_NE(GetAvatarToolbarButtonInterface(browser()), nullptr);
   // Attempt to show the IPH.
-  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  AvatarToolbarIphController::From(browser())->MaybeShowSignInBenefitsIPH();
   EXPECT_FALSE(WillShowPromo());
 }
 
@@ -3782,12 +3780,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
 // migrated from DICe.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
                        NotShownForUsersMigratedFromDice) {
-  AvatarToolbarButtonInterface* avatar_toolbar_button =
-      GetAvatarToolbarButtonInterface(browser());
-  ASSERT_NE(avatar_toolbar_button, nullptr);
-
+  ASSERT_NE(GetAvatarToolbarButtonInterface(browser()), nullptr);
   // Attempt to show the IPH.
-  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  AvatarToolbarIphController::From(browser())->MaybeShowSignInBenefitsIPH();
   EXPECT_FALSE(WillShowPromo());
 }
 
@@ -3900,8 +3895,8 @@ class AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest
 
     feature_list_.InitWithFeatures(enabled, disabled);
     delay_override_.emplace(
-        AvatarToolbarButtonInterface::
-            SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta()));
+        AvatarToolbarIphController::SetScopedIPHMinDelayAfterCreationForTesting(
+            base::TimeDelta()));
   }
 
   bool ShouldShowLegacyIphInPre() const { return GetParam(); }

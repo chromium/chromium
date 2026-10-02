@@ -54,20 +54,16 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
-#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -78,11 +74,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "content/public/common/url_utils.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,11 +107,6 @@ constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_on_signin_duration_for_testing;
 
 }  // namespace
-
-// static
-base::TimeDelta
-    AvatarToolbarButtonStateManager::g_iph_min_delay_after_creation =
-        base::Seconds(2);
 
 namespace {
 
@@ -2172,8 +2161,7 @@ AvatarToolbarButtonStateManager::AvatarToolbarButtonStateManager(
     BrowserWindowInterface* browser)
     : avatar_control_(avatar_control),
       browser_(browser),
-      profile_(*browser->GetProfile()),
-      creation_time_(base::TimeTicks::Now()) {}
+      profile_(*browser->GetProfile()) {}
 
 AvatarToolbarButtonStateManager::~AvatarToolbarButtonStateManager() {
   // States should be cleared before the observer list is destroyed, since some
@@ -2586,160 +2574,6 @@ void AvatarToolbarButtonStateManager::ComputeButtonActiveState() {
   }
 }
 
-void AvatarToolbarButtonStateManager::MaybeShowProfileSwitchIPH() {
-  // Prevent showing the promo right when the browser was created. Wait a small
-  // delay for a smoother animation.
-  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
-  if (time_since_creation < g_iph_min_delay_after_creation) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AvatarToolbarButtonStateManager::MaybeShowProfileSwitchIPH,
-            weak_ptr_factory_.GetWeakPtr()),
-        g_iph_min_delay_after_creation - time_since_creation);
-    return;
-  }
-
-  // This will show the promo only after the IPH system is properly initialized.
-  if (!web_app::AppBrowserController::IsWebApp(browser_)) {
-    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHProfileSwitchFeature);
-  } else {
-    // Installable PasswordManager WebUI is the only web app that has an avatar
-    // toolbar button.
-    auto app_url =
-        web_app::AppBrowserController::From(browser_)->GetAppStartUrl();
-    CHECK(
-        content::HasWebUIScheme(app_url) &&
-        (app_url.GetHost() == password_manager::kChromeUIPasswordManagerHost));
-    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
-  }
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void AvatarToolbarButtonStateManager::MaybeShowSupervisedUserSignInIPH() {
-  if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
-    return;
-  }
-  if (!browser_) {
-    return;
-  }
-  signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
-  CHECK(identity_manager);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return;
-  }
-
-  auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  if (account_info.GetAccountCapabilities().is_subject_to_parental_controls() !=
-      signin::Tribool::kTrue) {
-    return;
-  }
-  if (account_info.IsEmpty()) {
-    return;
-  }
-
-  // Prevent showing the promo right when the browser was created.
-  // This is not just used for smoother animation, but it gives the anchor
-  // element enough time to become visible and display the IPH.
-  // TODO(crbug.com/372689164): investigate alternative rescheduling,
-  // using `WouldShowFeaturePromo`.
-  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
-  if (time_since_creation < g_iph_min_delay_after_creation) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AvatarToolbarButtonStateManager::MaybeShowSupervisedUserSignInIPH,
-            weak_ptr_factory_.GetWeakPtr()),
-        g_iph_min_delay_after_creation - time_since_creation);
-    return;
-  }
-
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHSupervisedUserProfileSigninFeature);
-  params.title_params =
-      base::UTF8ToUTF16(account_info.GetGivenName().value_or(""));
-  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-      std::move(params));
-}
-
-void AvatarToolbarButtonStateManager::MaybeShowSignInBenefitsIPH() {
-  const bool show_new_signin =
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
-      base::FeatureList::IsEnabled(
-          feature_engagement::kIPHSignInBenefitsNewSigninFeature);
-  const bool show_legacy = base::FeatureList::IsEnabled(
-                               syncer::kReplaceSyncPromosWithSignInPromos) &&
-                           base::FeatureList::IsEnabled(
-                               feature_engagement::kIPHSignInBenefitsFeature);
-
-  if (!show_new_signin && !show_legacy) {
-    return;
-  }
-
-  // Prevent showing the IPH bubble right when the browser was created. Wait a
-  // small delay for a smoother animation.
-  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
-  if (time_since_creation < g_iph_min_delay_after_creation) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AvatarToolbarButtonStateManager::MaybeShowSignInBenefitsIPH,
-            weak_ptr_factory_.GetWeakPtr()),
-        g_iph_min_delay_after_creation - time_since_creation);
-    return;
-  }
-
-  Profile* profile = browser_->GetProfile();
-  CHECK(profile);
-
-  // The IPH only concerns signed-in, non-syncing profiles.
-  signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-
-  // Users who sign in after the migration and users migrated from DICe will be
-  // notified with other promos communicating sign-in benefits.
-  if (prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration) ||
-      prefs->GetBoolean(kDiceMigrationMigrated)) {
-    return;
-  }
-
-  if (show_new_signin && !show_legacy) {
-    auto* const edu_service =
-        UserEducationServiceFactory::GetForBrowserContext(profile);
-    if (edu_service) {
-      auto data = edu_service->user_education_storage_service().ReadPromoData(
-          feature_engagement::kIPHSignInBenefitsFeature);
-      if (data && data->show_count > 0) {
-        return;
-      }
-    }
-  }
-
-  // It should not matter in practice, but if both features are enabled, show
-  // the legacy IPH.
-  const base::Feature& feature_to_show =
-      show_legacy ? feature_engagement::kIPHSignInBenefitsFeature
-                  : feature_engagement::kIPHSignInBenefitsNewSigninFeature;
-
-  BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
-      feature_to_show);
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 void AvatarToolbarButtonStateManager::
     MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
         const AccountInfo& account_info) {
@@ -2891,14 +2725,6 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
           &g_promo_duration_for_testing, kInfiniteTimeForTesting);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
-}
-
-// static
-base::AutoReset<base::TimeDelta> AvatarToolbarButtonStateManager::
-    SetScopedIPHMinDelayAfterCreationForTesting(  // IN-TEST
-        base::TimeDelta delay) {
-  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
-                                          delay);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

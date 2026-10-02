@@ -268,12 +268,6 @@ class AvatarToolbarButtonStateManager
   // Shared button press logic.
   void HandleButtonPressed(bool is_source_accelerator);
 
-  // Shared IPH methods.
-  void MaybeShowProfileSwitchIPH();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  void MaybeShowSupervisedUserSignInIPH();
-  void MaybeShowSignInBenefitsIPH();
-#endif
   void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       const AccountInfo& account_info);
 
@@ -284,14 +278,6 @@ class AvatarToolbarButtonStateManager
   // Testing functions: check `AvatarToolbarButton` equivalent functions.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
-
-  // static
-  [[nodiscard]] static base::AutoReset<base::TimeDelta>
-  SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
-
-  // Do not show the IPH right when creating the window, so that the IPH has a
-  // separate animation.
-  static base::TimeDelta g_iph_min_delay_after_creation;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
@@ -386,9 +372,6 @@ class AvatarToolbarButtonStateManager
   // remembered following a web sign-in event but waiting for the available
   // account information to be fetched in order to show the sign in IPH.
   GaiaId gaia_id_for_signin_choice_remembered_;
-
-  // Time when this object was created.
-  const base::TimeTicks creation_time_;
 
   std::vector<raw_ref<Observer>> state_manager_observers_;
 

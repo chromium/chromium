@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -98,15 +99,12 @@ void CloseModalSigninInBrowser(
   }
 
   SigninViewController::From(browser.get())->CloseModalSignin();
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser.get());
-  if (browser_view) {
-    if (show_supervised_user_iph) {
-      browser_view->MaybeShowSupervisedUserProfileSignInIPH();
-    }
-    if (show_profile_switch_iph) {
-      browser_view->MaybeShowProfileSwitchIPH();
-    }
+  auto* iph_controller = AvatarToolbarIphController::From(browser.get());
+  if (show_supervised_user_iph) {
+    iph_controller->MaybeShowSupervisedUserProfileSignInIPH();
+  }
+  if (show_profile_switch_iph) {
+    iph_controller->MaybeShowProfileSwitchIPH();
   }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

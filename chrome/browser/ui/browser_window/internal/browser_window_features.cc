@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ttc/core/entrypoint_controller.h"
@@ -112,6 +113,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_controller_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -698,6 +700,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
   // co-located via inline if/else dispatch; dependency exceptions are called
   // out with `// Must be after X.` / `// Must be before X.` comments):
 
+  avatar_toolbar_iph_controller_ =
+      GetUserDataFactory().CreateInstance<AvatarToolbarIphController>(
+          *browser, *browser, *profile,
+          IdentityManagerFactory::GetForProfile(profile));
+
   if (browser_view) {
     bookmark_bar_controller_->SetDelegate(browser_view);
   } else if (webui_browser_window) {
@@ -932,6 +939,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
 
   if (browser_view) {
     user_education_->Init(browser_view);
+    avatar_toolbar_iph_controller_->MaybeShowSignInBenefitsIPH();
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1165,6 +1173,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
 
   // Owned-by-all members.
+  // Must be before user_education_: cancel delayed avatar IPHs first.
+  avatar_toolbar_iph_controller_.reset();
   zoom_bubble_coordinator_.reset();
   zoom_bubble_manager_.reset();
 #if BUILDFLAG(IS_WIN)

@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "components/sync/service/sync_service.h"
@@ -32,13 +32,12 @@ void ShowBubble(BrowserWindowInterface* bwi,
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise
       // the IPH will be shown after the customization bubble.
-      if (BrowserView* const browser_view =
-              BrowserView::GetBrowserViewForBrowser(bwi)) {
+      if (auto* iph_controller = AvatarToolbarIphController::From(bwi)) {
         // Attempts to show first the Supervised user IPH (which has higher
         // priority), then the profile switch IPH. Whether the IPH will show (if
         // all conditions are met) is decided by the IPH framework.
-        browser_view->MaybeShowSupervisedUserProfileSignInIPH();
-        browser_view->MaybeShowProfileSwitchIPH();
+        iph_controller->MaybeShowSupervisedUserProfileSignInIPH();
+        iph_controller->MaybeShowProfileSwitchIPH();
       }
 
       return;

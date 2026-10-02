@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -217,25 +218,9 @@ bool WebUIAvatarToolbarButton::HasExplicitButtonState() const {
   return state_manager_ && state_manager_->HasExplicitButtonState();
 }
 
-void WebUIAvatarToolbarButton::MaybeShowProfileSwitchIPH() {
-  if (state_manager_ && delegate_->GetView()->GetWidget()) {
-    state_manager_->MaybeShowProfileSwitchIPH();
-  }
+bool WebUIAvatarToolbarButton::IsReadyForIPH() const {
+  return state_manager_ && delegate_->GetView()->GetWidget();
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void WebUIAvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
-  if (state_manager_ && delegate_->GetView()->GetWidget()) {
-    state_manager_->MaybeShowSupervisedUserSignInIPH();
-  }
-}
-
-void WebUIAvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
-  if (state_manager_ && delegate_->GetView()->GetWidget()) {
-    state_manager_->MaybeShowSignInBenefitsIPH();
-  }
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void WebUIAvatarToolbarButton::ClearActiveStateForTesting() {
   CHECK(state_manager_);

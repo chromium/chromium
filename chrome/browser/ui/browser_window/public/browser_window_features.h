@@ -33,6 +33,7 @@
 
 class ActorBorderViewController;
 class ActorUiWindowController;
+class AvatarToolbarIphController;
 class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BookmarksServiceFeature;
@@ -316,6 +317,8 @@ class BrowserWindowFeatures {
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
   std::unique_ptr<web_app::AppBrowserController> app_browser_controller_;
+
+  std::unique_ptr<AvatarToolbarIphController> avatar_toolbar_iph_controller_;
 
   std::unique_ptr<BookmarkBarController> bookmark_bar_controller_;
   std::unique_ptr<BookmarksServiceFeature> bookmarks_service_feature_;
