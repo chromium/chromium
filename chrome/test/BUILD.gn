@@ -651,7 +651,6 @@ static_library("test_support") {
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/web_applications:launch_utils",
-      "//chrome/test/base:test_theme_provider",
 
       # TODO(crbug.com/353332589): Remove once browser_with_test_window_test.h
       # is componentized. It uses ChromeTestViewsDelegate<> as a member field,
@@ -8282,6 +8281,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
         "//chrome/browser/ui/views/eye_dropper:interactive_ui_tests",
+        "//chrome/test/base:drag_and_drop_test_utils",
         "//ui/aura:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",

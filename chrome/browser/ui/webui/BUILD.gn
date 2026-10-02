@@ -489,6 +489,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/util",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:test_theme_provider",
       "//content/test:test_support",
       "//testing/gtest",
     ]
