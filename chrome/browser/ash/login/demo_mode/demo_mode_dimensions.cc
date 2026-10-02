@@ -55,7 +55,9 @@ std::string StoreNumber(const PrefService& local_state) {
 }
 
 bool IsFeatureAwareDevice() {
-  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568458409): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(AreDemoDimensionsAccessible());
   return ash::features::IsFeatureAwareDeviceDemoModeEnabled();
 }
 
