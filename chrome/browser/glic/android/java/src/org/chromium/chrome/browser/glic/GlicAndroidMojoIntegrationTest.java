@@ -110,7 +110,7 @@ public class GlicAndroidMojoIntegrationTest {
 
         // Wait until WebClient mojo connection has completed
         CriteriaHelper.pollUiThread(
-                () -> mTestEnv.isWebClientConnected(),
+                () -> mTestEnv.isWebClientConnected() && mTestEnv.getGuestWebContents() != null,
                 MOJO_BINDING_TIMEOUT_MS,
                 MOJO_BINDING_POLLING_INTERVAL_MS);
 
@@ -129,34 +129,34 @@ public class GlicAndroidMojoIntegrationTest {
                     service.invokeWithAutoSubmit(mTab, "State preservation test", 27);
                 });
         CriteriaHelper.pollUiThread(
-                () -> mTestEnv.isWebClientConnected(),
+                () -> mTestEnv.isWebClientConnected() && mTestEnv.getGuestWebContents() != null,
                 MOJO_BINDING_TIMEOUT_MS,
                 MOJO_BINDING_POLLING_INTERVAL_MS);
         assertEquals("State preservation test", getLastPrompt());
 
         // 2. Close bottom sheet (releasing the view container)
+        TabbedRootUiCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                (TabbedRootUiCoordinator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getRootUiCoordinatorForTesting());
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabbedRootUiCoordinator coordinator =
-                            (TabbedRootUiCoordinator)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getRootUiCoordinatorForTesting();
-                    coordinator.toggleGlic(false, GlicInvocationSource.UNSUPPORTED);
-                });
+                () -> coordinator.toggleGlic(false, GlicInvocationSource.UNSUPPORTED));
+        CriteriaHelper.pollUiThread(
+                () -> !coordinator.getTabBottomSheetManagerForTesting().isSheetShowing(),
+                MOJO_BINDING_TIMEOUT_MS,
+                MOJO_BINDING_POLLING_INTERVAL_MS);
 
         // 3. Re-open Glic
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabbedRootUiCoordinator coordinator =
-                            (TabbedRootUiCoordinator)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getRootUiCoordinatorForTesting();
-                    coordinator.toggleGlic(true, GlicInvocationSource.UNSUPPORTED);
-                });
+                () -> coordinator.toggleGlic(true, GlicInvocationSource.UNSUPPORTED));
         CriteriaHelper.pollUiThread(
-                () -> mTestEnv.isWebClientConnected(),
+                () ->
+                        coordinator.getTabBottomSheetManagerForTesting().isSheetShowing()
+                                && mTestEnv.isWebClientConnected()
+                                && mTestEnv.getGuestWebContents() != null,
                 MOJO_BINDING_TIMEOUT_MS,
                 MOJO_BINDING_POLLING_INTERVAL_MS);
 
