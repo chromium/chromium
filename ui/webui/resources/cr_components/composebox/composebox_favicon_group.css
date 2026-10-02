@@ -74,10 +74,13 @@
   transition: none;
 }
 
-/* Placeholder: surface-variant coin. Fades current -> 0% when swapped out. */
+/* Placeholder: surface-variant coin. Fades current -> 0% when swapped out.
+ * Like the coin background and border above, the default is intentionally not
+ * tied to the color scheme because the realbox is always a light surface.
+ * Themed hosts (omnibox, Lens searchbox, context menu) override
+ * --composebox-favicon-skeleton-color with a theme-aware token. */
 .favicon-item::before {
-  background-color: var(--color-sys-surface-variant,
-      var(--cr-fallback-color-surface-variant));
+  background-color: var(--composebox-favicon-skeleton-color, #e1e3e1);
   border-radius: 50%;
   content: '';
   inset: 0;
