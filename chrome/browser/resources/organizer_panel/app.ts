@@ -7,6 +7,7 @@ import './organizer_list.js';
 import '/strings.m.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -52,6 +53,11 @@ export class OrganizerPanelAppElement extends CrLitElement {
   protected accessor sectionDelegates_:
       Array<OrganizerListSectionDelegate<unknown>> =
           this.getSectionDelegates_();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    ColorChangeUpdater.forDocument().start();
+  }
 
   private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
     const delegates: Array<OrganizerListSectionDelegate<unknown>> = [
