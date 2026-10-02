@@ -292,11 +292,6 @@ LensOverlayInteractiveTestBase::OpenLensOverlayWithRegionSearch(
       "body",
   };
 
-  const DeepQuery kPathToRegionSelection{
-      "lens-overlay-app",
-      "lens-selection-overlay",
-      "#regionSelectionLayer",
-  };
   return Steps(
       InAnyContext(
           InstrumentTab(tab_id), NavigateWebContents(tab_id, url),
@@ -307,6 +302,21 @@ LensOverlayInteractiveTestBase::OpenLensOverlayWithRegionSearch(
           PressButton(kToolbarAppMenuButtonElementId),
           WaitForShow(AppMenuModel::kShowLensOverlay),
           SelectMenuItem(AppMenuModel::kShowLensOverlay)),
+      SelectRegionInLensOverlay(overlay_id, std::move(target_point),
+                                tab_id_int));
+}
+
+ui::test::InteractiveTestApi::MultiStep
+LensOverlayInteractiveTestBase::SelectRegionInLensOverlay(
+    ui::ElementIdentifier overlay_id,
+    base::OnceCallback<gfx::Point()> target_point,
+    int tab_id_int) {
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  return Steps(
       InAnyContext(
           InstrumentNonTabWebView(overlay_id,
                                   LensOverlayController::kOverlayId),
