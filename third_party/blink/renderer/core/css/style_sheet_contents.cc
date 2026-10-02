@@ -939,10 +939,18 @@ void StyleSheetContents::StartMutation() {
   }
 }
 
-void StyleSheetContents::ClearRuleSet() {
-  if (has_cached_mixins_) {
-    has_cached_mixins_ = false;
+void StyleSheetContents::InvalidateCachedMixins() {
+  if (!has_cached_mixins_) {
+    return;
   }
+  has_cached_mixins_ = false;
+  if (mixins_.HasMixins()) {
+    ++mixin_cache_revision_;
+  }
+}
+
+void StyleSheetContents::ClearRuleSet() {
+  InvalidateCachedMixins();
 
   if (StyleSheetContents* parent_sheet = ParentStyleSheet()) {
     parent_sheet->ClearRuleSet();

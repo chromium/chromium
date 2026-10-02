@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_scope_frame.h"
+#include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
@@ -166,6 +167,10 @@ class StyleEngineTest : public PageTestBase {
     return GetStyleEngine().functional_media_query_results_.size();
   }
 
+  StyleSheetCollection& GetDocumentStyleSheetCollection() {
+    return GetStyleEngine().GetDocumentStyleSheetCollection();
+  }
+
   // Returns the total size of the random() base value caches (element-shared
   // and element-dependent).
   wtf_size_t GetRandomBaseValueCacheSize() {
@@ -217,6 +222,42 @@ TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
   EXPECT_FALSE(IsDocumentStyleSheetCollectionClean());
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(IsDocumentStyleSheetCollectionClean());
+}
+
+TEST_F(StyleEngineTest, UnrelatedStyleChangePreservesMixinMapIdentity) {
+  ScopedCSSMixinsForTest scoped_css_mixins(true);
+  SetBodyInnerHTML(R"HTML(
+    <style id="mixins">
+      @mixin --mixin() {
+        @result {
+          color: green;
+        }
+      }
+    </style>
+    <style id="unrelated">#unused { color: red; }</style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  StyleSheetCollection& collection = GetDocumentStyleSheetCollection();
+  ASSERT_TRUE(collection.Mixins().map_identifier.has_value());
+  const uint64_t original_identifier =
+      collection.Mixins().map_identifier.value();
+
+  GetDocument()
+      .getElementById(AtomicString("unrelated"))
+      ->setTextContent("#unused { color: blue; }");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(original_identifier, collection.Mixins().map_identifier);
+
+  GetDocument().getElementById(AtomicString("mixins"))->setTextContent(R"CSS(
+        @mixin --mixin() {
+          @result {
+            color: blue;
+          }
+        }
+      )CSS");
+  UpdateAllLifecyclePhases();
+  EXPECT_NE(original_identifier, collection.Mixins().map_identifier);
 }
 
 TEST_F(StyleEngineTest, AnalyzedInject) {

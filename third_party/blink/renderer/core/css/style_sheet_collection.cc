@@ -115,6 +115,7 @@ void StyleSheetCollection::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(style_sheet_candidate_nodes_);
   visitor->Trace(mixins_);
+  visitor->Trace(mixin_cache_revisions_);
 }
 
 StyleSheetCollection::StyleSheetCollection(TreeScope& tree_scope)
@@ -153,8 +154,7 @@ void StyleSheetCollection::UpdateStyleSheetList() {
   sheet_list_dirty_ = false;
 }
 
-void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
-    const MediaQueryEvaluator& medium) {
+void StyleSheetCollection::PrepareUpdateActiveStyleSheets() {
   ActiveStyleSheetVector new_active_style_sheets;
   const String& preferred_name =
       is_shadow_tree_
@@ -199,23 +199,48 @@ void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
     }
   }
 
-  {
-    TRACE_EVENT0("blink,blink_style", "StyleSheetCollection::updateMixins");
-    const bool had_mixins = mixins_.HasMixins();
-    mixins_ = MixinMap();
-    for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
-      mixins_.Merge(css_sheet->Contents()->ExtractMixins(medium));
-    }
-    // Assign a fresh Mixin map identifier whenever the effective mixins were or
-    // are non-empty, so RuleSets flattened against a different set of mixins
-    // are recreated. An empty map keeps the identifier unset, which is fine
-    // because all empty maps are interchangeable.
-    if (had_mixins || mixins_.HasMixins()) {
-      mixins_.map_identifier = MixinMap::AllocateMapIdentifier();
-    }
-  }
   DCHECK(pending_active_style_sheets_.empty());
   pending_active_style_sheets_ = std::move(new_active_style_sheets);
+}
+
+void StyleSheetCollection::UpdateMixins(
+    const MediaQueryEvaluator& medium,
+    HeapHashSet<Member<TreeScope>>& scopes_with_changed_mixins) {
+  TRACE_EVENT0("blink,blink_style", "StyleSheetCollection::updateMixins");
+  MixinMap new_mixins;
+  HeapHashMap<Member<StyleSheetContents>, uint64_t> new_mixin_cache_revisions;
+  bool mixin_cache_revision_changed = false;
+  for (auto& [css_sheet, rule_set] : pending_active_style_sheets_) {
+    StyleSheetContents* contents = css_sheet->Contents();
+    const uint64_t revision = contents->MixinCacheRevision();
+    auto old_revision = mixin_cache_revisions_.find(contents);
+    mixin_cache_revision_changed |=
+        old_revision != mixin_cache_revisions_.end() &&
+        old_revision->value != revision;
+    new_mixin_cache_revisions.Set(contents, revision);
+    new_mixins.Merge(contents->ExtractMixins(medium));
+  }
+  const bool did_mixins_change =
+      mixin_cache_revision_changed || !mixins_.HasSameContent(new_mixins);
+  if (did_mixins_change) {
+    // Assign a fresh identifier whenever the effective mixins were or are
+    // non-empty, so RuleSets flattened against the old contents are recreated.
+    if (mixins_.HasMixins() || new_mixins.HasMixins()) {
+      new_mixins.map_identifier = MixinMap::AllocateMapIdentifier();
+    }
+    scopes_with_changed_mixins.insert(tree_scope_);
+  } else if (new_mixins.HasMixins()) {
+    new_mixins.map_identifier = mixins_.map_identifier;
+  }
+  mixins_ = std::move(new_mixins);
+  mixin_cache_revisions_ = std::move(new_mixin_cache_revisions);
+}
+
+void StyleSheetCollection::RefreshMixinMapIdentityForInheritedChange() {
+  if (mixins_.HasMixins()) {
+    DCHECK(mixins_.HasScopeIdentity());
+    mixins_.map_identifier = MixinMap::AllocateMapIdentifier();
+  }
 }
 
 }  // namespace blink

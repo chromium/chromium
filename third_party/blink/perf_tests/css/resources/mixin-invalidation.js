@@ -43,6 +43,7 @@ function measureMixinInvalidation({description, mixinUserCount, mutate}) {
     tracingCategories: 'blink',
     traceEventsToMeasure: [
       'StyleSheetCollection::updateMixins',
+      'StyleEngine::invalidateMixinDependentTreeScopes',
       'StyleSheetContents::rebuildRuleSetForMixins',
       'Document::recalcStyle',
     ],

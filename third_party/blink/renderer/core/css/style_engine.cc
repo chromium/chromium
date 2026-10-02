@@ -647,12 +647,11 @@ void StyleEngine::MediaQueryAffectingValueChanged(MediaValueChange change) {
 
 void StyleEngine::PrepareUpdateActiveStyleSheetsInShadow(
     TreeScope* tree_scope,
-    UnorderedTreeScopeSet& tree_scopes_removed,
-    const MediaQueryEvaluator& medium) {
+    UnorderedTreeScopeSet& tree_scopes_removed) {
   DCHECK_NE(tree_scope, document_);
   auto* collection = StyleSheetCollectionFor(*tree_scope);
   DCHECK(collection);
-  collection->PrepareUpdateActiveStyleSheets(medium);
+  collection->PrepareUpdateActiveStyleSheets();
 }
 
 void StyleEngine::UpdateActiveUserStyleSheets() {
@@ -688,18 +687,83 @@ void StyleEngine::UpdateActiveStyleSheets() {
 
   // Prepare the stylesheet collections for update. This collects all the
   // stylesheets from the nodes in question and extracts mixins.
-  //
-  // Note that if mixins in a parent changes, we should invalidate all children
-  // (in addition to the parent itself), or at least all mixin-using children,
-  // but we do not do invalidation of mixins in general yet.
+  // Keep the original dirty set separate from scopes we're about to add
+  // that only depend on changed inherited mixins.
+  const UnorderedTreeScopeSet initially_dirty_tree_scopes = dirty_tree_scopes_;
+
+  UnorderedTreeScopeSet scopes_with_changed_mixins;
   if (ShouldUpdateDocumentStyleSheetCollection()) {
-    document_style_sheet_collection_->PrepareUpdateActiveStyleSheets(medium);
+    document_style_sheet_collection_->PrepareUpdateActiveStyleSheets();
+    document_style_sheet_collection_->UpdateMixins(medium,
+                                                   scopes_with_changed_mixins);
   }
   if (ShouldUpdateShadowTreeStyleSheetCollection()) {
     UnorderedTreeScopeSet tree_scopes_removed;
-    for (TreeScope* tree_scope : dirty_tree_scopes_) {
-      PrepareUpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed,
-                                             medium);
+    for (TreeScope* tree_scope : initially_dirty_tree_scopes) {
+      PrepareUpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed);
+      StyleSheetCollectionFor(*tree_scope)
+          ->UpdateMixins(medium, scopes_with_changed_mixins);
+    }
+  }
+
+  if (!scopes_with_changed_mixins.empty()) {
+    TRACE_EVENT0("blink,blink_style",
+                 "StyleEngine::invalidateMixinDependentTreeScopes");
+    UnorderedTreeScopeSet scopes_to_prepare;
+    UnorderedTreeScopeSet scopes_with_inherited_mixin_changes;
+    for (TreeScope* tree_scope : active_tree_scopes_) {
+      const ActiveStyleSheetVector& active_style_sheets =
+          StyleSheetCollectionFor(*tree_scope)->ActiveStyleSheets();
+      if (std::ranges::none_of(active_style_sheets, [](const auto& entry) {
+            return entry.second && entry.second->DependingOnMixins();
+          })) {
+        continue;
+      }
+
+      TreeScope* changed_ancestor = nullptr;
+      for (TreeScope* changed_scope : scopes_with_changed_mixins) {
+        // Use the nearest changed ancestor so only the affected path is
+        // considered when multiple ancestor scopes changed.
+        if (changed_scope != tree_scope &&
+            changed_scope->IsInclusiveAncestorOf(*tree_scope) &&
+            (!changed_ancestor ||
+             changed_ancestor->IsInclusiveAncestorOf(*changed_scope))) {
+          changed_ancestor = changed_scope;
+        }
+      }
+      if (!changed_ancestor) {
+        continue;
+      }
+
+      if (!initially_dirty_tree_scopes.Contains(tree_scope)) {
+        // Only scopes with mixin-dependent RuleSets need to rebuild them.
+        // Intermediate scopes only need their map identities refreshed.
+        scopes_to_prepare.insert(tree_scope);
+      }
+      // Local mixins supply the identity for a scope's effective map. Refresh
+      // identities along the path so they cannot hide an inherited change from
+      // nested RuleSet cache checks.
+      for (TreeScope* scope = tree_scope; scope != changed_ancestor;
+           scope = scope->ParentTreeScope()) {
+        if (!StyleSheetCollectionFor(*scope)) {
+          continue;
+        }
+        scopes_with_inherited_mixin_changes.insert(scope);
+      }
+    }
+
+    UnorderedTreeScopeSet tree_scopes_removed;
+    for (TreeScope* tree_scope : scopes_to_prepare) {
+      dirty_tree_scopes_.insert(tree_scope);
+      PrepareUpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed);
+      StyleSheetCollectionFor(*tree_scope)
+          ->UpdateMixins(medium, scopes_with_changed_mixins);
+    }
+    for (TreeScope* tree_scope : scopes_with_inherited_mixin_changes) {
+      StyleSheetCollection& collection = *StyleSheetCollectionFor(*tree_scope);
+      if (!scopes_with_changed_mixins.Contains(tree_scope)) {
+        collection.RefreshMixinMapIdentityForInheritedChange();
+      }
     }
   }
 
@@ -764,7 +828,7 @@ MixinMap StyleEngine::EffectiveMixinsForTreeScope(TreeScope& tree_scope) {
   // this scope's active stylesheets are recomputed. Otherwise the combination
   // is just the inherited map, and we can keep (and share) the inherited
   // identifier.
-  inherited_mixins.map_identifier = local_mixins.map_identifier.has_value()
+  inherited_mixins.map_identifier = local_mixins.HasScopeIdentity()
                                         ? local_mixins.map_identifier
                                         : inherited_id;
   return inherited_mixins;

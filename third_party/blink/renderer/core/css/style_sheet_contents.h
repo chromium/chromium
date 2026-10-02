@@ -156,7 +156,7 @@ class CORE_EXPORT StyleSheetContents final
     if (rule_set_diff_) {
       rule_set_diff_->MarkUnrepresentable();
     }
-    has_cached_mixins_ = false;
+    InvalidateCachedMixins();
   }
 
   // Get/clear the diff between last time we did StartMutation()
@@ -253,6 +253,11 @@ class CORE_EXPORT StyleSheetContents final
   // NOTE: “medium” must be the same as is later used for EnsureRuleSet(),
   // or the set of mixins and the rule set may be inconsistent.
   //
+  // Incremented when a previously extracted, non-empty mixin map is
+  // invalidated. Unlike has_cached_mixins_, this state is not consumed by
+  // ExtractMixins(), so every collection sharing these contents can observe
+  // the mutation.
+  uint64_t MixinCacheRevision() const { return mixin_cache_revision_; }
   MixinMap& ExtractMixins(const MediaQueryEvaluator& medium);
 
   RuleSet& GetRuleSet() {
@@ -283,6 +288,7 @@ class CORE_EXPORT StyleSheetContents final
 
  private:
   StyleSheetContents& operator=(const StyleSheetContents&) = delete;
+  void InvalidateCachedMixins();
   void NotifyRemoveFontFaceRule(const StyleRuleFontFace*);
 
   Document* ClientSingleOwnerDocument() const;
@@ -327,6 +333,7 @@ class CORE_EXPORT StyleSheetContents final
   // _previous_ mixin map, which helps us to know if we have any mixins
   // that may have been removed.
   MixinMap mixins_;
+  uint64_t mixin_cache_revision_ = 0;
   bool has_cached_mixins_ = false;
 
   Member<RuleSet> rule_set_;

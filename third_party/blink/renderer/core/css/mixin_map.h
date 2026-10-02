@@ -44,9 +44,15 @@ struct MixinMap {
 
   static uint64_t AllocateMapIdentifier();
 
+  bool HasScopeIdentity() const { return map_identifier.has_value(); }
+
   bool HasMixins() const {
     return !mixins.empty() || !media_query_set_results.empty();
   }
+
+  // Compares the mixins and the media-query state that produced them, but not
+  // the scope identity.
+  bool HasSameContent(const MixinMap& other) const;
 
   // Add everything from "other" to this map, overwriting any mixins that may
   // already exist. Does not touch "map_identifier"; the caller is responsible

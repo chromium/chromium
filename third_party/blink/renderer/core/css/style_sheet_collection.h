@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -45,6 +47,7 @@ namespace blink {
 class MediaQueryEvaluator;
 class Node;
 class StyleSheet;
+class StyleSheetContents;
 
 // StyleSheetCollection is responsible for keeping track of which style sheets
 // are relevant for a given tree scope. Style sheets may be relevant for either
@@ -106,10 +109,16 @@ class CORE_EXPORT StyleSheetCollection
 
   const MixinMap& Mixins() const { return mixins_; }
 
-  // Updates mixins_ but not active_style_sheets_.
-  void PrepareUpdateActiveStyleSheets(const MediaQueryEvaluator&);
+  void PrepareUpdateActiveStyleSheets();
 
-  // Must be called once, after all PrepareUpdateActiveStyleSheets().
+  // Updates mixins_ from the pending active stylesheets. Adds this
+  // collection's TreeScope if the effective mixins changed.
+  void UpdateMixins(const MediaQueryEvaluator&,
+                    HeapHashSet<Member<TreeScope>>& scopes_with_changed_mixins);
+
+  void RefreshMixinMapIdentityForInheritedChange();
+
+  // Must be called once, after all UpdateMixins().
   void FinishUpdateActiveStyleSheets(const MixinMap& effective_mixins);
 
  private:
@@ -126,6 +135,11 @@ class CORE_EXPORT StyleSheetCollection
   ActiveStyleSheetVector active_style_sheets_;
   ActiveStyleSheetVector pending_active_style_sheets_;
   MixinMap mixins_;
+  // Last mixin cache revision this collection observed for each active
+  // stylesheet.
+  // These are observations of source stylesheets, not part of the effective
+  // mixin map itself.
+  HeapHashMap<Member<StyleSheetContents>, uint64_t> mixin_cache_revisions_;
 
   bool sheet_list_dirty_ = true;
   const bool is_shadow_tree_;
