@@ -64,3 +64,4 @@ Local Modifications:
  - ece2fa50a313 Fix MemorySnapshotSanitized for 32-bit builds, where size_t
              ≠ VMAddress
  - ad1827ddbc03 Update cpp-httplib to d66d9a95997d (0.51.0)
+ - 60dd943f48d7 Round up OOB stack pointers in ScanStackForPointers
