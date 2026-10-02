@@ -24,7 +24,6 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "net/http/http_util.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/public/mojom/url_response_head.mojom.h"
