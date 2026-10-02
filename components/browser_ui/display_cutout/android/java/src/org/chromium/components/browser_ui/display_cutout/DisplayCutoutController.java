@@ -477,6 +477,24 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      * @return the union of browser bar and cutout insets, or an empty Rect if no insets are
      *     available yet.
      */
+    /**
+     * Whether the visible IME should be excluded from the merged bottom safe area. In
+     * resizes-content and resizes-visual modes, including the unset default, the keyboard occludes
+     * the bottom edge, so keeping the navigation-bar inset would make fixed bottom UI anchored
+     * above the keyboard float a bar-height too high (crbug.com/407420295). With the
+     * VirtualKeyboard API (overlays-content) the author manages keyboard geometry via
+     * env(keyboard-inset-*) and expects the bar inset to stay stable.
+     */
+    private static boolean shouldExcludeImeFromSafeArea(
+            @VirtualKeyboardMode.EnumType int keyboardMode) {
+        // UNSET means the page never declared interactive-widget, and the Android platform default
+        // for that is resizes-visual, so it belongs with the resizing modes rather than with
+        // overlays-content. Most pages report UNSET.
+        return keyboardMode == VirtualKeyboardMode.UNSET
+                || keyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
+                || keyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
+    }
+
     private Rect getBrowserSafeAreaInsets() {
         if (mInsetObserver == null) return new Rect();
 
@@ -492,15 +510,15 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             WebContents webContents = mDelegate.getWebContents();
             if (windowInsets.isVisible(ime())
                     && webContents != null
-                    && webContents.getVirtualKeyboardMode()
-                            == VirtualKeyboardMode.RESIZES_CONTENT) {
+                    && shouldExcludeImeFromSafeArea(webContents.getVirtualKeyboardMode())) {
                 // A resizes-content IME shrinks the content viewport to sit above the keyboard,
-                // so the keyboard already protects the part of the bottom edge it covers. Only
-                // the remainder of the navigation bar can still obstruct the page, which is
-                // normally none because the IME is far taller than the bar. Subtracting instead
-                // of zeroing keeps the page protected if the IME is ever reported shorter than
-                // the navigation bar, e.g. a floating or split keyboard, or a hardware keyboard
-                // that only shows a suggestion strip.
+                // and a resizes-visual IME occludes the bottom edge while the visual viewport
+                // shrinks above it; in both cases the keyboard already protects the part of the
+                // bottom edge it covers. Only the remainder of the navigation bar can still
+                // obstruct the page, which is normally none because the IME is far taller than
+                // the bar. Subtracting instead of zeroing keeps the page protected if the IME is
+                // ever reported shorter than the navigation bar, e.g. a floating or split
+                // keyboard, or a hardware keyboard that only shows a suggestion strip.
                 int imeBottom = windowInsets.getInsets(ime()).bottom;
                 navigationBarInsets =
                         Insets.of(

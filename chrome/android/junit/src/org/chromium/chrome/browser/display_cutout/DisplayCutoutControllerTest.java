@@ -358,8 +358,11 @@ public class DisplayCutoutControllerTest {
         when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_VISUAL);
         controller.onInsetChanged();
 
+        // A resizes-visual keyboard occludes the navigation bar just like a resizes-content one;
+        // fixed bottom UI following the visual viewport must not keep an extra bar-height gap.
         verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
-        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
         when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_CONTENT);
@@ -387,9 +390,10 @@ public class DisplayCutoutControllerTest {
 
     /**
      * Builds a controller whose window insets report the given navigation bar and IME bottoms with
-     * a visible, resizes-content keyboard.
+     * a visible keyboard in the given {@link VirtualKeyboardMode}.
      */
-    private DisplayCutoutController createControllerForImeTest(int navBarBottom, int imeBottom) {
+    private DisplayCutoutController createControllerForImeTest(
+            int navBarBottom, int imeBottom, @VirtualKeyboardMode.EnumType int keyboardMode) {
         WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
         when(insets.getInsetsIgnoringVisibility(statusBars()))
                 .thenReturn(UPDATED_STATUS_BAR_INSETS);
@@ -404,7 +408,7 @@ public class DisplayCutoutControllerTest {
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_CONTENT);
+        when(mWebContents.getVirtualKeyboardMode()).thenReturn(keyboardMode);
         when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
 
@@ -426,7 +430,10 @@ public class DisplayCutoutControllerTest {
         // The common case: the keyboard fully covers the navigation bar, so the resized content
         // no longer has anything obstructing its bottom edge.
         DisplayCutoutController controller =
-                createControllerForImeTest(/* navBarBottom= */ 16, /* imeBottom= */ 392);
+                createControllerForImeTest(
+                        /* navBarBottom= */ 16,
+                        /* imeBottom= */ 392,
+                        VirtualKeyboardMode.RESIZES_CONTENT);
 
         clearInvocations(mWebContents);
         controller.onInsetChanged();
@@ -443,7 +450,10 @@ public class DisplayCutoutControllerTest {
         // a suggestion strip: the IME is shorter than the navigation bar, so the part of the bar
         // it does not cover must stay in the safe area.
         DisplayCutoutController controller =
-                createControllerForImeTest(/* navBarBottom= */ 16, /* imeBottom= */ 4);
+                createControllerForImeTest(
+                        /* navBarBottom= */ 16,
+                        /* imeBottom= */ 4,
+                        VirtualKeyboardMode.RESIZES_CONTENT);
 
         clearInvocations(mWebContents);
         controller.onInsetChanged();
@@ -452,6 +462,80 @@ public class DisplayCutoutControllerTest {
         verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
         Assert.assertEquals(
                 new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 12), safeAreaCaptor.getValue());
+    }
+
+    @Test
+    public void testResizesVisualImeTallerThanNavBarClearsBottom() {
+        // The default keyboard mode since M108: the visual viewport shrinks above the keyboard
+        // while the layout viewport keeps its size. The keyboard still occludes the navigation
+        // bar, so env(safe-area-inset-bottom) must not keep the bar inset. crbug.com/407420295.
+        DisplayCutoutController controller =
+                createControllerForImeTest(
+                        /* navBarBottom= */ 16,
+                        /* imeBottom= */ 392,
+                        VirtualKeyboardMode.RESIZES_VISUAL);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
+    }
+
+    @Test
+    public void testResizesVisualShortImeKeepsUncoveredNavigationBar() {
+        DisplayCutoutController controller =
+                createControllerForImeTest(
+                        /* navBarBottom= */ 16,
+                        /* imeBottom= */ 4,
+                        VirtualKeyboardMode.RESIZES_VISUAL);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 12), safeAreaCaptor.getValue());
+    }
+
+    @Test
+    public void testUnsetKeyboardModeImeClearsBottom() {
+        // Pages that never declare interactive-widget report UNSET, and the Android platform
+        // default for UNSET is resizes-visual, so the keyboard still occludes the bottom edge.
+        // This is the configuration real pages hit. crbug.com/407420295.
+        DisplayCutoutController controller =
+                createControllerForImeTest(
+                        /* navBarBottom= */ 48, /* imeBottom= */ 392, VirtualKeyboardMode.UNSET);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
+    }
+
+    @Test
+    public void testOverlaysContentImeKeepsNavigationBarInset() {
+        // With the VirtualKeyboard API the author manages keyboard geometry explicitly via
+        // env(keyboard-inset-*); the bar inset must stay stable under the keyboard.
+        DisplayCutoutController controller =
+                createControllerForImeTest(
+                        /* navBarBottom= */ 16,
+                        /* imeBottom= */ 392,
+                        VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 16), safeAreaCaptor.getValue());
     }
 
     @Test
