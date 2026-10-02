@@ -577,6 +577,10 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
     return false;
   }
 
+  // Annotate before the early-return clear path so clearing selection also
+  // marks the resulting selection event with EventFrom::kAction.
+  ScopedActionAnnotator annotater(*private_,
+                                  ax::mojom::blink::Action::kSetSelection);
   if (anchor_offset == ax::mojom::blink::kNoSelectionOffset) {
     DCHECK_EQ(anchor_object, *this);
     DCHECK_EQ(focus_object, *this);
@@ -590,8 +594,6 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
       return true;
     }
   }
-  ScopedActionAnnotator annotater(*private_,
-                                  ax::mojom::blink::Action::kSetSelection);
   AXPosition ax_anchor, ax_focus;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
       static_cast<const AXObject*>(anchor_object)->IsAtomicTextField()) {

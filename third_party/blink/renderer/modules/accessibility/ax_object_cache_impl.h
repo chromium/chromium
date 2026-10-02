@@ -662,6 +662,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   }
   void ClearObjectsPendingSerializationForTesting() {
     pending_objects_to_serialize_.clear();
+    pending_events_to_serialize_.clear();
   }
   void ResetLifecycleForTesting() {
     lifecycle_.EnsureStateAtMost(AXObjectCacheLifecycle::kDeferTreeUpdates);
@@ -1335,6 +1336,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // been requested.
   bool serialize_immediately_after_current_serialization_ = false;
 
+  // If true, an accessibility action requested immediate serialization, so
+  // ScheduleAXUpdate() may schedule a visual update even while the document is
+  // still loading.
+  bool serialize_immediately_for_action_ = false;
+
   // Maps ids to their object's autofill suggestion availability.
   HashMap<AXID, WebAXAutofillSuggestionAvailability>
       autofill_suggestion_availability_map_;
@@ -1481,6 +1487,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
                            SetMenuListOptionsBoundsBasePickerClearsState);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccessibilityTest,
+      SelectionSerializedBeforeNextActionWhileDocumentLoading);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccessibilityTest,
+      CommitAXUpdatesPreservesSerializeImmediatelyAcrossParserPauseAndInFlight);
 
   // The ID of the object to fetch image data for.
   AXID image_data_node_id_ = ui::AXNodeData::kInvalidAXID;
