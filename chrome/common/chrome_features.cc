@@ -439,9 +439,6 @@ const base::FeatureParam<bool> kGlicActorIncrementalTypingClearAutoSelection{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-clear-auto-selection", false};
 
-const base::FeatureParam<bool> kGlicActorPolicyControlExemption{
-    &kGlicActor, "glic_actor_policy_control_exemption", false};
-
 BASE_FEATURE(kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

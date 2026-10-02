@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
@@ -54,8 +55,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
+        {features::kGlicActorPolicyControlExemption, {}}};
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});
 

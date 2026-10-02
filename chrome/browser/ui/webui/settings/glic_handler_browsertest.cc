@@ -108,8 +108,7 @@ class GlicHandlerConsentBrowserTest : public GlicHandlerBrowserTest {
   GlicHandlerConsentBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
+         {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{features::kGlicWebActuationSettingsToggle});
   }
 
@@ -122,8 +121,7 @@ class GlicHandlerSubscriptionTierBrowserTest : public GlicHandlerBrowserTest {
   GlicHandlerSubscriptionTierBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
+         {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }
 

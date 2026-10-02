@@ -171,6 +171,9 @@ BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
                         GlicActorEnterprisePrefDefault::kDisabledByDefault,
                         &kGlicActorEnterprisePrefDefaultOptions);
 
+BASE_FEATURE(kGlicActorPolicyControlExemption,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 base::flat_set<std::string> ParseBenefitList(const std::string& benefit_list) {

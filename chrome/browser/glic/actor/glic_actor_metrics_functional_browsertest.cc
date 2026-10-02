@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -149,12 +150,8 @@ class GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption
     : public GlicActorMetricsFunctionalBrowserTest {
  public:
   GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "false"}}}},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kGlicActorPolicyControlExemption);
   }
   ~GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption() override =
       default;

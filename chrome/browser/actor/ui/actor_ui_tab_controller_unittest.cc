@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "chrome/browser/actor/ui/test_support/mock_handoff_button_controller.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
@@ -84,10 +85,7 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"},
                                 {features::kGlicActorUiOverlayName, "true"}}},
-                              {features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
+                              {features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }
   ~ActorUiTabControllerTest() override = default;

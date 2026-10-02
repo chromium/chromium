@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -161,13 +162,18 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
             policy::ManagementServiceFactory::GetInstance()->GetForPlatform(),
             policy::EnterpriseManagementAuthority::NONE);
 
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicExperimentalTriggering, {}},
-         {features::kGlicExperimentalTriggeringScriptTools, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name,
-            ActorPolicyControlExemption() ? "true" : "false"}}}},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicExperimentalTriggering, {}},
+        {features::kGlicExperimentalTriggeringScriptTools, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (ActorPolicyControlExemption()) {
+      enabled_features.push_back(
+          {features::kGlicActorPolicyControlExemption, {}});
+    } else {
+      disabled_features.push_back(features::kGlicActorPolicyControlExemption);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
     ASSERT_TRUE(profile_manager_.SetUp());
 
     TestingProfile::TestingFactories testing_factories;

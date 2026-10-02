@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -142,9 +143,8 @@ class AttemptLoginToolInteractiveUiTestBase
     : public InteractiveBrowserTestMixin<ActorToolsTest> {
  public:
   AttemptLoginToolInteractiveUiTestBase() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicActorPolicyControlExemption);
   }
 
  private:

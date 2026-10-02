@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -57,8 +58,7 @@ class LegacyGlicActivityManagerTest : public testing::Test,
   LegacyGlicActivityManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
+        {features::kGlicActorPolicyControlExemption, {}}};
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});
   }

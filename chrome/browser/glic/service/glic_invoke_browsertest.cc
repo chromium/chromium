@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -2442,9 +2443,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 class GlicInvokeActuationBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeActuationBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {{::features::kGlicActorPolicyControlExemption.name, "true"}});
+    feature_list_.InitAndEnableFeature(
+        features::kGlicActorPolicyControlExemption);
   }
 
  private:

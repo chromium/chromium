@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
@@ -39,10 +40,8 @@ class GlicActorFunctionalBrowserTestMixin : public T {
       : T(std::forward<Args>(args)...) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{::actor::kActorBindCreatedTabToTask, {}},
-                              {features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
+                              {::features::kGlicActorPolicyControlExemption,
+                               {}}},
         /*disabled_features=*/{});
   }
   ~GlicActorFunctionalBrowserTestMixin() override = default;

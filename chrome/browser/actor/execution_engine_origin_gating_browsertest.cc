@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -177,8 +178,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
       const std::vector<base::test::FeatureRef>& additional_disabled_features) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {features::kGlicActorPolicyControlExemption, {}},
         {kGlicCrossOriginNavigationGating,
          {
              {"confirm_navigation_to_new_origins", "true"},
@@ -894,8 +894,7 @@ class ExecutionEngineOriginGatingUserPromptingBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {{
                  {"confirm_navigation_to_new_origins", "true"},
@@ -2432,8 +2431,7 @@ class ExecutionEngineBlocklistDisabledBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {
                  {"confirm_navigation_to_new_origins", "false"},
@@ -2509,8 +2507,7 @@ class ExecutionEngineOriginGatingDarkLaunchBrowserTest
         /*enabled_features=*/
         {
             {features::kGlic, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {kGlicCrossOriginNavigationGating,
              {
                  {"confirm_navigation_to_new_origins",
@@ -2612,8 +2609,7 @@ class ExecutionEngineOriginGatingSlowResponseBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {kActorPageStability, {{kActorPageStabilityTimeout.name, "300ms"}}},
             {kActorObservationDelay,
              {{kActorObservationDelayTimeout.name, "1s"}}},

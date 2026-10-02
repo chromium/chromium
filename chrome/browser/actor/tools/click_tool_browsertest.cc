@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -125,8 +126,7 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
   ActorClickToolBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{::features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {{features::kGlicActorPolicyControlExemption, {}},
          {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}},
          {features::kGlicActorRejectInteractionDisallowedTargets, {}}},
         /*disabled_features=*/{});
@@ -150,8 +150,7 @@ class ActorClickToolInteractionDisallowedTargetFeatureDisabledTest
   ActorClickToolInteractionDisallowedTargetFeatureDisabledTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{::features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {{features::kGlicActorPolicyControlExemption, {}},
          {kActorClickDelay, {{kActorClickDelayParam.name, "200ms"}}}},
         /*disabled_features=*/
         {features::kGlicActorRejectInteractionDisallowedTargets});

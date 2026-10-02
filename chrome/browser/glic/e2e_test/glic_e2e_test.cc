@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
@@ -124,10 +125,8 @@ void GlicE2ETest::SetUp() {
 
   running_actor_tests_ = command_line_of_test->HasSwitch(kEnableActorTests);
   if (running_actor_tests_) {
-    exempt_actor_policy_control_feature_list_
-        .InitAndEnableFeatureWithParameters(
-            features::kGlicActor,
-            {{features::kGlicActorPolicyControlExemption.name, "true"}});
+    exempt_actor_policy_control_feature_list_.InitAndEnableFeature(
+        features::kGlicActorPolicyControlExemption);
   }
   enable_low_bandwidth_tests_ =
       command_line_of_test->HasSwitch(kEnableLowBandwidthTestsSwitch);

@@ -286,10 +286,6 @@ extern const base::FeatureParam<int>(
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading);
 
-// Exempts the user from ActorPolicyChecker.
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kGlicActorPolicyControlExemption;
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(
     kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch);

@@ -8760,14 +8760,16 @@
                     "name": "Enabled_Dogfood_And_Allowlist",
                     "params": {
                         "glic-actor-eligible-tiers": "0,1,2",
-                        "glic_actor_enterprise_pref_default": "enabled_by_default",
-                        "glic_actor_policy_control_exemption": "false"
+                        "glic_actor_enterprise_pref_default": "enabled_by_default"
                     },
                     "enable_features": [
                         "GlicActor",
                         "GlicActorEligibleTiers",
                         "GlicActorEnterprisePrefDefault",
                         "GlicActorUi"
+                    ],
+                    "disable_features": [
+                        "GlicActorPolicyControlExemption"
                     ]
                 }
             ]

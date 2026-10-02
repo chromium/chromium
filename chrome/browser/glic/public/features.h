@@ -120,6 +120,9 @@ BASE_DECLARE_FEATURE(kGlicActorEnterprisePrefDefault);
 BASE_DECLARE_FEATURE_PARAM(GlicActorEnterprisePrefDefault,
                            kGlicActorEnterprisePrefDefaultParam);
 
+// Exempts the user from ActorPolicyChecker.
+BASE_DECLARE_FEATURE(kGlicActorPolicyControlExemption);
+
 // When enabled, Glic and Autobrowse (web actuation) entitlement is determined
 // by the synced subscription benefits priority pref
 // (`subscription_eligibility::prefs::kSubscriptionBenefits`) instead of the AI

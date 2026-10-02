@@ -340,8 +340,7 @@ class GlicApiTest : public GlicApiBrowserTest,
            {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
          {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
          {features::kGlicOpenContactInfoSettingsPageApi, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {blink::features::kAIPageContentTrackedElementsIframe, {}}},
         /*disabled_features=*/
         {
@@ -582,8 +581,7 @@ class GlicApiTestWithExperimentalTriggeringScreenshot : public GlicApiTest {
   GlicApiTestWithExperimentalTriggeringScreenshot() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicExperimentalTriggeringScreenshot, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}}},
+         {features::kGlicActorPolicyControlExemption, {}}},
         {});
   }
 
@@ -3332,8 +3330,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
           {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
         {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
         {features::kGlicOpenContactInfoSettingsPageApi, {}},
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {features::kGlicActorPolicyControlExemption, {}},
         {blink::features::kAIPageContentTrackedElementsIframe, {}},
     };
 
@@ -4726,14 +4723,12 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {
  public:
   GlicApiTestWithGeminiActOnWebPolicy() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "false"}}},
-         {features::kGlicActorEnterprisePrefDefault,
+        {{features::kGlicActorEnterprisePrefDefault,
           {{features::kGlicActorEnterprisePrefDefaultParam.name,
             features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
-        {});
+        {features::kGlicActorPolicyControlExemption});
   }
   ~GlicApiTestWithGeminiActOnWebPolicy() override = default;
 

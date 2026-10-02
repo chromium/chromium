@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -660,12 +661,8 @@ class GlicActorGeneralUiTestWithoutPolicyExemption
     : public GlicActorGeneralUiTest {
  public:
   GlicActorGeneralUiTestWithoutPolicyExemption() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "false"}}}},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicActorPolicyControlExemption);
   }
   ~GlicActorGeneralUiTestWithoutPolicyExemption() override = default;
 
@@ -878,8 +875,7 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
   GlicActorCallbackOrderGeneralUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {actor::kActorClickDelay,
              {{actor::kActorClickDelayParam.name, "60000ms"}}},
             {actor::kGlicPerformActionsReturnsBeforeStateChange, {}},

@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -121,8 +122,7 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
   ActorPageToolTimeoutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {{features::kGlicActorPolicyControlExemption, {}},
          {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2s"}}},
          {features::kGlicActorIncrementalTyping,
           {{"glic-actor-long-text-paste-threshold", "1000000000"},
@@ -186,8 +186,7 @@ class ActorPageToolLongClickDelayBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features_and_params.push_back(
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}});
+        {features::kGlicActorPolicyControlExemption, {}});
     // Delay holding the mouse down before mouse up.
     enabled_features_and_params.push_back(
         {kActorClickDelay, {{kActorClickDelayParam.name, "2d"}}});
@@ -280,10 +279,7 @@ class ActorPageToolLongMouseMoveDelayBrowserTest
  public:
   ActorPageToolLongMouseMoveDelayBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}},
+        /*enabled_features=*/{{features::kGlicActorPolicyControlExemption, {}},
                               {features::kGlicActorMoveBeforeClick,
                                // Delay after mouse move to target and before
                                // mouse down.
@@ -344,8 +340,8 @@ class ActorPageToolLongKeyDownDelayBrowserTest
         /*enabled_features=*/
         {{features::kGlicActor,
           // Delay holding down the keyboard key.
-          {{"glic-actor-incremental-typing-key-down-duration", "2d"},
-           {features::kGlicActorPolicyControlExemption.name, "true"}}},
+          {{"glic-actor-incremental-typing-key-down-duration", "2d"}}},
+         {features::kGlicActorPolicyControlExemption, {}},
          {kActorPageToolTimeout, {{kActorPageToolTimeoutParam.name, "2d"}}}},
         /*disabled_features=*/{});
   }

@@ -65,8 +65,7 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
          {extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
          {extensions_features::kApiGlicAccessFromPromotionPage, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}
+         {features::kGlicActorPolicyControlExemption, {}}
 #if BUILDFLAG(IS_CHROMEOS)
          ,
          {syncer::kReplaceSyncPromosWithSignInPromos, {}}
@@ -821,8 +820,7 @@ class GlicSubframeInvokeBrowserTest : public GlicPrivateApiTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
+         {features::kGlicActorPolicyControlExemption, {}}},
         {});
   }
 
@@ -967,8 +965,7 @@ class GlicMessagingWebContinuityBrowserTest : public GlicPrivateApiTestBase {
         {{contextual_tasks::kContextualTasks, {}},
          {extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromWebContinuity, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
+         {features::kGlicActorPolicyControlExemption, {}}},
         {});
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()

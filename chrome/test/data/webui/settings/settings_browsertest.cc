@@ -775,10 +775,6 @@ class SettingsGlicSubPageWebActuationTableTest
   SettingsGlicSubPageWebActuationTableTest() {
     const WebActuationTestParams& p = GetParam();
 
-    base::FieldTrialParams actor_params;
-    actor_params[features::kGlicActorPolicyControlExemption.name] =
-        p.policy_control_exemption ? "true" : "false";
-
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
@@ -797,7 +793,11 @@ class SettingsGlicSubPageWebActuationTableTest
       disabled.emplace_back(features::kGlicWebActuationSettingsToggle);
     }
 
-    enabled.emplace_back(features::kGlicActor, actor_params);
+    if (p.policy_control_exemption) {
+      enabled.push_back({features::kGlicActorPolicyControlExemption, {}});
+    } else {
+      disabled.emplace_back(features::kGlicActorPolicyControlExemption);
+    }
     enabled.push_back(
         {features::kGlicActorEligibleTiers,
          {{features::kGlicActorEligibleTiersParam.name, p.eligible_tiers}}});

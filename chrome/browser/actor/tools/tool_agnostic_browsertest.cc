@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/actor.mojom.h"
@@ -765,8 +766,7 @@ class ActorToolAgnosticBrowserTestWithCustomDelay
   ActorToolAgnosticBrowserTestWithCustomDelay() {
     // Ensure tool doesn't finish before the tab is closed.
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {{features::kGlicActorPolicyControlExemption, {}},
          {kActorPageStability, {{kActorPageStabilityMinWait.name, "10000ms"}}}},
         {});
   }

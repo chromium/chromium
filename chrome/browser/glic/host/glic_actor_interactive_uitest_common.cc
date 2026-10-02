@@ -91,8 +91,7 @@ GlicActorUiTest::GlicActorUiTest() {
       {// Increase timeout since tests are timing out with ASAN builds.
        {features::kGlicWebClientLoadTimes,
         {{features::kGlicMaxLoadingTimeMs.name, "30000"}}},
-       {features::kGlicActor,
-        {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+       {features::kGlicActorPolicyControlExemption, {}},
        // Decrease the timeout for observation delays to prevent test timeouts
        // on slow builders.
        {actor::kActorObservationDelay,

@@ -405,10 +405,11 @@ GlicActorPolicyChecker::ComputeActOnWebCapability(bool disable_for_enterprise) {
                              : CannotActReason::kNone};
       };
 
-  if (features::kGlicActorPolicyControlExemption.Get()) {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorPolicyControlExemption)) {
     return log_and_return(
         CanActOutcome::kYes,
-        "extempted via cmdline `glic_actor_policy_control_exemption`");
+        "exempted via cmdline `glic_actor_policy_control_exemption`");
   }
 
   // If the main Glic check has been split to no longer use the

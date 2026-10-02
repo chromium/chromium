@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -198,8 +199,7 @@ class PasswordBubbleInteractiveUiTestBase : public ManagePasswordsTest {
       std::vector<base::test::FeatureRefAndParams> enabled_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {}) {
     enabled_features.push_back(
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}});
+        {features::kGlicActorPolicyControlExemption, {}});
     disabled_features.push_back(features::kNonBlockingOsClipboardReads);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,

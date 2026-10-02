@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -46,8 +47,7 @@ class ActorTaskListBubbleInteractiveUiTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicRollout, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {features::kGlicActorPolicyControlExemption, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
         },

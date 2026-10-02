@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
@@ -30,8 +31,7 @@ class GlicSidePanelCoordinatorDesktopAndroidBrowserTest : public GlicBrowserTest
  public:
   GlicSidePanelCoordinatorDesktopAndroidBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {features::kGlicActorPolicyControlExemption, {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }

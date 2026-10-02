@@ -25,10 +25,7 @@ class GlicInstanceCoordinatorMetricsBrowserTest : public GlicBrowserTest {
  public:
   GlicInstanceCoordinatorMetricsBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
+        /*enabled_features=*/{{features::kGlicActorPolicyControlExemption, {}}},
         /*disabled_features=*/{});
   }
 
