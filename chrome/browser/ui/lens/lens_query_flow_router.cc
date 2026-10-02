@@ -208,11 +208,12 @@ void LensQueryFlowRouter::StartQueryFlow(
     if (!GetContextualSearchSessionHandle()) {
       pending_session_handle_ = CreateContextualSearchSessionHandle();
       pending_session_handle_->NotifySessionStarted();
-      // Add observer to listen for context upload status changes. This is only
-      // needed when a new session handle is created as part of this flow as
-      // the response is not used by the overlay otherwise.
+    }
+    if (auto* session_handle = GetContextualSearchSessionHandle();
+        session_handle && session_handle->GetController()) {
+      // Add observer to listen for context upload status changes.
       context_upload_status_observation_.Observe(
-          GetContextualSearchSessionHandle()->GetController());
+          session_handle->GetController());
     }
 
     initial_context_params_ = InitialContextParams{

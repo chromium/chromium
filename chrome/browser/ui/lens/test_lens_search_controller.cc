@@ -196,7 +196,9 @@ FakeLensQueryFlowRouter::FakeLensQueryFlowRouter(
           fake_tab_interface_.get());
 }
 
-FakeLensQueryFlowRouter::~FakeLensQueryFlowRouter() = default;
+FakeLensQueryFlowRouter::~FakeLensQueryFlowRouter() {
+  reset_context_upload_status_observation();
+}
 
 bool FakeLensQueryFlowRouter::IsActiveTabContextEligible() const {
   return true;

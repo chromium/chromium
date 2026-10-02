@@ -2698,9 +2698,16 @@ void ComposeboxQueryController::HandleUploadResponse(
     return;
   }
 
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+
   if (file_info->upload_chunker &&
-      file_info->upload_chunker->HandlePageContentResponse(
-          response->response)) {
+      file_info->upload_chunker->HandlePageContentResponse(response_string)) {
     // The chunker is handling missing chunk errors. Exit early. This handler
     // will be called again after the retry has finished.
     file_info->num_outstanding_network_requests_--;
@@ -2758,7 +2765,7 @@ void ComposeboxQueryController::HandleUploadResponse(
   }
 
   // Store the response body for later processing.
-  file_info->response_bodies.push_back(response->response);
+  file_info->response_bodies.push_back(response_string);
 
   // If the file was still uploading and there are no more outstanding network
   // requests, update the file upload status to successful. The upload status
