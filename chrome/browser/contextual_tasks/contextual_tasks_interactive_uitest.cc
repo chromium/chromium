@@ -348,6 +348,24 @@ class ContextualTasksInteractiveUiTestBase
     return WaitForComposeboxFilesCount(kPrimaryTab, expected_count);
   }
 
+  // Waits until the composebox holds `expected_count` attachments and every
+  // attachment upload has reached a terminal status. Interacting with a chip
+  // (e.g. removing it) while its upload is still in flight races with the
+  // asynchronous upload status updates on slow bots.
+  auto WaitForComposeboxFileUploadsComplete(
+      const ui::ElementIdentifier& contents_id,
+      int expected_count) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app", "#composebox", "#composebox"};
+    change.test_function = base::StringPrintf(
+        "el => !!el.attachedContext && el.attachedContext.size === %d && "
+        "el.fileUploadsComplete === true",
+        expected_count);
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
   auto WaitForFaviconGroupWithTitle(const ui::ElementIdentifier& contents_id,
                                     const std::string& expected_title) {
     StateChange change;
@@ -990,16 +1008,16 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
 }
 
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
-// TODO(crbug.com/524797987): Re-enable this test on ChromeOS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_AddAndRemovePdfChipFromComposebox \
-  DISABLED_AddAndRemovePdfChipFromComposebox
-#else
-#define MAYBE_AddAndRemovePdfChipFromComposebox \
-  AddAndRemovePdfChipFromComposebox
-#endif
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel.
+//  (2) User clicks the add context entrypoint in the composebox.
+//  (3) User selects "Upload file" and picks a PDF file.
+//  (4) User sees the PDF document chip with the file name, and its upload
+//      finishes.
+//  (5) User clicks the remove button on the document chip.
+//  (6) User sees the document chip removed and no attachments remain.
 IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
-                       MAYBE_AddAndRemovePdfChipFromComposebox) {
+                       AddAndRemovePdfChipFromComposebox) {
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   base::FilePath file_path = test_data_dir.AppendASCII("download.pdf");
@@ -1024,28 +1042,27 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
                                            "cr-composebox-file-thumbnail",
                                            "#removeDocumentButton"};
 
-  const DeepQuery kDocumentChipTitle = {"contextual-tasks-app",
-                                        "#composebox",
-                                        "#composebox",
-                                        "#carousel",
-                                        "cr-composebox-file-thumbnail",
-                                        "#documentTitle"};
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInSidePanel(kSidePanelId),
+      // Wait for the embedded thread frame to finish loading before attaching
+      // a file. Its initial navigation can reset the task, which clears any
+      // attachment added before it completes on slow bots.
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelId, 0),
 
-  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
-                  SelectTab(kTabStripElementId, 0),
-                  OpenContextualTasksInSidePanel(kSidePanelId),
+      ForceClickAddContextEntrypoint(kSidePanelId),
+      ForceClickMenuButton(kSidePanelId, "fileUpload"),
 
-                  ForceClickAddContextEntrypoint(kSidePanelId),
-                  ForceClickMenuButton(kSidePanelId, "fileUpload"),
+      WaitForDocumentChipWithTitle(kSidePanelId, "download.pdf"),
+      WaitForElementVisible(kSidePanelId, kDocumentChip),
+      // Ensure the upload has settled before removing the chip so the removal
+      // does not race with in-flight upload status updates.
+      WaitForComposeboxFileUploadsComplete(kSidePanelId, 1),
 
-                  WaitForDocumentChipWithTitle(kSidePanelId, "download.pdf"),
-                  WaitForElementVisible(kSidePanelId, kDocumentChip),
-                  WaitForComposeboxFilesCount(kSidePanelId, 1),
-
-                  WaitForElementVisible(kSidePanelId, kRemoveDocumentButton),
-                  ClickButton(kSidePanelId, kRemoveDocumentButton),
-                  WaitForElementDoesNotExist(kSidePanelId, kDocumentChip),
-                  WaitForComposeboxFilesCount(kSidePanelId, 0));
+      WaitForElementVisible(kSidePanelId, kRemoveDocumentButton),
+      ClickButton(kSidePanelId, kRemoveDocumentButton),
+      WaitForElementDoesNotExist(kSidePanelId, kDocumentChip),
+      WaitForComposeboxFilesCount(kSidePanelId, 0));
 }
 
 // TODO(crbug.com/524797987): Re-enable this test.
