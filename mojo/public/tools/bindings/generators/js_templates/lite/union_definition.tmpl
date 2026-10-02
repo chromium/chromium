@@ -24,3 +24,21 @@ mojo.internal.Union(
  * } }
  */
 {{module.namespace}}.{{union.name}};
+
+{#--- Fuzzing #}
+{%- if generate_fuzzing %}
+/**
+ * Fuzzing-only constructors, one per union variant. `new {{union.name}}.foo(x)`
+ * returns the plain object `{foo: x}`, which is how unions are represented in
+ * these bindings. Fuzzers can then produce unions through typed constructor
+ * calls instead of object literals that lack type information.
+ * @const
+ */
+{{module.namespace}}.{{union.name}} = {
+{%- for field in union.fields %}
+  '{{field.name}}': function(value) {
+    return {'{{field.name}}': value};
+  },
+{%- endfor %}
+};
+{%- endif %}
