@@ -1810,6 +1810,79 @@ TEST_F(SyncPrefsMigrationTest,
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kBookmarks));
 }
+
+// Regression test for crbug.com/568406887.
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForReadingListEnabled_SyncEverything) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+
+  // All types including kReadingList are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    // Sync Everything ON.
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/true,
+        /*registered_types=*/UserSelectableTypeSet::All(),
+        UserSelectableTypeSet::All());
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kReadingList));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      prefs::internal::kReadingListPrefMigratedToAccount));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+// Regression test for crbug.com/568406887.
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForReadingListEnabled_TypeEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+
+  // All types including kReadingList are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    // Enable everything manually (Sync Everything OFF).
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(),
+        UserSelectableTypeSet::All());
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kReadingList));
+}
+
+// Regression test for crbug.com/568406887.
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForReadingListEnabled_TypeDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+
+  // All types except for kReadingList are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();
+    selected_types.Remove(UserSelectableType::kReadingList);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), selected_types);
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kReadingList));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsTest, IsTypeDisabledByUserForAccount) {

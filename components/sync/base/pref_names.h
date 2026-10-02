@@ -146,6 +146,13 @@ inline constexpr char kMigrateExtensionsFromLocalToAccount[] =
 inline constexpr char kMigrateThemeFromLocalToAccount[] =
     "sync.migrate_theme_from_local_to_account";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Whether SyncPrefs::MigrateGlobalDataTypePrefsToAccount() ran with the Reading
+// List toggle included (see crbug.com/568406887).
+inline constexpr char kReadingListPrefMigratedToAccount[] =
+    "sync.reading_list_pref_migrated_to_account";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // State of SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1() and
 // MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up after those
 // migration methods are gone.
