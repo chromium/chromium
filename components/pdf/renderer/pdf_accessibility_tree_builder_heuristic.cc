@@ -850,8 +850,12 @@ ax::mojom::TextPosition ClassifySuperOrSubScriptRelativeToHost(
       host.bounds.height() * kSuperOrSubScriptVerticalToleranceRatio;
 
   // Superscript: vertical center sits above the host's vertical center, and
-  // bottom does not sink significantly below the host's bottom.
-  if (candidate_mid < host_mid && candidate_bottom <= host_bottom + tolerance) {
+  // bottom does not extend significantly past the host's vertical center.
+  // Bounds come from glyph boxes, so a smaller run on the host's baseline that
+  // lacks descenders while the host has a descender (e.g. 'p' or 'g') ends at
+  // the shared baseline rather than in the upper half of the host's box, and is
+  // not a superscript.
+  if (candidate_mid < host_mid && candidate_bottom <= host_mid + tolerance) {
     return ax::mojom::TextPosition::kSuperscript;
   }
 

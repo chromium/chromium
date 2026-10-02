@@ -3055,7 +3055,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 130.0f, 200.0f, 15.0f),
-       gfx::RectF(50.0f, 920.0f, 8.0f, 10.0f),
+       gfx::RectF(50.0f, 917.0f, 8.0f, 10.0f),
        gfx::RectF(60.0f, 920.0f, 300.0f, 15.0f),
        gfx::RectF(50.0f, 954.0f, 6.0f, 8.0f),
        gfx::RectF(58.0f, 955.0f, 300.0f, 12.0f)});
@@ -3096,7 +3096,7 @@ TEST_F(PdfAccessibilityTreeTest,
   page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
 
   // Run 0: Superscript marker "1" at font size 6 inside the top 10% margin
-  // (bottom = 60 <= 100), sharing its visual line with run 1.
+  // (bottom = 57 <= 100), sharing its visual line with run 1.
   // Run 1: The larger text the marker annotates. The 6/10 = 0.6 size ratio is
   // below the 0.85 marker threshold, so the marker must not become a header.
   // Runs 2-4: Body text establishing a median font size of 10.
@@ -3104,7 +3104,7 @@ TEST_F(PdfAccessibilityTreeTest,
       /*font_sizes=*/{6.0f, 10.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style},
       MakeCharVector({"1", "annotated text", kLongBodyText, "body2", "end"}),
-      {gfx::RectF(50.0f, 50.0f, 8.0f, 10.0f),
+      {gfx::RectF(50.0f, 47.0f, 8.0f, 10.0f),
        gfx::RectF(60.0f, 50.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 300.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 315.0f, 200.0f, 15.0f),
@@ -3141,7 +3141,7 @@ TEST_F(PdfAccessibilityTreeTest,
 
   // Runs 0-2: Body text establishing a median font size of 10.
   // Run 3: A bold superscript marker "1" at font size 6 in the bottom margin
-  // (y = 920 >= 900). `CreateBlockLevelNode()` resolves the header and footer
+  // (y = 917 >= 900). `CreateBlockLevelNode()` resolves the header and footer
   // role for bare digits before classifying headings, and that check now
   // declines to classify markers. The marker must not fall through and be
   // promoted to a heading on the strength of its bold styling instead.
@@ -3153,7 +3153,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {gfx::RectF(50.0f, 150.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 165.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 180.0f, 200.0f, 15.0f),
-       gfx::RectF(50.0f, 920.0f, 8.0f, 10.0f),
+       gfx::RectF(50.0f, 917.0f, 8.0f, 10.0f),
        gfx::RectF(60.0f, 920.0f, 200.0f, 15.0f)});
 
   const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
@@ -3395,6 +3395,46 @@ TEST_F(PdfAccessibilityTreeTest,
        gfx::RectF(135.0f, 100.0f, 50.0f, 15.0f),
        gfx::RectF(50.0f, 140.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 160.0f, 200.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_GT(page->GetChildCount(), 0u);
+
+  const ui::AXNode* first_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, first_block);
+  for (size_t i = 0; i < first_block->GetChildCount(); ++i) {
+    const ui::AXNode* child = first_block->GetChildAtIndex(i);
+    EXPECT_EQ(ax::mojom::TextPosition::kNone, child->data().GetTextPosition());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSuperOrSubScriptNotDetectedWhenHostHasDescender) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0 ("In this ") at size 10 shares a baseline (y = 66.67) with Run 1
+  // ("example ") at size 12, whose 'p' descender lowers its glyph box bottom to
+  // 69.33 (pulling its vertical center below Run 0's). Run 0's bottom sits at
+  // the shared baseline rather than in the upper half of Run 1's box, so it is
+  // not a superscript.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 12.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"In this ", "example ", "the font size is slightly",
+                      kLongBodyText, "body2"}),
+      {gfx::RectF(14.67f, 57.33f, 33.33f, 9.33f),
+       gfx::RectF(53.33f, 57.33f, 65.33f, 12.0f),
+       gfx::RectF(118.67f, 57.33f, 120.0f, 12.0f),
+       gfx::RectF(14.67f, 140.0f, 200.0f, 12.0f),
+       gfx::RectF(14.67f, 160.0f, 200.0f, 12.0f)});
 
   const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
   ASSERT_GT(pdf_root->GetChildCount(), 1u);
