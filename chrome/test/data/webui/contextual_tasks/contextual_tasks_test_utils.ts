@@ -8,13 +8,14 @@ import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksComposeboxElement} from 'chrome://contextual-tasks/composebox.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksInnerComposeboxElement} from 'chrome://contextual-tasks/contextual_tasks_inner_composebox.js';
+import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // </if>
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 // Base64 encoding of a UI handshake request message [1, 2, 3].
 // Generated from btoa(String.fromCharCode(...[1, 2, 3]))
@@ -129,6 +130,8 @@ export async function createContextualTasksAppElement(
     waitForInitialLoadStart: boolean = true) {
   const proxy = new TestContextualTasksBrowserProxy(url);
   BrowserProxyImpl.setInstance(proxy);
+  const toolbarProxy = new TestToolbarBrowserProxy();
+  ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
   if (setupProxy) {
     setupProxy(proxy);
   }
@@ -148,7 +151,7 @@ export async function createContextualTasksAppElement(
   }
   await microtasksFinished();
 
-  return {appElement, proxy};
+  return {appElement, proxy, toolbarProxy};
 }
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">

@@ -86,6 +86,8 @@ class ContextualTasksUIBase
   void OpenMyActivityUi() override;
   void OpenOverflowMenuHelpUi() override;
   void OpenFeedbackUi() override;
+  void MoveTaskUiToNewTab() override;
+  void ShowThreadHistory() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // PinnedToolbarActionsModel::Observer:
@@ -147,6 +149,9 @@ class ContextualTasksUIBase
   // currently on screen.
   void NotifyPermissionDashboardStateChanged(
       ContextualTasksPermissionController* controller);
+
+  // Notifies the toolbar page that the AI page status has changed.
+  void NotifyAiPageStatusChanged(bool is_ai_page);
 
  protected:
   // Helper to dynamically resolve the active tab's permission controller.

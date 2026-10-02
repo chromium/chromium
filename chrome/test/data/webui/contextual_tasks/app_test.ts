@@ -456,22 +456,22 @@ suite('ContextualTasksAppTest', function() {
   });
   // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
   test('isAiPage reflected in dom', async () => {
-    const {appElement, proxy} = await createContextualTasksAppElement(
+    const {appElement, toolbarProxy} = await createContextualTasksAppElement(
         /*url=*/ fixtureUrl,
         /*setupProxy=*/ undefined,
         /*waitForInitialLoadStart=*/ false);
 
     assertFalse(appElement.hasAttribute('is-ai-page_'));
 
-    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
-    await proxy.callbackRouterRemote.$.flushForTesting();
+    toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await toolbarProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await appElement.updateComplete;
 
     assertFalse(appElement.hasAttribute('is-ai-page_'));
 
-    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-    await proxy.callbackRouterRemote.$.flushForTesting();
+    toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await toolbarProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await appElement.updateComplete;
 
@@ -824,7 +824,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('composebox hidden when jump fix conditions met', async () => {
     loadTimeData.overrideValues({enableComposeboxJumpFix: true});
-    const {appElement, proxy} =
+    const {appElement, proxy, toolbarProxy} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
     await removeThreadFrameToPreventRaceConditions();
 
@@ -833,10 +833,10 @@ suite('ContextualTasksAppTest', function() {
 
     // Initial state setup: AI page, not zero state, no forced bounds
     proxy.handler.setIsAiPage(true);
-    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
     appElement.setIsZeroStateForTesting(false);
     appElement.setForcedComposeboxBoundsForTesting(null);
-    await proxy.callbackRouterRemote.$.flushForTesting();
+    await toolbarProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await appElement.updateComplete;
 
@@ -869,8 +869,8 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(composebox.hasAttribute('hidden'));
 
     // Set not AI page, composebox should not be hidden
-    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
-    await proxy.callbackRouterRemote.$.flushForTesting();
+    toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await toolbarProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     await appElement.updateComplete;
     assertFalse(composebox.hasAttribute('hidden'));

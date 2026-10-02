@@ -184,7 +184,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'sets basic mode when navigating from AI page and backend sends notification',
       async () => {
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
@@ -195,8 +195,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             'Initial state should not be in basic mode');
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.
@@ -271,7 +271,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'sets basic mode as true when navigating due to backend sending notification',
       async () => {
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
@@ -282,8 +282,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             'Initial state should not be in basic mode');
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.
@@ -359,15 +359,15 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
   test(
       'does not set basic mode when navigating from AI page to non-AI page',
       async () => {
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         // Verify initial state.
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is NOT an AI page.
@@ -393,15 +393,15 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       });
 
   test('does not set basic mode when navigating from non-AI page', async () => {
-    const {appElement, proxy} =
+    const {appElement, toolbarProxy} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     // Verify initial state.
     assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
 
     // Ensure the app is NOT on an AI page.
-    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
-    await proxy.callbackRouterRemote.$.flushForTesting();
+    toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await toolbarProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
     // Simulate navigation start.
@@ -435,11 +435,12 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const fixtureUrlWithHistory = new URL(fixtureUrl);
         fixtureUrlWithHistory.searchParams.set('atvm', '1');
 
-        const {appElement, proxy} = await createContextualTasksAppElement(
-            /*url=*/ fixtureUrlWithHistory.toString(),
-            /*setupProxy=*/ (p) => {
-              p.handler.setIsShownInTab(true);
-            });
+        const {appElement, proxy, toolbarProxy} =
+            await createContextualTasksAppElement(
+                /*url=*/ fixtureUrlWithHistory.toString(),
+                /*setupProxy=*/ (p) => {
+                  p.handler.setIsShownInTab(true);
+                });
 
         await removeThreadFrameToPreventRaceConditions();
 
@@ -447,8 +448,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Ensure the app is on an AI page so navigation logic triggers.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.
@@ -489,7 +490,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'sets pending basic mode to false when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
@@ -497,8 +498,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.
@@ -541,7 +542,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'does not set pending basic mode when navigating from AI page and initially in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         // Force into basic mode initially.
@@ -551,8 +552,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.
@@ -580,7 +581,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
       'updates basic mode on load commit when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
-        const {appElement, proxy} =
+        const {appElement, proxy, toolbarProxy} =
             await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
         await removeThreadFrameToPreventRaceConditions();
@@ -589,8 +590,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Ensure the app is on an AI page.
-        proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-        await proxy.callbackRouterRemote.$.flushForTesting();
+        toolbarProxy.callbackRouterRemote.onAiPageStatusChanged(true);
+        await toolbarProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
         // Ensure the new page is also an AI page.

@@ -120,11 +120,6 @@ interface PageHandler {
   // Closes the side panel if it's open.
   CloseSidePanel();
 
-  // Invoked when the user clicks Thread History button to show the full list
-  // of threads from history. In response, the backend will send a
-  // OPEN_THREADS_VIEW message to search to open the thread history natively.
-  ShowThreadHistory();
-
   // Returns whether the WebUI is being shown in a tab. If false, the UI is
   // shown in the side panel.
   IsShownInTab() => (bool is_in_tab);
@@ -139,9 +134,6 @@ interface PageHandler {
 
   // Opens the Ask G help page in a new tab.
   OpenAskGHelpUi();
-
-  // Moves the contents of the side panel to a new tab.
-  MoveTaskUiToNewTab();
 
   // Called when a tab in the sources menu is clicked. This will first attempt
   // to switch to a tab matching both the provided `tab_id` and `url`. If no
@@ -304,9 +296,6 @@ interface Page {
   // is in NLM mode.
   SetInNlm(bool in_nlm);
 
-  // Called by the browser process (C++) to notify the UI if the current page
-  // is an AI page or not.
-  OnAiPageStatusChanged(bool is_ai_page);
 
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
   // This also passes whether the overlay hint text should be shown for the

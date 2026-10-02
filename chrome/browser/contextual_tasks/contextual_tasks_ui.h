@@ -205,6 +205,7 @@ class ContextualTasksUI
   void OnPageContextEligibilityChecked(bool is_page_context_eligible) override;
   bool IsActiveTabContextSuggestionShowing() const override;
   void MoveTaskUiToNewTab() override;
+  void ShowThreadHistory() override;
   bool CanExpandToFullTab() const override;
   void PostAimMessage(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*

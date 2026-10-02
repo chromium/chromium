@@ -102,17 +102,15 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    const callbackRouter = this.browserProxy_.callbackRouter;
-    this.listenerIds_ = [
-      callbackRouter.onAiPageStatusChanged.addListener(
-          (isAiPage: boolean) => {
-            this.isAiPage = isAiPage;
-          }),
-    ];
+    this.listenerIds_ = [];
     this.toolbarListenerIds_ = [
       this.toolbarBrowserProxy_.callbackRouter.onSidePanelPinStateChanged
           .addListener((isPinned: boolean) => {
             this.isPinned = isPinned;
+          }),
+      this.toolbarBrowserProxy_.callbackRouter.onAiPageStatusChanged
+          .addListener((isAiPage: boolean) => {
+            this.isAiPage = isAiPage;
           }),
     ];
   }
@@ -184,13 +182,13 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   protected onThreadHistoryClick_() {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.OpenThreadHistory');
-    this.browserProxy_.handler.showThreadHistory();
+    this.toolbarBrowserProxy_.handler.showThreadHistory();
   }
 
   protected onOpenInNewTabClick_() {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.OpenInNewTab');
-    this.browserProxy_.handler.moveTaskUiToNewTab();
+    this.toolbarBrowserProxy_.handler.moveTaskUiToNewTab();
   }
 
   protected onMyActivityClick_() {

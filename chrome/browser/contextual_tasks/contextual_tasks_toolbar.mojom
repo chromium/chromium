@@ -34,6 +34,14 @@ interface PageHandler {
 
   // Opens the feedback UI.
   OpenFeedbackUi();
+
+  // Moves the contents of the side panel to a new tab.
+  MoveTaskUiToNewTab();
+
+  // Invoked when the user clicks Thread History button to show the full list
+  // of threads from history. In response, the backend will send a
+  // OPEN_THREADS_VIEW message to search to open the thread history natively.
+  ShowThreadHistory();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -42,6 +50,10 @@ interface Page {
   // Called by the browser process (C++) to notify the UI when the pin state
   // changes.
   OnSidePanelPinStateChanged(bool is_pinned);
+
+  // Called by the browser process (C++) to notify the UI when the AI page
+  // status changes.
+  OnAiPageStatusChanged(bool is_ai_page);
 };
 // Observer interface (page) implemented by WebUI to receive push
 // updates from browser process.

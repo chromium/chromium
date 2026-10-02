@@ -10,6 +10,8 @@ import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import {getCss} from './toolbar_app.css.js';
 import {getHtml} from './toolbar_app.html.js';
 import {recordAction} from './utils.js';
@@ -57,7 +59,10 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
   protected accessor onboardingTooltipShowing_: boolean = false;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private toolbarBrowserProxy_: ToolbarBrowserProxy =
+      ToolbarBrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private toolbarListenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -68,14 +73,17 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
         this.threadTitle_ = title;
         document.title = title || loadTimeData.getString('title');
       }),
-      callbackRouter.onAiPageStatusChanged.addListener((isAiPage: boolean) => {
-        this.isAiPage_ = isAiPage;
-      }),
       callbackRouter.onSidePanelStateChanged.addListener(() => {
         // Handle theme update if side panel state changes
         const url = new URL(window.location.href);
         this.updateThemeFromUrl(url);
       }),
+    ];
+    this.toolbarListenerIds_ = [
+      this.toolbarBrowserProxy_.callbackRouter.onAiPageStatusChanged
+          .addListener((isAiPage: boolean) => {
+            this.isAiPage_ = isAiPage;
+          }),
     ];
 
     const initialUrl = new URL(window.location.href);
@@ -87,6 +95,9 @@ export class ContextualTasksToolbarAppElement extends CrLitElement {
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
+    this.toolbarListenerIds_.forEach(
+        id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
+    this.toolbarListenerIds_ = [];
   }
 
   private updateThemeFromUrl(url: URL) {

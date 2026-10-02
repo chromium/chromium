@@ -920,9 +920,7 @@ bool ContextualTasksUI::IsCoBrowseOmniboxAction() const {
 }
 
 void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
-  if (page_) {
-    page_->OnAiPageStatusChanged(is_ai_page);
-  }
+  NotifyAiPageStatusChanged(is_ai_page);
 
   // When AI page is first loaded, close the Lens overlay if it's open,
   // unless opened for Omnibox Co-Browse visual selection.
@@ -1201,6 +1199,16 @@ void ContextualTasksUI::MoveTaskUiToNewTab() {
 
   ui_service_->MoveTaskUiToNewTab(task_id_.value(), browser,
                                   GetInnerFrameUrl());
+}
+
+void ContextualTasksUI::ShowThreadHistory() {
+  if (page_handler_) {
+    lens::ClientToAimMessage message;
+    message.mutable_open_threads_view()->mutable_payload();
+    PostAimMessage(message);
+    return;
+  }
+  ContextualTasksUIBase::ShowThreadHistory();
 }
 
 void ContextualTasksUI::PostAimMessage(
