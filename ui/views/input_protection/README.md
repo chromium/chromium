@@ -251,6 +251,36 @@ Implemented by `WindowActivationInputProtectionPolicy`:
   window was previously invisible. This protects against cases where a dialog
   suddenly appears and steals focus just as the user is clicking.
 
+### View Bounds and Visibility Input Protection Policy
+
+`ViewBoundsAndVisibilityInputProtectionPolicy` protects a specific `View` (and
+its descendants) against unintended interactions by starting a cooldown when the
+observed `View`'s bounds or visibility changes, while leaving sibling and
+unrelated views in the same `Widget` unaffected:
+
+- **Bounds Change**: The observed `View` changes position or size within the
+  containing `Widget` (either directly or because an ancestor view moved) while
+  drawn in a visible `Widget`. Changes from empty bounds (such as initial
+  layout) are ignored.
+- **Visibility Change**: The observed `View` or its containing `Widget` becomes
+  visible while the `View` is drawn (including when the policy is constructed
+  for a drawn `View` in an already visible `Widget`).
+
+The policy must be constructed after the target `View` is attached to a `Widget`
+(typically in `AddedToWidget()`). Prefer observing the specific interactive
+control or movable row (such as a button or list entry view) rather than a
+top-level container, so that resizing a container does not trigger a cooldown
+for controls inside it whose bounds did not change:
+
+```cpp
+void MyView::AddedToWidget() {
+  GetWidget()->EnableInputEventActivationProtection(
+      std::make_unique<InputEventActivationProtector>(
+          std::make_unique<ViewBoundsAndVisibilityInputProtectionPolicy>(
+              *accept_button_)));
+}
+```
+
 ______________________________________________________________________
 
 ## How to Create a New Policy

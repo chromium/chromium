@@ -5,8 +5,11 @@
 #ifndef UI_VIEWS_INPUT_PROTECTION_VIEW_BOUNDS_AND_VISIBILITY_INPUT_PROTECTION_POLICY_H_
 #define UI_VIEWS_INPUT_PROTECTION_VIEW_BOUNDS_AND_VISIBILITY_INPUT_PROTECTION_POLICY_H_
 
+#include <memory>
+
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/input_protection/input_protection_policy.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -17,14 +20,20 @@ namespace views {
 class InputEventActivationProtector;
 
 // An implementation of `InputProtectionPolicy` that protects a given `View`
-// against unintended interaction by observing changes to its visibility. The
-// `View` must already belong to a `Widget` when the policy is constructed
-// (e.g. in `View::AddedToWidget()`).
+// against unintended interaction by observing changes to its bounds and
+// visibility. The `View` must already belong to a `Widget` when the policy is
+// constructed (e.g. in `View::AddedToWidget()`).
 //
 // It blocks input events targeting the observed `View` or any descendant of the
-// observed `View` when the observed `View` or its containing `Widget` becomes
-// visible while the `View` is drawn (including when constructed for a drawn
-// `View` in an already visible `Widget`).
+// observed `View` in the following cases:
+//
+// 1. Bounds change: The observed `View` changes position or size within the
+//    containing `Widget` (either directly or because an ancestor view moved)
+//    while drawn in a visible `Widget`. Changes from empty bounds (such as
+//    initial layout) do not trigger protection.
+// 2. Visibility change: The observed `View` or its containing `Widget` becomes
+//    visible while the `View` is drawn (including when constructed for a drawn
+//    `View` in an already visible `Widget`).
 class VIEWS_EXPORT ViewBoundsAndVisibilityInputProtectionPolicy final
     : public InputProtectionPolicy,
       public ViewObserver {
@@ -42,6 +51,7 @@ class VIEWS_EXPORT ViewBoundsAndVisibilityInputProtectionPolicy final
   void OnProtectionStopped() override;
 
   // ViewObserver:
+  void OnViewVisibleBoundsChanged(View* observed_view) override;
   void OnViewRemovedFromWidget(View* observed_view) override;
   void OnViewVisibilityChanged(View* observed_view,
                                View* starting_view,
@@ -53,8 +63,16 @@ class VIEWS_EXPORT ViewBoundsAndVisibilityInputProtectionPolicy final
   // `Widget`.
   bool IsViewDrawnAndWidgetVisible() const;
 
+  // The last recorded bounds of the observed view in widget coordinates.
+  gfx::Rect last_bounds_;
+
   // The timestamp when the view was last protected.
   base::TimeTicks view_protected_time_stamp_;
+
+  // Enables `OnViewVisibleBoundsChanged` notifications when the observed `View`
+  // or any ancestor view changes bounds.
+  std::unique_ptr<View::ScopedNotifyObserversOnVisibleBoundsChanged>
+      scoped_notify_visible_bounds_changed_;
 
   // Observation of the target `View`.
   base::ScopedObservation<View, ViewObserver> view_observation_{this};

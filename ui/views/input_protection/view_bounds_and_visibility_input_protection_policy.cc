@@ -4,9 +4,12 @@
 
 #include "ui/views/input_protection/view_bounds_and_visibility_input_protection_policy.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -14,7 +17,11 @@
 namespace views {
 
 ViewBoundsAndVisibilityInputProtectionPolicy::
-    ViewBoundsAndVisibilityInputProtectionPolicy(View& view) {
+    ViewBoundsAndVisibilityInputProtectionPolicy(View& view)
+    : last_bounds_(view.ConvertRectToWidget(view.GetLocalBounds())),
+      scoped_notify_visible_bounds_changed_(
+          std::make_unique<View::ScopedNotifyObserversOnVisibleBoundsChanged>(
+              view)) {
   CHECK(view.GetWidget())
       << "ViewBoundsAndVisibilityInputProtectionPolicy must be constructed "
          "after the View has been added to a Widget (e.g. in "
@@ -67,8 +74,30 @@ bool ViewBoundsAndVisibilityInputProtectionPolicy::
   return observed_view->Contains(target_view);
 }
 
+void ViewBoundsAndVisibilityInputProtectionPolicy::OnViewVisibleBoundsChanged(
+    View* observed_view) {
+  const gfx::Rect new_bounds =
+      observed_view->ConvertRectToWidget(observed_view->GetLocalBounds());
+  if (last_bounds_ == new_bounds) {
+    return;
+  }
+
+  const bool was_empty = last_bounds_.IsEmpty();
+  last_bounds_ = new_bounds;
+
+  // Ignore changes from empty bounds (such as initial layout).
+  if (was_empty) {
+    return;
+  }
+
+  if (!new_bounds.IsEmpty() && IsViewDrawnAndWidgetVisible()) {
+    OnProtectionStarted();
+  }
+}
+
 void ViewBoundsAndVisibilityInputProtectionPolicy::OnViewRemovedFromWidget(
     View* observed_view) {
+  scoped_notify_visible_bounds_changed_.reset();
   view_observation_.Reset();
   OnProtectionStopped();
 }
@@ -86,6 +115,7 @@ void ViewBoundsAndVisibilityInputProtectionPolicy::OnViewVisibilityChanged(
 
 void ViewBoundsAndVisibilityInputProtectionPolicy::OnViewIsDeleting(
     View* observed_view) {
+  scoped_notify_visible_bounds_changed_.reset();
   view_observation_.Reset();
   OnProtectionStopped();
 }
