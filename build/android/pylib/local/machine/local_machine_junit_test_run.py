@@ -109,7 +109,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             # These values must be kept in sync with
             # BaseRobolectricTestRunner.java.
             min_sdk = '29'
-            max_sdk = '36'
+            max_sdk = '37'
 
             if self._test_instance.single_variant:
                 sdk_string = max_sdk
