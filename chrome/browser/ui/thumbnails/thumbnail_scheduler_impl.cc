@@ -41,12 +41,6 @@ void ThumbnailSchedulerImpl::AddTab(TabCapturer* tab) {
 }
 
 void ThumbnailSchedulerImpl::RemoveTab(TabCapturer* tab) {
-  if (!tabs_.contains(tab)) {
-    return;
-  }
-  // This removes the tab from any capture lists, marks it as not capturing, and
-  // possibly schedules another tab to be captured.
-  SetTabCapturePriority(tab, TabCapturePriority::kNone);
   int num_removed = tabs_.erase(tab);
   DCHECK_EQ(1, num_removed) << "removed a tab that was never added";
 }
