@@ -4023,6 +4023,17 @@ shown properly on the user-facing crash UI.
 
 <!--LINT.ThenChange(//chrome/browser/feedback/public/feedback_source.h:FeedbackSource) -->
 
+<!-- LINT.IfChange(FetchAbortedReason) -->
+
+<enum name="FetchAbortedReason">
+  <int value="0" label="Abort signal"/>
+  <int value="1" label="Frame detaching"/>
+  <int value="2" label="Execution context destroyed"/>
+  <int value="3" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/fetch/fetch_manager.h:FetchAbortedReason) -->
+
 <enum name="FetchKeepAliveRequestMetricType">
   <int value="0" label="kFetch"/>
   <int value="1" label="kBeacon"/>

@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -27,9 +28,12 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_redirect.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_test_util.h"
@@ -534,6 +538,143 @@ TEST_P(FetchLaterWithInvalidSchemeUrlTest, FailsWithTypeError) {
       scope.GetExceptionState(),
       HasException("TypeError", "fetchLater is only supported over HTTP(S)."));
   EXPECT_EQ(manager->NumLoadersForTesting(), 0u);
+}
+
+// Covers the UMA recorded when a plain fetch() request reaches a terminal
+// state.
+class FetchManagerTest : public testing::Test {
+ protected:
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+
+  // Registers `url` so that the mocked loader fails the request with
+  // `net_error` once it is served.
+  static void RegisterMockedNetworkError(const KURL& url, int net_error) {
+    WebURLResponse response(url);
+    response.SetMimeType("text/html");
+    response.SetHttpStatusCode(200);
+    URLLoaderMockFactory::GetSingletonInstance()->RegisterErrorURL(
+        url, response, WebURLError(net_error, url));
+  }
+
+  // Starts a fetch() for `url`. `signal` may be null, in which case the
+  // Request creates its own signal.
+  static void StartFetch(
+      V8TestingScope& scope,
+      const KURL& url,
+      AbortSignal* signal,
+      std::optional<V8RequestRedirect::Enum> redirect = std::nullopt) {
+    auto* request_init = RequestInit::Create();
+    request_init->setMethod("GET");
+    if (signal) {
+      request_init->setSignal(signal);
+    }
+    if (redirect) {
+      request_init->setRedirect(*redirect);
+    }
+    auto& exception_state = scope.GetExceptionState();
+    auto* request = Request::Create(scope.GetScriptState(), url.GetString(),
+                                    request_init, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    auto* fetch_manager =
+        MakeGarbageCollected<FetchManager>(scope.GetExecutionContext());
+    fetch_manager->Fetch(
+        scope.GetScriptState(),
+        request->PassRequestData(scope.GetScriptState(), exception_state),
+        request->signal(), exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+  }
+
+  const base::HistogramTester& Histogram() const { return histogram_; }
+
+ private:
+  test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_;
+};
+
+TEST_F(FetchManagerTest, RecordsNetErrorBeforeResponseHeaders) {
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/net-error");
+  RegisterMockedNetworkError(target, net::ERR_CONNECTION_RESET);
+
+  StartFetch(scope, target, /*signal=*/nullptr);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_CONNECTION_RESET, 1);
+  Histogram().ExpectUniqueSample(
+      FetchManager::kErrorCodesBeforeResponseHeadersHistogramName,
+      -net::ERR_CONNECTION_RESET, 1);
+  Histogram().ExpectTotalCount(
+      FetchManager::kErrorCodesAfterResponseHeadersHistogramName, 0);
+  // Only ERR_ABORTED needs disambiguating.
+  Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
+}
+
+TEST_F(FetchManagerTest, RecordsAbortSignalAsAbortReason) {
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/aborted");
+  url_test_helpers::RegisterMockedURLLoad(
+      target, test::CoreTestDataPath("foo.html"), "text/html");
+
+  auto* controller = AbortController::Create(scope.GetScriptState());
+  StartFetch(scope, target, controller->signal());
+  controller->abort(scope.GetScriptState());
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_ABORTED, 1);
+  Histogram().ExpectUniqueSample(FetchManager::kAbortedReasonHistogramName,
+                                 FetchAbortedReason::kAbortSignal, 1);
+}
+
+TEST_F(FetchManagerTest, RecordsPageTeardownAsAbortReason) {
+  const KURL target("https://example.com/in-flight");
+  {
+    V8TestingScope scope(KURL("https://example.com/"));
+    url_test_helpers::RegisterMockedURLLoad(
+        target, test::CoreTestDataPath("foo.html"), "text/html");
+
+    // The request is deliberately left in flight so that tearing the page down
+    // cancels it, which is what a tab close looks like to the loader.
+    StartFetch(scope, target, /*signal=*/nullptr);
+  }
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_ABORTED, 1);
+  // Frame::Detach() stops all loaders before Document::Shutdown() runs, so at
+  // this point the document and the execution context still look alive and
+  // only the frame lifecycle identifies the teardown.
+  Histogram().ExpectUniqueSample(FetchManager::kAbortedReasonHistogramName,
+                                 FetchAbortedReason::kFrameDetaching, 1);
+}
+
+TEST_F(FetchManagerTest, RecordsOkForManualRedirect) {
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/redirect");
+
+  WebURLResponse redirect_response(target);
+  redirect_response.SetHttpStatusCode(301);
+  redirect_response.SetHttpHeaderField("Location",
+                                       "https://example.com/destination");
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      target, test::CoreTestDataPath("foo.html"), redirect_response);
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kManual);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  // A manual redirect resolves the fetch() promise with an opaque-redirect
+  // response; the subsequent loader cancellation inside Dispose() must not
+  // record a spurious net::ERR_ABORTED.
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::OK, 1);
+  Histogram().ExpectUniqueSample(
+      FetchManager::kErrorCodesAfterResponseHeadersHistogramName, -net::OK, 1);
+  Histogram().ExpectTotalCount(
+      FetchManager::kErrorCodesBeforeResponseHeadersHistogramName, 0);
+  Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
 }
 
 }  // namespace blink

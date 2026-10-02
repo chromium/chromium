@@ -45,10 +45,45 @@ class Response;
 class ScriptState;
 class FetchLaterResult;
 
+// net::ERR_ABORTED is reported for page teardown, for script-initiated aborts
+// and for internal loader cancellation alike, so the raw net error cannot tell
+// a benign page exit apart from a real failure.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FetchAbortedReason)
+enum class FetchAbortedReason {
+  // Script called abort() on the AbortSignal passed to fetch().
+  kAbortSignal = 0,
+  // The frame that issued the fetch was being detached: a tab close, a
+  // navigation away or an iframe removal. Blink stops all loaders at the very
+  // start of frame detach, while the document and the execution context still
+  // look alive, so the frame lifecycle is the only state that identifies this.
+  kFrameDetaching = 1,
+  // The execution context itself was torn down before the loader was
+  // cancelled. Frames are cancelled while their context is still alive, so
+  // this mostly covers workers.
+  kExecutionContextDestroyed = 2,
+  // Cancellation from inside the loading stack with the frame still attached,
+  // for example window.stop().
+  kOther = 3,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FetchAbortedReason)
+
 class CORE_EXPORT FetchManager final
     : public GarbageCollected<FetchManager>,
       public ExecutionContextLifecycleObserver {
  public:
+  static constexpr char kErrorCodesHistogramName[] = "Blink.Fetch.ErrorCodes";
+  static constexpr char kErrorCodesBeforeResponseHeadersHistogramName[] =
+      "Blink.Fetch.ErrorCodes.BeforeResponseHeaders";
+  static constexpr char kErrorCodesAfterResponseHeadersHistogramName[] =
+      "Blink.Fetch.ErrorCodes.AfterResponseHeaders";
+  static constexpr char kAbortedReasonHistogramName[] =
+      "Blink.Fetch.AbortedReason";
+
   explicit FetchManager(ExecutionContext*);
 
   ScriptPromise<Response> Fetch(ScriptState*,

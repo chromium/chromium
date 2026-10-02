@@ -2705,6 +2705,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Fetch.AbortedReason" enum="FetchAbortedReason"
+    expires_after="2027-09-15">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Why a request issued through the fetch() API ended with net::ERR_ABORTED.
+    Recorded in the renderer once per aborted fetch(), at the same point as
+    Blink.Fetch.ErrorCodes, and only for that one error code.
+
+    The network stack reports ERR_ABORTED for page teardown, for
+    AbortController-initiated aborts and for internal loader cancellation alike,
+    which makes the ERR_ABORTED bucket of Blink.Fetch.ErrorCodes uninterpretable
+    on its own. This histogram separates them so that fetch() failures caused by
+    the user simply leaving the page can be told apart from genuine network
+    failures.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fetch.ErrorCodes" enum="NetErrorCodes"
+    expires_after="2027-09-15">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Net error codes that requests issued through the fetch() API end with,
+    including net::OK and net::ERR_ABORTED. Recorded in the renderer once per
+    fetch() request, when its loader terminates.
+
+    This is a fetch()-scoped counterpart to Net.ErrorCodesForSubresources3,
+    which aggregates every subresource type and so cannot be used to reason
+    about the reliability of the fetch() API on its own.
+
+    Requests that are rejected before a network request is made, for example by
+    Content Security Policy or by a failed redirect check, have no net error and
+    are not recorded here, even though script still observes them as
+    &quot;TypeError: Failed to fetch&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Fetch.ErrorCodes.{FetchResponsePhase}"
+    enum="NetErrorCodes" expires_after="2027-09-15">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Same as Blink.Fetch.ErrorCodes, recorded when {FetchResponsePhase}.
+
+    This split matters because the two phases surface to script as two different
+    errors: a failure before response headers rejects the fetch() promise with
+    &quot;TypeError: Failed to fetch&quot;, whereas a failure afterwards errors
+    the response body stream with &quot;TypeError: network error&quot;.
+  </summary>
+  <token key="FetchResponsePhase">
+    <variant name="AfterResponseHeaders"
+        summary="response headers had already been delivered, so the failure
+                 happened while the response body was being streamed"/>
+    <variant name="BeforeResponseHeaders"
+        summary="no response headers had been delivered yet"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.Fetch.RequestResourceTime2{SchemeOrPreload}"
     units="microseconds" expires_after="2027-02-07">
   <owner>cduvall@chromium.org</owner>

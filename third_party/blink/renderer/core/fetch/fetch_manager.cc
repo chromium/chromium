@@ -436,14 +436,16 @@ class FetchLoaderBase : public GarbageCollectedMixin {
   bool AddConsoleMessage(const String& message,
                          std::optional<base::UnguessableToken> issue_id);
 
-  ExecutionContext* GetExecutionContext() { return execution_context_.Get(); }
+  ExecutionContext* GetExecutionContext() const {
+    return execution_context_.Get();
+  }
   void SetExecutionContext(ExecutionContext* ec) { execution_context_ = ec; }
   FetchRequestData* GetFetchRequestData() const {
     return fetch_request_data_.Get();
   }
   ScriptState* GetScriptState() { return script_state_.Get(); }
   const DOMWrapperWorld* World() { return world_; }
-  AbortSignal* Signal() { return signal_.Get(); }
+  AbortSignal* Signal() const { return signal_.Get(); }
 
  private:
   Member<ExecutionContext> execution_context_;
@@ -612,6 +614,16 @@ class FetchManager::Loader final
               std::optional<base::UnguessableToken> issue_id = std::nullopt,
               std::optional<String> issue_summary = std::nullopt) override;
 
+  // Classifies why a request that ended with `net::ERR_ABORTED` was cancelled,
+  // inspecting the AbortSignal, the owning frame's attachment state, and
+  // execution context destruction.
+  FetchAbortedReason DeduceAbortedReason() const;
+
+  // Records the terminal state of this fetch() request. Called at most once,
+  // from DidFinishLoading(), WillFollowRedirect() (for manual redirects), or
+  // DidFail().
+  void RecordFetchCompletion(int net_error);
+
   Member<FetchManager> fetch_manager_;
   Member<ResponseResolver> response_resolver_;
   Member<ThreadableLoader> threadable_loader_;
@@ -620,6 +632,10 @@ class FetchManager::Loader final
   bool finished_;
   int response_http_status_code_;
   bool response_has_no_store_header_ = false;
+  // Distinguishes the two failures script can observe: a failure while this is
+  // false rejects the fetch() promise with "Failed to fetch", while a failure
+  // afterwards errors the response body stream with "network error".
+  bool received_response_headers_ = false;
   Member<IntegrityVerifier> integrity_verifier_;
   Vector<KURL> url_list_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
@@ -684,8 +700,11 @@ bool FetchManager::Loader::WillFollowRedirect(
     DidReceiveResponse(unused, response);
     DidStartLoadingResponseBody(*BytesConsumer::CreateClosed());
 
-    if (threadable_loader_)
+    if (threadable_loader_) {
+      finished_ = true;
+      RecordFetchCompletion(net::OK);
       NotifyFinished();
+    }
 
     Dispose();
     return false;
@@ -699,6 +718,8 @@ bool FetchManager::Loader::WillFollowRedirect(
 void FetchManager::Loader::DidReceiveResponse(
     uint64_t,
     const ResourceResponse& response) {
+  received_response_headers_ = true;
+
   // Record the blob fetch request status.
   if (GetFetchRequestData() &&
       GetFetchRequestData()->Url().ProtocolIs("blob")) {
@@ -841,6 +862,7 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
   DCHECK(!failed_);
 
   finished_ = true;
+  RecordFetchCompletion(net::OK);
 
   auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
   if (window && window->GetFrame() &&
@@ -862,6 +884,13 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 
 void FetchManager::Loader::DidFail(uint64_t identifier,
                                    const ResourceError& error) {
+  // Dispose() cancels `threadable_loader_` after a request has already
+  // completed (e.g. `redirect: 'manual'`) or failed a pre-network check (e.g.
+  // `redirect: 'error'`), which synchronously re-enters DidFail(ERR_ABORTED).
+  if (!failed_ && !finished_) {
+    RecordFetchCompletion(error.ErrorCode());
+  }
+
   if (GetExecutionContext()) {
     GetExecutionContext()->MaybeRecordFetchError(error.ErrorCode(),
                                                  GetFetchRequestData());
@@ -1332,6 +1361,47 @@ void FetchManager::Loader::Failed(
 void FetchManager::Loader::NotifyFinished() {
   if (fetch_manager_)
     fetch_manager_->OnLoaderFinished(this);
+}
+
+FetchAbortedReason FetchManager::Loader::DeduceAbortedReason() const {
+  if (Signal()->aborted()) {
+    // Explicit script abort via AbortController is the primary cause, even if
+    // the execution context or frame is concurrently undergoing teardown.
+    return FetchAbortedReason::kAbortSignal;
+  }
+
+  ExecutionContext* context = GetExecutionContext();
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    // For documents, Frame::Detach() advances the frame lifecycle to
+    // kDetaching and stops active loaders before
+    // LocalDOMWindow::FrameDestroyed runs. Any unattached frame or destroyed
+    // window context indicates page navigation, tab close, or iframe removal.
+    if (!window->GetFrame() || !window->GetFrame()->IsAttached() ||
+        window->IsContextDestroyed()) {
+      return FetchAbortedReason::kFrameDetaching;
+    }
+  } else if (!context || context->IsContextDestroyed()) {
+    // Non-window execution contexts (e.g. workers) shutting down without a
+    // parent frame.
+    return FetchAbortedReason::kExecutionContextDestroyed;
+  }
+
+  return FetchAbortedReason::kOther;
+}
+
+void FetchManager::Loader::RecordFetchCompletion(int net_error) {
+  base::UmaHistogramSparse(kErrorCodesHistogramName, -net_error);
+
+  const char* phase_histogram =
+      received_response_headers_
+          ? kErrorCodesAfterResponseHeadersHistogramName
+          : kErrorCodesBeforeResponseHeadersHistogramName;
+  base::UmaHistogramSparse(phase_histogram, -net_error);
+
+  if (net_error == net::ERR_ABORTED) {
+    base::UmaHistogramEnumeration(kAbortedReasonHistogramName,
+                                  DeduceAbortedReason());
+  }
 }
 
 bool FetchManager::Loader::IsDeferred() const {
