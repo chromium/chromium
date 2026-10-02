@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.support_lib_boundary;
+package org.chromium.support_lib_boundary.web;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;

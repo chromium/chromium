@@ -11,8 +11,8 @@ import com.android.webview.chromium.WebSurface;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.support_lib_boundary.WebSurfaceBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
+import org.chromium.support_lib_boundary.web.WebSurfaceBoundaryInterface;
 
 import java.lang.reflect.InvocationHandler;
 

@@ -33,8 +33,6 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/VisualStateCallbackBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebContentBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebContentConfig.java",
     "src/org/chromium/support_lib_boundary/WebMessageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageListenerBoundaryInterface.java",
@@ -44,8 +42,6 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebSettingsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebStorageBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebSurfaceBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebSurfaceEvent.java",
     "src/org/chromium/support_lib_boundary/WebViewBackForwardCacheSettingsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewBuilderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewClientBoundaryInterface.java",
@@ -98,5 +94,8 @@ android_apk("boundary_interface_example_apk") {
   # Explicitly enable lint for this apk.
   enable_lint = true
 
-  deps = [ ":boundary_interface_java" ]
+  deps = [
+    ":boundary_interface_java",
+    "web:web_boundary_interface_java",
+  ]
 }

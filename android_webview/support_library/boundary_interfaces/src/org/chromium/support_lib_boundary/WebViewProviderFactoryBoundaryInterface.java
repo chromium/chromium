@@ -30,12 +30,6 @@ public interface WebViewProviderFactoryBoundaryInterface {
 
     /* WebViewBuilderBoundaryInterface */ InvocationHandler getWebViewBuilder();
 
-    /* WebContentBoundaryInterface */ InvocationHandler buildWebContent(
-            /* Config= */ Consumer<BiConsumer<@WebContentConfig Integer, Object>> buildConfig);
-
-    /* WebSurfaceBoundaryInterface */ InvocationHandler createWebSurface(
-            BiConsumer<@WebSurfaceEvent Integer, Object> eventListener);
-
     /* SupportLibraryWebViewChromium */ InvocationHandler createWebView(WebView webview);
 
     /* SupportLibWebkitToCompatConverter */ InvocationHandler getWebkitToCompatConverter();

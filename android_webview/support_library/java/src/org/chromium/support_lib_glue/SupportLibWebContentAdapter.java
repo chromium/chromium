@@ -11,7 +11,7 @@ import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebContentContextWrapper;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.support_lib_boundary.WebContentBoundaryInterface;
+import org.chromium.support_lib_boundary.web.WebContentBoundaryInterface;
 
 import java.util.function.Function;
 

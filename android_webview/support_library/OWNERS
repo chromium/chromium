@@ -2,3 +2,6 @@ elabadysayed@chromium.org
 ntfschr@chromium.org
 pbirk@chromium.org
 torne@chromium.org
+
+# Web boundary interfaces:
+per-file boundary_interfaces/web/...=bewise@chromium.org

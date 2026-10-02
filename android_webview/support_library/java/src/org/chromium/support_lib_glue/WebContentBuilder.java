@@ -8,7 +8,7 @@ import com.android.webview.chromium.WebContent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.support_lib_boundary.WebContentConfig;
+import org.chromium.support_lib_boundary.web.WebContentConfig;
 
 import java.util.function.BiConsumer;
 

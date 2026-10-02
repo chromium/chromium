@@ -35,13 +35,15 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.SharedArrayBuffer;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
-import org.chromium.support_lib_boundary.WebContentConfig;
-import org.chromium.support_lib_boundary.WebSurfaceEvent;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpConfigBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
+import org.chromium.support_lib_boundary.web.WebContentConfig;
+import org.chromium.support_lib_boundary.web.WebProviderFactoryBoundaryInterface;
+import org.chromium.support_lib_boundary.web.WebSurfaceEvent;
+import org.chromium.support_lib_boundary.web.util.WebFeatures;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
@@ -53,7 +55,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** Support library glue version of WebViewChromiumFactoryProvider. */
-public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundaryInterface {
+public class SupportLibWebViewChromiumFactory
+        implements WebViewProviderFactoryBoundaryInterface, WebProviderFactoryBoundaryInterface {
     // SupportLibWebkitToCompatConverterAdapter
     private final InvocationHandler mCompatConverterAdapter;
     private final WebViewChromiumAwInit mAwInit;
@@ -156,11 +159,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HTTP_CACHE_MANAGER,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
                 Features.NAVIGATION_GET_RESPONSE_HEADERS + Features.DEV_SUFFIX,
-                Features.WEB_CONTENT,
+                WebFeatures.WEB_CONTENT,
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS + Features.DEV_SUFFIX,
                 Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER + Features.DEV_SUFFIX,
-                Features.WEB_SURFACE + Features.DEV_SUFFIX,
+                WebFeatures.WEB_SURFACE + WebFeatures.DEV_SUFFIX,
                 Features.ADD_QUIC_HINTS_WILDCARDS + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one

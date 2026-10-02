@@ -8100,6 +8100,7 @@ def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
             files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
                            input_api.DEFAULT_FILES_TO_SKIP + (
                                r'.*Test.*\.java',
+                               r'.*package-info\.java$',
                                r'^build/.*',
                                r'^chromecast/.*',
                                r'^components/cronet/.*',

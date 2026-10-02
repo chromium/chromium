@@ -8,6 +8,8 @@
 
 # We need to avoid obfuscating the support library boundary interface because
 # this API is shared with the Android Support Library.
-# Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
-# any sub-packages of that package can still be obfuscated.
+# Note that we only 'keep' the packages org.chromium.support_lib_boundary and
+# org.chromium.support_lib_boundary.web themselves, any other sub-packages of
+# those packages can still be obfuscated.
 -keep public class org.chromium.support_lib_boundary.* { public *; }
+-keep public class org.chromium.support_lib_boundary.web.* { public *; }

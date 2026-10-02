@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("web_boundary_interface_java") {
+  sources = [
+    "src/org/chromium/support_lib_boundary/web/WebContentBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/web/WebContentConfig.java",
+    "src/org/chromium/support_lib_boundary/web/WebProviderFactoryBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/web/WebSurfaceBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/web/WebSurfaceEvent.java",
+    "src/org/chromium/support_lib_boundary/web/util/WebFeatures.java",
+  ]
+
+  proguard_configs = [
+    # Include rules that should not be copied to AndroidX.
+    "../../proguard.flags",
+  ]
+
+  # Our choice of deps is limited, because boundary_interfaces/ must continue to
+  # build when we mirror this into AndroidX. We are only permitted to depend on
+  # core Android classes and other AndroidX classes (must be in the androidx.*
+  # package name).
+  deps = [
+    "//third_party/android_deps:org_jspecify_jspecify_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  # Prevent automatic dep on build_java.
+  chromium_code = false
+
+  # Do not let chromium_code = false disable Error Prone.
+  enable_errorprone = true
+}
