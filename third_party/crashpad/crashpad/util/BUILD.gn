@@ -58,12 +58,12 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
 
     args = [ "{{source}}" ]
     if (crashpad_is_in_chromium) {
-      if (!use_system_xcode) {
+      if (!use_system_xcode || host_os != "mac") {
         import("//build/config/clang/clang.gni")
-        import("//build/config/mac/mac_sdk.gni")
         clang_path =
             rebase_path("$clang_base_path/bin/", root_build_dir) + "clang"
         if (host_os == "mac") {
+          import("//build/config/mac/mac_sdk.gni")
           mig_path = "$mac_bin_path" + "mig"
           migcom_path = "$mac_bin_path" + "../libexec/migcom"
         } else if (host_os == "linux") {
