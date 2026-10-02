@@ -1,6 +1,10 @@
 [Unit]
 Description=Chrome Remote Desktop instance for %i
 After=network.target
+# Wait until user logins are allowed. Otherwise, pam_systemd may time out
+# waiting for user@<uid>.service during boot, leaving the session without
+# XDG_RUNTIME_DIR. See b/149144987.
+After=systemd-user-sessions.service
 # This service (single-process host) cannot start if the multi-process host has
 # started, and vice versa.
 Conflicts=chrome-remote-desktop.service
