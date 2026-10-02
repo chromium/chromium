@@ -21,12 +21,6 @@ import shutil
 import sys
 
 INFRA_CONFIG_DIR = os.path.abspath(f'{__file__}/../..')
-TESTING_BUILDBOT_DIR = os.path.normpath(
-  f'{INFRA_CONFIG_DIR}/../../testing/buildbot'
-)
-GENERATED_TESTING_DIR = os.path.normpath(
-  f'{INFRA_CONFIG_DIR}/generated/testing'
-)
 
 
 def copy_file(src, dst):
@@ -60,13 +54,34 @@ def parse_args(argv):
     dest='func',
     const=check_file,
   )
+  parser.add_argument(
+    '--infra-config-dir',
+    default=INFRA_CONFIG_DIR,
+    help=(
+      'infra/config directory whose generated/testing files are the source.'
+      ' Defaults to the directory containing this script.'
+    ),
+  )
+  parser.add_argument(
+    '--testing-buildbot-dir',
+    default=None,
+    help=(
+      'Directory to sync the files to. Defaults to ../../testing/buildbot'
+      ' relative to --infra-config-dir.'
+    ),
+  )
   return parser.parse_args(argv)
 
 
 def main(args):
+  generated_testing_dir = f'{args.infra_config_dir}/generated/testing'
+  testing_buildbot_dir = (
+    args.testing_buildbot_dir
+    or f'{args.infra_config_dir}/../../testing/buildbot'
+  )
   error = args.func(
-    os.path.normpath(f'{GENERATED_TESTING_DIR}/mixins.pyl'),
-    os.path.normpath(f'{TESTING_BUILDBOT_DIR}/mixins.pyl'),
+    os.path.normpath(f'{generated_testing_dir}/mixins.pyl'),
+    os.path.normpath(f'{testing_buildbot_dir}/mixins.pyl'),
   )
   if error is not None:
     print(error, file=sys.stderr)

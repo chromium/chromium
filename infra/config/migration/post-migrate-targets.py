@@ -4,7 +4,8 @@
 # found in the LICENSE file.
 """A script to do the end work of migrating targets to starlark.
 
-Run this from the infra/config directory that should be modified.
+Run this from the infra/config directory that should be modified, or pass
+--infra-config-dir.
 
 After running migrate-targets.py, some manual work is necessary to
 remove references to the migrated builders from waterfalls.pyl and
@@ -18,6 +19,7 @@ This script will perform the necessary modifications to the starlark to
 remove these errors.
 """
 
+import argparse
 import ast
 import bisect
 import dataclasses
@@ -33,9 +35,11 @@ from lib import buildozer
 from lib import post_migrate_targets
 from lib import pyl
 
-_INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
-_TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
-_TARGETS_DIR = _INFRA_CONFIG_DIR / 'targets'
+# The copy of sync-pyl-files.py next to these scripts, so that it is available
+# when modifying an infra/config directory in another repo
+_SYNC_PYL_FILES_SCRIPT = (
+  pathlib.Path(__file__).resolve().parent.parent / 'scripts/sync-pyl-files.py'
+)
 
 
 def _get_literal(path: pathlib.Path) -> pyl.Value:
@@ -56,8 +60,11 @@ class _SuiteToMigrate:
   attrs: dict[str, str | None]
 
 
-def _update_suites(suites_to_migrate: dict[str, _SuiteToMigrate]) -> None:
-  bundles_star = _TARGETS_DIR / 'bundles.star'
+def _update_suites(
+  targets_dir: pathlib.Path,
+  suites_to_migrate: dict[str, _SuiteToMigrate],
+) -> None:
+  bundles_star = targets_dir / 'bundles.star'
 
   # Find the existing bundles so that we can determine where each bundle should
   # go to maintain sorted order (the file is already sorted)
@@ -77,7 +84,7 @@ def _update_suites(suites_to_migrate: dict[str, _SuiteToMigrate]) -> None:
     return f'before {bundles[idx]}'
 
   for suite_name, suite in sorted(suites_to_migrate.items()):
-    suites_star = _TARGETS_DIR / f'{suite.suite_type}.star'
+    suites_star = targets_dir / f'{suite.suite_type}.star'
     buildozer.run(
       f'new targets.bundle {suite_name} {get_before(suite_name)}',
       f'{bundles_star}:__pkg__',
@@ -119,15 +126,60 @@ _UNREFERENCED_ISOLATES_RE = re.compile(
 )
 
 
-def main():
+def main(argv: list[str]):
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--infra-config-dir',
+    type=pathlib.Path,
+    default=pathlib.Path(os.getcwd()),
+    help=(
+      'The infra/config directory whose starlark should be modified.'
+      ' Defaults to the working directory.'
+    ),
+  )
+  parser.add_argument(
+    '--testing-buildbot-dir',
+    type=pathlib.Path,
+    default=None,
+    help=(
+      'Directory containing the generate_*_json.py script and the .pyl and'
+      ' .json files it reads and writes, for repos that keep them somewhere'
+      ' other than //testing/buildbot. Defaults to ../../testing/buildbot'
+      ' relative to --infra-config-dir.'
+    ),
+  )
+  args = parser.parse_args(argv)
 
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+  infra_config_dir = args.infra_config_dir.resolve()
+  testing_buildbot_dir = (
+    args.testing_buildbot_dir or infra_config_dir / '../../testing/buildbot'
+  ).resolve()
+  targets_dir = infra_config_dir / 'targets'
+
+  sync_pyl_files_cmd = [
+    _SYNC_PYL_FILES_SCRIPT,
+    '--infra-config-dir',
+    infra_config_dir,
+    '--testing-buildbot-dir',
+    testing_buildbot_dir,
+  ]
+  # Only keep mixins.pyl in sync if it is already a copy of the generated file.
+  # A repo may have no copy, or may still maintain its own mixins.pyl, which
+  # generate_buildbot_json.py reads in preference to the generated one.
+  sync_mixins = (
+    subprocess.run(
+      sync_pyl_files_cmd + ['--check'], capture_output=True
+    ).returncode
+    == 0
+  )
+
+  subprocess.check_call([infra_config_dir / 'main.star'])
 
   # Regenerate testing/buildbot .json files
   (generate_script,) = glob.glob(
-    'generate_*_json.py', root_dir=_TESTING_BUILDBOT_DIR
+    'generate_*_json.py', root_dir=testing_buildbot_dir
   )
-  generate_script = _TESTING_BUILDBOT_DIR / generate_script
+  generate_script = testing_buildbot_dir / generate_script
   subprocess.check_call([generate_script])
 
   def check_testing_buildbot_generation() -> subprocess.CompletedProcess:
@@ -143,7 +195,7 @@ def main():
       unreferenced_suite_names = ast.literal_eval(match.group(1))
       test_suites = typing.cast(
         pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
-        _get_literal(_INFRA_CONFIG_DIR / 'generated/testing/test_suites.pyl'),
+        _get_literal(infra_config_dir / 'generated/testing/test_suites.pyl'),
       )
 
       suites_to_migrate = {}
@@ -155,12 +207,12 @@ def main():
               suite_type=suite_type.value, attrs=handler(suite)
             )
 
-      _update_suites(suites_to_migrate)
+      _update_suites(targets_dir, suites_to_migrate)
 
       # Regenerating the configs updates test_suites.pyl so that
       # generate_buildbot_json.py --check should no longer complain about
       # unreferenced suites and allow us to see if there's any other errors
-      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      subprocess.check_call([infra_config_dir / 'main.star'])
 
       ret = check_testing_buildbot_generation()
 
@@ -173,13 +225,13 @@ def main():
       variant_name_pattern = r'\|'.join(unreferenced_variant_names)
       variant_regex = rf'"\({variant_name_pattern}\)"'
       subprocess.check_call(
-        ['sed', '-i', f'/{variant_regex}/d', _INFRA_CONFIG_DIR / 'main.star']
+        ['sed', '-i', f'/{variant_regex}/d', infra_config_dir / 'main.star']
       )
 
       # Regenerating the configs updates variants.pyl so that
       # generate_buildbot_json.py --check should no longer complain about
       # unreferenced variants and allow us to see if there's any other errors
-      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      subprocess.check_call([infra_config_dir / 'main.star'])
 
       ret = check_testing_buildbot_generation()
 
@@ -192,26 +244,26 @@ def main():
       mixin_name_pattern = r'\|'.join(unreferenced_mixin_names)
       mixin_regex = rf'"\({mixin_name_pattern}\)"'
       subprocess.check_call(
-        ['sed', '-i', f'/{mixin_regex}/d', _INFRA_CONFIG_DIR / 'main.star']
+        ['sed', '-i', f'/{mixin_regex}/d', infra_config_dir / 'main.star']
       )
 
       # Regenerating the configs updates mixins.pyl so that
       # generate_buildbot_json.py --check should no longer complain about
       # unreferenced mixins and allow us to see if there's any other errors
-      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      subprocess.check_call([infra_config_dir / 'main.star'])
 
       ret = check_testing_buildbot_generation()
 
       if _UNREFERENCED_MIXINS_RE.search(ret.stderr):
         raise Exception('unreferenced mixins still exist after update')
 
-    check_script = _TESTING_BUILDBOT_DIR / 'check.py'
+    check_script = testing_buildbot_dir / 'check.py'
 
     if check_script.exists():
 
       def check_check():
         return subprocess.run(
-          [_TESTING_BUILDBOT_DIR / 'check.py'],
+          [check_script],
           capture_output=True,
           encoding='utf-8',
         )
@@ -227,9 +279,9 @@ def main():
         # there are some tests that have the same name as binaries that wouldn't
         # support the necessary argument.
         files = [
-          _TARGETS_DIR / 'binaries.star',
-          _TARGETS_DIR / 'compile_targets.star',
-          _TARGETS_DIR / 'tests.star',
+          targets_dir / 'binaries.star',
+          targets_dir / 'compile_targets.star',
+          targets_dir / 'tests.star',
         ]
 
         comment = 'All references have been moved to starlark'.replace(
@@ -248,7 +300,7 @@ def main():
         # Regenerating the configs updates gn_usolate_map.pyl so that check.py
         # should no longer complain about unreferenced isolates and allow us to
         # see if there's any other errors
-        subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+        subprocess.check_call([infra_config_dir / 'main.star'])
 
         ret = check_check()
 
@@ -256,13 +308,19 @@ def main():
           raise Exception('unreferenced isolates still exist after update')
 
   finally:
-    subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
+    subprocess.check_call(['lucicfg', 'fmt'], cwd=infra_config_dir)
 
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'scripts/sync-pyl-files.py'])
+  if sync_mixins:
+    subprocess.check_call(sync_pyl_files_cmd)
+  else:
+    sys.stderr.write(
+      f'Not syncing {testing_buildbot_dir / "mixins.pyl"}: it was not a copy'
+      ' of the generated mixins.pyl before this script ran\n'
+    )
 
   sys.stderr.write(ret.stderr)
   sys.exit(ret.returncode)
 
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv[1:])
