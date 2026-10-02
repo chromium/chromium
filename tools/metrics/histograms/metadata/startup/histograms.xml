@@ -1724,9 +1724,13 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2027-09-23">
   <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the first navigation start
     {StartupWebExtensionState}.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or during first run.
   </summary>
   <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
 </histogram>
@@ -1736,9 +1740,13 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2027-09-23">
   <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the first page loaded
     {StartupWebExtensionState}.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or during first run.
   </summary>
   <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
 </histogram>

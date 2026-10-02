@@ -314,7 +314,8 @@ void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
     const std::string& base_histogram_name) {
   id<StartupInformation> startup_information =
       browser_->GetSceneState().profileState.startupInformation;
-  if (!startup_information || startup_information.isFirstRun) {
+  if (!startup_information || startup_information.isFirstRun ||
+      startup_information.isLaunchedInBackground) {
     return;
   }
   base::TimeTicks launch_time = [startup_information appLaunchTime];
