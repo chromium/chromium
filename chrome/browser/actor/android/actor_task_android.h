@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,7 @@ class ActorTaskAndroid : public base::SupportsUserData::Data {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  std::optional<std::string> GetGlicConversationId();
   std::string GetCurrentActionName();
   int32_t GetState();
   bool IsCompleted();
