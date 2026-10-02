@@ -49,7 +49,7 @@ QuickAnswersTool::QuickAnswersTool(tabs::TabInterface& tab) : tab_(tab) {}
 QuickAnswersTool::~QuickAnswersTool() = default;
 
 QuickAnswersTool::ToolId QuickAnswersTool::GetToolId() const {
-  return optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED;
+  return optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS;
 }
 
 void QuickAnswersTool::RequestSuggestions(

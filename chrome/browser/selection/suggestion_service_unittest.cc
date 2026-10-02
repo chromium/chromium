@@ -218,6 +218,14 @@ TEST_F(SuggestionServiceUnitTest, DuplicateToolRegistrationChecks) {
   service().UnregisterTool(&tool1);
 }
 
+// Tests that we CHECK that one cannot register a tool with an unspecified id.
+TEST_F(SuggestionServiceUnitTest, UnspecifiedToolRegistrationChecks) {
+  CustomTestTool unspecified_tool(
+      u"Unspecified Action",
+      optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
+  EXPECT_CHECK_DEATH(service().RegisterTool(&unspecified_tool));
+}
+
 // Tests that server suggestions are not requested when the feature is disabled.
 TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
   CustomTestTool static_tool(u"Static Action");
@@ -274,12 +282,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
       u"Local Only Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH,
       /*supports_server_suggestions=*/false);
-  CustomTestTool unspecified_tool(
-      u"Unspecified Action",
-      optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
   service().RegisterTool(&gemini_tool);
   service().RegisterTool(&local_only_tool);
-  service().RegisterTool(&unspecified_tool);
 
   optimization_guide::proto::SmartSelectionSuggestionsResponse response;
   optimization_guide::proto::SmartSelectionSuggestion* s1 =
@@ -354,8 +358,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   auto [static_batch, static_complete] = future.Take();
   EXPECT_FALSE(static_complete);
   EXPECT_THAT(static_batch,
-              ElementsAre(SuggestionWithLabel(u"Unspecified Action"),
-                          SuggestionWithLabel(u"Static Action"),
+              ElementsAre(SuggestionWithLabel(u"Static Action"),
                           SuggestionWithLabel(u"Local Only Action")));
 
   // Second batch: Server suggestions, with complete=true.
@@ -366,7 +369,6 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
   service().UnregisterTool(&gemini_tool);
   service().UnregisterTool(&local_only_tool);
-  service().UnregisterTool(&unspecified_tool);
 }
 
 // Tests that server errors still complete the suggestion request.

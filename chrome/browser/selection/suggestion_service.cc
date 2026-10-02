@@ -55,8 +55,8 @@ proto::AreaOfInterest ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
 }
 
 // Builds a request proto for `aoi` and `tools`, excluding screenshot data.
-// Returns `std::nullopt` if no tools supporting server suggestions with a valid
-// `ToolId` are registered.
+// Returns `std::nullopt` if no tools supporting server suggestions are
+// registered.
 std::optional<proto::SmartSelectionSuggestionsRequest>
 BuildServerSuggestionsRequest(
     const AreaOfInterest& aoi,
@@ -67,9 +67,6 @@ BuildServerSuggestionsRequest(
       *request.mutable_client_capabilities();
   for (const auto& [tool_id, tool] : tools) {
     if (!tool->SupportsServerSuggestions()) {
-      continue;
-    }
-    if (tool_id == proto::SMART_SELECTION_TOOL_UNSPECIFIED) {
       continue;
     }
     proto::SmartSelectionToolWithCapabilities& tool_cap =
@@ -113,9 +110,6 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
   suggestions.reserve(response->suggestions().size());
   for (const proto::SmartSelectionSuggestion& server_suggestion :
        response->suggestions()) {
-    if (server_suggestion.tool() == proto::SMART_SELECTION_TOOL_UNSPECIFIED) {
-      continue;
-    }
     if (const raw_ptr<SuggestionTool>* tool =
             base::FindOrNull(tools, server_suggestion.tool());
         tool && (*tool)->SupportsServerSuggestions()) {
@@ -181,9 +175,9 @@ void SuggestionService::RegisterTool(SuggestionTool* tool) {
   if (!tool) {
     return;
   }
-  // TODO(crbug.com/561489586): Disallow registering tools with an undefined
-  // tool ID.
-  CHECK(tools_.try_emplace(tool->GetToolId(), tool).second);
+  const SuggestionTool::ToolId tool_id = tool->GetToolId();
+  CHECK_NE(tool_id, SuggestionTool::ToolId::SMART_SELECTION_TOOL_UNSPECIFIED);
+  CHECK(tools_.try_emplace(tool_id, tool).second);
 }
 
 void SuggestionService::UnregisterTool(SuggestionTool* tool) {
