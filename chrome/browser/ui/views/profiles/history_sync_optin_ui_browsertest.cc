@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 
+#include <array>
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -43,11 +45,11 @@ std::string ParamToTestSuffix(
       {pixel_param.test_suffix, is_ui_refresh_enabled ? "Refresh" : ""});
 }
 
-const PixelTestParam kDialogTestParams[] = {
+const base::NoDestructor kDialogTestParams(std::to_array<PixelTestParam>({
     {.test_suffix = "Regular"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "Rtl", .use_right_to_left_language = true},
-};
+}));
 }  // namespace
 
 class HistorySyncOptinUIDialogPixelTest
@@ -107,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinUIDialogPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          HistorySyncOptinUIDialogPixelTest,
-                         testing::Combine(testing::ValuesIn(kDialogTestParams),
+                         testing::Combine(testing::ValuesIn(*kDialogTestParams),
                                           testing::Bool()),
                          &ParamToTestSuffix);
 
@@ -158,13 +160,13 @@ class HistorySyncOptinStepControllerForTest
       this};
 };
 
-const PixelTestParam kWindowTestParams[] = {
+const base::NoDestructor kWindowTestParams(std::to_array<PixelTestParam>({
     {.test_suffix = "Regular"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "Rtl", .use_right_to_left_language = true},
     {.test_suffix = "SmallWindow",
      .window_size = PixelTestParam::kSmallWindowSize},
-};
+}));
 
 class HistorySyncOptinUIWindowPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
@@ -253,6 +255,6 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinUIWindowPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          HistorySyncOptinUIWindowPixelTest,
-                         testing::Combine(testing::ValuesIn(kWindowTestParams),
+                         testing::Combine(testing::ValuesIn(*kWindowTestParams),
                                           testing::Bool()),
                          &ParamToTestSuffix);

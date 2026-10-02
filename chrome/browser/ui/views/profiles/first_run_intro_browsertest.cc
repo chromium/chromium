@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,53 +46,56 @@ std::string ParamToTestSuffix(
 }
 
 // Permutations of supported parameters.
-const FirstRunTestParam kTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "DarkThemeFixedSize",
-                          .use_dark_theme = true},
-     .use_fixed_size = true},
-    {.pixel_test_param = {.test_suffix = "DarkThemeDeclineSigninCTAExperiment",
-                          .use_dark_theme = true},
-     .decline_signin_cta_experiment_enabled = true},
+auto GetTestParams() {
+  return std::to_array<FirstRunTestParam>({
+      {.pixel_test_param = {.test_suffix = "DarkThemeFixedSize",
+                            .use_dark_theme = true},
+       .use_fixed_size = true},
+      {.pixel_test_param = {.test_suffix =
+                                "DarkThemeDeclineSigninCTAExperiment",
+                            .use_dark_theme = true},
+       .decline_signin_cta_experiment_enabled = true},
 
 #if !BUILDFLAG(IS_WIN)
-    // TODO(https://crbug.com/40261456): The following test has been frequently
-    // flaking on "Win10 Tests x64" since 2024-05-09:
-    // FirstRunIntroPixelTest.InvokeUi_default/LightTheme
-    {.pixel_test_param = {.test_suffix = "LightTheme"}},
+      // TODO(https://crbug.com/40261456): The following test has been
+      // frequently flaking on "Win10 Tests x64" since 2024-05-09:
+      // FirstRunIntroPixelTest.InvokeUi_default/LightTheme
+      {.pixel_test_param = {.test_suffix = "LightTheme"}},
 #endif
-    {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize"},
-     .use_fixed_size = true,
-     .use_longer_strings = true,
-     .use_refresh = false},
-    {.pixel_test_param = {.test_suffix = "LongerStringsFixedSizeRefreshedUI"},
-     .use_fixed_size = true,
-     .use_longer_strings = true,
-     .use_refresh = true},
-    {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
-                          .use_right_to_left_language = true}},
-    // Refresh parameters
-    {.pixel_test_param = {.test_suffix = "RefreshDefault"},
-     .use_refresh = true},
-    {.pixel_test_param = {.test_suffix = "RefreshDarkTheme",
-                          .use_dark_theme = true},
-     .use_refresh = true},
-    {.pixel_test_param = {.test_suffix = "RefreshRightToLeftLanguage",
-                          .use_right_to_left_language = true},
-     .use_refresh = true},
+      {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize"},
+       .use_fixed_size = true,
+       .use_longer_strings = true,
+       .use_refresh = false},
+      {.pixel_test_param = {.test_suffix = "LongerStringsFixedSizeRefreshedUI"},
+       .use_fixed_size = true,
+       .use_longer_strings = true,
+       .use_refresh = true},
+      {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
+                            .use_right_to_left_language = true}},
+      // Refresh parameters
+      {.pixel_test_param = {.test_suffix = "RefreshDefault"},
+       .use_refresh = true},
+      {.pixel_test_param = {.test_suffix = "RefreshDarkTheme",
+                            .use_dark_theme = true},
+       .use_refresh = true},
+      {.pixel_test_param = {.test_suffix = "RefreshRightToLeftLanguage",
+                            .use_right_to_left_language = true},
+       .use_refresh = true},
 
-    // Revamp parameters.
-    {.pixel_test_param = {.test_suffix = "RevampDefault"},
-     .use_refresh = true,
-     .use_revamp = true},
-    {.pixel_test_param = {.test_suffix = "RevampRightToLeftLanguage",
-                          .use_right_to_left_language = true},
-     .use_refresh = true,
-     .use_revamp = true},
-    {.pixel_test_param = {.test_suffix = "RevampSoundDisabled"},
-     .use_refresh = true,
-     .use_revamp = true,
-     .enable_sound = false},
-};
+      // Revamp parameters.
+      {.pixel_test_param = {.test_suffix = "RevampDefault"},
+       .use_refresh = true,
+       .use_revamp = true},
+      {.pixel_test_param = {.test_suffix = "RevampRightToLeftLanguage",
+                            .use_right_to_left_language = true},
+       .use_refresh = true,
+       .use_revamp = true},
+      {.pixel_test_param = {.test_suffix = "RevampSoundDisabled"},
+       .use_refresh = true,
+       .use_revamp = true,
+       .enable_sound = false},
+  });
+}
 
 std::string_view GetMakeCardDescriptionLongerJsString() {
   if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
@@ -206,5 +211,5 @@ IN_PROC_BROWSER_TEST_P(FirstRunIntroPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          FirstRunIntroPixelTest,
-                         testing::ValuesIn(kTestParams),
+                         testing::ValuesIn(GetTestParams()),
                          &ParamToTestSuffix);

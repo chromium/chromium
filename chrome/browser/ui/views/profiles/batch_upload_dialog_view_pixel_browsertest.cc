@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 
 #include "base/i18n/number_formatting.h"
+#include "base/no_destructor.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,7 +26,10 @@
 
 namespace {
 
-const gfx::Image kSignedInImage = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+gfx::Image GetSignedInImage() {
+  return gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+}
+
 const char kSignedInImageUrl[] = "SIGNED_IN_IMAGE_URL";
 
 syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
@@ -92,7 +97,7 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 }
 
 // Test configurations
-const TestParam kTestParams[] = {
+const base::NoDestructor kTestParams(std::to_array<TestParam>({
     {.test_suffix = "Regular"},
 
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
@@ -162,7 +167,7 @@ const TestParam kTestParams[] = {
                                  {5, syncer::DataType::PASSWORDS},
                                  {1, syncer::DataType::THEMES}},
      .long_title = true},
-};
+}));
 
 }  // namespace
 
@@ -213,7 +218,7 @@ class BatchUploadDialogViewPixelTest
 
     signin::SimulateAccountImageFetch(identity_manager,
                                       account_info.GetAccountId(),
-                                      kSignedInImageUrl, kSignedInImage);
+                                      kSignedInImageUrl, GetSignedInImage());
   }
 
   void ShowUi(const std::string& name) override {
@@ -244,5 +249,5 @@ IN_PROC_BROWSER_TEST_P(BatchUploadDialogViewPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          BatchUploadDialogViewPixelTest,
-                         testing::ValuesIn(kTestParams),
+                         testing::ValuesIn(*kTestParams),
                          &ParamToTestSuffix);

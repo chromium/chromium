@@ -26,9 +26,8 @@
 
 namespace {
 
-const std::map<syncer::DataType,
-               std::vector<syncer::LocalDataItemModel::DataId>>
-    kEmptySelectedMap;
+using SelectedDataMap =
+    std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>;
 
 syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
                                               int item_count) {
@@ -153,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       browser()->GetProfile(), std::move(descriptions), entry_point,
       mock_callback.Get());
 
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  EXPECT_CALL(mock_callback, Run(SelectedDataMap())).Times(1);
 
   dialog_view->OnDialogSelectionMade({});
   views::test::WidgetDestroyedWaiter(dialog_view->GetWidget()).Wait();
@@ -184,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   base::MockCallback<BatchUploadSelectedDataTypeItemsCallback> mock_callback;
 
   syncer::DataType input_type = syncer::DataType::PASSWORDS;
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  EXPECT_CALL(mock_callback, Run(SelectedDataMap())).Times(1);
   BatchUploadService::EntryPoint entry_point =
       BatchUploadService::EntryPoint::kPasswordManagerSettings;
   {
@@ -235,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       mock_callback.Get());
 
   // Pressing the escape key should dismiss the dialog and return empty result.
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  EXPECT_CALL(mock_callback, Run(SelectedDataMap())).Times(1);
   views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_view->GetWidget());
   SimulateEscapeKeyPress(dialog_view->GetWebViewForTesting()->GetWebContents());
   destroyed_waiter.Wait();
@@ -274,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
   base::MockCallback<BatchUploadSelectedDataTypeItemsCallback> mock_callback;
 
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  EXPECT_CALL(mock_callback, Run(SelectedDataMap())).Times(1);
 
   std::vector<syncer::LocalDataDescription> descriptions;
   syncer::DataType type = syncer::DataType::PASSWORDS;
@@ -324,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
   base::MockCallback<BatchUploadSelectedDataTypeItemsCallback> mock_callback;
 
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  EXPECT_CALL(mock_callback, Run(SelectedDataMap())).Times(1);
 
   std::vector<syncer::LocalDataDescription> descriptions;
   syncer::DataType type = syncer::DataType::PASSWORDS;

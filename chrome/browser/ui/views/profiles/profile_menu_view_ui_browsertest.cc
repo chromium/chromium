@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -121,256 +122,266 @@ std::string ParamToTestSuffix(
 }
 
 // Permutations of supported parameters.
-const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
-    {.pixel_test_param = {.test_suffix = "Regular"}},
-    {
-        .pixel_test_param = {.test_suffix = "SigninDisallowed"},
-        .signin_status = SigninStatusPixelTestParam::kSigninDisallowed,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "DarkTheme",
-                             .use_dark_theme = true},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "RTL",
-                             .use_right_to_left_language = true},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles"},
-        .use_multiple_profiles = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "SignedOut_MultipleProfiles_DarkTheme",
-                             .use_dark_theme = true},
-        .use_multiple_profiles = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "WebSignedIn"},
-        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "WebSignedIn_PlaceholderIcon"},
-        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .account_image_available = false,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "WebSignedIn_PlaceholderIcon_DarkTheme",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .account_image_available = false,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "WebSignedIn_AccountPreviewPreference"},
-        .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
-        .with_account_preview_preference = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_MultipleProfiles"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .use_multiple_profiles = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "SignedIn_MultipleProfiles_DarkTheme",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .use_multiple_profiles = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_Sync"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignInPending"},
-        .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignInPending_RTL",
-                             .use_right_to_left_language = true},
-        .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_AccountManaged"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .management_status = ManagementStatus::kAccountManaged,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedOut,
-        .management_status = ManagementStatus::kBrowserManaged,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "SignedIn_BrowserSupervised_DarkTheme",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "Sync_BrowserSupervised_DarkTheme",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param =
-            {.test_suffix = "SignInPending_Nosync_BrowserSupervised_DarkTheme",
-             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param =
-            {
-                .test_suffix = "SignedIn_BrowserSupervised",
-                .use_dark_theme = false,
-            },
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param =
-            {
-                .test_suffix = "Sync_BrowserSupervised",
-                .use_dark_theme = false,
-            },
-        .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param =
-            {
-                .test_suffix = "SignInPending_Nosync_BrowserSupervised",
-                .use_dark_theme = false,
-            },
-        .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
-        .management_status = ManagementStatus::kSupervisedUser,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "Guest"},
-        .profile_type_param = ProfileTypePixelTestParam::kGuest,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "Guest_Dark",
-                             .use_dark_theme = true},
-        .profile_type_param = ProfileTypePixelTestParam::kGuest,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "Incognito"},
-        .profile_type_param = ProfileTypePixelTestParam::kIncognito,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "Isolated"},
-        .profile_type_param = ProfileTypePixelTestParam::kIsolated,
-        .management_status = ManagementStatus::kBrowserManaged,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_local_data = WithLocalData::kSingleLocalData,
-        .extra_features_and_params =
-            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "BatchUploadPromoMultipleLocalDataDarkTheme",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_local_data = WithLocalData::kMultipleLocalData,
-        .extra_features_and_params =
-            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "BatchUploadPrimaryPromo"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
-        .with_local_data = WithLocalData::kMultipleLocalData,
-        .from_avatar_promo = true,
-        .extra_features_and_params =
-            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "BatchUploadBookmarksPrimaryPromo"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_local_data = WithLocalData::kWithBookmarksLocalData,
-        .from_avatar_promo = true,
-        .extra_features_and_params =
-            {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
-    },
-    {
-        .pixel_test_param =
-            {.test_suffix = "BatchUploadWindows10DepreciationPrimaryPromo"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_local_data = WithLocalData::kMultipleLocalData,
-        .from_avatar_promo = true,
-        .extra_features_and_params =
-            {{switches::kSigninWindows10DepreciationStateForTesting, {}}},
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "SignedIn_SyncDisabledByAccount"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .management_status = ManagementStatus::kAccountManaged,
-        .sync_disabled = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Light"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .use_multiple_profiles = true,
-        .with_ai_avatar_ring = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Dark",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .use_multiple_profiles = true,
-        .with_ai_avatar_ring = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromo"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_cross_device_signin_promo = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromoNewBadge"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_cross_device_signin_promo = true,
-        .with_cross_device_signin_new_badge = true,
-    },
-    {
-        // The badge is rendered immediately after the label text, so it has to
-        // mirror to the leading edge in RTL.
-        .pixel_test_param = {.test_suffix =
-                                 "CrossDeviceSigninPromoNewBadge_RTL",
-                             .use_right_to_left_language = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_cross_device_signin_promo = true,
-        .with_cross_device_signin_new_badge = true,
-    },
-    {
-        .pixel_test_param = {.test_suffix =
-                                 "CrossDeviceSigninPromoNewBadge_Dark",
-                             .use_dark_theme = true},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .with_cross_device_signin_promo = true,
-        .with_cross_device_signin_new_badge = true,
-    },
-};
+auto GetPixelTestParams() {
+  return std::to_array<ProfileMenuViewPixelTestParam>({
+      {.pixel_test_param = {.test_suffix = "Regular"}},
+      {
+          .pixel_test_param = {.test_suffix = "SigninDisallowed"},
+          .signin_status = SigninStatusPixelTestParam::kSigninDisallowed,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "DarkTheme",
+                               .use_dark_theme = true},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "RTL",
+                               .use_right_to_left_language = true},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles"},
+          .use_multiple_profiles = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "SignedOut_MultipleProfiles_DarkTheme",
+                               .use_dark_theme = true},
+          .use_multiple_profiles = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "WebSignedIn"},
+          .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "WebSignedIn_PlaceholderIcon"},
+          .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+          .account_image_available = false,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "WebSignedIn_PlaceholderIcon_DarkTheme",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+          .account_image_available = false,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "WebSignedIn_AccountPreviewPreference"},
+          .signin_status = SigninStatusPixelTestParam::kWebSignedIn,
+          .with_account_preview_preference = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_MultipleProfiles"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .use_multiple_profiles = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "SignedIn_MultipleProfiles_DarkTheme",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .use_multiple_profiles = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_Sync"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignInPending"},
+          .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignInPending_RTL",
+                               .use_right_to_left_language = true},
+          .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_AccountManaged"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .management_status = ManagementStatus::kAccountManaged,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedOut,
+          .management_status = ManagementStatus::kBrowserManaged,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "SignedIn_BrowserSupervised_DarkTheme",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "Sync_BrowserSupervised_DarkTheme",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param =
+              {.test_suffix =
+                   "SignInPending_Nosync_BrowserSupervised_DarkTheme",
+               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param =
+              {
+                  .test_suffix = "SignedIn_BrowserSupervised",
+                  .use_dark_theme = false,
+              },
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param =
+              {
+                  .test_suffix = "Sync_BrowserSupervised",
+                  .use_dark_theme = false,
+              },
+          .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param =
+              {
+                  .test_suffix = "SignInPending_Nosync_BrowserSupervised",
+                  .use_dark_theme = false,
+              },
+          .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+          .management_status = ManagementStatus::kSupervisedUser,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "Guest"},
+          .profile_type_param = ProfileTypePixelTestParam::kGuest,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "Guest_Dark",
+                               .use_dark_theme = true},
+          .profile_type_param = ProfileTypePixelTestParam::kGuest,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "Incognito"},
+          .profile_type_param = ProfileTypePixelTestParam::kIncognito,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "Isolated"},
+          .profile_type_param = ProfileTypePixelTestParam::kIsolated,
+          .management_status = ManagementStatus::kBrowserManaged,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "BatchUploadPromoSingleLocalData"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_local_data = WithLocalData::kSingleLocalData,
+          .extra_features_and_params =
+              {{switches::kSigninWindows10DepreciationStateBypassForTesting,
+                {}}},
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "BatchUploadPromoMultipleLocalDataDarkTheme",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_local_data = WithLocalData::kMultipleLocalData,
+          .extra_features_and_params =
+              {{switches::kSigninWindows10DepreciationStateBypassForTesting,
+                {}}},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "BatchUploadPrimaryPromo"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
+          .with_local_data = WithLocalData::kMultipleLocalData,
+          .from_avatar_promo = true,
+          .extra_features_and_params =
+              {{switches::kSigninWindows10DepreciationStateBypassForTesting,
+                {}}},
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "BatchUploadBookmarksPrimaryPromo"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_local_data = WithLocalData::kWithBookmarksLocalData,
+          .from_avatar_promo = true,
+          .extra_features_and_params =
+              {{switches::kSigninWindows10DepreciationStateBypassForTesting,
+                {}}},
+      },
+      {
+          .pixel_test_param =
+              {.test_suffix = "BatchUploadWindows10DepreciationPrimaryPromo"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_local_data = WithLocalData::kMultipleLocalData,
+          .from_avatar_promo = true,
+          .extra_features_and_params =
+              {{switches::kSigninWindows10DepreciationStateForTesting, {}}},
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "SignedIn_SyncDisabledByAccount"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .management_status = ManagementStatus::kAccountManaged,
+          .sync_disabled = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Light"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .use_multiple_profiles = true,
+          .with_ai_avatar_ring = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "AiSubscriptionAvatarRing_Dark",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .use_multiple_profiles = true,
+          .with_ai_avatar_ring = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromo"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_cross_device_signin_promo = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromoNewBadge"},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_cross_device_signin_promo = true,
+          .with_cross_device_signin_new_badge = true,
+      },
+      {
+          // The badge is rendered immediately after the label text, so it has
+          // to mirror to the leading edge in RTL.
+          .pixel_test_param = {.test_suffix =
+                                   "CrossDeviceSigninPromoNewBadge_RTL",
+                               .use_right_to_left_language = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_cross_device_signin_promo = true,
+          .with_cross_device_signin_new_badge = true,
+      },
+      {
+          .pixel_test_param = {.test_suffix =
+                                   "CrossDeviceSigninPromoNewBadge_Dark",
+                               .use_dark_theme = true},
+          .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+          .with_cross_device_signin_promo = true,
+          .with_cross_device_signin_new_badge = true,
+      },
+  });
+}
 
 }  // namespace
 
@@ -868,5 +879,5 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          ProfileMenuViewPixelTest,
-                         testing::ValuesIn(kPixelTestParams),
+                         testing::ValuesIn(GetPixelTestParams()),
                          &ParamToTestSuffix);

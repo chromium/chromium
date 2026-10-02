@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
+#include <array>
 #include <optional>
 #include <set>
 #include <string>
@@ -4031,7 +4032,7 @@ struct GlicTestParam {
   std::string expected_learn_more_url;
 };
 
-const GlicTestParam kGlicTestParams[] = {
+const base::NoDestructor kGlicTestParams(std::to_array<GlicTestParam>({
     {
         .profiles_are_glic_eligible = false,
         .expected_learn_more_url = chrome::kSigninOnDesktopLearnMoreURL,
@@ -4040,7 +4041,7 @@ const GlicTestParam kGlicTestParams[] = {
         .profiles_are_glic_eligible = true,
         .expected_learn_more_url = chrome::kAddNewProfileOnDesktopLearnMoreURL,
     },
-};
+}));
 
 class ProfilePickerWithGlicParamBrowserTest
     : public ProfilePickerCreationFlowBrowserTest,
@@ -4085,7 +4086,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerWithGlicParamBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          ProfilePickerWithGlicParamBrowserTest,
-                         testing::ValuesIn(kGlicTestParams),
+                         testing::ValuesIn(*kGlicTestParams),
                          [](const auto& info) {
                            return info.param.profiles_are_glic_eligible
                                       ? "GlicEligibleProfiles"

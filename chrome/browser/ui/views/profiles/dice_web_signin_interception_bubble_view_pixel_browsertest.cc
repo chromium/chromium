@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "base/scoped_environment_variable_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -86,7 +88,7 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 }
 
 // Permutations of supported bubbles.
-const TestParam kTestParams[] = {
+const base::NoDestructor kTestParams(std::to_array<TestParam>({
     // Common consumer user case: regular account signing in to a profile having
     // a regular account on a non-managed device.
     {
@@ -104,7 +106,6 @@ const TestParam kTestParams[] = {
         .use_dark_theme = true,
         .intercepted_profile_color = SkColors::kMagenta,
     },
-
 
     // Regular account signing in to a profile having a regular account on a
     // managed device (having policies configured locally for example).
@@ -296,7 +297,7 @@ const TestParam kTestParams[] = {
             ManagedAccountState::kSupervisedAccount,
         .use_right_to_left_language = true,
     },
-};
+}));
 
 }  // namespace
 
@@ -483,5 +484,5 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceWebSigninInterceptionBubblePixelTest,
-                         testing::ValuesIn(kTestParams),
+                         testing::ValuesIn(*kTestParams),
                          &ParamToTestSuffix);
