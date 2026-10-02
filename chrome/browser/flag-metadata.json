@@ -6048,7 +6048,7 @@
   {
     "name": "google-pay-via-android-intents",
     "owners": [ "xuehuichen@google.com", "chrome-payments-eng@google.com" ],
-    "expiry_milestone": 157
+    "expiry_milestone": 160
   },
   {
     "name": "group-promo-prototype",
