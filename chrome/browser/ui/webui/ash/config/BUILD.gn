@@ -112,6 +112,7 @@ static_library("config") {
     "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/consent_auditor:consent_auditor_provider",
+    "//chromeos/ash/components/media_device_salt:media_device_salt_service_provider",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/guest_os/borealis/motd",
     "//components/application_locale_storage",

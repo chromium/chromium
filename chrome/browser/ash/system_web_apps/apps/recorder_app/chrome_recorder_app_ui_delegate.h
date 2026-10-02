@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "components/account_id/account_id.h"
 #include "components/soda/constants.h"
-#include "content/public/browser/web_ui.h"
 
 class ApplicationLocaleStorage;
 class PrefService;
@@ -70,8 +69,6 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
       override;
 
-  media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
-      content::BrowserContext* context) override;
 
  private:
   const raw_ref<PrefService> local_state_;

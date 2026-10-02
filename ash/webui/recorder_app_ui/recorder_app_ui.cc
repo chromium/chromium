@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -115,21 +117,13 @@ void GotSalt(
 }
 
 void TranslateAudioDeviceId(
-    content::BrowserContext* browser_context,
-    media_device_salt::MediaDeviceSaltService* salt_service,
+    media_device_salt::MediaDeviceSaltService& salt_service,
     const url::Origin& origin,
     const std::string& source_id,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  if (salt_service) {
-    salt_service->GetSalt(
-        blink::StorageKey::CreateFirstParty(origin),
-        base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
-  } else {
-    // If the embedder does not provide a salt service, use the browser
-    // context's unique ID as salt.
-    GotSalt(origin, source_id, std::move(callback),
-            browser_context->UniqueId());
-  }
+  salt_service.GetSalt(
+      blink::StorageKey::CreateFirstParty(origin),
+      base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
 }
 
 int GetResourceIdFromStringName(const std::string& name) {
@@ -201,8 +195,10 @@ bool RecorderAppUIConfig::IsWebUIEnabled(
              speech::kFeatureManagementCrosSodaConchLanguages);
 }
 
-RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
-                             std::unique_ptr<RecorderAppUIDelegate> delegate)
+RecorderAppUI::RecorderAppUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<RecorderAppUIDelegate> delegate,
+    media_device_salt::MediaDeviceSaltService& media_device_salt_service)
     : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -270,10 +266,9 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   }
 
   // Add salt translator
-  device_id_mapping_callback_ =
-      base::BindRepeating(&TranslateAudioDeviceId, browser_context,
-                          delegate_->GetMediaDeviceSaltService(browser_context),
-                          url::Origin::Create(GURL(kChromeUIRecorderAppURL)));
+  device_id_mapping_callback_ = base::BindRepeating(
+      &TranslateAudioDeviceId, std::ref(media_device_salt_service),
+      url::Origin::Create(GURL(kChromeUIRecorderAppURL)));
 
   auto* message_center = message_center::MessageCenter::Get();
   message_center->AddObserver(this);

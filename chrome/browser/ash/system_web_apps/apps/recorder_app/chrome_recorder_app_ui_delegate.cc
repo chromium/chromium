@@ -11,7 +11,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
-#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -93,13 +92,6 @@ void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
                            /*extra_diagnostics=*/std::string(),
                            /*autofill_metadata=*/base::DictValue(),
                            /*ai_metadata=*/std::move(ai_metadata));
-}
-
-media_device_salt::MediaDeviceSaltService*
-ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
-    content::BrowserContext* context) {
-  return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-      context);
 }
 
 bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {

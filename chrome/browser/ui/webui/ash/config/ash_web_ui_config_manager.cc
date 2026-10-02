@@ -139,6 +139,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -282,6 +283,8 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
             IdentityManagerProvider::Get().Find(account_id);
         consent_auditor::ConsentAuditor* consent_auditor =
             ConsentAuditorProvider::Get().Find(account_id);
+        media_device_salt::MediaDeviceSaltService* media_device_salt_service =
+            MediaDeviceSaltServiceProvider::Get().Find(account_id);
 
         auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
             g_browser_process->local_state(),
@@ -289,7 +292,9 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
             g_browser_process->variations_service(),
             user_manager::UserManager::Get(), account_id, identity_manager,
             consent_auditor);
-        return std::make_unique<RecorderAppUI>(web_ui, std::move(delegate));
+        return std::make_unique<RecorderAppUI>(
+            web_ui, std::move(delegate),
+            CHECK_DEREF(media_device_salt_service));
       });
 
   return std::make_unique<RecorderAppUIConfig>(create_controller_func);
