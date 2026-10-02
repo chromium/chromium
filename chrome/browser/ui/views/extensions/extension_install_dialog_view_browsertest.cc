@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -72,6 +73,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
@@ -799,8 +801,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogRatingsSectionTest,
   TestRatingsSectionA11y(0, 0.0, "Not yet rated by any users.");
 }
 
-class ExtensionInstallDialogWithWithholdPermissionsUI
+class ExtensionInstallDialogSiteAccessTestBase
     : public ExtensionInstallDialogViewTestBase {
+ public:
+  ExtensionInstallDialogSiteAccessTestBase() = default;
+  ExtensionInstallDialogSiteAccessTestBase(
+      const ExtensionInstallDialogSiteAccessTestBase&) = delete;
+  ExtensionInstallDialogSiteAccessTestBase& operator=(
+      const ExtensionInstallDialogSiteAccessTestBase&) = delete;
+
+ protected:
+  ExtensionInstallDialogView* CreateAndShowPrompt(
+      ExtensionInstallPromptTestHelper* helper,
+      bool with_host_permissions = true) {
+    std::unique_ptr<InstallPromptData> prompt =
+        CreatePrompt(InstallPromptData::INSTALL_PROMPT);
+    if (with_host_permissions) {
+      PermissionSet permissions(
+          extensions::APIPermissionSet(), extensions::ManifestPermissionSet(),
+          extensions::URLPatternSet(
+              {URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                          "http://example.com/*")}),
+          extensions::URLPatternSet());
+      prompt->AddPermissionSet(permissions);
+    }
+    auto dialog = std::make_unique<ExtensionInstallDialogView>(
+        std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
+        helper->GetCallback(), std::move(prompt));
+    ExtensionInstallDialogView* delegate_view = dialog.get();
+
+    views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
+        dialog.release(), gfx::NativeWindow(),
+        platform_util::GetViewForWindow(
+            browser()->GetWindow()->GetNativeWindow()));
+    modal_dialog->Show();
+    return delegate_view;
+  }
+};
+
+class ExtensionInstallDialogWithWithholdPermissionsUI
+    : public ExtensionInstallDialogSiteAccessTestBase {
  public:
   ExtensionInstallDialogWithWithholdPermissionsUI() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -816,35 +856,111 @@ class ExtensionInstallDialogWithWithholdPermissionsUI
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that some UI is displayed in the extra view when withholding
+// Verifies that site access radio buttons are displayed when withholding
 // permissions on installation.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
                        ShowsWithholdUI) {
   ExtensionInstallPromptTestHelper helper;
-  std::unique_ptr<InstallPromptData> prompt =
-      CreatePrompt(InstallPromptData::INSTALL_PROMPT);
-  // Add a permission to the prompt with example.com as an explicit pattern.
-  PermissionSet permissions(
-      extensions::APIPermissionSet(), extensions::ManifestPermissionSet(),
-      extensions::URLPatternSet(
-          {URLPattern(extensions::Extension::kValidHostPermissionSchemes,
-                      "http://example.com/*")}),
-      extensions::URLPatternSet());
-  prompt->AddPermissionSet(permissions);
-  auto dialog = std::make_unique<ExtensionInstallDialogView>(
-      std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
-      helper.GetCallback(), std::move(prompt));
-  views::BubbleDialogDelegateView* delegate_view = dialog.get();
+  ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
 
-  views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog.release(), gfx::NativeWindow(),
-      platform_util::GetViewForWindow(
-          browser()->GetWindow()->GetNativeWindow()));
-  modal_dialog->Show();
+  ASSERT_TRUE(delegate_view->on_click_radio_button_for_testing());
+  ASSERT_TRUE(delegate_view->always_all_sites_radio_button_for_testing());
+  EXPECT_TRUE(delegate_view->on_click_radio_button_for_testing()->GetChecked());
+  EXPECT_FALSE(
+      delegate_view->always_all_sites_radio_button_for_testing()->GetChecked());
 
-  const views::View* const extra_view = delegate_view->GetExtraView();
-  EXPECT_TRUE(extra_view);
-  EXPECT_EQ("Checkbox", extra_view->GetClassName());
+  views::View* radio_group =
+      delegate_view->on_click_radio_button_for_testing()->parent();
+  ASSERT_TRUE(radio_group);
+  ui::AXNodeData group_node_data;
+  radio_group->GetViewAccessibility().GetAccessibleNodeData(&group_node_data);
+  EXPECT_EQ(ax::mojom::Role::kRadioGroup, group_node_data.role);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE),
+      group_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  CloseAndWait(delegate_view->GetWidget());
+}
+
+// Verifies that accepting the dialog with the "on click" radio button selected
+// withholds permissions.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
+                       AcceptWithOnClickSelectedWithholdsPermissions) {
+  ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate_view->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
+  }));
+
+  ASSERT_TRUE(delegate_view->on_click_radio_button_for_testing());
+  EXPECT_TRUE(delegate_view->on_click_radio_button_for_testing()->GetChecked());
+
+  delegate_view->AcceptDialog();
+  EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS,
+            helper.result());
+}
+
+// Verifies that accepting the dialog with the "always on all sites" radio
+// button selected grants permissions.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
+                       AcceptWithAlwaysAllSitesSelectedGrantsPermissions) {
+  ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate_view->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
+  }));
+
+  ASSERT_TRUE(delegate_view->always_all_sites_radio_button_for_testing());
+  delegate_view->always_all_sites_radio_button_for_testing()->SetChecked(true);
+
+  delegate_view->AcceptDialog();
+  EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
+}
+
+// Verifies that site access radio buttons are not shown when no host
+// permissions are requested, even if the feature is enabled.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
+                       DoesNotShowWhenNoHostPermissions) {
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view =
+      CreateAndShowPrompt(&helper, /*with_host_permissions=*/false);
+
+  EXPECT_EQ(nullptr, delegate_view->on_click_radio_button_for_testing());
+  EXPECT_EQ(nullptr,
+            delegate_view->always_all_sites_radio_button_for_testing());
+
+  CloseAndWait(delegate_view->GetWidget());
+}
+
+class ExtensionInstallDialogWithoutWithholdPermissionsUI
+    : public ExtensionInstallDialogSiteAccessTestBase {
+ public:
+  ExtensionInstallDialogWithoutWithholdPermissionsUI() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionInstallSiteAccessOptions);
+  }
+
+  ExtensionInstallDialogWithoutWithholdPermissionsUI(
+      const ExtensionInstallDialogWithoutWithholdPermissionsUI&) = delete;
+  ExtensionInstallDialogWithoutWithholdPermissionsUI& operator=(
+      const ExtensionInstallDialogWithoutWithholdPermissionsUI&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that site access radio buttons are not shown when the feature is
+// disabled.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithoutWithholdPermissionsUI,
+                       DoesNotShowWithholdUI) {
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+
+  EXPECT_EQ(nullptr, delegate_view->on_click_radio_button_for_testing());
+  EXPECT_EQ(nullptr,
+            delegate_view->always_all_sites_radio_button_for_testing());
 
   CloseAndWait(delegate_view->GetWidget());
 }

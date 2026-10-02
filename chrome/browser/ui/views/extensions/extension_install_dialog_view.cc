@@ -44,7 +44,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -249,8 +249,7 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
       done_callback_(std::move(done_callback)),
       prompt_(std::move(prompt)),
       scroll_view_(nullptr),
-      install_button_enabled_(false),
-      grant_permissions_checkbox_(nullptr) {
+      install_button_enabled_(false) {
   DCHECK(prompt_->extension());
 
   extensions::ExtensionRegistry* extension_registry =
@@ -291,10 +290,6 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
     store_link->SetCallback(base::BindRepeating(
         &ExtensionInstallDialogView::LinkClicked, base::Unretained(this)));
     SetExtraView(std::move(store_link));
-  } else if (prompt_->ShouldWithheldPermissionsOnDialogAccept()) {
-    grant_permissions_checkbox_ = SetExtraView(
-        std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
-            IDS_EXTENSION_PROMPT_GRANT_PERMISSIONS_CHECKBOX)));
   }
 
   SetButtonLabel(ui::mojom::DialogButton::kOk, prompt_->GetAcceptButtonLabel());
@@ -409,11 +404,10 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
   prompt_->OnDialogAccepted();
 
   // Permissions are withheld at installation when the prompt specifies it and
-  // `grant_permissions_checkbox_` wasn't selected.
+  // the "On click" site access radio button is selected.
   auto result =
       (prompt_->ShouldWithheldPermissionsOnDialogAccept() &&
-       grant_permissions_checkbox_ &&
-       !grant_permissions_checkbox_->GetChecked())
+       on_click_radio_button_ && on_click_radio_button_->GetChecked())
           ? ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS
           : ExtensionInstallPrompt::Result::ACCEPTED;
 
@@ -506,8 +500,10 @@ void ExtensionInstallDialogView::CreateContents() {
   bool has_permissions = prompt_->GetPermissionCount() > 0;
   bool requires_justification =
       prompt_->type() == InstallPromptData::EXTENSION_REQUEST_PROMPT;
+  bool has_site_access_options =
+      prompt_->ShouldWithheldPermissionsOnDialogAccept();
 
-  if (!has_permissions && !requires_justification) {
+  if (!has_permissions && !requires_justification && !has_site_access_options) {
     // Use a smaller margin between the title area and buttons, since there
     // isn't any content.
     set_margins(
@@ -523,8 +519,8 @@ void ExtensionInstallDialogView::CreateContents() {
   set_margins(
       gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
-  std::unique_ptr<views::ScrollView> scroll_view =
-      CreateExtensionInfoContainer(has_permissions, requires_justification);
+  std::unique_ptr<views::ScrollView> scroll_view = CreateExtensionInfoContainer(
+      has_permissions, requires_justification, has_site_access_options);
   scroll_view_ = scroll_view.get();
   AddChildView(std::move(scroll_view));
 }
@@ -532,8 +528,9 @@ void ExtensionInstallDialogView::CreateContents() {
 std::unique_ptr<views::ScrollView>
 ExtensionInstallDialogView::CreateExtensionInfoContainer(
     bool has_permissions,
-    bool requires_justification) {
-  CHECK(has_permissions || requires_justification);
+    bool requires_justification,
+    bool has_site_access_options) {
+  CHECK(has_permissions || requires_justification || has_site_access_options);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
@@ -572,6 +569,37 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
     extension_info_container.AddChild(
         views::Builder<ExtensionJustificationView>(
             std::move(justification_view)));
+  }
+
+  if (has_site_access_options) {
+    constexpr int kRadioGroupId = 0;
+    extension_info_container.AddChild(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetBetweenChildSpacing(provider->GetDistanceMetric(
+                views::DISTANCE_RELATED_CONTROL_VERTICAL))
+            .SetAccessibleRole(ax::mojom::Role::kRadioGroup)
+            .SetAccessibleName(l10n_util::GetStringUTF16(
+                IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE))
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE))
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetMultiLine(true),
+                views::Builder<views::RadioButton>()
+                    .CopyAddressTo(&on_click_radio_button_)
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK))
+                    .SetGroup(kRadioGroupId)
+                    .SetChecked(true),
+                views::Builder<views::RadioButton>()
+                    .CopyAddressTo(&always_all_sites_radio_button_)
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2))
+                    .SetGroup(kRadioGroupId)
+                    .SetChecked(false)));
   }
 
   return views::Builder<views::ScrollView>()

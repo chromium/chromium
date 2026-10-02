@@ -5328,8 +5328,8 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO" desc="Shown when a website tries to connect to an extension from Incognito mode, prompting the user to allow or deny the request.">
         <ph name="ORIGIN">$1<ex>http://www.google.com</ex></ph> wants to communicate with the extension "<ph name="EXTENSION_NAME">$2<ex>Gmail Checker</ex></ph>"
       </message>
-      <message name="IDS_EXTENSION_PROMPT_GRANT_PERMISSIONS_CHECKBOX" desc="Label next to the checkbox in the extension or app installation prompt, which indicates if a user wants to grant access to all requested sites.">
-        Grant access to all requested sites.
+      <message name="IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE" desc="Title of the section in the extension or app installation prompt that allows the user to choose site access permissions.">
+        Allow site access
       </message>
 
       <message name="IDS_EXTENSION_PERMISSION_LINE" desc="Template for item in list of privileges that an extension or app has">
