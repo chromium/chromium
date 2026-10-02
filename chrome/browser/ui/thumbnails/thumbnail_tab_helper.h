@@ -100,10 +100,10 @@ class ThumbnailTabHelper : public content::WebContentsObserver {
   // Copy info from the most recent frame we have captured.
   ThumbnailCaptureInfo last_frame_capture_info_;
 
+  std::unique_ptr<BackgroundThumbnailCapturer> background_capturer_;
+
   // Private implementation of state tracking.
   std::unique_ptr<TabStateTracker> state_;
-
-  std::unique_ptr<BackgroundThumbnailCapturer> background_capturer_;
 
   // Times for computing metrics.
   base::TimeTicks start_video_capture_time_;

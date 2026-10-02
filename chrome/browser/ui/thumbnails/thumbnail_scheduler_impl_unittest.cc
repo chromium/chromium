@@ -194,3 +194,19 @@ TEST_F(ThumbnailSchedulerImplTest, CaptureStopsOnPriorityNone) {
       &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kNone);
   EXPECT_THAT(TabScheduledStates(), ElementsAre(false, false, false, false));
 }
+
+TEST_F(ThumbnailSchedulerImplTest, RemoveTabWhileCapturing) {
+  FakeTabCapturer removed_tab;
+  scheduler_.AddTab(&removed_tab);
+  scheduler_.SetTabCapturePriority(
+      &removed_tab, ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_TRUE(removed_tab.capture_permitted());
+
+  scheduler_.RemoveTab(&removed_tab);
+
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  scheduler_.SetTabCapturePriority(
+      &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(true, true, false, false));
+}
