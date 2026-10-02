@@ -6,7 +6,10 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 
 // static
 constexpr int ThumbnailSchedulerImpl::kMaxTotalCaptures;

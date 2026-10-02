@@ -40,7 +40,6 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
 
   // Update the capture state machine with new data.
   void UpdatePageReadiness(PageReadiness page_readiness);
-  void UpdatePageVisibility(bool page_visible);
   void UpdateThumbnailVisibility(bool thumbnail_visible);
 
   // Can be called whenever. Will not issue a Client::StartCapture()
@@ -85,7 +84,6 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
   const raw_ptr<ThumbnailScheduler> scheduler_;
 
   PageReadiness page_readiness_ = PageReadiness::kNotReady;
-  bool page_visible_ = false;
   bool thumbnail_visible_ = false;
   bool can_capture_ = false;
   bool scheduled_ = false;

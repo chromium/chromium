@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // Determines how ready a page is for thumbnail capture based on
@@ -31,7 +30,6 @@ class ThumbnailReadinessTracker : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
-  void WebContentsDestroyed() override;
   void WasDiscarded() override;
 
  private:

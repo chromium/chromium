@@ -29,11 +29,6 @@ void ThumbnailCaptureDriver::UpdatePageReadiness(PageReadiness page_readiness) {
   UpdateCaptureState();
 }
 
-void ThumbnailCaptureDriver::UpdatePageVisibility(bool page_visible) {
-  page_visible_ = page_visible;
-  UpdateSchedulingPriority();
-}
-
 void ThumbnailCaptureDriver::UpdateThumbnailVisibility(bool thumbnail_visible) {
   thumbnail_visible_ = thumbnail_visible;
   UpdateSchedulingPriority();

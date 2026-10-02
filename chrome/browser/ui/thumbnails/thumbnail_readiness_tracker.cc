@@ -61,20 +61,10 @@ void ThumbnailReadinessTracker::DidFinishNavigation(
 
   pending_navigation_ = nullptr;
   UpdateReadiness(Readiness::kReadyForInitialCapture);
-
-  if (last_readiness_ > Readiness::kReadyForInitialCapture) {
-    return;
-  }
-  UpdateReadiness(Readiness::kReadyForInitialCapture);
 }
 
 void ThumbnailReadinessTracker::DocumentOnLoadCompletedInPrimaryMainFrame() {
   UpdateReadiness(Readiness::kReadyForFinalCapture);
-}
-
-void ThumbnailReadinessTracker::WebContentsDestroyed() {
-  pending_navigation_ = nullptr;
-  UpdateReadiness(Readiness::kNotReady);
 }
 
 void ThumbnailReadinessTracker::WasDiscarded() {
@@ -89,11 +79,6 @@ void ThumbnailReadinessTracker::WasDiscarded() {
 void ThumbnailReadinessTracker::UpdateReadiness(Readiness readiness) {
   if (readiness == last_readiness_) {
     return;
-  }
-
-  // If the WebContents is closing, it shouldn't be captured.
-  if (web_contents()->IsBeingDestroyed()) {
-    readiness = Readiness::kNotReady;
   }
 
   last_readiness_ = readiness;

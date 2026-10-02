@@ -7,7 +7,6 @@ import("//build/config/chromeos/args.gni")
 if (!is_android) {
   source_set("thumbnails") {
     sources = [
-      "background_thumbnail_capturer.h",
       "background_thumbnail_video_capturer.cc",
       "background_thumbnail_video_capturer.h",
       "thumbnail_capture_driver.cc",
