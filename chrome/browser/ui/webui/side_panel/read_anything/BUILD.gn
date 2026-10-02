@@ -7,11 +7,13 @@ assert(!is_android)
 source_set("read_anything") {
   sources = [
     "chrome_os_extension_wrapper.cc",
+    "read_anything_translate_observer.cc",
     "read_anything_untrusted_page_handler.cc",
     "read_anything_untrusted_ui.cc",
   ]
   public = [
     "chrome_os_extension_wrapper.h",
+    "read_anything_translate_observer.h",
     "read_anything_untrusted_page_handler.h",
     "read_anything_untrusted_ui.h",
   ]
@@ -73,6 +75,29 @@ source_set("read_anything") {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "read_anything_translate_observer_unittest.cc" ]
+  deps = [
+    ":read_anything",
+    "//base/test:test_support",
+    "//chrome/browser/translate",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/translate/content/browser",
+    "//components/translate/content/common",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -93,6 +118,9 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chrome/test/user_education",
     "//components/language_detection/core",
+    "//components/translate/content/browser",
+    "//components/translate/content/common",
+    "//components/translate/core/common",
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//extensions/browser/mime_handler",

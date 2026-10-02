@@ -52,8 +52,11 @@
 #include "components/language_detection/core/constants.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/translate/content/browser/content_translate_driver.h"
+#include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -62,6 +65,8 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/pdf_features.h"
@@ -457,10 +462,16 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
     handler_->OnImageDataRequested(target_tree_id, target_node_id);
   }
 
+  // Makes the tab's translate driver notify its observers that the page's
+  // language has been determined, as it does when the renderer reports it.
   void OnLanguageDetermined(const std::string& code) {
+    mojo::PendingRemote<translate::mojom::TranslateAgent> agent;
+    translate_agent_receivers_.push_back(agent.InitWithNewPipeAndPassReceiver());
     translate::LanguageDetectionDetails details;
     details.adopted_language = code;
-    handler_->OnLanguageDetermined(details);
+    GetChromeTranslateClient()->translate_driver()->RegisterPage(
+        std::move(agent), details,
+        /*page_level_translation_criteria_met=*/false);
   }
 
   void GetVoicePackInfo(const std::string& language) {
@@ -492,10 +503,6 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   }
 
   void OnActiveAXTreeIDChanged() { handler_->OnActiveAXTreeIDChanged(); }
-
-  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) {
-    handler_->OnTranslateDriverDestroyed(driver);
-  }
 
   void SetUpHandler() {
     ASSERT_TRUE(
@@ -538,6 +545,10 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::vector<mojo::PendingReceiver<translate::mojom::TranslateAgent>>
+      translate_agent_receivers_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1733,23 +1744,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
 
   // Send another language code.
-  SetTranslateSourceLanguage(kLang2);
-  OnActiveAXTreeIDChanged();
-
-  EXPECT_CALL(page_, SetLanguageCode(kLang2)).Times(1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerTest,
-    OnActiveAXTreeIDChanged_AfterTranslateDriverDestroyed_StillSendsLanguage) {
-  const char kLang1[] = "pt-br";
-  const char kLang2[] = "es-es";
-  SetTranslateSourceLanguage(kLang1);
-  handler_ = CreateHandler();
-  EXPECT_CALL(page_, SetLanguageCode).Times(1);
-  EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
-
-  OnTranslateDriverDestroyed(GetChromeTranslateClient()->GetTranslateDriver());
   SetTranslateSourceLanguage(kLang2);
   OnActiveAXTreeIDChanged();
 
