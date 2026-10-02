@@ -84,7 +84,9 @@ void SearchSessionMetricsManager::OnLaunch(Location location,
                                            const std::vector<Result>& shown,
                                            const std::u16string& query) {
   if (location == Location::kList) {
-    CHECK(session_active_, base::NotFatalUntil::M160);
+    // TODO: CHECK-exclusion: Convert to a CHECK once we are confident it won't
+    // be triggered.
+    DCHECK(session_active_);
     session_result_ = ash::SearchSessionConclusion::kLaunch;
   }
 }
