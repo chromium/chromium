@@ -1400,7 +1400,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Enables input activation protection. Installs standard policies (window
   // activation, click-spam) if `custom_protector` is nullptr. Otherwise, the
-  // caller must configure the provided protector with the desired policies.
+  // caller must configure the provided protector with the desired policies. A
+  // `custom_protector` may only be provided when first enabling protection.
   //
   // Enabling this also activates occlusion protection for non-located events
   // (e.g. keyboard action keys like Space or Return) in

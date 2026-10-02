@@ -1380,6 +1380,9 @@ void Widget::EnableInputEventActivationProtection(
   }
 
   if (input_event_activation_protection_enabled_) {
+    CHECK(!custom_protector)
+        << "Cannot set a custom InputEventActivationProtector after input "
+           "protection has already been enabled on the Widget.";
     return;
   }
 

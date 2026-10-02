@@ -7044,6 +7044,30 @@ TEST_F(WidgetTest, InputProtectionEventHandlerInterceptsEvents) {
   EXPECT_EQ(click_count, 1);
 }
 
+TEST_F(WidgetTest, EnableInputProtectionIdempotentAndRejectsLateCustom) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnableInputProtection);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  widget->EnableInputEventActivationProtection();
+  InputEventActivationProtector* initial_protector =
+      widget->GetInputEventActivationProtector();
+  ASSERT_NE(initial_protector, nullptr);
+
+  // Calling `EnableInputEventActivationProtection()` again with `nullptr` is a
+  // no-op and preserves the existing protector instance.
+  widget->EnableInputEventActivationProtection();
+  EXPECT_EQ(widget->GetInputEventActivationProtector(), initial_protector);
+
+  // Passing a custom protector after input protection has already been enabled
+  // must fail.
+  EXPECT_CHECK_DEATH(widget->EnableInputEventActivationProtection(
+      std::make_unique<
+          testing::NiceMock<MockInputEventActivationProtector>>()));
+}
+
 namespace {
 
 class ThemeChangeTrackingView : public View {
