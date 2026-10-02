@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -88,7 +89,7 @@ TEST_F(BrowserLayoutCoordinatorTest, BrowserViewControllerAssignment) {
   [coordinator stop];
 }
 
-// Tests that the tab strip view controller is created on start for tablet or
+// Test that the tab strip view controller is created on start for tablet or
 // lazily when traits change to regular size class on phone, and updates
 // BrowserLayoutState.tabStripVisible.
 TEST_F(BrowserLayoutCoordinatorTest, TabStripVisibility) {
@@ -96,7 +97,7 @@ TEST_F(BrowserLayoutCoordinatorTest, TabStripVisibility) {
       [[BrowserLayoutCoordinator alloc] initWithBrowser:browser_.get()];
   [coordinator start];
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (CanShowTabStrip(coordinator.viewController)) {
     EXPECT_NE(coordinator.viewController.tabStripViewController, nil);
     EXPECT_TRUE(browser_->GetBrowserLayoutState().tabStripVisible);
   } else {
@@ -110,6 +111,32 @@ TEST_F(BrowserLayoutCoordinatorTest, TabStripVisibility) {
     EXPECT_NE(coordinator.viewController.tabStripViewController, nil);
     EXPECT_TRUE(browser_->GetBrowserLayoutState().tabStripVisible);
   }
+
+  [coordinator stop];
+}
+
+// Test that when there is no safe area top inset (e.g. on Duo devices on iOS
+// 27.0) and the tab strip is showing, the tab strip top margin is at least
+// 16.0pt and the browser view controller's top toolbar inset accounts for it.
+TEST_F(BrowserLayoutCoordinatorTest, TabStripTopMarginWithoutSafeArea) {
+  BrowserLayoutCoordinator* coordinator =
+      [[BrowserLayoutCoordinator alloc] initWithBrowser:browser_.get()];
+  [coordinator start];
+
+  FakeBrowserViewController* bvc = [[FakeBrowserViewController alloc] init];
+  coordinator.viewController.browserViewController = bvc;
+
+  coordinator.viewController.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  coordinator.viewController.traitOverrides.verticalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [coordinator.viewController updateTraitsIfNeeded];
+
+  ASSERT_NE(coordinator.viewController.tabStripViewController, nil);
+  EXPECT_EQ(
+      coordinator.viewController.tabStripViewController.view.frame.origin.y,
+      16.0);
+  EXPECT_EQ(bvc.topToolbarInset, 60.0);
 
   [coordinator stop];
 }
