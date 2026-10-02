@@ -30,7 +30,6 @@
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/update_client/update_client_errors.h"
-#include "crypto/sha2.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"

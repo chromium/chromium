@@ -39,7 +39,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace component_updater {
 
@@ -117,13 +117,13 @@ CrOSComponentInstallerPolicy::CrOSComponentInstallerPolicy(
     const ComponentConfig& config,
     CrOSComponentInstaller* cros_component_installer)
     : cros_component_installer_(cros_component_installer), name_(config.name) {
-  if (strlen(config.sha2hash) != crypto::kSHA256Length * 2) {
+  if (strlen(config.sha2hash) != crypto::hash::kSha256Size * 2) {
     return;
   }
 
   bool converted = base::HexStringToBytes(config.sha2hash, &sha2_hash_);
   DCHECK(converted);
-  DCHECK_EQ(crypto::kSHA256Length, sha2_hash_.size());
+  DCHECK_EQ(crypto::hash::kSha256Size, sha2_hash_.size());
 }
 
 CrOSComponentInstallerPolicy::~CrOSComponentInstallerPolicy() = default;

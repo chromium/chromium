@@ -47,7 +47,7 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace component_updater {
 
@@ -79,7 +79,7 @@ constexpr uint8_t kLegacyBaseModelPublicKeySHA256[32] = {
     0x4a, 0x80, 0xf5, 0x52, 0x90, 0x74, 0xea, 0x87, 0x3a, 0xf9, 0x91,
     0x00, 0x26, 0x43, 0x86, 0x03, 0x36, 0xa6, 0x38, 0x86, 0x63};
 static_assert(std::size(kLegacyBaseModelPublicKeySHA256) ==
-              crypto::kSHA256Length);
+              crypto::hash::kSha256Size);
 
 constexpr base::FilePath::CharType kManifestModelDirName[] =
     FILE_PATH_LITERAL("OptGuideManifestModel");
@@ -93,7 +93,7 @@ constexpr uint8_t kManifestPublicKeySHA256[32] = {
     0x24, 0xe5, 0x03, 0x34, 0x54, 0x52, 0x11, 0xb6, 0x26, 0xd8, 0x1d,
     0xed, 0x6b, 0x22, 0x15, 0x90, 0x9a, 0x44, 0xf0, 0x88, 0xdc, 0x19,
     0xfa, 0x5d, 0xd4, 0x55, 0xf7, 0x95, 0x88, 0xff, 0xfd, 0x8a};
-static_assert(std::size(kManifestPublicKeySHA256) == crypto::kSHA256Length);
+static_assert(std::size(kManifestPublicKeySHA256) == crypto::hash::kSha256Size);
 
 BASE_FEATURE(kModelManifestChannelFeature,
              "ModelManifestChannel",

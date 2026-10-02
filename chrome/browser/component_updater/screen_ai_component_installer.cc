@@ -21,7 +21,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 
 namespace {
@@ -35,7 +35,7 @@ constexpr uint8_t kScreenAIPublicKeySHA256[32] = {
     0x77, 0xab, 0x55, 0x0d, 0x0e, 0x5a, 0xed, 0x04, 0x7b, 0x1e, 0x16,
     0x86, 0x7c, 0xf0, 0x42, 0x71, 0x85, 0xe4, 0x31, 0x2d, 0xc5};
 
-static_assert(std::size(kScreenAIPublicKeySHA256) == crypto::kSHA256Length);
+static_assert(std::size(kScreenAIPublicKeySHA256) == crypto::hash::kSha256Size);
 
 constexpr char kScreenAIManifestName[] = "ScreenAI Library";
 

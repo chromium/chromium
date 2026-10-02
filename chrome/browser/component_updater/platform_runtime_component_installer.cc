@@ -34,7 +34,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/request_header_integrity/platform_runtime_host.h"  // nogncheck
@@ -73,7 +73,7 @@ constexpr uint8_t kPlatformRuntimePublicKeySHA256[32] = {
     0x42, 0xd1, 0xfe, 0xdf, 0xd0, 0x28, 0x86, 0x10, 0xef, 0xf0};
 
 static_assert(std::size(kPlatformRuntimePublicKeySHA256) ==
-              crypto::kSHA256Length);
+              crypto::hash::kSha256Size);
 constexpr char kPlatformRuntimeManifestName[] = "Platform Runtime";
 constexpr base::TimeDelta kPlatformRuntimeStalenessThreshold = base::Days(7);
 
