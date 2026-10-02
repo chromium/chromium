@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -602,7 +602,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   // Set poster image to video
-  auto* layout_image = To<LayoutImage>(Video()->GetLayoutObject());
+  auto* layout_video = To<LayoutVideo>(Video()->GetLayoutObject());
   const char kPosterUrl[] = "http://example.com/foo.jpg";
   url_test_helpers::RegisterMockedErrorURLLoad(
       url_test_helpers::ToKURL(kPosterUrl));
@@ -610,7 +610,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   Video()->setAttribute(html_names::kStyleAttr, AtomicString("object-fit: none;"
                                                              "height: 150px;"
                                                              "width: 150px;"));
-  layout_image->ImageResource()->SetImageResource(image_content);
+  layout_video->ImageResource()->SetImageResource(image_content);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())

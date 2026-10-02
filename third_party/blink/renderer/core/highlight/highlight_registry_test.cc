@@ -545,11 +545,11 @@ TEST_F(HighlightRegistryTest, TracksReplacedWithPlumbingChild) {
 }
 
 TEST_F(HighlightRegistryTest, SkipsVideoWithUAShadowChildren) {
-  // A <video> is a replaced element (LayoutVideo, a LayoutImage subclass),
-  // but its user-agent shadow tree (the media-controls container) produces
-  // child layout objects, so its layout object is not a selection leaf and
-  // must not be tracked -- the same painted-children rule that excludes a
-  // <canvas> with fallback content. This documents that the gate is not
+  // A <video> is a replaced element, but its user-agent shadow tree (the
+  // media-controls container) produces child layout objects, so its layout
+  // object is not a selection leaf and must not be tracked -- the same
+  // painted-children rule that excludes a <canvas> with fallback content.
+  // This documents that the gate is not
   // "<img>-only": it turns on IsLayoutReplaced() + CanBeSelectionLeaf() for
   // any element, and <img> in the positive tests is representative of that
   // contract rather than a special case.

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -28,10 +28,10 @@ class LayoutVideoTest : public RenderingTest {
 
     // Set image to video
     auto* video = To<HTMLVideoElement>(GetElementById(id));
-    auto* layout_image = To<LayoutImage>(video->GetLayoutObject());
+    auto* layout_video = To<LayoutVideo>(video->GetLayoutObject());
     video->setAttribute(html_names::kPosterAttr,
                         AtomicString("http://example.com/foo.jpg"));
-    layout_image->ImageResource()->SetImageResource(image_content);
+    layout_video->ImageResource()->SetImageResource(image_content);
   }
 };
 
