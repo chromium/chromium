@@ -12,7 +12,6 @@
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
 
 namespace performance_manager {
 
@@ -39,8 +38,7 @@ std::string GetInputScenarioSuffix(InputScenario scenario) {
 // InputObserver receives input events from content::RenderWidgetHost and
 // determines the current InputScenario for a frame.
 class FrameInputStateDecorator::InputObserver
-    : public content::RenderWidgetHost::InputEventObserver,
-      public content::RenderWidgetHostObserver {
+    : public content::RenderWidgetHost::InputEventObserver {
  public:
   InputObserver(FrameInputStateDecorator* decorator,
                 const FrameNode* frame_node,
@@ -51,9 +49,6 @@ class FrameInputStateDecorator::InputObserver
   void OnInputEvent(const content::RenderWidgetHost& rwh,
                     const blink::WebInputEvent& event,
                     input::InputEventSource source) override;
-
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostDestroyed(content::RenderWidgetHost* rwh) override;
 
  private:
   void OnInputInactiveTimer();
@@ -72,9 +67,6 @@ class FrameInputStateDecorator::InputObserver
   base::ScopedObservation<content::RenderWidgetHost,
                           content::RenderWidgetHost::InputEventObserver>
       input_observation_{this};
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      rwh_observation_{this};
 };
 
 FrameInputStateDecorator::Data::Data(const FrameNode* frame_node) {
@@ -153,13 +145,12 @@ FrameInputStateDecorator::InputObserver::InputObserver(
     return;
   }
 
-  // Observes the RenderWidgetHost and its input events.
+  // Observes the RenderWidgetHost's input events.
   content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
   // `rfh` should not be detached, so it should have a `RenderWidgetHost`.
   CHECK(rwh, base::NotFatalUntil::M136);
   if (rwh) {
     input_observation_.Observe(rwh);
-    rwh_observation_.Observe(rwh);
   }
 }
 
@@ -210,18 +201,6 @@ void FrameInputStateDecorator::InputObserver::OnInputEvent(
       // We intentionally ignore other input types.
       return;
   }
-}
-
-void FrameInputStateDecorator::InputObserver::RenderWidgetHostDestroyed(
-    content::RenderWidgetHost* rwh) {
-  // Stops observing the RenderWidgetHost if it's destroyed before the
-  // InputObserver. If the InputObserver is destroyed first, the destructor
-  // automatically deletes the ScopedObservations and stops observing.
-  input_observation_.Reset();
-  rwh_observation_.Reset();
-  // TODO(crbug.com/365586676): This is not expected to happen in practice.
-  // Remove this function if no reports are received.
-  CHECK(false, base::NotFatalUntil::M136);
 }
 
 void FrameInputStateDecorator::InputObserver::OnInputInactiveTimer() {
