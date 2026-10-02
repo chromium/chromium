@@ -45,7 +45,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
                      &signin::PreferredDataTypeInfo::data_type);
 
   return signin::Java_AccountPreviewPreference_Constructor(
-      env, preference.gaia_id, data_types, preference.other_device_form_factor);
+      env, preference.gaia_id, data_types,
+      preference.other_device_info.form_factor);
 }
 
 }  // namespace jni_zero

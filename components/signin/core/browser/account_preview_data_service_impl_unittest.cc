@@ -1929,11 +1929,12 @@ TEST_F(AccountPreviewDataServiceTest,
           testing::Field(&AccountPreviewPreference::gaia_id,
                          account.GetGaiaId()),
           testing::Field(
-              &AccountPreviewPreference::other_device_form_factor,
-              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET),
-          testing::Field(
-              &AccountPreviewPreference::other_device_enabled_data_types,
-              syncer::DataTypeSet({syncer::BOOKMARKS, syncer::PASSWORDS})))));
+              &AccountPreviewPreference::other_device_info,
+              PreferredDeviceInfo{
+                  .form_factor = sync_pb::
+                      SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
+                  .enabled_data_types = {syncer::BOOKMARKS,
+                                         syncer::PASSWORDS}}))));
 }
 
 TEST_F(AccountPreviewDataServiceTest,

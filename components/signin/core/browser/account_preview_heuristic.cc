@@ -167,7 +167,8 @@ std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
   return result;
 }
 
-const DevicePreview* GetPreferredOtherDevice(const AccountPreviewData& data) {
+PreferredDeviceInfo ExtractPreferredOtherDevice(
+    const AccountPreviewData& data) {
   const DevicePreview* most_recent_device = nullptr;
   for (const auto& device : data.devices) {
     if (device.form_factor ==
@@ -180,7 +181,14 @@ const DevicePreview* GetPreferredOtherDevice(const AccountPreviewData& data) {
     }
   }
 
-  return most_recent_device;
+  if (!most_recent_device) {
+    return {};
+  }
+
+  return PreferredDeviceInfo{
+      .form_factor = most_recent_device->form_factor,
+      .enabled_data_types = most_recent_device->interested_data_types,
+  };
 }
 
 // This function is needed as `SyncDataQuartileToValue()` should only be used
@@ -298,11 +306,7 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
   AccountPreviewDataService::AccountPreviewPreference preference;
   preference.gaia_id = gaia_id;
   preference.preferred_data_types = ExtractPreferredDataTypes(data);
-  if (const DevicePreview* preferred_device = GetPreferredOtherDevice(data)) {
-    preference.other_device_form_factor = preferred_device->form_factor;
-    preference.other_device_enabled_data_types =
-        preferred_device->interested_data_types;
-  }
+  preference.other_device_info = ExtractPreferredOtherDevice(data);
   return preference;
 }
 

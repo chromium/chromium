@@ -2597,8 +2597,9 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.preferred_data_types.push_back(
       {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE};
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       GetInterceptionType(),
@@ -2764,14 +2765,16 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   signin::AccountPreviewDataService::AccountPreviewPreference pref_a;
   pref_a.preferred_data_types.push_back(
       {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
-  pref_a.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  pref_a.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE};
 
   signin::AccountPreviewDataService::AccountPreviewPreference pref_b;
   pref_b.preferred_data_types.push_back(
       {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
-  pref_b.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+  pref_b.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP};
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters_b(
       GetInterceptionType(),

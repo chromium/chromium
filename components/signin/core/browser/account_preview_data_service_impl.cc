@@ -727,7 +727,7 @@ AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
       dict.FindInt(kPreferredAccountDictOtherDeviceFormFactorKey);
   if (form_factor_int.has_value() &&
       sync_pb::SyncEnums::DeviceFormFactor_IsValid(*form_factor_int)) {
-    preference.other_device_form_factor =
+    preference.other_device_info.form_factor =
         static_cast<sync_pb::SyncEnums_DeviceFormFactor>(*form_factor_int);
   }
 
@@ -738,7 +738,7 @@ AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
         syncer::DataType data_type =
             syncer::GetDataTypeFromStableIdentifier(*dt_int);
         if (syncer::IsRealDataType(data_type)) {
-          preference.other_device_enabled_data_types.Put(data_type);
+          preference.other_device_info.enabled_data_types.Put(data_type);
         }
       }
     }
@@ -767,10 +767,10 @@ void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
   dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,
-           static_cast<int>(preference->other_device_form_factor));
+           static_cast<int>(preference->other_device_info.form_factor));
   base::ListValue other_device_data_types_list;
   for (syncer::DataType data_type :
-       preference->other_device_enabled_data_types) {
+       preference->other_device_info.enabled_data_types) {
     other_device_data_types_list.Append(
         syncer::DataTypeToStableIdentifier(data_type));
   }

@@ -766,9 +766,12 @@ class ProfileMenuViewPixelTest
               {
                   {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3},
               },
-          .other_device_form_factor =
-              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
-          .other_device_enabled_data_types = {syncer::PASSWORDS},
+          .other_device_info =
+              signin::PreferredDeviceInfo{
+                  .form_factor = sync_pb::
+                      SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+                  .enabled_data_types = {syncer::PASSWORDS},
+              },
       };
       auto* test_service = static_cast<signin::TestAccountPreviewDataService*>(
           AccountPreviewDataServiceFactory::GetForProfile(

@@ -49,6 +49,14 @@ struct PreferredDataTypeInfo {
   bool operator==(const PreferredDataTypeInfo&) const = default;
 };
 
+struct PreferredDeviceInfo {
+  sync_pb::SyncEnums_DeviceFormFactor form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+  syncer::DataTypeSet enabled_data_types;
+
+  bool operator==(const PreferredDeviceInfo&) const = default;
+};
+
 // A keyed service that provides preview data and usage metrics for the
 // signed-in accounts in the profile.
 class AccountPreviewDataService : public KeyedService {
@@ -56,9 +64,8 @@ class AccountPreviewDataService : public KeyedService {
   struct AccountPreviewPreference {
     GaiaId gaia_id;
     std::vector<PreferredDataTypeInfo> preferred_data_types;
-    sync_pb::SyncEnums_DeviceFormFactor other_device_form_factor =
-        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
-    syncer::DataTypeSet other_device_enabled_data_types;
+    // Most recently used other device where `gaia_id` is signed in.
+    PreferredDeviceInfo other_device_info;
 
     bool operator==(const AccountPreviewPreference&) const = default;
   };

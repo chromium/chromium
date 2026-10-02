@@ -156,10 +156,7 @@ TEST_F(AccountPreviewHeuristicTest,
   auto pref_no_devices =
       ComputeAccountPreviewPreference(GaiaId("user1"), no_devices);
   ASSERT_TRUE(pref_no_devices.has_value());
-  EXPECT_EQ(pref_no_devices->other_device_form_factor,
-            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED);
-
-  EXPECT_TRUE(pref_no_devices->other_device_enabled_data_types.empty());
+  EXPECT_EQ(pref_no_devices->other_device_info, PreferredDeviceInfo());
 
   base::Time now = base::Time::Now();
   AccountPreviewData data_with_devices = CreatePreviewData(
@@ -175,10 +172,12 @@ TEST_F(AccountPreviewHeuristicTest,
   auto pref_with_devices =
       ComputeAccountPreviewPreference(GaiaId("user2"), data_with_devices);
   ASSERT_TRUE(pref_with_devices.has_value());
-  EXPECT_EQ(pref_with_devices->other_device_form_factor,
-            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
-  EXPECT_EQ(pref_with_devices->other_device_enabled_data_types,
-            syncer::DataTypeSet({syncer::PASSWORDS, syncer::SESSIONS}));
+  EXPECT_EQ(
+      pref_with_devices->other_device_info,
+      (PreferredDeviceInfo{
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+          .enabled_data_types = {syncer::PASSWORDS, syncer::SESSIONS}}));
 }
 
 TEST_F(AccountPreviewHeuristicTest,
@@ -235,8 +234,11 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
               ElementsAre(PreferredDataTypeInfo{
                   .data_type = syncer::PASSWORDS,
                   .quartile = SyncDataQuartile::kMedianToQ3}));
-  EXPECT_EQ(pref->other_device_form_factor,
-            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
+  EXPECT_EQ(
+      pref->other_device_info,
+      (PreferredDeviceInfo{
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}));
 }
 
 TEST_F(AccountPreviewHeuristicTest,
@@ -673,8 +675,11 @@ TEST_F(AccountPreviewHeuristicTest,
   auto pref = ComputePreferredAccountForPromo({acc1, acc2, acc3}).preference;
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->gaia_id, GaiaId("acc3"));
-  EXPECT_EQ(pref->other_device_form_factor,
-            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET);
+  EXPECT_EQ(
+      pref->other_device_info,
+      (PreferredDeviceInfo{
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET}));
 
   // Tie between acc1 and acc2 preserves the earlier account (acc1).
   pref = ComputePreferredAccountForPromo({acc1, acc2}).preference;

@@ -353,9 +353,11 @@ TEST_P(DiceWebSigninInterceptHandlerTest, BodyTextWithAccountPreviewData) {
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.preferred_data_types.push_back(
       {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
-  pref.other_device_enabled_data_types.Put(syncer::PASSWORDS);
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .enabled_data_types = {syncer::PASSWORDS},
+  };
 
   base::DictValue parameters =
       GetInterceptionParameters(pref, "Primary Profile 1");
@@ -469,9 +471,11 @@ TEST_P(DiceWebSigninInterceptHandlerChromeSigninInterceptionTest,
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.preferred_data_types.push_back(
       {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3});
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
-  pref.other_device_enabled_data_types.Put(syncer::PASSWORDS);
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .enabled_data_types = {syncer::PASSWORDS},
+  };
 
   base::DictValue parameters =
       GetInterceptionParameters(pref, "Primary Profile 1");

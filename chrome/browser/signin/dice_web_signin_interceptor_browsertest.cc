@@ -1128,8 +1128,9 @@ IN_PROC_BROWSER_TEST_F(
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.preferred_data_types.push_back(
       {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE};
   GetTestAccountPreviewDataService(GetProfile())->SetPreviewPreference(pref);
 
   FakeDiceWebSigninInterceptorDelegate* delegate =
@@ -1161,8 +1162,9 @@ IN_PROC_BROWSER_TEST_F(
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
   pref.preferred_data_types.push_back(
       {syncer::BOOKMARKS, signin::SyncDataQuartile::kAboveQ3});
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE};
   GetTestAccountPreviewDataService(GetProfile())->SetPreviewPreference(pref);
 
   // Add a tab.

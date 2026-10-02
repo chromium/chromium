@@ -200,9 +200,11 @@ TEST_F(AccountAwareSignInPromoDelegateTest,
        GetPromoDataTitleWithOtherDeviceFormFactor) {
   SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
   auto pref = *preview_service_.GetPreferredAccountForPromo();
-  pref.other_device_form_factor =
-      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
-  pref.other_device_enabled_data_types.Put(syncer::BOOKMARKS);
+  pref.other_device_info = signin::PreferredDeviceInfo{
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .enabled_data_types = {syncer::BOOKMARKS},
+  };
   preview_service_.SetPreferredAccountForPromo(pref);
 
   auto delegate = CreateDelegate();
