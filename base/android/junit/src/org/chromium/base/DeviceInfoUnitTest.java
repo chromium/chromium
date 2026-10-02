@@ -186,20 +186,6 @@ public class DeviceInfoUnitTest {
         assertFalse(DeviceInfo.isFoldable());
     }
 
-    @Test
-    public void testInstanceIsCachedAndResetForTesting() {
-        ShadowPackageManager pm =
-                shadowOf(ContextUtils.getApplicationContext().getPackageManager());
-        assertFalse(DeviceInfo.isAutomotive());
-
-        pm.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, true);
-        // Cached instance should still return false until resetInstanceForTesting() is called.
-        assertFalse(DeviceInfo.isAutomotive());
-
-        DeviceInfo.resetInstanceForTesting();
-        assertTrue(DeviceInfo.isAutomotive());
-    }
-
     private static void setHasHingeAngleFeature(boolean hasFeature) {
         Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager())
                 .setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, hasFeature);

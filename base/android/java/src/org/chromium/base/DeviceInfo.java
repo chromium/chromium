@@ -220,15 +220,10 @@ public final class DeviceInfo {
 
     public static void setIsAutomotiveForTesting(boolean isAutomotive) {
         sIsAutomotiveForTesting = isAutomotive;
-        ResettersForTesting.register(
-                () -> {
-                    sIsAutomotiveForTesting = null;
-                    resetInstance();
-                });
+        ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
         if (isAutomotive) {
             setExclusiveFormFactorForTesting(FormFactor.AUTOMOTIVE);
         }
-        resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -236,15 +231,10 @@ public final class DeviceInfo {
 
     public static void setIsTVForTesting(boolean isTV) {
         sIsTVForTesting = isTV;
-        ResettersForTesting.register(
-                () -> {
-                    sIsTVForTesting = null;
-                    resetInstance();
-                });
+        ResettersForTesting.register(() -> sIsTVForTesting = null);
         if (isTV) {
             setExclusiveFormFactorForTesting(FormFactor.TV);
         }
-        resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -344,15 +334,10 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void setIsXrForTesting(boolean value) {
         sIsXrForTesting = value;
-        ResettersForTesting.register(
-                () -> {
-                    sIsXrForTesting = null;
-                    resetInstance();
-                });
+        ResettersForTesting.register(() -> sIsXrForTesting = null);
         if (value) {
             setExclusiveFormFactorForTesting(FormFactor.XR);
         }
-        resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -361,31 +346,20 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void resetIsXrForTesting() {
         sIsXrForTesting = null;
-        resetInstance();
     }
 
     public static void setIsRetailDemoModeForTesting(boolean value) {
         sIsRetailDemoModeForTesting = value;
-        ResettersForTesting.register(
-                () -> {
-                    sIsRetailDemoModeForTesting = null;
-                    resetInstance();
-                });
-        resetInstance();
+        ResettersForTesting.register(() -> sIsRetailDemoModeForTesting = null);
     }
 
     @CalledByNativeForTesting
     public static void setIsDesktopForTesting(boolean isDesktop) {
         sIsDesktopForTesting = isDesktop;
-        ResettersForTesting.register(
-                () -> {
-                    sIsDesktopForTesting = null;
-                    resetInstance();
-                });
+        ResettersForTesting.register(() -> sIsDesktopForTesting = null);
         if (isDesktop) {
             setExclusiveFormFactorForTesting(FormFactor.DESKTOP);
         }
-        resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -394,7 +368,6 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void resetIsDesktopForTesting() {
         sIsDesktopForTesting = null;
-        resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -403,12 +376,7 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void setIsFoldableForTesting(boolean value) {
         sIsFoldableForTesting = value;
-        ResettersForTesting.register(
-                () -> {
-                    sIsFoldableForTesting = null;
-                    resetInstance();
-                });
-        resetInstance();
+        ResettersForTesting.register(() -> sIsFoldableForTesting = null);
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -417,27 +385,18 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void resetIsFoldableForTesting() {
         sIsFoldableForTesting = null;
-        resetInstance();
-    }
-
-    public static void resetInstanceForTesting() {
-        resetInstance();
-    }
-
-    private static void resetInstance() {
-        synchronized (CREATION_LOCK) {
-            sInstance = null;
-        }
     }
 
     private static DeviceInfo getInstance() {
-        // Tests that mock out things DeviceInfo is based on must call resetInstanceForTesting()
-        // so that cached values are invalidated. The *ForTesting setters in this class do this
-        // automatically.
+        // Some tests mock out things DeviceInfo is based on, so disable caching in tests to ensure
+        // such mocking is not defeated by caching.
+        if (BuildConfig.IS_FOR_TEST) {
+            return new DeviceInfo();
+        }
+
         synchronized (CREATION_LOCK) {
             if (sInstance == null) {
                 sInstance = new DeviceInfo();
-                ResettersForTesting.register(DeviceInfo::resetInstance);
             }
             return sInstance;
         }
@@ -605,37 +564,20 @@ public final class DeviceInfo {
     private static void setExclusiveFormFactorForTesting(@FormFactor int activeFormFactor) {
         if (activeFormFactor != FormFactor.TV) {
             sIsTVForTesting = false;
-            ResettersForTesting.register(
-                    () -> {
-                        sIsTVForTesting = null;
-                        resetInstance();
-                    });
+            ResettersForTesting.register(() -> sIsTVForTesting = null);
         }
         if (activeFormFactor != FormFactor.AUTOMOTIVE) {
             sIsAutomotiveForTesting = false;
-            ResettersForTesting.register(
-                    () -> {
-                        sIsAutomotiveForTesting = null;
-                        resetInstance();
-                    });
+            ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
         }
         if (activeFormFactor != FormFactor.DESKTOP) {
             sIsDesktopForTesting = false;
-            ResettersForTesting.register(
-                    () -> {
-                        sIsDesktopForTesting = null;
-                        resetInstance();
-                    });
+            ResettersForTesting.register(() -> sIsDesktopForTesting = null);
         }
         if (activeFormFactor != FormFactor.XR) {
             sIsXrForTesting = false;
-            ResettersForTesting.register(
-                    () -> {
-                        sIsXrForTesting = null;
-                        resetInstance();
-                    });
+            ResettersForTesting.register(() -> sIsXrForTesting = null);
         }
-        resetInstance();
     }
 
     @NativeMethods
