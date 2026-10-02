@@ -14,6 +14,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -27,7 +28,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -36,8 +36,10 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace base {
 
@@ -412,7 +414,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
 
 ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
-    scoped_refptr<SequencedTaskRunner> task_runner,
+    TaskRunnerOrBlockCurrentSequence task_runner,
     std::string_view histogram_suffix)
     : ImportantFileWriter(path,
                           std::move(task_runner),
@@ -421,7 +423,7 @@ ImportantFileWriter::ImportantFileWriter(
 
 ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
-    scoped_refptr<SequencedTaskRunner> task_runner,
+    TaskRunnerOrBlockCurrentSequence task_runner,
     TimeDelta interval,
     std::string_view histogram_suffix)
     : path_(path),
@@ -429,7 +431,13 @@ ImportantFileWriter::ImportantFileWriter(
       commit_interval_(interval),
       histogram_suffix_(histogram_suffix),
       replace_file_callback_(BindRepeating(&ReplaceFile)) {
-  DCHECK(task_runner_);
+  std::visit(absl::Overload{
+                 [](const scoped_refptr<SequencedTaskRunner>& task_runner) {
+                   DCHECK(task_runner);
+                 },
+                 [](BlockCurrentSequenceTag) { AssertBlockingAllowed(); },
+             },
+             task_runner_);
   ImportantFileWriterCleaner::AddDirectory(path.DirName());
 }
 
@@ -464,20 +472,28 @@ void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
     BackgroundDataProducerCallback background_data_producer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnceClosure write_task = BindOnce(&ProduceAndWriteStringToFileAtomically,
-                                    path_, std::move(background_data_producer),
-                                    std::move(before_next_write_callback_),
-                                    std::move(after_next_write_callback_),
-                                    replace_file_callback_, histogram_suffix_);
-  if (!task_runner_->PostTask(
-          FROM_HERE, MakeCriticalClosure("ImportantFileWriter::WriteNow",
-                                         std::move(write_task),
-                                         /*is_immediate=*/true))) {
-    // Posting the task to background message loop is not expected
-    // to fail.
-    NOTREACHED();
-  }
+  OnceClosure write_task =
+      MakeCriticalClosure("ImportantFileWriter::WriteNow",
+                          BindOnce(&ProduceAndWriteStringToFileAtomically,
+                                   path_, std::move(background_data_producer),
+                                   std::move(before_next_write_callback_),
+                                   std::move(after_next_write_callback_),
+                                   replace_file_callback_, histogram_suffix_),
+                          /*is_immediate=*/true);
   ClearPendingWrite();
+
+  std::visit(
+      absl::Overload{
+          [&write_task](const scoped_refptr<SequencedTaskRunner>& task_runner) {
+            // Failing to post highlights an ordering problem between a desired
+            // write and the destination sequence's shutdown.
+            CHECK(task_runner->PostTask(FROM_HERE, std::move(write_task)));
+          },
+          [&write_task](BlockCurrentSequenceTag) {
+            std::move(write_task).Run();
+          },
+      },
+      task_runner_);
 }
 
 void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
@@ -496,6 +512,8 @@ void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
 void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
     BackgroundDataSerializer* serializer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(
+      std::holds_alternative<scoped_refptr<SequencedTaskRunner>>(task_runner_));
 
   DCHECK(serializer);
   serializer_.emplace<raw_ptr<BackgroundDataSerializer>>(serializer);

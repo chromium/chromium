@@ -20,6 +20,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -50,7 +52,9 @@ FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
   // Needed by syncer::LoopbackServer.
   base::ScopedAllowBlockingForTesting allow_blocking;
   loopback_server_ = std::make_unique<syncer::LoopbackServer>(
-      loopback_server_dir.AppendASCII("profile.pb"));
+      loopback_server_dir.AppendASCII("profile.pb"),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   loopback_server_->set_observer_for_tests(this);
 
   SetUpdateMode(syncer::AUTOFILL_VALUABLE, UpdateMode::kFull);

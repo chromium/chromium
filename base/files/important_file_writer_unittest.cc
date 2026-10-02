@@ -797,4 +797,58 @@ TEST_F(ImportantFileWriterTest,
       "ImportantFile.MissingFileRestoreResult.All", 2, 1);
 }
 
+TEST_F(ImportantFileWriterTest, WriteNow_BlockCurrentSequence) {
+  ImportantFileWriter writer(file_, ImportantFileWriter::kBlockCurrentSequence);
+  EXPECT_FALSE(PathExists(writer.path()));
+  write_callback_observer_.ObserveNextWriteCallbacks(&writer);
+
+  writer.WriteNow("foo");
+
+  // Without pumping any tasks, the write and callbacks must have already
+  // completed synchronously.
+  EXPECT_EQ(CALLED_WITH_SUCCESS,
+            write_callback_observer_.GetAndResetObservationState());
+  ASSERT_TRUE(PathExists(writer.path()));
+  EXPECT_EQ("foo", GetFileContent(writer.path()));
+}
+
+TEST_F(ImportantFileWriterTest, DoScheduledWrite_BlockCurrentSequence) {
+  MockOneShotTimer timer;
+  ImportantFileWriter writer(file_, ImportantFileWriter::kBlockCurrentSequence);
+  writer.SetTimerForTesting(&timer);
+  EXPECT_FALSE(writer.HasPendingWrite());
+  DataSerializer serializer("foo");
+  writer.ScheduleWrite(&serializer);
+  EXPECT_TRUE(writer.HasPendingWrite());
+  write_callback_observer_.ObserveNextWriteCallbacks(&writer);
+
+  writer.DoScheduledWrite();
+
+  // Without pumping any tasks, the write and callbacks must have already
+  // completed synchronously.
+  EXPECT_FALSE(writer.HasPendingWrite());
+  EXPECT_EQ(CALLED_WITH_SUCCESS,
+            write_callback_observer_.GetAndResetObservationState());
+  ASSERT_TRUE(PathExists(writer.path()));
+  EXPECT_EQ("foo", GetFileContent(writer.path()));
+}
+
+TEST_F(ImportantFileWriterTest, ScheduleWrite_BlockCurrentSequence) {
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
+  MockOneShotTimer timer;
+  ImportantFileWriter writer(file_, ImportantFileWriter::kBlockCurrentSequence,
+                             kCommitInterval);
+  writer.SetTimerForTesting(&timer);
+  DataSerializer serializer("foo");
+  writer.ScheduleWrite(&serializer);
+  ASSERT_TRUE(timer.IsRunning());
+
+  timer.Fire();
+
+  // Firing the timer executes DoScheduledWrite(), which writes synchronously.
+  EXPECT_FALSE(writer.HasPendingWrite());
+  ASSERT_TRUE(PathExists(writer.path()));
+  EXPECT_EQ("foo", GetFileContent(writer.path()));
+}
+
 }  // namespace base

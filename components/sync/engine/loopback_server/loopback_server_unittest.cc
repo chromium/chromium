@@ -281,7 +281,6 @@ TEST_F(LoopbackServerTest, LoadSavedState) {
   ASSERT_TRUE(expected_response.has_store_birthday());
 
   lcm_.reset();
-  task_environment_.RunUntilIdle();
 
   LoopbackConnectionManager second_user(persistent_file_);
 

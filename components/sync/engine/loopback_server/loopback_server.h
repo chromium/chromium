@@ -54,7 +54,9 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
         const sync_pb::DeletionOrigin& deletion_origin) = 0;
   };
 
-  explicit LoopbackServer(const base::FilePath& persistent_file);
+  LoopbackServer(const base::FilePath& persistent_file,
+                 base::ImportantFileWriter::TaskRunnerOrBlockCurrentSequence
+                     writer_task_runner);
   ~LoopbackServer() override;
 
   // Handles a /command POST (with the given `message`) to the server.

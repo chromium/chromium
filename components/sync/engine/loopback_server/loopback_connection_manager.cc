@@ -11,7 +11,8 @@ namespace syncer {
 
 LoopbackConnectionManager::LoopbackConnectionManager(
     const base::FilePath& persistent_file)
-    : loopback_server_(persistent_file) {}
+    : loopback_server_(persistent_file,
+                       base::ImportantFileWriter::kBlockCurrentSequence) {}
 
 LoopbackConnectionManager::~LoopbackConnectionManager() = default;
 

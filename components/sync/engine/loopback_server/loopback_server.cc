@@ -23,9 +23,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
@@ -266,13 +263,14 @@ bool SortByVersion(const LoopbackServerEntity* lhs,
 
 }  // namespace
 
-LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
+LoopbackServer::LoopbackServer(
+    const base::FilePath& persistent_file,
+    base::ImportantFileWriter::TaskRunnerOrBlockCurrentSequence
+        writer_task_runner)
     : persistent_file_(persistent_file),
-      writer_(
-          persistent_file_,
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          kHistogramSuffix) {
+      writer_(persistent_file_,
+              std::move(writer_task_runner),
+              kHistogramSuffix) {
   DCHECK(!persistent_file_.empty());
   Init();
 }
