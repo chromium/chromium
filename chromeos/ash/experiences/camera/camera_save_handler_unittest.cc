@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -92,7 +93,7 @@ constexpr char kMyFilesFolder[] = "/home/user/abcdef/MyFiles";
 constexpr char kOneDriveUploadFolder[] =
     "/media/fuse/fusebox/onedrive_root/Camera";
 constexpr char kOneDriveUploadedPath[] = "/uploaded/photo.jpg";
-constexpr std::string kFileContents = "0123456789";  // 10 bytes
+constexpr std::string_view kFileContents = "0123456789";  // 10 bytes
 
 }  // namespace
 

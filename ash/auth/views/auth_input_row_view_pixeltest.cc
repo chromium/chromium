@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/test_support/mock_auth_input_row_view_observer.h"
@@ -27,7 +28,7 @@ namespace ash {
 
 namespace {
 
-constexpr std::u16string kPassword = u"password";
+constexpr std::u16string_view kPassword = u"password";
 
 class InputRowWithPasswordPixelTest : public AshTestBase {
  public:

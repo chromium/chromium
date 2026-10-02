@@ -55,7 +55,7 @@ using ::ui::CompositionText;
 using ::ui::FakeTextInputClient;
 using ::ui::TextInputClient;
 
-const std::u16string kSampleText = u"あいうえお";
+constexpr char16_t kSampleText[] = u"あいうえお";
 
 using KeyEventCallback = TextInputMethod::KeyEventDoneCallback;
 

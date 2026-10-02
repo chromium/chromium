@@ -45,6 +45,7 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
 
    private:
     const raw_ptr<MockInputMethodManager> manager_;
+    const InputMethodDescriptor default_input_method_;
   };
 
   MockInputMethodManagerImpl();

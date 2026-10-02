@@ -337,9 +337,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   // Returns the corresponding ShillClientHelper for the profile.
   ShillClientHelper* GetHelper(const dbus::ObjectPath& service_path) {
-    static const std::string kServicePrefix("/service/");
-    if (service_path.value().compare(0, kServicePrefix.size(),
-                                     kServicePrefix) != 0) {
+    if (!service_path.value().starts_with("/service/")) {
       LOG(ERROR) << "Invalid service path: " << service_path.value();
       return nullptr;
     }

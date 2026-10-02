@@ -21,7 +21,7 @@ namespace display::test {
 namespace {
 constexpr int64_t kDisplayId = 123;
 const DisplayMode kDisplayMode({1366, 768}, false, 60.0f);
-const std::string kFakeKey285 =
+constexpr char kFakeKey285[] =
     "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
     "wxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr"
     "stuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn"

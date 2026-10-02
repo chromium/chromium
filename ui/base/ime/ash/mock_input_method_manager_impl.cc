@@ -15,7 +15,9 @@ namespace ash {
 namespace input_method {
 
 MockInputMethodManagerImpl::State::State(MockInputMethodManagerImpl* manager)
-    : manager_(manager) {
+    : manager_(manager),
+      default_input_method_(
+          InputMethodUtil::GetFallbackInputMethodDescriptor()) {
   enabled_input_method_ids.emplace_back("xkb:us::eng");
 }
 
@@ -41,11 +43,9 @@ MockInputMethodManagerImpl::State::GetEnabledInputMethods() const {
 const InputMethodDescriptor*
 MockInputMethodManagerImpl::State::GetInputMethodFromId(
     const std::string& input_method_id) const {
-  static const InputMethodDescriptor defaultInputMethod =
-      InputMethodUtil::GetFallbackInputMethodDescriptor();
   for (const auto& enabled_input_method_id : enabled_input_method_ids) {
     if (input_method_id == enabled_input_method_id) {
-      return &defaultInputMethod;
+      return &default_input_method_;
     }
   }
   return nullptr;

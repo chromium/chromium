@@ -26,9 +26,8 @@
 using content::WebUIMessageHandler;
 
 namespace {
-const GURL& DummyUrl() {
-  static GURL url(content::GetWebUIURLString("DummyURL"));
-  return url;
+GURL DummyUrl() {
+  return GURL(content::GetWebUIURLString("DummyURL"));
 }
 }  // namespace
 
