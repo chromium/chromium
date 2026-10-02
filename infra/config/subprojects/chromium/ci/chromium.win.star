@@ -497,6 +497,10 @@ ci.builder(
         short_name = "w10",
     ),
     cq_mirrors_console_view = "mirrors",
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
+    },
 )
 
 ci.thin_tester(
