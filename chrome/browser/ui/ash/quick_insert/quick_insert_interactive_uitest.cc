@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoticon) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchGifs) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, FeatureGifs) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       WaitForShow(ash::kQuickInsertGifElementId),
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, ToggleGifs) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFile) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, LocalFilePreview) {
   RunTestSequence(
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
+                [this, &quick_insert_search_field](ui::TrackedElement* el) {
                   quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
       ObserveState(kSearchFieldFocusedState,

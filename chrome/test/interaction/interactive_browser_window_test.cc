@@ -94,16 +94,20 @@ gfx::Rect GetWebElementIntersection(
 
 // Returns the location of Web UI element `where`, relative to the tracked
 // WebContents `el` it resides in. The web element must reside (at least
-// partially) within the web container's bounds and be visible on screen, or
-// this will CHECK() fail.
+// partially) within the web container's bounds and be visible on screen.
 gfx::Rect GetRegionInWebContents(
+    ui::InteractionSequence* seq,
     ui::TrackedElement* el,
     const WebContentsInteractionTestUtil::DeepQuery& where) {
   gfx::Rect intersect_bounds = GetWebElementIntersection(el, where);
 
   // Compute the sub-region relative to the webcontents.
   auto* const contents = el->AsA<TrackedElementWebContents>();
-  CHECK(contents) << "Containing element is not a WebContents";
+  if (!contents) {
+    LOG(ERROR) << "Element " << *el << " is not a WebContents";
+    seq->FailForTesting();
+    return gfx::Rect();
+  }
   const gfx::Rect container_bounds = contents->GetScreenBounds();
   intersect_bounds.Offset(-container_bounds.OffsetFromOrigin());
   return intersect_bounds;
@@ -160,7 +164,7 @@ InteractiveBrowserWindowTestApi::ScreenshotWebUi(
          std::string baseline_cl, const DeepQuery& where,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         // Locate the element within the bounds of the WebContents.
-        const auto window_rect = GetRegionInWebContents(el, where);
+        const auto window_rect = GetRegionInWebContents(seq, el, where);
         ScreenshotOptions options;
         options.region = window_rect;
         options.focus = ScreenshotFocusMode::kLeaveFocusWhereItIs;

@@ -1193,7 +1193,7 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
         RunSubsequence(
             Steps(
                 // Programmatically generate a list of mouse movement steps.
-                []() {
+                [this]() {
                   constexpr int kMouseMovements = 20;
                   constexpr base::TimeDelta kMovementDelay =
                       base::Milliseconds(250);

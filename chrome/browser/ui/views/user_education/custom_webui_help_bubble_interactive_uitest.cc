@@ -189,7 +189,7 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
                 TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl))));
   }
 
-  static auto CheckMostRecentClosedReason(
+  auto CheckMostRecentClosedReason(
       const base::Feature& iph_feature,
       std::optional<user_education::FeaturePromoClosedReason> reason) {
     return CheckView(
@@ -209,8 +209,7 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
         .SetDescription("CheckMostRecentClosedReason()");
   }
 
-  static auto CheckSnoozeCount(const base::Feature& iph_feature,
-                               int snooze_count) {
+  auto CheckSnoozeCount(const base::Feature& iph_feature, int snooze_count) {
     return CheckView(
                kBrowserViewElementId,
                [&iph_feature](BrowserView* browser_view) {
@@ -226,8 +225,7 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
         .SetDescription("CheckSnoozeCount()");
   }
 
-  static auto CheckIsDismissed(const base::Feature& iph_feature,
-                               bool dismissed) {
+  auto CheckIsDismissed(const base::Feature& iph_feature, bool dismissed) {
     return CheckView(
                kBrowserViewElementId,
                [&iph_feature](BrowserView* browser_view) {
@@ -243,7 +241,7 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
         .SetDescription("CheckIsDismissed()");
   }
 
-  static auto CheckIsAnchor(ElementSpecifier el, bool is_anchor) {
+  auto CheckIsAnchor(ElementSpecifier el, bool is_anchor) {
     return Steps(CheckView(
                      kToolbarAppMenuButtonElementId,
                      [](BrowserAppMenuButton* button) {
@@ -262,7 +260,7 @@ class CustomWebUIHelpBubbleUiTest : public InteractiveFeaturePromoTest {
                      .SetDescription("Check in attention state."));
   }
 
-  static auto CheckFrame() {
+  auto CheckFrame() {
     return Steps(
         CheckView(
             CustomWebUIHelpBubble::kHelpBubbleIdForTesting,

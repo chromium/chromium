@@ -214,19 +214,19 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   // Returns a step that opens the menu for a SiteDataRow.
   auto OpenRowMenu(ElementSpecifier row) {
     return WithElement(
-        row, base::BindOnce([](ui::TrackedElement* el) {
+        row, [this](ui::TrackedElement* el) {
           views::test::InteractionTestUtilSimulatorViews::PressButton(
               AsView<SiteDataRowView>(el)->menu_button_for_testing());
-        }));
+        });
   }
 
   // Returns a step that clicks the delete button on a SiteDataRow.
   auto DeleteRow(ElementSpecifier row) {
     return WithElement(
-        row, base::BindOnce([](ui::TrackedElement* el) {
+        row, [this](ui::TrackedElement* el) {
           views::test::InteractionTestUtilSimulatorViews::PressButton(
               AsView<SiteDataRowView>(el)->delete_button_for_testing());
-        }));
+        });
   }
 
   const base::UserActionTester& user_actions() const { return *user_actions_; }

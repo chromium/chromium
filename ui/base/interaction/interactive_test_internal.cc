@@ -212,6 +212,24 @@ InteractiveTestPrivate::InteractiveTestPrivate() {
 
 InteractiveTestPrivate::~InteractiveTestPrivate() = default;
 
+void InteractiveTestPrivate::OnStepStartCallbackWillRun(
+    InteractionSequence* seq) {
+  CHECK(std::ranges::find(sequences_with_active_steps_, seq) ==
+        sequences_with_active_steps_.end());
+  sequences_with_active_steps_.push_front(seq);
+}
+
+void InteractiveTestPrivate::OnStepStartCallbackDone(
+    const InteractionSequence* seq) {
+  CHECK_NE(0U, sequences_with_active_steps_.remove(
+                   const_cast<InteractionSequence*>(seq)));
+}
+
+void InteractiveTestPrivate::OnSequenceDestroying(
+    const InteractionSequence* seq) {
+  sequences_with_active_steps_.remove(const_cast<InteractionSequence*>(seq));
+}
+
 void InteractiveTestPrivate::Init(ElementContext initial_context) {
   success_ = false;
   sequence_skipped_ = false;
@@ -229,6 +247,7 @@ void InteractiveTestPrivate::Init(ElementContext initial_context) {
 void InteractiveTestPrivate::Cleanup() {
   context_subscription_ = base::CallbackListSubscription();
   pivot_elements_.clear();
+  CHECK(sequences_with_active_steps_.empty());
 }
 
 void InteractiveTestPrivate::OnElementAdded(TrackedElement* el) {
@@ -364,6 +383,19 @@ void InteractiveTestPrivate::HandleActionResult(
       }
       break;
   }
+}
+
+bool InteractiveTestPrivate::IsBestGuessExecutingSequenceInAnyContext() const {
+  CHECK(!sequences_with_active_steps_.empty())
+      << "Cannot be called outside of an active step callback.";
+  return sequences_with_active_steps_.front()
+      ->IsCurrentStepInAnyContextForTesting();
+}
+
+void InteractiveTestPrivate::FailBestGuessExecutingSequence() {
+  CHECK(!sequences_with_active_steps_.empty())
+      << "Cannot be called outside of an active step callback.";
+  sequences_with_active_steps_.front()->FailForTesting();
 }
 
 TrackedElement* InteractiveTestPrivate::GetPivotElement(

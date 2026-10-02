@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <concepts>
 #include <functional>
+#include <list>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -145,7 +146,7 @@ class InteractiveTestPrivateFrameworkBase : public SafeCastable {
 
 // Class that implements functionality for InteractiveTest* that should be
 // hidden from tests that inherit the API.
-class InteractiveTestPrivate {
+class InteractiveTestPrivate : public InteractionSequence::TestDelegate {
  public:
   using MultiStep = internal::MultiStep;
 
@@ -275,6 +276,30 @@ class InteractiveTestPrivate {
                           ActionResult result,
                           bool defer_failure = false);
 
+  // Tries to determine if the current sequence executing a step is in "in any
+  // context" mode.
+  //
+  // In certain very specific cases, such as when there are two parallel
+  // branches and one is calling additional code through a message pump
+  // while the other executes, this may end up querying the wrong subsequence.
+  //
+  // Note: It is always better to call
+  // `InteractionSequence::IsCurrentStepInAnyContextForTesting()` directly; only
+  // use this if there is no way to directly access the sequence (and generally,
+  // do not use this directly from a step callback).
+  bool IsBestGuessExecutingSequenceInAnyContext() const;
+
+  // Attempts to fail the best-guess current executing sequence.
+  //
+  // In certain very specific cases, such as when there are two parallel
+  // branches and one is calling additional code through a message pump
+  // while the other executes, this may end up failing the wrong subsequence.
+  //
+  // Note: It is always better to call `InteractionSequence::FailForTesting()`
+  // directly; only use this if there is no way to directly access the sequence
+  // (and generally, do not use this directly from a step callback).
+  void FailBestGuessExecutingSequence();
+
   // Gets the pivot element for the specified context, which must exist.
   TrackedElement* GetPivotElement(ElementContext context) const;
 
@@ -367,6 +392,11 @@ class InteractiveTestPrivate {
   friend class ui::test::InteractiveTestTest;
   friend class ui::test::InteractiveTestApi;
 
+  // InteractionSequence::TestDelegate:
+  void OnStepStartCallbackWillRun(InteractionSequence* seq) override;
+  void OnStepStartCallbackDone(const InteractionSequence* seq) override;
+  void OnSequenceDestroying(const InteractionSequence* seq) override;
+
   // Prepare for a sequence to start.
   void Init(ElementContext initial_context);
 
@@ -378,6 +408,9 @@ class InteractiveTestPrivate {
 
   // Maybe adds a pivot element for the given context.
   void MaybeAddPivotElement(ElementContext context);
+
+  // Maintains a list of interaction sequences with active steps.
+  std::list<raw_ptr<InteractionSequence>> sequences_with_active_steps_;
 
   // Tracks whether a sequence succeeded or failed.
   bool success_ = false;

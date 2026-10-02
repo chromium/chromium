@@ -72,12 +72,6 @@
 namespace glic {
 
 namespace {
-auto GetPointWithOffset(int x, int y) {
-  return base::BindLambdaForTesting([x, y](ui::TrackedElement* el) {
-    auto* view = views::test::InteractiveViewsTestApi::AsView<views::View>(el);
-    return view->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
-  });
-}
 
 views::View* GetOverlayView(content::WebContents* tab_contents) {
   auto* controller =
@@ -132,6 +126,13 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
         {});
   }
   ~SelectionOverlayInteractiveTest() override = default;
+
+  auto GetPointWithOffset(int x, int y) {
+    return base::BindLambdaForTesting([this, x, y](ui::TrackedElement* el) {
+      auto* view = AsView<views::View>(el);
+      return view->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
+    });
+  }
 
   auto GetOverlayVisibilityAt(int index) {
     return base::BindLambdaForTesting([this, index]() {

@@ -13,9 +13,11 @@
 #include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -548,6 +550,29 @@ TEST_F(InteractiveViewsTestTest, ScrollIntoView) {
                   CheckView(kScrollChild2Id, visible, true),
                   ScrollIntoView(kScrollChild1Id),
                   CheckView(kScrollChild1Id, visible, true));
+}
+
+TEST_F(InteractiveViewsTestTest, AsViewNotAViewAbortsTest) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
+  ui::test::TestElement el(
+      kTestId, ElementTrackerViews::GetContextForWidget(widget_.get()));
+  el.Show();
+
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(WithElement(
+          kTestId, [this](ui::TrackedElement* el) { AsView<View>(el); })));
+}
+
+TEST_F(InteractiveViewsTestTest, AsViewWrongViewAbortsTest) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(WithElement(
+          kLabelId, [this](ui::TrackedElement* el) { AsView<Button>(el); })));
 }
 
 }  // namespace views::test

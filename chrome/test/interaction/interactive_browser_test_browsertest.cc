@@ -589,7 +589,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       // it's there.
       InstrumentNextTab(kIncognito1Id, AnyBrowser()),
       NameView(
-          kIncognitoNtbName, base::BindLambdaForTesting([incognito_browser]() {
+          kIncognitoNtbName,
+          base::BindLambdaForTesting([this, incognito_browser]() {
             return AsView(
                 ui::ElementTracker::GetElementTracker()->GetUniqueElement(
                     kNewTabButtonElementId,

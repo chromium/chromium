@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -130,9 +131,9 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
     StepBuilder builder;
     builder.SetDescription("CheckIcon()");
     builder.SetElement(view);
-    builder.SetStartCallback(base::BindOnce(
-        [](std::string expected_name, ui::InteractionSequence* sequence,
-           ui::TrackedElement* element) {
+    builder.SetStartCallback(base::BindLambdaForTesting(
+        [this, expected_name](ui::InteractionSequence* sequence,
+                              ui::TrackedElement* element) {
           auto* vector_icon = AsView<views::ImageView>(element)
                                   ->GetImageModel()
                                   .GetVectorIcon()
@@ -140,8 +141,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
           if (vector_icon->name != expected_name) {
             sequence->FailForTesting();
           }
-        },
-        expected_name));
+        }));
     return builder;
   }
 

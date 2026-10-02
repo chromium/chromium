@@ -311,20 +311,20 @@ class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
 
   auto TogglePermission(ElementSpecifier row) {
     return WithElement(
-        row, base::BindOnce([](ui::TrackedElement* el) {
+        row, [this](ui::TrackedElement* el) {
           views::test::InteractionTestUtilSimulatorViews::PressButton(
               static_cast<views::Button*>(AsView<PermissionToggleRowView>(el)
                                               ->toggle_button_for_testing()));
-        }));
+        });
   }
 
   auto DeleteGrant(ElementSpecifier row) {
     return WithElement(
-        row, base::BindOnce([](ui::TrackedElement* el) {
+        row, [this](ui::TrackedElement* el) {
           views::test::InteractionTestUtilSimulatorViews::PressButton(
               static_cast<views::Button*>(
                   AsView<ChosenObjectView>(el)->GetDeleteButtonForTesting()));
-        }));
+        });
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

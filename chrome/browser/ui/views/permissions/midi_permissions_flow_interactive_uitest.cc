@@ -86,36 +86,35 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
                            int expected_tooltip_string_id) {
     return AfterShow(
         ContentSettingImageModel::kMidiSysexIconElementId,
-        base::BindLambdaForTesting(
-            [this, expected_rounded_icon, expected_old_icon,
-             expected_tooltip_string_id](ui::TrackedElement* element) {
-              const gfx::VectorIcon* icon = nullptr;
-              const gfx::VectorIcon* icon_badge = nullptr;
-              std::u16string tooltip_text;
-              if (features::IsWebUILocationBarEnabled()) {
-                auto* location_bar = static_cast<WebUILocationBar*>(
-                    BrowserWindow::FromBrowser(browser())->GetLocationBar());
-                auto* model =
-                    location_bar->content_setting_image_control().GetModel(
-                        ContentSettingImageModel::ImageType::kMidiSysex);
-                ASSERT_TRUE(model);
-                icon = model->icon();
-                icon_badge = model->get_icon_badge();
-                tooltip_text = model->get_tooltip();
-              } else {
-                auto* element_view = AsView<ContentSettingImageView>(element);
-                ASSERT_TRUE(element_view);
-                icon = element_view->get_icon_for_testing();
-                icon_badge = element_view->get_icon_badge_for_testing();
-                tooltip_text = element_view->get_tooltip_text_for_testing();
-              }
-              EXPECT_EQ(icon, features::IsRoundedIconsEnabled()
-                                  ? expected_rounded_icon
-                                  : expected_old_icon);
-              EXPECT_EQ(icon_badge, &gfx::VectorIcon::EmptyIcon());
-              EXPECT_EQ(tooltip_text,
-                        l10n_util::GetStringUTF16(expected_tooltip_string_id));
-            }));
+        [this, expected_rounded_icon, expected_old_icon,
+         expected_tooltip_string_id](ui::TrackedElement* element) {
+          const gfx::VectorIcon* icon = nullptr;
+          const gfx::VectorIcon* icon_badge = nullptr;
+          std::u16string tooltip_text;
+          if (features::IsWebUILocationBarEnabled()) {
+            auto* location_bar = static_cast<WebUILocationBar*>(
+                BrowserWindow::FromBrowser(browser())->GetLocationBar());
+            auto* model =
+                location_bar->content_setting_image_control().GetModel(
+                    ContentSettingImageModel::ImageType::kMidiSysex);
+            ASSERT_TRUE(model);
+            icon = model->icon();
+            icon_badge = model->get_icon_badge();
+            tooltip_text = model->get_tooltip();
+          } else {
+            auto* element_view = AsView<ContentSettingImageView>(element);
+            ASSERT_TRUE(element_view);
+            icon = element_view->get_icon_for_testing();
+            icon_badge = element_view->get_icon_badge_for_testing();
+            tooltip_text = element_view->get_tooltip_text_for_testing();
+          }
+          EXPECT_EQ(icon, features::IsRoundedIconsEnabled()
+                              ? expected_rounded_icon
+                              : expected_old_icon);
+          EXPECT_EQ(icon_badge, &gfx::VectorIcon::EmptyIcon());
+          EXPECT_EQ(tooltip_text,
+                    l10n_util::GetStringUTF16(expected_tooltip_string_id));
+        });
   }
 
  protected:
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),  // open page info.
       AfterShow(
           PageInfoMainView::kMainLayoutElementId,
-          base::BindLambdaForTesting([](ui::TrackedElement* element) {
+          [this](ui::TrackedElement* element) {
             bool includes_midi_sysex = false;
             for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
@@ -162,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
               }
             }
             EXPECT_TRUE(includes_midi_sysex);
-          })));
+          }));
 }
 
 // Display MIDI permission state in page info when allowed.
@@ -175,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),  // open page info.
       AfterShow(
           PageInfoMainView::kMainLayoutElementId,
-          base::BindLambdaForTesting([](ui::TrackedElement* element) {
+          [this](ui::TrackedElement* element) {
             bool includes_midi_sysex = false;
             for (PermissionToggleRowView* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
               }
             }
             EXPECT_TRUE(includes_midi_sysex);
-          })));
+          }));
 }
 
 // Display blockage indicator of MIDI when blocked.

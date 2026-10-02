@@ -352,13 +352,12 @@ LensOverlayInteractiveTestBase::SelectRegionInLensOverlay(
                                   LensOverlayController::kOverlayId),
           WaitForWebContentsReady(
               overlay_id, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-      InSameContext(
-          WaitForShow(LensOverlayController::kOverlayId),
-          // Disable animations in the WebUI to prevent flakiness on
-          // bots. The duration is set to 0s instead of 'none' to
-          // ensure that animationend/transitionend events still fire,
-          // as the WebUI logic relies on them to transition states.
-          ExecuteJsAt(overlay_id, {}, R"(
+      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
+                    // Disable animations in the WebUI to prevent flakiness on
+                    // bots. The duration is set to 0s instead of 'none' to
+                    // ensure that animationend/transitionend events still fire,
+                    // as the WebUI logic relies on them to transition states.
+                    ExecuteJsAt(overlay_id, {}, R"(
                       () => {
                         const style = document.createElement('style');
                         style.textContent = `
@@ -370,26 +369,25 @@ LensOverlayInteractiveTestBase::SelectRegionInLensOverlay(
                         document.head.appendChild(style);
                       }
                     )"),
-          WaitForScreenshotRendered(overlay_id),
-          EnsurePresent(overlay_id, kPathToRegionSelection),
-          // Send the drag straight to the overlay renderer instead
-          // of using OS-level input. On Windows, ui_controls waits
-          // with no timeout for each mouse button message to reach
-          // the UI thread, so one lost message hangs the step until
-          // the whole sequence times out.
-          WithElement(LensOverlayController::kOverlayId,
-                      base::BindOnce(
-                          [](base::OnceCallback<gfx::Point()> target_point,
-                             ui::TrackedElement* el) {
-                            auto* const web_view = AsView<views::WebView>(el);
-                            const gfx::Rect bounds =
-                                web_view->GetBoundsInScreen();
-                            SimulateLeftClickDrag(
-                                web_view->GetWebContents(),
-                                gfx::Rect(bounds.size()).CenterPoint(),
-                                std::move(target_point).Run() -
-                                    bounds.OffsetFromOrigin());
-                          },
-                          std::move(target_point))),
-          FinishScreenshotUpload(tab_id_int)));
+                    WaitForScreenshotRendered(overlay_id),
+                    EnsurePresent(overlay_id, kPathToRegionSelection),
+                    // Send the drag straight to the overlay renderer instead
+                    // of using OS-level input. On Windows, ui_controls waits
+                    // with no timeout for each mouse button message to reach
+                    // the UI thread, so one lost message hangs the step until
+                    // the whole sequence times out.
+                    WithElement(LensOverlayController::kOverlayId,
+                                [this, target_point = std::move(target_point)](
+                                    ui::TrackedElement* el) mutable {
+                                  auto* const web_view =
+                                      AsView<views::WebView>(el);
+                                  const gfx::Rect bounds =
+                                      web_view->GetBoundsInScreen();
+                                  SimulateLeftClickDrag(
+                                      web_view->GetWebContents(),
+                                      gfx::Rect(bounds.size()).CenterPoint(),
+                                      std::move(target_point).Run() -
+                                          bounds.OffsetFromOrigin());
+                                }),
+                    FinishScreenshotUpload(tab_id_int)));
 }
