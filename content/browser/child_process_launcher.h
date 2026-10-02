@@ -96,6 +96,7 @@ struct RenderProcessPriority {
                         bool boost_for_pending_views,
                         bool boost_for_loading,
                         bool boost_for_discard,
+                        bool boost_for_background_execution,
 #if BUILDFLAG(IS_ANDROID)
                         bool is_spare_renderer,
                         ChildProcessImportance importance
@@ -142,6 +143,10 @@ struct RenderProcessPriority {
   // worker that may need to service timely events from other, possibly visible,
   // processes.
   bool has_foreground_service_worker;
+
+  // |boost_for_background_execution| is true when the process is executing in
+  // the background but requires OS foreground priority.
+  bool boost_for_background_execution;
 
   // |frame_depth| is the depth of the shallowest frame this process is
   // responsible for which has |visible| visibility. It only makes sense to

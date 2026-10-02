@@ -700,6 +700,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnBoostForLoadingAdded() override;
   void OnBoostForLoadingRemoved() override;
 
+  // Called when the process enters a state where it is executing in the
+  // background but requires OS foreground priority. This is used to determine
+  // if the process should be backgrounded or not.
+  void OnBoostForBackgroundExecutionAdded();
+  void OnBoostForBackgroundExecutionRemoved();
+
   void OnImmersiveXrSessionStarted() override;
   void OnImmersiveXrSessionStopped() override;
   bool HasImmersiveXrSessionForTesting() const override;
@@ -1628,6 +1634,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Tracks the count of render frame host that requested prioritize the
   // processing commit navigation and initial loading (crbug/351953350).
   int boost_for_loading_count_ = 0;
+
+  // Tracks the count of background execution environments (e.g. headless
+  // automation targets) that strictly require OS foreground priority.
+  int boost_for_background_execution_count_ = 0;
 
   // Tracks whether or not the current process is in an immersive webxr session.
   // Used to determine if a process should not be backgrounded.

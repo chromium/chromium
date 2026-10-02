@@ -364,6 +364,7 @@ RenderProcessPriority::RenderProcessPriority(bool visible,
                                              bool boost_for_pending_views,
                                              bool boost_for_loading,
                                              bool boost_for_discard,
+                                             bool boost_for_background_execution,
 #if BUILDFLAG(IS_ANDROID)
                                              bool is_spare_renderer,
                                              ChildProcessImportance importance
@@ -377,6 +378,7 @@ RenderProcessPriority::RenderProcessPriority(bool visible,
       has_media_stream(has_media_stream),
       has_immersive_xr_session(has_immersive_xr_session),
       has_foreground_service_worker(has_foreground_service_worker),
+      boost_for_background_execution(boost_for_background_execution),
       frame_depth(frame_depth),
       intersects_viewport(intersects_viewport),
       boost_for_pending_views(boost_for_pending_views),
@@ -415,6 +417,7 @@ bool RenderProcessPriority::is_background() const {
     // background priority and the worker can starve and miss its start
     // timeout (crbug.com/484218883).
     if (boost_for_loading || boost_for_discard ||
+        boost_for_background_execution ||
         has_foreground_service_worker) {
       return false;
     }
@@ -424,6 +427,7 @@ bool RenderProcessPriority::is_background() const {
 #endif
   return !visible && !has_media_stream && !has_immersive_xr_session &&
          !boost_for_pending_views && !has_foreground_service_worker &&
+         !boost_for_background_execution &&
          !boost_for_loading && !boost_for_discard;
 }
 
@@ -442,6 +446,7 @@ base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
     // priority, or it can starve and miss its start timeout
     // (crbug.com/484218883).
     if (boost_for_loading || boost_for_discard ||
+        boost_for_background_execution ||
         has_foreground_service_worker) {
       return base::Process::Priority::kUserBlocking;
     }

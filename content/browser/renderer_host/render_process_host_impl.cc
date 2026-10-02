@@ -1716,6 +1716,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 true /* boost_for_pending_views */,
                 false /*boost_for_loading*/,
                 false /* boost_for_discard */,
+                false /* boost_for_background_execution */,
 #if BUILDFLAG(IS_ANDROID)
                 is_spare_renderer,
                 ChildProcessImportance::NORMAL
@@ -3424,6 +3425,21 @@ void RenderProcessHostImpl::OnBoostForLoadingRemoved() {
   CHECK_GT(boost_for_loading_count_, 0);
   --boost_for_loading_count_;
   if (boost_for_loading_count_ == 0) {
+    UpdateProcessPriority();
+  }
+}
+
+void RenderProcessHostImpl::OnBoostForBackgroundExecutionAdded() {
+  ++boost_for_background_execution_count_;
+  if (boost_for_background_execution_count_ == 1) {
+    UpdateProcessPriority();
+  }
+}
+
+void RenderProcessHostImpl::OnBoostForBackgroundExecutionRemoved() {
+  CHECK_GT(boost_for_background_execution_count_, 0);
+  --boost_for_background_execution_count_;
+  if (boost_for_background_execution_count_ == 0) {
     UpdateProcessPriority();
   }
 }
@@ -6023,6 +6039,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
       boost_for_loading_count_ > 0, is_discarding_,
+      boost_for_background_execution_count_ > 0,
 #if BUILDFLAG(IS_ANDROID)
       spare_renderer_priority_status_ == SpareRendererPriorityStatus::kSpare,
       GetEffectiveImportance()
