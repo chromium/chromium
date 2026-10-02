@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
 
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -26,10 +27,22 @@ EnterpriseNetworkAuthServiceFactory::GetInstance() {
 }
 
 EnterpriseNetworkAuthServiceFactory::EnterpriseNetworkAuthServiceFactory()
-    : ProfileKeyedServiceFactory("EnterpriseNetworkAuthService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "EnterpriseNetworkAuthService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              // Gated by enterprise_isolated_mode::
+              // IsolatedModeMilestone2Enabled() in
+              // BuildServiceInstanceForBrowserContext().
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
+  DependsOn(enterprise_isolated_mode::IsolatedModeSettingsServiceFactory::
+                GetInstance());
 }
 
 EnterpriseNetworkAuthServiceFactory::~EnterpriseNetworkAuthServiceFactory() =
@@ -46,7 +59,17 @@ EnterpriseNetworkAuthServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+  Profile* original_profile = profile;
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    if (!enterprise_isolated_mode::IsolatedModeMilestone2Enabled(profile)) {
+      return nullptr;
+    }
+    // In Isolated mode, IdentityManager is taken from the original profile,
+    // since the primary account and its tokens live there.
+    original_profile = profile->GetOriginalProfile();
+  }
   return std::make_unique<enterprise_net::EnterpriseNetworkAuthService>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(original_profile),
+      profile->GetPrefs(),
       enterprise::ProfileIdServiceFactory::GetForProfile(profile));
 }
