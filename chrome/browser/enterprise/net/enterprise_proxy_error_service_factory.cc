@@ -30,6 +30,9 @@ EnterpriseProxyErrorServiceFactory::EnterpriseProxyErrorServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
+              // Built only when EnterpriseProxyService exists for the profile,
+              // which is gated for Isolated mode.
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(EnterpriseProxyServiceFactory::GetInstance());
 }
@@ -45,8 +48,15 @@ EnterpriseProxyErrorServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
+  // EnterpriseProxyErrorService requires EnterpriseProxyService, which is not
+  // created e.g. for Isolated mode profiles while Milestone 2 is disabled.
+  enterprise_net::EnterpriseProxyService* proxy_service =
+      EnterpriseProxyServiceFactory::GetForProfile(profile);
+  if (!proxy_service) {
+    return nullptr;
+  }
   return std::make_unique<enterprise_net::EnterpriseProxyErrorService>(
-      EnterpriseProxyServiceFactory::GetForProfile(profile));
+      proxy_service);
 }
 
 bool EnterpriseProxyErrorServiceFactory::ServiceIsCreatedWithBrowserContext()
