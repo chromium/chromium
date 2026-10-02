@@ -10,7 +10,7 @@ import android.view.View;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 
 import java.util.List;
