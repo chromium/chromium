@@ -23,6 +23,8 @@
 
 namespace {
 
+// Migrates preferences between untracked, tracked (unprotected), and tracked
+// (protected) as their tracking configuration changes.
 class TrackedPreferencesMigrator
     : public base::RefCounted<TrackedPreferencesMigrator> {
  public:
