@@ -94,7 +94,7 @@ void MaybeReportDangerousDownloadEvent(
       /*source=*/"", /*destination=*/"", path.AsUTF8Unsafe(),
       file_info.sha256_or_cb,
       /*threat_type=*/kDangerousFileTypeDownloadThreatType, file_info.mime_type,
-      kFileDownloadDataTransferEventTrigger, response.request_token(),
+      DataTransferEventTrigger::FILE_DOWNLOAD, response.request_token(),
       /*content_transfer_method=*/"", file_info.size, info.referrer_chain(),
       info.frame_url_chain(), result);
 }

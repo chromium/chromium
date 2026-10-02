@@ -253,7 +253,7 @@ TEST_F(NetworkRequestHandlerTest, DlpVerdictReported) {
   EXPECT_EQ(event->destination, kRequestUrl);
   EXPECT_EQ(event->file_name, "");
   EXPECT_EQ(event->mime_type, "");
-  EXPECT_EQ(event->trigger, kNetworkRequestDataTransferEventTrigger);
+  EXPECT_EQ(event->trigger, DataTransferEventTrigger::NETWORK_REQUEST);
   EXPECT_EQ(event->scan_id, kRequestToken);
   EXPECT_EQ(event->content_transfer_method, "");
   EXPECT_EQ(event->content_size, static_cast<int64_t>(kRequestBody.size()));
@@ -287,7 +287,7 @@ TEST_F(NetworkRequestHandlerTest, BlockVerdictReportedAsAllowed) {
 
   ASSERT_TRUE(event);
   EXPECT_EQ(event->destination, kRequestUrl);
-  EXPECT_EQ(event->trigger, kNetworkRequestDataTransferEventTrigger);
+  EXPECT_EQ(event->trigger, DataTransferEventTrigger::NETWORK_REQUEST);
   EXPECT_EQ(event->event_result, EventResult::ALLOWED);
   ASSERT_EQ(event->result.triggered_rules_size(), 1);
   EXPECT_EQ(event->result.triggered_rules(0).action(), TriggeredRule::BLOCK);

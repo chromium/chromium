@@ -107,7 +107,7 @@ void PagePrintRequestHandler::ReportWarningBypass(
       content_analysis_info(), /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info()->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
+      /*mime_type*/ std::string(), DataTransferEventTrigger::PAGE_PRINT,
       /*content_tranfer_method*/ "",
       /*content_size*/ -1, response_, user_justification);
 }
@@ -186,7 +186,7 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
       /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info()->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
+      /*mime_type*/ std::string(), DataTransferEventTrigger::PAGE_PRINT,
       /*content_tranfer_method*/ "",
       content_analysis_info()->GetContentAreaAccountEmail(),
       /*content_size*/ -1, result, response_,

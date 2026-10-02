@@ -819,7 +819,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         reporting_event_router, this, /*source=*/"",
         /*destination=*/GetDestinationString(download_result),
         file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        enterprise_connectors::DataTransferEventTrigger::FILE_DOWNLOAD,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
         file_metadata.size, result, file_metadata.scan_response));
 

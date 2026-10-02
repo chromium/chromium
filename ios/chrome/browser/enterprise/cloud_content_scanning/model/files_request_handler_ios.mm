@@ -51,7 +51,7 @@ FilesRequestHandlerIOS::CreateFileRequest(
 void FilesRequestHandlerIOS::ReportWarningBypass(
     std::optional<std::u16string> user_justification,
     const ContentAnalysisInfoBase& info,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& content_transfer_method) {
   if (!was_warned_) {
     return;

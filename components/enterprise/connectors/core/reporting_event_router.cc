@@ -325,7 +325,6 @@ void ReportingEventRouter::SendEventOnGotHash(
                                  std::move(reporting_settings));
 }
 
-
 void ReportingEventRouter::OnUnscannedFileEvent(
     const GURL& url,
     const GURL& tab_url,
@@ -334,7 +333,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     const std::string& file_name,
     const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& reason,
     const std::string& content_transfer_method,
@@ -384,7 +383,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const std::string& file_name,
     const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
     const std::string& source_email,
@@ -465,7 +464,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const HashCallbackVariant& sha256_or_cb,
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
@@ -487,7 +486,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const HashCallbackVariant& sha256_or_cb,
     const std::string& threat_type,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
     const int64_t content_size,
@@ -537,7 +536,7 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     const std::string& file_name,
     const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
     const std::string& source_email,
@@ -606,37 +605,31 @@ std::string ReportingEventRouter::GetClipboardSourceString(
 void ReportingEventRouter::ReportCopy(
     const data_controls::ClipboardContext& context,
     const data_controls::Verdict& verdict) {
-  ReportCopyOrPaste(
-      context, verdict,
-      enterprise_connectors::kClipboardCopyDataTransferEventTrigger,
-      GetEventResult(verdict.level()));
+  ReportCopyOrPaste(context, verdict, DataTransferEventTrigger::CLIPBOARD_COPY,
+                    GetEventResult(verdict.level()));
 }
 
 void ReportingEventRouter::ReportCopyWarningBypassed(
     const data_controls::ClipboardContext& context,
     const data_controls::Verdict& verdict) {
-  ReportCopyOrPaste(
-      context, verdict,
-      enterprise_connectors::kClipboardCopyDataTransferEventTrigger,
-      enterprise_connectors::EventResult::BYPASSED);
+  ReportCopyOrPaste(context, verdict, DataTransferEventTrigger::CLIPBOARD_COPY,
+                    enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingEventRouter::ReportPaste(
     const data_controls::ClipboardContext& context,
     const data_controls::Verdict& verdict) {
-  ReportCopyOrPaste(
-      context, verdict,
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
-      GetEventResult(verdict.level()));
+  ReportCopyOrPaste(context, verdict,
+                    DataTransferEventTrigger::WEB_CONTENT_UPLOAD,
+                    GetEventResult(verdict.level()));
 }
 
 void ReportingEventRouter::ReportPasteWarningBypassed(
     const data_controls::ClipboardContext& context,
     const data_controls::Verdict& verdict) {
-  ReportCopyOrPaste(
-      context, verdict,
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
-      enterprise_connectors::EventResult::BYPASSED);
+  ReportCopyOrPaste(context, verdict,
+                    DataTransferEventTrigger::WEB_CONTENT_UPLOAD,
+                    enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingEventRouter::ReportPasteFromGemini(
@@ -656,7 +649,7 @@ void ReportingEventRouter::ReportPasteFromGemini(
       /*destination=*/destination_url.spec(),
       /*mime_type=*/"text/plain",
       /*trigger=*/
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      DataTransferEventTrigger::WEB_CONTENT_UPLOAD,
       // TODO(crbug.com/520496047): Use Gemini user email, should be the same as
       // the profile managed user.
       /*source_active_user_email=*/"",
@@ -671,7 +664,7 @@ void ReportingEventRouter::ReportPasteFromGemini(
 void ReportingEventRouter::ReportCopyOrPaste(
     const data_controls::ClipboardContext& context,
     const data_controls::Verdict& verdict,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     enterprise_connectors::EventResult result) {
   if (verdict.triggered_rules().empty()) {
     return;
@@ -681,16 +674,14 @@ void ReportingEventRouter::ReportCopyOrPaste(
   std::string destination_string;
   std::string source_string;
   std::string content_area_account_email;
-  if (trigger ==
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger) {
+  if (trigger == DataTransferEventTrigger::WEB_CONTENT_UPLOAD) {
     url = context.destination_url();
     destination_string = url.spec();
     source_string =
         GetClipboardSourceString(context.data_controls_copied_text_source());
     content_area_account_email = context.destination_active_user();
   } else {
-    DCHECK_EQ(trigger,
-              enterprise_connectors::kClipboardCopyDataTransferEventTrigger);
+    DCHECK_EQ(trigger, DataTransferEventTrigger::CLIPBOARD_COPY);
     url = context.source_url();
     source_string = context.source_url().spec();
     content_area_account_email = context.source_active_user();
@@ -716,7 +707,7 @@ void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
     const std::string& source,
     const std::string& destination,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& source_active_user_email,
     const std::string& content_area_account_email,
     const data_controls::Verdict::TriggeredRules& triggered_rules,

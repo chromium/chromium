@@ -54,7 +54,7 @@ void ReportCancellationsOnUIThread(
     base::WeakPtr<Profile> profile_weak,
     std::string source,
     std::string destination,
-    std::string access_point_trigger,
+    DataTransferEventTrigger access_point_trigger,
     std::string content_transfer_method,
     GURL url,
     GURL tab_url,
@@ -191,7 +191,7 @@ void FilesRequestHandler::MaybeCancelAndReport() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&FetchFileSizes, std::move(unreported_files)),
       base::BindOnce(&ReportCancellationsOnUIThread, profile_->GetWeakPtr(),
-                     source_, destination_, handler_->access_point_string(),
+                     source_, destination_, handler_->data_transfer_trigger(),
                      handler_->content_transfer_method(),
                      GURL(handler_->content_analysis_info()->url()),
                      handler_->content_analysis_info()->tab_url(),
@@ -210,7 +210,7 @@ void FilesRequestHandler::StopFileWork() {
 void FilesRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification,
     const ContentAnalysisInfoBase& info,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& content_transfer_method) {
   // Report a warning bypass for each previously warned file.
   for (const auto& warning : file_warnings_) {

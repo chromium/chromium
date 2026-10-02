@@ -19,6 +19,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/network_request_analysis_request.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -136,7 +137,7 @@ void NetworkRequestHandler::OnContentAnalysisResponse(
                                  /*destination=*/url().spec(),
                                  /*file_name=*/"",
                                  /*sha256_or_cb=*/"",
-                                 /*mime_type=*/"", access_point_string(),
+                                 /*mime_type=*/"", data_transfer_trigger(),
                                  /*content_transfer_method=*/"",
                                  /*source_email=*/"", content_size_, result,
                                  response, EventResult::ALLOWED);

@@ -576,7 +576,7 @@ void MaybeReportDangerousDownloadBlocked(
         download->GetURL(), download->GetTabUrl(), /*source*/ "",
         /*destination=*/"", download_path, base::HexEncode(raw_digest_sha256),
         danger_type, download->GetMimeType(),
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        enterprise_connectors::DataTransferEventTrigger::FILE_DOWNLOAD,
         /*scan_id=*/"", /*content_transfer_method=*/"",
         download->GetTotalBytes(), referrer_chain,
         enterprise_connectors::CollectFrameUrls(

@@ -111,7 +111,7 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& file_name,
                             const HashCallbackVariant& sha256_or_cb,
                             const std::string& mime_type,
-                            const std::string& trigger,
+                            DataTransferEventTrigger trigger,
                             const std::string& scan_id,
                             const std::string& reason,
                             const std::string& content_transfer_method,
@@ -131,7 +131,8 @@ class ReportingEventRouter : public KeyedService {
     std::string file_name;
     enterprise_connectors::HashCallbackVariant sha256_or_cb;
     std::string mime_type;
-    std::string trigger;
+    DataTransferEventTrigger trigger =
+        DataTransferEventTrigger::DATA_TRANSFER_EVENT_TRIGGER_TYPE_UNSPECIFIED;
     std::string scan_id;
     std::string content_transfer_method;
     std::string source_email;
@@ -154,7 +155,7 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& file_name,
                             const HashCallbackVariant& sha256_or_cb,
                             const std::string& mime_type,
-                            const std::string& trigger,
+                            DataTransferEventTrigger trigger,
                             const std::string& scan_id,
                             const std::string& content_transfer_method,
                             const std::string& source_email,
@@ -177,7 +178,7 @@ class ReportingEventRouter : public KeyedService {
                                 const HashCallbackVariant& sha256_or_cb,
                                 const download::DownloadDangerType danger_type,
                                 const std::string& mime_type,
-                                const std::string& trigger,
+                                DataTransferEventTrigger trigger,
                                 const std::string& scan_id,
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
@@ -197,7 +198,7 @@ class ReportingEventRouter : public KeyedService {
                                 const HashCallbackVariant& sha256_or_cb,
                                 const std::string& threat_type,
                                 const std::string& mime_type,
-                                const std::string& trigger,
+                                DataTransferEventTrigger trigger,
                                 const std::string& scan_id,
                                 const std::string& content_transfer_method,
                                 const int64_t content_size,
@@ -213,7 +214,7 @@ class ReportingEventRouter : public KeyedService {
                                  const std::string& file_name,
                                  const HashCallbackVariant& sha256_or_cb,
                                  const std::string& mime_type,
-                                 const std::string& trigger,
+                                 DataTransferEventTrigger trigger,
                                  const std::string& scan_id,
                                  const std::string& content_transfer_method,
                                  const std::string& source_email,
@@ -262,7 +263,7 @@ class ReportingEventRouter : public KeyedService {
   // methods and `OnDataControlsSensitiveDataEvent()`.
   void ReportCopyOrPaste(const data_controls::ClipboardContext& context,
                          const data_controls::Verdict& verdict,
-                         const std::string& trigger,
+                         DataTransferEventTrigger trigger,
                          enterprise_connectors::EventResult result);
 
   // Helper function to report sensitive data event that were caused by
@@ -275,7 +276,7 @@ class ReportingEventRouter : public KeyedService {
       const std::string& source,
       const std::string& destination,
       const std::string& mime_type,
-      const std::string& trigger,
+      DataTransferEventTrigger trigger,
       const std::string& source_active_user_email,
       const std::string& content_area_account_email,
       const data_controls::Verdict::TriggeredRules& triggered_rules,

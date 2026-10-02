@@ -768,35 +768,33 @@ TEST_F(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
   validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-    expected_event.set_url("https://example.com/");
-    expected_event.set_tab_url("https://example.com/");
-    expected_event.set_source("exampleSource");
-    expected_event.set_destination("exampleDestination");
-    expected_event.set_content_type("text/html");
-    expected_event.set_content_size(1234);
-    expected_event.set_trigger(
-        chrome::cros::reporting::proto::DataTransferEventTrigger::
-            WEB_CONTENT_UPLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
-    expected_event.set_web_app_signed_in_account("content_area_user@gmail.com");
-    expected_event.set_source_web_app_signed_in_account(
-        "active_user@gmail.com");
+  expected_event.set_url("https://example.com/");
+  expected_event.set_tab_url("https://example.com/");
+  expected_event.set_source("exampleSource");
+  expected_event.set_destination("exampleDestination");
+  expected_event.set_content_type("text/html");
+  expected_event.set_content_size(1234);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  expected_event.set_web_app_signed_in_account("content_area_user@gmail.com");
+  expected_event.set_source_web_app_signed_in_account("active_user@gmail.com");
 
-    TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_rule_id(1);
-    triggered_rule.set_rule_name("rule_1_name");
+  TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_id(1);
+  triggered_rule.set_rule_name("rule_1_name");
 
-    *expected_event.add_triggered_rule_info() = triggered_rule;
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(profile_->GetProfileUserName());
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   reporting_event_router_->OnDataControlsSensitiveDataEvent(
       GURL("https://example.com/"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "text/html",
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      enterprise_connectors::DataTransferEventTrigger::WEB_CONTENT_UPLOAD,
       "active_user@gmail.com", "content_area_user@gmail.com", triggered_rules,
       enterprise_connectors::EventResult::ALLOWED, 1234);
   run_loop.Run();
@@ -927,9 +925,9 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Allowed) {
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
-      "application/zip", "FILE_UPLOAD", "123", "FILE_PASSWORD_PROTECTED",
-      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, referrer_chain,
-      EventResult::ALLOWED);
+      "application/zip", DataTransferEventTrigger::FILE_UPLOAD, "123",
+      "FILE_PASSWORD_PROTECTED", "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345,
+      referrer_chain, EventResult::ALLOWED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -976,8 +974,9 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Cancelled) {
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
-      "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
-      12345, referrer_chain, EventResult::CANCELLED);
+      "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
+      "FILE_PASSWORD_PROTECTED", "", 12345, referrer_chain,
+      EventResult::CANCELLED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1026,8 +1025,9 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Blocked) {
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
-      "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
-      12345, referrer_chain, EventResult::BLOCKED);
+      "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
+      "FILE_PASSWORD_PROTECTED", "", 12345, referrer_chain,
+      EventResult::BLOCKED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1083,7 +1083,7 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnSensitiveDataEvent_Allowed) {
   reporting_event_router_->OnSensitiveDataEvent(
       GURL("about:blank"), GURL("about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
-      "application/zip", "FILE_UPLOAD", "123",
+      "application/zip", DataTransferEventTrigger::FILE_UPLOAD, "123",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", "test@gmail.com",
       "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
       referrer_chain, CreateFakeFrameUrlChainProto(), EventResult::ALLOWED);
@@ -1154,9 +1154,10 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnSensitiveDataEvent_Blocked) {
   reporting_event_router_->OnSensitiveDataEvent(
       GURL("about:blank"), GURL("about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
-      "application/zip", "FILE_DOWNLOAD", "123", "", "test@gmail.com",
-      "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
-      referrer_chain, CreateFakeFrameUrlChainProto(), EventResult::BLOCKED);
+      "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123", "",
+      "test@gmail.com", "gaia@gmail.com", /*user_justification=*/std::nullopt,
+      *result, 200, referrer_chain, CreateFakeFrameUrlChainProto(),
+      EventResult::BLOCKED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1207,7 +1208,7 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnDangerousDownloadEvent_Warned) {
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "encrypted.zip",
       GetHashCallbackVariant("DEADBEEF"), "POTENTIALLY_UNWANTED",
-      "application/zip", "FILE_DOWNLOAD", "123",
+      "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
       CreateFakeFrameUrlChainProto(), EventResult::WARNED);
   RunUntilHashObtained();
@@ -1261,7 +1262,7 @@ TEST_P(ReportingEventRouterFileEventTest,
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "encrypted.zip",
       GetHashCallbackVariant("DEADBEEF"), "DANGEROUS", "application/zip",
-      "FILE_DOWNLOAD", "123",
+      DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
       CreateFakeFrameUrlChainProto(), EventResult::BLOCKED);
   RunUntilHashObtained();
@@ -1315,8 +1316,9 @@ TEST_P(ReportingEventRouterFileEventTest,
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
-      "FILE_DOWNLOAD", "123", 12345, std::move(referrer_chain),
-      CreateFakeFrameUrlChainProto(), EventResult::BYPASSED);
+      DataTransferEventTrigger::FILE_DOWNLOAD, "123", 12345,
+      std::move(referrer_chain), CreateFakeFrameUrlChainProto(),
+      EventResult::BYPASSED);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1367,8 +1369,9 @@ TEST_P(ReportingEventRouterFileEventTest,
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
-      "FILE_DOWNLOAD", "", 12345, std::move(referrer_chain),
-      CreateFakeFrameUrlChainProto(), EventResult::WARNED);
+      DataTransferEventTrigger::FILE_DOWNLOAD, "", 12345,
+      std::move(referrer_chain), CreateFakeFrameUrlChainProto(),
+      EventResult::WARNED);
   RunUntilHashObtained();
   run_loop.Run();
 }

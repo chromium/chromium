@@ -632,35 +632,33 @@ TEST_F(IOSReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
   validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
 
-    expected_event.set_url("https://example.com/");
-    expected_event.set_tab_url("https://example.com/");
-    expected_event.set_source("exampleSource");
-    expected_event.set_destination("exampleDestination");
-    expected_event.set_content_type("text/html");
-    expected_event.set_content_size(1234);
-    expected_event.set_trigger(
-        chrome::cros::reporting::proto::DataTransferEventTrigger::
-            WEB_CONTENT_UPLOAD);
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
-    expected_event.set_web_app_signed_in_account("content_area_user@gmail.com");
-    expected_event.set_source_web_app_signed_in_account(
-        "active_user@gmail.com");
+  expected_event.set_url("https://example.com/");
+  expected_event.set_tab_url("https://example.com/");
+  expected_event.set_source("exampleSource");
+  expected_event.set_destination("exampleDestination");
+  expected_event.set_content_type("text/html");
+  expected_event.set_content_size(1234);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  expected_event.set_web_app_signed_in_account("content_area_user@gmail.com");
+  expected_event.set_source_web_app_signed_in_account("active_user@gmail.com");
 
-    TriggeredRuleInfo triggered_rule;
-    triggered_rule.set_rule_id(1);
-    triggered_rule.set_rule_name("rule_1_name");
+  TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_id(1);
+  triggered_rule.set_rule_name("rule_1_name");
 
-    *expected_event.add_triggered_rule_info() = triggered_rule;
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(profile_->GetProfileName());
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(profile_->GetProfileName());
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   reporting_event_router_->OnDataControlsSensitiveDataEvent(
       GURL("https://example.com/"), GURL("https://example.com/"),
       "exampleSource", "exampleDestination", "text/html",
-      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      enterprise_connectors::DataTransferEventTrigger::WEB_CONTENT_UPLOAD,
       "active_user@gmail.com", "content_area_user@gmail.com", triggered_rules,
       enterprise_connectors::EventResult::ALLOWED, 1234);
   run_loop.Run();

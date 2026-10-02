@@ -69,21 +69,6 @@ inline constexpr char kTooManyRequestsUnscannedReason[] = "TOO_MANY_REQUESTS";
 inline constexpr char kTimeoutUnscannedReason[] = "TIMEOUT";
 inline constexpr char kUserCancelledUnscannedReason[] = "USER_CANCELLED";
 
-inline constexpr char kFileDownloadDataTransferEventTrigger[] = "FILE_DOWNLOAD";
-inline constexpr char kFileUploadDataTransferEventTrigger[] = "FILE_UPLOAD";
-inline constexpr char kWebContentUploadDataTransferEventTrigger[] =
-    "WEB_CONTENT_UPLOAD";
-inline constexpr char kPagePrintDataTransferEventTrigger[] = "PAGE_PRINT";
-inline constexpr char kUrlVisitedDataTransferEventTrigger[] = "URL_VISITED";
-inline constexpr char kClipboardCopyDataTransferEventTrigger[] =
-    "CLIPBOARD_COPY";
-inline constexpr char kNetworkRequestDataTransferEventTrigger[] =
-    "NETWORK_REQUEST";
-inline constexpr char kFileTransferDataTransferEventTrigger[] = "FILE_TRANSFER";
-inline constexpr char kPageLoadDataTransferEventTrigger[] = "PAGE_LOAD";
-inline constexpr char kMutationDataTransferEventTrigger[] = "MUTATION";
-inline constexpr char kMouseActionDataTransferEventTrigger[] = "MOUSE_ACTION";
-
 inline constexpr char kContentTransferMethodUnknown[] =
     "CONTENT_TRANSFER_METHOD_UNKNOWN";
 inline constexpr char kContentTransferMethodFilePicker[] =

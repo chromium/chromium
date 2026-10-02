@@ -110,7 +110,7 @@ void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
       delegate_->GetReportingEventRouter(), content_analysis_info(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
-      file_info.mime_type, access_point_string(), content_transfer_method_,
+      file_info.mime_type, data_transfer_trigger(), content_transfer_method_,
       content_analysis_info()->GetContentAreaAccountEmail(), file_info.size,
       ScanRequestUploadResult::kUserCancelled,
       enterprise_connectors::ContentAnalysisResponse(), EventResult::CANCELLED);
@@ -119,7 +119,7 @@ void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
 void FilesRequestHandlerBase::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   delegate_->ReportWarningBypass(user_justification, *content_analysis_info(),
-                                 access_point_string(),
+                                 data_transfer_trigger(),
                                  content_transfer_method_);
 }
 
@@ -336,7 +336,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
       delegate_->GetReportingEventRouter(), content_analysis_info(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
-      file_info.mime_type, access_point_string(), content_transfer_method_,
+      file_info.mime_type, data_transfer_trigger(), content_transfer_method_,
       content_analysis_info()->GetContentAreaAccountEmail(), file_info.size,
       upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,

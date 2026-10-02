@@ -42,7 +42,7 @@ class MockFilesRequestHandlerBaseDelegate
               ReportWarningBypass,
               (std::optional<std::u16string> user_justification,
                const ContentAnalysisInfoBase& info,
-               const std::string& trigger,
+               DataTransferEventTrigger trigger,
                const std::string& content_transfer_method),
               (override));
   MOCK_METHOD(bool, UploadDataImpl, (), (override));

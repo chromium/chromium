@@ -66,23 +66,23 @@ void RequestHandlerBase::AddRequestTokenToAckFinalAction(
   request_tokens_to_ack_final_actions_[token] = final_action;
 }
 
-std::string RequestHandlerBase::access_point_string() const {
+DataTransferEventTrigger RequestHandlerBase::data_transfer_trigger() const {
   switch (access_point_) {
     case DeepScanAccessPoint::FILE_TRANSFER:
-      return kFileTransferDataTransferEventTrigger;
+      return DataTransferEventTrigger::FILE_TRANSFER;
     case DeepScanAccessPoint::UPLOAD:
     case DeepScanAccessPoint::DRAG_AND_DROP:
     case DeepScanAccessPoint::PASTE:
     case DeepScanAccessPoint::ACTOR:
-      return kFileUploadDataTransferEventTrigger;
+      return DataTransferEventTrigger::FILE_UPLOAD;
     case DeepScanAccessPoint::DOWNLOAD:
-      return kFileDownloadDataTransferEventTrigger;
+      return DataTransferEventTrigger::FILE_DOWNLOAD;
     case DeepScanAccessPoint::NETWORK_REQUEST:
-      return kNetworkRequestDataTransferEventTrigger;
+      return DataTransferEventTrigger::NETWORK_REQUEST;
     case DeepScanAccessPoint::COPY:
-      return kClipboardCopyDataTransferEventTrigger;
+      return DataTransferEventTrigger::CLIPBOARD_COPY;
     case DeepScanAccessPoint::PRINT:
-      return kPagePrintDataTransferEventTrigger;
+      return DataTransferEventTrigger::PAGE_PRINT;
   }
   NOTREACHED();
 }

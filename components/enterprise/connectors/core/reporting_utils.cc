@@ -158,49 +158,6 @@ proto::UnscannedFileEvent::UnscannedReason ToProtoUnscannedReason(
   NOTREACHED();
 }
 
-// TODO(crbug.com/567468504): Clean up this function.
-proto::DataTransferEventTrigger ToProtoDataTransferEventTrigger(
-    const std::string& trigger) {
-  if (trigger == kFileDownloadDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::FILE_DOWNLOAD;
-  }
-  if (trigger == kFileUploadDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::FILE_UPLOAD;
-  }
-  if (trigger == kWebContentUploadDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::WEB_CONTENT_UPLOAD;
-  }
-  if (trigger == kPagePrintDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::PAGE_PRINT;
-  }
-  if (trigger == kClipboardCopyDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::CLIPBOARD_COPY;
-  }
-  if (trigger == kNetworkRequestDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::NETWORK_REQUEST;
-  }
-  if (trigger == kUrlVisitedDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::URL_VISITED;
-  }
-  if (trigger == kFileTransferDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::FILE_TRANSFER;
-  }
-  if (trigger == kPageLoadDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::PAGE_LOAD;
-  }
-  if (trigger == kMutationDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::MUTATION;
-  }
-  if (trigger == kMouseActionDataTransferEventTrigger) {
-    return proto::DataTransferEventTrigger::MOUSE_ACTION;
-  }
-  if (trigger.empty()) {
-    return proto::DataTransferEventTrigger::
-        DATA_TRANSFER_EVENT_TRIGGER_TYPE_UNSPECIFIED;
-  }
-  NOTREACHED();
-}
-
 proto::ContentTransferMethod ToProtoContentTransferMethod(
     const std::string& method) {
   // If `method` is empty, it means the field is not applicable and this method
@@ -623,7 +580,7 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& reason,
     const std::string& content_transfer_method,
@@ -640,7 +597,7 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
   event.set_file_name(file_name);
   event.set_download_digest_sha_256(download_digest_sha256);
   event.set_content_type(mime_type);
-  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+  event.set_trigger(trigger);
   event.set_scan_id(scan_id);
   event.set_unscanned_reason(ToProtoUnscannedReason(reason));
 
@@ -674,7 +631,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
     const std::string& source_active_user_email,
@@ -695,7 +652,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
   event.set_file_name(file_name);
   event.set_download_digest_sha_256(download_digest_sha256);
   event.set_content_type(mime_type);
-  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+  event.set_trigger(trigger);
   event.set_scan_id(scan_id);
 
   if (!content_transfer_method.empty()) {
@@ -746,7 +703,7 @@ proto::SafeBrowsingDangerousDownloadEvent GetDangerousDownloadEvent(
     const std::string& download_digest_sha256,
     const std::string& threat_type,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
     const std::string& profile_identifier,
@@ -764,7 +721,7 @@ proto::SafeBrowsingDangerousDownloadEvent GetDangerousDownloadEvent(
   event.set_download_digest_sha256(download_digest_sha256);
   event.set_threat_type(ToProtoThreatType(threat_type));
   event.set_content_type(mime_type);
-  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+  event.set_trigger(trigger);
   event.set_scan_id(scan_id);
 
   if (!content_transfer_method.empty()) {
@@ -799,7 +756,7 @@ GetDataControlsSensitiveDataEvent(
     const std::string& source,
     const std::string& destination,
     const std::string& mime_type,
-    const std::string& trigger,
+    DataTransferEventTrigger trigger,
     const std::string& source_active_user_email,
     const std::string& content_area_account_email,
     const std::string& profile_identifier,
@@ -813,7 +770,7 @@ GetDataControlsSensitiveDataEvent(
   event.set_source(source);
   event.set_destination(destination);
   event.set_content_type(mime_type);
-  event.set_trigger(ToProtoDataTransferEventTrigger(trigger));
+  event.set_trigger(trigger);
 
   if (!content_area_account_email.empty()) {
     event.set_web_app_signed_in_account(content_area_account_email);

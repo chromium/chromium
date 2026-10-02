@@ -61,7 +61,7 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     virtual void ReportWarningBypass(
         std::optional<std::u16string> user_justification,
         const ContentAnalysisInfoBase& info,
-        const std::string& trigger,
+        DataTransferEventTrigger trigger,
         const std::string& content_transfer_method) = 0;
 
     // Returns true if scanning should proceed for the files managed by this

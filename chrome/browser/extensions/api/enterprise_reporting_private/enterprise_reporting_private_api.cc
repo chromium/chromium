@@ -218,7 +218,7 @@ void ReportForceSaveToCloudEvent(
     enterprise_connectors::MaybeReportDeepScanningVerdict(
         reporting_event_router, &info, /*source=*/"", destination,
         file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
-        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        enterprise_connectors::DataTransferEventTrigger::FILE_DOWNLOAD,
         /*content_transfer_method=*/"", info.GetContentAreaAccountEmail(),
         file_metadata.size,
         enterprise_connectors::ScanRequestUploadResult::kSuccess,

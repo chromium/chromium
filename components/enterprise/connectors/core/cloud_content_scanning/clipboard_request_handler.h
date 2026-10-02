@@ -52,7 +52,7 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   // RequestHandlerBase:
   void ReportWarningBypass(
       std::optional<std::u16string> user_justification) override;
-  std::string access_point_string() const override;
+  DataTransferEventTrigger data_transfer_trigger() const override;
 
  protected:
   // Calls `BinaryUploadService` with the passed request to obtain a scanning

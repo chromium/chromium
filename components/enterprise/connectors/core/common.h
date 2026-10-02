@@ -20,6 +20,7 @@
 #include "build/blink_buildflags.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "url/gurl.h"
@@ -46,6 +47,10 @@ using SourceDestinationStringPair = std::pair<std::string, std::string>;
 
 // Alias to reduce verbosity when using Event::EventCase.
 using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
+
+// Alias to reduce verbosity when using the data transfer event trigger enum.
+using DataTransferEventTrigger =
+    ::chrome::cros::reporting::proto::DataTransferEventTrigger;
 
 // Callback which accepts a hash for use in scan upload or reporting.
 using OnGotHashCallback = base::OnceCallback<void(std::string)>;

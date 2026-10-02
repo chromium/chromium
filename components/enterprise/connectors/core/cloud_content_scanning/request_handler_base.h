@@ -64,7 +64,7 @@ class RequestHandlerBase {
 
   base::TimeTicks upload_start_time() const;
   DeepScanAccessPoint access_point() const;
-  virtual std::string access_point_string() const;
+  virtual DataTransferEventTrigger data_transfer_trigger() const;
   ContentAnalysisInfoBase* content_analysis_info() const;
   const GURL& url() const;
   void AddRequestTokenToAckFinalAction(
