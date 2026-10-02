@@ -355,6 +355,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragmentRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicAndroidMojoIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicAndroidUiIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicMicPermissionDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonRenderTest.java",
