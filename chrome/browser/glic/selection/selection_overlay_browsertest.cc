@@ -104,21 +104,21 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
 
 namespace {
 
-class TestSuggestedActionsListener
-    : public selection::SuggestedActionsListener {
+class TestSuggestedActionsListener {
  public:
   TestSuggestedActionsListener() = default;
-  ~TestSuggestedActionsListener() override = default;
+  ~TestSuggestedActionsListener() = default;
 
-  mojo::PendingRemote<selection::SuggestedActionsListener>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
+  SelectionOverlayController::SuggestedActionsCallback GetCallback() {
+    return base::BindRepeating(
+        &TestSuggestedActionsListener::OnSuggestedActionsAvailable,
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   void OnSuggestedActionsAvailable(
-      std::vector<selection::SuggestedActionPtr> actions) override {
-    for (auto& action : actions) {
-      actions_.push_back(std::move(action));
+      const std::vector<selection::SuggestedActionPtr>& actions) {
+    for (const auto& action : actions) {
+      actions_.push_back(action->Clone());
     }
     batches_received_++;
     if (run_loop_ && batches_received_ >= expected_batches_) {
@@ -140,11 +140,11 @@ class TestSuggestedActionsListener
   }
 
  private:
-  mojo::Receiver<selection::SuggestedActionsListener> receiver_{this};
   std::vector<selection::SuggestedActionPtr> actions_;
   size_t batches_received_ = 0;
   size_t expected_batches_ = 0;
   std::unique_ptr<base::RunLoop> run_loop_;
+  base::WeakPtrFactory<TestSuggestedActionsListener> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -159,8 +159,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   controller->Show(/*options=*/nullptr);
 
   TestSuggestedActionsListener listener;
-  static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   EXPECT_TRUE(listener.actions().empty());
 }
@@ -286,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       /*is_using_keyboard=*/false);
 
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 3u);
@@ -338,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
       /*is_using_keyboard=*/false);
 
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 1u);
@@ -394,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   auto* handler =
       static_cast<selection::SelectionOverlayPageHandler*>(controller);
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 1u);
@@ -411,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
           selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
       /*is_using_keyboard=*/false);
   TestSuggestedActionsListener adjusted_listener;
-  handler->GetSuggestedActions(adjusted_listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(adjusted_listener.GetCallback());
   adjusted_listener.WaitForBatches(1);
   EXPECT_TRUE(adjusted_listener.actions().empty());
 }
@@ -495,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       /*is_using_keyboard=*/false);
 
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(2);
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 5u);
@@ -603,10 +602,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       SelectionOverlayController::State::kOverlay,
       "Timeout waiting for SelectionOverlayController state to be kOverlay"));
 
-  auto* handler =
-      static_cast<selection::SelectionOverlayPageHandler*>(controller);
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
 
   EXPECT_EQ(counting_tool.request_count(), 1);
@@ -641,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   // fetching.
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     EXPECT_TRUE(listener.actions().empty());
     EXPECT_EQ(counting_tool.request_count(), 0);
@@ -657,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   base::UnguessableToken region1_action_id;
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
@@ -671,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   // suggestions without refetching.
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
@@ -689,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       /*is_using_keyboard=*/false);
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 2");
@@ -701,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   handler->DeleteRegion(region2_id, /*is_using_keyboard=*/false);
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
@@ -718,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       /*is_using_keyboard=*/false);
   {
     TestSuggestedActionsListener listener;
-    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    controller->GetSuggestedActionsForTesting(listener.GetCallback());
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 3");
@@ -823,7 +820,7 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
       /*is_using_keyboard=*/false);
 
   TestSuggestedActionsListener listener;
-  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
   listener.WaitForBatches(1);
   if (listener.actions().empty()) {
     return nullptr;

@@ -108,6 +108,10 @@ class SelectionOverlayController
   void DeleteRegion(const base::UnguessableToken& id,
                     bool is_using_keyboard) override;
 
+  using SuggestedActionsCallback = base::RepeatingCallback<void(
+      const std::vector<selection::SuggestedActionPtr>&)>;
+  void GetSuggestedActionsForTesting(SuggestedActionsCallback callback);
+
  private:
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
@@ -207,6 +211,7 @@ class SelectionOverlayController
       const std::u16string& content,
       uint32_t start_offset,
       uint32_t end_offset);
+  void GetSuggestedActionsImpl(SuggestedActionsCallback callback);
   void RequestNewSuggestions(SelectedRegionData& region_data);
   void OnSuggestionsReceived(
       const base::UnguessableToken& region_id,
@@ -244,6 +249,7 @@ class SelectionOverlayController
   std::optional<base::UnguessableToken> active_region_id_;
   base::OneShotTimer surrounding_text_timer_;
   mojo::Remote<selection::SuggestedActionsListener> suggested_actions_listener_;
+  SuggestedActionsCallback suggested_actions_callback_for_testing_;
   // Subscription for `OverlayBaseController::overlay_web_view_` taking focus.
   // Scoped to the lifetime of that WebView.
   base::CallbackListSubscription overlay_web_view_focus_subscription_;

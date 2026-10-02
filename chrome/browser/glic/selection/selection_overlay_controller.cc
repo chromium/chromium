@@ -812,17 +812,35 @@ void SelectionOverlayController::GetSuggestedActions(
     mojo::PendingRemote<selection::SuggestedActionsListener> listener) {
   suggested_actions_listener_.reset();
   suggested_actions_listener_.Bind(std::move(listener));
+  GetSuggestedActionsImpl(base::BindRepeating(
+      [](mojo::Remote<selection::SuggestedActionsListener>* remote,
+         const std::vector<selection::SuggestedActionPtr>& actions) {
+        if (remote->is_bound()) {
+          (*remote)->OnSuggestedActionsAvailable(base::ToVector(
+              actions, [](const auto& action) { return action.Clone(); }));
+        }
+      },
+      base::Unretained(&suggested_actions_listener_)));
+}
 
+void SelectionOverlayController::GetSuggestedActionsForTesting(
+    SuggestedActionsCallback callback) {
+  suggested_actions_callback_for_testing_ = std::move(callback);
+  GetSuggestedActionsImpl(suggested_actions_callback_for_testing_);
+}
+
+void SelectionOverlayController::GetSuggestedActionsImpl(
+    SuggestedActionsCallback callback) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
       !active_region_id_.has_value()) {
-    suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    callback.Run({});
     return;
   }
 
   SelectedRegionData* region_data =
       base::FindOrNull(selected_regions_, *active_region_id_);
   if (!region_data) {
-    suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    callback.Run({});
     return;
   }
 
@@ -835,9 +853,15 @@ void SelectionOverlayController::GetSuggestedActions(
                 item.first, base::UTF16ToUTF8(item.second->GetLabel()),
                 item.second->GetAction());
           });
-      suggested_actions_listener_->OnSuggestedActionsAvailable(
-          std::move(actions));
+      callback.Run(std::move(actions));
     }
+    return;
+  }
+
+  ::selection::SuggestionService* suggestion_service =
+      ::selection::SuggestionService::From(tab_);
+  if (!suggestion_service || redacted_screenshot_.empty()) {
+    callback.Run({});
     return;
   }
 
@@ -865,7 +889,8 @@ void SelectionOverlayController::OnTextSurroundingSelectionAvailable(
     region_data->text_surrounding_selection = content;
   }
   if (active_region_id_ == region_id && !region_data->suggestions_requested &&
-      suggested_actions_listener_.is_bound()) {
+      (suggested_actions_listener_.is_bound() ||
+       suggested_actions_callback_for_testing_)) {
     RequestNewSuggestions(*region_data);
   }
 }
@@ -874,10 +899,8 @@ void SelectionOverlayController::RequestNewSuggestions(
     SelectedRegionData& region_data) {
   ::selection::SuggestionService* suggestion_service =
       ::selection::SuggestionService::From(tab_);
-  if (!suggestion_service || redacted_screenshot_.empty()) {
-    suggested_actions_listener_->OnSuggestedActionsAvailable({});
-    return;
-  }
+  CHECK(suggestion_service);
+  CHECK(!redacted_screenshot_.empty());
   if (region_data.waiting_for_surrounding_text) {
     return;
   }
@@ -957,11 +980,14 @@ void SelectionOverlayController::OnSuggestionsReceived(
 
   // This appends the new ones. The `suggested_actions_listener_` will be
   // unbound when the user makes a new selection.
-  if (active_region_id_ == region_id &&
-      suggested_actions_listener_.is_bound() &&
-      (complete || !suggestions.empty())) {
-    suggested_actions_listener_->OnSuggestedActionsAvailable(
-        std::move(actions));
+  if (active_region_id_ == region_id && (complete || !suggestions.empty())) {
+    if (suggested_actions_callback_for_testing_) {
+      suggested_actions_callback_for_testing_.Run(actions);
+    }
+    if (suggested_actions_listener_.is_bound()) {
+      suggested_actions_listener_->OnSuggestedActionsAvailable(
+          std::move(actions));
+    }
   }
 }
 
@@ -1030,6 +1056,7 @@ void SelectionOverlayController::Reset() {
   active_region_id_.reset();
   surrounding_text_timer_.Stop();
   suggested_actions_listener_.reset();
+  suggested_actions_callback_for_testing_.Reset();
   tab_context_.reset();
   capture_region_observer_.reset();
   options_.reset();
