@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: invalidate inherited ::search-text variables</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-cascade">
+<link rel="match" href="search-text-variable-invalidation-ref.html">
+<meta name="assert" content="An inherited inactive ::search-text style is updated when a custom property changes on its originating element.">
+<script src="/common/reftest-wait.js"></script>
+<script src="../support/markers.js"></script>
+<style>
+  :root {
+    --search-text-color: red;
+  }
+  ::search-text {
+    background-color: transparent;
+    color: var(--search-text-color);
+  }
+</style>
+<div id="parent"><span id="child">text</span></div>
+<script>
+  const child = document.getElementById("child");
+  addSearchTextMarker(child, 0, 4);
+  getComputedStyle(child, "::search-text").color;
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    child.style.setProperty("--search-text-color", "green");
+    takeScreenshot();
+  }));
+</script>
+</html>

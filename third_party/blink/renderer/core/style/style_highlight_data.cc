@@ -153,28 +153,10 @@ void StyleHighlightData::SetCustomHighlightUniversal(
 }
 
 bool StyleHighlightData::DependsOnSizeContainerQueries() const {
-  if ((selection_ && (selection_->DependsOnSizeContainerQueries() ||
-                      selection_->HasContainerRelativeValue())) ||
-      (target_text_ && (target_text_->DependsOnSizeContainerQueries() ||
-                        target_text_->HasContainerRelativeValue())) ||
-      (spelling_error_ && (spelling_error_->DependsOnSizeContainerQueries() ||
-                           spelling_error_->HasContainerRelativeValue())) ||
-      (grammar_error_ && (grammar_error_->DependsOnSizeContainerQueries() ||
-                          grammar_error_->HasContainerRelativeValue())) ||
-      (custom_highlight_universal_ &&
-       (custom_highlight_universal_->DependsOnSizeContainerQueries() ||
-        custom_highlight_universal_->HasContainerRelativeValue()))
-
-  ) {
-    return true;
-  }
-  for (const auto& style : custom_highlights_) {
-    if (style.value->DependsOnSizeContainerQueries() ||
-        style.value->HasContainerRelativeValue()) {
-      return true;
-    }
-  }
-  return false;
+  return StylesDependOnFunc([](const ComputedStyle& style) {
+    return style.DependsOnSizeContainerQueries() ||
+           style.HasContainerRelativeValue();
+  });
 }
 
 void StyleHighlightData::Trace(Visitor* visitor) const {

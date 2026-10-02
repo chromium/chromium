@@ -564,91 +564,19 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
 }
 
 bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
-  const StyleHighlightData& highlight_data = HighlightData();
-  if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasAnyRelativeUnits()) {
-    return true;
-  }
-  if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasAnyRelativeUnits()) {
-    return true;
-  }
-  if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasAnyRelativeUnits()) {
-    return true;
-  }
-  if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasAnyRelativeUnits()) {
-    return true;
-  }
-  const CustomHighlightsStyleMap& custom_highlights =
-      highlight_data.CustomHighlights();
-  for (const auto& custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasAnyRelativeUnits()) {
-      return true;
-    }
-  }
-
-  return false;
+  return HighlightData().StylesDependOnFunc(
+      [](const ComputedStyle& style) { return style.HasAnyRelativeUnits(); });
 }
 
 bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
-  const StyleHighlightData& highlight_data = HighlightData();
-  if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasContainerRelativeValue()) {
-    return true;
-  }
-  if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasContainerRelativeValue()) {
-    return true;
-  }
-  if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasContainerRelativeValue()) {
-    return true;
-  }
-  if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasContainerRelativeValue()) {
-    return true;
-  }
-  const CustomHighlightsStyleMap& custom_highlights =
-      highlight_data.CustomHighlights();
-  for (const auto& custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasContainerRelativeValue()) {
-      return true;
-    }
-  }
-
-  return false;
+  return HighlightData().StylesDependOnFunc([](const ComputedStyle& style) {
+    return style.HasContainerRelativeValue();
+  });
 }
 
-
 bool ComputedStyle::HighlightPseudoElementStylesHaveVariableReferences() const {
-  const StyleHighlightData& highlight_data = HighlightData();
-  if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasVariableReference()) {
-    return true;
-  }
-  if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasVariableReference()) {
-    return true;
-  }
-  if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasVariableReference()) {
-    return true;
-  }
-  if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasVariableReference()) {
-    return true;
-  }
-  const CustomHighlightsStyleMap& custom_highlights =
-      highlight_data.CustomHighlights();
-  for (const auto& custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasVariableReference()) {
-      return true;
-    }
-  }
-
-  return false;
+  return HighlightData().StylesDependOnFunc(
+      [](const ComputedStyle& style) { return style.HasVariableReference(); });
 }
 
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
