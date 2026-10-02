@@ -69,10 +69,13 @@ if (is_win) {
     ]
     public = [ "virtual_machine_win.h" ]
     sources = [
+      "virtual_machine_cpuid_win.cc",
       "virtual_machine_metrics_win.cc",
-      "virtual_machine_stub_win.cc",
+      "virtual_machine_smbios_win.cc",
+      "virtual_machine_win_internal.h",
     ]
     deps = [ "//base" ]
+    friend = [ ":unit_tests" ]
   }
 }
 

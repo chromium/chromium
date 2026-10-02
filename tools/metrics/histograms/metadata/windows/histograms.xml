@@ -745,35 +745,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.VmDetection.Agreement" enum="VmDetectionAgreement"
-    expires_after="2026-12-18">
+    expires_after="2027-06-30">
   <owner>sorin@chromium.org</owner>
   <owner>ganesh@chromium.org</owner>
   <summary>
     Which of the CPUID-based and SMBIOS-based implementations detected a virtual
-    machine guest. Recorded each time browser activity is reported, at most once
-    every 5 hours. Not yet emitted (crbug.com/563548288).
+    machine guest. The Hyper-V root partition, an unrecognized CPUID hypervisor,
+    ARM64 and unreadable firmware tables all count as not detected. Generic VM
+    firmware strings from an unrecognized vendor count as detected. Recorded
+    each time browser activity is reported, at most once every 5 hours.
   </summary>
 </histogram>
 
 <histogram name="Windows.VmDetection.FirmwareVmVendor" enum="FirmwareVmVendor"
-    expires_after="2026-12-18">
+    expires_after="2027-06-30">
   <owner>sorin@chromium.org</owner>
   <owner>ganesh@chromium.org</owner>
   <summary>
     The virtualization vendor identified from the SMBIOS/firmware strings.
     Recorded each time browser activity is reported, at most once every 5 hours.
-    Not yet emitted (crbug.com/563548288).
+    The cloud vendor buckets (Google Compute Engine, Amazon EC2, Alibaba Cloud,
+    Nutanix) may include bare-metal machines, which report the same firmware
+    strings as that vendor's VMs.
   </summary>
 </histogram>
 
 <histogram name="Windows.VmDetection.HypervisorType" enum="HypervisorType"
-    expires_after="2026-12-18">
+    expires_after="2027-06-30">
   <owner>sorin@chromium.org</owner>
   <owner>ganesh@chromium.org</owner>
   <summary>
     The hypervisor identified via the CPUID hypervisor leaves. Recorded each
-    time browser activity is reported, at most once every 5 hours. Not yet
-    emitted (crbug.com/563548288).
+    time browser activity is reported, at most once every 5 hours.
   </summary>
 </histogram>
 

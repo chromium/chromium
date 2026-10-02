@@ -13,6 +13,8 @@
 
 namespace activity_reporter {
 
+// TODO(crbug.com/563548288): Enable by default in a follow-up CL once the
+// histograms have landed.
 BASE_FEATURE(kVmDetectionExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 VmDetectionResult DetectVirtualMachine() {
@@ -47,9 +49,6 @@ void RecordVirtualMachineHistograms(const VmDetectionResult& result) {
       ComputeAgreement(result.cpuid_says_vm, result.smbios_says_vm));
 }
 
-// TODO(crbug.com/563548288): remove the feature condition once the VM detection
-// code lands. The conditional is present so that manual testing is possible on
-// branches while avoiding collecting unreliable UMA data.
 void RecordVirtualMachineHistogramsAsync() {
   if (!base::FeatureList::IsEnabled(kVmDetectionExperiment)) {
     return;

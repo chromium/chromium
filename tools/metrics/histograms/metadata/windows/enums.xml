@@ -59,7 +59,10 @@ chromium-metrics-reviews@google.com.
     The virtualization vendor identified from the SMBIOS/firmware strings.
   </summary>
   <int value="0" label="None">Firmware looks like a physical machine.</int>
-  <int value="1" label="Unknown">VM of an unrecognized vendor.</int>
+  <int value="1" label="Unrecognized VM vendor">
+    Generic VM strings (e.g. &quot;Virtual Machine&quot;) from an unrecognized
+    vendor. Counts as a VM, unlike the CPUID &quot;Unknown&quot; bucket.
+  </int>
   <int value="2" label="Read failed">
     Firmware tables could not be read (&quot;don't know&quot;).
   </int>
@@ -71,7 +74,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Parallels"/>
   <int value="9" label="bhyve"/>
   <int value="10" label="Google Compute Engine"/>
-  <int value="11" label="Amazon EC2"/>
+  <int value="11" label="Amazon EC2">
+    Nitro instances only. Xen-based instances report as Xen.
+  </int>
   <int value="12" label="Alibaba Cloud"/>
   <int value="13" label="OpenStack"/>
   <int value="14" label="Nutanix"/>
@@ -86,13 +91,16 @@ chromium-metrics-reviews@google.com.
   <summary>The hypervisor identified via the CPUID hypervisor leaves.</summary>
   <int value="0" label="None">No hypervisor: a physical machine.</int>
   <int value="1" label="Unknown">
-    Hypervisor-present bit set, vendor not recognized.
+    Hypervisor-present bit set, vendor not recognized. May be a physical host
+    running under a security hypervisor (&quot;don't know&quot;). Counts as not
+    a VM, unlike the SMBIOS &quot;Unrecognized VM vendor&quot; bucket.
   </int>
   <int value="2" label="Unsupported architecture">
-    Not x86 (Windows on ARM64), so CPUID could not run (&quot;don't know&quot;).
+    Windows on ARM64, native or x86/x64 emulated: CPUID is unavailable or
+    synthesized (&quot;don't know&quot;).
   </int>
   <int value="3" label="Hyper-V guest">
-    Hyper-V/Azure VM, Windows Sandbox, WDAG or WSL2.
+    Hyper-V/Azure VM or Windows Sandbox.
   </int>
   <int value="4" label="Hyper-V root">
     The Hyper-V host: a physical machine with VBS, WSL2 or similar enabled.
@@ -2779,7 +2787,8 @@ and the result of attempting to pin to taskbar when user requests it.
   <int value="0" label="Neither"/>
   <int value="1" label="CPUID only"/>
   <int value="2" label="SMBIOS only">
-    Expected for nested virtualization and on ARM64.
+    Expected for nested virtualization, on ARM64 (native or x86/x64 emulated)
+    and when CPUID reports an unrecognized hypervisor.
   </int>
   <int value="3" label="Both"/>
 </enum>
