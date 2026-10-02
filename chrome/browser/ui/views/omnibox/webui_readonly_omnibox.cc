@@ -312,6 +312,14 @@ void WebUIReadOnlyOmnibox::SetAccessibilityLabel(
     const std::u16string& display_text,
     const AutocompleteMatch& match,
     bool notify_text_changed) {
+  if (IsSuggestionNarrationOwnedByWebUIPopup()) {
+    // The full WebUI popup narrates selections itself; also narrating here
+    // interrupts it.
+    ClearAccessibilityLabel();
+    RequestUpdateWebUI();
+    return;
+  }
+
   // We can ignore the prefix length, since we set the suggestion separately.
   int ignored_suggestion_text_prefix_length;
 

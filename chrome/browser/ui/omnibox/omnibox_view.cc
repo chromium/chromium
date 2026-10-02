@@ -365,6 +365,11 @@ void OmniboxView::UpdateTextStyle(
   }
 }
 
+bool OmniboxView::IsSuggestionNarrationOwnedByWebUIPopup() const {
+  return controller()->popup_state_manager()->popup_state() ==
+         OmniboxPopupState::kFull;
+}
+
 std::u16string OmniboxView::ComputeFriendlySuggestionTextForAccessibility(
     const std::u16string& display_text,
     const AutocompleteMatch& match,

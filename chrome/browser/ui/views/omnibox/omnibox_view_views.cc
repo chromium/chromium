@@ -1198,6 +1198,12 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
+  if (IsSuggestionNarrationOwnedByWebUIPopup()) {
+    // The full WebUI popup narrates selections itself; also narrating here
+    // (especially the macOS announcement below) interrupts it.
+    ClearAccessibilityLabel();
+    return;
+  }
   friendly_suggestion_text_ = ComputeFriendlySuggestionTextForAccessibility(
       display_text, match, friendly_suggestion_text_prefix_length_);
   UpdateAccessibleValue();

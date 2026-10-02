@@ -55,6 +55,11 @@ export function getHtml(this: SearchboxInputElement) {
           @paste="${this.onInputPaste_}">
     `}
     <span id="ellipsisIndicator" aria-hidden="true">...</span>
+    <!-- Target of the input's aria-activedescendant while a suggestion is
+         selected, so screen readers narrate the suggestion's label instead of
+         the input value that previews it. Must share the input's shadow root
+         for element reflection to work. -->
+    <div id="selectionAnnouncement"></div>
     <slot name="action-buttons"></slot>
     <slot name="compose-button"></slot>
 </div>

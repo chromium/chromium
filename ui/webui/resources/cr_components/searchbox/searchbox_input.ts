@@ -49,6 +49,7 @@ export interface SearchboxInputElement {
   $: {
     input: HTMLInputElement|HTMLTextAreaElement,
     icon: SearchboxIconElement,
+    selectionAnnouncement: HTMLElement,
   };
 }
 
@@ -220,6 +221,19 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     return this.lastInput_;
   }
 
+  /**
+   * While a suggestion is selected, the input's value previews it. Screen
+   * readers narrate that value change, interrupting the suggestion's own
+   * announcement. Pointing aria-activedescendant at an element holding the
+   * suggestion's label makes screen readers narrate the label instead. Pass an
+   * empty string to narrate the input itself again, e.g. when the user edits.
+   */
+  setSelectionA11yLabel(label: string) {
+    this.$.selectionAnnouncement.textContent = label;
+    this.$.input.ariaActiveDescendantElement =
+        label ? this.$.selectionAnnouncement : null;
+  }
+
   isMultiline(): boolean {
     if (!this.$.input) {
       return false;
@@ -254,6 +268,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputBlur_() {
+    this.setSelectionA11yLabel('');
     this.updateEllipsisState_();
   }
 
@@ -294,6 +309,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       return;
     }
 
+    // The user is editing, so narrate the input itself.
+    this.setSelectionA11yLabel('');
     this.updateInput_({text: inputValue, inline: ''});
     // Record a user timing mark if the input has content.
     if (inputValue.length > 0 &&
@@ -331,6 +348,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
+    // The user is moving the caret, so narrate the input itself.
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+      this.setSelectionA11yLabel('');
+    }
+
     // Ignore this event during IME composition or if the input does not have
     // inline autocompletion.
     if (e.isComposing || !this.lastInput_.inline) {
@@ -397,6 +419,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (e && e.button !== 0) {
       return;
     }
+    // The user is placing the caret, so narrate the input itself.
+    this.setSelectionA11yLabel('');
     this.fire(
         'input-focus-changed',
         {value: this.$.input.value, isOnFocus: !this.$.input.value});

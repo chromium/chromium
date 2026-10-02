@@ -2389,6 +2389,55 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('hello there', mockInput.inputElement.value);
       });
 
+  test(
+      'Input narrates the selected match label instead of its preview',
+      async () => {
+        const mockInput = element.getInputElement();
+        mockInput.inputElement.focus();
+        await simulateUserTextInput(mockInput, 'hello');
+        assertEquals(null, mockInput.inputElement.ariaActiveDescendantElement);
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'hello',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: false,
+              fillIntoEdit: 'hello world',
+              a11yLabel: 'hello world, search suggestion, 1 of 2',
+            }),
+            createSearchMatchForTesting({
+              fillIntoEdit: 'hello there',
+              destinationUrl: 'https://example.com/hello_there',
+              a11yLabel: 'hello there, search suggestion, 2 of 2',
+            }),
+          ],
+        }));
+        await microtasksFinished();
+
+        const announcement = mockInput.$.selectionAnnouncement;
+
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals('hello world', mockInput.inputElement.value);
+        assertEquals(
+            announcement, mockInput.inputElement.ariaActiveDescendantElement);
+        assertEquals(
+            'hello world, search suggestion, 1 of 2', announcement.textContent);
+
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(
+            announcement, mockInput.inputElement.ariaActiveDescendantElement);
+        assertEquals(
+            'hello there, search suggestion, 2 of 2', announcement.textContent);
+
+        // Editing the text narrates the input itself again.
+        await simulateUserTextInput(mockInput, 'hello t');
+        assertEquals(null, mockInput.inputElement.ariaActiveDescendantElement);
+        assertEquals('', announcement.textContent);
+      });
+
   test('PageDown and PageUp jump through selections', async () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'test');
