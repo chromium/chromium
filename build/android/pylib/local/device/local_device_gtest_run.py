@@ -252,8 +252,16 @@ class _ApkDelegate:
         if self._use_existing_test_data:
             return
 
+        install_timeout = device.INSTALL_DEFAULT_TIMEOUT * math.ceil(
+            _GetDeviceTimeoutMultiplier() / 10
+        )
         for additional_apk in self._additional_apks:
-            device.Install(additional_apk, allow_downgrade=True, reinstall=True)
+            device.Install(
+                additional_apk,
+                allow_downgrade=True,
+                reinstall=True,
+                timeout=install_timeout,
+            )
 
         if self._test_apk_incremental_install_json:
             installer.Install(
@@ -268,6 +276,7 @@ class _ApkDelegate:
                 allow_downgrade=True,
                 reinstall=True,
                 permissions=self._permissions,
+                timeout=install_timeout,
             )
 
     def ResultsDirectory(self, device):

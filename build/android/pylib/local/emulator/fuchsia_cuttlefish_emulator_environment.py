@@ -55,6 +55,10 @@ class FuchsiaCuttlefishEmulatorEnvironment(
 
     # override
     def SetUp(self):
+        # Emulated Cuttlefish on nested QEMU runs slower than physical
+        # hardware. Set DEVICE_TIMEOUT_MULTIPLIER so list_tests and test
+        # runs have sufficient timeout headroom.
+        os.environ.setdefault('DEVICE_TIMEOUT_MULTIPLIER', '3')
         self._device_serials = [self._instance.Start()]
         super().SetUp()
 
