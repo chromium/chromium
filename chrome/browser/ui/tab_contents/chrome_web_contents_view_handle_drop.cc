@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +38,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -164,21 +162,18 @@ void CompletionCallback(
   drop_data.filenames = std::move(final_filenames);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableDlpFileSystemApi)) {
-    std::vector<content::DropData::FileSystemFileInfo> final_file_system_files;
-    for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
-      if (virtual_file_to_scan_file_index.contains(i)) {
-        int scan_file_index = virtual_file_to_scan_file_index[i];
-        if (file_indexes_to_block.contains(scan_file_index)) {
-          continue;
-        }
+  std::vector<content::DropData::FileSystemFileInfo> final_file_system_files;
+  for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
+    if (virtual_file_to_scan_file_index.contains(i)) {
+      int scan_file_index = virtual_file_to_scan_file_index[i];
+      if (file_indexes_to_block.contains(scan_file_index)) {
+        continue;
       }
-      final_file_system_files.push_back(
-          std::move(drop_data.file_system_files[i]));
     }
-    drop_data.file_system_files = std::move(final_file_system_files);
+    final_file_system_files.push_back(
+        std::move(drop_data.file_system_files[i]));
   }
+  drop_data.file_system_files = std::move(final_file_system_files);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::move(callback).Run(std::move(drop_data));
@@ -331,15 +326,12 @@ void HandleOnPerformingDrop(
   // `drop_data.file_system_file` indices and `paths_to_scan` indices.
   base::flat_map<int, int> virtual_file_to_scan_file_index;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableDlpFileSystemApi)) {
-    for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
-      base::FilePath resolved_path = MaybeSubstituteFuseboxFilePath(
-          profile, scan_target, drop_data.file_system_files[i].url);
-      if (!resolved_path.empty()) {
-        virtual_file_to_scan_file_index[i] = paths_to_scan.size();
-        paths_to_scan.push_back(resolved_path);
-      }
+  for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
+    base::FilePath resolved_path = MaybeSubstituteFuseboxFilePath(
+        profile, scan_target, drop_data.file_system_files[i].url);
+    if (!resolved_path.empty()) {
+      virtual_file_to_scan_file_index[i] = paths_to_scan.size();
+      paths_to_scan.push_back(resolved_path);
     }
   }
 #endif

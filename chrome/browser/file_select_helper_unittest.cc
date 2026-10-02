@@ -39,10 +39,8 @@
 using blink::mojom::FileChooserParams;
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -777,7 +775,6 @@ class FakeFuseboxDelegate : public fusebox::Server::Delegate {
 }  // namespace
 
 struct FuseboxFileParams {
-  bool feature_enabled;
   base::FilePath virtual_path;
   base::FilePath expected_fusebox_path;
 };
@@ -787,24 +784,11 @@ class FileSelectHelperChromeOSTest : public ChromeRenderViewHostTestHarness {
   FileSelectHelperChromeOSTest() = default;
 
  protected:
-  void EnableDlpFileSystemApi(bool enabled) {
-    feature_list_.Reset();
-    if (enabled) {
-      feature_list_.InitAndEnableFeature(
-          enterprise_connectors::kEnableDlpFileSystemApi);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          enterprise_connectors::kEnableDlpFileSystemApi);
-    }
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir_));
     data_dir_ = data_dir_.AppendASCII("file_select_helper");
     ASSERT_TRUE(base::PathExists(data_dir_));
-
-    EnableDlpFileSystemApi(true);
 
     // Register fake mount points
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
@@ -862,7 +846,6 @@ class FileSelectHelperChromeOSTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::FilePath data_dir_;
-  base::test::ScopedFeatureList feature_list_;
   FakeFuseboxDelegate fake_fusebox_delegate_;
   std::unique_ptr<fusebox::Server> fusebox_server_;
 };
@@ -872,12 +855,6 @@ class MaybeSubstituteFuseboxFilePathParamTest
       public testing::WithParamInterface<FuseboxFileParams> {
  public:
   MaybeSubstituteFuseboxFilePathParamTest() = default;
-
- protected:
-  void SetUp() override {
-    FileSelectHelperChromeOSTest::SetUp();
-    EnableDlpFileSystemApi(GetParam().feature_enabled);
-  }
 };
 
 TEST_P(MaybeSubstituteFuseboxFilePathParamTest, ConvertVirtualFile) {
@@ -947,8 +924,7 @@ TEST_P(MaybeSubstituteFuseboxFilePathParamTest,
   enterprise_connectors::ContentAnalysisDelegate::Result result;
 
   base::FilePath expected_fusebox_path = GetParam().expected_fusebox_path;
-  bool virtual_file_is_scanned =
-      GetParam().feature_enabled && !expected_fusebox_path.empty();
+  bool virtual_file_is_scanned = !expected_fusebox_path.empty();
 
   if (virtual_file_is_scanned) {
     data.paths.push_back(expected_fusebox_path);
@@ -977,30 +953,16 @@ TEST_P(MaybeSubstituteFuseboxFilePathParamTest,
 }
 
 const FuseboxFileParams kFuseboxTestCases[] = {
-    // Case 0: Feature enabled, virtual file -> Should substitute Fusebox path
-    {.feature_enabled = true,
-     .virtual_path =
+    // Case 0: Virtual file -> Should substitute Fusebox path
+    {.virtual_path =
          base::FilePath(FILE_PATH_LITERAL("fake_mount/virtual_doc.docx")),
      .expected_fusebox_path = base::FilePath(
          FILE_PATH_LITERAL("/media/fuse/fusebox/fake_mount/virtual_doc.docx"))},
-    // Case 1: Feature enabled, virtual file not backed by fusebox -> Should
-    // return empty
-    {.feature_enabled = true,
-     .virtual_path =
+    // Case 1: Virtual file not backed by fusebox -> Should return empty
+    {.virtual_path =
          base::FilePath(FILE_PATH_LITERAL("not_backed_mount/virtual_doc.docx")),
      .expected_fusebox_path = base::FilePath()},
-    // Case 2: Feature disabled, virtual file -> Should return empty
-    {.feature_enabled = false,
-     .virtual_path =
-         base::FilePath(FILE_PATH_LITERAL("fake_mount/virtual_doc.docx")),
-     .expected_fusebox_path = base::FilePath(
-         FILE_PATH_LITERAL("/media/fuse/fusebox/fake_mount/virtual_doc.docx"))},
-    // Case 3: Feature disabled, virtual file not backed by fusebox -> Should
-    // return empty
-    {.feature_enabled = false,
-     .virtual_path =
-         base::FilePath(FILE_PATH_LITERAL("not_backed_mount/virtual_doc.docx")),
-     .expected_fusebox_path = base::FilePath()},
+
 };
 
 INSTANTIATE_TEST_SUITE_P(MaybeSubstituteFuseboxFilePath,

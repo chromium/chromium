@@ -669,8 +669,6 @@ class FileAnalysisRequestBaseVirtualFileTest
  public:
   void SetUp() override {
     FileAnalysisRequestBaseTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_connectors::kEnableDlpFileSystemApi);
     FileAnalysisRequestBase::SetIsVirtualFileForTesting(true);
   }
 
@@ -678,9 +676,6 @@ class FileAnalysisRequestBaseVirtualFileTest
     FileAnalysisRequestBase::SetIsVirtualFileForTesting(false);
     FileAnalysisRequestBaseTest::TearDown();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileAnalysisRequestBaseVirtualFileTest, LargeFileNoHashAndFileTooLarge) {

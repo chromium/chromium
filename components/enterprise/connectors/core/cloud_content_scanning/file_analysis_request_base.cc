@@ -183,9 +183,7 @@ std::string ComputeHashBlocking(
 }
 
 bool ShouldCheckVirtualFile(const base::FilePath& path) {
-  return base::FeatureList::IsEnabled(
-             enterprise_connectors::kEnableDlpFileSystemApi) &&
-         FileAnalysisRequestBase::IsVirtualFile(path);
+  return FileAnalysisRequestBase::IsVirtualFile(path);
 }
 
 std::optional<std::string> DetectFileMimeType(const base::FilePath& path,

@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
@@ -37,7 +36,6 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -288,7 +286,7 @@ class FakeFuseboxDelegate : public fusebox::Server::Delegate {
 #endif
 
 class ChromeWebContentsViewDelegateHandleOnPerformingDrop
-    : public testing::TestWithParam</*EnableDlpFileSystemApi_enabled=*/bool> {
+    : public testing::Test {
  public:
   ChromeWebContentsViewDelegateHandleOnPerformingDrop() {
     EXPECT_TRUE(profile_manager_.SetUp());
@@ -296,16 +294,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
   }
 
  protected:
-  bool IsDlpFileSystemApiEnabled() const { return GetParam(); }
-
   void SetUp() override {
-    if (IsDlpFileSystemApiEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          enterprise_connectors::kEnableDlpFileSystemApi);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          enterprise_connectors::kEnableDlpFileSystemApi);
-    }
 #if BUILDFLAG(IS_CHROMEOS)
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         "fake_mount", storage::kFileSystemTypeProvided,
@@ -503,7 +492,6 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -524,7 +512,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
 
 // When no drop data is specified, HandleOnPerformingDrop() should indicate
 // the caller can proceed, whether scanning is enabled or not.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
   content::DropData data;
 
   SetExpectedRequestsCount(0);
@@ -538,7 +526,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
 // When drop data is specified, but document_is_handling_drag is false,
 // HandleOnPerformingDrop() should indicate the caller can proceed
 // and no scanning is done.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
        WithData_NoneDocOp) {
   content::DropData data;
   data.text = base::UTF8ToUTF16(large_text());
@@ -552,7 +540,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
 }
 
 // Make sure DropData::url_title is handled correctly.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.url_infos = {ui::ClipboardUrlInfo(GURL("https://example.com"),
@@ -575,7 +563,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
 }
 
 // Make sure DropData::text is handled correctly.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.text = base::UTF8ToUTF16(large_text());
@@ -597,7 +585,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
 }
 
 // Make sure DropData::html is handled correctly.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.html = base::UTF8ToUTF16(large_text());
@@ -619,7 +607,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
 }
 
 // Make sure DropData::filenames is handled correctly.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -662,7 +650,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
 }
 
 // Make sure DropData::filenames directories are handled correctly.
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -740,7 +728,7 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, VirtualFiles) {
+TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, VirtualFiles) {
   content::WebContents* web_contents = contents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -800,61 +788,42 @@ TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, VirtualFiles) {
   data.file_system_files.push_back({url_3, 30, std::string()});
   data.document_is_handling_drag = true;
 
-  if (IsDlpFileSystemApiEnabled()) {
-    // Scenario 1: DLP Disabled -> All files allowed (including unscanned VFS 3)
-    SetExpectedRequestsCount(0);
-    RunTest(data, /*enable=*/false, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_1, url_2, url_3},
-            /*use_mock_handler=*/true);
+  // Scenario 1: DLP Disabled -> All files allowed (including unscanned VFS 3)
+  SetExpectedRequestsCount(0);
+  RunTest(data, /*enable=*/false, /*successful_text_scan=*/false,
+          /*successful_file_paths=*/{},
+          /*successful_vfs_urls=*/{url_1, url_2, url_3},
+          /*use_mock_handler=*/true);
 
-    // Scenario 2: DLP Enabled, all allowed -> All files allowed (since no
-    // violations)
-    SetExpectedRequestsCount(2);
-    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_1, url_2, url_3},
-            /*use_mock_handler=*/true);
+  // Scenario 2: DLP Enabled, all allowed -> All files allowed (since no
+  // violations)
+  SetExpectedRequestsCount(2);
+  RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+          /*successful_file_paths=*/{},
+          /*successful_vfs_urls=*/{url_1, url_2, url_3},
+          /*use_mock_handler=*/true);
 
-    // Scenario 3: DLP Enabled, selective block -> url_1 (resolved_path_1)
-    // blocks, others allowed. Note: url_3 is not backed by Fusebox, so it is
-    // allowed because it was never scanned.
-    SetExpectedRequestsCount(2);
-    SetFailingFileScans({resolved_path_1});
-    SetFailingFileAcks({resolved_path_1});
-    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_2, url_3},
-            /*use_mock_handler=*/true);
+  // Scenario 3: DLP Enabled, selective block -> url_1 (resolved_path_1)
+  // blocks, others allowed. Note: url_3 is not backed by Fusebox, so it is
+  // allowed because it was never scanned.
+  SetExpectedRequestsCount(2);
+  SetFailingFileScans({resolved_path_1});
+  SetFailingFileAcks({resolved_path_1});
+  RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+          /*successful_file_paths=*/{},
+          /*successful_vfs_urls=*/{url_2, url_3},
+          /*use_mock_handler=*/true);
 
-    // Scenario 4: DLP Enabled, all scannable files blocked -> Allow
-    // non-scannable Note: Since all files that *could* be scanned (url_1,
-    // url_2) are blocked, but url_3 is not scannable, the drop is not aborted
-    // and url_3 is allowed.
-    SetExpectedRequestsCount(2);
-    SetFailingFileScans({resolved_path_1, resolved_path_2});
-    SetFailingFileAcks({resolved_path_1, resolved_path_2});
-    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_3},
-            /*use_mock_handler=*/true);
-  } else {
-    // When the feature is disabled, virtual files are allowed by default
-    // without scanning, regardless of DLP policy settings.
-    SetExpectedRequestsCount(0);
-    RunTest(data, /*enable=*/false, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_1, url_2, url_3},
-            /*use_mock_handler=*/true);
-
-    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
-            /*successful_file_paths=*/{},
-            /*successful_vfs_urls=*/{url_1, url_2, url_3},
-            /*use_mock_handler=*/true);
-  }
+  // Scenario 4: DLP Enabled, all scannable files blocked -> Allow
+  // non-scannable Note: Since all files that *could* be scanned (url_1,
+  // url_2) are blocked, but url_3 is not scannable, the drop is not aborted
+  // and url_3 is allowed.
+  SetExpectedRequestsCount(2);
+  SetFailingFileScans({resolved_path_1, resolved_path_2});
+  SetFailingFileAcks({resolved_path_1, resolved_path_2});
+  RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+          /*successful_file_paths=*/{},
+          /*successful_vfs_urls=*/{url_3},
+          /*use_mock_handler=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeWebContentsViewDelegateHandleOnPerformingDrop,
-                         /*EnableDlpFileSystemApi_enabled=*/testing::Bool());
