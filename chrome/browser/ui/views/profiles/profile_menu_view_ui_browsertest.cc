@@ -768,6 +768,7 @@ class ProfileMenuViewPixelTest
               },
           .other_device_form_factor =
               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+          .other_device_enabled_data_types = {syncer::PASSWORDS},
       };
       auto* test_service = static_cast<signin::TestAccountPreviewDataService*>(
           AccountPreviewDataServiceFactory::GetForProfile(
