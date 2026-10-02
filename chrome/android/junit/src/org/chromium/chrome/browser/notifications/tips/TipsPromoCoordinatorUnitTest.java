@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,13 +37,17 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.TipsPromoSheetContent;
+import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
@@ -59,6 +66,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Collections;
 
 /** Unit tests for {@link TipsPromoCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -112,6 +121,11 @@ public class TipsPromoCoordinatorUnitTest {
         mActionTester = new UserActionTester();
 
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+    }
+
+    @After
+    public void tearDown() {
+        TipsPromoHandlerFactory.resetForTesting();
     }
 
     @Test
@@ -675,5 +689,56 @@ public class TipsPromoCoordinatorUnitTest {
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();
         mBottomSheetContent = mTipsPromoCoordinator.getBottomSheetContentForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TIPS_SELF_SERVICE)
+    public void testShowBottomSheet_WithTipsPromoHandler() {
+        TipsPromoHandler mockHandler = mock(TipsPromoHandler.class);
+        when(mockHandler.getPromoData(any()))
+                .thenReturn(
+                        new FeatureTipPromoData(
+                                "positive_btn",
+                                "title",
+                                "desc",
+                                R.drawable.tips_promo_esb_logo,
+                                "detail_title",
+                                Collections.emptyList()));
+
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING, () -> mockHandler);
+
+        setUpTipsPromoCoordinator(TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
+        mTipsPromoCoordinator.showBottomSheet();
+
+        verify(mockHandler).onPromoShown(any());
+
+        // Click the positive action button
+        mPropertyModel.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER).onClick(mView);
+
+        verify(mockHandler).onPromoAccepted();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TIPS_SELF_SERVICE)
+    public void testShowBottomSheet_TipsSelfServiceDisabled_FallsBackToLegacy() {
+        TipsPromoHandler mockHandler = mock(TipsPromoHandler.class);
+
+        when(mSettingsNavigation.createSettingsIntent(eq(mActivity), any(), any()))
+                .thenReturn(new Intent());
+
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING, () -> mockHandler);
+
+        setUpTipsPromoCoordinator(TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
+        mTipsPromoCoordinator.showBottomSheet();
+
+        verify(mockHandler, never()).onPromoShown(any());
+
+        // Click the positive action button
+        mPropertyModel.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER).onClick(mView);
+
+        verify(mockHandler, never()).onPromoAccepted();
+        verify(mSettingsNavigation).createSettingsIntent(eq(mActivity), any(), any());
     }
 }
