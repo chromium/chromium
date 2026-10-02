@@ -1206,10 +1206,6 @@ BASE_FEATURE(kOpenH264SoftwareEncoder, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables clear Dolby Vision playback through a pure MFT processor in the GPU
-// process, working together with the D3D11 video decoder.
-BASE_FEATURE(kAllowClearDolbyVisionViaMFT, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is enabled at build time, allow
 // the support of encrypted Dolby Vision. Have no effect when
 // ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is disabled.

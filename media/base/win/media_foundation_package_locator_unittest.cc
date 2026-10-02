@@ -198,20 +198,4 @@ TEST_F(MediaFoundationPackageLocatorTest, AC4) {
     ASSERT_TRUE(paths.empty());
   }
 }
-
-TEST_F(MediaFoundationPackageLocatorTest, DolbyVision) {
-  AddPackageFamilyName(L"DolbyLaboratories.DolbyVisionAccess_rz1tebttyb220");
-  AddPackageFamilyName(L"DolbyLaboratories.DolbyVisionHDR_rz1tebttyb220");
-  std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"DolbyVisionPlugin.dll", MediaFoundationCodecPackage::kDolbyVision);
-
-  // Dolby Vision has no dedicated MFVideoFormat GUID for capability probing.
-  // MFTEnumEx probing can only use P010 as a proxy, which may be unstable
-  // across devices and produce false positives/negatives.
-  // Therefore this test only verifies file existence when package paths exist.
-  if (!paths.empty()) {
-    VerifyMfCodecPaths(paths);
-  }
-}
-
 }  // namespace media

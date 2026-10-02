@@ -45,7 +45,6 @@ constexpr wchar_t kMfPackageFamilyName_EAC3[] =
     L"DolbyLaboratories.DolbyDigitalPlusDecoderOEM_rz1tebttyb220";
 constexpr wchar_t kMfLibraryName_AC4[] = L"DolbyAc4DecMft.dll";
 constexpr wchar_t kMfLibraryName_EAC3[] = L"DolbyDDPDecMft.dll";
-constexpr wchar_t kMfLibraryName_DolbyVision[] = L"DolbyVisionPlugin.dll";
 
 constexpr char kMediaFoundationPackageDecoderUmaPrefixName[] =
     "Media.MediaFoundationPackageDecoder.";
@@ -112,8 +111,6 @@ std::wstring GetMfCodecPackageLibraryName(
       return kMfLibraryName_AC4;
     case MediaFoundationCodecPackage::kEAC3:
       return kMfLibraryName_EAC3;
-    case MediaFoundationCodecPackage::kDolbyVision:
-      return kMfLibraryName_DolbyVision;
     default:
       return L"";
   }
@@ -260,21 +257,6 @@ AudioCodecToMediaFoundationCodecPackage(AudioCodec codec) {
   return package_type;
 }
 
-std::optional<MediaFoundationCodecPackage>
-VideoCodecToMediaFoundationCodecPackage(VideoCodec codec) {
-  std::optional<MediaFoundationCodecPackage> package_type;
-  switch (codec) {
-    case VideoCodec::kDolbyVision:
-      package_type = MediaFoundationCodecPackage::kDolbyVision;
-      break;
-    default:
-      DVLOG(3) << "Video codec " << GetCodecName(codec)
-               << " has no MediaFoundation package.";
-      break;
-  }
-  return package_type;
-}
-
 }  // namespace
 
 bool LoadMediaFoundationPackageDecoder(AudioCodec codec) {
@@ -287,22 +269,6 @@ bool LoadMediaFoundationPackageDecoder(AudioCodec codec) {
 
 bool FindMediaFoundationPackageDecoder(AudioCodec codec) {
   auto codec_package = AudioCodecToMediaFoundationCodecPackage(codec);
-  return codec_package.has_value()
-             ? MediaFoundationPackageRuntimeLocator::GetInstance().FoundModule(
-                   codec_package.value())
-             : false;
-}
-
-bool LoadMediaFoundationPackageDecoder(VideoCodec codec) {
-  auto codec_package = VideoCodecToMediaFoundationCodecPackage(codec);
-  return codec_package.has_value()
-             ? MediaFoundationPackageRuntimeLocator::GetInstance().LoadModule(
-                   codec_package.value())
-             : false;
-}
-
-bool FindMediaFoundationPackageDecoder(VideoCodec codec) {
-  auto codec_package = VideoCodecToMediaFoundationCodecPackage(codec);
   return codec_package.has_value()
              ? MediaFoundationPackageRuntimeLocator::GetInstance().FoundModule(
                    codec_package.value())
