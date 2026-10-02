@@ -2742,6 +2742,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/41384307.
+      name: "EmojiZWJVerticalOrientation",
+      status: "stable",
+    },
+    {
       // Controls whether XSLT processing is selectively re-enabled for
       // Common Alerting Protocol (CAP) alert XML documents when native XSLT
       // is otherwise disabled.

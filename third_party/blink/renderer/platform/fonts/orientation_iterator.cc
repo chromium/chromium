@@ -6,7 +6,34 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+
 namespace blink {
+
+namespace {
+
+// UAX #29 rule GB9 keeps Extend and ZWJ in the preceding grapheme cluster, and
+// rule GB11 keeps a pictograph that a ZWJ joins to a preceding pictograph:
+// \p{Extended_Pictographic} Extend* ZWJ x \p{Extended_Pictographic}.
+bool ExtendsGraphemeCluster(UChar32 character,
+                            UChar32 cluster_base,
+                            bool after_zwj) {
+  if (Character::IsGraphemeExtended(character)) {
+    return true;
+  }
+  if (!RuntimeEnabledFeatures::EmojiZWJVerticalOrientationEnabled()) {
+    return false;
+  }
+  if (character == uchar::kZeroWidthJoiner) {
+    return true;
+  }
+  return after_zwj && Character::IsExtendedPictographic(character) &&
+         Character::IsExtendedPictographic(cluster_base);
+}
+
+}  // namespace
 
 OrientationIterator::OrientationIterator(base::span<const UChar> buffer,
                                          FontOrientation run_orientation)
@@ -22,10 +49,13 @@ bool OrientationIterator::Consume(unsigned* orientation_limit,
     return false;
 
   RenderOrientation current_render_orientation = kOrientationInvalid;
+  UChar32 cluster_base = 0;
+  bool after_zwj = false;
   UChar32 next_u_char32;
   while (utf16_iterator_.Consume(next_u_char32)) {
     if (current_render_orientation == kOrientationInvalid ||
-        !Character::IsGraphemeExtended(next_u_char32)) {
+        !ExtendsGraphemeCluster(next_u_char32, cluster_base, after_zwj)) {
+      cluster_base = next_u_char32;
       RenderOrientation previous_render_orientation =
           current_render_orientation;
       current_render_orientation =
@@ -39,6 +69,7 @@ bool OrientationIterator::Consume(unsigned* orientation_limit,
         return true;
       }
     }
+    after_zwj = next_u_char32 == uchar::kZeroWidthJoiner;
     utf16_iterator_.Advance();
   }
   *orientation_limit = utf16_iterator_.Size();

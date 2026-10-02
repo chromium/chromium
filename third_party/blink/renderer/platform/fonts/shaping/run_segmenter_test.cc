@@ -202,6 +202,12 @@ TEST_F(RunSegmenterTest, EmojiZWJSequences) {
         OrientationIterator::kOrientationKeep, FontFallbackPriority::kText}});
 }
 
+TEST_F(RunSegmenterTest, EmojiZWJSequencesVerticalMixed) {
+  CheckRunsMixed({{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨",
+                   USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
+                   FontFallbackPriority::kEmojiEmoji}});
+}
+
 TEST_F(RunSegmenterTest, JapaneseLetterlikeEnd) {
   CheckRunsMixed(
       {{"いろは", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
