@@ -8,10 +8,10 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/smb_client/smb_share_info.h"
 
-class Profile;
+class PrefService;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -21,12 +21,13 @@ namespace ash::smb_client {
 
 class SmbUrl;
 
-// Handles saving of SMB shares in the user's Profile.
+// Handles saving of SMB shares in the user's prefs.
 class SmbPersistedShareRegistry {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  explicit SmbPersistedShareRegistry(Profile* profile);
+  // `prefs` is the user's PrefService. It must outlive `this`.
+  explicit SmbPersistedShareRegistry(PrefService& prefs);
 
   // Disallow copy/assign.
   SmbPersistedShareRegistry() = delete;
@@ -34,7 +35,7 @@ class SmbPersistedShareRegistry {
   SmbPersistedShareRegistry& operator=(const SmbPersistedShareRegistry&) =
       delete;
 
-  // Save |share| in the user's profile. If a saved share already exists with
+  // Save |share| in the user's prefs. If a saved share already exists with
   // the url share.share_url(), that saved share will be overwritten.
   void Save(const SmbShareInfo& share);
 
@@ -49,7 +50,7 @@ class SmbPersistedShareRegistry {
   std::vector<SmbShareInfo> GetAll() const;
 
  private:
-  const raw_ptr<Profile> profile_;
+  const raw_ref<PrefService> prefs_;
 };
 
 }  // namespace ash::smb_client

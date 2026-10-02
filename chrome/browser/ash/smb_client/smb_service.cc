@@ -115,7 +115,7 @@ SmbService::SmbService(Profile* profile,
                        std::unique_ptr<base::TickClock> tick_clock)
     : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
       profile_(profile),
-      registry_(profile) {
+      registry_(CHECK_DEREF(profile->GetPrefs())) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   CHECK(user, base::NotFatalUntil::M160);
 

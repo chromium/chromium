@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/smb_client/smb_persisted_share_registry.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,7 +27,7 @@ class SmbPersistedShareRegistryTest : public testing::Test {
 };
 
 TEST_F(SmbPersistedShareRegistryTest, Empty) {
-  SmbPersistedShareRegistry registry(&profile_);
+  SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
   std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
 
@@ -42,7 +43,7 @@ TEST_F(SmbPersistedShareRegistryTest, SaveGet) {
   // vector<>.
   const std::vector<uint8_t> kSalt = {1, 2, 9, 0, 'a', 'b', 0, 255};
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     SmbShareInfo info1(SmbUrl(kShareUrl), kDisplayName, kUsername, kWorkgroup,
                        false /* use_kerberos */, kSalt);
     registry.Save(info1);
@@ -54,7 +55,7 @@ TEST_F(SmbPersistedShareRegistryTest, SaveGet) {
   // Use scopes to simulate a logout/login so that the instances of
   // SmbPersistedShareRegistry are not the same (and have no hidden state).
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
@@ -82,7 +83,7 @@ TEST_F(SmbPersistedShareRegistryTest, SaveGet) {
 
 TEST_F(SmbPersistedShareRegistryTest, Replace) {
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     SmbShareInfo info(SmbUrl(kShareUrl), kDisplayName, kUsername, kWorkgroup,
                       false /* use_kerberos */);
     registry.Save(info);
@@ -90,7 +91,7 @@ TEST_F(SmbPersistedShareRegistryTest, Replace) {
   // Use scopes to simulate a logout/login so that the instances of
   // SmbPersistedShareRegistry are not the same (and have no hidden state).
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
@@ -107,7 +108,7 @@ TEST_F(SmbPersistedShareRegistryTest, Replace) {
     registry.Save(replace_info);
   }
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
@@ -123,7 +124,7 @@ TEST_F(SmbPersistedShareRegistryTest, Replace) {
 
 TEST_F(SmbPersistedShareRegistryTest, Delete) {
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     SmbShareInfo info1(SmbUrl(kShareUrl), kDisplayName, kUsername, kWorkgroup,
                        false /* use_kerberos */);
     registry.Save(info1);
@@ -135,7 +136,7 @@ TEST_F(SmbPersistedShareRegistryTest, Delete) {
   // Use scopes to simulate a logout/login so that the instances of
   // SmbPersistedShareRegistry are not the same (and have no hidden state).
   {
-    SmbPersistedShareRegistry registry(&profile_);
+    SmbPersistedShareRegistry registry(CHECK_DEREF(profile_.GetPrefs()));
     registry.Delete(SmbUrl(kShareUrl2));
 
     std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
