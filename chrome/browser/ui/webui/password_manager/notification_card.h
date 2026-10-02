@@ -35,6 +35,18 @@ enum class NotificationCardType {
 };
 // LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardMetricId)
 
+// LINT.IfChange(NotificationCardId)
+inline constexpr char kCheckupPromoId[] = "password_checkup_promo";
+inline constexpr char kWebPasswordManagerPromoId[] = "passwords_on_web_promo";
+inline constexpr char kShortcutPromoId[] = "password_shortcut_promo";
+inline constexpr char kAccessOnAnyDevicePromoId[] =
+    "access_on_any_device_promo";
+inline constexpr char kRelaunchChromePromoId[] = "relaunch_chrome_promo";
+inline constexpr char kMovePasswordsPromoId[] = "move_passwords_promo";
+// kScreenlockReauthPromoId = "screenlock_reauth_promo", Obsolete
+inline constexpr char kPasskeyUnlockPromoId[] = "passkey_unlock_promo";
+// LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardId)
+
 enum class NotificationSeverity {
   kCritical = 0,
   kPromo = 1,

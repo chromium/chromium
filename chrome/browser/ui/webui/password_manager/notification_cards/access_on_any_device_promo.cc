@@ -11,12 +11,11 @@ extern const char16_t kGetStartedOnAndroid[] =
     u"https://support.google.com/chrome/?p=gpm_desktop_promo_android";
 extern const char16_t kGetStartedOnIOS[] =
     u"https://support.google.com/chrome/?p=gpm_desktop_promo_ios";
-constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
 
 AccessOnAnyDevicePromo::AccessOnAnyDevicePromo() = default;
 
 std::string AccessOnAnyDevicePromo::GetCardID() const {
-  return kAccessOnAnyDevicePromoId;
+  return password_manager::kAccessOnAnyDevicePromoId;
 }
 
 password_manager::NotificationCardType

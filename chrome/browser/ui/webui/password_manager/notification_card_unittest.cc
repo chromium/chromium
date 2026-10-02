@@ -55,10 +55,8 @@ class FakeNotificationCard : public PasswordNotificationCardBase {
  public:
   FakeNotificationCard() = default;
 
-  static constexpr char kId[] = "password_checkup_promo";
-
   // PasswordNotificationCardBase implementation.
-  std::string GetCardID() const override { return kId; }
+  std::string GetCardID() const override { return kCheckupPromoId; }
 
   NotificationCardType GetNotificationCardType() const override {
     return NotificationCardType::kCheckup;

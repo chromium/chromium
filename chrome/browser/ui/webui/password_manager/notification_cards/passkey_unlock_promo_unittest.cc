@@ -38,7 +38,7 @@ TEST_F(PasskeyUnlockPromoTest, PromoCardProperties) {
   auto promo =
       std::make_unique<PasskeyUnlockPromo>(passkey_unlock_manager());
 
-  EXPECT_EQ(promo->GetCardID(), "passkey_unlock_promo");
+  EXPECT_EQ(promo->GetCardID(), password_manager::kPasskeyUnlockPromoId);
   EXPECT_EQ(promo->GetNotificationCardType(),
             password_manager::NotificationCardType::kPasskeyUnlock);
   EXPECT_EQ(promo->GetNotificationSeverity(),

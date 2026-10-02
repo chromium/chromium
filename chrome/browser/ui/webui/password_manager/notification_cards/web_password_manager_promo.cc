@@ -12,8 +12,6 @@
 #include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-constexpr char kWebPasswordManagerPromoId[] = "passwords_on_web_promo";
-
 WebPasswordManagerPromo::WebPasswordManagerPromo(
     const syncer::SyncService* sync_service) {
   sync_enabled_ =
@@ -25,7 +23,7 @@ WebPasswordManagerPromo::WebPasswordManagerPromo(
 }
 
 std::string WebPasswordManagerPromo::GetCardID() const {
-  return kWebPasswordManagerPromoId;
+  return password_manager::kWebPasswordManagerPromoId;
 }
 
 password_manager::NotificationCardType

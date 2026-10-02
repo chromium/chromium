@@ -14,7 +14,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 constexpr base::TimeDelta kPasswordCheckupPromoPeriod = base::Days(7);
-constexpr char kCheckupPromoId[] = "password_checkup_promo";
 
 PasswordCheckupPromo::PasswordCheckupPromo(
     PrefService* prefs,
@@ -27,7 +26,7 @@ PasswordCheckupPromo::PasswordCheckupPromo(
 PasswordCheckupPromo::~PasswordCheckupPromo() = default;
 
 std::string PasswordCheckupPromo::GetCardID() const {
-  return kCheckupPromoId;
+  return password_manager::kCheckupPromoId;
 }
 
 password_manager::NotificationCardType

@@ -11,10 +11,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-constexpr char kPasskeyUnlockPromoId[] = "passkey_unlock_promo";
-}  // namespace
-
 PasskeyUnlockPromo::PasskeyUnlockPromo(
     webauthn::PasskeyUnlockManager* passkey_unlock_manager)
     : passkey_unlock_manager_(passkey_unlock_manager) {}
@@ -22,7 +18,7 @@ PasskeyUnlockPromo::PasskeyUnlockPromo(
 PasskeyUnlockPromo::~PasskeyUnlockPromo() = default;
 
 std::string PasskeyUnlockPromo::GetCardID() const {
-  return kPasskeyUnlockPromoId;
+  return password_manager::kPasskeyUnlockPromoId;
 }
 
 password_manager::NotificationCardType

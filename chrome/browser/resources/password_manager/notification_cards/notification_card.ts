@@ -22,8 +22,7 @@ import {getTemplate} from './notification_card.html.js';
 import type {NotificationCard} from './notification_cards_browser_proxy.js';
 import {NotificationCardsProxyImpl} from './notification_cards_browser_proxy.js';
 
-// WARNING: Keep synced with
-// chrome/browser/ui/webui/password_manager/notification_cards_handler.cc.
+// LINT.IfChange(NotificationCardId)
 export enum NotificationCardId {
   CHECKUP = 'password_checkup_promo',
   WEB_PASSWORD_MANAGER = 'passwords_on_web_promo',
@@ -31,9 +30,10 @@ export enum NotificationCardId {
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
   RELAUNCH_CHROME = 'relaunch_chrome_promo',
   MOVE_PASSWORDS = 'move_passwords_promo',
-  SCREENLOCK_REAUTH = 'screenlock_reauth_promo',  // Obsolete
+  // SCREENLOCK_REAUTH = 'screenlock_reauth_promo',  // Obsolete
   PASSKEY_UNLOCK = 'passkey_unlock_promo',
 }
+// LINT.ThenChange(//chrome/browser/ui/webui/password_manager/notification_card.h:NotificationCardId)
 
 /**
  * These values are persisted to logs. Entries should not be renumbered and

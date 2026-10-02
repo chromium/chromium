@@ -83,11 +83,10 @@ class NotificationCardsHandlerTest : public ChromeRenderViewHostTestHarness {
         cards;
     cards.emplace_back(std::make_unique<MockNotificationCard>());
     card1_ = static_cast<MockNotificationCard*>(cards.back().get());
-    ON_CALL(*card1_, GetCardID).WillByDefault(Return("password_checkup_promo"));
+    ON_CALL(*card1_, GetCardID).WillByDefault(Return(kCheckupPromoId));
     cards.emplace_back(std::make_unique<MockNotificationCard>());
     card2_ = static_cast<MockNotificationCard*>(cards.back().get());
-    ON_CALL(*card2_, GetCardID)
-        .WillByDefault(Return("password_shortcut_promo"));
+    ON_CALL(*card2_, GetCardID).WillByDefault(Return(kShortcutPromoId));
 
     auto handler = std::make_unique<NotificationCardsHandler>(
         base::PassKey<NotificationCardsHandlerTest>(), profile(),

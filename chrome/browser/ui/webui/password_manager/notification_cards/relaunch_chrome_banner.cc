@@ -8,14 +8,12 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-constexpr char kRelaunchChromeId[] = "relaunch_chrome_promo";
-
 RelaunchChromeBanner::RelaunchChromeBanner() = default;
 
 RelaunchChromeBanner::~RelaunchChromeBanner() = default;
 
 std::string RelaunchChromeBanner::GetCardID() const {
-  return kRelaunchChromeId;
+  return password_manager::kRelaunchChromePromoId;
 }
 
 password_manager::NotificationCardType

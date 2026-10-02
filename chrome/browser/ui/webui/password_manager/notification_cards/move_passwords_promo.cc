@@ -19,8 +19,6 @@ constexpr base::TimeDelta kMovePasswordsPromoPeriod = base::Days(7);
 using extensions::api::passwords_private::CredentialGroup;
 using extensions::api::passwords_private::PasswordUiEntry;
 
-constexpr char kMovePasswordsId[] = "move_passwords_promo";
-
 syncer::SyncService* GetSyncService(Profile* profile) {
   return SyncServiceFactory::IsSyncAllowed(profile)
              ? SyncServiceFactory::GetForProfile(profile)
@@ -66,7 +64,7 @@ MovePasswordsPromo::MovePasswordsPromo(
 MovePasswordsPromo::~MovePasswordsPromo() = default;
 
 std::string MovePasswordsPromo::GetCardID() const {
-  return kMovePasswordsId;
+  return password_manager::kMovePasswordsPromoId;
 }
 
 password_manager::NotificationCardType
