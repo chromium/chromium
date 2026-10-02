@@ -456,6 +456,15 @@ aura::WindowTreeHost* DesktopWindowTreeHostPlatform::AsWindowTreeHost() {
   return this;
 }
 
+DesktopWindowTreeHost::WindowTreeHosts
+DesktopWindowTreeHostPlatform::GetOwnedWindowTreeHosts() {
+  WindowTreeHosts hosts;
+  for (DesktopWindowTreeHostPlatform* child : window_children_) {
+    hosts.insert(child);
+  }
+  return hosts;
+}
+
 void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
                                          const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);

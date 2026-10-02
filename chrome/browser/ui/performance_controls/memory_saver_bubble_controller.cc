@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace memory_saver {
 
@@ -36,7 +37,11 @@ MemorySaverBubbleController::MemorySaverBubbleController(
   CHECK(action_item_);
 }
 
-MemorySaverBubbleController::~MemorySaverBubbleController() = default;
+MemorySaverBubbleController::~MemorySaverBubbleController() {
+  if (bubble_) {
+    bubble_->GetWidget()->CloseNow();
+  }
+}
 
 void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
                                                actions::ActionItem* item) {

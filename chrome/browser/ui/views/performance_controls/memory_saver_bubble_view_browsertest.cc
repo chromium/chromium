@@ -85,10 +85,6 @@ class MemorySaverBubbleViewTest
   }
   void TearDownOnMainThread() override {
     unconditionally_discard_pages_.reset();
-    auto* bubble_view = GetBubbleView();
-    if (bubble_view && bubble_view->GetWidget()) {
-      bubble_view->GetWidget()->CloseNow();
-    }
     MemorySaverBrowserTestMixin::TearDownOnMainThread();
   }
 
@@ -129,6 +125,10 @@ class MemorySaverBubbleViewTest
                 PreDiscardResourceUsage::FromWebContents(old_contents)) {
       savings = old_usage->memory_footprint_estimate();
       reason = old_usage->discard_reason();
+    } else {
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::CreateForWebContents(old_contents, savings,
+                                                        reason);
     }
 
     auto* manager = performance_manager::user_tuning::
