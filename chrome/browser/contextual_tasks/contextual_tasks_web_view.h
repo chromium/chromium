@@ -122,6 +122,10 @@ class ContextualTasksWebView
   // happen when the contents is detached from the side panel.
   void DetachWebContentsModalDialogManager(content::WebContents* web_contents);
 
+  // Returns whether the task associated with the current WebContents is waiting
+  // for its initial thread URL to be generated.
+  bool IsTaskWaitingForUrl() const;
+
   // The browser window interface associated with this view.
   raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -134,6 +138,10 @@ class ContextualTasksWebView
 
   // The placeholder ghost loader view overlaying the content WebView.
   raw_ptr<ContextualTasksGhostLoaderView> ghost_loader_view_ = nullptr;
+
+  // Whether the next DidStopLoading() corresponds to an initial or aborted
+  // about:blank navigation that should not dismiss the ghost loader.
+  bool ignore_next_stop_loading_for_about_blank_ = false;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
