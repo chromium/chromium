@@ -229,10 +229,8 @@ public class SearchActivity extends AsyncInitializationActivity
     /** Notified about events happening for the SearchActivity. */
     private static @Nullable SearchActivityDelegate sDelegate;
 
-    // Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}.
-    @IntentOrigin Integer mIntentOrigin;
-    // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
-    @SearchType Integer mSearchType;
+    // The search session currently served by this activity. Replaced on every new intent.
+    SearchActivitySession mCurrentSession;
 
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final SearchUiCoordinator mSearchUiCoordinator;
@@ -346,32 +344,33 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ void handleNewIntent(Intent intent, boolean activityPresent) {
         setIntent(intent);
-        mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
-        mSearchType = SearchActivityUtils.getIntentSearchType(intent);
+        mCurrentSession = new SearchActivitySession(intent);
+        @IntentOrigin int intentOrigin = mCurrentSession.getIntentOrigin();
+        @SearchType int searchType = mCurrentSession.getSearchType();
 
         if (mUmaActivityObserver != null) mUmaActivityObserver.endUmaSession();
         mUmaActivityObserver =
                 new UmaActivityObserver(
                         this,
                         getLifecycleDispatcher(),
-                        mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                        intentOrigin == IntentOrigin.CUSTOM_TAB
                                 ? ActivityType.CUSTOM_TAB
                                 : ActivityType.TABBED);
 
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_INTENT_ORIGIN, mIntentOrigin, IntentOrigin.COUNT);
+                HISTOGRAM_INTENT_ORIGIN, intentOrigin, IntentOrigin.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_REQUESTED_SEARCH_TYPE, mSearchType, SearchType.COUNT);
+                HISTOGRAM_REQUESTED_SEARCH_TYPE, searchType, SearchType.COUNT);
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_ACTIVITY_PRESENT, activityPresent);
 
-        recordUsage(mIntentOrigin, mSearchType);
+        recordUsage(intentOrigin, searchType);
 
         LocationBarEmbedderUiOverrides locationBarUiOverrides =
                 mSearchUiCoordinator.getLocationBarUiOverrides();
 
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
 
-        switch (mIntentOrigin) {
+        switch (intentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
                 // Note: this may be refined by refinePageClassWithProfile().
                 mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT);
@@ -478,7 +477,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private void finishNativeInitializationWithProfile(Profile profile) {
         refinePageClassWithProfile(profile);
 
-        if (mIntentOrigin == IntentOrigin.HUB) {
+        if (mCurrentSession.getIntentOrigin() == IntentOrigin.HUB) {
             setHubSearchBoxUrlBarElements();
         }
 
@@ -528,7 +527,8 @@ public class SearchActivity extends AsyncInitializationActivity
     void finishDeferredInitialization() {
         mSearchUiCoordinator
                 .getSearchBox()
-                .onDeferredStartup(mSearchType, assertNonNull(getWindowAndroid()));
+                .onDeferredStartup(
+                        mCurrentSession.getSearchType(), assertNonNull(getWindowAndroid()));
         getActivityDelegate().onFinishDeferredInitialization();
     }
 
@@ -564,7 +564,7 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
-        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB
+        if (mCurrentSession.getIntentOrigin() == IntentOrigin.CUSTOM_TAB
                 && ChromeFeatureList.sSearchinCctApplyReferrerId.getValue()) {
             var referrer = SearchActivityUtils.getReferrer(getIntent());
             var referrerValid = !TextUtils.isEmpty(referrer);
@@ -601,7 +601,11 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
 
-        mSearchUiCoordinator.beginQuery(mIntentOrigin, mSearchType, query, getWindowAndroid());
+        mSearchUiCoordinator.beginQuery(
+                mCurrentSession.getIntentOrigin(),
+                mCurrentSession.getSearchType(),
+                query,
+                getWindowAndroid());
     }
 
     @SuppressWarnings("NullAway")
@@ -653,7 +657,7 @@ public class SearchActivity extends AsyncInitializationActivity
         Intent intent = SearchActivityUtils.createIntentForStartActivity(params);
         if (intent == null) return;
 
-        if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
+        if (mCurrentSession.getIntentOrigin() == IntentOrigin.SEARCH_WIDGET) {
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
 
@@ -819,9 +823,9 @@ public class SearchActivity extends AsyncInitializationActivity
             String histogramName, int sample, int max) {
         RecordHistogram.recordEnumeratedHistogram(histogramName, sample, max);
 
-        if (mIntentOrigin != null) {
+        if (mCurrentSession != null) {
             String suffix =
-                    switch (mIntentOrigin) {
+                    switch (mCurrentSession.getIntentOrigin()) {
                         case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
                         case IntentOrigin.LAUNCHER -> ".Launcher";
@@ -936,7 +940,7 @@ public class SearchActivity extends AsyncInitializationActivity
         // For hub search use in split screen and multi window mode, search activity should be
         // dismissed when focus is lost to prevent focus from causing the suggestion list to flicker
         // on window toggling.
-        if (!isTopResumedActivity && mIntentOrigin == IntentOrigin.HUB) {
+        if (!isTopResumedActivity && mCurrentSession.getIntentOrigin() == IntentOrigin.HUB) {
             finish(TerminationReason.ACTIVITY_FOCUS_LOST, null);
             return;
         }
