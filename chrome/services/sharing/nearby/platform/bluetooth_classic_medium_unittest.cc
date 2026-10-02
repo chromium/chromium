@@ -27,9 +27,8 @@ const char kDeviceAddress2[] = "DeviceAddress2";
 const char kDeviceName1[] = "DeviceName1";
 const char kDeviceName2[] = "DeviceName2";
 const char kNearbySharingServiceName[] = "NearbySharing";
-const device::BluetoothUUID kNearbySharingServiceUuid =
-    device::BluetoothUUID("a82efa21-ae5c-3dde-9bbc-f16da7b16c5a");
 const base::TimeDelta kStaleDeviceTimeout = base::Seconds(20);
+
 }  // namespace
 
 class BluetoothClassicMediumTest : public testing::Test {
@@ -113,6 +112,9 @@ class BluetoothClassicMediumTest : public testing::Test {
     fake_adapter_->NotifyDeviceRemoved(CreateDeviceInfo(address, name));
     run_loop.Run();
   }
+
+  const device::BluetoothUUID nearby_sharing_service_uuid_ =
+      device::BluetoothUUID("a82efa21-ae5c-3dde-9bbc-f16da7b16c5a");
 
   raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
@@ -315,11 +317,11 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Success) {
   StopDiscovery();
 
   fake_adapter_->AllowConnectionForAddressAndUuidPair(
-      kDeviceAddress1, kNearbySharingServiceUuid);
+      kDeviceAddress1, nearby_sharing_service_uuid_);
 
   auto cancellation_flag = std::make_unique<CancellationFlag>();
   auto bluetooth_socket = bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      *last_device_discovered_, nearby_sharing_service_uuid_.value(),
       cancellation_flag.get());
   EXPECT_EQ(last_device_discovered_, bluetooth_socket->GetRemoteDevice());
 
@@ -333,13 +335,13 @@ TEST_F(BluetoothClassicMediumTest,
   StopDiscovery();
 
   fake_adapter_->AllowConnectionForAddressAndUuidPair(
-      kDeviceAddress1, kNearbySharingServiceUuid);
+      kDeviceAddress1, nearby_sharing_service_uuid_);
 
   auto cancellation_flag = std::make_unique<CancellationFlag>();
   cancellation_flag->Cancel();
 
   EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      *last_device_discovered_, nearby_sharing_service_uuid_.value(),
       cancellation_flag.get()));
 }
 
@@ -351,28 +353,28 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Failure) {
 
   // Do not allow "Device 2".
   fake_adapter_->AllowConnectionForAddressAndUuidPair(
-      kDeviceAddress1, kNearbySharingServiceUuid);
+      kDeviceAddress1, nearby_sharing_service_uuid_);
 
   EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr));
+      *last_device_discovered_, nearby_sharing_service_uuid_.value(), nullptr));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestListenForService_Success) {
   fake_adapter_->AllowIncomingConnectionForServiceNameAndUuidPair(
-      kNearbySharingServiceName, kNearbySharingServiceUuid);
+      kNearbySharingServiceName, nearby_sharing_service_uuid_);
 
   EXPECT_TRUE(bluetooth_classic_medium_->ListenForService(
-      kNearbySharingServiceName, kNearbySharingServiceUuid.value()));
+      kNearbySharingServiceName, nearby_sharing_service_uuid_.value()));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestListenForService_Failure) {
   fake_adapter_->AllowIncomingConnectionForServiceNameAndUuidPair(
-      "DifferentServiceName", kNearbySharingServiceUuid);
+      "DifferentServiceName", nearby_sharing_service_uuid_);
   fake_adapter_->AllowIncomingConnectionForServiceNameAndUuidPair(
       kNearbySharingServiceName, device::BluetoothUUID("DifferentServiceId"));
 
   EXPECT_FALSE(bluetooth_classic_medium_->ListenForService(
-      kNearbySharingServiceName, kNearbySharingServiceUuid.value()));
+      kNearbySharingServiceName, nearby_sharing_service_uuid_.value()));
 }
 
 }  // namespace nearby::chrome

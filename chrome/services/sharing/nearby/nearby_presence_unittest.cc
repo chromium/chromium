@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
@@ -29,22 +30,21 @@ const char kMacAddress[] = "AA:BB:CC:DD:EE:FF";
 
 const char kDeviceName[] = "Test's Chromebook";
 const char kAccountName[] = "test.tester@gmail.com";
-const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
-                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
-                                        0x89, 0xab, 0xcd, 0xef};
-const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
-const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
-const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
 
 const long kSharedCredId1 = 111;
 const long kSharedCredId2 = 222;
 const long kSharedCredId3 = 333;
 
+std::vector<uint8_t> DeviceId() {
+  return {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+          0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+}
+
 ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
   ash::nearby::presence::mojom::MetadataPtr metadata =
       ash::nearby::presence::mojom::Metadata::New();
   metadata->device_name = kDeviceName;
-  metadata->device_id = kDeviceId;
+  metadata->device_id = DeviceId();
   return metadata;
 }
 
@@ -52,7 +52,7 @@ ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
   ::nearby::internal::DeviceIdentityMetaData metadata;
   metadata.set_device_name(kDeviceName);
   metadata.set_bluetooth_mac_address(kMacAddress);
-  metadata.set_device_id(std::string(kDeviceId.begin(), kDeviceId.end()));
+  metadata.set_device_id(std::string(base::as_string_view(DeviceId())));
   return metadata;
 }
 
@@ -311,7 +311,7 @@ TEST_F(NearbyPresenceTest, RunUpdateLocalDeviceMetadata) {
   ::nearby::internal::DeviceIdentityMetaData local_device_metadata =
       fake_presence_service_->GetDeviceIdentityMetaData();
   EXPECT_EQ(kDeviceName, local_device_metadata.device_name());
-  EXPECT_EQ(std::string(kDeviceId.begin(), kDeviceId.end()),
+  EXPECT_EQ(std::string(base::as_string_view(DeviceId())),
             local_device_metadata.device_id());
 }
 

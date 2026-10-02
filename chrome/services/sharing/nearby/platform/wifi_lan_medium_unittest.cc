@@ -50,8 +50,6 @@ namespace {
 
 const char kLocalIpString[] = "\xC0\xA8\x56\x4B";
 const int kLocalPort = ash::nearby::TcpServerSocketPort::kMin;
-const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
-                                    kLocalPort);
 
 const char kRemoteIpString[] = "\xC0\xA8\x56\x3E";
 const int kRemotePort = ash::nearby::TcpServerSocketPort::kMax;
@@ -118,7 +116,7 @@ class WifiLanMediumTest : public ::testing::Test {
     // Set up TCP socket factory mojo service.
     auto fake_socket_factory =
         std::make_unique<ash::nearby::FakeTcpSocketFactory>(
-            /*default_local_addr=*/kLocalAddress);
+            /*default_local_addr=*/local_address_);
     fake_socket_factory_ = fake_socket_factory.get();
     mojo::MakeSelfOwnedReceiver(
         std::move(fake_socket_factory),
@@ -137,7 +135,7 @@ class WifiLanMediumTest : public ::testing::Test {
     switch (state) {
       case WifiInitState::kComplete:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/true);
-        AddWifiService(/*add_ip_configs=*/true, kLocalAddress.address());
+        AddWifiService(/*add_ip_configs=*/true, local_address_.address());
         break;
       case WifiInitState::kIpAddressInvalid:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/true);
@@ -146,11 +144,11 @@ class WifiLanMediumTest : public ::testing::Test {
         break;
       case WifiInitState::kNoIpConfigs:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/true);
-        AddWifiService(/*add_ip_configs=*/false, kLocalAddress.address());
+        AddWifiService(/*add_ip_configs=*/false, local_address_.address());
         break;
       case WifiInitState::kNoManagedProperties:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/false);
-        AddWifiService(/*add_ip_configs=*/true, kLocalAddress.address());
+        AddWifiService(/*add_ip_configs=*/true, local_address_.address());
         break;
       case WifiInitState::kNoWifiService:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/false);
@@ -381,6 +379,9 @@ class WifiLanMediumTest : public ::testing::Test {
   void SetOnServiceDiscoveredCallback(base::OnceClosure callback) {
     on_service_discovered_callback_ = std::move(callback);
   }
+
+  const net::IPEndPoint local_address_ =
+      net::IPEndPoint(net::IPAddress(192, 168, 86, 75), kLocalPort);
 
   base::test::TaskEnvironment task_environment_;
   size_t num_running_connect_calls_ = 0;

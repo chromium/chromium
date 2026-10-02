@@ -27,12 +27,6 @@
 
 namespace {
 
-const device::BluetoothUUID kServiceId =
-    device::BluetoothUUID("12345678-1234-5678-9abc-def123456789");
-const device::BluetoothUUID kCharacteristicUuid1 =
-    device::BluetoothUUID("00001101-0000-1000-8000-00805f9b34fb");
-const device::BluetoothUUID kCharacteristicUuid2 =
-    device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
 constexpr char kNewCharacteristicValue[] = "123456";
 constexpr int kPartialBufferOffset = 2;
 
@@ -102,7 +96,7 @@ class BleV2GattServerTest : public testing::Test {
       api::ble_v2::GattCharacteristic::Property property =
           api::ble_v2::GattCharacteristic::Property::kRead) {
     gatt_characteristic_ = ble_v2_gatt_server_->CreateCharacteristic(
-        /*service_uuid=*/BluetoothUuidToNearbyUuid(kServiceId),
+        /*service_uuid=*/BluetoothUuidToNearbyUuid(service_id_),
         /*characteristic_uuid=*/BluetoothUuidToNearbyUuid(characteristic_uuid),
         /*permission=*/permission,
         /*property=*/property);
@@ -118,7 +112,7 @@ class BleV2GattServerTest : public testing::Test {
           api::ble_v2::GattCharacteristic::Property::kRead) {
     api::ble_v2::GattCharacteristic gatt_characteristic = {
         BluetoothUuidToNearbyUuid(characteristic_uuid),
-        BluetoothUuidToNearbyUuid(kServiceId), permission, property};
+        BluetoothUuidToNearbyUuid(service_id_), permission, property};
     bool result = ble_v2_gatt_server_->UpdateCharacteristic(
         /*characteristic=*/gatt_characteristic,
         /*value=*/nearby::ByteArray(kNewCharacteristicValue));
@@ -126,6 +120,13 @@ class BleV2GattServerTest : public testing::Test {
   }
 
  protected:
+  const device::BluetoothUUID service_id_ =
+      device::BluetoothUUID("12345678-1234-5678-9abc-def123456789");
+  const device::BluetoothUUID characteristic_uuid1_ =
+      device::BluetoothUUID("00001101-0000-1000-8000-00805f9b34fb");
+  const device::BluetoothUUID characteristic_uuid2_ =
+      device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
+
   base::test::TaskEnvironment task_environment_;
   std::optional<api::ble_v2::GattCharacteristic> gatt_characteristic_;
   raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
@@ -149,7 +150,7 @@ TEST_F(BleV2GattServerTest,
     base::MockCallback<base::OnceClosure> callback;
     EXPECT_CALL(callback, Run).Times(1);
     fake_adapter_->SetCreateLocalGattServiceCallback(callback.Get());
-    CallCreateCharacteristic(/*characteristic_uuid=*/kCharacteristicUuid1,
+    CallCreateCharacteristic(/*characteristic_uuid=*/characteristic_uuid1_,
                              /*expected_success=*/true);
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
@@ -166,7 +167,7 @@ TEST_F(BleV2GattServerTest,
     EXPECT_CALL(callback, Run).Times(0);
     fake_adapter_->SetCreateLocalGattServiceCallback(callback.Get());
     CallCreateCharacteristic(
-        /*characteristic_uuid=*/kCharacteristicUuid2,
+        /*characteristic_uuid=*/characteristic_uuid2_,
         /*expected_success=*/true);
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
@@ -185,7 +186,7 @@ TEST_F(BleV2GattServerTest, CreateCharacteristic_Success) {
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
 
-  CallCreateCharacteristic(/*characteristic_uuid=*/kCharacteristicUuid1,
+  CallCreateCharacteristic(/*characteristic_uuid=*/characteristic_uuid1_,
                            /*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
@@ -201,7 +202,7 @@ TEST_F(BleV2GattServerTest, CreateCharacteristic_Failure) {
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
 
-  CallCreateCharacteristic(/*characteristic_uuid=*/kCharacteristicUuid1,
+  CallCreateCharacteristic(/*characteristic_uuid=*/characteristic_uuid1_,
                            /*expected_success=*/false);
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
@@ -223,7 +224,7 @@ TEST_F(BleV2GattServerTest,
   // a GATT characteristic since it isn't in the map yet.
   {
     CallCreateCharacteristic(
-        /*characteristic_uuid=*/kCharacteristicUuid1,
+        /*characteristic_uuid=*/characteristic_uuid1_,
         /*expected_success=*/true);
     EXPECT_EQ(1, fake_gatt_service_ptr->GetNumCharacteristicUuids());
     histogram_tester_.ExpectBucketCount(
@@ -238,7 +239,7 @@ TEST_F(BleV2GattServerTest,
   // exists for the same characteristic id.
   {
     CallCreateCharacteristic(
-        /*characteristic_uuid=*/kCharacteristicUuid1,
+        /*characteristic_uuid=*/characteristic_uuid1_,
         /*expected_success=*/true);
     EXPECT_EQ(1, fake_gatt_service_ptr->GetNumCharacteristicUuids());
     histogram_tester_.ExpectBucketCount(
@@ -253,7 +254,7 @@ TEST_F(BleV2GattServerTest,
 TEST_F(BleV2GattServerTest,
        UpdateCharacteristic_FailureIfCharacteristicDoesntExist) {
   CallUpdateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/false);
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
@@ -268,11 +269,11 @@ TEST_F(BleV2GattServerTest,
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   CallUpdateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
@@ -281,8 +282,8 @@ TEST_F(BleV2GattServerTest,
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
   fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
-      device::BluetoothUUID(kServiceId),
-      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback());
+      device::BluetoothUUID(service_id_),
+      device::BluetoothUUID(characteristic_uuid1_), future.GetCallback());
   auto read_result = future.Take();
   EXPECT_FALSE(read_result->is_error_code());
   EXPECT_TRUE(read_result->is_data());
@@ -302,13 +303,13 @@ TEST_F(
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true,
       /*permission=*/api::ble_v2::GattCharacteristic::Permission::kWrite,
       /*property=*/api::ble_v2::GattCharacteristic::Property::kWrite);
 
   CallUpdateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true,
       /*permission=*/api::ble_v2::GattCharacteristic::Permission::kWrite,
       /*property=*/api::ble_v2::GattCharacteristic::Property::kWrite);
@@ -319,8 +320,8 @@ TEST_F(
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
   fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
-      device::BluetoothUUID(kServiceId),
-      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback());
+      device::BluetoothUUID(service_id_),
+      device::BluetoothUUID(characteristic_uuid1_), future.GetCallback());
   auto read_result = future.Take();
   EXPECT_TRUE(read_result->is_error_code());
   EXPECT_FALSE(read_result->is_data());
@@ -340,14 +341,14 @@ TEST_F(
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
   fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
-      device::BluetoothUUID(kServiceId),
-      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback());
+      device::BluetoothUUID(service_id_),
+      device::BluetoothUUID(characteristic_uuid1_), future.GetCallback());
   auto read_result = future.Take();
   EXPECT_TRUE(read_result->is_error_code());
   EXPECT_FALSE(read_result->is_data());
@@ -372,7 +373,7 @@ TEST_F(BleV2GattServerTest, Stop) {
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   // Expect the underlying objects to have been destroyed.
@@ -388,7 +389,7 @@ TEST_F(BleV2GattServerTest, Register_Success) {
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   base::test::TestFuture<bool> future;
@@ -406,7 +407,7 @@ TEST_F(BleV2GattServerTest, Register_Failure) {
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   base::test::TestFuture<bool> future;
@@ -436,7 +437,7 @@ TEST_F(BleV2GattServerTest, MojoGattServiceDisconnect) {
       }));
 
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   // Close the Mojo pipe.
@@ -455,18 +456,18 @@ TEST_F(
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   CallUpdateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
   fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
-      device::BluetoothUUID(kServiceId),
-      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback(),
+      device::BluetoothUUID(service_id_),
+      device::BluetoothUUID(characteristic_uuid1_), future.GetCallback(),
       /*offset=*/kPartialBufferOffset);
   auto read_result = future.Take();
   EXPECT_FALSE(read_result->is_error_code());
@@ -484,18 +485,18 @@ TEST_F(BleV2GattServerTest,
   fake_adapter_->SetCreateLocalGattServiceResult(
       /*gatt_service=*/std::move(fake_gatt_service));
   CallCreateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   CallUpdateCharacteristic(
-      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*characteristic_uuid=*/characteristic_uuid1_,
       /*expected_success=*/true);
 
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
   fake_gatt_service_ptr->TriggerReadCharacteristicRequest(
-      device::BluetoothUUID(kServiceId),
-      device::BluetoothUUID(kCharacteristicUuid1), future.GetCallback(),
+      device::BluetoothUUID(service_id_),
+      device::BluetoothUUID(characteristic_uuid1_), future.GetCallback(),
       /*offset=*/10);
   auto read_result = future.Take();
   EXPECT_TRUE(read_result->is_error_code());

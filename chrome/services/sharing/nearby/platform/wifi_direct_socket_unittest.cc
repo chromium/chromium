@@ -19,12 +19,14 @@
 
 namespace {
 
-const std::vector<uint8_t> kTestData = {0x01, 0x02, 0x03, 0x04};
-
 constexpr char kReadResultMetricName[] =
     "Nearby.Connections.WifiDirect.Socket.Read.Result";
 constexpr char kWriteResultMetricName[] =
     "Nearby.Connections.WifiDirect.Socket.Write.Result";
+
+std::vector<uint8_t> TestData() {
+  return {0x01, 0x02, 0x03, 0x04};
+}
 
 void RunOnTaskRunner(base::OnceClosure task) {
   base::RunLoop run_loop;
@@ -200,15 +202,15 @@ class SocketInputStreamTest : public ::testing::Test {
 };
 
 TEST_F(SocketInputStreamTest, Read) {
-  stream_socket()->SetReadData(kTestData);
+  stream_socket()->SetReadData(TestData());
   histogram_tester().ExpectTotalCount(kReadResultMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](SocketInputStream* input_stream) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        auto result = input_stream->Read(kTestData.size());
+        auto result = input_stream->Read(TestData().size());
         EXPECT_TRUE(result.ok());
-        EXPECT_EQ(result.GetResult(), ToByteArray(kTestData));
+        EXPECT_EQ(result.GetResult(), ToByteArray(TestData()));
       },
       input_stream()));
 
@@ -236,7 +238,7 @@ TEST_F(SocketInputStreamTest, Read_Error) {
 }
 
 TEST_F(SocketInputStreamTest, Read_AfterClose) {
-  stream_socket()->SetReadData(kTestData);
+  stream_socket()->SetReadData(TestData());
   histogram_tester().ExpectTotalCount(kReadResultMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
@@ -283,9 +285,9 @@ TEST_F(SocketOutputStreamTest, Write) {
       [](SocketOutputStream* output_stream, FakeStreamSocket* socket) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
 
-        auto result = output_stream->Write(ToByteArray(kTestData));
+        auto result = output_stream->Write(ToByteArray(TestData()));
         EXPECT_TRUE(result.Ok());
-        EXPECT_EQ(socket->GetWriteData(), kTestData);
+        EXPECT_EQ(socket->GetWriteData(), TestData());
       },
       output_stream(), stream_socket()));
 
@@ -299,7 +301,7 @@ TEST_F(SocketOutputStreamTest, Write_AfterClose) {
       [](SocketOutputStream* output_stream, FakeStreamSocket* socket) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         output_stream->Close();
-        auto result = output_stream->Write(ToByteArray(kTestData));
+        auto result = output_stream->Write(ToByteArray(TestData()));
         EXPECT_FALSE(result.Ok());
         EXPECT_TRUE(socket->GetWriteData().empty());
       },

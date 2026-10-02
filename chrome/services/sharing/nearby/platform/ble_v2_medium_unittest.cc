@@ -31,17 +31,9 @@ namespace {
 const char kDeviceAddress[] = "11:12:13:14:15:16";
 const char kDeviceServiceData1Str[] = "Device_Advertisement1";
 const char kDeviceServiceData2Str[] = "Device_Advertisement2";
-const ByteArray kDeviceServiceData1ByteArray{
-    std::string{kDeviceServiceData1Str}};
-const ByteArray kDeviceServiceData2ByteArray{
-    std::string{kDeviceServiceData2Str}};
 const Uuid kFastAdvertisementServiceUuid1{0x0000FEF300001000,
                                           0x800000805F9B34FB};
 const Uuid kTestServiceUuid2{0x0000FEF300001000, 0xA0000060ABCDEF12};
-const device::BluetoothUUID kService1BluetoothUuid{
-    base::as_byte_span(kFastAdvertisementServiceUuid1.data())};
-const device::BluetoothUUID kService2BluetoothUuid{
-    base::as_byte_span(kTestServiceUuid2.data())};
 const char kServiceId[] = "TestServiceId";
 const char kCharacteristicUuid[] = "1234";
 const uint64_t kUniqueId = 24279786918417;
@@ -141,7 +133,7 @@ class BleV2MediumTest : public testing::Test {
     api::ble_v2::BleAdvertisementData advertising_data;
     advertising_data.is_extended_advertisement = true;
     advertising_data.service_data.insert(
-        {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+        {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
 
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
 
@@ -164,6 +156,15 @@ class BleV2MediumTest : public testing::Test {
   }
 
  protected:
+  const ByteArray device_service_data1_byte_array_ =
+      ByteArray{std::string{kDeviceServiceData1Str}};
+  const ByteArray device_service_data2_byte_array_ =
+      ByteArray{std::string{kDeviceServiceData2Str}};
+  const device::BluetoothUUID service1_bluetooth_uuid_ = device::BluetoothUUID{
+      base::as_byte_span(kFastAdvertisementServiceUuid1.data())};
+  const device::BluetoothUUID service2_bluetooth_uuid_ =
+      device::BluetoothUUID{base::as_byte_span(kTestServiceUuid2.data())};
+
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
@@ -195,7 +196,7 @@ TEST_F(BleV2MediumTest, TestScanning_OneService) {
             EXPECT_EQ(advertisement_data.service_data
                           .find(kFastAdvertisementServiceUuid1)
                           ->second,
-                      kDeviceServiceData1ByteArray);
+                      device_service_data1_byte_array_);
             found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
           }};
@@ -205,7 +206,7 @@ TEST_F(BleV2MediumTest, TestScanning_OneService) {
   EXPECT_NE(scanning_session, nullptr);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(kService1BluetoothUuid,
+  service_data_map.insert_or_assign(service1_bluetooth_uuid_,
                                     GetByteVector(kDeviceServiceData1Str));
 
   EXPECT_TRUE(scanning_started_latch.Await().Ok());
@@ -274,7 +275,7 @@ TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
       /*bucket: Success=*/1, 2);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(kService1BluetoothUuid,
+  service_data_map.insert_or_assign(service1_bluetooth_uuid_,
                                     GetByteVector(kDeviceServiceData1Str));
   base::RunLoop run_loop;
   SetOnExpectedPeripheralsDiscoveredCallback(run_loop.QuitClosure());
@@ -323,8 +324,8 @@ TEST_F(BleV2MediumTest, TestScanning_IgnoreIrrelevantAdvertisement) {
   EXPECT_NE(scanning_session, nullptr);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  // Scan for kService1BluetoothUuid but notify with kService2BluetoothUuid.
-  service_data_map.insert_or_assign(kService2BluetoothUuid,
+  // Scan for service1_bluetooth_uuid_ but notify with service2_bluetooth_uuid_.
+  service_data_map.insert_or_assign(service2_bluetooth_uuid_,
                                     GetByteVector(kDeviceServiceData1Str));
 
   EXPECT_TRUE(scanning_started_latch.Await().Ok());
@@ -351,7 +352,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFails) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_FALSE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
@@ -384,7 +385,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFailsInAsyncStartAdvertising) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   auto advertising_session = ble_v2_medium_->StartAdvertising(
       advertising_data,
       {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
@@ -426,7 +427,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_FastAdvertisementSuccess) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
@@ -450,7 +451,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementNotSupported) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = true;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_FALSE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                          .is_connectable = true}));
@@ -483,7 +484,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementSupported) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = true;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                          .is_connectable = true}));
@@ -522,22 +523,22 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
       /*disabled_features=*/{});
   EXPECT_TRUE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 
   fake_adapter_->SetShouldAdvertisementRegistrationSucceed(true);
   api::ble_v2::BleAdvertisementData advertising_data1;
   advertising_data1.is_extended_advertisement = false;
   advertising_data1.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data1, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                           .is_connectable = true}));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
   // TODO(b/330759317): Refactor FakeAdapter to hold multiple advertisements per
   // Bluetooth UUID, and remove private variable access here.
   EXPECT_EQ(1u, ble_v2_medium_->registered_advertisements_map_
-                    .at(kService1BluetoothUuid)
+                    .at(service1_bluetooth_uuid_)
                     .size());
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.StartAdvertising.Result",
@@ -551,16 +552,16 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
   api::ble_v2::BleAdvertisementData advertising_data2;
   advertising_data2.is_extended_advertisement = true;
   advertising_data2.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data2, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                           .is_connectable = true}));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
   // TODO(b/330759317): Refactor FakeAdapter to hold multiple advertisements per
   // Bluetooth UUID, and remove private variable access here.
   EXPECT_EQ(2u, ble_v2_medium_->registered_advertisements_map_
-                    .at(kService1BluetoothUuid)
+                    .at(service1_bluetooth_uuid_)
                     .size());
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.StartAdvertising.Result",
@@ -580,24 +581,24 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleAdvertisementDataSuccess) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService2BluetoothUuid));
+      service2_bluetooth_uuid_));
 
   // Currently, NC does not pass in multiple advertisement data per call
   // to StartAdvertising. However, we are expected to support that
   // capability and start advertising for each one. This is a map, so
   // service UUIDs will be different in this case.
   advertising_data.service_data = {
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray},
-      {kTestServiceUuid2, kDeviceServiceData2ByteArray}};
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_},
+      {kTestServiceUuid2, device_service_data2_byte_array_}};
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService2BluetoothUuid));
+      service2_bluetooth_uuid_));
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.StartAdvertising.Result",
       /*bucket: Success=*/1, 1);
@@ -616,15 +617,15 @@ TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.StartAdvertising.Result",
       /*bucket: Success=*/1, 1);
@@ -639,7 +640,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
     run_loop.Run();
   }
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
@@ -652,9 +653,9 @@ TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 
   auto advertising_session = ble_v2_medium_->StartAdvertising(
       advertising_data,
@@ -676,7 +677,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
   EXPECT_NE(advertising_session, nullptr);
 
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 
   {
     base::RunLoop run_loop;
@@ -686,7 +687,7 @@ TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
     run_loop.Run();
   }
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      kService1BluetoothUuid));
+      service1_bluetooth_uuid_));
 }
 
 TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagDisabled) {
@@ -823,7 +824,7 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Success) {
             EXPECT_EQ(advertisement_data.service_data
                           .find(kFastAdvertisementServiceUuid1)
                           ->second,
-                      kDeviceServiceData1ByteArray);
+                      device_service_data1_byte_array_);
             found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
           }};
@@ -832,7 +833,7 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Success) {
       kFastAdvertisementServiceUuid1, {}, std::move(scanning_callback));
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(kService1BluetoothUuid,
+  service_data_map.insert_or_assign(service1_bluetooth_uuid_,
                                     GetByteVector(kDeviceServiceData1Str));
 
   fake_adapter_->SetConnectToDeviceResult(
@@ -888,7 +889,7 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
             EXPECT_EQ(advertisement_data.service_data
                           .find(kFastAdvertisementServiceUuid1)
                           ->second,
-                      kDeviceServiceData1ByteArray);
+                      device_service_data1_byte_array_);
             found_advertisement_latch.CountDown();
             OnPeripheralDiscovered();
           }};
@@ -897,7 +898,7 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
       kFastAdvertisementServiceUuid1, {}, std::move(scanning_callback));
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(kService1BluetoothUuid,
+  service_data_map.insert_or_assign(service1_bluetooth_uuid_,
                                     GetByteVector(kDeviceServiceData1Str));
 
   fake_adapter_->SetConnectToDeviceResult(
@@ -945,7 +946,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_FastAdvertisement) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
 
   // Fast Advertisements are expected to be non-connectable; this behavior
   // aligns with the Nearby SDK implementation.
@@ -954,7 +955,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_FastAdvertisement) {
                          .is_connectable = false}));
   EXPECT_FALSE(
       fake_adapter_
-          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          ->GetRegisteredAdvertisementConnectable(service1_bluetooth_uuid_)
           .value());
 }
 
@@ -970,7 +971,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_ExtendedAdvertisement) {
   api::ble_v2::BleAdvertisementData advertising_data;
   advertising_data.is_extended_advertisement = true;
   advertising_data.service_data.insert(
-      {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+      {kFastAdvertisementServiceUuid1, device_service_data1_byte_array_});
 
   // Extended advertisements are expected to be connectable; this behavior
   // aligns with the Nearby SDK implementation.
@@ -979,7 +980,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_ExtendedAdvertisement) {
                          .is_connectable = true}));
   EXPECT_TRUE(
       fake_adapter_
-          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          ->GetRegisteredAdvertisementConnectable(service1_bluetooth_uuid_)
           .value());
 }
 
@@ -1002,7 +1003,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_GattAdvertisement) {
 
   EXPECT_TRUE(
       fake_adapter_
-          ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
+          ->GetRegisteredAdvertisementConnectable(service1_bluetooth_uuid_)
           .value());
 }
 

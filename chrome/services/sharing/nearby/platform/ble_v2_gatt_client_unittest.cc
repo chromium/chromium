@@ -26,10 +26,12 @@ const nearby::Uuid kServiceUuid1 = nearby::Uuid("0000");
 const nearby::Uuid kServiceUuid2 = nearby::Uuid("1111");
 const nearby::Uuid kCharacteristicUuid1 = nearby::Uuid("2222");
 const nearby::Uuid kCharacteristicUuid2 = nearby::Uuid("3333");
-const std::vector<uint8_t> kReadCharacteristicValue = {0x01, 0x02, 0x03, 0x04,
-                                                       0x05};
 const char kServiceId1[] = "1234";
 const char kServiceId2[] = "5678";
+
+std::vector<uint8_t> ReadCharacteristicValue() {
+  return {0x01, 0x02, 0x03, 0x04, 0x05};
+}
 
 bluetooth::mojom::ServiceInfoPtr GenerateServiceInfo(nearby::Uuid service_uuid,
                                                      std::string service_id) {
@@ -261,7 +263,7 @@ TEST_F(BleV2GattClientTest, ReadCharacteristic_Success) {
   SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
                                                 kCharacteristicUuid1);
   fake_device_->set_read_value_for_characteristic_response(
-      bluetooth::mojom::GattResult::SUCCESS, kReadCharacteristicValue);
+      bluetooth::mojom::GattResult::SUCCESS, ReadCharacteristicValue());
 
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})

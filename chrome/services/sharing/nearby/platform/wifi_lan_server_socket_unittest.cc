@@ -32,10 +32,6 @@ namespace {
 
 const char kExpectedLocalIpString[] = "\xC0\xA8\x56\x4B";
 const int kExpectedLocalPort = 44444;
-const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
-                                    kExpectedLocalPort);
-
-const net::IPEndPoint kRemoteAddress(net::IPAddress(192, 168, 86, 62), 33333);
 
 }  // namespace
 
@@ -63,7 +59,7 @@ class WifiLanServerSocketTest : public testing::Test {
 
     wifi_lan_server_socket_ = std::make_unique<WifiLanServerSocket>(
         WifiLanServerSocket::ServerSocketParameters(
-            kLocalAddress, std::move(tcp_server_socket),
+            local_address_, std::move(tcp_server_socket),
             std::move(firewall_hole)));
   }
 
@@ -110,6 +106,11 @@ class WifiLanServerSocketTest : public testing::Test {
     }
   }
 
+  const net::IPEndPoint local_address_ =
+      net::IPEndPoint(net::IPAddress(192, 168, 86, 75), kExpectedLocalPort);
+  const net::IPEndPoint remote_address_ =
+      net::IPEndPoint(net::IPAddress(192, 168, 86, 62), 33333);
+
   base::test::TaskEnvironment task_environment_;
   std::atomic<size_t> num_running_accept_calls_{0};
   base::OnceClosure on_accept_calls_finished_;
@@ -134,7 +135,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Success) {
       /*expected_num_accept_calls_sent_to_tcp_socket=*/1u,
       /*expected_success=*/true,
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
-  fake_tcp_server_socket_->FinishNextAccept(net::OK, kRemoteAddress);
+  fake_tcp_server_socket_->FinishNextAccept(net::OK, remote_address_);
   run_loop.Run();
 }
 
@@ -147,7 +148,7 @@ TEST_F(WifiLanServerSocketTest, Accept_Success_ConcurrentCalls) {
       /*expected_success=*/true,
       /*on_accept_calls_finished=*/run_loop.QuitClosure());
   for (size_t thread = 0; thread < kNumThreads; ++thread) {
-    fake_tcp_server_socket_->FinishNextAccept(net::OK, kRemoteAddress);
+    fake_tcp_server_socket_->FinishNextAccept(net::OK, remote_address_);
   }
   run_loop.Run();
 }

@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -76,13 +77,21 @@ constexpr char kAwaitingUserVerificationKey[] = "await_user_verification";
 
 constexpr int kUserVerifiedStatusCode = 0;
 
-const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
-const std::vector<uint8_t> kValidAuthData = {0x02, 0x03, 0x04};
-const std::vector<uint8_t> kValidSignature = {0x03, 0x04, 0x05};
-
 const char kWifiTransferResultHistogramName[] = "QuickStart.WifiTransferResult";
 const char kWifiTransferResultFailureReasonHistogramName[] =
     "QuickStart.WifiTransferResult.FailureReason";
+
+std::vector<uint8_t> ValidCredentialId() {
+  return {0x01, 0x02, 0x03};
+}
+
+std::vector<uint8_t> ValidAuthData() {
+  return {0x02, 0x03, 0x04};
+}
+
+std::vector<uint8_t> ValidSignature() {
+  return {0x03, 0x04, 0x05};
+}
 
 std::vector<uint8_t> BuildEncodedResponseData(
     std::vector<uint8_t> credential_id,
@@ -383,7 +392,7 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceRespnoseCodeTest_OutOfRange) {
   // Unmapped error byte
   uint8_t status_code = 0x07;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      kValidCredentialId, auth_data, signature, user_id, status_code);
+      ValidCredentialId(), auth_data, signature, user_id, status_code);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   base::test::TestFuture<
       ::ash::quick_start::mojom::FidoAssertionResponsePtr,
@@ -486,14 +495,13 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_OnlyStatusCode) {
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
-  std::string expected_credential_id(kValidCredentialId.begin(),
-                                     kValidCredentialId.end());
+  std::string expected_credential_id(base::as_string_view(ValidCredentialId()));
   std::string email = "testcase@google.com";
   std::vector<uint8_t> user_id(email.begin(), email.end());
   // kSuccess
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
+      ValidCredentialId(), ValidAuthData(), ValidSignature(), user_id, status);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   base::test::TestFuture<
       ::ash::quick_start::mojom::FidoAssertionResponsePtr,
@@ -504,8 +512,8 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
   EXPECT_FALSE(future.Get<1>().has_value());
   EXPECT_EQ(future.Get<0>()->credential_id, expected_credential_id);
   EXPECT_EQ(future.Get<0>()->email, email);
-  EXPECT_EQ(future.Get<0>()->auth_data, kValidAuthData);
-  EXPECT_EQ(future.Get<0>()->signature, kValidSignature);
+  EXPECT_EQ(future.Get<0>()->auth_data, ValidAuthData());
+  EXPECT_EQ(future.Get<0>()->signature, ValidSignature());
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
@@ -517,7 +525,7 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
   // kSuccess
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      credential_id, kValidAuthData, kValidSignature, user_id, status);
+      credential_id, ValidAuthData(), ValidSignature(), user_id, status);
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   base::test::TestFuture<
       ::ash::quick_start::mojom::FidoAssertionResponsePtr,
@@ -545,12 +553,12 @@ TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_NullPayload) {
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_UnexpectedMessageType) {
   // Build a valid SecondDeviceAuthPayload
-  std::string expected_credential_id(kValidCredentialId.begin(),
-                                     kValidCredentialId.end());
+  std::string expected_credential_id(base::as_string_view(ValidCredentialId()));
   std::string email = "testcase@google.com";
   std::vector<uint8_t> user_id(email.begin(), email.end());
-  std::vector<uint8_t> data = BuildEncodedResponseData(
-      kValidCredentialId, kValidAuthData, kValidSignature, user_id, kSuccess);
+  std::vector<uint8_t> data =
+      BuildEncodedResponseData(ValidCredentialId(), ValidAuthData(),
+                               ValidSignature(), user_id, kSuccess);
 
   std::vector<uint8_t> payload = BuildSecondDeviceAuthPayload(data);
 
@@ -668,14 +676,13 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest, ExtractFidoDataFromValidJsonResponse) {
   // Build a FIDO Message
-  std::string expected_credential_id(kValidCredentialId.begin(),
-                                     kValidCredentialId.end());
+  std::string expected_credential_id(base::as_string_view(ValidCredentialId()));
   std::string email = "testcase@google.com";
   std::vector<uint8_t> user_id(email.begin(), email.end());
   // kSuccess
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
+      ValidCredentialId(), ValidAuthData(), ValidSignature(), user_id, status);
 
   std::vector<uint8_t> payload = BuildSecondDeviceAuthPayload(data);
 

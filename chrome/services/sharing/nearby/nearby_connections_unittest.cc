@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
@@ -58,9 +59,6 @@ const char kEndpointId[] = "ABCD";
 const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kDeviceName[] = "Cris Cros's Pixel";
-const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
-                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
-                                        0x89, 0xab, 0xcd, 0xef};
 const char kRemoteEndpointInfo[] = {0x0d, 0x07, 0x06, 0x08, 0x09};
 const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
@@ -69,6 +67,11 @@ const char kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
 const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 const base::TimeDelta kKeepAliveInterval = base::Milliseconds(5123);
 const base::TimeDelta kKeepAliveTimeout = base::Milliseconds(31234);
+
+std::vector<uint8_t> DeviceId() {
+  return {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+          0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+}
 
 mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   bool use_ble = false;
@@ -129,7 +132,7 @@ nearby::internal::DeviceIdentityMetaData CreateMetadata() {
   metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
   metadata.set_device_name(kDeviceName);
   metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
-  metadata.set_device_id(std::string(kDeviceId.begin(), kDeviceId.end()));
+  metadata.set_device_id(std::string(base::as_string_view(DeviceId())));
   return metadata;
 }
 
