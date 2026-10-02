@@ -53,7 +53,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link ContextMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuUtilsUnitTest {
     Activity mActivity;
     @Mock WebContents mWebContentsMock;
@@ -71,7 +70,8 @@ public class ContextMenuUtilsUnitTest {
 
     @Before
     public void setup() {
-        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        // Make the activity visible so that its content view is attached to a window.
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
     }
 
     @After
@@ -531,26 +531,17 @@ public class ContextMenuUtilsUnitTest {
     private void doTestGetTouchPointCoordinates(boolean isPopup) {
         Context context = mActivity;
 
-        // In a real Android environment, the containerView would be part of a
-        // layout hierarchy that's been inflated and attached to a Window.
-        // However, in our JUnit tests, we don't have a real layout, so we need
-        // to mock the containerView and its behavior.
-        View mockContainerView = mock(View.class);
+        View containerView = new View(context);
+        containerView.setTranslationX(200);
+        containerView.setTranslationY(300);
+        mActivity.setContentView(containerView);
+        int[] containerLocation = new int[2];
+        containerView.getLocationOnScreen(containerLocation);
+        assertTrue(containerLocation[0] >= 200);
+        assertTrue(containerLocation[1] >= 300);
+
         Window mockWindow = mock(Window.class);
         WindowManager.LayoutParams mockLayoutParams = mock(WindowManager.LayoutParams.class);
-
-        int[] mockLocation = {200, 300};
-        // Simulate the behavior of View.getLocationOnScreen(), which populates the passed-in int
-        // array with the view's screen coordinates.
-        Mockito.doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = mockLocation[0];
-                            location[1] = mockLocation[1];
-                            return null;
-                        })
-                .when(mockContainerView)
-                .getLocationOnScreen(Mockito.any(int[].class));
 
         mockLayoutParams.x = 10;
         mockLayoutParams.y = 20;
@@ -585,12 +576,7 @@ public class ContextMenuUtilsUnitTest {
 
         Point result =
                 ContextMenuUtils.getTouchPointCoordinates(
-                        context,
-                        mockWindow,
-                        params,
-                        topContentOffsetPx,
-                        isPopup,
-                        mockContainerView);
+                        context, mockWindow, params, topContentOffsetPx, isPopup, containerView);
 
         // We need to check if the X and Y have been correctly modified by the method.
         final float density = context.getResources().getDisplayMetrics().density;
@@ -600,8 +586,8 @@ public class ContextMenuUtilsUnitTest {
         int expectedY = (int) (touchPointYPx + topContentOffsetPx);
 
         if (isPopup) {
-            expectedX += mockLocation[0];
-            expectedY += mockLocation[1];
+            expectedX += containerLocation[0];
+            expectedY += containerLocation[1];
 
             expectedX += mockLayoutParams.x;
             expectedY += mockLayoutParams.y;

@@ -6,6 +6,7 @@ package org.chromium.ui.insets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -39,8 +41,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.ImmutableWeakReference;
@@ -52,8 +56,20 @@ import java.util.Collections;
 
 /** Tests for {@link InsetObserver} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InsetObserverTest {
+    private static class TestContentView extends LinearLayout {
+        TestContentView() {
+            super(ContextUtils.getApplicationContext());
+        }
+
+        // Prevents re-entry into InsetObserver#onApplyWindowInsets() via fitSystemWindows(), which
+        // happens because tests call it directly rather than via dispatchApplyWindowInsets().
+        @Override
+        public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+            return WindowInsetsCompat.CONSUMED.toWindowInsets();
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /** The rect values if the display cutout is present. */
@@ -97,8 +113,8 @@ public class InsetObserverTest {
     @Mock private WindowInsetsConsumer mInsetsConsumer1;
     @Mock private WindowInsetsConsumer mInsetsConsumer2;
     @Mock private WindowInsetsAnimationListener mInsetsAnimationListener;
-    @Mock private LinearLayout mContentView;
 
+    private TestContentView mContentView;
     private InsetObserver mInsetObserver;
 
     private void setCutout(boolean hasCutout) {
@@ -112,14 +128,9 @@ public class InsetObserverTest {
 
     @Before
     public void setUp() {
+        mContentView = new TestContentView();
         doReturn(mNonCompatInsets).when(mInsets).toWindowInsets();
         doReturn(mModifiedNonCompatInsets).when(mModifiedInsets).toWindowInsets();
-        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets())
-                .when(mContentView)
-                .onApplyWindowInsets(mNonCompatInsets);
-        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets())
-                .when(mContentView)
-                .onApplyWindowInsets(mModifiedNonCompatInsets);
 
         doReturn(SYSTEM_BAR_INSETS).when(mInsets).getInsets(WindowInsetsCompat.Type.systemBars());
         doReturn(NAVIGATION_BAR_INSETS)
@@ -412,7 +423,10 @@ public class InsetObserverTest {
     @Test
     @Config(sdk = VERSION_CODES.R)
     public void initializeWithLastSeenRawWindowInsets() {
-        doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setContentView(mContentView);
+        WindowInsets rootWindowInsets = mContentView.getRootWindowInsets();
+        assertNotNull(rootWindowInsets);
         mInsetObserver =
                 new InsetObserver(
                         new ImmutableWeakReference<>(mContentView),
@@ -421,7 +435,7 @@ public class InsetObserverTest {
                         /* enableExtraEdgeToEdgeLogging= */ false);
         assertEquals(
                 "WindowInsets is different.",
-                WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),
+                WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets),
                 mInsetObserver.getLastRawWindowInsets());
     }
 

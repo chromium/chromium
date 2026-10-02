@@ -16,7 +16,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.os.Handler;
 import android.view.KeyCharacterMap;
 import android.view.View;
@@ -25,7 +24,6 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputContentInfo;
-import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -37,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -53,16 +52,13 @@ import java.util.concurrent.Callable;
 
 /** Unit tests for {@link ThreadedInputConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ThreadedInputConnectionTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImeAdapterImpl mImeAdapter;
     @Mock CorrectionInfo mCorrectionInfo;
-    @Mock private Context mContext;
     @Mock private InputContentInfo mInputContentInfo;
-    @Mock private View mView;
-    @Mock private InputMethodManager mInputMethodManager;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     ThreadedInputConnection mConnection;
     InOrder mInOrder;
     boolean mRunningOnUiThread;
@@ -71,10 +67,6 @@ public class ThreadedInputConnectionTest {
     public void setUp() {
         mInOrder = inOrder(mImeAdapter);
 
-        // Mocks required to create a ThreadedInputConnection object
-        when(mView.getContext()).thenReturn(mContext);
-        when(mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
-                .thenReturn(mInputMethodManager);
         // Let's create Handler for test thread and pretend that it is running on IME thread.
         mConnection =
                 new ThreadedInputConnection(mView, mImeAdapter, new Handler()) {

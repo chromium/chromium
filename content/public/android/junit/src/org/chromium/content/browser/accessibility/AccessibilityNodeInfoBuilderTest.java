@@ -23,13 +23,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link AccessibilityNodeInfoBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccessibilityNodeInfoBuilderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AccessibilityNodeInfoBuilder.BuilderDelegate mDelegate;
-    @Mock private View mView;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private AccessibilityNodeInfoBuilder mBuilder;
 
     @Before

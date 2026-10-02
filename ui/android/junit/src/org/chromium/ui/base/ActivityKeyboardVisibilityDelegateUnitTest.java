@@ -4,15 +4,16 @@
 
 package org.chromium.ui.base;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.graphics.Insets;
-import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
 
@@ -22,8 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -41,7 +40,6 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ActivityKeyboardVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -49,11 +47,22 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    private class TestRootView extends FrameLayout {
+        TestRootView(Activity activity) {
+            super(activity);
+        }
+
+        // Robolectric does not provide a way to set the root window insets.
+        @Override
+        public WindowInsets getRootWindowInsets() {
+            return mWindowInsets;
+        }
+    }
+
     @Mock private KeyboardVisibilityListener mKeyboardVisibilityListener;
     @Mock private WindowInsets mWindowInsets;
-    @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mOnLayoutChangeListener;
 
-    private FrameLayout mRootView;
+    private TestRootView mRootView;
     private final SettableMonotonicObservableSupplier<Integer> mKeyboardInsetSupplier =
             ObservableSuppliers.createMonotonic();
     private LazyOneshotSupplier<MonotonicObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
@@ -66,12 +75,8 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     }
 
     private void onActivity(Activity activity) {
-        mRootView = spy(new FrameLayout(activity));
-        mRootView.setId(android.R.id.content);
-        when(mRootView.getRootView()).thenReturn(mRootView);
-        when(mRootView.getRootWindowInsets()).thenReturn(mWindowInsets);
-        when(mRootView.isAttachedToWindow()).thenReturn(false);
-        activity.setContentView(mRootView);
+        // Not attached to the activity's window so that it is its own root view.
+        mRootView = new TestRootView(activity);
         mKeyboardVisibilityDelegate =
                 new ActivityKeyboardVisibilityDelegate(new WeakReference<>(activity));
         mKeyboardVisibilityDelegate.setContentViewForTesting(mRootView);
@@ -81,17 +86,17 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Test
     public void testOnLayoutChangeObserver() {
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
-        verify(mRootView).addOnLayoutChangeListener(mOnLayoutChangeListener.capture());
+        assertEquals(1, shadowOf(mRootView).getOnLayoutChangeListeners().size());
 
         int inset = 150;
         setRootViewKeyboardInset(inset);
-        mOnLayoutChangeListener.getValue().onLayoutChange(mRootView, 0, 0, 0, 0, 0, 0, 0, 0);
+        triggerLayout();
         // Verify the observer is notified the keyboard is shown in response to a layout change.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
 
         inset = 0;
         setRootViewKeyboardInset(inset);
-        mOnLayoutChangeListener.getValue().onLayoutChange(mRootView, 0, 0, 0, 0, 0, 0, 0, 0);
+        triggerLayout();
         // Verify the observer is notified the keyboard is hidden in response to a layout change.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
     }
@@ -99,7 +104,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Test
     public void testKeyboardInsetObserver_ObserverAlreadyAdded() {
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
-        verify(mRootView).addOnLayoutChangeListener(mOnLayoutChangeListener.capture());
+        assertEquals(1, shadowOf(mRootView).getOnLayoutChangeListeners().size());
         mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
         assertTrue(mKeyboardInsetSupplier.hasObservers());
 
@@ -110,7 +115,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
 
         // Verify only called once.
-        mOnLayoutChangeListener.getValue().onLayoutChange(mRootView, 0, 0, 0, 0, 0, 0, 0, 0);
+        triggerLayout();
         // Verify the observer is not re-notified the keyboard is shown.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
 
@@ -121,7 +126,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
 
         // Verify only called once.
-        mOnLayoutChangeListener.getValue().onLayoutChange(mRootView, 0, 0, 0, 0, 0, 0, 0, 0);
+        triggerLayout();
         // Verify the observer is not re-notified the keyboard is hidden.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
     }
@@ -132,7 +137,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         assertFalse(mKeyboardInsetSupplier.hasObservers());
 
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
-        verify(mRootView).addOnLayoutChangeListener(mOnLayoutChangeListener.capture());
+        assertEquals(1, shadowOf(mRootView).getOnLayoutChangeListeners().size());
         assertTrue(mKeyboardInsetSupplier.hasObservers());
 
         int inset = 150;
@@ -146,6 +151,13 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is hidden in response to an inset change.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+    }
+
+    private void triggerLayout() {
+        mRootView.forceLayout();
+        int spec = MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY);
+        mRootView.measure(spec, spec);
+        mRootView.layout(0, 0, 100, 100);
     }
 
     private void setRootViewKeyboardInset(int inset) {

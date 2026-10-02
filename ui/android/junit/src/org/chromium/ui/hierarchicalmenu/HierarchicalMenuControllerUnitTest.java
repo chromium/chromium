@@ -9,11 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_MENU_ITEM_KEYS;
 import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_SUBMENU_ITEM_KEYS;
@@ -31,14 +29,15 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -51,12 +50,12 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link HierarchicalMenuControllerUnitTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HierarchicalMenuControllerUnitTest {
 
     private static final int TEST_MENU_ITEM_ID = 3; // Arbitrary int for testing
@@ -70,11 +69,11 @@ public class HierarchicalMenuControllerUnitTest {
 
     @Mock private OnClickListener mItemClickListener;
     @Mock private Runnable mDismissDialog;
-    @Mock private View mParentView;
-    @Mock private ListView mHeaderListView;
-    @Mock private ListView mListView;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
 
+    private View mParentView;
+    private ListView mHeaderListView;
+    private ListView mListView;
     private final ModelList mHeaderModelList = new ModelList();
     private final ModelList mModelList = new ModelList();
     private ListItem mListItemWithModelClickCallback;
@@ -87,6 +86,11 @@ public class HierarchicalMenuControllerUnitTest {
     @Before
     public void setUp() {
         Context context = ContextUtils.getApplicationContext();
+        mParentView = new View(context);
+        mParentView.setFocusable(true);
+        mParentView.setFocusableInTouchMode(true);
+        mHeaderListView = createListView(context);
+        mListView = createListView(context);
 
         HierarchicalMenuKeyProvider keyProvider = HierarchicalMenuTestUtils.createKeyProvider();
         SubmenuHeaderFactory headerFactory =
@@ -155,9 +159,6 @@ public class HierarchicalMenuControllerUnitTest {
                                 .with(IS_HIGHLIGHTED, false)
                                 .build());
         mModelList.add(mListItemWithoutModelClickCallback);
-
-        when(mListView.getContext()).thenReturn(context);
-        when(mParentView.getContext()).thenReturn(context);
     }
 
     @Test
@@ -471,15 +472,23 @@ public class HierarchicalMenuControllerUnitTest {
 
         mController.setupCallbacks(mHeaderModelList, mModelList, mDismissDialog);
 
+        scrollListViewTo(mListView, 5);
+        scrollListViewTo(mHeaderListView, 5);
+        List<Integer> positionsOnFocus = new ArrayList<>();
+        // setSelection() only takes effect on the next layout, so lay out when focus arrives.
+        mParentView.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    positionsOnFocus.add(layoutAndGetFirstVisiblePosition(mListView));
+                    positionsOnFocus.add(layoutAndGetFirstVisiblePosition(mHeaderListView));
+                });
+
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
 
-        // Assert correct a11y behavior
-        verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
-        InOrder inOrder = inOrder(mParentView, mHeaderListView, mListView);
-        inOrder.verify(mListView).setSelection(0);
-        inOrder.verify(mHeaderListView).setSelection(0);
-        inOrder.verify(mParentView).requestFocus();
+        // Assert correct a11y behavior: lists are scrolled to the top before the pane is focused.
+        assertEquals(SUBMENU_LEVEL_0, mParentView.getAccessibilityPaneTitle());
+        assertTrue(mParentView.isFocused());
+        assertEquals(List.of(0, 0), positionsOnFocus);
     }
 
     @Test
@@ -496,14 +505,19 @@ public class HierarchicalMenuControllerUnitTest {
 
         mController.setupCallbacks(/* headerModelList= */ null, mModelList, mDismissDialog);
 
+        scrollListViewTo(mListView, 5);
+        List<Integer> positionsOnFocus = new ArrayList<>();
+        // setSelection() only takes effect on the next layout, so lay out when focus arrives.
+        mParentView.setOnFocusChangeListener(
+                (v, hasFocus) -> positionsOnFocus.add(layoutAndGetFirstVisiblePosition(mListView)));
+
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
 
-        // Assert correct a11y behavior
-        verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
-        InOrder inOrder = inOrder(mParentView, mListView);
-        inOrder.verify(mListView).setSelection(0);
-        inOrder.verify(mParentView).requestFocus();
+        // Assert correct a11y behavior: lists are scrolled to the top before the pane is focused.
+        assertEquals(SUBMENU_LEVEL_0, mParentView.getAccessibilityPaneTitle());
+        assertTrue(mParentView.isFocused());
+        assertEquals(List.of(0), positionsOnFocus);
     }
 
     @Test
@@ -644,5 +658,26 @@ public class HierarchicalMenuControllerUnitTest {
 
     private static CharSequence getTitle(ListItem item) {
         return item.model.get(TITLE);
+    }
+
+    private static ListView createListView(Context context) {
+        List<String> items = new ArrayList<>();
+        for (int i = 0; i < 10; i++) items.add("Item " + i);
+        ListView listView = new ListView(context);
+        listView.setAdapter(
+                new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, items));
+        return listView;
+    }
+
+    private static void scrollListViewTo(ListView listView, int position) {
+        listView.setSelection(position);
+        assertEquals(position, layoutAndGetFirstVisiblePosition(listView));
+    }
+
+    private static int layoutAndGetFirstVisiblePosition(ListView listView) {
+        int spec = MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY);
+        listView.measure(spec, spec);
+        listView.layout(0, 0, 100, 100);
+        return listView.getFirstVisiblePosition();
     }
 }

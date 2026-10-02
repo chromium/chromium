@@ -22,18 +22,18 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
 
 /** Unit tests for {@link IntegerValueTransition}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IntegerValueTransitionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mView;
     @Mock private Callback<Integer> mOnUpdate;
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     @Test
     public void testCreateAnimator() {

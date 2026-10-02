@@ -28,6 +28,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,7 +57,6 @@ import java.util.List;
 
 /** Unit tests for {@link DirectWritingServiceCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DirectWritingServiceCallbackTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -72,11 +72,11 @@ public class DirectWritingServiceCallbackTest {
                     DirectWritingServiceCallback.GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE);
 
     @Mock private StylusWritingImeCallback mImeCallback;
-    @Mock private ViewGroup mContainerView;
 
     private final DirectWritingServiceCallback mDwServiceCallback =
             new DirectWritingServiceCallback();
     private Context mContext;
+    private ViewGroup mContainerView;
 
     private static String mojoStringToJavaString(String16 mojoString) {
         short[] data = mojoString.data;
@@ -162,8 +162,8 @@ public class DirectWritingServiceCallbackTest {
     @Before
     public void setup() {
         mContext = RuntimeEnvironment.application;
+        mContainerView = new FrameLayout(mContext);
         doReturn(mContainerView).when(mImeCallback).getContainerView();
-        doReturn(mContext).when(mContainerView).getContext();
     }
 
     @Test

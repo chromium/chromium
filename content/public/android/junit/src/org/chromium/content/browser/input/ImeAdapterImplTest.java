@@ -21,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
@@ -29,10 +30,9 @@ import android.text.Spanned;
 import android.text.style.SuggestionSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowInsetsController;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -46,6 +46,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -81,12 +82,35 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatureList.ANDROID_MEDIA_INSERTION,
     ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImeAdapterImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static class TestContainerView extends FrameLayout {
+        int mRequestRectangleOnScreen1ArgCount;
+        int mRequestRectangleOnScreen3ArgCount;
+        boolean mLastRequestRectangleOnScreenImmediate;
+        int mLastRequestRectangleOnScreenSource;
+
+        TestContainerView() {
+            super(ApplicationProvider.getApplicationContext());
+        }
+
+        @Override
+        public boolean requestRectangleOnScreen(Rect rectangle) {
+            mRequestRectangleOnScreen1ArgCount++;
+            return false;
+        }
+
+        @Override
+        public boolean requestRectangleOnScreen(Rect rectangle, boolean immediate, int source) {
+            mRequestRectangleOnScreen3ArgCount++;
+            mLastRequestRectangleOnScreenImmediate = immediate;
+            mLastRequestRectangleOnScreenSource = source;
+            return false;
+        }
+    }
+
     @Mock private WebContentsImpl mWebContentsImpl;
-    @Mock private ViewGroup mContainerView;
     @Mock private ImeEventObserver mImeEventObserver;
     @Mock private ImeAdapterImpl.Natives mImeAdapterImplJni;
     @Mock private CorrectionInfo mCorrectionInfo;
@@ -95,7 +119,8 @@ public class ImeAdapterImplTest {
     @Mock private EventForwarder mEventForwarder;
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private RenderCoordinatesImpl mRenderCoordinatesImpl;
-    @Mock private WindowInsetsController mWindowInsetsController;
+
+    private final TestContainerView mContainerView = new TestContainerView();
 
     @Before
     public void setUp() {
@@ -110,9 +135,6 @@ public class ImeAdapterImplTest {
                 .when(mWebContentsImpl)
                 .getOrSetUserData(any(), any());
 
-        when(mContainerView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
-        when(mContainerView.getResources())
-                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
         when(mWebContentsImpl.getViewAndroidDelegate())
                 .thenReturn(new TestViewAndroidDelegate(mContainerView));
         when(mWebContentsImpl.getEventForwarder()).thenReturn(mEventForwarder);
@@ -906,14 +928,7 @@ public class ImeAdapterImplTest {
         when(mRenderCoordinatesImpl.getDeviceScaleFactor()).thenReturn(1.0f);
         when(mRenderCoordinatesImpl.getContentOffsetYPixInt()).thenReturn(0);
 
-        when(mContainerView.getLocalVisibleRect(any(Rect.class)))
-                .thenAnswer(
-                        (Answer<Boolean>)
-                                invocation -> {
-                                    Rect rect = invocation.getArgument(0);
-                                    rect.set(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
-                                    return true;
-                                });
+        mContainerView.layout(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
@@ -929,13 +944,17 @@ public class ImeAdapterImplTest {
         // Matches the API selection in ImeAdapterImpl#updateCursorAnchorInfo().
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
                 && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
-            verify(mContainerView, times(expectedCalls))
-                    .requestRectangleOnScreen(
-                            any(Rect.class),
-                            eq(false),
-                            eq(View.RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR));
+            Assert.assertEquals(0, mContainerView.mRequestRectangleOnScreen1ArgCount);
+            Assert.assertEquals(expectedCalls, mContainerView.mRequestRectangleOnScreen3ArgCount);
+            if (shouldExpectRequestRectangleOnScreen) {
+                Assert.assertFalse(mContainerView.mLastRequestRectangleOnScreenImmediate);
+                Assert.assertEquals(
+                        View.RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR,
+                        mContainerView.mLastRequestRectangleOnScreenSource);
+            }
         } else {
-            verify(mContainerView, times(expectedCalls)).requestRectangleOnScreen(any(Rect.class));
+            Assert.assertEquals(expectedCalls, mContainerView.mRequestRectangleOnScreen1ArgCount);
+            Assert.assertEquals(0, mContainerView.mRequestRectangleOnScreen3ArgCount);
         }
     }
 
@@ -1070,9 +1089,11 @@ public class ImeAdapterImplTest {
         adapter.onConnectedToRenderProcess();
 
         when(mWebContentsImpl.isFullscreenForCurrentTab()).thenReturn(false);
-        when(mWindowInsetsController.getSystemBarsBehavior())
-                .thenReturn(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        when(mContainerView.getWindowInsetsController()).thenReturn(mWindowInsetsController);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setContentView(mContainerView);
+        mContainerView
+                .getWindowInsetsController()
+                .setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
 
         // Simulate touch down inside gesture insets
         when(mEventForwarder.hasTouchOriginatingInGestureInsets(mContainerView)).thenReturn(true);

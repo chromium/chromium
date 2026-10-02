@@ -4,13 +4,13 @@
 
 package org.chromium.ui.base;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.view.View;
 
@@ -28,14 +28,30 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PointerLockTest {
+
+    // Robolectric does not support pointer capture, so record releasePointerCapture() calls.
+    private static class TestView extends View {
+        int mReleasePointerCaptureCount;
+
+        TestView() {
+            super(ContextUtils.getApplicationContext());
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+        }
+
+        @Override
+        public void releasePointerCapture() {
+            super.releasePointerCapture();
+            mReleasePointerCaptureCount++;
+        }
+    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mPointerLockView;
-    @Mock private View mView;
     @Mock private WindowAndroid.Natives mWindowAndroidJniMock;
+    private final TestView mPointerLockView = new TestView();
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private WindowAndroid mWindowAndroid;
 
     @Before
@@ -52,19 +68,19 @@ public class PointerLockTest {
 
     @Test
     public void testLockPointerViewAndWindowInFocus() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
     }
 
     @Test
     public void testLockPointerViewNotInFocus() {
-        when(mPointerLockView.hasFocus()).thenReturn(false);
+        assertFalse(mPointerLockView.hasFocus());
         assertFalse(mWindowAndroid.requestPointerLock(mPointerLockView));
     }
 
     @Test
     public void testLockPointerWindowNotInFocus() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         mWindowAndroid.onWindowFocusChanged(false);
 
         assertFalse(mWindowAndroid.requestPointerLock(mPointerLockView));
@@ -72,7 +88,7 @@ public class PointerLockTest {
 
     @Test
     public void testLockAndUnlockPointer() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         mWindowAndroid.releasePointerLock(mPointerLockView);
@@ -80,7 +96,7 @@ public class PointerLockTest {
 
     @Test
     public void testLockAndUnlockPointerWrongView() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         Assert.assertThrows(AssertionError.class, () -> mWindowAndroid.releasePointerLock(mView));
@@ -88,7 +104,7 @@ public class PointerLockTest {
 
     @Test
     public void testLockAndUnlockAndRelockPointer() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         mWindowAndroid.releasePointerLock(mPointerLockView);
@@ -97,7 +113,7 @@ public class PointerLockTest {
 
     @Test
     public void testLockPointerTwiceInARow() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
         Assert.assertThrows(
                 AssertionError.class, () -> mWindowAndroid.requestPointerLock(mPointerLockView));
@@ -105,20 +121,20 @@ public class PointerLockTest {
 
     @Test
     public void testPointerLockTriggerOnPointerCaptureChangeEvent() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         View pointerLockChangeView = mWindowAndroid.getPointerLockChangeViewForTesting();
         assertNotNull(pointerLockChangeView);
         pointerLockChangeView.onPointerCaptureChange(false);
 
-        verify(mPointerLockView, never()).releasePointerCapture();
+        assertEquals(0, mPointerLockView.mReleasePointerCaptureCount);
         verify(mWindowAndroidJniMock).onWindowPointerLockRelease(anyLong());
     }
 
     @Test
     public void testPointerLockNotReleasedOnPointerCaptureChangeEvent() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         View pointerLockChangeView = mWindowAndroid.getPointerLockChangeViewForTesting();
@@ -126,13 +142,13 @@ public class PointerLockTest {
 
         pointerLockChangeView.onPointerCaptureChange(true);
 
-        verify(mPointerLockView, never()).releasePointerCapture();
+        assertEquals(0, mPointerLockView.mReleasePointerCaptureCount);
         verify(mWindowAndroidJniMock, never()).onWindowPointerLockRelease(anyLong());
     }
 
     @Test
     public void testPointerLockTriggerOnFocusChange() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         View.OnFocusChangeListener focusListener =
@@ -140,13 +156,13 @@ public class PointerLockTest {
         assertNotNull(focusListener);
         focusListener.onFocusChange(mPointerLockView, false);
 
-        verify(mPointerLockView).releasePointerCapture();
+        assertEquals(1, mPointerLockView.mReleasePointerCaptureCount);
         verify(mWindowAndroidJniMock).onWindowPointerLockRelease(anyLong());
     }
 
     @Test
     public void testPointerLockNotReleasedOnFocusChange() {
-        when(mPointerLockView.hasFocus()).thenReturn(true);
+        assertTrue(mPointerLockView.requestFocus());
         assertTrue(mWindowAndroid.requestPointerLock(mPointerLockView));
 
         View.OnFocusChangeListener focusListener =
@@ -154,7 +170,7 @@ public class PointerLockTest {
         assertNotNull(focusListener);
         focusListener.onFocusChange(mPointerLockView, true);
 
-        verify(mPointerLockView, never()).releasePointerCapture();
+        assertEquals(0, mPointerLockView.mReleasePointerCaptureCount);
         verify(mWindowAndroidJniMock, never()).onWindowPointerLockRelease(anyLong());
     }
 }
