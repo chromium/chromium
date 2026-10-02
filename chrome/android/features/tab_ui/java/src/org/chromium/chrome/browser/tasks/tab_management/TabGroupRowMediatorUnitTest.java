@@ -120,7 +120,7 @@ public class TabGroupRowMediatorUnitTest {
     private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
     private SavedTabGroup mSyncGroup;
-    private int mRootId = Tab.INVALID_TAB_ID;
+    private int mFirstTabId = Tab.INVALID_TAB_ID;
 
     @Before
     public void setUp() {
@@ -141,7 +141,7 @@ public class TabGroupRowMediatorUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
-        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(true);
+        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(true);
     }
 
     private PropertyModel buildTestModel(GURL... urls) {
@@ -154,7 +154,7 @@ public class TabGroupRowMediatorUnitTest {
         mSyncGroup.title = TITLE;
         mSyncGroup.savedTabs = SyncedGroupTestHelper.tabsFromUrls(urls);
 
-        mRootId =
+        mFirstTabId =
                 mSyncGroup.savedTabs.isEmpty()
                         ? Tab.INVALID_TAB_ID
                         : mSyncGroup.savedTabs.get(0).localId;
@@ -279,18 +279,18 @@ public class TabGroupRowMediatorUnitTest {
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(mRootId);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
 
     @Test(expected = AssertionError.class)
     public void testOpen_InCurrent_RequestShowFails() {
-        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(false);
+        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(false);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(mRootId);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
 
     @Test
@@ -299,9 +299,9 @@ public class TabGroupRowMediatorUnitTest {
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabModel).cancelTabClosure(mRootId);
+        verify(mTabModel).cancelTabClosure(mFirstTabId);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(mRootId);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
 
     @Test
@@ -335,7 +335,7 @@ public class TabGroupRowMediatorUnitTest {
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(mRootId);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
         assertEquals(1, userActionTester.getActionCount("TabGroups.RestoreFromTabGroupPane"));
         histograms.assertExpected();
         userActionTester.tearDown();
@@ -395,7 +395,7 @@ public class TabGroupRowMediatorUnitTest {
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
         assertNull(propertyModel.get(LEAVE_RUNNABLE));
         propertyModel.get(DELETE_RUNNABLE).run();
-        verify(mTabModel).commitTabClosure(mRootId);
+        verify(mTabModel).commitTabClosure(mFirstTabId);
         verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID1);
     }
 

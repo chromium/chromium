@@ -106,7 +106,7 @@ class TabGroupCreationUiDelegate {
             @Nullable TabSwitcherPaneBase tabSwitcherPaneBase =
                     (TabSwitcherPaneBase) paneManager.getPaneForId(tabSwitcher);
             if (tabSwitcherPaneBase != null) {
-                tabSwitcherPaneBase.requestOpenTabGroupDialog(tab.getId());
+                tabSwitcherPaneBase.requestOpenTabGroupDialog(groupId);
             }
         }
     }

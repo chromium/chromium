@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -596,11 +597,11 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     }
 
     @Override
-    public boolean requestOpenTabGroupDialog(int tabId) {
+    public boolean requestOpenTabGroupDialog(Token tabGroupId) {
         @Nullable TabSwitcherPaneCoordinator coordinator =
                 mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator != null) {
-            coordinator.requestOpenTabGroupDialog(tabId);
+            coordinator.requestOpenTabGroupDialog(tabGroupId);
             return true;
         } else {
             return false;

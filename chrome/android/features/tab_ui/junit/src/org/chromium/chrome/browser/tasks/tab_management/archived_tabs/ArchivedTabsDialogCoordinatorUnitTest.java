@@ -93,7 +93,6 @@ import java.util.List;
 public class ArchivedTabsDialogCoordinatorUnitTest {
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
-    private static final int TAB1_ID = 456;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -360,7 +359,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupAfter);
         when(mCurrentTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mCurrentTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         when(mTabListEditorController.isVisible()).thenReturn(true);
 
         // Show the dialog.
@@ -382,7 +380,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mBackPressManager).removeHandler(any());
 
         // Assert that the tab group has a request to open from GTS.
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(TAB1_ID);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(TAB_GROUP_ID);
     }
 
     @Test

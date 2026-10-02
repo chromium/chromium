@@ -918,11 +918,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * Scrolls to the specified group and animates open a dialog. It is the caller's responsibility
      * to ensure that this pane is showing before calling this.
      *
-     * @param tabId The id of any tab in the group.
+     * @param tabGroupId The tab group ID of the group.
      */
-    public void requestOpenTabGroupDialog(int tabId) {
-        mMediator.scrollToTabById(tabId);
-        mMediator.openTabGroupDialog(tabId);
+    public void requestOpenTabGroupDialog(Token tabGroupId) {
+        mMediator.openTabGroupDialog(tabGroupId, /* shouldScroll= */ true);
     }
 
     /** Returns the range (inclusive) of visible view indexes. */

@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -302,14 +303,14 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                     (TabSwitcherPaneBase)
                                             mPaneManagerSupplier.get().getDefaultPane();
                             assumeNonNull(tabSwitcherPaneBase);
-                            Callback<Integer> requestOpenTabGroupDialog =
-                                    (Integer rootId) ->
+                            Callback<Token> requestOpenTabGroupDialog =
+                                    (Token tabGroupId) ->
                                             hide(
                                                     ANIM_DURATION_MS,
                                                     () ->
                                                             tabSwitcherPaneBase
                                                                     .requestOpenTabGroupDialog(
-                                                                            rootId));
+                                                                            tabGroupId));
                             // Archive status is reset through any tab group open action in
                             // LocalTabGroupMutationHelper#createNewTabGroup().
                             TabSwitcherUtils.focusTabGroup(

@@ -2285,8 +2285,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     return;
                 }
 
-                int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
                 if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+                    int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
                     Tab tab = tabModel.getTabById(tabId);
                     if (tab != null) {
                         tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
@@ -2305,7 +2305,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> {
                             var tabSwitcher = mTabSwitcherSupplier.get();
                             assert tabSwitcher != null;
-                            tabSwitcher.requestOpenTabGroupDialog(tabId);
+                            tabSwitcher.requestOpenTabGroupDialog(assumeNonNull(tabGroupId));
                         });
             }
 

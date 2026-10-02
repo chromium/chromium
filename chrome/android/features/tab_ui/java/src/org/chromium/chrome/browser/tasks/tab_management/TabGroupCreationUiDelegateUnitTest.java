@@ -70,7 +70,6 @@ public class TabGroupCreationUiDelegateUnitTest {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mToken = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(mToken);
-        when(mTab.getId()).thenReturn(1);
 
         mTabGroupCreationUiDelegate =
                 new TabGroupCreationUiDelegate(
@@ -114,7 +113,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         });
         mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
-        verify(mTabSwitcherPane).requestOpenTabGroupDialog(1);
+        verify(mTabSwitcherPane).requestOpenTabGroupDialog(mToken);
     }
 
     @Test
@@ -136,7 +135,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         });
         mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
-        verify(mTabSwitcherPane).requestOpenTabGroupDialog(1);
+        verify(mTabSwitcherPane).requestOpenTabGroupDialog(mToken);
     }
 
     @Test
@@ -160,6 +159,6 @@ public class TabGroupCreationUiDelegateUnitTest {
 
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mPaneManager).getPaneForId(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPane, never()).requestOpenTabGroupDialog(anyInt());
+        verify(mTabSwitcherPane, never()).requestOpenTabGroupDialog(any());
     }
 }

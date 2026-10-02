@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -253,13 +252,12 @@ class TabGroupRowMediator {
             return;
         }
 
-        int tabId = mTabModel.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
-        assert tabId != Tab.INVALID_TAB_ID;
         mPaneManager.focusPane(PaneId.TAB_SWITCHER);
         TabSwitcherPaneBase tabSwitcherPaneBase =
                 (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
         assumeNonNull(tabSwitcherPaneBase);
-        boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(tabId);
+        boolean success =
+                tabSwitcherPaneBase.requestOpenTabGroupDialog(savedTabGroup.localId.tabGroupId);
         assert success;
     }
 

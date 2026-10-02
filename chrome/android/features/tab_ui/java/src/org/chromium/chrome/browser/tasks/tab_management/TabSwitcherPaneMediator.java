@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -63,7 +64,9 @@ public class TabSwitcherPaneMediator
             new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                    openTabGroupDialog(tabId);
+                    Tab tab = assumeNonNull(mTabModelSupplier.get()).getTabById(tabId);
+                    openTabGroupDialog(
+                            tab != null ? tab.getTabGroupId() : null, /* shouldScroll= */ false);
                     RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
                 }
 
@@ -447,12 +450,20 @@ public class TabSwitcherPaneMediator
         return tabModel.isIncognito() == tab.isIncognito() && tabModel.isTabInTabGroup(tab);
     }
 
-    public void openTabGroupDialog(int tabId) {
-        List<Tab> relatedTabs = assumeNonNull(mTabModelSupplier.get()).getRelatedTabList(tabId);
-        if (relatedTabs.isEmpty()) {
-            relatedTabs = null;
+    /**
+     * Opens the tab group dialog for the given tab group ID.
+     *
+     * @param tabGroupId The tab group ID of the group to show.
+     * @param shouldScroll Whether to scroll to the group's card before opening the dialog.
+     */
+    public void openTabGroupDialog(@Nullable Token tabGroupId, boolean shouldScroll) {
+        List<Tab> tabsInGroup = assumeNonNull(mTabModelSupplier.get()).getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) {
+            tabsInGroup = null;
+        } else if (shouldScroll) {
+            scrollToTabById(tabsInGroup.get(0).getId());
         }
-        assumeNonNull(mTabGridDialogControllerSupplier.get()).resetWithListOfTabs(relatedTabs);
+        assumeNonNull(mTabGridDialogControllerSupplier.get()).resetWithListOfTabs(tabsInGroup);
     }
 
     private void notifyBackPressStateChangedInternal() {

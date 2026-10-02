@@ -165,7 +165,7 @@ public class TabGroupListMediatorUnitTest {
         mPropertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
         mModelList = new ModelList();
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
-        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(true);
+        when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(true);
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
@@ -335,8 +335,6 @@ public class TabGroupListMediatorUnitTest {
         group3.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
         group3.localId = null;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID2)).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabModel.tabGroupExists(LOCAL_GROUP_ID1)).thenReturn(true);
         when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(false);
         List<Tab> tabList = List.of(mTab1);
@@ -372,8 +370,6 @@ public class TabGroupListMediatorUnitTest {
         group2.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
         group2.localId = null;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID2)).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabModel.tabGroupExists(LOCAL_GROUP_ID1)).thenReturn(true);
         when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(false);
         List<Tab> tabList = List.of(mTab1);
@@ -389,7 +385,7 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         // Set up mocks to change behavior after #openTabGroup() is called.
         MockitoHelper.doRunnable(
@@ -401,8 +397,6 @@ public class TabGroupListMediatorUnitTest {
                             updatedGroup2.localId = new LocalTabGroupId(LOCAL_GROUP_ID2);
 
                             when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(true);
-                            when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID2))
-                                    .thenReturn(ROOT_ID2);
                         })
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID2);
@@ -413,7 +407,7 @@ public class TabGroupListMediatorUnitTest {
         model2.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID2);
         verify(mPaneManager, times(2)).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(ROOT_ID2);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID2);
     }
 
     @Test
@@ -441,8 +435,6 @@ public class TabGroupListMediatorUnitTest {
         MockitoHelper.doRunnable(
                         () -> {
                             group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
-                            when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1))
-                                    .thenReturn(ROOT_ID1);
                         })
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID1);
@@ -452,7 +444,7 @@ public class TabGroupListMediatorUnitTest {
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
         verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
 
     @Test
@@ -472,13 +464,11 @@ public class TabGroupListMediatorUnitTest {
 
         assertEquals(1, mModelList.size());
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
         verify(mTabModel).cancelTabClosure(ROOT_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
 
     @Test
@@ -494,7 +484,6 @@ public class TabGroupListMediatorUnitTest {
         when(mComprehensiveModel.getTabAtChecked(1)).thenReturn(mTab2);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab2.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
 
         createMediator();
         assertEquals(1, mModelList.size());
@@ -503,19 +492,19 @@ public class TabGroupListMediatorUnitTest {
         model1.get(OPEN_RUNNABLE).run();
         verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         when(mTab1.isClosing()).thenReturn(true);
         model1.get(OPEN_RUNNABLE).run();
         verify(mTabModel, never()).cancelTabClosure(ROOT_ID1);
         verify(mPaneManager, times(2)).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase, times(2)).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase, times(2)).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         when(mTab2.isClosing()).thenReturn(true);
         model1.get(OPEN_RUNNABLE).run();
         verify(mTabModel).cancelTabClosure(ROOT_ID1);
         verify(mPaneManager, times(3)).focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPaneBase, times(3)).requestOpenTabGroupDialog(ROOT_ID1);
+        verify(mTabSwitcherPaneBase, times(3)).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
     }
 
     @Test
@@ -528,8 +517,6 @@ public class TabGroupListMediatorUnitTest {
         group2.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
         group2.localId = null;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID2)).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -572,7 +559,6 @@ public class TabGroupListMediatorUnitTest {
         group1.savedTabs = SyncedGroupTestHelper.tabsFromIds(ROOT_ID1);
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -646,7 +632,6 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
         group1.collaborationId = COLLABORATION_ID1;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -675,7 +660,6 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
         group1.collaborationId = COLLABORATION_ID1;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(List.of(mTab1));
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -704,7 +688,6 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
         group1.collaborationId = COLLABORATION_ID1;
 
-        when(mTabModel.getGroupLastShownTabId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabModel.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);

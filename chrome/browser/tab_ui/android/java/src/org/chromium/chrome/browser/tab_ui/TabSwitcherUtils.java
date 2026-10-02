@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.Token;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -101,7 +102,7 @@ public class TabSwitcherUtils {
      * @param tabGroupUiActionHandler Handler used to open closed tab groups.
      * @param tabModel The tab model used to resolve the group's last shown tab and update tab
      *     selection when the tab switcher is disabled.
-     * @param requestOpenTabGroupDialog Callback invoked with the root tab ID to display the tab
+     * @param requestOpenTabGroupDialog Callback invoked with the tab group ID to display the tab
      *     group dialog when the tab switcher is enabled.
      */
     public static void focusTabGroup(
@@ -109,7 +110,7 @@ public class TabSwitcherUtils {
             TabGroupSyncService tabGroupSyncService,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             TabModel tabModel,
-            Callback<Integer> requestOpenTabGroupDialog) {
+            Callback<Token> requestOpenTabGroupDialog) {
         SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
         if (syncGroup == null) return;
 
@@ -120,16 +121,17 @@ public class TabSwitcherUtils {
             assert syncGroup.localId != null;
         }
 
-        int tabId = tabModel.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
-        if (tabId == Tab.INVALID_TAB_ID) return;
+        Token tabGroupId = syncGroup.localId.tabGroupId;
+        if (!tabModel.tabGroupExists(tabGroupId)) return;
         if (isGridTabSwitcherDisabled()) {
+            int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
             Tab tab = tabModel.getTabById(tabId);
             if (tab != null) {
                 tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
             }
             return;
         }
-        requestOpenTabGroupDialog.onResult(tabId);
+        requestOpenTabGroupDialog.onResult(tabGroupId);
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,8 +50,8 @@ public interface TabSwitcher {
     /**
      * Requests to show a dialog for a tab group.
      *
-     * @param tabId The id of any tab in the group.
+     * @param tabGroupId The tab group ID of the group.
      * @return Whether the request to show was able to be handled.
      */
-    boolean requestOpenTabGroupDialog(int tabId);
+    boolean requestOpenTabGroupDialog(Token tabGroupId);
 }

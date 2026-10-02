@@ -2073,14 +2073,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                     .getTabGroupSyncController(),
                             tabModel,
-                            (rootId) -> {
+                            (localTabGroupId) -> {
                                 Pane curPane =
                                         assumeNonNull(paneManager.getFocusedPaneSupplier().get());
                                 if (curPane.getPaneId() != PaneId.TAB_SWITCHER) {
                                     paneManager.focusPane(PaneId.TAB_SWITCHER);
                                 }
                                 assumeNonNull(tabSwitcherPaneBase);
-                                tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
+                                tabSwitcherPaneBase.requestOpenTabGroupDialog(localTabGroupId);
                             });
                 };
         // Navigate to the tab switcher while waiting for the layout and tab model to be available.
