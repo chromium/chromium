@@ -781,7 +781,7 @@ class AutofillClient {
 #if BUILDFLAG(IS_ANDROID)
   // Shows the Personal Context ambient autofill notice. Returns whether the
   // notice was successfully shown.
-  virtual bool ShowAmbientAutoFillNotice(
+  virtual bool ShowAmbientAutofillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate);
 
   // Shows the Autofill AI private inference notice in the Touch To Fill bottom
@@ -790,7 +790,7 @@ class AutofillClient {
       base::WeakPtr<TouchToFillAutofillDelegate> delegate);
 
   // Hides the Personal Context ambient autofill notice.
-  virtual void HideAmbientAutoFillNotice();
+  virtual void HideAmbientAutofillNotice();
 
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.

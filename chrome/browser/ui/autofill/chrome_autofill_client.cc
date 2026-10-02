@@ -1204,7 +1204,7 @@ void ChromeAutofillClient::SetTouchToFillAutofillControllerForTesting(
       std::move(touch_to_fill_autofill_controller);
 }
 
-bool ChromeAutofillClient::ShowAmbientAutoFillNotice(
+bool ChromeAutofillClient::ShowAmbientAutofillNotice(
     base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
   if (!touch_to_fill_autofill_controller_) {
     return false;
@@ -1224,7 +1224,7 @@ bool ChromeAutofillClient::ShowPrivateInferenceNoticeBottomSheet(
       std::move(delegate));
 }
 
-void ChromeAutofillClient::HideAmbientAutoFillNotice() {
+void ChromeAutofillClient::HideAmbientAutofillNotice() {
   if (touch_to_fill_autofill_controller_) {
     touch_to_fill_autofill_controller_->Hide();
   }

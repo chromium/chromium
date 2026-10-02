@@ -98,7 +98,7 @@ bool TouchToFillAutofillDelegateAndroidImpl::TryToShowTouchToFill(
   if (!IntendsToShowTouchToFill(form.global_id(), field.global_id())) {
     return false;
   }
-  if (manager_->client().ShowAmbientAutoFillNotice(
+  if (manager_->client().ShowAmbientAutofillNotice(
           weak_ptr_factory_.GetWeakPtr())) {
     ttf_autofill_state_ = TouchToFillAutofillState::kShowing;
     query_field_id_ = field.global_id();
@@ -127,7 +127,7 @@ bool TouchToFillAutofillDelegateAndroidImpl::IsShowingTouchToFill() {
 void TouchToFillAutofillDelegateAndroidImpl::HideTouchToFill() {
   switch (ttf_autofill_state_) {
     case TouchToFillAutofillState::kShowing:
-      manager_->client().HideAmbientAutoFillNotice();
+      manager_->client().HideAmbientAutofillNotice();
       ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
       break;
     case TouchToFillAutofillState::kNavigatingAway:

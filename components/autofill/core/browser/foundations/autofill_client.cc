@@ -287,7 +287,7 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool AutofillClient::ShowAmbientAutoFillNotice(
+bool AutofillClient::ShowAmbientAutofillNotice(
     base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
   return false;
 }
@@ -297,7 +297,7 @@ bool AutofillClient::ShowPrivateInferenceNoticeBottomSheet(
   return false;
 }
 
-void AutofillClient::HideAmbientAutoFillNotice() {}
+void AutofillClient::HideAmbientAutofillNotice() {}
 
 AutofillSnackbarControllerImpl*
 AutofillClient::GetAutofillSnackbarController() {

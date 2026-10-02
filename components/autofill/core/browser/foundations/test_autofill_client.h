@@ -612,7 +612,7 @@ class TestAutofillClientTemplate : public T {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  bool ShowAmbientAutoFillNotice(
+  bool ShowAmbientAutofillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override {
     show_ambient_autofill_notice_called_ = true;
     return show_ambient_autofill_notice_result_;
@@ -623,7 +623,7 @@ class TestAutofillClientTemplate : public T {
   void set_show_ambient_autofill_notice_result(bool result) {
     show_ambient_autofill_notice_result_ = result;
   }
-  void HideAmbientAutoFillNotice() override {
+  void HideAmbientAutofillNotice() override {
     hide_ambient_autofill_notice_called_ = true;
   }
   bool hide_ambient_autofill_notice_called() const {

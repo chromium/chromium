@@ -33,10 +33,10 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   using TestAutofillClient::TestAutofillClient;
   MOCK_METHOD(bool,
-              ShowAmbientAutoFillNotice,
+              ShowAmbientAutofillNotice,
               (base::WeakPtr<TouchToFillAutofillDelegate> delegate),
               (override));
-  MOCK_METHOD(void, HideAmbientAutoFillNotice, (), (override));
+  MOCK_METHOD(void, HideAmbientAutofillNotice, (), (override));
 };
 
 class TouchToFillAutofillDelegateAndroidImplTest
@@ -150,7 +150,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillOnce(Return(true));
   FormData form = test::CreateTestPersonalInformationFormData();
   autofill_manager().AddSeenForm(
@@ -179,7 +179,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillOnce(Return(false));
   FormData form = test::CreateTestPersonalInformationFormData();
   autofill_manager().AddSeenForm(
@@ -196,7 +196,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(false);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice).Times(0);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice).Times(0);
   FormData form = test::CreateTestPersonalInformationFormData();
   autofill_manager().AddSeenForm(
       form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
@@ -213,7 +213,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillOnce(Return(true));
   FormData form = test::CreateTestPersonalInformationFormData();
   autofill_manager().AddSeenForm(
@@ -221,7 +221,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
   ASSERT_TRUE(delegate().IsShowingTouchToFill());
 
-  EXPECT_CALL(autofill_client(), HideAmbientAutoFillNotice);
+  EXPECT_CALL(autofill_client(), HideAmbientAutofillNotice);
   delegate().HideTouchToFill();
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
@@ -235,7 +235,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, OnDismissedResetsState) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillOnce(Return(true));
   FormData form = test::CreateTestPersonalInformationFormData();
   autofill_manager().AddSeenForm(
@@ -258,7 +258,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillRepeatedly(Return(true));
 
   FormData form = test::CreateTestPersonalInformationFormData();
@@ -289,7 +289,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillRepeatedly(Return(true));
 
   FormData form = test::CreateTestPersonalInformationFormData();
@@ -330,7 +330,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillRepeatedly(Return(true));
 
   FormData form = test::CreateTestPersonalInformationFormData();
@@ -378,7 +378,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillRepeatedly(Return(true));
 
   FormData form = test::CreateTestPersonalInformationFormData();
@@ -411,7 +411,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_ambient_autofill_notice(true);
-  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
       .WillRepeatedly(Return(true));
 
   FormData form = test::CreateTestPersonalInformationFormData();

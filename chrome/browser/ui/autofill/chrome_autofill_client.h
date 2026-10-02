@@ -266,11 +266,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // from the server to fill the form.
   void DismissAutofillAiLoadingDialog() final;
 
-  bool ShowAmbientAutoFillNotice(
+  bool ShowAmbientAutofillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   bool ShowPrivateInferenceNoticeBottomSheet(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
-  void HideAmbientAutoFillNotice() override;
+  void HideAmbientAutofillNotice() override;
 
   // The AutofillMessageController is used to show native Android messages via
   // the messages API.
