@@ -16,8 +16,35 @@
       {
         "id": "ContextType",
         "type": "string",
-        "enum": ["all", "page", "frame", "selection", "link", "editable", "image", "video", "audio", "launcher", "browser_action", "page_action", "action", "tab"],
-        "description": "The different contexts a menu can appear in. Specifying 'all' is equivalent to the combination of all other contexts except for 'launcher'. The 'launcher' context is only supported by apps and is used to add menu items to the context menu that appears when clicking the app icon in the launcher/taskbar/dock/etc. Different platforms might put limitations on what is actually supported in a launcher context menu."
+        "enum": [
+          "all",
+          "page",
+          "frame",
+          "selection",
+          "link",
+          "editable",
+          "image",
+          "video",
+          "audio",
+          "launcher",
+          {
+            "name": "browser_action",
+            "nodoc": true
+          },
+          {
+            "name": "page_action",
+            "nodoc": true
+          },
+          {
+            "name": "action",
+            "description": "Applies to the context menu of the extension's action (its toolbar icon)."
+          },
+          {
+            "name": "tab",
+            "description": "Applies to the context menu of a tab in the tab strip."
+          }
+        ],
+        "description": "The different contexts a menu can appear in. Specifying 'all' is equivalent to the combination of all other contexts except for 'launcher' and 'tab'. The 'launcher' context is only supported by apps and is used to add menu items to the context menu that appears when clicking the app icon in the launcher/taskbar/dock/etc. Different platforms might put limitations on what is actually supported in a launcher context menu."
       },
       {
         "id": "ItemType",
