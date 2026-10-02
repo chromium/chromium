@@ -1224,6 +1224,11 @@ crbug.com/495458814 [ Linux ] external/wpt/css/css-values/rlh-on-root-lengths.ht
 crbug.com/495458814 [ Linux ] external/wpt/css/cssom/font-family-serialization-001.html [ Failure Pass ]
 crbug.com/495458814 [ Linux ] external/wpt/css/css-overflow/text-overflow-005.html [ Failure Pass ]
 
+# ::scroll-marker not updated when scroll container status changes
+crbug.com/500793607 external/wpt/css/css-overflow/scroll-markers/scroll-marker-group-scroll-container-change-001.html [ Failure ]
+crbug.com/500793607 external/wpt/css/css-overflow/scroll-markers/scroll-marker-group-scroll-container-change-002.html [ Failure ]
+crbug.com/500793607 external/wpt/css/css-overflow/scroll-markers/scroll-marker-group-scroll-container-change-crash.html [ Crash Timeout ]
+
 # Table color must quirk-inherit
 crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-003.html [ Failure ]
 
