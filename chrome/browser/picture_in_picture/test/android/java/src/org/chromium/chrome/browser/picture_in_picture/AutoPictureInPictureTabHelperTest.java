@@ -35,7 +35,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -137,11 +136,13 @@ public class AutoPictureInPictureTabHelperTest {
         switchToTab(newTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
 
         // Return to the tab. This should exit auto-PiP.
         switchToTab(originalTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
+        waitForPipWindowToClose(pipActivity);
     }
 
     @Test
@@ -169,16 +170,17 @@ public class AutoPictureInPictureTabHelperTest {
         switchToTab(newTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
 
         // Return to the tab. This should exit auto-PiP.
         switchToTab(originalTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
+        waitForPipWindowToClose(pipActivity);
     }
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/511288544
     public void testHideAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         Tab originalTab = mPage.getTab();
@@ -384,6 +386,7 @@ public class AutoPictureInPictureTabHelperTest {
         DOMUtils.clickNodeWithJavaScript(webContents, PIP_BUTTON_ID);
         AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
                 webContents, true, "Did not enter PiP after manual request.");
+        getPictureInPictureActivity();
 
         // Create a new tab in the background to switch to later.
         Tab originalTab = mPage.getTab();
@@ -572,7 +575,6 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/550361715")
     public void testBackToTabPostHideTimeRecorded() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         Tab originalTab = mPage.getTab();
@@ -761,22 +763,24 @@ public class AutoPictureInPictureTabHelperTest {
      * @return The current {@link PictureInPictureActivity} instance, or null if not found.
      */
     private PictureInPictureActivity getPictureInPictureActivity() {
-        final Activity[] activityHolder = new Activity[1];
+        final PictureInPictureActivity[] activityHolder = new PictureInPictureActivity[1];
         CriteriaHelper.pollUiThread(
                 () -> {
+                    ChromeTabbedActivity cta = getActivity();
+                    if (cta == null) return false;
                     List<Activity> activities = ApplicationStatus.getRunningActivities();
                     for (Activity activity : activities) {
-                        if (activity instanceof PictureInPictureActivity) {
-                            activityHolder[0] = activity;
-                            return true;
+                        if (activity instanceof PictureInPictureActivity pipActivity) {
+                            activityHolder[0] = pipActivity;
+                            return pipActivity.isPipTransitionCompleteForTesting(cta);
                         }
                     }
                     return false;
                 },
-                "Could not find PictureInPictureActivity.",
+                "Could not find PictureInPictureActivity in PiP mode.",
                 PIP_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        return (PictureInPictureActivity) activityHolder[0];
+        return activityHolder[0];
     }
 
     /** Waits for the remote action lists to be initialized. */

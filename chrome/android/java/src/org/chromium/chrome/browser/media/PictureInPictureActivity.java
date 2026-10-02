@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
@@ -892,6 +893,21 @@ public class PictureInPictureActivity extends VideoOverlayActivity {
 
     /* package */ @Nullable View getViewForTesting() {
         return getCompositorView() == null ? null : getCompositorView().getView();
+    }
+
+    public boolean isPipTransitionCompleteForTesting(Activity initiatorActivity) {
+        View pipView = getViewForTesting();
+        int initiatorWidth = initiatorActivity.getWindow().getDecorView().getWidth();
+        // Wait until PictureInPictureActivity has fully transitioned into its
+        // pinned PiP task and received its smaller PiP window bounds. Closing
+        // it while WindowManager's OPEN or PIP transition is still in flight
+        // can cause the transition to misfire on the initiator activity's task.
+        return isNativeHandleInitialized()
+                && isInPictureInPictureMode()
+                && getTaskId() != initiatorActivity.getTaskId()
+                && pipView != null
+                && pipView.getWidth() > 0
+                && pipView.getWidth() < initiatorWidth;
     }
 
     public void expireQuickDismissalTimerForTesting() {
