@@ -243,13 +243,9 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
 
 bool CanCreateNativeBufferForFormat(SharedImageFormat format) {
   return (format == SinglePlaneFormat::kBGRA_8888 ||
-          format == SinglePlaneFormat::kR_8 ||
-          format == SinglePlaneFormat::kRG_88 ||
 #if BUILDFLAG(IS_APPLE)
           format == SinglePlaneFormat::kBGRX_8888 ||
           format == SinglePlaneFormat::kRGBX_8888 ||
-          format == SinglePlaneFormat::kR_16 ||
-          format == SinglePlaneFormat::kRG_1616 ||
 #endif
           format == SinglePlaneFormat::kRGBA_4444 ||
           format == SinglePlaneFormat::kRGBA_8888 ||
