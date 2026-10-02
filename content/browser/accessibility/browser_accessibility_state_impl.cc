@@ -509,11 +509,9 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
     BrowserContext* browser_context) {
   return FilterAccessibilityModeInvariants(
-      GetAccessibilityMode() |
+      scoped_modes_for_process_.accessibility_mode() |
       ModeCollectionForTarget::GetAccessibilityMode(browser_context));
 }
-
-
 
 void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
   if (allow_ax_mode_changes_ == allowed) {
@@ -638,7 +636,7 @@ void BrowserAccessibilityStateImpl::OnPageNavigationComplete(
 void BrowserAccessibilityStateImpl::OnWebContentsInitialized(
     WebContentsImpl* web_contents) {
   const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
-      GetAccessibilityMode() |
+      scoped_modes_for_process_.accessibility_mode() |
       ModeCollectionForTarget::GetAccessibilityMode(
           web_contents->GetBrowserContext()) |
       ui::AXMode());
@@ -670,7 +668,7 @@ void BrowserAccessibilityStateImpl::OnWebContentsRevealed(
   AccessibilityDisabler::Remove(web_contents);
 
   const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
-      GetAccessibilityMode() |
+      scoped_modes_for_process_.accessibility_mode() |
       ModeCollectionForTarget::GetAccessibilityMode(
           web_contents->GetBrowserContext()) |
       ModeCollectionForTarget::GetAccessibilityMode(web_contents));
@@ -785,7 +783,9 @@ void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
 
 // This ScopedModeCollection::Delegate override is called by
 // scoped_modes_for_process_ when the effective mode for the collection of
-// scopers targeting the process changes.
+// scopers targeting the process changes, and by
+// BrowserAccessibilityStateImplAndroid::OnModeChangedForWebContents when the
+// global mode changes due to a WebContents-scoped mode change.
 void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
   // Strip kNativeAdaptedWebContents so it never pollutes process-wide UMA
@@ -818,15 +818,19 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
     base::debug::SetCrashKeyString(ax_mode_crash_key, new_mode.ToString());
   }
 
-  // Combine the new mode for the process with the effective mode for each
-  // WebContents and its associated BrowserContext.
+  // Combine the effective mode for the process with the effective mode for each
+  // WebContents and its associated BrowserContext. Read
+  // `scoped_modes_for_process_` directly rather than `new_mode` because on
+  // Android `OnModeChanged` is also called with the global mode (which unions
+  // all WebContents modes) and must not apply one WebContents's mode to others.
   std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
-      [this, new_mode](WebContentsImpl* web_contents) {
+      [this, process_mode = scoped_modes_for_process_.accessibility_mode()](
+          WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&
             !web_contents->IsNeverComposited()) {
           ApplyAccessibilityModeToWebContents(
-              web_contents, new_mode,
+              web_contents, process_mode,
               ModeCollectionForTarget::GetAccessibilityMode(
                   web_contents->GetBrowserContext()),
               ModeCollectionForTarget::GetAccessibilityMode(web_contents));
@@ -888,7 +892,8 @@ void BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext(
   // `browser_context`.
   std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
-      [this, browser_context, process_mode = GetAccessibilityMode(),
+      [this, browser_context,
+       process_mode = scoped_modes_for_process_.accessibility_mode(),
        new_mode](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&
             !web_contents->IsNeverComposited() &&
@@ -939,7 +944,8 @@ void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
   // Combine the effective modes for the process, `web_contents`'s
   // BrowserContext, and for `web_contents.
   ApplyAccessibilityModeToWebContents(
-      static_cast<WebContentsImpl*>(web_contents), GetAccessibilityMode(),
+      static_cast<WebContentsImpl*>(web_contents),
+      scoped_modes_for_process_.accessibility_mode(),
       ModeCollectionForTarget::GetAccessibilityMode(
           web_contents->GetBrowserContext()),
       new_mode);

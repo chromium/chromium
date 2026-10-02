@@ -908,7 +908,8 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   // is necessary.
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
-  if (!accessibility_state->IsAXModeChangeAllowed()) {
+  if (!accessibility_state->IsAXModeChangeAllowed() ||
+      !accessibility_state->IsActivationFromPlatformEnabled()) {
     scoped_accessibility_mode_.reset();
     return;
   }
@@ -930,10 +931,15 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     target_mode = ui::kAXModeBasic;
   }
 
-  target_mode |= ui::AXMode::kFromPlatform;
-
-  scoped_accessibility_mode_ =
-      accessibility_state->CreateScopedModeForProcess(target_mode);
+  // Scope `target_mode` strictly to `web_contents_` (`web_contents_` is null
+  // for Paint Preview snapshot instances).
+  if (web_contents_) {
+    scoped_accessibility_mode_ =
+        accessibility_state->CreateScopedModeForWebContents(web_contents_,
+                                                            target_mode);
+  } else {
+    scoped_accessibility_mode_.reset();
+  }
 }
 
 bool WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
@@ -2566,7 +2572,9 @@ int32_t WebContentsAccessibilityAndroid::FindElementType(
     // sure be in a mode with kExtendedProperties).
     BrowserAccessibilityStateImpl* accessibility_state =
         BrowserAccessibilityStateImpl::GetInstance();
-    ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+    ui::AXMode mode = web_contents_
+                          ? web_contents_->GetAccessibilityMode()
+                          : accessibility_state->GetAccessibilityMode();
     std::string suffix;
 
     if (mode == ui::kAXModeBasic) {
@@ -2710,7 +2718,8 @@ void WebContentsAccessibilityAndroid::RecordInlineTextBoxMetrics(
   // for modes that don't have kInlineTextBoxes mode flag.
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
-  ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+  ui::AXMode mode = web_contents_ ? web_contents_->GetAccessibilityMode()
+                                  : accessibility_state->GetAccessibilityMode();
 
   ui::AXMode::BundleHistogramValue bundle;
   // Clear out any modes that will confuse the bundle detection.

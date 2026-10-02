@@ -14,9 +14,14 @@
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/accessibility/web_contents_accessibility_android.h"
+#endif
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
@@ -635,5 +640,219 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(web_contents_impl->GetRootBrowserAccessibilityManager()
                   ->GetBrowserAccessibilityRoot());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Exhaustively verifies per-WebContents vs. global/process AXMode,
+// ActiveAssistiveTech, and UMA histograms when Java
+// WebContentsAccessibilityImpl becomes ready on one WebContents across all
+// combinations of accessibility services, while other WebContents without Java
+// accessibility ready remain at ui::AXMode().
+IN_PROC_BROWSER_TEST_F(
+    ScopedAccessibilityModeTest,
+    AndroidWebContentsScopedAXMode_PerWebContentsAndProcessModes_MixOfServices) {
+  base::HistogramTester histogram_tester;
+
+  // Enable platform activation, as it is turned off by default in browsertests.
+  accessibility_state().SetActivationFromPlatformEnabled(true);
+
+  // Initially, neither global mode nor any WebContents has accessibility
+  // enabled.
+  ASSERT_EQ(accessibility_state().GetAccessibilityMode(), ui::AXMode());
+  ASSERT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+  ASSERT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  ASSERT_EQ(web_contents3().GetAccessibilityMode(), ui::AXMode());
+
+  // Initialize WebContentsAccessibilityAndroid on web_contents1() ONLY
+  // (simulating Java becoming ready on a foreground tab while web_contents2()
+  // and web_contents3() do not have Java accessibility ready). Owned by
+  // WebContents via RenderWidgetHostConnector.
+  auto* wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+
+  // Case 1: No accessibility services enabled (e.g. framework probe during
+  // view/autofill structure query).
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/false,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+  // Global GetAccessibilityMode() reflects the union across all WebContents
+  // (ui::kAXModeBasic), while web_contents2() and web_contents3() remain at
+  // ui::AXMode().
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeBasic);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeBasic);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(web_contents3().GetAccessibilityMode(), ui::AXMode());
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kBasic, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS, 1);
+  histogram_tester.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart",
+                                    1);
+
+  // Case 2: Password manager only (FormControls candidate).
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/false,
+      /*is_form_controls_candidate=*/true,
+      /*is_on_screen_mode_candidate=*/false);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(),
+            ui::kAXModeFormControls);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeFormControls);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kFormControls,
+      1);
+
+  // Case 3: Single basic on-screen service.
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/false,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/true);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeBasic);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeBasic);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+
+  // Case 4: Complex user interaction accessibility service.
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/true,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeComplete);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeComplete);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kComplete, 1);
+
+  // Case 5: Known screen reader (TalkBack) enabled.
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/true,
+      /*is_complex_accessibility_service_enabled=*/true,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
+  EXPECT_EQ(accessibility_state().ActiveAssistiveTech(),
+            ui::AssistiveTech::kTalkback);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
+  // web_contents2() still has ui::AXMode() because its Java
+  // WebContentsAccessibilityImpl has not initialized!
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER, 1);
+
+  // Clean up wcax1 via DisableRendererAccessibility and verify everything
+  // resets cleanly.
+  wcax1->DisableRendererAccessibility(/*env=*/nullptr);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(accessibility_state().ActiveAssistiveTech(),
+            ui::AssistiveTech::kNone);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+}
+
+// Verifies that when accessibility (TalkBack/Complete mode) is active on an
+// existing tab and a new C++ WebContents is created, C++/renderer
+// accessibility is NEVER enabled on the new WebContents until its own Java
+// WebContentsAccessibilityImpl is initialized.
+IN_PROC_BROWSER_TEST_F(
+    ScopedAccessibilityModeTest,
+    AndroidWebContentsScopedAXMode_NewWebContentsDeferredUntilJavaReady) {
+  base::HistogramTester histogram_tester;
+  accessibility_state().SetActivationFromPlatformEnabled(true);
+
+  auto* wcax1 = new WebContentsAccessibilityAndroid(&web_contents1());
+  wcax1->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/true,
+      /*is_complex_accessibility_service_enabled=*/true,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+
+  ASSERT_EQ(accessibility_state().ActiveAssistiveTech(),
+            ui::AssistiveTech::kTalkback);
+  ASSERT_EQ(web_contents1().GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kUnnamed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER, 1);
+
+  // Now create a brand new C++ WebContents while TalkBack is active on Tab 1.
+  Shell* new_shell = CreateBrowser();
+  WebContents* new_wc = new_shell->web_contents();
+
+  // Before Java WebContentsAccessibilityImpl initializes for `new_wc`,
+  // `new_wc` must NOT have accessibility enabled and must NOT create a
+  // BrowserAccessibilityManager.
+  EXPECT_EQ(new_wc->GetAccessibilityMode(), ui::AXMode());
+  EXPECT_FALSE(static_cast<WebContentsImpl*>(new_wc)
+                   ->GetRootBrowserAccessibilityManager());
+
+  // Once Java WebContentsAccessibilityImpl initializes for `new_wc` and calls
+  // SetBrowserAXMode, `new_wc` receives the full accessibility mode.
+  auto* wcax_new = new WebContentsAccessibilityAndroid(new_wc);
+  wcax_new->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/true,
+      /*is_complex_accessibility_service_enabled=*/true,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+
+  EXPECT_EQ(new_wc->GetAccessibilityMode(),
+            ui::kAXModeComplete | ui::AXMode::kScreenReader);
+  // Enabling the same mode on a second tab must not record duplicate
+  // Accessibility.Bundle or Accessibility.ModeFlag samples.
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kUnnamed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ModeFlag",
+      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER, 1);
+}
+
+// Verifies the b/565076216 scenario: a background/hidden tab initializing
+// WebContentsAccessibilityAndroid when no accessibility services are enabled
+// never leaks kAXModeBasic to a foreground tab, and auto-disabling one tab
+// does not affect another active tab.
+IN_PROC_BROWSER_TEST_F(
+    ScopedAccessibilityModeTest,
+    AndroidWebContentsScopedAXMode_BackgroundTabAutoDisableDoesNotLeakBasicMode) {
+  accessibility_state().SetActivationFromPlatformEnabled(true);
+
+  // web_contents1() is the active foreground tab; web_contents2() is a
+  // background tab (e.g. restored at startup on desktop/phone).
+  auto* wcax_bg = new WebContentsAccessibilityAndroid(&web_contents2());
+  wcax_bg->SetBrowserAXMode(
+      /*env=*/nullptr,
+      /*is_known_screen_reader_enabled=*/false,
+      /*is_complex_accessibility_service_enabled=*/false,
+      /*is_form_controls_candidate=*/false,
+      /*is_on_screen_mode_candidate=*/false);
+
+  // Foreground tab (web_contents1) must remain at ui::AXMode().
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeBasic);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::kAXModeBasic);
+
+  // When background tab auto-disables, its scoped mode is also released.
+  wcax_bg->DisableRendererAccessibility(/*env=*/nullptr);
+  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
+  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

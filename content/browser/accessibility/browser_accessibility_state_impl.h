@@ -161,10 +161,18 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void RecordPlatformClientHistograms(ui::AXMode old_mode,
                                               ui::AXMode new_mode);
 
+  // ScopedModeCollection::Delegate:
+  // Handles a change to the effective accessibility mode for the process.
+  void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) override;
+
+  // Handles a change to the effective accessibility mode for `web_contents`.
+  virtual void OnModeChangedForWebContents(WebContents* web_contents,
+                                           ui::AXMode old_mode,
+                                           ui::AXMode new_mode);
+
   ui::AXPlatform& ax_platform() { return ax_platform_; }
 
  private:
-
   // Stops tracking `web_contents` for disabling accessibility while it is
   // hidden.
   void OnDisablerDestroyedForWebContents(WebContentsImpl* web_contents);
@@ -178,10 +186,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
                                            ui::AXMode browser_context_mode,
                                            ui::AXMode web_contents_mode);
 
-  // ScopedModeCollection::Delegate:
-  // Handles a change to the effective accessibility mode for the process.
-  void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) override;
-
   // Filters out `kFromPlatform` from `mode` if activation from platform
   // integration is enabled; otherwise, filters all mode flags from `mode` if
   // `kFromPlatform` is present in it.
@@ -191,11 +195,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnModeChangedForBrowserContext(BrowserContext* browser_context,
                                       ui::AXMode old_mode,
                                       ui::AXMode new_mode);
-
-  // Handles a change to the effective accessibility mode for `web_contents`.
-  void OnModeChangedForWebContents(WebContents* web_contents,
-                                   ui::AXMode old_mode,
-                                   ui::AXMode new_mode);
 
   // Add the AXModes + AXMode::kFromPlatform, when corresponding platform APIs
   // are used.
