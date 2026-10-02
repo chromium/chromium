@@ -691,37 +691,6 @@ TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {
                            /*sample=*/false, /*expected_count=*/1);
 }
 
-TEST_F(NetworkMetadataStoreTest, SetTrafficCountersResetDay) {
-  std::string service_path = ConfigureService(kConfigWifi0Connectable);
-  const base::Value* value =
-      metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
-  EXPECT_EQ(nullptr, value);
-
-  metadata_store()->SetDayOfTrafficCountersAutoReset(
-      kGuid, /*day=*/std::optional<int>(5));
-  base::RunLoop().RunUntilIdle();
-
-  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
-  ASSERT_TRUE(value && value->is_int());
-  EXPECT_EQ(5, value->GetInt());
-
-  metadata_store()->SetDayOfTrafficCountersAutoReset(
-      kGuid, /*day=*/std::optional<int>(31));
-  base::RunLoop().RunUntilIdle();
-
-  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
-  ASSERT_TRUE(value && value->is_int());
-  EXPECT_EQ(31, value->GetInt());
-
-  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid,
-                                                     /*day=*/std::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
-  ASSERT_TRUE(value);
-  EXPECT_TRUE(value->is_none());
-}
-
 TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampDisabled) {
   scoped_feature_list_.InitAndDisableFeature(ash::features::kApnRevamp);
   TestGetSetCustomApnList();

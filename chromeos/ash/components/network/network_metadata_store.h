@@ -130,16 +130,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // marks networks that were added in OOBE to the user's list.
   void OwnSharedNetworksOnFirstUserLogin();
 
-  // Sets the day of the month on which traffic counters are automatically
-  // reset.
-  void SetDayOfTrafficCountersAutoReset(const std::string& network_guid,
-                                        const std::optional<int>& day);
-
-  // Returns the day of the month on which traffic counters are automatically
-  // reset. Returns nullptr if no pref exists for |network_guid|.
-  const base::Value* GetDayOfTrafficCountersAutoReset(
-      const std::string& network_guid);
-
   // Records if the default network is configured to use secure DNS template
   // URIs which contain user or device identifiers.
   void SetSecureDnsTemplatesWithIdentifiersActive(bool active);

@@ -243,7 +243,6 @@
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
-#include "chromeos/ash/components/network/traffic_counters_handler.h"
 #include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -1370,11 +1369,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Create the service connection to CrosHealthd platform service instance.
     cros_healthd::ServiceConnection::GetInstance();
 
-    // Initialize the TrafficCountersHandler instance.
-    if (features::IsTrafficCountersEnabled()) {
-      traffic_counters::TrafficCountersHandler::Initialize();
-    }
-
     // Initialize input methods.
     input_method::InputMethodManager* manager =
         input_method::InputMethodManager::Get();
@@ -1722,9 +1716,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
-  if (features::IsTrafficCountersEnabled()) {
-    traffic_counters::TrafficCountersHandler::Shutdown();
-  }
   bluetooth_pref_state_observer_.reset();
   auth_events_recorder_.reset();
 

@@ -50,8 +50,6 @@ const char kCustomApnList[] = "custom_apn_list";
 const char kCustomApnListV2[] = "custom_apn_list_v2";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
-const char kDayOfTrafficCountersAutoReset[] =
-    "day_of_traffic_counters_auto_reset";
 const char kUserTextMessageSuppressionState[] =
     "user_text_message_suppression_state";
 
@@ -553,18 +551,6 @@ const base::ListValue* NetworkMetadataStore::GetPreRevampCustomApnList(
     return pref->GetIfList();
   }
   return nullptr;
-}
-
-void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
-    const std::string& network_guid,
-    const std::optional<int>& day) {
-  auto value = day.has_value() ? base::Value(day.value()) : base::Value();
-  SetPref(network_guid, kDayOfTrafficCountersAutoReset, std::move(value));
-}
-
-const base::Value* NetworkMetadataStore::GetDayOfTrafficCountersAutoReset(
-    const std::string& network_guid) {
-  return GetPref(network_guid, kDayOfTrafficCountersAutoReset);
 }
 
 void NetworkMetadataStore::SetSecureDnsTemplatesWithIdentifiersActive(
