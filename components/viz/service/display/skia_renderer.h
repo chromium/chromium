@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -45,7 +46,9 @@ class TileDrawQuad;
 // TODO(crbug.com/40554816): SkColorSpace is only a subset comparing to
 // gfx::ColorSpace. Need to figure out support for color space that is not
 // covered by SkColorSpace.
-class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
+class VIZ_SERVICE_EXPORT SkiaRenderer
+    : public DirectRenderer,
+      public base::trace_event::MemoryDumpProvider {
  public:
   // TODO(penghuang): Remove skia_output_surface when DDL is used everywhere.
   SkiaRenderer(const RendererSettings* settings,
@@ -59,6 +62,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   SkiaRenderer& operator=(const SkiaRenderer&) = delete;
 
   ~SkiaRenderer() override;
+
+  // base::trace_event::MemoryDumpProvider implementation. Dumps all the
+  // BufferQueues owned by this renderer, since registering each BufferQueue
+  // individually would take the MemoryDumpManager lock once per render pass.
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   void SwapBuffersSkipped() override;

@@ -143,6 +143,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TileManager"/>
   <variant name="V8Isolate"/>
   <variant name="V8SharedMemory"/>
+  <variant name="viz__SkiaRenderer" summary="viz::SkiaRenderer"/>
   <variant name="vulkan"/>
   <variant name="WebGL"/>
   <variant name="WebMediaPlayer_MainThread"/>
@@ -579,6 +580,9 @@ chromium-metrics-reviews@google.com.
       summary="Only counting memory used by V8 worker isolates."/>
   <variant name=".V8.Workers.AllocatedObjects"
       summary="Only counting objects allocated by V8 worker isolates."/>
+  <variant name=".VizBufferQueue"
+      summary="Total size of viz::BufferQueue swapchain buffers allocated in
+               the GPU process. This is a subset of SharedImages."/>
   <variant name=".Vulkan2"
       summary="Total memory allocated by the Vulkan Memory Allocator except
                memory that is lazily allocated. Only reported when Vulkan is

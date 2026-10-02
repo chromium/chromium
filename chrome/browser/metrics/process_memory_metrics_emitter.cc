@@ -354,6 +354,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"gpu/transfer_cache", "ServiceTransferCache.AvgImageSize",
      MetricSize::kCustom, "average_size", EmitTo::kSizeInUmaOnly, nullptr,
      ImageSizeMetricRange},
+    {"gpu/viz_buffer_queue", "VizBufferQueue", MetricSize::kLarge, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     // For the Vulkan Memory Allocator, "allocated_size" is the amount of GPU
     // memory used by the allocator except lazily allocated memory; "used_size"
     // is the amount allocated by clients except lazily used memory.

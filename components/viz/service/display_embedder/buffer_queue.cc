@@ -4,11 +4,18 @@
 
 #include "components/viz/service/display_embedder/buffer_queue.h"
 
+#include <cinttypes>
+#include <string>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace viz {
@@ -265,6 +272,83 @@ int BufferQueue::GetCurrentAllocatedBuffers() const {
     return 0;
   }
   return number_of_buffers_;
+}
+
+void BufferQueue::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) const {
+  // Always emit the dump, even with no buffers, so that UMA records 0 rather
+  // than skipping the sample.
+  std::string dump_name =
+      base::StringPrintf("gpu/viz_buffer_queue/queue_0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this));
+  base::trace_event::MemoryAllocatorDump* dump =
+      pmd->CreateAllocatorDump(dump_name);
+
+  size_t buffer_count = 0;
+  size_t purgeable_count = 0;
+  auto count_buffer = [&](const std::unique_ptr<AllocatedBuffer>& buffer) {
+    if (buffer) {
+      buffer_count++;
+      if (buffer->purgeable) {
+        purgeable_count++;
+      }
+    }
+  };
+
+  count_buffer(current_buffer_);
+  count_buffer(displayed_buffer_);
+  for (const auto& buffer : available_buffers_) {
+    count_buffer(buffer);
+  }
+  for (const auto& buffer : in_flight_buffers_) {
+    count_buffer(buffer);
+  }
+
+  const uint64_t single_buffer_bytes =
+      format_ ? format_->EstimatedSizeInBytes(size_) : 0;
+
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  buffer_count * single_buffer_bytes);
+  dump->AddScalar("purgeable_size",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  purgeable_count * single_buffer_bytes);
+
+  if (args.level_of_detail ==
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+    return;
+  }
+
+  auto dump_buffer = [&](const std::unique_ptr<AllocatedBuffer>& buffer,
+                         const std::string& buffer_name) {
+    if (!buffer) {
+      return;
+    }
+    std::string buffer_dump_name =
+        base::StringPrintf("%s/%s", dump_name.c_str(), buffer_name.c_str());
+    base::trace_event::MemoryAllocatorDump* buffer_dump =
+        pmd->CreateAllocatorDump(buffer_dump_name);
+    buffer_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                           single_buffer_bytes);
+    buffer_dump->AddScalar("purgeable", "bool", buffer->purgeable);
+
+    constexpr int kImportance =
+        static_cast<int>(gpu::TracingImportance::kServiceOwner);
+    auto guid = gpu::GetSharedImageGUIDForTracing(buffer->mailbox);
+    pmd->CreateSharedGlobalAllocatorDump(guid);
+    pmd->AddOwnershipEdge(buffer_dump->guid(), guid, kImportance);
+  };
+
+  dump_buffer(current_buffer_, "current");
+  dump_buffer(displayed_buffer_, "displayed");
+  for (size_t i = 0; i < available_buffers_.size(); ++i) {
+    dump_buffer(available_buffers_[i], base::StringPrintf("available_%zu", i));
+  }
+  for (size_t i = 0; i < in_flight_buffers_.size(); ++i) {
+    dump_buffer(in_flight_buffers_[i], base::StringPrintf("in_flight_%zu", i));
+  }
 }
 
 void BufferQueue::DestroyBuffers() {

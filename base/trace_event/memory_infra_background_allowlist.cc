@@ -98,6 +98,7 @@ constexpr auto kDumpProviderAllowlist =
         "TextureOwner"
         "URLRequestContext",
         "V8Isolate",
+        "viz::SkiaRenderer",
         "WebGL",
         "WebMediaPlayer_MainThread",
         "WebMediaPlayer_MediaThread",
@@ -189,6 +190,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "gpu/transfer_buffer_memory/buffer_0x?",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
+        "gpu/viz_buffer_queue/queue_0x?",
         "gpu/vulkan/vma_allocator_0x?",
         "gpu/vulkan/graphite_allocator",
         "history/delta_file_service/leveldb_0x?",

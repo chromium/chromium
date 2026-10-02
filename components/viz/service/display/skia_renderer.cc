@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -1130,10 +1131,48 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   protected_buffer_queue_ = std::make_unique<BufferQueue>(
       skia_output_surface_, skia_output_surface_->GetSurfaceHandle(), 3,
       /*is_protected=*/true);
+  const bool has_buffer_queue = true;
+#else
+  // Non-root render pass BufferQueues are only used when there is a root one.
+  const bool has_buffer_queue = !!root_buffer_queue_;
 #endif
+
+  if (has_buffer_queue && base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "viz::SkiaRenderer",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
 }
 
-SkiaRenderer::~SkiaRenderer() = default;
+SkiaRenderer::~SkiaRenderer() {
+  // Unregistering without having registered a provider is allowed.
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
+
+bool SkiaRenderer::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                                base::trace_event::ProcessMemoryDump* pmd) {
+  if (root_buffer_queue_) {
+    root_buffer_queue_->OnMemoryDump(args, pmd);
+  }
+  // The root render pass backing does not own a BufferQueue (it uses
+  // |root_buffer_queue_|), so this does not double count.
+  for (const auto& [id, backing] : render_pass_backings_) {
+    if (backing.buffer_queue) {
+      backing.buffer_queue->OnMemoryDump(args, pmd);
+    }
+  }
+  if (scanout_backing_for_reuse_ && scanout_backing_for_reuse_->buffer_queue) {
+    scanout_backing_for_reuse_->buffer_queue->OnMemoryDump(args, pmd);
+  }
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  if (protected_buffer_queue_) {
+    protected_buffer_queue_->OnMemoryDump(args, pmd);
+  }
+#endif
+  return true;
+}
 
 bool SkiaRenderer::CanPartialSwap() {
   return output_surface_->capabilities().supports_post_sub_buffer;
