@@ -1221,6 +1221,7 @@ public class LocationBarCoordinator
      * @see LocationBarMediator#updateUrlBarHintTextColor(boolean)
      */
     public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
+        if (mLocationBarMediator == null) return;
         mLocationBarMediator.updateUrlBarHintTextColor(useDefaultUrlBarHintTextColor);
     }
 
@@ -1228,6 +1229,7 @@ public class LocationBarCoordinator
      * @see LocationBarMediator#updateUrlActionContainerEndMargin(boolean)
      */
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
+        if (mLocationBarMediator == null) return;
         mLocationBarMediator.updateUrlActionContainerEndMargin(
                 useDefaultUrlActionContainerEndMargin);
     }
