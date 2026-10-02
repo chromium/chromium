@@ -99,8 +99,8 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   declare automaticSeedColorEnabled: boolean;
-  private previousStaticColorSelected_: SkColor|null;
-  private previousColorSchemeSelected_: ColorScheme|null;
+  private previousStaticColorSelected_: SkColor|null = null;
+  private previousColorSchemeSelected_: ColorScheme|null = null;
   declare private staticColorSelected_: SkColor|null;
   declare private colorSchemeSelected_: ColorScheme|null;
   declare private staticColors_: StaticColorInfo[];

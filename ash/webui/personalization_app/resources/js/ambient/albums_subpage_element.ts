@@ -67,7 +67,6 @@ export class AlbumsSubpageElement extends WithPersonalizationStore {
 
   declare topicSource: TopicSource;
   declare albums: AmbientModeAlbum[]|null;
-  loadingAlbums: boolean;
 
   declare private ambientModeEnabled_: boolean|null;
   declare private showArtAlbumDialog_: boolean;

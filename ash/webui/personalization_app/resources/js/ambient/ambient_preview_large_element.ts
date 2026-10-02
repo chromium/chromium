@@ -38,18 +38,14 @@ export class AmbientPreviewLargeElement extends AmbientPreviewBase {
 
   static override get properties() {
     return {
-      previewImages_: {
-        type: Array,
-        value: null,
-      },
-      thumbnailImages_: {
+      thumbnailImages: {
         type: Array,
         computed: 'computeThumbnailImages_(topicSource_, previewImages_)',
       },
     };
   }
 
-  private thumbnailImages_: Url[];
+  declare protected thumbnailImages: Url[];
 
   /** Returns the array of thumbnail images. */
   private computeThumbnailImages_(): Url[] {
@@ -91,7 +87,7 @@ export class AmbientPreviewLargeElement extends AmbientPreviewBase {
   }
 
   private getThumbnailContainerClass_(): string {
-    return `thumbnail-${this.thumbnailImages_.length} clickable`;
+    return `thumbnail-${this.thumbnailImages.length} clickable`;
   }
 }
 

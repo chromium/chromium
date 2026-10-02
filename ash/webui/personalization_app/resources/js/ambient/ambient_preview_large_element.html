@@ -301,11 +301,11 @@
                 on-keypress="onClickPreviewImage_">
           </div>
           <div aria-hidden="true"
-              class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
+              class$="[[getThumbnailContainerClass_(thumbnailImages)]]"
               id="thumbnailContainer"
               on-click="onClickThumbnails_"
               on-keypress="onClickThumbnails_">
-            <template is="dom-repeat" items="[[thumbnailImages_]]">
+            <template is="dom-repeat" items="[[thumbnailImages]]">
               <div class="thumbnail-item">
                 <img auto-src="[[item]]"
                     is-google-photos

@@ -45,7 +45,7 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
   }
 
   declare ambientTheme: AmbientTheme;
-  private ambientThemePreviews_: AmbientThemePreviewMap|null;
+  private ambientThemePreviews_: AmbientThemePreviewMap|null = null;
   declare private itemDescription_: string;
   declare private imgSrc_: string;
 

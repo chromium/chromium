@@ -47,7 +47,7 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
   declare private error_: PersonalizationStateError|null;
   declare private isLoading_: boolean;
   declare private showError_: boolean;
-  private autoDismissTimeout_: number;
+  private autoDismissTimeout_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();

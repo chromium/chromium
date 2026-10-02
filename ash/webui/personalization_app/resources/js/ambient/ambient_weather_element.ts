@@ -39,7 +39,7 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
       /**
        * Used to refer to the enum values in HTML file.
        */
-      temperatureUnit_: {
+      temperatureUnit: {
         type: Object,
         value: TemperatureUnit,
       },
@@ -49,41 +49,46 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
         observer: 'onSelectedTemperatureUnitChanged_',
       },
 
-      geolocationPermissionEnabled_: {
+      geolocationPermissionEnabled: {
         type: Boolean,
         value: null,
       },
 
-      geolocationIsUserModifiable_: {
+      geolocationIsUserModifiable: {
         type: Boolean,
         value: null,
       },
 
-      shouldShowGeolocationWarningText_: {
+      shouldShowGeolocationDialog: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldShowGeolocationWarningText: {
         type: Boolean,
         computed: 'computeShouldShowGeolocationWarningText_(' +
-            'geolocationPermissionEnabled_),',
+            'geolocationPermissionEnabled)',
         value: false,
       },
     };
   }
 
-  declare private temperatureUnit_: TemperatureUnit;
-  declare private selectedTemperatureUnit: string;
-  declare private geolocationPermissionEnabled_: boolean|null;
-  declare private geolocationIsUserModifiable_: boolean|null;
-  private shouldShowGeolocationDialog_: boolean;
-  declare private shouldShowGeolocationWarningText_: boolean;
+  declare protected temperatureUnit: TemperatureUnit;
+  declare protected selectedTemperatureUnit: string;
+  declare protected geolocationPermissionEnabled: boolean|null;
+  declare protected geolocationIsUserModifiable: boolean|null;
+  declare protected shouldShowGeolocationDialog: boolean;
+  declare protected shouldShowGeolocationWarningText: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
     AmbientObserver.initAmbientObserverIfNeeded();
 
-    this.watch<AmbientWeatherUnitElement['geolocationPermissionEnabled_']>(
-        'geolocationPermissionEnabled_',
+    this.watch<AmbientWeatherUnitElement['geolocationPermissionEnabled']>(
+        'geolocationPermissionEnabled',
         state => state.ambient.geolocationPermissionEnabled);
-    this.watch<AmbientWeatherUnitElement['geolocationIsUserModifiable_']>(
-        'geolocationIsUserModifiable_',
+    this.watch<AmbientWeatherUnitElement['geolocationIsUserModifiable']>(
+        'geolocationIsUserModifiable',
         state => state.ambient.geolocationIsUserModifiable);
     this.updateFromStore();
 
@@ -104,7 +109,7 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
   private computeShouldShowGeolocationWarningText_(): boolean {
     // Warning text should be guarded with the Privacy Hub feature flag.
     return isCrosPrivacyHubLocationEnabled() &&
-        this.geolocationPermissionEnabled_ === false;
+        this.geolocationPermissionEnabled === false;
   }
 
   private openGeolocationDialog_(e: CustomEvent<{event: Event}>): void {
@@ -121,11 +126,11 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
     }
 
     // Show the dialog to let users enable system location inline.
-    this.shouldShowGeolocationDialog_ = true;
+    this.shouldShowGeolocationDialog = true;
   }
 
   private onGeolocationDialogClose_(): void {
-    this.shouldShowGeolocationDialog_ = false;
+    this.shouldShowGeolocationDialog = false;
   }
 
   // Callback for user clicking 'Allow' on the geolocation dialog.

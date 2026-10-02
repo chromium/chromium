@@ -118,16 +118,16 @@
         </h2>
         <div id="buttonContainer">
           <cr-button
-              class$="[[getScreenSaverPreviewClass_(ambientUiVisibility_)]]"
-              aria-label$="[[getScreenSaverPreviewAriaLabel_(ambientUiVisibility_)]]"
-              role$="[[getScreenSaverPreviewRole_(ambientUiVisibility_)]]"
+              class$="[[getScreenSaverPreviewClass_(ambientUiVisibility)]]"
+              aria-label$="[[getScreenSaverPreviewAriaLabel_(ambientUiVisibility)]]"
+              role$="[[getScreenSaverPreviewRole_(ambientUiVisibility)]]"
               on-click="startScreenSaverPreview_">
             <iron-icon icon="personalization:fullscreen"
-                hidden$="[[screenSaverPreviewActive_]]"></iron-icon>
+                hidden$="[[screenSaverPreviewActive]]"></iron-icon>
             <paper-spinner-lite active class="spinner"
-                hidden$="[[!screenSaverPreviewActive_]]"></paper-spinner-lite>
+                hidden$="[[!screenSaverPreviewActive]]"></paper-spinner-lite>
             <div class="text">
-              [[getScreenSaverPreviewText_(ambientUiVisibility_)]]
+              [[getScreenSaverPreviewText_(ambientUiVisibility)]]
             </div>
           </cr-button>
         </div>

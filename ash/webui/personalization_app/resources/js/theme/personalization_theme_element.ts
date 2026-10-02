@@ -50,58 +50,57 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   static get properties() {
     return {
       // null indicates value is being loaded.
-      darkModeEnabled_: {
+      darkModeEnabled: {
         type: Boolean,
         value: null,
       },
 
-      colorModeAutoScheduleEnabled_: {
+      colorModeAutoScheduleEnabled: {
         type: Boolean,
         value: null,
       },
 
-      geolocationPermissionEnabled_: {
+      geolocationPermissionEnabled: {
         type: Boolean,
         value: null,
       },
 
-      geolocationIsUserModifiable_: {
+      geolocationIsUserModifiable: {
         type: Boolean,
         value: null,
       },
 
-      sunriseTime_: {
+      sunriseTime: {
         type: String,
         value: null,
       },
 
-      sunsetTime_: {
+      sunsetTime: {
         type: String,
         value: null,
       },
 
       /** The button currently highlighted by keyboard navigation. */
-      selectedButton_: {
+      selectedButton: {
         type: Object,
         notify: true,
       },
 
-      shouldShowGeolocationDialog_: {
+      shouldShowGeolocationDialog: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  declare private darkModeEnabled_: boolean|null;
-  declare private colorModeAutoScheduleEnabled_: boolean|null;
-  declare private geolocationPermissionEnabled_: boolean|null;
-  declare private sunriseTime_: string|null;
-  declare private sunsetTime_: string|null;
-  declare private selectedButton_: CrButtonElement;
-  declare private geolocationIsUserModifiable_: boolean|null;
-  declare private shouldShowGeolocationDialog_: boolean;
-  private shouldShowGeolocationWarningText_: boolean;
+  declare protected darkModeEnabled: boolean|null;
+  declare protected colorModeAutoScheduleEnabled: boolean|null;
+  declare protected geolocationPermissionEnabled: boolean|null;
+  declare protected sunriseTime: string|null;
+  declare protected sunsetTime: string|null;
+  declare protected selectedButton: CrButtonElement;
+  declare protected geolocationIsUserModifiable: boolean|null;
+  declare protected shouldShowGeolocationDialog: boolean;
 
   override ready() {
     super.ready();
@@ -111,21 +110,21 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     ThemeObserver.initThemeObserverIfNeeded();
-    this.watch<PersonalizationThemeElement['darkModeEnabled_']>(
-        'darkModeEnabled_', state => state.theme.darkModeEnabled);
-    this.watch<PersonalizationThemeElement['colorModeAutoScheduleEnabled_']>(
-        'colorModeAutoScheduleEnabled_',
+    this.watch<PersonalizationThemeElement['darkModeEnabled']>(
+        'darkModeEnabled', state => state.theme.darkModeEnabled);
+    this.watch<PersonalizationThemeElement['colorModeAutoScheduleEnabled']>(
+        'colorModeAutoScheduleEnabled',
         state => state.theme.colorModeAutoScheduleEnabled);
-    this.watch<PersonalizationThemeElement['geolocationPermissionEnabled_']>(
-        'geolocationPermissionEnabled_',
+    this.watch<PersonalizationThemeElement['geolocationPermissionEnabled']>(
+        'geolocationPermissionEnabled',
         state => state.theme.geolocationPermissionEnabled);
-    this.watch<PersonalizationThemeElement['geolocationIsUserModifiable_']>(
-        'geolocationIsUserModifiable_',
+    this.watch<PersonalizationThemeElement['geolocationIsUserModifiable']>(
+        'geolocationIsUserModifiable',
         state => state.theme.geolocationIsUserModifiable);
-    this.watch<PersonalizationThemeElement['sunriseTime_']>(
-        'sunriseTime_', state => state.theme.sunriseTime);
-    this.watch<PersonalizationThemeElement['sunsetTime_']>(
-        'sunsetTime_', state => state.theme.sunsetTime);
+    this.watch<PersonalizationThemeElement['sunriseTime']>(
+        'sunriseTime', state => state.theme.sunriseTime);
+    this.watch<PersonalizationThemeElement['sunsetTime']>(
+        'sunsetTime', state => state.theme.sunsetTime);
 
     this.updateFromStore();
     initializeData(getThemeProvider(), this.getStore());
@@ -135,7 +134,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   private onKeysPress_(
       e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
     const selector = this.$.selector;
-    const prevButton = this.selectedButton_;
+    const prevButton = this.selectedButton;
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
@@ -151,9 +150,9 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
       prevButton.removeAttribute('tabindex');
     }
     // Add focus state for new button.
-    if (this.selectedButton_) {
-      this.selectedButton_.setAttribute('tabindex', '0');
-      this.selectedButton_.focus();
+    if (this.selectedButton) {
+      this.selectedButton.setAttribute('tabindex', '0');
+      this.selectedButton.focus();
     }
     e.detail.keyboardEvent.preventDefault();
   }
@@ -165,9 +164,9 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     //  dark mode is enabled. Also explictly check that these prefs are not null
     //  to avoid showing this button as selected when the values are being
     //  fetched.
-    return (this.colorModeAutoScheduleEnabled_ !== null &&
-            this.darkModeEnabled_ !== null &&
-            !this.colorModeAutoScheduleEnabled_ && !this.darkModeEnabled_)
+    return (this.colorModeAutoScheduleEnabled !== null &&
+            this.darkModeEnabled !== null &&
+            !this.colorModeAutoScheduleEnabled && !this.darkModeEnabled)
         .toString();
   }
 
@@ -176,12 +175,12 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     //  mode is enabled or not. To ensure expected behavior, we show that light
     //  mode is selected only when both auto schedule mode and dark mode are
     //  disabled.
-    return (!this.colorModeAutoScheduleEnabled_ && !!this.darkModeEnabled_)
+    return (!this.colorModeAutoScheduleEnabled && !!this.darkModeEnabled)
         .toString();
   }
 
   private getAutoAriaChecked_(): string {
-    return (!!this.colorModeAutoScheduleEnabled_).toString();
+    return (!!this.colorModeAutoScheduleEnabled).toString();
   }
 
   private onClickColorModeButton_(event: Event) {
@@ -199,7 +198,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   }
 
   private onClickAutoModeButton_(event: Event) {
-    if (!isSelectionEvent(event) || this.colorModeAutoScheduleEnabled_) {
+    if (!isSelectionEvent(event) || this.colorModeAutoScheduleEnabled) {
       return;
     }
     setColorModeAutoSchedule(
@@ -208,25 +207,25 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     // If needed, pop up a dialog asking users to enable system location
     // permission.
     if (isCrosPrivacyHubLocationEnabled() &&
-        this.geolocationPermissionEnabled_ === false &&
-        this.geolocationIsUserModifiable_ === true) {
-      this.shouldShowGeolocationDialog_ = true;
+        this.geolocationPermissionEnabled === false &&
+        this.geolocationIsUserModifiable === true) {
+      this.shouldShowGeolocationDialog = true;
     }
   }
 
   private computeShouldShowTooltipIcon_(): boolean {
     return isCrosPrivacyHubLocationEnabled() &&
-        this.colorModeAutoScheduleEnabled_ === true &&
-        this.geolocationPermissionEnabled_ === false;
+        this.colorModeAutoScheduleEnabled === true &&
+        this.geolocationPermissionEnabled === false;
   }
 
   private computeAutoModeGeolocationDialogText_(): string {
     return loadTimeData.getStringF(
-        'autoModeGeolocationDialogText', this.sunriseTime_!, this.sunsetTime_!);
+        'autoModeGeolocationDialogText', this.sunriseTime!, this.sunsetTime!);
   }
 
   private onGeolocationDialogClose_(): void {
-    this.shouldShowGeolocationDialog_ = false;
+    this.shouldShowGeolocationDialog = false;
   }
 
   // Callback for user clicking 'Allow' on the geolocation dialog.

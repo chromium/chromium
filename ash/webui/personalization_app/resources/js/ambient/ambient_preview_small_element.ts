@@ -42,19 +42,19 @@ export class AmbientPreviewSmallElement extends AmbientPreviewBase {
 
   static override get properties() {
     return {
-      screenSaverPreviewActive_: {
+      screenSaverPreviewActive: {
         type: Boolean,
-        computed: 'computeScreenSaverPreviewActive_(ambientUiVisibility_)',
+        computed: 'computeScreenSaverPreviewActive_(ambientUiVisibility)',
       },
-      ambientUiVisibility_: {
+      ambientUiVisibility: {
         type: Number,
         value: null,
       },
     };
   }
 
-  private screenSaverPreviewActive_: boolean;
-  private ambientUiVisibility_: AmbientUiVisibility|null;
+  declare protected screenSaverPreviewActive: boolean;
+  declare protected ambientUiVisibility: AmbientUiVisibility|null;
 
   override connectedCallback() {
     assert(
@@ -62,12 +62,12 @@ export class AmbientPreviewSmallElement extends AmbientPreviewBase {
         'ambient-preview-small requires ambient mode allowed');
     super.connectedCallback();
     this.watch(
-        'ambientUiVisibility_', state => state.ambient.ambientUiVisibility);
+        'ambientUiVisibility', state => state.ambient.ambientUiVisibility);
     this.updateFromStore();
   }
 
   private computeScreenSaverPreviewActive_(): boolean {
-    return this.ambientUiVisibility_ === AmbientUiVisibility.kPreview;
+    return this.ambientUiVisibility === AmbientUiVisibility.kPreview;
   }
 
   private startScreenSaverPreview_(event: Event) {
@@ -76,25 +76,25 @@ export class AmbientPreviewSmallElement extends AmbientPreviewBase {
   }
 
   private getScreenSaverPreviewClass_(): string {
-    return this.screenSaverPreviewActive_ ?
+    return this.screenSaverPreviewActive ?
         'preview-button-disabled secondary' :
         'preview-button secondary';
   }
 
   private getScreenSaverPreviewText_(): string {
-    return this.screenSaverPreviewActive_ ?
+    return this.screenSaverPreviewActive ?
         this.i18n('screenSaverPreviewDownloading') :
         this.i18n('screenSaverPreviewButton');
   }
 
   private getScreenSaverPreviewAriaLabel_(): string {
-    return this.screenSaverPreviewActive_ ?
+    return this.screenSaverPreviewActive ?
         this.i18n('screenSaverPreviewDownloadingAriaLabel') :
         this.i18n('screenSaverPreviewButtonAriaLabel');
   }
 
   private getScreenSaverPreviewRole_(): string {
-    return this.screenSaverPreviewActive_ ? 'none' : 'button';
+    return this.screenSaverPreviewActive ? 'none' : 'button';
   }
 }
 

@@ -103,11 +103,11 @@
   <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0"
-      selected-item="{{selectedButton_}}" role="radiogroup"
+      selected-item="{{selectedButton}}" role="radiogroup"
       selectable="cr-button">
     <cr-button id="lightMode" data-color-mode="LIGHT"
         on-click="onClickColorModeButton_"
-        aria-checked$="[[getLightAriaChecked_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+        aria-checked$="[[getLightAriaChecked_(colorModeAutoScheduleEnabled, darkModeEnabled)]]"
         aria-description="$i18n{ariaLabelEnableLightColorMode}"
         role="radio">
       <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
@@ -116,7 +116,7 @@
     <cr-button id="darkMode" data-color-mode="DARK"
         on-click="onClickColorModeButton_"
         on-keypress="onClickColorModeButton_" tabindex="-1"
-        aria-checked$="[[getDarkAriaChecked_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+        aria-checked$="[[getDarkAriaChecked_(colorModeAutoScheduleEnabled, darkModeEnabled)]]"
         aria-description="$i18n{ariaLabelEnableDarkColorMode}"
         role="radio">
       <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
@@ -125,7 +125,7 @@
     <cr-button id="autoMode"
         on-click="onClickAutoModeButton_"
         on-keypress="onClickAutoModeButton_" tabindex="-1"
-        aria-checked$="[[getAutoAriaChecked_(colorModeAutoScheduleEnabled_)]]"
+        aria-checked$="[[getAutoAriaChecked_(colorModeAutoScheduleEnabled)]]"
         aria-describedby="autoColorModeDescription hiddenSeparator locationDeniedInfoIcon"
         aria-label="$i18n{autoColorMode}"
         title="$i18n{tooltipAutoColorMode}"
@@ -136,9 +136,9 @@
       <p hidden id="hiddenSeparator">.</p>
     </cr-button>
     <template is="dom-if"
-        if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
+        if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled, geolocationPermissionEnabled)]]"
         restamp>
-      <template is="dom-if" if="[[geolocationIsUserModifiable_]]">
+      <template is="dom-if" if="[[geolocationIsUserModifiable]]">
         <cr-tooltip-icon
             id="locationDeniedInfoIcon"
             icon-class="cr:error"
@@ -147,7 +147,7 @@
             class="consumer-tooltip">
         </cr-tooltip-icon>
       </template>
-      <template is="dom-if" if="[[!geolocationIsUserModifiable_]]">
+      <template is="dom-if" if="[[!geolocationIsUserModifiable]]">
         <cr-tooltip-icon
             id="locationDeniedInfoIcon"
             icon-class="personalization:managed"
@@ -160,9 +160,9 @@
   </iron-selector>
 </div>
 
-<template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
+<template is="dom-if" if="[[shouldShowGeolocationDialog]]" restamp>
   <geolocation-dialog id="geolocationDialog"
-      body-text-paragraph1="[[computeAutoModeGeolocationDialogText_(sunriseTime_, sunsetTime_)]]"
+      body-text-paragraph1="[[computeAutoModeGeolocationDialogText_(sunriseTime, sunsetTime)]]"
       confirm-button-text="$i18n{autoModeGeolocationDialogConfirmButton}"
       cancel-button-text="$i18n{autoModeGeolocationDialogCancelButton}"
       on-geolocation-enabled="onGeolocationEnabled_"
