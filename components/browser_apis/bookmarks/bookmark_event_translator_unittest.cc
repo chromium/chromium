@@ -322,6 +322,38 @@ TEST_F(DefaultBookmarksViewEventAccountTest,
   ASSERT_EQ(events_[1]->get_removed()->id, account_uuid);
 }
 
+// Local and account nodes that share a native UUID get distinct API UUIDs, and
+// a new view (e.g. after a browser restart) hands out the same ones.
+TEST_F(DefaultBookmarksViewEventAccountTest,
+       SharedNativeUuidsGetDistinctStableApiUuids) {
+  const bookmarks::BookmarkNode* local_bar = model_->bookmark_bar_node();
+  const bookmarks::BookmarkNode* account_bar =
+      model_->account_bookmark_bar_node();
+  ASSERT_NE(account_bar, nullptr);
+  ASSERT_EQ(local_bar->uuid(), account_bar->uuid());
+
+  const base::Uuid shared_uuid = base::Uuid::GenerateRandomV4();
+  const bookmarks::BookmarkNode* local_node = model_->AddURL(
+      local_bar, 0, u"Local", GURL("http://local.com"),
+      /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, shared_uuid);
+  const bookmarks::BookmarkNode* account_node = model_->AddURL(
+      account_bar, 0, u"Account", GURL("http://account.com"),
+      /*meta_info=*/nullptr, /*creation_time=*/std::nullopt, shared_uuid);
+
+  const base::Uuid local_bar_uuid = view_->GetUuid(local_bar);
+  const base::Uuid account_bar_uuid = view_->GetUuid(account_bar);
+  const base::Uuid local_node_uuid = view_->GetUuid(local_node);
+  const base::Uuid account_node_uuid = view_->GetUuid(account_node);
+  EXPECT_NE(local_bar_uuid, account_bar_uuid);
+  EXPECT_NE(local_node_uuid, account_node_uuid);
+
+  DefaultBookmarksView new_view(model_.get());
+  EXPECT_EQ(new_view.GetUuid(local_bar), local_bar_uuid);
+  EXPECT_EQ(new_view.GetUuid(account_bar), account_bar_uuid);
+  EXPECT_EQ(new_view.GetUuid(local_node), local_node_uuid);
+  EXPECT_EQ(new_view.GetUuid(account_node), account_node_uuid);
+}
+
 TEST_F(DefaultBookmarksViewEventAccountTest,
        ReorderAfterCrossStorageFolderMoveWithUuidReassignment) {
   const bookmarks::BookmarkNode* local_bar = model_->bookmark_bar_node();

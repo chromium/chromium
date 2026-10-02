@@ -111,7 +111,6 @@ class DefaultBookmarksView : public BookmarksView,
 
  private:
   void Notify(std::vector<mojom::BookmarksEventPtr> events);
-  void RegisterAccountNodeOverrides();
 
   raw_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_service_;

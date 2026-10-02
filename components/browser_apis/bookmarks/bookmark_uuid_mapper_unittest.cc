@@ -4,6 +4,9 @@
 
 #include "components/browser_apis/bookmarks/bookmark_uuid_mapper.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,19 +46,19 @@ TEST_F(BookmarkUuidMapperTest, BookmarkIdTupleBasics) {
   EXPECT_EQ(tuple_from_node.uuid(), uuid);
 }
 
-TEST_F(BookmarkUuidMapperTest, StandardUniqueNodeMapsToRandomV4Uuid) {
+TEST_F(BookmarkUuidMapperTest, StandardUniqueNodeMapsToDerivedUuid) {
   const base::Uuid shared_native_uuid =
       base::Uuid::ParseLowercase(kSharedNativeUuidStr);
   BookmarkUuidMapper mapper;
   bookmarks::BookmarkNode node(/*id=*/1, shared_native_uuid,
                                GURL("https://example.com"));
 
-  base::Uuid api_uuid = mapper.GetUuidFor(&node);
+  base::Uuid api_uuid = mapper.GetUuidFor(&node, BookmarkStorage::kLocal);
   EXPECT_TRUE(api_uuid.is_valid());
   EXPECT_NE(api_uuid, shared_native_uuid);
 
   // Subsequent lookups return the same API UUID
-  EXPECT_EQ(mapper.GetUuidFor(&node), api_uuid);
+  EXPECT_EQ(mapper.GetUuidFor(&node, BookmarkStorage::kLocal), api_uuid);
   EXPECT_EQ(mapper.MaybeGetIdFromUuidOverride(api_uuid), 1);
 
   std::optional<BookmarkIdTuple> model_id = mapper.MaybeGetModelId(api_uuid);
@@ -74,11 +77,13 @@ TEST_F(BookmarkUuidMapperTest, ExplicitOverrideTakesPrecedence) {
 
   mapper.SetUuidOverride(&node, custom_override);
   EXPECT_TRUE(mapper.HasOverrideFor(&node));
-  EXPECT_EQ(mapper.GetUuidFor(&node), custom_override);
+  EXPECT_EQ(mapper.GetUuidFor(&node, BookmarkStorage::kLocal), custom_override);
   EXPECT_EQ(mapper.MaybeGetIdFromUuidOverride(custom_override), 2);
 }
 
-TEST_F(BookmarkUuidMapperTest, MultipleNodesGetUniqueRandomUuids) {
+// Nodes in the same storage shouldn't share a native UUID, but if they do, the
+// mapper must still hand out distinct API UUIDs.
+TEST_F(BookmarkUuidMapperTest, NodesWithSameUuidInSameStorageStayUnique) {
   const base::Uuid shared_native_uuid =
       base::Uuid::ParseLowercase(kSharedNativeUuidStr);
   BookmarkUuidMapper mapper;
@@ -87,8 +92,8 @@ TEST_F(BookmarkUuidMapperTest, MultipleNodesGetUniqueRandomUuids) {
   bookmarks::BookmarkNode node_2(/*id=*/20, shared_native_uuid,
                                  GURL("https://node2.com"));
 
-  base::Uuid uuid1 = mapper.GetUuidFor(&node_1);
-  base::Uuid uuid2 = mapper.GetUuidFor(&node_2);
+  base::Uuid uuid1 = mapper.GetUuidFor(&node_1, BookmarkStorage::kLocal);
+  base::Uuid uuid2 = mapper.GetUuidFor(&node_2, BookmarkStorage::kLocal);
 
   EXPECT_TRUE(uuid1.is_valid());
   EXPECT_TRUE(uuid2.is_valid());
@@ -118,14 +123,14 @@ TEST_F(BookmarkUuidMapperTest, SyntheticNodesWithSameIdHaveSeparateMappings) {
   bookmarks::BookmarkNode node_1(/*id=*/0, uuid1, GURL("https://node1.com"));
   bookmarks::BookmarkNode node_2(/*id=*/0, uuid2, GURL("https://node2.com"));
 
-  base::Uuid api_uuid1 = mapper.GetUuidFor(&node_1);
-  base::Uuid api_uuid2 = mapper.GetUuidFor(&node_2);
+  base::Uuid api_uuid1 = mapper.GetUuidFor(&node_1, BookmarkStorage::kLocal);
+  base::Uuid api_uuid2 = mapper.GetUuidFor(&node_2, BookmarkStorage::kLocal);
 
   EXPECT_TRUE(api_uuid1.is_valid());
   EXPECT_TRUE(api_uuid2.is_valid());
   EXPECT_NE(api_uuid1, api_uuid2);
-  EXPECT_EQ(mapper.GetUuidFor(&node_1), api_uuid1);
-  EXPECT_EQ(mapper.GetUuidFor(&node_2), api_uuid2);
+  EXPECT_EQ(mapper.GetUuidFor(&node_1, BookmarkStorage::kLocal), api_uuid1);
+  EXPECT_EQ(mapper.GetUuidFor(&node_2, BookmarkStorage::kLocal), api_uuid2);
   EXPECT_TRUE(mapper.HasOverrideFor(&node_1));
   EXPECT_TRUE(mapper.HasOverrideFor(&node_2));
 }
@@ -137,7 +142,7 @@ TEST_F(BookmarkUuidMapperTest, NodeRemovalClearsMapping) {
   bookmarks::BookmarkNode node(/*id=*/50, shared_native_uuid,
                                GURL("https://example.com"));
 
-  base::Uuid api_uuid = mapper.GetUuidFor(&node);
+  base::Uuid api_uuid = mapper.GetUuidFor(&node, BookmarkStorage::kLocal);
   EXPECT_TRUE(api_uuid.is_valid());
 
   mapper.RemoveNode(&node);
@@ -156,8 +161,10 @@ TEST_F(BookmarkUuidMapperTest, SubtreeNodeRemovalClearsMapping) {
   bookmarks::BookmarkNode* child_ptr = child.get();
   folder.Add(std::move(child));
 
-  base::Uuid api_folder_uuid = mapper.GetUuidFor(&folder);
-  base::Uuid api_child_uuid = mapper.GetUuidFor(child_ptr);
+  base::Uuid api_folder_uuid =
+      mapper.GetUuidFor(&folder, BookmarkStorage::kLocal);
+  base::Uuid api_child_uuid =
+      mapper.GetUuidFor(child_ptr, BookmarkStorage::kLocal);
   EXPECT_TRUE(mapper.HasOverrideFor(&folder));
   EXPECT_TRUE(mapper.HasOverrideFor(child_ptr));
 
@@ -173,7 +180,7 @@ TEST_F(BookmarkUuidMapperTest, ClearClearsAllMappings) {
   BookmarkUuidMapper mapper;
   bookmarks::BookmarkNode node(/*id=*/100, uuid1, GURL("https://example.com"));
 
-  base::Uuid api_uuid = mapper.GetUuidFor(&node);
+  base::Uuid api_uuid = mapper.GetUuidFor(&node, BookmarkStorage::kLocal);
   EXPECT_TRUE(mapper.HasOverrideFor(&node));
 
   mapper.Clear();
@@ -192,9 +199,12 @@ TEST_F(BookmarkUuidMapperTest,
   bookmarks::BookmarkNode user_node(/*id=*/10, uuid3,
                                     GURL("https://example.com"));
 
-  base::Uuid perm1_api_uuid = mapper.GetUuidFor(&permanent_node1);
-  base::Uuid perm2_api_uuid = mapper.GetUuidFor(&permanent_node2);
-  base::Uuid user_api_uuid = mapper.GetUuidFor(&user_node);
+  base::Uuid perm1_api_uuid =
+      mapper.GetUuidFor(&permanent_node1, BookmarkStorage::kLocal);
+  base::Uuid perm2_api_uuid =
+      mapper.GetUuidFor(&permanent_node2, BookmarkStorage::kLocal);
+  base::Uuid user_api_uuid =
+      mapper.GetUuidFor(&user_node, BookmarkStorage::kLocal);
 
   EXPECT_TRUE(mapper.HasOverrideFor(&permanent_node1));
   EXPECT_TRUE(mapper.HasOverrideFor(&permanent_node2));
@@ -205,14 +215,80 @@ TEST_F(BookmarkUuidMapperTest,
   // Permanent node mappings are preserved with the exact same API UUIDs.
   EXPECT_TRUE(mapper.HasOverrideFor(&permanent_node1));
   EXPECT_TRUE(mapper.HasOverrideFor(&permanent_node2));
-  EXPECT_EQ(mapper.GetUuidFor(&permanent_node1), perm1_api_uuid);
-  EXPECT_EQ(mapper.GetUuidFor(&permanent_node2), perm2_api_uuid);
+  EXPECT_EQ(mapper.GetUuidFor(&permanent_node1, BookmarkStorage::kLocal),
+            perm1_api_uuid);
+  EXPECT_EQ(mapper.GetUuidFor(&permanent_node2, BookmarkStorage::kLocal),
+            perm2_api_uuid);
   EXPECT_EQ(mapper.MaybeGetIdFromUuidOverride(perm1_api_uuid), 1);
   EXPECT_EQ(mapper.MaybeGetIdFromUuidOverride(perm2_api_uuid), 2);
 
   // User node mapping is discarded.
   EXPECT_FALSE(mapper.HasOverrideFor(&user_node));
   EXPECT_EQ(mapper.MaybeGetIdFromUuidOverride(user_api_uuid), std::nullopt);
+}
+
+TEST_F(BookmarkUuidMapperTest, DerivedUuidIsVersion5) {
+  BookmarkUuidMapper mapper;
+  bookmarks::BookmarkNode node(/*id=*/1,
+                               base::Uuid::ParseLowercase(kSharedNativeUuidStr),
+                               GURL("https://example.com"));
+
+  // xxxxxxxx-xxxx-5xxx-yxxx-xxxxxxxxxxxx, with y in [8, 9, a, b].
+  const std::string api_uuid =
+      mapper.GetUuidFor(&node, BookmarkStorage::kLocal).AsLowercaseString();
+  EXPECT_EQ(api_uuid[14], '5');
+  EXPECT_NE(std::string_view("89ab").find(api_uuid[19]), std::string::npos);
+}
+
+// Simulates a browser restart: a new mapper must produce the same API UUID.
+TEST_F(BookmarkUuidMapperTest, DerivedUuidIsStableAcrossMappers) {
+  bookmarks::BookmarkNode node(/*id=*/1,
+                               base::Uuid::ParseLowercase(kSharedNativeUuidStr),
+                               GURL("https://example.com"));
+
+  BookmarkUuidMapper mapper1;
+  BookmarkUuidMapper mapper2;
+  EXPECT_EQ(mapper1.GetUuidFor(&node, BookmarkStorage::kLocal),
+            mapper2.GetUuidFor(&node, BookmarkStorage::kLocal));
+}
+
+// Model ids can change across sessions (e.g. account storage is re-downloaded
+// after sign-out and sign-in), so they must not affect the API UUID.
+TEST_F(BookmarkUuidMapperTest, DerivedUuidIgnoresModelId) {
+  const base::Uuid native_uuid =
+      base::Uuid::ParseLowercase(kSharedNativeUuidStr);
+  bookmarks::BookmarkNode before(/*id=*/1, native_uuid,
+                                 GURL("https://example.com"));
+  bookmarks::BookmarkNode after(/*id=*/42, native_uuid,
+                                GURL("https://example.com"));
+
+  BookmarkUuidMapper mapper1;
+  BookmarkUuidMapper mapper2;
+  EXPECT_EQ(mapper1.GetUuidFor(&before, BookmarkStorage::kLocal),
+            mapper2.GetUuidFor(&after, BookmarkStorage::kLocal));
+}
+
+// Local and account storage may contain nodes with the same native UUID (e.g.
+// the permanent folders, which use hard-coded UUIDs).
+TEST_F(BookmarkUuidMapperTest, SameUuidInDifferentStoragesGetDistinctUuids) {
+  const base::Uuid native_uuid =
+      base::Uuid::ParseLowercase(kSharedNativeUuidStr);
+  bookmarks::BookmarkNode local_node(/*id=*/1, native_uuid, GURL());
+  bookmarks::BookmarkNode account_node(/*id=*/2, native_uuid, GURL());
+
+  BookmarkUuidMapper mapper1;
+  const base::Uuid local_api_uuid =
+      mapper1.GetUuidFor(&local_node, BookmarkStorage::kLocal);
+  const base::Uuid account_api_uuid =
+      mapper1.GetUuidFor(&account_node, BookmarkStorage::kAccount);
+  EXPECT_NE(local_api_uuid, account_api_uuid);
+
+  // Both remain stable in a new mapper.
+  BookmarkUuidMapper mapper2;
+  EXPECT_EQ(mapper2.GetUuidFor(&local_node, BookmarkStorage::kLocal),
+            local_api_uuid);
+  EXPECT_EQ(mapper2.GetUuidFor(&account_node, BookmarkStorage::kAccount),
+            account_api_uuid);
 }
 
 }  // namespace
