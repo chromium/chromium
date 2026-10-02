@@ -365,7 +365,8 @@ ThirdPartyMetricsObserver::GetThirdPartyInfo(const GURL& url,
   auto it = all_third_party_info_.find(representative_url);
   if (it == all_third_party_info_.end() &&
       all_third_party_info_.size() < 1000) {  // Bound growth.
-    it = all_third_party_info_.emplace(url, ThirdPartyInfo()).first;
+    it = all_third_party_info_.emplace(representative_url, ThirdPartyInfo())
+             .first;
   }
   // If there's no valid iterator, we've gone over the size limit for the map.
   // TODO(crbug.com/40144431): We probably want UMA to let us know how often we
@@ -406,7 +407,7 @@ void ThirdPartyMetricsObserver::RecordMetrics(
 
   int cookie_origin_reads = 0;
 
-  for (auto it : all_third_party_info_) {
+  for (const auto& it : all_third_party_info_) {
     const ThirdPartyInfo& tpi = it.second;
     if (tpi.access_types[static_cast<size_t>(AccessType::kCookieRead)]) {
       ++cookie_origin_reads;
