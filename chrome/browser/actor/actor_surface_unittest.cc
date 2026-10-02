@@ -7,25 +7,31 @@
 #include <memory>
 
 #include "chrome/browser/actor/actor_surface_impl.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor {
 namespace {
 
 using ::testing::Return;
+using ::testing::ReturnRef;
 
 class ActorSurfaceTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ON_CALL(mock_tab_, GetContents()).WillByDefault(Return(web_contents()));
+    ON_CALL(mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(user_data_host_));
   }
 
  protected:
+  ::ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
 };
 
@@ -57,6 +63,26 @@ TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
   ON_CALL(mock_tab_, GetContents()).WillByDefault(Return(swapped.get()));
 
   EXPECT_EQ(surface.GetWebContents(), swapped.get());
+}
+
+TEST_F(ActorSurfaceTest, TabBackedReturnsTabActorTabData) {
+  ActorSurfaceImpl surface(ActorSurfaceId(4), mock_tab_.GetHandle());
+  auto tab_data = std::make_unique<ActorTabData>(&mock_tab_);
+
+  EXPECT_EQ(surface.GetActorTabData(), tab_data.get());
+  EXPECT_EQ(surface.GetActorTabData(), ActorTabData::From(&mock_tab_));
+}
+
+TEST_F(ActorSurfaceTest, TabBackedWithoutActorTabDataReturnsNull) {
+  ActorSurfaceImpl surface(ActorSurfaceId(5), mock_tab_.GetHandle());
+
+  EXPECT_EQ(surface.GetActorTabData(), nullptr);
+}
+
+TEST_F(ActorSurfaceTest, HeadlessReturnsNullActorTabData) {
+  ActorSurfaceImpl surface(ActorSurfaceId(6), web_contents());
+
+  EXPECT_EQ(surface.GetActorTabData(), nullptr);
 }
 
 }  // namespace

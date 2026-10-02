@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_surface_impl.h"
 
 #include "base/check.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "content/public/browser/web_contents.h"
 
 namespace actor {
@@ -43,6 +44,16 @@ content::WebContents* ActorSurfaceImpl::GetWebContents() const {
 
 std::optional<tabs::TabHandle> ActorSurfaceImpl::GetTabHandle() const {
   return tab_;
+}
+
+ActorTabData* ActorSurfaceImpl::GetActorTabData() const {
+  if (IsTab()) {
+    tabs::TabInterface* tab = tab_->Get();
+    CHECK(tab);
+    return ActorTabData::From(tab);
+  }
+  // TODO(b/567721071): Implement ActorTabData for headless surfaces.
+  return nullptr;
 }
 
 void ActorSurfaceImpl::SetTab(tabs::TabHandle tab) {

@@ -35,6 +35,7 @@ class ActorSurfaceImpl : public ActorSurface {
   bool IsTab() const override;
   content::WebContents* GetWebContents() const override;
   std::optional<tabs::TabHandle> GetTabHandle() const override;
+  ActorTabData* GetActorTabData() const override;
 
  private:
   friend class ActorSurfaceRegistry;

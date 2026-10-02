@@ -16,6 +16,8 @@ class WebContents;
 
 namespace actor {
 
+class ActorTabData;
+
 // An actuation surface for the actor, backed by either a visible browser tab
 // or an unparented headless WebContents.
 //
@@ -38,6 +40,10 @@ class ActorSurface {
 
   // Nullopt when headless.
   virtual std::optional<tabs::TabHandle> GetTabHandle() const = 0;
+
+  // Per-surface actor data, e.g. the last observed page content used for
+  // TOCTOU validation.
+  virtual ActorTabData* GetActorTabData() const = 0;
 };
 
 }  // namespace actor
