@@ -318,6 +318,7 @@ public class AppModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568491692
     public void testDialogDimensionsWithNonZeroSystemBarsInsets() {
         doTestDialogDimensions(
                 /* leftInset= */ 50,
