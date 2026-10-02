@@ -115,6 +115,7 @@ class CheckHasNoPipeInCommentTest(unittest.TestCase):
                                           good_lines + bad_lines),
             PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.h',
                                           bad_lines + good_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/README.md', bad_lines),
         ]
         mock_output = PRESUBMIT_test_mocks.MockOutputApi()
         errors = PRESUBMIT._CheckHasNoPipeInComment(mock_input, mock_output)
@@ -124,6 +125,7 @@ class CheckHasNoPipeInCommentTest(unittest.TestCase):
         self.assertTrue('ios/path/foo_controller.mm:6' in errors[0].message)
         self.assertTrue('ios/path/foo_controller.h:1' in errors[0].message)
         self.assertTrue('ios/path/foo_controller.h:2' in errors[0].message)
+        self.assertFalse('ios/path/README.md' in errors[0].message)
         error_lines = errors[0].message.split('\n')
         self.assertEqual(len(error_lines), len(bad_lines) * 2 + 3)
 
@@ -352,38 +354,38 @@ class CheckNewColorIntroductionTest(unittest.TestCase):
         self.assertEqual(len(results), 0)
 
 def testUmbrellaHeaderUsage(self):
-        good_lines = [
-            '#import <Foundation/Foundation.h>',
-            '#import <memory>',
-            '#import "MyLocalFile.h"',
-            '#import <CustomFramework/CustomFramework.h>',
-        ]
-        bad_lines = [
-            '#import <Foundation/NSString.h>',
-            '#import <UIKit/UIView.h>',
-            '#import <CoreLocation/CLLocationManager.h>',
-        ]
+    good_lines = [
+        '#import <Foundation/Foundation.h>',
+        '#import <memory>',
+        '#import "MyLocalFile.h"',
+        '#import <CustomFramework/CustomFramework.h>',
+    ]
+    bad_lines = [
+        '#import <Foundation/NSString.h>',
+        '#import <UIKit/UIView.h>',
+        '#import <CoreLocation/CLLocationManager.h>',
+    ]
 
-        mock_input = PRESUBMIT_test_mocks.MockInputApi()
-        mock_input.files = [
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/foo.mm',
-                good_lines + bad_lines
-            ),
-        ]
+    mock_input = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input.files = [
+        PRESUBMIT_test_mocks.MockFile(
+            'ios/path/foo.mm',
+            good_lines + bad_lines
+        ),
+    ]
 
-        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
-        errors = PRESUBMIT._CheckUmbrellaHeaderUsage(mock_input, mock_output)
+    mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+    errors = PRESUBMIT._CheckUmbrellaHeaderUsage(mock_input, mock_output)
 
-        self.assertEqual(len(errors), 1)
-        self.assertEqual('warning', errors[0].type)
+    self.assertEqual(len(errors), 1)
+    self.assertEqual('warning', errors[0].type)
 
-        for i in range(1, 5):
-            self.assertFalse(f'ios/path/foo.mm:{i}' in errors[0].items)
+    for i in range(1, 5):
+        self.assertFalse(f'ios/path/foo.mm:{i}' in errors[0].items)
 
-        self.assertTrue(any('ios/path/foo.mm:5' in e for e in errors[0].items))
-        self.assertTrue(any('ios/path/foo.mm:6' in e for e in errors[0].items))
-        self.assertTrue(any('ios/path/foo.mm:7' in e for e in errors[0].items))
+    self.assertTrue(any('ios/path/foo.mm:5' in e for e in errors[0].items))
+    self.assertTrue(any('ios/path/foo.mm:6' in e for e in errors[0].items))
+    self.assertTrue(any('ios/path/foo.mm:7' in e for e in errors[0].items))
 
 class CheckNoFlakyUnitTest(unittest.TestCase):
     """Test the _CheckNoFlakyUnitTest presubmit check."""

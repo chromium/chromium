@@ -163,6 +163,8 @@ def _CheckHasNoPipeInComment(input_api, output_api):
     for f in input_api.AffectedFiles():
         if not _IsInIosPackage(input_api, f.LocalPath()):
             continue
+        if f.LocalPath().endswith('.md'):
+            continue
         for line_num, line in f.ChangedContents():
             if pipe_regex.search(line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
