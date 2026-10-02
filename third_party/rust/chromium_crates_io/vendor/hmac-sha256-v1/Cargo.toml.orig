@@ -1,10 +1,10 @@
 [package]
 name = "hmac-sha256"
-version = "1.1.14"
+version = "1.1.15"
 authors = ["Frank Denis <github@pureftpd.org>"]
 edition = "2021"
-description = "A small, self-contained SHA256, HMAC-SHA256, and HKDF-SHA256 implementation"
-keywords = ["hash", "hmac", "sha2", "sha256", "hkdf"]
+description = "SHA256 hashing, HMAC-SHA256 authentication, and HKDF-SHA256 key derivation in pure Rust, with no_std support"
+keywords = ["sha256", "hmac", "hkdf", "hash", "no-std"]
 repository = "https://github.com/jedisct1/rust-hmac-sha256"
 homepage = "https://github.com/jedisct1/rust-hmac-sha256"
 categories = ["algorithms", "cryptography", "no-std"]
@@ -13,7 +13,7 @@ license = "ISC"
 [dependencies]
 digest09 = { package = "digest", version = "0.9.0", optional = true }
 digest010 = { package = "digest", version = "0.10.7", features = ["oid"], optional = true }
-digest011 = { package = "digest", version = "0.11.0", features = ["oid"], optional = true }
+digest011 = { package = "digest", version = "0.11.3", features = ["oid"], optional = true }
 
 [features]
 default = []
@@ -27,3 +27,7 @@ traits011 = ["digest011"]
 lto = true
 panic = "abort"
 opt-level = 3
+
+[[test]]
+name = "test_digest011"
+required-features = ["traits011"]

@@ -23,9 +23,9 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_authors = "Frank Denis <github@pureftpd.org>"
   cargo_pkg_name = "hmac-sha256"
-  cargo_pkg_description = "A small, self-contained SHA256, HMAC-SHA256, and HKDF-SHA256 implementation"
+  cargo_pkg_description = "SHA256 hashing, HMAC-SHA256 authentication, and HKDF-SHA256 key derivation in pure Rust, with no_std support"
   cargo_pkg_repository = "https://github.com/jedisct1/rust-hmac-sha256"
-  cargo_pkg_version = "1.1.14"
+  cargo_pkg_version = "1.1.15"
 
   allow_unsafe = true
 
