@@ -2466,7 +2466,11 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [self updateGuide:kForwardButtonGuide
            withView:_forwardButton
                hide:hideToolbar];
-  [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideToolbar];
+  // The toolbar share button is only visible in compact height; in regular
+  // height, the location bar steady view owns `kShareButtonGuide`.
+  BOOL hideShare =
+      hideToolbar || !IsCompactHeight(self) || _shareButton.forceHidden;
+  [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideShare];
 
   // The assistant button is hidden in non Regular-Regular size classes, but the
   // toolbar button's visibility handler may run after this, so
@@ -2486,10 +2490,13 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   if (!_hasOmnibox || !self.view.window) {
     return;
   }
-  if (self.layoutState.appBarPosition == AppBarPosition::kNone) {
-    [self.layoutGuideCenter referenceView:_tabGridButton
-                                underName:kTabSwitcherGuide];
-  }
+  BOOL hideTabSwitcher =
+      [self shouldHideToolbar] ||
+      self.layoutState.appBarPosition != AppBarPosition::kNone ||
+      !IsRegularXRegularSizeClass(self) || _tabGridButton.forceHidden;
+  [self updateGuide:kTabSwitcherGuide
+           withView:_tabGridButton
+               hide:hideTabSwitcher];
 }
 
 @end

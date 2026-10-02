@@ -604,12 +604,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   _shareButtonEnabled = enabled;
   if (self.trailingButtonState == kShareButton) {
     [self.locationBarSteadyView enableTrailingButton:enabled];
-
-    if (_shareButtonEnabled) {
-      [self.layoutGuideCenter
-          referenceView:self.locationBarSteadyView.trailingButton
-              underName:kShareButtonGuide];
-    }
+    [self updateShareButtonGuide];
   }
 }
 
@@ -873,12 +868,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
           kOmniboxShareButtonIdentifier;
       [self.locationBarSteadyView enableTrailingButton:self.shareButtonEnabled];
-
-      if (self.shareButtonEnabled) {
-        [self.layoutGuideCenter
-            referenceView:self.locationBarSteadyView.trailingButton
-                underName:kShareButtonGuide];
-      }
       break;
     };
     case kVoiceSearchButton: {
@@ -906,6 +895,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       [self.locationBarSteadyView enableTrailingButton:self.voiceSearchEnabled];
     }
   }
+  [self updateShareButtonGuide];
 }
 
 - (void)setTrailingButtonState:(TrailingButtonState)state {
@@ -974,11 +964,32 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
         forControlEvents:UIControlEventTouchUpInside];
 }
 
+// Updates `kShareButtonGuide` to reference the trailing button when this
+// location bar is active and displaying an enabled Share button.
+- (void)updateShareButtonGuide {
+  if (!self.isViewLoaded || _textOnly) {
+    return;
+  }
+  BOOL isActive = _active || !IsChromeNextIaEnabled();
+  BOOL isShareButtonActive =
+      isActive && self.trailingButtonState == kShareButton &&
+      !self.hideShareButtonWhileOnIncognitoNTP && self.shareButtonEnabled;
+  UIView* trailingButton = self.locationBarSteadyView.trailingButton;
+  if (isShareButtonActive) {
+    [self.layoutGuideCenter referenceView:trailingButton
+                                underName:kShareButtonGuide];
+  } else if ([self.layoutGuideCenter
+                 referencedViewUnderName:kShareButtonGuide] == trailingButton) {
+    [self.layoutGuideCenter referenceView:nil underName:kShareButtonGuide];
+  }
+}
+
 // Updates the layout guides to point to the entrypoints in this toolbar.
 - (void)updateLayoutGuides {
   if (!self.isViewLoaded || _textOnly) {
     return;
   }
+  [self updateShareButtonGuide];
   // The _active flag is only used when NextIA is enabled. When it is disabled,
   // the location bar should always be treated as active for layout guides.
   BOOL isActive = _active || !IsChromeNextIaEnabled();
