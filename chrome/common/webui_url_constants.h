@@ -238,9 +238,11 @@ inline constexpr char kChromeUIUntrustedNtpMicrosoftAuthHost[] =
 inline constexpr char kChromeUIUntrustedNtpMicrosoftAuthURL[] =
     "chrome-untrusted://ntp-microsoft-auth/";
 inline constexpr char kChromeUINTPTilesInternalsHost[] = "ntp-tiles-internals";
-inline constexpr char kChromeUIOmniboxHost[] = "omnibox";
-inline constexpr char kChromeUIOmniboxAimEligibilityPage[] =
-    "omnibox/aim-eligibility";
+inline constexpr char kChromeUIOmniboxInternalsAimEligibilityPage[] =
+    "omnibox-internals/aim-eligibility";
+inline constexpr char kChromeUIOmniboxInternalsHost[] = "omnibox-internals";
+inline constexpr char kChromeUIOmniboxInternalsURL[] =
+    "chrome://omnibox-internals/";
 inline constexpr char kChromeUIOmniboxPopupHost[] = "omnibox-popup.top-chrome";
 inline constexpr char kChromeUIOmniboxEverywhereHost[] =
     "omnibox-everywhere.top-chrome";
@@ -250,7 +252,6 @@ inline constexpr char kChromeUIOmniboxPopupURL[] =
     "chrome://omnibox-popup.top-chrome/";
 inline constexpr char kChromeUIOmniboxPopupAimURL[] =
     "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html";
-inline constexpr char kChromeUIOmniboxURL[] = "chrome://omnibox/";
 inline constexpr char kChromeUIOrganizerPanelHost[] =
     "organizer-panel.top-chrome";
 inline constexpr char kChromeUIOrganizerPanelURL[] =

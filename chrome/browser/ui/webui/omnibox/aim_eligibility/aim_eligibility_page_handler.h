@@ -20,7 +20,7 @@ class AimEligibilityService;
 class PrefService;
 class Profile;
 
-// WebUI page handler for the chrome://omnibox/aim-eligibility.
+// WebUI page handler for the chrome://omnibox-internals/aim-eligibility.
 class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
  public:
   AimEligibilityPageHandler(

@@ -123,8 +123,9 @@ information from someone outside the team in order to make progress.  It’s als
 an indication that someone on the team needs to follow-up if feedback is not
 forthcoming.
 
-Often the appropriate request includes a request for chrome://omnibox data;
-[an example such request](#Example-request-for-chrome_omnibox-data) is below.
+Often the appropriate request includes a request for chrome://omnibox-internals
+data; [an example such request](#Example-request-for-chrome_omnibox_internals-data)
+is below.
 
 Also, if the bug is clear, try to reproduce.  If it cannot be reproduced or you
 lack the necessary setup, either ask the reporter for clarification or add the
@@ -316,20 +317,21 @@ additional value from ChromeOS alerts.
 
 # Appendix
 
-## Example request for chrome://omnibox data
+## Example request for chrome://omnibox-internals data
 
-NOTE: If you ask someone for chrome://omnibox data on a public bug, label the
-bug with Restrict-View-Google so that any personal data from the reporter's
-chrome://omnibox output is not made public. Do this *before* they respond.
+NOTE: If you ask someone for chrome://omnibox-internals data on a public bug,
+label the bug with Restrict-View-Google so that any personal data from the
+reporter's chrome://omnibox-internals output is not made public. Do this
+*before* they respond.
 As the original reporter, they should still have access to the bug even with the
 restrict applied.
 
 Example request:
 
-> Please visit chrome://omnibox in the version of Chrome in which you're
-> experiencing the issue and type the input that triggers the issue into the
-> "Enter omnibox input" text box. Then click the Download link and attach the
-> downloaded file to this issue.
+> Please visit chrome://omnibox-internals in the version of Chrome in which
+> you're experiencing the issue and type the input that triggers the issue into
+> the "Enter omnibox input" text box. Then click the Download link and attach
+> the downloaded file to this issue.
 >
 > Please be aware that this data may reveal details of your browsing history so
 > only attach the file if you're comfortable sharing that data with the omnibox
@@ -342,9 +344,10 @@ Example request:
   [crbug/91378](https://bugs.chromium.org/p/chromium/issues/detail?id=91378).
 
   * Try to understand the motivation of the user making the request.  Please
-  ask the user for examples, with chrome://omnibox detail (see above), of times
-  where the omnibox doesn’t do what they want.  Ideally we should be able make
-  to make the omnibox smart enough that such a feature isn’t necessary.
+  ask the user for examples, with chrome://omnibox-internals detail (see above),
+  of times where the omnibox doesn’t do what they want.  Ideally we should be
+  able make to make the omnibox smart enough that such a feature isn’t
+  necessary.
 
 * “I want to disable suggestions from appearing entirely”. Dup against [crbug/1470391](https://bugs.chromium.org/p/chromium/issues/detail?id=1470391)
 

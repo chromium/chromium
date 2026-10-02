@@ -70,7 +70,7 @@ void OmniboxPageHandler::OnStart(AutocompleteController* controller,
   auto type = GetAutocompleteControllerType(controller);
   page_->HandleNewAutocompleteQuery(type, base::UTF16ToUTF8(input.text()));
   // Kick off ml-disabled autocompletion to show a before/after comparison on
-  // chrome://omnibox/ml.
+  // chrome://omnibox-internals/ml.
   if (type == mojom::AutocompleteControllerType::kBrowser) {
     ml_disabled_controller_->Start(input);
   }

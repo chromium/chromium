@@ -924,7 +924,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     any_matches_in_groups = true;
 
     // Record suggestion group information into the additional_info field
-    // for chrome://omnibox.
+    // for chrome://omnibox-internals.
     match.RecordAdditionalInfo("group id", group_id);
     match.RecordAdditionalInfo("group header",
                                GetHeaderForSuggestionGroup(group_id));

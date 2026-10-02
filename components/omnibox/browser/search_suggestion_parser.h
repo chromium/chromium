@@ -248,7 +248,8 @@ class SearchSuggestionParser {
     // The contents to be displayed as prefix of match contents.
     // Used for tail suggestions to display a leading ellipsis (or some
     // equivalent character) to indicate omitted text.
-    // Only used to pass this information to about:omnibox's "Additional Info".
+    // Only used to pass this information to chrome://omnibox-internals'
+    // "Additional Info".
     std::u16string match_contents_prefix_;
 
     // Optional annotation for the |match_contents_| for disambiguation.

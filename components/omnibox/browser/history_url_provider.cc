@@ -192,7 +192,7 @@ int CalculateRelevanceScoreUsingScoringParams(
 
 // Extracts typed_count, visit_count, and last_visited time from the URLRow and
 // puts them in the additional info field of the `match` for display in
-// about:omnibox.
+// chrome://omnibox-internals.
 void RecordAdditionalInfoFromUrlRow(const history::URLRow& info,
                                     AutocompleteMatch* match) {
   match->RecordAdditionalInfo("typed count", info.typed_count());

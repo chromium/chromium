@@ -16,7 +16,7 @@ import {AutocompleteControllerType, OmniboxPageCallbackRouter, OmniboxPageHandle
 import type {OmniboxOutput} from './omnibox_output.js';
 
 /**
- * Javascript for omnibox.html, served from chrome://omnibox/
+ * Javascript for omnibox.html, served from chrome://omnibox-internals/
  * This is used to debug omnibox ranking. The user enters some text into a box,
  * submits it, and then sees lots of debug information from the autocompleter
  * that shows what omnibox would do with that input.
@@ -260,7 +260,7 @@ class ExportDelegate {
       dateCreated: now.toISOString(),
       author: '',
       description: '',
-      authorTool: 'chrome://omnibox',
+      authorTool: 'chrome://omnibox-internals',
       batchName,
       versionDetails: ExportDelegate.getVersionDetails(),
       variationInfo,

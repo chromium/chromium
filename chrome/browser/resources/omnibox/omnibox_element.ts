@@ -4,7 +4,7 @@
 
 /**
  * Helper class to be used as the super class of all custom elements in
- * chrome://omnibox.
+ * chrome://omnibox-internals.
  */
 // TODO(manukh) Replace with `CustomElement` defined in
 //  ui/webui/resources/js/custom_element.ts. Their essentially equivalent with

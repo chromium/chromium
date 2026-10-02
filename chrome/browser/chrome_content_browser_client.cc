@@ -6546,6 +6546,11 @@ class SpecialAccessFileURLLoaderFactory
   int child_id_;
 };
 
+// The former host of chrome://omnibox-internals. HandleWebUI() rewrites it to
+// the new host so that existing links, bookmarks, and docs keep working.
+// TODO(crbug.com/566702581): Remove once the new host is well-known.
+constexpr char kLegacyOmniboxInternalsHost[] = "omnibox";
+
 bool IsDisabledInternalWebUI(const GURL& url) {
   if (!content::IsInternalWebUI(url)) {
     return false;
@@ -7584,6 +7589,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
     content::BrowserContext* browser_context) {
   DCHECK(browser_context);
 
+  // Rewrite chrome://omnibox to chrome://omnibox-internals, keeping the path,
+  // query, and fragment. This must happen before the internal debug pages check
+  // below. HandleWebUIReverse() makes the new URL the displayed one.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == kLegacyOmniboxInternalsHost) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(chrome::kChromeUIOmniboxInternalsHost);
+    *url = url->ReplaceComponents(replacements);
+  }
+
   // Rewrite chrome://help to chrome://settings/help.
   if (url->SchemeIs(content::kChromeUIScheme) &&
       url->host() == chrome::kChromeUIHelpHost) {
@@ -7696,6 +7711,14 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
     return true;
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+  // No need to actually reverse-rewrite the URL, but return true to update the
+  // displayed URL when rewriting chrome://omnibox to
+  // chrome://omnibox-internals.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUIOmniboxInternalsHost) {
+    return true;
+  }
 
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.

@@ -54,6 +54,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -86,6 +87,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -206,6 +208,27 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   ASSERT_TRUE(entry != nullptr);
   EXPECT_EQ(url, entry->GetURL());
   EXPECT_EQ(url, entry->GetVirtualURL());
+}
+
+// Test that chrome://omnibox, the former name of chrome://omnibox-internals,
+// loads chrome://omnibox-internals and displays the new URL.
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
+                       LegacyOmniboxURLRedirectsToOmniboxInternals) {
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://omnibox/")));
+  content::NavigationEntry* entry = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
+
+  ASSERT_TRUE(entry != nullptr);
+  const GURL expected_url(chrome::kChromeUIOmniboxInternalsURL);
+  EXPECT_EQ(expected_url, entry->GetURL());
+  EXPECT_EQ(expected_url, entry->GetVirtualURL());
 }
 
 // Helper class to mark "https://ntp.com/" as an isolated origin.

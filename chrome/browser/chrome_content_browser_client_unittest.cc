@@ -1198,6 +1198,49 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectDebugURL) {
   EXPECT_EQ(debug_url, dest_url);
 }
 
+// chrome://omnibox is the former name of chrome://omnibox-internals.
+TEST_F(ChromeContentSettingsRedirectTest, RedirectLegacyOmniboxURL) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
+
+  GURL dest_url("chrome://omnibox/");
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUIOmniboxInternalsURL), dest_url);
+
+  // The path, query, and fragment are kept.
+  const GURL expected_url("chrome://omnibox-internals/ml?signals=1,2#ref");
+  dest_url = GURL("chrome://omnibox/ml?signals=1,2#ref");
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(expected_url, dest_url);
+
+  // The new URL is the one displayed.
+  EXPECT_TRUE(
+      test_content_browser_client.HandleWebUIReverse(&dest_url, &profile_));
+  EXPECT_EQ(expected_url, dest_url);
+
+  // Other omnibox WebUI hosts are not rewritten.
+  const GURL omnibox_popup_url("chrome://omnibox-popup.top-chrome/");
+  dest_url = omnibox_popup_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(omnibox_popup_url, dest_url);
+}
+
+TEST_F(ChromeContentSettingsRedirectTest,
+       RedirectLegacyOmniboxURLWithInternalDebugPagesDisabled) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, false);
+
+  // The internal debug pages disabled page refers to the new URL.
+  GURL dest_url("chrome://omnibox/");
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(chrome::kChromeUIInternalDebugPagesDisabledHost,
+            dest_url.GetHost());
+  EXPECT_EQ(std::string("host=") + chrome::kChromeUIOmniboxInternalsURL,
+            dest_url.GetQuery());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   TestChromeContentBrowserClient test_content_browser_client;

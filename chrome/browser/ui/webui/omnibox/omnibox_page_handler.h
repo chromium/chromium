@@ -90,11 +90,11 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   // Helper to get the ML service for this profile.
   AutocompleteScoringModelService* GetMlService();
 
-  // A controller to allow chrome://omnibox can try inputs without messing with
-  // location bar omnibox.
+  // A controller to allow chrome://omnibox-internals to try inputs without
+  // messing with location bar omnibox.
   std::unique_ptr<AutocompleteController> controller_;
-  // A controller with ML disabled to allow chrome://omnibox/ml to show a
-  // before-after comparison.
+  // A controller with ML disabled to allow chrome://omnibox-internals/ml to
+  // show a before-after comparison.
   std::unique_ptr<AutocompleteController> ml_disabled_controller_;
 
   // Time the user's input was sent to the omnibox to start searching.

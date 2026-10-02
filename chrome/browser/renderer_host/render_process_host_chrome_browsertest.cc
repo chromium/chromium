@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/public/features.h"
@@ -173,7 +174,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
             browser()->tab_strip_model()->GetActiveWebContents()));
 
     // Change the first tab to be the omnibox page (WebUI).
-    GURL omnibox(chrome::kChromeUIOmniboxURL);
+    GURL omnibox(chrome::kChromeUIOmniboxInternalsURL);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
     // The host objects from the page before the WebUI navigation stick around
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, DISABLED_ProcessPerTab) {
           browser()->tab_strip_model()->GetActiveWebContents()));
 
   // Change the first tab to be a WebUI page.
-  GURL omnibox(chrome::kChromeUIOmniboxURL);
+  GURL omnibox(chrome::kChromeUIOmniboxInternalsURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
   // The host objects from the page before the WebUI navigation stick around
@@ -434,7 +435,7 @@ class ChromeRenderProcessHostBackgroundingTest
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTest,
                        MAYBE_MultipleTabs) {
   // Change the first tab to be the omnibox page (TYPE_WEBUI).
-  GURL omnibox(chrome::kChromeUIOmniboxURL);
+  GURL omnibox(chrome::kChromeUIOmniboxInternalsURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
   // Create a new tab. It should be foreground.
@@ -624,7 +625,7 @@ class WindowDestroyer : public content::WebContentsObserver {
 // Disabled due to flakiness, see  http://crbug.com/41250793.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
                        DISABLED_CloseAllTabsDuringProcessDied) {
-  GURL url(chrome::kChromeUIOmniboxURL);
+  GURL url(chrome::kChromeUIOmniboxInternalsURL);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);

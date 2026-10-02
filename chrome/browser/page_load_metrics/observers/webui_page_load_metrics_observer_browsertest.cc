@@ -100,8 +100,8 @@ IN_PROC_BROWSER_TEST_P(WebUIPageLoadMetricsObserverBrowserTest,
       chrome_urls::kInternalOnlyUisEnabled, true);
 
   // Navigate to an internal debug WebUI page.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://omnibox")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://omnibox-internals")));
   // Verify that WebUI metrics ARE NOT recorded for internal debug WebUI.
   // Note: When InitialWebUI is enabled, a background WebContents may load a
   // regular WebUI page (e.g. New Tab Page) and record FCP early, polluting
@@ -109,18 +109,21 @@ IN_PROC_BROWSER_TEST_P(WebUIPageLoadMetricsObserverBrowserTest,
   // disabled. However, LCP is not recorded for background pages, so we still
   // expect 0.
   histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI.omnibox", 0);
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI."
+      "omnibox-internals",
+      0);
 
   histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI.omnibox",
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI."
+      "omnibox-internals",
       0);
 
   // Navigate to a WebUI page that is not an internal debug WebUI.
   NavigateAndWaitForMetrics(GURL("chrome://version"));
   // Verify that WebUI metrics ARE recorded for version WebUI but are not
-  // recorded for previous WebUI navigation. If aggregate metrics fail, omnibox
-  // is no longer an internal debug WebUI or WebUIPageLoadMetricsObserver
-  // recorded metrics incorrectly.
+  // recorded for previous WebUI navigation. If aggregate metrics fail,
+  // omnibox-internals is no longer an internal debug WebUI or
+  // WebUIPageLoadMetricsObserver recorded metrics incorrectly.
 
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI.version",

@@ -848,6 +848,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1222744253" label="chrome-untrusted://ai-overlay-dialog/"/>
   <int value="-1203248739" label="chrome://scanning/"/>
   <int value="-1198437953" label="chrome://download-shelf.top-chrome/"/>
+  <int value="-1187235642" label="chrome://omnibox-internals/"/>
   <int value="-1179878260" label="chrome://user-education-internals/"/>
   <int value="-1177126000" label="chrome://profile-internals/"/>
   <int value="-1176451566" label="chrome://access-code-cast/"/>

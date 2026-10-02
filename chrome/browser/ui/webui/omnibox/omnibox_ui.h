@@ -32,14 +32,14 @@ class OmniboxUI;
 class OmniboxUIConfig : public content::DefaultInternalWebUIConfig<OmniboxUI> {
  public:
   OmniboxUIConfig()
-      : DefaultInternalWebUIConfig(chrome::kChromeUIOmniboxHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUIOmniboxInternalsHost) {}
 
   // content::WebUIConfig:
   bool SupportsInProcessResourceLoadingV2() const override;
   bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const override;
 };
 
-// The UI for chrome://omnibox/
+// The UI for chrome://omnibox-internals/
 class OmniboxUI : public ui::MojoWebUIController,
                   public aim_eligibility::mojom::PageHandlerFactory,
                   public omnibox::logging::mojom::PageHandlerFactory {

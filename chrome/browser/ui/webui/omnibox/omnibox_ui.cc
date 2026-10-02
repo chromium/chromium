@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/version/version_handler.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/omnibox_resources.h"
 #include "chrome/grit/omnibox_resources_map.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -53,9 +54,9 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-  // Set up the chrome://omnibox/ source.
+  // Set up the chrome://omnibox-internals/ source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIOmniboxHost);
+      profile, chrome::kChromeUIOmniboxInternalsHost);
 
   webui::SetupWebUIDataSource(source, kOmniboxResources,
                               IDR_OMNIBOX_OMNIBOX_HTML);

@@ -161,8 +161,8 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUINetExportHost,
       kChromeUINetInternalsHost,
       kChromeUINewTabHost,
-      kChromeUIOmniboxHost,
-      kChromeUIOmniboxAimEligibilityPage,
+      kChromeUIOmniboxInternalsHost,
+      kChromeUIOmniboxInternalsAimEligibilityPage,
 #if !BUILDFLAG(IS_ANDROID)
       kChromeUIOnDeviceInternalsHost,
 #endif

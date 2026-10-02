@@ -38,8 +38,8 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // neither the HistoryQuickProvider (which is a provider that appears
 // often) nor the ShortcutsProvider are listed here.  For the best
 // idea of how scoring works and what providers are affecting which
-// queries, play with chrome://omnibox/ for a while.  While the tables
-// below may have some utility, nothing compares with first-hand
+// queries, play with chrome://omnibox-internals/ for a while.  While the
+// tables below may have some utility, nothing compares with first-hand
 // investigation and experience.
 //
 // ZERO SUGGEST (empty input type) on NTP:
