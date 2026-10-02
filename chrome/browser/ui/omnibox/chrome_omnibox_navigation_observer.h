@@ -67,9 +67,6 @@ class ChromeOmniboxNavigationObserver
 
   ~ChromeOmniboxNavigationObserver() override;
 
-  // ChromeOmniboxNavigationObserverBase:
-  void OnSuccessfulNavigation() override;
-
   void ShowAlternativeNavInfoBar();
 
   // Callback to allow tests to inject custom behaviour.

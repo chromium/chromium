@@ -28,6 +28,7 @@ source_set("omnibox") {
   deps = [
     "//base",
     "//chrome/browser:intranet_redirect_detector",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",

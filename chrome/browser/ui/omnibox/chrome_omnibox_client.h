@@ -161,11 +161,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
   Profile* profile() { return profile_; }
   BrowserWindowInterface* browser() { return browser_; }
 
-  // Update shortcuts when a navigation succeeds.
-  static void OnSuccessfulNavigation(Profile* profile,
-                                     const std::u16string& text,
-                                     const AutocompleteMatch& match);
-
  private:
   // Performs prerendering for |match|.
   void DoPrerender(const AutocompleteMatch& match);

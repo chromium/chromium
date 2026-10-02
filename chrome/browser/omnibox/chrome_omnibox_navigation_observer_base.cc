@@ -10,9 +10,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/typed_macros.h"
+#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -342,4 +344,14 @@ void ChromeOmniboxNavigationObserverBase::OnAlternativeLoaderDone(
   }
   loader_.reset();
   // |this| might be deleted here.
+}
+
+void ChromeOmniboxNavigationObserverBase::OnSuccessfulNavigation() {
+  auto shortcuts_backend = ShortcutsBackendFactory::GetForProfile(profile_);
+  // Can be null in incognito.
+  if (!shortcuts_backend) {
+    return;
+  }
+
+  shortcuts_backend->AddOrUpdateShortcut(text_, match_);
 }

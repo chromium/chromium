@@ -17,7 +17,6 @@
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -56,10 +55,6 @@ ChromeOmniboxNavigationObserver::~ChromeOmniboxNavigationObserver() {
   if (fetch_state() == AlternativeFetchState::kFetchSucceeded) {
     std::move(show_infobar_).Run(this);
   }
-}
-
-void ChromeOmniboxNavigationObserver::OnSuccessfulNavigation() {
-  ChromeOmniboxClient::OnSuccessfulNavigation(profile(), text(), match());
 }
 
 // static

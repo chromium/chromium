@@ -30,7 +30,6 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -92,7 +91,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
-#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -1148,18 +1146,4 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   // We could prefetch the alternate nav URL, if any, but because there
   // can be many of these as a user types an initial series of characters,
   // the OS DNS cache could suffer eviction problems for minimal gain.
-}
-
-// static
-void ChromeOmniboxClient::OnSuccessfulNavigation(
-    Profile* profile,
-    const std::u16string& text,
-    const AutocompleteMatch& match) {
-  auto shortcuts_backend = ShortcutsBackendFactory::GetForProfile(profile);
-  // Can be null in incognito.
-  if (!shortcuts_backend) {
-    return;
-  }
-
-  shortcuts_backend->AddOrUpdateShortcut(text, match);
 }

@@ -63,22 +63,20 @@ class ChromeOmniboxNavigationObserverBase
 
   ~ChromeOmniboxNavigationObserverBase() override;
 
-  // Records an omnibox navigation that committed successfully. Platforms
-  // differ in which services they update, so this is left to the subclass.
-  virtual void OnSuccessfulNavigation() = 0;
-
   const std::u16string& text() const { return text_; }
   const AutocompleteMatch& match() const { return match_; }
   const AutocompleteMatch& alternative_nav_match() const {
     return alternative_nav_match_;
   }
-  Profile* profile() const { return profile_; }
   AlternativeFetchState fetch_state() const { return fetch_state_; }
 
  private:
   friend class base::RefCounted<ChromeOmniboxNavigationObserverBase>;
 
   class AlternativeNavigationURLLoader;
+
+  // Records a successful omnibox navigation in the Shortcuts backend.
+  void OnSuccessfulNavigation();
 
   const std::u16string text_;
   const AutocompleteMatch match_;
