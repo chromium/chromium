@@ -8,6 +8,7 @@ import re
 from typing import List
 from typing import Optional
 
+import common
 import java_types
 
 
@@ -76,11 +77,11 @@ class _ParsedProxyNatives:
   methods: List[ParsedNative]
 
 
-# Match single line comments, multiline comments, character literals, and
-# double-quoted strings.
+# Match single line comments, multiline comments, character literals,
+# triple-quoted strings, and double-quoted strings.
 _COMMENT_REMOVER_REGEX = re.compile(
-    r'//.*?$|/\*.*?\*/[ \t]*|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-    re.DOTALL | re.MULTILINE)
+    r'//.*?$|/\*.*?\*/[ \t]*|\'(?:\\.|[^\\\'])*\'|"""[\s\S]*?"""'
+    r'|"(?:\\.|[^\\"])*"', re.DOTALL | re.MULTILINE)
 
 
 def remove_comments(contents):
@@ -108,7 +109,8 @@ def find_iter_with_note(regex, data, **kwargs):
     last_match.pop()
 
 
-_PACKAGE_REGEX = re.compile(r'^package\s+(\S+?);', flags=re.MULTILINE)
+# Kotlin does not require a semicolon.
+_PACKAGE_REGEX = re.compile(r'^package\s+([\w.]+)', flags=re.MULTILINE)
 
 
 def parse_package(contents, require=True):
@@ -360,7 +362,9 @@ def parse_proxy_natives(type_resolver, contents, *, iter_methods):
       if is_long_member or is_safe_ptr_member:
         first_param_annotations, _ = parse_annotations(
             split_by_delimiter(params_part, ',')[0])
-        if 'Nullable' in first_param_annotations:
+        # Kotlin marks nullable types with "?" rather than with @Nullable.
+        if 'Nullable' in first_param_annotations or (
+            type_resolver.null_marked and first_param.java_type.nullable):
           raise ParseError(
               f'Method "{name}" first parameter "{first_param.name}" dispatches '
               f'to a C++ member function and cannot be @Nullable.')
@@ -391,7 +395,9 @@ def check_called_by_native_return_type(name, return_type):
         f'(JniUniquePtr and JniRawPtr implement JniPtr and can be returned).')
 
 
-_IMPORT_REGEX = re.compile(r'^import\s+([^\s*]+);', flags=re.MULTILINE)
+# Kotlin does not require a semicolon.
+_IMPORT_REGEX = re.compile(r'^import\s+([\w.$]+)[ \t]*(?:;|$)',
+                           flags=re.MULTILINE)
 _IMPORT_CLASS_NAME_REGEX = re.compile(r'^(.*?)\.([A-Z].*)')
 
 
@@ -437,3 +443,19 @@ def extract_type_catalog(parsed_classes, type_catalog=None):
   for parsed_class in parsed_classes:
     parsed_class.type_resolver.type_catalog = merged_catalog
   return type_tokens
+
+
+def parse_file(filename, parse_func, **kwargs):
+  """Reads |filename| and parses it with |parse_func|.
+
+  |parse_func| is java_parse.parse_java_file or kotlin_parse.parse_kotlin_file.
+  """
+  try:
+    with open(filename) as f:
+      contents = f.read()
+    return parse_func(filename, contents, **kwargs)
+  except Exception as e:
+    if last_match:
+      common.add_note(e, f'in match {last_match}')
+    common.add_note(e, f'when parsing {filename}')
+    raise

@@ -24,6 +24,8 @@ import common
 import java_parse
 import java_types
 import jni_generator
+import kotlin_parse
+import parse_common
 import proxy
 
 _THIS_DIR = os.path.dirname(__file__)
@@ -31,15 +33,17 @@ _THIS_DIR = os.path.dirname(__file__)
 
 def _ParseHelper(package_prefix, package_prefix_filter, enable_safe_pointers,
                  path):
+  parse_func = (kotlin_parse.parse_kotlin_file
+                if path.endswith('.kt') else java_parse.parse_java_file)
   try:
     # The link step emits only JNI boundary types, so safe pointer inner types
     # are never resolved to C++ types here.
-    return java_parse.parse_java_file(
-        path,
-        package_prefix=package_prefix,
-        package_prefix_filter=package_prefix_filter,
-        allow_private_called_by_natives=True,
-        enable_safe_pointers=enable_safe_pointers)
+    return parse_common.parse_file(path,
+                                   parse_func,
+                                   package_prefix=package_prefix,
+                                   package_prefix_filter=package_prefix_filter,
+                                   allow_private_called_by_natives=True,
+                                   enable_safe_pointers=enable_safe_pointers)
   except Exception as e:
     return e
 

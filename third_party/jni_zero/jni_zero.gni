@@ -96,6 +96,7 @@ template("_invoke_jni_zero") {
                             "jni_generator.py",
                             "jni_registration_generator.py",
                             "jni_zero.py",
+                            "kotlin_parse.py",
                             "parse_common.py",
                             "proxy.py",
                           ],

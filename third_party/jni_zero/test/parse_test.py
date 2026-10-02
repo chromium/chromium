@@ -14,6 +14,7 @@ sys.path.insert(
 import common
 import java_parse
 import java_types
+import kotlin_parse
 import parse_common
 
 
@@ -64,22 +65,32 @@ def _parsed_file_to_string(parsed_file):
   return sb.to_string()
 
 
-def _parse_java_file_data(filename, contents, enable_safe_pointers=False):
-  return java_parse.parse_java_file_data(
-      filename,
-      contents,
-      package_prefix=None,
-      package_prefix_filter=None,
-      allow_private_called_by_natives=False,
-      enable_safe_pointers=enable_safe_pointers)
+def _parse_java_file(filename, contents, enable_safe_pointers=False):
+  return java_parse.parse_java_file(filename,
+                                    contents,
+                                    package_prefix=None,
+                                    package_prefix_filter=None,
+                                    allow_private_called_by_natives=False,
+                                    enable_safe_pointers=enable_safe_pointers)
 
 
 def _parse_and_resolve(filename, contents):
-  parsed_file = _parse_java_file_data(filename,
-                                      contents,
-                                      enable_safe_pointers=True)
+  parsed_file = _parse_java_file(filename, contents, enable_safe_pointers=True)
   java_parse.resolve_safe_pointers([parsed_file], {})
   return parsed_file
+
+
+def _parse_kotlin_file(filename,
+                       contents,
+                       package_prefix=None,
+                       enable_safe_pointers=False):
+  return kotlin_parse.parse_kotlin_file(
+      filename,
+      contents,
+      package_prefix=package_prefix,
+      package_prefix_filter=None,
+      allow_private_called_by_natives=False,
+      enable_safe_pointers=enable_safe_pointers)
 
 
 class TestParse(unittest.TestCase):
@@ -136,7 +147,7 @@ public class MyClass<
 public class MyClass<T extends List<String>, P extends List<String>> {
 }
 """
-    parsed_file = _parse_java_file_data('MyClass.java', contents)
+    parsed_file = _parse_java_file('MyClass.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseSampleProxyEdgeCases(self):
@@ -156,7 +167,7 @@ class SampleProxyEdgeCases<E extends Enum<E>> {
 public class SampleProxyEdgeCases<E extends Enum<E>> {
 }
 """
-    parsed_file = _parse_java_file_data('SampleProxyEdgeCases.java', contents)
+    parsed_file = _parse_java_file('SampleProxyEdgeCases.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseCallback2(self):
@@ -180,7 +191,7 @@ public class Callback2.JniHelper {
   public static void onResultFromNative(Callback2<T1, T2> callback, T1 r1, T2 r2);
 }
 """
-    parsed_file = _parse_java_file_data('Callback2.java', contents)
+    parsed_file = _parse_java_file('Callback2.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseWithAnnotationsAndModifiers(self):
@@ -210,7 +221,7 @@ public class AnnotatedClass {
 native @Nullable Outer.Inner bar(@JniType("string") @Nullable String arg);
 native List<String> foo(@JniType("vec<vec<int>>") String bar);
 """
-    parsed_file = _parse_java_file_data('AnnotatedClass.java', contents)
+    parsed_file = _parse_java_file('AnnotatedClass.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseMethodWithGenerics(self):
@@ -229,7 +240,7 @@ public class Test {
   public static @Nullable Map<String, int[][]> foo();
 }
 """
-    parsed_file = _parse_java_file_data('Test.java', contents)
+    parsed_file = _parse_java_file('Test.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseNestedClassWithGenerics(self):
@@ -251,7 +262,7 @@ public class Outer.Inner<T2> {
   public @Nullable T2 foo(@Nullable T1 arg);
 }
 """
-    parsed_file = _parse_java_file_data('Outer.java', contents)
+    parsed_file = _parse_java_file('Outer.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseJavapWithComplexGenerics(self):
@@ -334,7 +345,7 @@ public class MyClass {
   public static void foo(OtherClass o) {}
 }
 """
-    parsed_file = java_parse.parse_java_file_data(
+    parsed_file = java_parse.parse_java_file(
         'MyClass.java',
         contents,
         package_prefix='prefix',
@@ -359,7 +370,7 @@ public class MyClass {
   public static void foo(@Nullable pkg.Outer.Inner o);
 }
 """
-    parsed_file = _parse_java_file_data('MyClass.java', contents)
+    parsed_file = _parse_java_file('MyClass.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseCurrentClassAndNestedReferences(self):
@@ -378,7 +389,7 @@ public class MyClass {
   public static void foo(@Nullable MyClass o);
 }
 """
-    parsed_file = _parse_java_file_data('MyClass.java', contents)
+    parsed_file = _parse_java_file('MyClass.java', contents)
     self._assert_golden(expected, parsed_file)
 
   def testParseSafePointers(self):
@@ -408,9 +419,9 @@ public class SafePtrTest {
   public static void foo(@Nullable JniPtr<SafePtrTest.NativeFoo> ptr);
 }
 """
-    parsed_file = _parse_java_file_data('SafePtrTest.java',
-                                        contents,
-                                        enable_safe_pointers=True)
+    parsed_file = _parse_java_file('SafePtrTest.java',
+                                   contents,
+                                   enable_safe_pointers=True)
     self._assert_golden(expected, parsed_file)
 
     cbn_class = parsed_file.classes_with_jni[0]
@@ -459,9 +470,7 @@ public class FlagTest {
 """
     with self.assertRaisesRegex(parse_common.ParseError,
                                 "Safe JNI pointers are not enabled"):
-      _parse_java_file_data('FlagTest.java',
-                            contents,
-                            enable_safe_pointers=False)
+      _parse_java_file('FlagTest.java', contents, enable_safe_pointers=False)
 
   def testParseRawSafePointerError(self):
     contents = """
@@ -472,9 +481,9 @@ public class RawSafePtrTest {
 }
 """
     with self.assertRaises(parse_common.ParseError):
-      _parse_java_file_data('RawSafePtrTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('RawSafePtrTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseSafePointerMissingJniTypeError(self):
     contents = """
@@ -510,9 +519,9 @@ public class PrimitiveInnerTest {
 }
 """
     with self.assertRaises(parse_common.ParseError):
-      _parse_java_file_data('PrimitiveInnerTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('PrimitiveInnerTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseProxyNativeShortBorrowReturnError(self):
     contents = """
@@ -528,9 +537,9 @@ public class ProxyReturnTest {
 }
 """
     with self.assertRaises(parse_common.ParseError):
-      _parse_java_file_data('ProxyReturnTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ProxyReturnTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseCalledByNativeUniquePtrReturn(self):
     contents = """
@@ -546,9 +555,9 @@ public class ProxyReturnTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'@CalledByNative return types must use JniPtr'):
-      _parse_java_file_data('ProxyReturnTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ProxyReturnTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseCalledByNativeRawPtrReturn(self):
     contents = """
@@ -564,9 +573,9 @@ public class ProxyReturnTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'@CalledByNative return types must use JniPtr'):
-      _parse_java_file_data('ProxyReturnTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ProxyReturnTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseCalledByNativeJniPtrReturn(self):
     contents = """
@@ -579,9 +588,9 @@ public class ProxyReturnTest {
   public static JniPtr<NativeFoo> get() { return null; }
 }
 """
-    parsed_file = _parse_java_file_data('ProxyReturnTest.java',
-                                        contents,
-                                        enable_safe_pointers=True)
+    parsed_file = _parse_java_file('ProxyReturnTest.java',
+                                   contents,
+                                   enable_safe_pointers=True)
     cbn_class = parsed_file.classes_with_jni[0]
     get_method = cbn_class.called_by_natives[0]
     self.assertTrue(get_method.signature.return_type.is_safe_pointer())
@@ -595,7 +604,7 @@ public class CatalogTest {
 }
 """
     catalog = {'org/jni_zero/MyType': '::my::cpp::Type'}
-    parsed_file = java_parse.parse_java_file_data(
+    parsed_file = java_parse.parse_java_file(
         'CatalogTest.java',
         contents,
         enable_safe_pointers=True,
@@ -628,9 +637,9 @@ public class SafePointerArrayTest {
 """
     with self.assertRaisesRegex(parse_common.ParseError,
                                 "Arrays of safe pointers .* are not supported"):
-      _parse_java_file_data('SafePointerArrayTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('SafePointerArrayTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseSafePointerArrayVariantsError(self):
     wrappers = ['JniPtr', 'JniUniquePtr', 'JniRawPtr']
@@ -649,9 +658,9 @@ public class TestClass {{
         with self.assertRaisesRegex(
             parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
-          _parse_java_file_data('TestClass.java',
-                                contents_cbn_param,
-                                enable_safe_pointers=True)
+          _parse_java_file('TestClass.java',
+                           contents_cbn_param,
+                           enable_safe_pointers=True)
 
         contents_cbn_ret = f"""
 package org.jni_zero;
@@ -665,9 +674,9 @@ public class TestClass {{
         with self.assertRaisesRegex(
             parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
-          _parse_java_file_data('TestClass.java',
-                                contents_cbn_ret,
-                                enable_safe_pointers=True)
+          _parse_java_file('TestClass.java',
+                           contents_cbn_ret,
+                           enable_safe_pointers=True)
 
         contents_native_param = f"""
 package org.jni_zero;
@@ -683,9 +692,9 @@ public class TestClass {{
         with self.assertRaisesRegex(
             parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
-          _parse_java_file_data('TestClass.java',
-                                contents_native_param,
-                                enable_safe_pointers=True)
+          _parse_java_file('TestClass.java',
+                           contents_native_param,
+                           enable_safe_pointers=True)
 
         contents_native_ret = f"""
 package org.jni_zero;
@@ -701,9 +710,9 @@ public class TestClass {{
         with self.assertRaisesRegex(
             parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
-          _parse_java_file_data('TestClass.java',
-                                contents_native_ret,
-                                enable_safe_pointers=True)
+          _parse_java_file('TestClass.java',
+                           contents_native_ret,
+                           enable_safe_pointers=True)
 
   def testParseProxyNativeUniquePtrParamError(self):
     contents = """
@@ -721,9 +730,9 @@ public class ProxyParamTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'@NativeMethods parameters must use JniPtr<T>'):
-      _parse_java_file_data('ProxyParamTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ProxyParamTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseProxyNativeNullableMemberFirstParamError(self):
     contents = """
@@ -741,9 +750,9 @@ public class NullableMemberTest {
 """
     with self.assertRaisesRegex(parse_common.ParseError,
                                 r'cannot be @Nullable'):
-      _parse_java_file_data('NullableMemberTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('NullableMemberTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseProxyNativeConflictingClassNameError(self):
     contents = """
@@ -762,9 +771,9 @@ public class ConflictClassTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'specifies both @NativeClassQualifiedName and a safe pointer'):
-      _parse_java_file_data('ConflictClassTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ConflictClassTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseProxyNativeSafePtrNativePrefixError(self):
     contents = """
@@ -782,9 +791,9 @@ public class NativePrefixMemberTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'Use "self" to dispatch to a C\+\+ member function'):
-      _parse_java_file_data('NativePrefixMemberTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('NativePrefixMemberTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseProxyNativeRawPtrParamError(self):
     contents = """
@@ -802,9 +811,9 @@ public class ProxyParamTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'@NativeMethods parameters must use JniPtr<T>'):
-      _parse_java_file_data('ProxyParamTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('ProxyParamTest.java',
+                       contents,
+                       enable_safe_pointers=True)
 
   def testParseNonTemplatizedVectorError(self):
     contents = """
@@ -817,9 +826,291 @@ public class VectorTest {
     with self.assertRaisesRegex(
         parse_common.ParseError,
         r'Found non-templatized @JniType\("std::vector"\)'):
-      _parse_java_file_data('VectorTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_java_file('VectorTest.java', contents, enable_safe_pointers=True)
+
+  def testParseKotlinComments(self):
+    # Uses ''' since the Kotlin code contains """.
+    contents = '''
+/* Block comment. */
+package org.jni_zero
+// comment
+class MyClass {
+    /* Comment with a "quote" in it. */
+    val s = """a"b/*"""
+    @NativeMethods
+    interface Natives {
+        fun foo(): Int
+    }
+    val t = "*/"
+}
+'''
+    expected = """\
+public class MyClass {
+}
+native int foo();
+"""
+    parsed_file = _parse_kotlin_file('MyClass.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinPackageAndImports(self):
+    contents = """
+package org.jni_zero
+
+import org.chromium.base.Callback
+
+class ImportTest {
+    @NativeMethods
+    interface Natives {
+        fun takeCallback(c: Callback<String>)
+    }
+}
+"""
+    expected = """\
+public class ImportTest {
+}
+native void takeCallback(Callback<String> c);
+"""
+    parsed_file = _parse_kotlin_file('ImportTest.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinTypesAndNullability(self):
+    contents = """
+package org.jni_zero
+
+class SampleTypes {
+    @NativeMethods
+    interface Natives {
+        fun testArrays(
+            b: ByteArray,
+            bNull: ByteArray?,
+            i: IntArray,
+            boxed: Array<Int>,
+            strs: Array<String>,
+            strsNull: Array<String>?,
+            nested: Array<IntArray>,
+        ): ByteArray
+        fun testBoxed(
+            z: Boolean?,
+            b: Byte?,
+            c: Char?,
+            s: Short?,
+            i: Int?,
+            l: Long?,
+            f: Float?,
+            d: Double?,
+        ): Int?
+        fun testCollections(
+            list: List<String>,
+            map: Map<String, Int>,
+            set: Set<String>,
+            mList: MutableList<String>,
+            mMap: MutableMap<String, Int>,
+            mSet: MutableSet<String>,
+        ): List<String>?
+        fun testOtherCollections(
+            collection: Collection<String>,
+            mCollection: MutableCollection<String>,
+            arrayList: ArrayList<String>,
+            hashMap: HashMap<String, Int>,
+            hashSet: HashSet<String>,
+        )
+        fun testPrimitives(
+            z: Boolean,
+            b: Byte,
+            c: Char,
+            s: Short,
+            i: Int,
+            l: Long,
+            f: Float,
+            d: Double,
+        )
+        fun testProjections(
+            star: List<*>,
+            covariant: MutableList<out String>,
+            contravariant: MutableList<in String>,
+        )
+        fun testStrings(
+            s: String,
+            sNull: String?,
+            o: Any,
+            oNull: Any?,
+        ): String
+    }
+}
+"""
+    expected = """\
+public class SampleTypes {
+}
+native byte[] testArrays(byte[] b, @Nullable byte[] bNull, int[] i, Integer[] boxed, String[] strs, @Nullable String[] strsNull, int[][] nested);
+native @Nullable Integer testBoxed(@Nullable Boolean z, @Nullable Byte b, @Nullable Character c, @Nullable Short s, @Nullable Integer i, @Nullable Long l, @Nullable Float f, @Nullable Double d);
+native @Nullable java.util.List<String> testCollections(java.util.List<String> list, java.util.Map<String, Integer> map, java.util.Set<String> set, java.util.List<String> mList, java.util.Map<String, Integer> mMap, java.util.Set<String> mSet);
+native void testOtherCollections(java.util.Collection<String> collection, java.util.Collection<String> mCollection, java.util.ArrayList<String> arrayList, java.util.HashMap<String, Integer> hashMap, java.util.HashSet<String> hashSet);
+native void testPrimitives(boolean z, byte b, char c, short s, int i, long l, float f, double d);
+native void testProjections(java.util.List<Object> star, java.util.List<String> covariant, java.util.List<Object> contravariant);
+native String testStrings(String s, @Nullable String sNull, Object o, @Nullable Object oNull);
+"""
+    parsed_file = _parse_kotlin_file('SampleTypes.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinAnnotationsAndNativePtr(self):
+    contents = """
+package org.jni_zero
+
+@JNINamespace("sample")
+class SampleAnnotations {
+    @NativeMethods
+    interface Natives {
+        @NativeClassQualifiedName("MyCppClass")
+        fun customCppClass(nativePtr: Long)
+        fun init(nativeSampleAnnotations: Long)
+        fun omittedReturn()
+        fun passCppString(str: @JniType("std::string") String)
+        fun passVectors(
+            ints: @JniType("std::vector") IntArray,
+            strs: @JniType("std::vector") Array<String>,
+            list: @JniType("std::vector") List<String>,
+        ): @JniType("std::vector") IntArray
+        fun returnCppString(): @JniType("std::string") String
+    }
+}
+"""
+    expected = """\
+public class SampleAnnotations {
+}
+native void customCppClass(long nativePtr);
+native void init(long nativeSampleAnnotations);
+native void omittedReturn();
+native void passCppString(@JniType("std::string") String str);
+native @JniType("std::vector<int32_t>") int[] passVectors(@JniType("std::vector<int32_t>") int[] ints, @JniType("std::vector<jni_zero::ScopedJavaLocalRef<jobject>>") String[] strs, @JniType("std::vector<jni_zero::ScopedJavaLocalRef<jobject>>") java.util.List<String> list);
+native @JniType("std::string") String returnCppString();
+"""
+    parsed_file = _parse_kotlin_file('SampleAnnotations.kt', contents)
+    self._assert_golden(expected, parsed_file)
+    self.assertEqual(parsed_file.jni_namespace, 'sample')
+    self.assertEqual(parsed_file.proxy_visibility, 'public')
+
+  def testParseKotlinOuterClassGenerics(self):
+    contents = """
+package org.jni_zero
+
+class MyClass<T : List<String>, out P : Any> {
+    @NativeMethods
+    interface Natives {
+        fun foo()
+    }
+}
+"""
+    expected = """\
+public class MyClass<T extends java.util.List<String>, P> {
+}
+native void foo();
+"""
+    parsed_file = _parse_kotlin_file('MyClass.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinNestedClasses(self):
+    contents = """
+package org.jni_zero
+
+class MyClass {
+    data class Point(val x: Int, val y: Int)
+
+    class Inner {
+        val x = 1
+    }
+
+    @NativeMethods
+    interface Natives {
+        fun foo(p: Point, i: Inner, e: Empty, t: TopLevel)
+    }
+
+    class Empty
+}
+
+data class TopLevel(val x: Int)
+"""
+    expected = """\
+public class MyClass {
+}
+native void foo(MyClass.Point p, MyClass.Inner i, MyClass.Empty e, TopLevel t);
+"""
+    parsed_file = _parse_kotlin_file('MyClass.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinPackagePrefix(self):
+    contents = """
+package org.jni_zero
+
+class MyClass {
+    @NativeMethods
+    interface Natives {
+        fun foo(o: OtherClass)
+    }
+}
+"""
+    parsed_file = _parse_kotlin_file('MyClass.kt',
+                                     contents,
+                                     package_prefix='prefix')
+
+    param_type = parsed_file.proxy_methods[0].signature.param_list[0].java_type
+    self.assertEqual(param_type.java_class.full_name_with_slashes,
+                     'prefix/org/jni_zero/OtherClass')
+
+  def testParseKotlinErrors(self):
+    with self.assertRaisesRegex(parse_common.ParseError,
+                                'Unable to find "package" line'):
+      _parse_kotlin_file('MyClass.kt', 'class MyClass {}')
+
+    with self.assertRaisesRegex(parse_common.ParseError, 'No classes found'):
+      _parse_kotlin_file('MyClass.kt', 'package foo\n')
+
+    with self.assertRaisesRegex(
+        parse_common.ParseError,
+        'Found class "YourClass" but expected "MyClass"'):
+      _parse_kotlin_file('MyClass.kt', 'package foo\nclass YourClass {}')
+
+    # Generic methods are not supported (nor are they in Java), and must not be
+    # silently skipped.
+    with self.assertRaisesRegex(
+        parse_common.ParseError,
+        'Could not parse all methods within @NativeMethod interface'):
+      _parse_kotlin_file(
+          'MyClass.kt', 'package foo\nclass MyClass {\n@NativeMethods\n'
+          'interface A {\nfun <T> a(t: T)\nfun b()\n}\n}')
+
+  def testParseKotlinSafePointers(self):
+    contents_ret_ptr = """
+package org.jni_zero
+
+class SafePointerTest {
+    @NativeMethods
+    interface Natives {
+        fun getPtr(): JniPtr<NativeFoo>
+    }
+}
+"""
+    with self.assertRaisesRegex(
+        parse_common.ParseError,
+        r'returns JniPtr, but a short-borrow pointer is auto-invalidated'):
+      _parse_kotlin_file('SafePointerTest.kt',
+                         contents_ret_ptr,
+                         enable_safe_pointers=True)
+
+    contents_nullable_self = """
+package org.jni_zero
+
+class SafePointerTest {
+    @NativeMethods
+    interface Natives {
+        fun foo(self: JniPtr<NativeFoo>?)
+    }
+}
+"""
+    with self.assertRaisesRegex(parse_common.ParseError,
+                                r'cannot be @Nullable'):
+      _parse_kotlin_file('SafePointerTest.kt',
+                         contents_nullable_self,
+                         enable_safe_pointers=True)
 
 
 if __name__ == '__main__':

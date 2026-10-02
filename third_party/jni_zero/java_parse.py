@@ -379,14 +379,14 @@ def _parse_fields(contents, parsed_classes):
                                  const_value=const_value))
 
 
-def parse_java_file_data(filename,
-                         contents,
-                         *,
-                         package_prefix,
-                         package_prefix_filter,
-                         allow_private_called_by_natives,
-                         type_catalog=None,
-                         enable_safe_pointers=False):
+def parse_java_file(filename,
+                    contents,
+                    *,
+                    package_prefix,
+                    package_prefix_filter,
+                    allow_private_called_by_natives,
+                    type_catalog=None,
+                    enable_safe_pointers=False):
   contents = parse_common.remove_comments(contents)
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
@@ -472,37 +472,10 @@ def resolve_safe_pointers(parsed_files, type_catalog):
         for m in c.non_proxy_methods:
           _resolve_signature(m.signature, type_catalog)
     except Exception as e:
-      # This runs after parse_java_file() has returned, so it must attach the
+      # This runs after parse_file() has returned, so it must attach the
       # filename itself.
       common.add_note(e, f'when parsing {pf.filename}')
       raise
-
-
-def parse_java_file(filename,
-                    *,
-                    package_prefix=None,
-                    package_prefix_filter=None,
-                    allow_private_called_by_natives=False,
-                    type_catalog=None,
-                    enable_safe_pointers=False):
-  try:
-    assert not filename.endswith('.kt'), (
-        f'Found {filename}, but Kotlin is not supported by JNI generator.')
-    with open(filename) as f:
-      contents = f.read()
-    return parse_java_file_data(
-        filename,
-        contents,
-        package_prefix=package_prefix,
-        package_prefix_filter=package_prefix_filter,
-        allow_private_called_by_natives=allow_private_called_by_natives,
-        type_catalog=type_catalog,
-        enable_safe_pointers=enable_safe_pointers)
-  except Exception as e:
-    if parse_common.last_match:
-      common.add_note(e, f'in match {parse_common.last_match}')
-    common.add_note(e, f'when parsing {filename}')
-    raise
 
 
 def parse_javap_data(filename, contents, natives_only=False):

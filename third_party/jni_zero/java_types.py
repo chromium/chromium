@@ -690,6 +690,8 @@ OBJECT_CLASS = JavaClass('java/lang/Object')
 STRING_CLASS = JavaClass('java/lang/String')
 LIST_CLASS = JavaClass('java/util/List')
 MAP_CLASS = JavaClass('java/util/Map')
+COLLECTION_CLASS = JavaClass('java/util/Collection')
+SET_CLASS = JavaClass('java/util/Set')
 
 JNI_PTR_CLASS = JavaClass('org/jni_zero/JniPtr')
 JNI_PTR_INNER_CLASS = JavaClass('org/jni_zero/JniPtrInner')
@@ -707,8 +709,8 @@ SAFE_POINTER_CLASSES = (
 # More can be added here if the need arises.
 COLLECTION_CLASSES = (
     LIST_CLASS,
-    JavaClass('java/util/Collection'),
-    JavaClass('java/util/Set'),
+    COLLECTION_CLASS,
+    SET_CLASS,
 )
 
 # Classes provided by jni_zero.h (and used by

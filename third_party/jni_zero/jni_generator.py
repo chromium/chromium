@@ -24,6 +24,7 @@ from codegen import proxy_impl_java
 import common
 import java_parse
 import java_types
+import kotlin_parse
 import parse_common
 import proxy
 
@@ -784,10 +785,13 @@ def GenerateFromSource(parser, args, jni_mode):
         type_catalogs=args.type_catalogs)
 
     for f in args.input_files:
+      parse_func = (kotlin_parse.parse_kotlin_file
+                    if f.endswith('.kt') else java_parse.parse_java_file)
       try:
         parsed_files.append(
-            java_parse.parse_java_file(
+            parse_common.parse_file(
                 f,
+                parse_func,
                 package_prefix=args.package_prefix,
                 package_prefix_filter=args.package_prefix_filter,
                 allow_private_called_by_natives=args.
