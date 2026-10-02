@@ -16,6 +16,7 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -136,6 +137,13 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   bool is_verdict_received_ = false;
 
   int64_t navigation_id_;
+
+  // Original URL of the observed navigation (see GetOriginalUrl()), updated on
+  // redirects. This is the URL the real-time lookup runs on. Events for
+  // navigations that end without committing are reported against this URL,
+  // since the last committed URL of the WebContents is still the previous
+  // page's.
+  GURL original_url_;
 
   // Screenshots are allowed unless explicitly blocked.
   bool allow_screenshot_ = true;

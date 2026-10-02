@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
@@ -24,6 +25,8 @@
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -45,6 +48,23 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDelayedTitleHtml(
   response->set_content(
       "<html><head><title>title1.html</title></head><body>Delayed!</body></"
       "html>");
+  return response;
+}
+
+safe_browsing::RTLookupResponse CreateMatchedRuleResponse() {
+  safe_browsing::RTLookupResponse response;
+  auto* threat_info = response.add_threat_info();
+  threat_info->set_threat_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+  threat_info->set_verdict_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
+
+  safe_browsing::MatchedUrlNavigationRule* rule =
+      threat_info->mutable_matched_url_navigation_rule();
+  rule->set_rule_id("test_rule_id");
+  rule->set_rule_name("test_rule_name");
+  rule->set_matched_url_category("test_category");
+  rule->mutable_watermark_message()->set_watermark_message("test_watermark");
   return response;
 }
 
@@ -143,22 +163,6 @@ class TabTitleReportingBrowserTest : public InProcessBrowserTest {
                   on_lookup_started.Run();
                 }
 
-                safe_browsing::RTLookupResponse response;
-                auto* threat_info = response.add_threat_info();
-                threat_info->set_threat_type(safe_browsing::RTLookupResponse::
-                                                 ThreatInfo::MANAGED_POLICY);
-                threat_info->set_verdict_type(
-                    safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
-
-                safe_browsing::MatchedUrlNavigationRule* rule =
-                    threat_info->mutable_matched_url_navigation_rule();
-                rule->set_rule_id("test_rule_id");
-                rule->set_rule_name("test_rule_name");
-                rule->set_matched_url_category("test_category");
-
-                rule->mutable_watermark_message()->set_watermark_message(
-                    "test_watermark");
-
                 auto deliver_response = base::BindOnce(
                     [](safe_browsing::RTLookupResponseCallback cb,
                        safe_browsing::RTLookupResponse resp,
@@ -171,7 +175,7 @@ class TabTitleReportingBrowserTest : public InProcessBrowserTest {
                         responded_cb.Run();
                       }
                     },
-                    std::move(rt_lookup_callback), response,
+                    std::move(rt_lookup_callback), CreateMatchedRuleResponse(),
                     on_lookup_responded);
 
                 if (delay_ms > 0) {
@@ -193,6 +197,20 @@ class TabTitleReportingBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
+  CreateExpectedUrlFilteringEvent(const GURL& url,
+                                  const std::string& tab_title) {
+    auto* reporting_client =
+        enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+            browser()->GetProfile());
+    return enterprise_connectors::GetUrlFilteringInterstitialEvent(
+        url, "", CreateMatchedRuleResponse(),
+        reporting_client->GetProfileIdentifier(),
+        reporting_client->GetProfileUserName(),
+        /*active_user=*/std::string(),
+        /*referrer_chain=*/safe_browsing::ReferrerChain(), tab_title);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       event_report_validator_helper_;
@@ -211,32 +229,8 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, StandardNavigation) {
 
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  safe_browsing::RTLookupResponse mock_response;
-  auto* threat_info = mock_response.add_threat_info();
-  threat_info->set_threat_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::MANAGED_POLICY);
-  threat_info->set_verdict_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
-  safe_browsing::MatchedUrlNavigationRule* rule =
-      threat_info->mutable_matched_url_navigation_rule();
-  rule->set_rule_id("test_rule_id");
-  rule->set_rule_name("test_rule_name");
-  rule->set_matched_url_category("test_category");
-  rule->mutable_watermark_message()->set_watermark_message("test_watermark");
-
-  auto* reporting_client =
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          browser()->GetProfile());
-
-  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event =
-      enterprise_connectors::GetUrlFilteringInterstitialEvent(
-          target_url, "", mock_response,
-          reporting_client->GetProfileIdentifier(),
-          reporting_client->GetProfileUserName(),
-          /*active_user=*/std::string(),
-          /*referrer_chain=*/safe_browsing::ReferrerChain(),
-          /*tab_title=*/"title1.html");
-  event_validator.ExpectUrlFilteringInterstitialEvent(expected_event);
+  event_validator.ExpectUrlFilteringInterstitialEvent(
+      CreateExpectedUrlFilteringEvent(target_url, /*tab_title=*/"title1.html"));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), target_url, WindowOpenDisposition::CURRENT_TAB,
@@ -255,33 +249,10 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, FallbackFlushNavigation) {
 
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.SetDoneClosure(run_loop.QuitClosure());
-  safe_browsing::RTLookupResponse mock_response;
-  auto* threat_info = mock_response.add_threat_info();
-  threat_info->set_threat_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::MANAGED_POLICY);
-  threat_info->set_verdict_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
-  safe_browsing::MatchedUrlNavigationRule* rule =
-      threat_info->mutable_matched_url_navigation_rule();
-  rule->set_rule_id("test_rule_id");
-  rule->set_rule_name("test_rule_name");
-  rule->set_matched_url_category("test_category");
-  rule->mutable_watermark_message()->set_watermark_message("test_watermark");
-
-  auto* reporting_client =
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          browser()->GetProfile());
-
-  GURL expected_url("about:blank");
-  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event =
-      enterprise_connectors::GetUrlFilteringInterstitialEvent(
-          expected_url, "", mock_response,
-          reporting_client->GetProfileIdentifier(),
-          reporting_client->GetProfileUserName(),
-          /*active_user=*/std::string(),
-          /*referrer_chain=*/safe_browsing::ReferrerChain(),
-          /*tab_title=*/"about:blank");
-  event_validator.ExpectUrlFilteringInterstitialEvent(expected_event);
+  // The navigation never commits, so the event names the pending URL instead
+  // of the tab's last committed URL (about:blank), and has no title.
+  event_validator.ExpectUrlFilteringInterstitialEvent(
+      CreateExpectedUrlFilteringEvent(target_url, /*tab_title=*/""));
 
   // Add a background tab to test the dynamic closure without terminating the
   // session
@@ -297,10 +268,8 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, FallbackFlushNavigation) {
   // Wait for the lookup response to arrive and be stored in rt_lookup_response_
   lookup_responded_loop.Run();
 
-  // Close the active tab while navigation is still in-flight.
-  // The DataProtectionNavigationObserver destructor will detect
-  // pending_navigation_callback_ AND rt_lookup_response_, triggering the
-  // Fallback Flush.
+  // Close the active tab while navigation is still in-flight. The verdict that
+  // already arrived is reported even though the navigation never finishes.
   ASSERT_TRUE(browser()->GetTabStripModel()->GetWebContentsAt(0));
   browser()->GetTabStripModel()->CloseWebContentsAt(0,
                                                     TabCloseTypes::CLOSE_NONE);
@@ -309,16 +278,51 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, FallbackFlushNavigation) {
   run_loop.Run();
 }
 
+// A 204 response ends the navigation without committing, so the tab keeps
+// the previous page. The event must name the URL that matched the rule rather
+// than the previous page, have no title, and leave the previous page's data
+// protection settings untouched.
+IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest, NoContentNavigation) {
+  GURL target_url = embedded_test_server()->GetURL("example.com", "/nocontent");
+  SetupRealtimeServiceMock(target_url);
+
+  GURL safe_url = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), safe_url));
+
+  base::RunLoop run_loop;
+
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+  event_validator.ExpectUrlFilteringInterstitialEvent(
+      CreateExpectedUrlFilteringEvent(target_url, /*tab_title=*/""));
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), target_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+
+  run_loop.Run();
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), safe_url);
+  auto* user_data =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(
+          web_contents->GetPrimaryMainFrame()->GetPage());
+  ASSERT_TRUE(user_data);
+  EXPECT_TRUE(user_data->settings().watermark_text.empty());
+}
+
 IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest,
                        PrivacyIncognitoNavigation) {
+  // Incognito navigations must not fall back to the regular profile's lookup
+  // service.
+  EXPECT_CALL(*mock_lookup_service_, StartMaybeCachedLookup).Times(0);
+
   auto* incognito_browser = CreateIncognitoBrowser();
 
-  safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance()
-      ->SetTestingFactoryAndUse(
-          incognito_browser->GetProfile(),
-          base::BindRepeating(
-              &TabTitleReportingBrowserTest::CreateMockLookupService,
-              base::Unretained(this)));
+  // Incognito profiles have no enterprise lookup service of their own.
+  ASSERT_FALSE(safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
+                   GetForProfile(incognito_browser->GetProfile()));
 
   incognito_browser->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -328,12 +332,10 @@ IN_PROC_BROWSER_TEST_F(TabTitleReportingBrowserTest,
       enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
-  GURL target_url =
-      embedded_test_server()->GetURL("example.com", "/delayed_title.html");
-  SetupRealtimeServiceMock(target_url);
-
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
+  GURL target_url =
+      embedded_test_server()->GetURL("example.com", "/delayed_title.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, target_url));
 }

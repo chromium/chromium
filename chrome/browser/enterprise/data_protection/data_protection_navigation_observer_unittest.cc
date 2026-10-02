@@ -56,6 +56,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -276,6 +277,21 @@ class DataProtectionNavigationObserverTest
   }
 
  protected:
+  // Returns the event reported for `url` when `lookup_service_` returns a SAFE
+  // verdict with a matched rule and no watermark. `tab_title` is left unset.
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
+  MakeMatchedRuleEvent(const std::string& url) {
+    chrome::cros::reporting::proto::UrlFilteringInterstitialEvent event;
+    event.set_url(url);
+    event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+    event.set_profile_user_name("test-user@chromium.org");
+    event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+    *event.add_triggered_rule_info() =
+        MakeTriggeredRuleInfo(/*has_watermark=*/false);
+    return event;
+  }
+
   testing::NiceMock<FakeRealTimeUrlLookupService> lookup_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -339,22 +355,14 @@ class FakeDataProtectionNavigationController
 };
 
 TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
-  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
-  expected_event.set_url("https://example.com/");
-  expected_event.set_event_result(
-      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
-  expected_event.set_profile_user_name("test-user@chromium.org");
-  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
-  *expected_event.add_triggered_rule_info() =
-      MakeTriggeredRuleInfo(/*has_watermark=*/false);
-  // kEnterpriseTabTitleReporting is disabled in this test, so `tab_title` must
-  // be left unset.
-
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
+  // kEnterpriseTabTitleReporting is disabled in this test, so `tab_title` must
+  // be left unset.
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent("https://example.com/"));
 
   lookup_service_.SetShouldHaveMatchedRule(true);
   lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
@@ -422,6 +430,215 @@ TEST_F(DataProtectionNavigationObserverTest,
 
   histogram_tester.ExpectTotalCount(
       "Enterprise.DelayedReportingInterstitial.Time.UrlFiltering", 1);
+}
+
+// A navigation that finishes without committing (e.g. a download or a 204)
+// leaves the previous page in the tab. The event must name the navigation URL,
+// not the previous page, and the verdict must not be applied to that page.
+TEST_F(DataProtectionNavigationObserverTest,
+       UncommittedNavigation_ReportsNavigationUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_data_protection::kEnterpriseTabTitleReporting);
+  NavigateAndCommit(GURL("https://previous.com/"));
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent("https://example.com/"));
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+
+  // ERR_ABORTED ends the navigation without committing an error page.
+  simulator->Fail(net::ERR_ABORTED);
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents())));
+}
+
+// Same as above, but the verdict arrives after the navigation finished.
+TEST_F(DataProtectionNavigationObserverTest,
+       UncommittedNavigation_LateVerdict_ReportsNavigationUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_data_protection::kEnterpriseTabTitleReporting);
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://previous.com/"));
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent("https://redirect.com/"));
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         std::nullopt);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com/"),
+                                         std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+
+  {
+    base::test::TestFuture<void> future_lookup_complete;
+    lookup_service_.set_on_start_lookup_complete(
+        future_lookup_complete.GetCallback());
+    simulator->Start();
+    EXPECT_TRUE(future_lookup_complete.Wait());
+  }
+
+  // The redirect restarts the lookup. Finish the navigation before it
+  // completes; the event must name the redirect URL.
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+  simulator->Redirect(GURL("https://redirect.com/"));
+  simulator->Fail(net::ERR_ABORTED);
+  EXPECT_FALSE(future_lookup_complete.IsReady());
+
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents())));
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DelayedReportingInterstitial.Triggered.UrlFiltering", 0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DelayedReportingInterstitial.Time.UrlFiltering", 0);
+}
+
+// A reader mode navigation is looked up by its original URL, so an uncommitted
+// one must report that URL rather than the chrome-distiller:// URL.
+TEST_F(DataProtectionNavigationObserverTest,
+       UncommittedNavigation_DistillerUrl_ReportsOriginalUrl) {
+  NavigateAndCommit(GURL("https://previous.com/"));
+  const GURL original_url("https://example.com/article");
+  const GURL distilled_url =
+      dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent(original_url.spec()));
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(original_url, std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      distilled_url, web_contents());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  simulator->Fail(net::ERR_ABORTED);
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Same as above for a committed reader mode navigation: the event names the
+// original URL, not the chrome-distiller:// URL that was committed.
+TEST_F(DataProtectionNavigationObserverTest,
+       CommittedNavigation_DistillerUrl_ReportsOriginalUrl) {
+  const GURL original_url("https://example.com/article");
+  const GURL distilled_url =
+      dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  // kEnterpriseTabTitleReporting is disabled, so `tab_title` is left unset.
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent(original_url.spec()));
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(original_url, std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      distilled_url, web_contents());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  simulator->Commit();
+  run_loop.Run();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), distilled_url);
+}
+
+// The observer can be destroyed before its navigation finishes, e.g. when the
+// tab is closed mid-navigation. A verdict that already arrived is reported
+// against the navigation URL.
+TEST_F(DataProtectionNavigationObserverTest,
+       ObserverDestroyedMidNavigation_ReportsNavigationUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_data_protection::kEnterpriseTabTitleReporting);
+  NavigateAndCommit(GURL("https://previous.com/"));
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectUrlFilteringInterstitialEvent(
+      MakeMatchedRuleEvent("https://example.com/"));
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+  base::test::TestFuture<const UrlSettings&> future;
+  auto controller = std::make_unique<FakeDataProtectionNavigationController>(
+      web_contents(), &lookup_service_, future.GetCallback());
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+
+  // Destroys the observer while the navigation is still in flight.
+  controller.reset();
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
