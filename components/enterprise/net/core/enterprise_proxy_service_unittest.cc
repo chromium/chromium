@@ -538,6 +538,59 @@ TEST_F(EnterpriseProxyServiceTest, OAuthAuthenticationFetch) {
             service_->GetProvisioningDomainConfigs()[0].state);
 }
 
+TEST_F(EnterpriseProxyServiceTest, PolicyExtraHeadersExpandedInPvdFetch) {
+  pref_service_.registry()->RegisterStringPref(
+      language::prefs::kAcceptLanguages, "en-US,en;q=0.9");
+  SetUpPrimaryAccount();
+  CreateService();
+
+  base::ListValue extra_headers;
+  extra_headers.Append(base::DictValue()
+                           .Set("key", "x-resource-key")
+                           .Set("value", "arbitrary-resource-key-value"));
+  extra_headers.Append(base::DictValue()
+                           .Set("key", "x-profile-id")
+                           .Set("value", "${profile_id}"));
+  extra_headers.Append(base::DictValue()
+                           .Set("key", "accept-language")
+                           .Set("value", "${accept_language}"));
+  extra_headers.Append(base::DictValue()
+                           .Set("key", "x-unknown")
+                           .Set("value", "${unsupported_var}"));
+
+  base::ListValue policy_domains;
+  policy_domains.Append(CreateDomainPolicyEntry(
+      kTestDomain1, "profile_bearer_token", "cloud_secure_gateway",
+      std::move(extra_headers)));
+  pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "bearer_token_abc", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_EQ("Bearer bearer_token_abc",
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization)
+                .value_or(""));
+  EXPECT_EQ("arbitrary-resource-key-value",
+            request.headers.GetHeader("x-resource-key").value_or(""));
+  EXPECT_EQ("test_profile_id",
+            request.headers.GetHeader("x-profile-id").value_or(""));
+  EXPECT_EQ("en-US,en;q=0.9",
+            request.headers.GetHeader("accept-language").value_or(""));
+  EXPECT_FALSE(request.headers.HasHeader("x-unknown"));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
+  ASSERT_EQ(1u, service_->GetProvisioningDomainConfigs().size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid,
+            service_->GetProvisioningDomainConfigs()[0].state);
+}
+
 TEST_F(EnterpriseProxyServiceTest,
        CachesResponsesIncrementallyAndPrunesOnPolicyChange) {
   CreateService();

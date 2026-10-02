@@ -178,9 +178,15 @@ std::vector<ProxyExtraHeader> ParseExtraHeadersList(
                                  ProxyExtraHeader::HeaderType::kVariable);
     } else if (const std::string* value = header_dict.FindString(kValueKey)) {
       const std::string* type = header_dict.FindString(kTypeKey);
-      auto header_type = (type && *type == "variable")
-                             ? ProxyExtraHeader::HeaderType::kVariable
-                             : ProxyExtraHeader::HeaderType::kConstant;
+      ProxyExtraHeader::HeaderType header_type =
+          ProxyExtraHeader::HeaderType::kConstant;
+      if (type) {
+        if (base::EqualsCaseInsensitiveASCII(*type, "variable")) {
+          header_type = ProxyExtraHeader::HeaderType::kVariable;
+        }
+      } else if (value->find("${") != std::string::npos) {
+        header_type = ProxyExtraHeader::HeaderType::kVariable;
+      }
       extra_headers.emplace_back(*key, *value, header_type);
     }
   }

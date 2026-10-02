@@ -173,7 +173,8 @@ void EnterpriseProxyBrowserTestBase::SetMachineProxyProvisioningDomains(
 
 base::DictValue EnterpriseProxyBrowserTestBase::CreateDomainPolicyEntry(
     const std::string& domain_id,
-    bool use_oauth) {
+    bool use_oauth,
+    base::ListValue extra_headers) {
   base::DictValue entry;
   entry.Set("pvd_id",
             net::HostPortPair(domain_id, https_server_.port()).ToString());
@@ -182,6 +183,9 @@ base::DictValue EnterpriseProxyBrowserTestBase::CreateDomainPolicyEntry(
     auth_config.Set("type", "profile_bearer_token");
     auth_config.Set("scope", "cloud_secure_gateway");
     entry.Set("auth_config", std::move(auth_config));
+  }
+  if (!extra_headers.empty()) {
+    entry.Set("extra_headers", std::move(extra_headers));
   }
   return entry;
 }
@@ -285,6 +289,8 @@ EnterpriseProxyBrowserTestBase::HandlePvdRequest(
   if (url.path() != "/.well-known/pvd") {
     return nullptr;
   }
+
+  last_pvd_request_headers_ = request.headers;
 
   if (pvd_response_override_code_.has_value()) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

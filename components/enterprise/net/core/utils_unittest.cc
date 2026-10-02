@@ -342,6 +342,79 @@ TEST(ParseProxyProvisioningDomainPolicyTest, ParsesPolicyDictWithHyphenKey) {
   EXPECT_EQ(*policy, expected);
 }
 
+TEST(ParseProxyProvisioningDomainPolicyTest,
+     ParsesAndResolvesVariablePlaceholdersInPolicy) {
+  std::string policy_json = R"({
+    "pvd_id": "example.pvd.com",
+    "auth_config": {
+      "type": "profile_bearer_token",
+      "scope": "cloud_secure_gateway"
+    },
+    "extra_headers": [
+      {
+        "key": "x-resource-key",
+        "value": "arbitrary-resource-key-value"
+      },
+      {
+        "key": "x-profile-id",
+        "value": "${profile_id}"
+      },
+      {
+        "key": "x-prefixed-profile-id",
+        "value": "prefix-${profile_id}"
+      },
+      {
+        "key": "accept-language",
+        "value": "${accept_language}"
+      },
+      {
+        "key": "x-unknown",
+        "value": "${unknown_var}"
+      },
+      {
+        "key": "x-explicit-constant-placeholder",
+        "value": "${profile_id}",
+        "type": "constant"
+      }
+    ]
+  })";
+
+  std::optional<base::DictValue> domain_dict =
+      base::JSONReader::ReadDict(policy_json, 0);
+  ASSERT_TRUE(domain_dict.has_value());
+
+  std::optional<ProvisioningDomainConfig> policy =
+      ParseProxyProvisioningDomainPolicy(*domain_dict);
+  ASSERT_TRUE(policy.has_value());
+
+  std::vector<ProxyExtraHeader> expected_headers = {
+      ProxyExtraHeader("x-resource-key", "arbitrary-resource-key-value",
+                       ProxyExtraHeader::HeaderType::kConstant),
+      ProxyExtraHeader("x-profile-id", "${profile_id}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("x-prefixed-profile-id", "prefix-${profile_id}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("accept-language", "${accept_language}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("x-unknown", "${unknown_var}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("x-explicit-constant-placeholder", "${profile_id}",
+                       ProxyExtraHeader::HeaderType::kConstant),
+  };
+  EXPECT_EQ(policy->extra_headers, expected_headers);
+
+  net::HttpRequestHeaders resolved = ResolveExtraHeadersWithValues(
+      policy->extra_headers, kTestProfileId, kTestAcceptLanguages);
+
+  ExpectHeader(resolved, "x-resource-key", "arbitrary-resource-key-value");
+  ExpectHeader(resolved, "x-profile-id", kTestProfileId);
+  ExpectHeader(resolved, "x-prefixed-profile-id",
+               "prefix-" + std::string(kTestProfileId));
+  ExpectHeader(resolved, "accept-language", kTestAcceptLanguages);
+  EXPECT_FALSE(resolved.HasHeader("x-unknown"));
+  ExpectHeader(resolved, "x-explicit-constant-placeholder", "${profile_id}");
+}
+
 TEST(ParseProxyProvisioningDomainPolicyTest, RejectsInvalidPolicyDict) {
   base::DictValue missing_pvd_id;
   missing_pvd_id.Set("some_other_key", "value");

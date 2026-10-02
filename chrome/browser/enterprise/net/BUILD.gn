@@ -47,6 +47,7 @@ source_set("platform_browser_tests") {
       "//components/metrics:content",
       "//components/policy:policy_code_generate",
       "//components/policy/core/common",
+      "//components/prefs",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings",
       "//components/tabs:public",
