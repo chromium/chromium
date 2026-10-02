@@ -9227,15 +9227,8 @@ bool Element::MatchesOverscrollOpen() const {
   if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
     return false;
   }
-  if (auto* pseudo = GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
-    if (auto* box_model_object =
-            DynamicTo<LayoutBoxModelObject>(pseudo->GetLayoutObject())) {
-      auto* scrollable_area = DynamicTo<PaintLayerScrollableArea>(
-          box_model_object->GetScrollableArea());
-      return scrollable_area->IsCurrentlyOverscrolling();
-    }
-  }
-  return false;
+  Element* container = GetOverscrollContainer();
+  return container && container->GetOverscrollAreaTracker()->IsOpen(*this);
 }
 
 bool Element::MatchesOverscrollClosed() const {

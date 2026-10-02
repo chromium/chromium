@@ -9,7 +9,9 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -1517,6 +1519,158 @@ TEST_F(OverscrollAreaTrackerPageTest, AreaLeavingTopLayerIsRegistered) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_FALSE(area->IsInTopLayer());
   EXPECT_EQ(area->GetOverscrollContainer(), container);
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, OpenOverscrollAreaLayoutDetach) {
+  // The scroll offset of the ::-internal-overscroll-area-parent isn't restored
+  // when its scroller is recreated, so an open area comes back closed after
+  // any of these changes.
+  enum class Change {
+    kAreaDisplay,
+    kContainerDisplay,
+    kAncestorDisplay,
+    kNewArea,
+    kAreaDisplayNone,
+    kContainerDisplayNone,
+    kAncestorDisplayNone,
+    kContainerReinsert,
+    kInvokerRemove,
+  };
+  const char* kOpen =
+      "matches=1 position=open green=1 area_inert=0 content_inert=1";
+  const char* kClosed =
+      "matches=0 position=closed green=0 area_inert=1 content_inert=0";
+  const Change cases[] = {
+      Change::kAreaDisplay,         Change::kContainerDisplay,
+      Change::kAncestorDisplay,     Change::kNewArea,
+      Change::kAreaDisplayNone,     Change::kContainerDisplayNone,
+      Change::kAncestorDisplayNone, Change::kContainerReinsert,
+      Change::kInvokerRemove,
+  };
+  for (Change change : cases) {
+    SCOPED_TRACE(static_cast<int>(change));
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <style>
+        #container {
+          width: 200px;
+          height: 200px;
+        }
+        #area {
+          width: 100%;
+          height: 100%;
+          right: 100%;
+        }
+        #area:overscroll-open {
+          color: green;
+        }
+      </style>
+      <div id="ancestor">
+        <div id="container" overscrollcontainer>
+          <div id="area" overscrollarea></div>
+          <div id="content"></div>
+        </div>
+      </div>
+      <button command="toggle-overscroll" commandfor="area"></button>
+    )HTML");
+    UpdateAllLifecyclePhasesForTest();
+
+    Element* ancestor = GetElementById("ancestor");
+    Element* container = GetElementById("container");
+    Element* area = GetElementById("area");
+    Element* content = GetElementById("content");
+    auto state = [&]() -> std::string {
+      std::string position = "none";
+      if (area->GetLayoutObject()) {
+        float area_left = area->GetBoundingClientRect()->left();
+        float area_right = area->GetBoundingClientRect()->right();
+        float container_left = container->GetBoundingClientRect()->left();
+        position = area_left == container_left    ? "open"
+                   : area_right == container_left ? "closed"
+                                                  : "other";
+      }
+      bool green = area->GetComputedStyle()->VisitedDependentColor(
+                       GetCSSPropertyColor()) == Color::FromRGB(0, 128, 0);
+      return std::string("matches=") +
+             (area->MatchesOverscrollOpen() ? "1" : "0") +
+             " position=" + position + " green=" + (green ? "1" : "0") +
+             " area_inert=" +
+             (area->GetComputedStyle()->IsInert() ? "1" : "0") +
+             " content_inert=" +
+             (content->GetComputedStyle()->IsInert() ? "1" : "0");
+    };
+
+    container->GetOverscrollAreaTracker()->OpenArea(area);
+    UpdateAllLifecyclePhasesForTest();
+    ASSERT_EQ(state(), kOpen);
+
+    switch (change) {
+      case Change::kAreaDisplay:
+        area->SetInlineStyleProperty(CSSPropertyID::kDisplay, "flow-root");
+        break;
+      case Change::kContainerDisplay:
+        container->SetInlineStyleProperty(CSSPropertyID::kDisplay, "flow-root");
+        break;
+      case Change::kAncestorDisplay:
+        ancestor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "flow-root");
+        break;
+      case Change::kNewArea: {
+        // Adding an overscroll area reattaches the container's layout tree.
+        Element* new_area = GetDocument().CreateRawElement(html_names::kDivTag);
+        new_area->setAttribute(html_names::kIdAttr, AtomicString("new-area"));
+        new_area->setAttribute(html_names::kOverscrollareaAttr, g_empty_atom);
+        container->AppendChild(new_area);
+        Element* new_invoker =
+            GetDocument().CreateRawElement(html_names::kButtonTag);
+        new_invoker->setAttribute(html_names::kCommandAttr,
+                                  AtomicString("toggle-overscroll"));
+        new_invoker->setAttribute(html_names::kCommandforAttr,
+                                  AtomicString("new-area"));
+        GetDocument().body()->AppendChild(new_invoker);
+        break;
+      }
+      case Change::kAreaDisplayNone:
+        area->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+        UpdateAllLifecyclePhasesForTest();
+        EXPECT_FALSE(area->MatchesOverscrollOpen());
+        EXPECT_FALSE(content->GetComputedStyle()->IsInert());
+        area->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+        break;
+      case Change::kContainerDisplayNone:
+        container->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+        UpdateAllLifecyclePhasesForTest();
+        EXPECT_FALSE(area->MatchesOverscrollOpen());
+        container->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+        break;
+      case Change::kAncestorDisplayNone:
+        ancestor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+        UpdateAllLifecyclePhasesForTest();
+        EXPECT_FALSE(area->MatchesOverscrollOpen());
+        ancestor->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+        break;
+      case Change::kContainerReinsert:
+        container->remove();
+        ancestor->AppendChild(container);
+        break;
+      case Change::kInvokerRemove: {
+        // Without an invoker, the area isn't an overscroll area.
+        Element* invoker = GetDocument().QuerySelector(AtomicString("button"));
+        invoker->remove();
+        UpdateAllLifecyclePhasesForTest();
+        EXPECT_FALSE(area->MatchesOverscrollOpen());
+        EXPECT_FALSE(content->GetComputedStyle()->IsInert());
+        GetDocument().body()->AppendChild(invoker);
+        break;
+      }
+    }
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(state(), kClosed);
+
+    // A restyle of the container's subtree doesn't change anything.
+    container->SetNeedsStyleRecalc(kSubtreeStyleChange,
+                                   StyleChangeReasonForTracing::Create("test"));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(state(), kClosed);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

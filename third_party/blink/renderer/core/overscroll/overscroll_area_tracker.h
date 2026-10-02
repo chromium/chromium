@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -25,9 +27,18 @@ class Element;
 // visual stacking order where earlier DOM siblings are on top of later
 // siblings), manages open/close actions, and provides queries for determining
 // inertness of areas, container content, and command invokers.
+//
+// Whether an area is open is committed here, rather than read from the scroller
+// of its ::-internal-overscroll-area-parent, since styles depend on it (e.g.
+// the rest of the container's content is inert while an area is open), and the
+// scroller may be destroyed during style recalc (e.g. when the area becomes
+// display:none). The committed state is only updated outside of style recalc:
+// at overscrollchanging timing, and in UpdateSnapshot() after layout, which
+// catches scrollers that were destroyed or recreated.
 class CORE_EXPORT OverscrollAreaTracker
     : public GarbageCollected<OverscrollAreaTracker>,
-      public NodeRareDataField {
+      public NodeRareDataField,
+      public PostLayoutSnapshotClient {
  public:
   explicit OverscrollAreaTracker(Element*);
 
@@ -55,13 +66,22 @@ class CORE_EXPORT OverscrollAreaTracker
                               std::optional<bool>& html_inert,
                               bool& can_escape_overscroll_inertness);
 
+  // Whether `area` is open, as last committed.
+  bool IsOpen(const Element& area) const { return open_areas_.Contains(&area); }
+
+  // Commits whether `area`, an overscroll area of this container, is open,
+  // based on the scroller of its ::-internal-overscroll-area-parent, and
+  // invalidates styles that depend on it if that changed. Returns true if it
+  // changed. Must not be called during style recalc.
+  bool UpdateOpenState(Element& area);
+
   // Returns true if there is an open overscroll area above |area| in the visual
   // stacking order (i.e. preceding |area| in DOM order). If so, |area| is
   // covered by the open area above it and should be inert.
   bool HasOpenAreaAbove(const Element* area);
 
   // Returns true if any overscroll area in this container is currently open.
-  bool HasAnyOpenArea() const;
+  bool HasAnyOpenArea() const { return !open_areas_.empty(); }
 
   // Returns the overscroll area element that contains |element| (or |element|
   // itself if it is an overscroll area), or nullptr if |element| is not part of
@@ -79,15 +99,25 @@ class CORE_EXPORT OverscrollAreaTracker
   // inheritance applies).
   bool ShouldRemoveInertness(const Element* invoker, const Element* target);
 
+  // PostLayoutSnapshotClient:
+  bool UpdateSnapshot() override;
+  bool ShouldScheduleNextService() override { return false; }
+
   void Trace(Visitor*) const override;
 
  private:
   friend class OverscrollAreaTrackerTest;
 
+  void InvalidateOpenStateDependents();
+
   Member<Element> container_;
 
   VectorOf<Element> overscroll_members_;
   bool needs_dom_sort_ = false;
+
+  // Open areas, as last committed. Areas that stopped being overscroll areas of
+  // this container are only removed in UpdateSnapshot().
+  HeapHashSet<Member<const Element>> open_areas_;
 };
 
 }  // namespace blink

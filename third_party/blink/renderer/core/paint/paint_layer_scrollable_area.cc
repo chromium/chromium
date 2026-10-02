@@ -216,7 +216,11 @@ void PaintLayerScrollableArea::DisposeImpl() {
     probe::UpdateScrollableFlag(GetLayoutBox()->GetNode(), false);
   }
 
-  if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
+  // The scroll offset of an ::-internal-overscroll-area-parent isn't saved, so
+  // that an overscroll area whose scroller is recreated (e.g. when its layout
+  // tree is reattached) comes back closed, at the initial scroll position.
+  if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode());
+      element && !GetLayoutBox()->IsOverscrollAreaParent()) {
     element->SetSavedLayerScrollOffset(scroll_offset_);
   }
 
@@ -3732,15 +3736,10 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
            target_snap_areas.y != first_target.element_id;
   }();
 
-  if (was_overscrolling != RareData()->is_currently_overscrolling_) {
-    overscroll_element.SetNeedsStyleRecalc(
-        kLocalStyleChange,
-        StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
-    if (overscroll_container) {
-      overscroll_container->SetNeedsStyleRecalc(
-          kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kOverscroll));
-    }
+  if (was_overscrolling != RareData()->is_currently_overscrolling_ &&
+      overscroll_container) {
+    overscroll_container->GetOverscrollAreaTracker()->UpdateOpenState(
+        overscroll_element);
   }
 
   GetLayoutBox()->GetDocument().EnqueueOverscrollEvent(
