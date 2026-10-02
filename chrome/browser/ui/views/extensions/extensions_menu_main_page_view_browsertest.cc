@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -122,8 +123,9 @@ class ExtensionsMenuMainPageViewBrowserTest
 };
 
 ExtensionsMenuMainPageViewBrowserTest::ExtensionsMenuMainPageViewBrowserTest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kExtensionsMenuAccessControl);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{extensions_features::kExtensionsMenuAccessControl},
+      /*disabled_features=*/{features::kWebUIExtensionsContainer});
 }
 
 void ExtensionsMenuMainPageViewBrowserTest::ShowMenu() {
