@@ -24,10 +24,6 @@
 class SkCanvas;
 class SkSurface;
 
-namespace cc {
-class SkiaPaintCanvas;
-}  // namespace cc
-
 namespace gfx {
 class Size;
 }  // namespace gfx
@@ -83,7 +79,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   gfx::ColorSpace color_space_;
   WeakPersistent<CanvasResourceProviderDelegate> delegate_;
   const sk_sp<SkSurface> surface_;
-  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 
   // Even though this is a bitmap provider, it may be called upon to rasterize a
   // texture-backed resource, and that resource must be bound to a gpu context

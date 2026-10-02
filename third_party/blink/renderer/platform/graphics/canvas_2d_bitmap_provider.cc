@@ -81,7 +81,6 @@ size_t Canvas2DBitmapProvider::GetSize() const {
 }
 
 void Canvas2DBitmapProvider::OnContextDestroyed() {
-  skia_canvas_.reset();
   canvas_image_provider_ = nullptr;
 }
 
@@ -123,19 +122,17 @@ void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
 }
 
 void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
-  }
+  cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
+                                  GetOrCreateSWCanvasImageProvider());
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   if (delegate_) {
     // base::Unretained(this) is safe here because the callback will only be
-    // invoked during the scope of skia_canvas_->drawPicture().
+    // invoked during the scope of skia_canvas.drawPicture().
     custom_callback = base::BindRepeating(
         &Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId,
         base::Unretained(this));
   }
-  skia_canvas_->drawPicture(std::move(last_recording), custom_callback);
+  skia_canvas.drawPicture(std::move(last_recording), custom_callback);
   if (canvas_image_provider_) {
     canvas_image_provider_->ReleaseLockedImages();
     canvas_image_provider_->UnbindTextureBackedImages();
