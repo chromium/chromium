@@ -61,7 +61,6 @@ if (is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/common:channel_info",
-      "//chrome/common:version_header",
       "//components/country_codes",
       "//components/feed:feature_list",
       "//components/feed/core/proto:proto_v2",

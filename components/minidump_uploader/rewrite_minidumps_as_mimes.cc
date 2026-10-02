@@ -185,8 +185,7 @@ void RewriteMinidumpsAsMIMEs(const base::FilePath& src_dir,
   for (const auto& report : reports) {
     std::unique_ptr<const crashpad::CrashReportDatabase::UploadReport>
         upload_report;
-    switch (db->GetReportForUploading(report.uuid,
-                                      &upload_report,
+    switch (db->GetReportForUploading(report.uuid, &upload_report,
                                       /* report_metrics= */ false)) {
       case crashpad::CrashReportDatabase::kBusyError:
       case crashpad::CrashReportDatabase::kReportNotFound:
@@ -272,7 +271,7 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
                       base::android::apk_info::installer_package_name());
   builder.SetFormData("abi_name", base::android::android_info::abi_name());
   builder.SetFormData("resources_version",
-                      base::android::apk_info::resources_version());
+                      base::android::apk_info::package_version_name());
   builder.SetFormData("gms_core_version",
                       base::android::device_info::gms_version_code());
 

@@ -69,7 +69,6 @@ public final class ApkInfo {
                         /* packageVersionCode= */ info.packageVersionCode,
                         /* packageVersionName= */ info.packageVersionName,
                         /* packageName= */ info.packageName,
-                        /* resourcesVersion= */ info.resourcesVersion,
                         /* installerPackageName= */ info.installerPackageName,
                         /* isDebugApp= */ info.isDebugApp,
                         /* isSystemApp= */ info.isSystemApp,
@@ -110,10 +109,6 @@ public final class ApkInfo {
 
     public static String getInstallerPackageName() {
         return getInstance().mIApkInfo.installerPackageName;
-    }
-
-    public static String getResourcesVersion() {
-        return getInstance().mIApkInfo.resourcesVersion;
     }
 
     public static boolean isDebugApp() {
@@ -305,22 +300,6 @@ public final class ApkInfo {
         mIApkInfo.installerPackageName =
                 nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
 
-        String currentResourcesVersion = "Not Enabled";
-        // Controlled by target specific build flags.
-        if (BuildConfig.R_STRING_PRODUCT_VERSION != 0) {
-            try {
-                // This value can be compared with the actual product version to determine if
-                // corrupted resources were the cause of a crash. This can happen if the app
-                // loads resources from the outdated package  during an update
-                // (http://crbug.com/820591).
-                currentResourcesVersion =
-                        ContextUtils.getApplicationContext()
-                                .getString(BuildConfig.R_STRING_PRODUCT_VERSION);
-            } catch (Exception e) {
-                currentResourcesVersion = "Not found";
-            }
-        }
-        mIApkInfo.resourcesVersion = currentResourcesVersion;
         // Important that we do not pull this from the Browser application info - if we are
         // currently in WebView, the host application's targetSdk is what we care about, to enable
         // compatibility modes.
@@ -352,7 +331,6 @@ public final class ApkInfo {
                 @JniType("std::string") String packageVersionCode,
                 @JniType("std::string") String packageVersionName,
                 @JniType("std::string") String packageName,
-                @JniType("std::string") String resourcesVersion,
                 @JniType("std::string") String installerPackageName,
                 boolean isDebugApp,
                 boolean isSystemApp,

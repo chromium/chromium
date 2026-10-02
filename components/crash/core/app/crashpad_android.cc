@@ -301,7 +301,7 @@ void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
       base::android::apk_info::installer_package_name();
   (*annotations)["abi_name"] = base::android::android_info::abi_name();
   (*annotations)["resources_version"] =
-      base::android::apk_info::resources_version();
+      base::android::apk_info::package_version_name();
   (*annotations)["gms_core_version"] =
       base::android::device_info::gms_version_code();
 

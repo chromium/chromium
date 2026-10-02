@@ -42,8 +42,6 @@ BASE_EXPORT const std::string& package_version_name();
 
 BASE_EXPORT const std::string& package_name();
 
-BASE_EXPORT const std::string& resources_version();
-
 BASE_EXPORT const std::string& installer_package_name();
 
 BASE_EXPORT bool is_debug_app();

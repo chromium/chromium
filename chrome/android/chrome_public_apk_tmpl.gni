@@ -373,12 +373,6 @@ template("chrome_common_apk_or_module_tmpl") {
         deps += [ "//gin:v8_snapshot_assets" ]
       }
       deps += [ "//third_party/icu:icu_assets" ]
-
-      # TODO(agrieve): This is excluded from trichrome in preparation for
-      # "synchronized proguarding", which we've since abandoned. Enable for
-      # trichrome, or just remove the version check altogether.
-      build_config_include_product_version_resource = true
-      deps += [ "//chrome/android:product_version_resources" ]
     }
 
     loadable_modules = []

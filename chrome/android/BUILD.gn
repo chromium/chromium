@@ -1834,21 +1834,6 @@ if (_is_default_toolchain) {
     deps = [ ":chrome_base_module_resources" ]
   }
 
-  version_resource_dir = "$target_gen_dir/templates/chrome_version_xml/res"
-  version_resource_file = "$version_resource_dir/values/strings.xml"
-
-  process_version("version_xml") {
-    process_only = true
-    template_file = "java/version_strings.xml.template"
-    sources = [ "//chrome/VERSION" ]
-    output = version_resource_file
-  }
-
-  android_resources("product_version_resources") {
-    sources = [ version_resource_file ]
-    deps = [ ":version_xml" ]
-  }
-
   java_group("chrome_public_non_pak_assets") {
     deps = [
       "//chrome/android/webapk/libs/runtime_library:runtime_library_assets",

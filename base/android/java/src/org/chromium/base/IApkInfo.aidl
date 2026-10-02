@@ -42,7 +42,5 @@ parcelable IApkInfo {
   String packageVersionCode;
   /** The versionName of Chrome/WebView. Use application context for host app versionName. */
   String packageVersionName;
-  /** Product version as stored in Android resources. */
-  String resourcesVersion;
   int targetSdkVersion;
 }
