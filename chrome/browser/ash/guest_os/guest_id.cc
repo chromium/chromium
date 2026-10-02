@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -23,7 +23,7 @@
 namespace guest_os {
 namespace {
 
-static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
+constexpr auto kPropertiesAllowList = std::to_array<std::string_view>({
     prefs::kContainerCreateOptions,
     prefs::kContainerOsVersionKey,
     prefs::kContainerOsPrettyNameKey,
@@ -33,7 +33,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kTerminalPolicyDisabled,
     prefs::kContainerSharedVmDevicesKey,
     prefs::kBruschettaConfigId,
-}};
+});
 
 }  // namespace
 
@@ -156,7 +156,7 @@ void AddContainerToPrefs(Profile* profile,
 
   base::DictValue new_container = container_id.ToDictValue();
   for (auto [key, value] : properties) {
-    if (std::ranges::contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(kPropertiesAllowList, key)) {
       new_container.Set(key, std::move(value));
     }
   }
@@ -207,7 +207,7 @@ void UpdateContainerPref(Profile* profile,
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (std::ranges::contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(kPropertiesAllowList, key)) {
       it->GetDict().Set(key, std::move(value));
     } else {
       LOG(ERROR) << "Ignoring disallowed property: " << key;
@@ -262,7 +262,7 @@ void MergeContainerPref(Profile* profile,
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (std::ranges::contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(kPropertiesAllowList, key)) {
       base::DictValue* old_container_dict = it->GetIfDict();
       if (old_container_dict) {
         base::DictValue wrapped;
