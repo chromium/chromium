@@ -21,8 +21,10 @@ class BASE_EXPORT ElapsedTimer {
   ElapsedTimer(const ElapsedTimer&) = default;
   ElapsedTimer& operator=(const ElapsedTimer&) = default;
 
-  // Returns the time elapsed since object construction.
-  TimeDelta Elapsed() const;
+  // Returns the time elapsed since object construction. If `now_out` is
+  // provided, it is populated with the TimeTicks timestamp sampled by this
+  // method.
+  TimeDelta Elapsed(TimeTicks* now_out = nullptr) const;
 
   // Returns the timestamp of the creation of this timer.
   TimeTicks start_time() const { return start_time_; }
@@ -41,7 +43,12 @@ class BASE_EXPORT ElapsedThreadTimer {
 
   // Returns the ThreadTicks time elapsed since object construction.
   // Only valid if |is_supported()| returns true, otherwise returns TimeDelta().
-  TimeDelta Elapsed() const;
+  // If `now_out` is provided, it is populated with the ThreadTicks timestamp
+  // sampled by this method.
+  TimeDelta Elapsed(ThreadTicks* now_out = nullptr) const;
+
+  // Returns the timestamp of the creation of this timer.
+  ThreadTicks start_time() const { return begin_; }
 
   bool is_supported() const { return is_supported_; }
 
@@ -59,8 +66,9 @@ class BASE_EXPORT ElapsedLiveTimer {
   ElapsedLiveTimer& operator=(const ElapsedLiveTimer&) = default;
 
   // Returns the time elapsed since object construction, not including time that
-  // the system was suspended.
-  TimeDelta Elapsed() const;
+  // the system was suspended. If `now_out` is provided, it is populated with
+  // the LiveTicks timestamp sampled by this method.
+  TimeDelta Elapsed(LiveTicks* now_out = nullptr) const;
 
   // Returns the timestamp of the creation of this timer.
   LiveTicks start_time() const { return start_time_; }
@@ -112,8 +120,9 @@ class BASE_EXPORT ElapsedNoSleepTimer {
 
   // Returns the time elapsed since object construction, or std::nullopt if the
   // system slept during the measured interval or if sleep detection was
-  // inconclusive due to high clock sampling error.
-  std::optional<TimeDelta> Elapsed() const;
+  // inconclusive due to high clock sampling error. If `now_out` is provided,
+  // it is populated with the LiveTicks timestamp sampled by this method.
+  std::optional<TimeDelta> Elapsed(LiveTicks* now_out = nullptr) const;
 
   // Returns the timestamp of the creation of this timer.
   LiveTicks start_time() const { return start_sample_.live; }

@@ -55,6 +55,43 @@ TEST(ElapsedTimerTest, Mocked) {
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
 }
 
+TEST(ElapsedTimerTest, ElapsedWithNowOut) {
+  ElapsedTimer timer;
+
+  PlatformThread::Sleep(kSleepDuration);
+  TimeTicks now1;
+  const TimeDelta elapsed1 = timer.Elapsed(&now1);
+  EXPECT_GE(elapsed1, kSleepDuration);
+  EXPECT_EQ(now1 - timer.start_time(), elapsed1);
+
+  // Can call |Elapsed()| multiple times.
+  PlatformThread::Sleep(kSleepDuration);
+  TimeTicks now2;
+  const TimeDelta elapsed2 = timer.Elapsed(&now2);
+  EXPECT_GE(elapsed2, 2 * kSleepDuration);
+  EXPECT_EQ(now2 - timer.start_time(), elapsed2);
+  EXPECT_GT(now2, now1);
+}
+
+TEST(ElapsedTimerTest, MockedWithNowOut) {
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedTimer timer;
+  TimeTicks now;
+  EXPECT_EQ(timer.Elapsed(&now),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now, timer.start_time() +
+                     ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  PlatformThread::Sleep(kSleepDuration);
+  TimeTicks now2;
+  EXPECT_EQ(timer.Elapsed(&now2),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now2, timer.start_time() +
+                      ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
 class ElapsedThreadTimerTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -119,6 +156,53 @@ TEST_F(ElapsedThreadTimerTest, Mocked) {
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
 }
 
+TEST_F(ElapsedThreadTimerTest, ElapsedWithNowOut) {
+  if (!ThreadTicks::IsSupported()) {
+    ElapsedThreadTimer timer;
+    ThreadTicks now;
+    EXPECT_EQ(timer.Elapsed(&now), TimeDelta());
+    EXPECT_TRUE(now.is_null());
+    return;
+  }
+
+  ElapsedThreadTimer timer;
+  EXPECT_TRUE(timer.is_supported());
+
+  // 1ms of work.
+  constexpr TimeDelta kLoopingTime = Milliseconds(1);
+  const ThreadTicks start_ticks = ThreadTicks::Now();
+  while (ThreadTicks::Now() - start_ticks < kLoopingTime) {
+  }
+
+  ThreadTicks now;
+  const TimeDelta elapsed = timer.Elapsed(&now);
+  EXPECT_GE(elapsed, kLoopingTime);
+  EXPECT_EQ(now - timer.start_time(), elapsed);
+}
+
+TEST_F(ElapsedThreadTimerTest, MockedWithNowOut) {
+  if (!ThreadTicks::IsSupported()) {
+    return;
+  }
+
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedThreadTimer timer;
+  ThreadTicks now;
+  EXPECT_EQ(timer.Elapsed(&now),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now, timer.start_time() +
+                     ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  PlatformThread::Sleep(kSleepDuration);
+  ThreadTicks now2;
+  EXPECT_EQ(timer.Elapsed(&now2),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now2, timer.start_time() +
+                      ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
 TEST(ElapsedLiveTimerTest, Simple) {
   ElapsedLiveTimer timer;
 
@@ -141,6 +225,43 @@ TEST(ElapsedLiveTimerTest, Mocked) {
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
 }
 
+TEST(ElapsedLiveTimerTest, ElapsedWithNowOut) {
+  ElapsedLiveTimer timer;
+
+  PlatformThread::Sleep(kSleepDuration);
+  LiveTicks now1;
+  const TimeDelta elapsed1 = timer.Elapsed(&now1);
+  EXPECT_GE(elapsed1, kSleepDuration);
+  EXPECT_EQ(now1 - timer.start_time(), elapsed1);
+
+  // Can call |Elapsed()| multiple times.
+  PlatformThread::Sleep(kSleepDuration);
+  LiveTicks now2;
+  const TimeDelta elapsed2 = timer.Elapsed(&now2);
+  EXPECT_GE(elapsed2, 2 * kSleepDuration);
+  EXPECT_EQ(now2 - timer.start_time(), elapsed2);
+  EXPECT_GT(now2, now1);
+}
+
+TEST(ElapsedLiveTimerTest, MockedWithNowOut) {
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedLiveTimer timer;
+  LiveTicks now;
+  EXPECT_EQ(timer.Elapsed(&now),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now, timer.start_time() +
+                     ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  PlatformThread::Sleep(kSleepDuration);
+  LiveTicks now2;
+  EXPECT_EQ(timer.Elapsed(&now2),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now2, timer.start_time() +
+                      ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
 class ElapsedNoSleepTimerTest : public ::testing::Test {
  protected:
   test::TaskEnvironment task_environment_{
@@ -156,6 +277,37 @@ TEST_F(ElapsedNoSleepTimerTest, Mocked) {
   // Real-time doesn't matter.
   task_environment_.AdvanceClock(kSleepDuration);
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
+TEST_F(ElapsedNoSleepTimerTest, MockedWithNowOut) {
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedNoSleepTimer timer;
+  LiveTicks now;
+  EXPECT_EQ(timer.Elapsed(&now),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now, timer.start_time() +
+                     ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  task_environment_.AdvanceClock(kSleepDuration);
+  LiveTicks now2;
+  EXPECT_EQ(timer.Elapsed(&now2),
+            ScopedMockElapsedTimersForTest::kMockElapsedTime);
+  EXPECT_EQ(now2, timer.start_time() +
+                      ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
+TEST_F(ElapsedNoSleepTimerTest, ElapsedWithNowOut) {
+  ElapsedNoSleepTimer timer;
+  task_environment_.AdvanceClock(Seconds(2));
+
+  LiveTicks now;
+  std::optional<TimeDelta> elapsed = timer.Elapsed(&now);
+  ASSERT_TRUE(elapsed.has_value());
+  EXPECT_EQ(*elapsed, Seconds(2));
+  EXPECT_EQ(now - timer.start_time(), Seconds(2));
+  EXPECT_EQ(now, task_environment_.NowLiveTicks());
 }
 
 TEST_F(ElapsedNoSleepTimerTest, ReturnsElapsedWhenClocksAgree) {
