@@ -1590,6 +1590,49 @@ TEST_F(DragDropControllerTest, DragImageWidgetNotCreatedIfNoImage) {
   EXPECT_TRUE(GetDragImageWindow());
 }
 
+TEST_F(DragDropControllerTest, DragImageSizeAndOffsetClamped) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
+  aura::Window* window = widget->GetNativeWindow();
+
+  // Start drag with an oversized 400x200 image and an in-bounds (100, 50)
+  // offset. It should be cropped to the top-left 200x200 region with offset
+  // (100, 50).
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->SetString(u"I am being dragged");
+  gfx::ImageSkia oversized_image(gfx::ImageSkiaRep({400, 200}, 1.0f));
+  data->provider().SetDragImage(oversized_image, gfx::Vector2d(100, 50));
+
+  drag_drop_controller_->StartDragAndDrop(
+      std::move(data), window->GetRootWindow(), window, gfx::Point(300, 300),
+      ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kMouse);
+  ASSERT_TRUE(GetDragImageWindow());
+  EXPECT_EQ((gfx::Rect{200, 250, 200, 200}),
+            GetDragImageWindow()->GetBoundsInScreen());
+  EXPECT_EQ((gfx::Size{200, 200}), GetDragImage().size());
+
+  // Update mid-drag with a 1000x2000 image and negative out-of-bounds offset.
+  // Size should crop to 200x200 and offset should clamp to (0, 0).
+  gfx::ImageSkia tall_image(gfx::ImageSkiaRep({1000, 2000}, 1.0f));
+  drag_drop_controller_->SetDragImage(tall_image, gfx::Vector2d(-500, -500));
+  EXPECT_EQ((gfx::Rect{300, 300, 200, 200}),
+            GetDragImageWindow()->GetBoundsInScreen());
+  EXPECT_EQ((gfx::Size{200, 200}), GetDragImage().size());
+
+  // Update mid-drag with a 100x80 image and positive out-of-bounds offset.
+  // Size stays 100x80 and offset clamps to (100, 80).
+  gfx::ImageSkia normal_image(gfx::ImageSkiaRep({100, 80}, 1.0f));
+  drag_drop_controller_->SetDragImage(normal_image, gfx::Vector2d(500, 500));
+  EXPECT_EQ((gfx::Rect{200, 220, 100, 80}),
+            GetDragImageWindow()->GetBoundsInScreen());
+  EXPECT_EQ((gfx::Size{100, 80}), GetDragImage().size());
+
+  DragImageWindowObserver observer;
+  GetDragImageWindow()->AddObserver(&observer);
+  drag_drop_controller_->DragCancel();
+  CompleteCancelAnimation();
+  EXPECT_EQ(gfx::Point(200, 220), observer.window_location_on_destroying());
+}
+
 TEST_F(DragDropControllerTest, ObserverNotifiedOfDestruction) {
   NiceMock<MockDragDropObserver> drag_drop_observer(
       drag_drop_controller_.get());

@@ -4,6 +4,7 @@
 
 #include "ash/drag_drop/drag_drop_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -38,6 +39,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -57,6 +59,10 @@ const int kCancelAnimationFrameRate = 60;
 // For touch initiated dragging, we scale and shift drag image by the following:
 static const float kTouchDragImageScale = 1.2f;
 static const int kTouchDragImageVerticalOffset = -25;
+
+// Maximum size of the drag image in DIP, taken from Blink's kMaxDragImageSize,
+// so that drag images created by Blink won't be cropped here.
+constexpr gfx::Size kMaxDragImageSize(200, 200);
 
 // Adjusts the drag image bounds such that the new bounds are scaled by |scale|
 // and translated by the |drag_image_offset| and additional |vertical_offset|.
@@ -278,6 +284,12 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
     return;
   }
 
+  gfx::ImageSkia clamped_image = gfx::ImageSkiaOperations::ExtractSubset(
+      image, gfx::Rect(kMaxDragImageSize));
+  gfx::Vector2d clamped_offset(
+      std::clamp(image_offset.x(), 0, clamped_image.width()),
+      std::clamp(image_offset.y(), 0, clamped_image.height()));
+
   auto source = current_drag_event_source_;
   auto* source_window = drag_source_window_.get();
 
@@ -288,7 +300,7 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
     drag_image_vertical_offset = kTouchDragImageVerticalOffset;
   }
   drag_image_final_bounds_for_cancel_animation_ =
-      gfx::Rect(start_location_ - image_offset, image.size());
+      gfx::Rect(start_location_ - clamped_offset, clamped_image.size());
 
   // Only create `drag_image_widget_` if it doesn't exist. This prevents the
   // case when dragging a webui tab in lacros keeps creating fresh
@@ -301,10 +313,9 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
-  drag_image->SetImage(ui::ImageModel::FromImageSkia(image));
-  drag_image_offset_ = image_offset;
-  gfx::Rect drag_image_bounds(current_location_,
-                              drag_image->GetPreferredSize());
+  drag_image->SetImage(ui::ImageModel::FromImageSkia(clamped_image));
+  drag_image_offset_ = clamped_offset;
+  gfx::Rect drag_image_bounds(current_location_, clamped_image.size());
   drag_image_bounds = AdjustDragImageBoundsForScaleAndOffset(
       drag_image_bounds, drag_image_vertical_offset, drag_image_scale,
       &drag_image_offset_);
