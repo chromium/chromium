@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -82,9 +81,6 @@ class CloudUploadNotificationManager
   friend base::RefCounted<CloudUploadNotificationManager>;
   ~CloudUploadNotificationManager();
 
-  // Returns the message center display service that manages notifications.
-  NotificationDisplayService* GetNotificationDisplayService();
-
   // Returns an instance of an 'ash' upload progress notification.
   std::unique_ptr<message_center::Notification>
   CreateUploadProgressNotification();
@@ -136,6 +132,7 @@ class CloudUploadNotificationManager
   CloudProvider provider_;
   std::string cloud_provider_name_;
   std::string notification_id_;
+  message_center::NotifierId notifier_id_;
   std::string target_app_name_;
   std::u16string display_source_;
   int num_files_;

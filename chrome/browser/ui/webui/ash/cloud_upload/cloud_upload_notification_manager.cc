@@ -7,6 +7,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -15,12 +16,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash::cloud_upload {
@@ -57,6 +60,14 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
       base::NumberToString(
           ++CloudUploadNotificationManager::notification_manager_counter_);
 
+  // Set `profile_id` so that the notifications are hidden while another
+  // signed-in user is active.
+  notifier_id_.profile_id =
+      CHECK_DEREF(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+          .GetAccountId()
+          .GetUserEmail();
+
   // Set the system notification source display name to "Files".
   display_source_ =
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
@@ -71,11 +82,6 @@ CloudUploadNotificationManager::~CloudUploadNotificationManager() {
   // Make sure open notifications are dismissed before the notification manager
   // goes out of scope.
   CloseNotification();
-}
-
-NotificationDisplayService*
-CloudUploadNotificationManager::GetNotificationDisplayService() {
-  return NotificationDisplayServiceFactory::GetForProfile(profile_);
 }
 
 std::unique_ptr<message_center::Notification>
@@ -97,7 +103,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
       /*id=*/notification_id_, title,
       // TODO(b/272601262) Display or delete this message.
       /*message=*/{}, /*display_source=*/display_source_,
-      /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/notifier_id_,
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -120,6 +126,9 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
     notification->set_buttons(notification_buttons);
   }
 
+  // Set SYSTEM_PRIORITY so that the notification has the highest priority and
+  // never times out.
+  notification->SetSystemPriority();
   return notification;
 }
 
@@ -140,7 +149,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, title, message,
       /*display_source=*/display_source_,
-      /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/notifier_id_,
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -160,6 +169,10 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
         message_center::ButtonInfo(button_title)};
     notification->set_buttons(notification_buttons);
   }
+
+  // Set SYSTEM_PRIORITY so that the notification has the highest priority and
+  // never times out.
+  notification->SetSystemPriority();
   return notification;
 }
 
@@ -178,7 +191,7 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, title, base::UTF8ToUTF16(message),
       /*display_source=*/display_source_,
-      /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/notifier_id_,
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -197,6 +210,10 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
   }
 
   notification->set_buttons(notification_buttons);
+
+  // Set SYSTEM_PRIORITY so that the notification has the highest priority and
+  // never times out.
+  notification->SetSystemPriority();
   return notification;
 }
 
@@ -205,13 +222,8 @@ void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadProgressNotification();
   notification->set_progress(progress_);
-  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
-  // notification never times out.
-  notification->set_never_timeout(true);
-  notification->SetSystemPriority();
-  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
-                                           *notification,
-                                           /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   // Make sure we display the "in progress" state for a minimum amount of time.
   if (state_ == State::kUninitialized) {
@@ -228,17 +240,12 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
   DCHECK_EQ(state_, State::kComplete);
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
-  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
-  // notification never times out.
-  notification->set_never_timeout(true);
-  notification->SetSystemPriority();
   // Close the progress notification before displaying the completed
   // notification.
-  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-                                         notification_id_);
-  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
-                                           *notification,
-                                           /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           /*by_user=*/false);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   // Start the timer to automatically dismiss the "Complete" notification if
   // "Show in folder" button not clicked.
@@ -266,20 +273,18 @@ void CloudUploadNotificationManager::MarkUploadComplete() {
 
 void CloudUploadNotificationManager::ShowUploadError(
     const std::string& message) {
-  std::unique_ptr<message_center::Notification> notification =
-      CreateUploadErrorNotification(message);
-  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
-  // notification never times out.
-  notification->set_never_timeout(true);
-  notification->SetSystemPriority();
-  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
-                                           *notification,
-                                           /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      CreateUploadErrorNotification(message));
 }
 
 void CloudUploadNotificationManager::CloseNotification() {
-  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-                                         notification_id_);
+  // During logout or shutdown, the message center is destroyed before the
+  // profile. If profile teardown drops the last reference to this manager, the
+  // destructor calls this function after the message center and its
+  // notifications are already gone.
+  if (auto* message_center = message_center::MessageCenter::Get()) {
+    message_center->RemoveNotification(notification_id_, /*by_user=*/false);
+  }
   in_progress_timer_.Stop();
   complete_notification_timer_.Stop();
   if (callback_) {

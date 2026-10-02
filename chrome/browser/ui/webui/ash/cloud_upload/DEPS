@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/chromeos/office_web_app",
   "+chrome/browser/chromeos/upload_office_to_cloud",
-  "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -44,6 +43,10 @@ specific_include_rules = {
   "drive_upload_handler_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/signin/identity_manager_factory.h",
+  ],
+
+  "one_drive_upload_handler_browsertest\\.cc": [
+    "+ui/message_center/message_center_observer.h",
   ],
 
   "cloud_upload_ui\\.cc": [

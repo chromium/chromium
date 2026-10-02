@@ -8,17 +8,20 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/stub_notification_display_service.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash::cloud_upload {
 
@@ -34,23 +37,23 @@ class CloudUploadNotificationManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-
-    display_service_ = static_cast<StubNotificationDisplayService*>(
-        NotificationDisplayServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                profile_.get(),
-                base::BindRepeating(
-                    &StubNotificationDisplayService::FactoryForTests)));
+    message_center::MessageCenter::Initialize();
+    user_manager::User* user =
+        fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    AnnotatedAccountId::Set(profile_.get(), user->GetAccountId());
   }
+
+  void TearDown() override { message_center::MessageCenter::Shutdown(); }
 
  protected:
   Profile* profile() { return profile_.get(); }
 
   std::optional<message_center::Notification> notification() {
-    auto notifications = display_service_->GetDisplayedNotificationsForType(
-        NotificationHandler::Type::TRANSIENT);
-    if (notifications.size()) {
-      return notifications[0];
+    const message_center::NotificationList::Notifications& notifications =
+        message_center::MessageCenter::Get()->GetNotifications();
+    if (!notifications.empty()) {
+      return **notifications.begin();
     }
     return std::nullopt;
   }
@@ -131,8 +134,9 @@ class CloudUploadNotificationManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<StubNotificationDisplayService> display_service_;
   base::FilePath file_path_ = base::FilePath("/some/path/foo.doc");
 };
 
@@ -154,6 +158,8 @@ TEST_F(CloudUploadNotificationManagerTest,
   ASSERT_EQ(std::nullopt, notification());
   manager->ShowUploadProgress(1);
   ASSERT_TRUE(HaveMoveProgressNotification());
+  EXPECT_EQ(user_manager::StubAccountId().GetUserEmail(),
+            notification()->notifier_id().profile_id);
 
   manager->CloseNotification();
 }
@@ -258,9 +264,8 @@ TEST_F(CloudUploadNotificationManagerTest, CancelClick) {
   ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
 
   // Click "Cancel" button (0th button) which triggers |cancel_callback|.
-  display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                  notification()->id(), /*action_index=*/0,
-                                  std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification()->id(), /*button_index=*/0);
 
   // Run loop until |cancel_callback| is called.
   run_loop.Run();
@@ -323,9 +328,8 @@ TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
 
   // Click "Show in folder" button (0th button) which triggers
   // |HandleNotificationClick|.
-  display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                  notification()->id(), /*action_index=*/0,
-                                  std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification()->id(), /*button_index=*/0);
 
   // Run loop until |HandleNotificationClick| is called.
   run_loop.Run();
