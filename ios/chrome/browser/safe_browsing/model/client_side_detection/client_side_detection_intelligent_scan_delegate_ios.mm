@@ -172,6 +172,10 @@ bool ClientSideDetectionIntelligentScanDelegateIOS::ShouldShowScamWarning(
     return false;
   }
 
+  if (*verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING) {
+    return base::FeatureList::IsEnabled(kClientSideDetectionTrickToBill);
+  }
+
   return *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1 ||
          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2 ||
          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3 ||

@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/safe_browsing/core/browser/credit_card_form_event.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/client_side_detection_enums.h"
@@ -243,6 +244,13 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       bool match_csd_allowlist,
       bool match_hc_allowlist);
 
+  // Returns the SBThreatType to use for the blocking page. Billing scam
+  // verdicts show the billing interstitial, unless the page is also classified
+  // as phishing, in which case the more severe phishing interstitial is shown.
+  static SBThreatType GetBlockingPageThreatType(
+      bool is_phishing,
+      safe_browsing::ThreatSubtype threat_subtype);
+
   // Cancels any pending asynchronous requests bound to this host.
   // Intended to handle the case where the primary page changes while there is
   // a pending phishing report request. We have to cancel it to make sure we
@@ -379,6 +387,7 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       GURL phishing_url,
       ClientSideDetectionType request_type,
       std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+      bool is_phishing,
       bool should_show_scam_warning) = 0;
 
   // Subclasses override this to update local feature caches with network

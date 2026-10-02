@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/client_side_detection_feature_cache_base.h"
 #include "components/safe_browsing/core/browser/client_side_detection_service_base.h"
 #include "components/safe_browsing/core/browser/credit_card_form_event.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -68,6 +69,8 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
                                     history_service,
                                     is_off_the_record) {}
   ~TestClientSideDetectionHostBase() override = default;
+
+  using ClientSideDetectionHostBase::GetBlockingPageThreatType;
 
   MOCK_METHOD(void, GetInnerText, (HostInnerTextCallback callback), (override));
 
@@ -148,6 +151,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
               (GURL phishing_url,
                ClientSideDetectionType request_type,
                std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+               bool is_phishing,
                bool should_show_scam_warning),
               (override));
   MOCK_METHOD(void,
@@ -221,6 +225,25 @@ class ClientSideDetectionHostBaseTest : public testing::Test {
   std::unique_ptr<TestClientSideDetectionHostBase> host_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST(ClientSideDetectionHostBaseStaticTest, GetBlockingPageThreatType) {
+  EXPECT_EQ(TestClientSideDetectionHostBase::GetBlockingPageThreatType(
+                /*is_phishing=*/true, ThreatSubtype::UNKNOWN),
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
+  EXPECT_EQ(TestClientSideDetectionHostBase::GetBlockingPageThreatType(
+                /*is_phishing=*/false,
+                ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT),
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
+  EXPECT_EQ(TestClientSideDetectionHostBase::GetBlockingPageThreatType(
+                /*is_phishing=*/false,
+                ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING),
+            SBThreatType::SB_THREAT_TYPE_BILLING);
+  // The phishing interstitial takes precedence over the billing interstitial.
+  EXPECT_EQ(
+      TestClientSideDetectionHostBase::GetBlockingPageThreatType(
+          /*is_phishing=*/true, ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING),
+      SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
+}
 
 TEST_F(ClientSideDetectionHostBaseTest, PriorityTier) {
   // Lower tier value means higher priority tier.
@@ -897,7 +920,8 @@ TEST_F(ClientSideDetectionHostBaseTest,
   EXPECT_CALL(*host_,
               ShowBlockingPage(phishing_url,
                                ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
-                               _, false))
+                               _, /*is_phishing=*/true,
+                               /*should_show_scam_warning=*/false))
       .Times(1);
   host_->CallMaybeShowPhishingWarning(
       /*is_from_cache=*/false, ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,

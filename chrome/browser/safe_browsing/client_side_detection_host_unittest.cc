@@ -172,6 +172,11 @@ MATCHER_P(HasScamThreatSubtype, other, "") {
   return (other.threat_subtype == arg.threat_subtype);
 }
 
+MATCHER_P(HasThreatTypeAndSubtype, other, "") {
+  return (other.threat_type == arg.threat_type &&
+          other.threat_subtype == arg.threat_subtype);
+}
+
 MATCHER(EmptyLlamForcedTriggerInfoVerdict, "") {
   return !arg->has_llama_forced_trigger_info();
 }
@@ -5516,6 +5521,77 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       BillingScamExperimentVerdictShowsBillingWarning) {
+  SetFeatures({}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING)))
+      .WillOnce(Return(true));
+
+  UnsafeResource resource;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_BILLING;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING;
+  // Because the callback responds with the billing verdict, we show the
+  // billing warning.
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasThreatTypeAndSubtype(resource)))
+      .Times(1);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_intelligent_scan_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       BillingScamExperimentVerdictWithPhishingShowsPhishingWarning) {
+  SetFeatures({}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/true,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING)))
+      .WillOnce(Return(true));
+
+  UnsafeResource resource;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING;
+  // The phishing warning takes precedence over the billing warning, but the
+  // billing subtype is kept for metrics.
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasThreatTypeAndSubtype(resource)))
+      .Times(1);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,

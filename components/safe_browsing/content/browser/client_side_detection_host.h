@@ -354,6 +354,7 @@ class ClientSideDetectionHost
       GURL phishing_url,
       ClientSideDetectionType request_type,
       std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+      bool is_phishing,
       bool should_show_scam_warning) override;
   void UpdateDebuggingMetadataWithNetworkResult(
       GURL phishing_url,

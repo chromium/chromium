@@ -689,6 +689,30 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
   }
 }
 
+// Tests that the billing verdict does not show a warning when
+// kClientSideDetectionTrickToBill is disabled.
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       ShouldShowScamWarning_BillingVerdictFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kClientSideDetectionTrickToBill);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING));
+}
+
+// Tests that the billing verdict shows a warning when
+// kClientSideDetectionTrickToBill is enabled.
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       ShouldShowScamWarning_BillingVerdictFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kClientSideDetectionTrickToBill);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING));
+}
+
 // Tests ShouldShowScamWarning evaluation for all verdict types.
 TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
        ShouldShowScamWarning) {

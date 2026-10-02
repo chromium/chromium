@@ -1324,6 +1324,7 @@ void ClientSideDetectionHost::ShowBlockingPage(
     GURL phishing_url,
     ClientSideDetectionType request_type,
     std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+    bool is_phishing,
     bool should_show_scam_warning) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_manager_.get()) {
@@ -1334,8 +1335,6 @@ void ClientSideDetectionHost::ShowBlockingPage(
     security_interstitials::UnsafeResource resource;
     resource.url = phishing_url;
     resource.original_url = phishing_url;
-    resource.threat_type =
-        SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     resource.threat_source = safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
     resource.navigation_id = current_navigation_id_;
     // When we present a scam warning, we want to add separate interstitial
@@ -1345,6 +1344,8 @@ void ClientSideDetectionHost::ShowBlockingPage(
       DCHECK(GetIntelligentScanDelegate());
       GetIntelligentScanDelegate()->OnScamWarningShown();
     }
+    resource.threat_type =
+        GetBlockingPageThreatType(is_phishing, resource.threat_subtype);
     resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
         CreateForRenderFrameToken(primary_main_frame_id.child_id.value(),
                                   primary_main_frame->GetFrameToken().value());

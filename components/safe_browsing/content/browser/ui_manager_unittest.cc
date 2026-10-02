@@ -915,4 +915,23 @@ TEST_F(SafeBrowsingUIManagerTest,
                    .is_bypassing_interstitial);
 }
 
+TEST(BaseBlockingPageReportingInfoTest, ClientSideDetectionBillingScamVerdict) {
+  security_interstitials::UnsafeResource resource;
+  resource.url = GURL("https://example.test/");
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_BILLING;
+  resource.threat_source = ThreatSource::CLIENT_SIDE_DETECTION;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING;
+
+  security_interstitials::MetricsHelper::ReportDetails reporting_info =
+      BaseBlockingPage::GetReportingInfo(
+          {resource}, /*blocked_page_shown_timestamp=*/std::nullopt);
+
+  // These values form the interstitial.billing.*.from_client_side_detection
+  // histogram names.
+  EXPECT_EQ(reporting_info.metric_prefix, "billing");
+  EXPECT_EQ(reporting_info.extra_suffix, "from_client_side_detection");
+  EXPECT_EQ(reporting_info.extra_extra_suffix,
+            "scam_experiment_verdict_billing");
+}
+
 }  // namespace safe_browsing

@@ -222,6 +222,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
 
 BASE_DECLARE_FEATURE(kClientSideDetectionTierSystem);
 
+// Enables showing the trick-to-bill (billing) interstitial when the
+// intelligent scan returns a SCAM_EXPERIMENT_VERDICT_BILLING verdict.
+BASE_DECLARE_FEATURE(kClientSideDetectionTrickToBill);
+
 // Set a RESIZE_BEST preference for image resizing algorithm in Client Side
 // Detection renderer processes for both image classification and image
 // embedding. This experiment is done to see if the resizing algorithm

@@ -370,6 +370,7 @@ void ClientSideDetectionHostIOS::ShowBlockingPage(
     safe_browsing::ClientSideDetectionType request_type,
     std::optional<safe_browsing::IntelligentScanVerdict>
         intelligent_scan_verdict,
+    bool is_phishing,
     bool should_show_scam_warning) {
   if (!web_state_ || !web_state_->GetNavigationManager() ||
       !kCsdEnforceIos.Get()) {
@@ -383,8 +384,6 @@ void ClientSideDetectionHostIOS::ShowBlockingPage(
   resource.url = phishing_url;
   resource.original_url = phishing_url;
   resource.navigation_url = phishing_url;
-  resource.threat_type =
-      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
   resource.threat_source = safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
   resource.weak_web_state = web_state_->GetWeakPtr();
   // When we present a scam warning, we want to add separate interstitial
@@ -395,6 +394,8 @@ void ClientSideDetectionHostIOS::ShowBlockingPage(
       GetIntelligentScanDelegate()->OnScamWarningShown();
     }
   }
+  resource.threat_type =
+      GetBlockingPageThreatType(is_phishing, resource.threat_subtype);
 
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(web_state_);

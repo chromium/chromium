@@ -1846,6 +1846,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
   host->ShowBlockingPage(phishing_url,
                          safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
                          /*intelligent_scan_verdict=*/std::nullopt,
+                         /*is_phishing=*/true,
                          /*should_show_scam_warning=*/false);
 
   SafeBrowsingUnsafeResourceContainer* container =
@@ -1876,6 +1877,7 @@ TEST_F(ClientSideDetectionHostIOSTest, ShowBlockingPageEnforcementEnabled) {
   host->ShowBlockingPage(phishing_url,
                          safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
                          /*intelligent_scan_verdict=*/std::nullopt,
+                         /*is_phishing=*/true,
                          /*should_show_scam_warning=*/false);
 
   SafeBrowsingUnsafeResourceContainer* container =
@@ -2365,6 +2367,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
   host->ShowBlockingPage(phishing_url,
                          safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
                          scan_verdict,
+                         /*is_phishing=*/false,
                          /*should_show_scam_warning=*/true);
 
   SafeBrowsingUnsafeResourceContainer* container =
@@ -2375,6 +2378,73 @@ TEST_F(ClientSideDetectionHostIOSTest,
   ASSERT_TRUE(resource);
   EXPECT_EQ(resource->threat_subtype,
             safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1);
+}
+
+// Tests that ShowBlockingPage uses the billing threat type for a billing scam
+// verdict.
+TEST_F(ClientSideDetectionHostIOSTest,
+       ShowBlockingPageBillingVerdictUsesBillingThreatType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kClientSideDetectionEnabledIos,
+      {{"CsdEnforceIos", "true"}});
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+
+  EXPECT_CALL(mock_delegate, OnScamWarningShown()).Times(1);
+
+  GURL phishing_url(kPhishingUrl);
+  host->ShowBlockingPage(
+      phishing_url, safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
+      safe_browsing::IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING,
+      /*is_phishing=*/false,
+      /*should_show_scam_warning=*/true);
+
+  SafeBrowsingUnsafeResourceContainer* container =
+      SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state_);
+  ASSERT_TRUE(container);
+  const security_interstitials::UnsafeResource* resource =
+      container->GetMainFrameUnsafeResource();
+  ASSERT_TRUE(resource);
+  EXPECT_EQ(resource->threat_type,
+            safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING);
+  EXPECT_EQ(resource->threat_subtype,
+            safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING);
+}
+
+// Tests that ShowBlockingPage prefers the phishing threat type over the billing
+// threat type when the page is also classified as phishing.
+TEST_F(ClientSideDetectionHostIOSTest,
+       ShowBlockingPageBillingVerdictWithPhishingUsesPhishingThreatType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kClientSideDetectionEnabledIos,
+      {{"CsdEnforceIos", "true"}});
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+
+  EXPECT_CALL(mock_delegate, OnScamWarningShown()).Times(1);
+
+  GURL phishing_url(kPhishingUrl);
+  host->ShowBlockingPage(
+      phishing_url, safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
+      safe_browsing::IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_BILLING,
+      /*is_phishing=*/true,
+      /*should_show_scam_warning=*/true);
+
+  SafeBrowsingUnsafeResourceContainer* container =
+      SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state_);
+  ASSERT_TRUE(container);
+  const security_interstitials::UnsafeResource* resource =
+      container->GetMainFrameUnsafeResource();
+  ASSERT_TRUE(resource);
+  EXPECT_EQ(
+      resource->threat_type,
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
+  EXPECT_EQ(resource->threat_subtype,
+            safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_BILLING);
 }
 
 // Tests that High Confidence allowlist telemetry metrics are emitted when CSD
@@ -3041,6 +3111,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
   host->ShowBlockingPage(phishing_url,
                          safe_browsing::ClientSideDetectionType::TRIGGER_MODELS,
                          /*intelligent_scan_verdict=*/std::nullopt,
+                         /*is_phishing=*/false,
                          /*should_show_scam_warning=*/true);
 
   SafeBrowsingUnsafeResourceContainer* container =

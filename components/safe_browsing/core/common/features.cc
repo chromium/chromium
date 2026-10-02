@@ -243,6 +243,9 @@ BASE_FEATURE(kClientSideDetectionSkipErrorPage,
 
 BASE_FEATURE(kClientSideDetectionTierSystem, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionTrickToBill,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConditionalImageResize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports,

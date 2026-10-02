@@ -27,6 +27,12 @@ chromium-metrics-reviews@google.com.
   <variant name="origin_policy." summary=""/>
 </variants>
 
+<variants name="BillingInterstitialFromClientSideDetectionSubtype">
+  <variant name="" summary="for any scam verdict"/>
+  <variant name=".scam_experiment_verdict_billing"
+      summary="for the trick-to-bill scam verdict"/>
+</variants>
+
 <variants name="IsPostCommitInterstitialSuffix">
   <variant name=".after_page_shown" summary="shown"/>
   <variant name=".before_page_shown" summary="not shown"/>
@@ -99,6 +105,56 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/utils.cc:GetExtraMetricsSuffix) -->
+
+<histogram
+    name="interstitial.billing.decision{RepeatVisit}.from_client_side_detection{BillingInterstitialFromClientSideDetectionSubtype}"
+    enum="SecurityInterstitialDecision" expires_after="2027-03-28">
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User decision when presented with a billing (trick-to-bill) security
+    interstitial{RepeatVisit} that was triggered by client side detection
+    {BillingInterstitialFromClientSideDetectionSubtype}.
+  </summary>
+  <token key="RepeatVisit" variants="RepeatVisit">
+    <variant name=""/>
+  </token>
+  <token key="BillingInterstitialFromClientSideDetectionSubtype"
+      variants="BillingInterstitialFromClientSideDetectionSubtype"/>
+</histogram>
+
+<histogram
+    name="interstitial.billing.interaction.from_client_side_detection{BillingInterstitialFromClientSideDetectionSubtype}"
+    enum="SecurityInterstitialInteraction" expires_after="2027-03-28">
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User interactions with a billing (trick-to-bill) security interstitial that
+    was triggered by client side detection
+    {BillingInterstitialFromClientSideDetectionSubtype}.
+  </summary>
+  <token key="BillingInterstitialFromClientSideDetectionSubtype"
+      variants="BillingInterstitialFromClientSideDetectionSubtype"/>
+</histogram>
+
+<histogram
+    name="interstitial.billing.show_delay{TimeRange}.from_client_side_detection{BillingInterstitialFromClientSideDetectionSubtype}"
+    units="ms" expires_after="2027-03-28">
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time {TimeRange} between when the blocked page is shown and when the
+    billing (trick-to-bill) interstitial is shown. 0 if the blocked page is not
+    shown. This is specifically for billing interstitials triggered by client
+    side detection {BillingInterstitialFromClientSideDetectionSubtype}.
+  </summary>
+  <token key="TimeRange">
+    <variant name="" summary="(capped at 10 seconds)"/>
+    <variant name="_long_range" summary="(capped at 3 minutes)"/>
+  </token>
+  <token key="BillingInterstitialFromClientSideDetectionSubtype"
+      variants="BillingInterstitialFromClientSideDetectionSubtype"/>
+</histogram>
 
 <histogram name="interstitial.captive_portal"
     enum="CaptivePortalBlockingPageEvent" expires_after="2027-01-18">
