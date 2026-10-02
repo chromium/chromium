@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/app_constants/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"

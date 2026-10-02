@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_delegate.h"
-#include "chrome/browser/sync/glue/sync_start_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change.h"

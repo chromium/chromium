@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/extensions/menu_manager_factory.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
@@ -47,9 +46,19 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only the implementation needs sync_start_util; the header just holds a
+  # syncer::SyncableService::StartSyncFlare, which comes from //components/sync.
+  "app_list_syncable_service\\.cc": [
+    "+chrome/browser/sync/glue/sync_start_util.h",
+  ],
+  # The keyed service factory is the //chrome seam here.
+  "app_sync_ui_state_factory\\.cc": [
+    "+chrome/browser/sync/sync_service_factory.h",
+  ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+    "+chrome/browser/sync",
   ],
   "app_service_app_item_browsertest\\.cc": [
     "+ash/app_list/app_list_controller_impl.h",
