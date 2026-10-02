@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
@@ -143,6 +144,8 @@ public class AutofillUnitTest {
     @Test
     @SmallTest
     @Feature({"autofill"})
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/567995896")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/567995896")
     public void testAutofillClickFirstSuggestion() {
         AutofillDropdownItem[] suggestions = createTwoAutofillDropdownItemArray();
         openAutofillPopupAndWaitUntilReady(suggestions);
