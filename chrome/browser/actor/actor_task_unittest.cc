@@ -824,15 +824,16 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTab) {
 }
 
 TEST_F(ActorTaskTest, AddTab_RegistersSurfaceWithTabHandleId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kGenerateIndependentIdsForActorSurface);
+  base::test::ScopedFeatureList feature_list(kUseTabHandleAsSurfaceHandle);
   tabs::MockTabInterface mock_tab;
   AddTabAndVerify(mock_tab);
 
   ActorSurface* surface =
-      registry().Get(ActorSurfaceId(mock_tab.GetHandle().raw_value()));
+      registry().Get(ActorSurfaceHandle(mock_tab.GetHandle().raw_value()));
   ASSERT_TRUE(surface);
   EXPECT_EQ(surface->GetTabHandle(), mock_tab.GetHandle());
+  EXPECT_EQ(ActorSurfaceHandle(mock_tab.GetHandle().raw_value()).Get(),
+            surface);
 }
 
 TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {

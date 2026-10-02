@@ -17,12 +17,16 @@ class WebContents;
 
 namespace actor {
 
-// Holds either a tab handle or a headless WebContents, never both. Created and
-// mutated only by ActorSurfaceRegistry.
-class ActorSurfaceImpl : public ActorSurface {
+// Holds either a tab handle or a headless WebContents, never both. Created,
+// owned, and mutated per-profile by ActorSurfaceRegistry. Registers its
+// ActorSurfaceHandle in the process-wide lookup table on construction and
+// unregisters it on destruction to back convenient lookups via
+// ActorSurfaceHandle::Get().
+class ActorSurfaceImpl final : public ActorSurface {
  public:
-  ActorSurfaceImpl(ActorSurfaceId id, tabs::TabHandle tab);
-  ActorSurfaceImpl(ActorSurfaceId id, content::WebContents* headless_contents);
+  ActorSurfaceImpl(ActorSurfaceHandle handle, tabs::TabHandle tab);
+  ActorSurfaceImpl(ActorSurfaceHandle handle,
+                   content::WebContents* headless_contents);
 
   // Disallow copy/assign.
   ActorSurfaceImpl(const ActorSurfaceImpl&) = delete;
@@ -31,7 +35,7 @@ class ActorSurfaceImpl : public ActorSurface {
   ~ActorSurfaceImpl() override;
 
   // ActorSurface:
-  ActorSurfaceId Id() const override;
+  ActorSurfaceHandle GetHandle() const override;
   bool IsTab() const override;
   content::WebContents* GetWebContents() const override;
   std::optional<tabs::TabHandle> GetTabHandle() const override;
@@ -44,8 +48,15 @@ class ActorSurfaceImpl : public ActorSurface {
   void SetTab(tabs::TabHandle tab);
   void SetHeadless();
 
-  const ActorSurfaceId id_;
+  // Unique ID for this surface.
+  const ActorSurfaceHandle handle_;
+
+  // Set when this surface is backed by a tab; mutually exclusive with
+  // `headless_contents_`.
   std::optional<tabs::TabHandle> tab_;
+
+  // Set when this surface is backed by a headless WebContents; mutually
+  // exclusive with `tab_`.
   raw_ptr<content::WebContents> headless_contents_ = nullptr;
 };
 

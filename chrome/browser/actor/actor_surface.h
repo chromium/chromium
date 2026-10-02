@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/actor/core/actor_surface_id.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace content {
@@ -21,15 +21,26 @@ class ActorTabData;
 // An actuation surface for the actor, backed by either a visible browser tab
 // or an unparented headless WebContents.
 //
-// Lifetime contract: surfaces are owned by ActorSurfaceRegistry, which
-// destroys a surface before its backing tab or WebContents goes away. While a
-// surface is alive, GetWebContents() is always non-null.
+// Ownership and lifecycle:
+//  - Surfaces are owned per-profile by ActorSurfaceRegistry.
+//  - A surface's lifetime is strictly aligned with its backing tab or headless
+//    WebContents: ActorSurfaceRegistry observes tab detach/deletion and
+//    HeadlessWebContentsManager destruction, destroying the ActorSurface
+//    before its backing tab or WebContents goes away. A live ActorSurface
+//    never holds a dangling tab or WebContents, and GetWebContents() is always
+//    non-null.
+//  - Each live surface is registered in a process-wide lookup table on
+//    construction and unregistered on destruction, allowing
+//    ActorSurfaceHandle::Get() to safely resolve a handle to a live
+//    ActorSurface* (or nullptr once destroyed) without needing a registry
+//    reference.
 class ActorSurface {
  public:
   virtual ~ActorSurface() = default;
 
-  // Stable across promotion and demotion.
-  virtual ActorSurfaceId Id() const = 0;
+  // Unique ID for the surface. Stable across promotion and demotion, and safe
+  // to pass around since Get() returns null if the surface is destroyed.
+  virtual ActorSurfaceHandle GetHandle() const = 0;
 
   // True if this surface is currently backed by a visible browser tab.
   virtual bool IsTab() const = 0;

@@ -35,28 +35,47 @@ class ActorSurfaceTest : public ChromeRenderViewHostTestHarness {
   tabs::MockTabInterface mock_tab_;
 };
 
-TEST_F(ActorSurfaceTest, TabBacked) {
-  ActorSurfaceImpl surface(ActorSurfaceId(1), mock_tab_.GetHandle());
+TEST_F(ActorSurfaceTest, NullAndUnknownHandleReturnNull) {
+  EXPECT_TRUE(ActorSurfaceHandle().is_null());
+  EXPECT_TRUE(ActorSurfaceHandle::Null().is_null());
+  EXPECT_EQ(ActorSurfaceHandle::Null().raw_value(), 0);
+  EXPECT_EQ(ActorSurfaceHandle::Null().Get(), nullptr);
+  EXPECT_EQ(ActorSurfaceHandle(42).Get(), nullptr);
+}
 
-  EXPECT_EQ(surface.Id(), ActorSurfaceId(1));
-  EXPECT_TRUE(surface.IsTab());
-  EXPECT_EQ(surface.GetTabHandle(), mock_tab_.GetHandle());
-  EXPECT_EQ(surface.GetWebContents(), web_contents());
+TEST_F(ActorSurfaceTest, TabBacked) {
+  const ActorSurfaceHandle handle(1);
+  auto surface =
+      std::make_unique<ActorSurfaceImpl>(handle, mock_tab_.GetHandle());
+
+  EXPECT_EQ(surface->GetHandle(), handle);
+  EXPECT_EQ(handle.Get(), surface.get());
+  EXPECT_TRUE(surface->IsTab());
+  EXPECT_EQ(surface->GetTabHandle(), mock_tab_.GetHandle());
+  EXPECT_EQ(surface->GetWebContents(), web_contents());
+
+  surface.reset();
+  EXPECT_EQ(handle.Get(), nullptr);
 }
 
 TEST_F(ActorSurfaceTest, HeadlessBacked) {
-  ActorSurfaceImpl surface(ActorSurfaceId(2), web_contents());
+  const ActorSurfaceHandle handle(2);
+  auto surface = std::make_unique<ActorSurfaceImpl>(handle, web_contents());
 
-  EXPECT_EQ(surface.Id(), ActorSurfaceId(2));
-  EXPECT_FALSE(surface.IsTab());
-  EXPECT_FALSE(surface.GetTabHandle().has_value());
-  EXPECT_EQ(surface.GetWebContents(), web_contents());
+  EXPECT_EQ(surface->GetHandle(), handle);
+  EXPECT_EQ(handle.Get(), surface.get());
+  EXPECT_FALSE(surface->IsTab());
+  EXPECT_FALSE(surface->GetTabHandle().has_value());
+  EXPECT_EQ(surface->GetWebContents(), web_contents());
+
+  surface.reset();
+  EXPECT_EQ(handle.Get(), nullptr);
 }
 
 // A tab's WebContents can be swapped out, e.g. on discard. The surface must
 // follow the tab rather than hold on to the original WebContents.
 TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
-  ActorSurfaceImpl surface(ActorSurfaceId(3), mock_tab_.GetHandle());
+  ActorSurfaceImpl surface(ActorSurfaceHandle(3), mock_tab_.GetHandle());
   ASSERT_EQ(surface.GetWebContents(), web_contents());
 
   std::unique_ptr<content::WebContents> swapped = CreateTestWebContents();
@@ -66,7 +85,7 @@ TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
 }
 
 TEST_F(ActorSurfaceTest, TabBackedReturnsTabActorTabData) {
-  ActorSurfaceImpl surface(ActorSurfaceId(4), mock_tab_.GetHandle());
+  ActorSurfaceImpl surface(ActorSurfaceHandle(4), mock_tab_.GetHandle());
   auto tab_data = std::make_unique<ActorTabData>(&mock_tab_);
 
   EXPECT_EQ(surface.GetActorTabData(), tab_data.get());
@@ -74,13 +93,13 @@ TEST_F(ActorSurfaceTest, TabBackedReturnsTabActorTabData) {
 }
 
 TEST_F(ActorSurfaceTest, TabBackedWithoutActorTabDataReturnsNull) {
-  ActorSurfaceImpl surface(ActorSurfaceId(5), mock_tab_.GetHandle());
+  ActorSurfaceImpl surface(ActorSurfaceHandle(5), mock_tab_.GetHandle());
 
   EXPECT_EQ(surface.GetActorTabData(), nullptr);
 }
 
 TEST_F(ActorSurfaceTest, HeadlessReturnsNullActorTabData) {
-  ActorSurfaceImpl surface(ActorSurfaceId(6), web_contents());
+  ActorSurfaceImpl surface(ActorSurfaceHandle(6), web_contents());
 
   EXPECT_EQ(surface.GetActorTabData(), nullptr);
 }

@@ -50,6 +50,8 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  content::BrowserContext* browser_context() const { return browser_context_; }
+
   // content::WebContentsDelegate:
   void CloseContents(content::WebContents* source) override;
 

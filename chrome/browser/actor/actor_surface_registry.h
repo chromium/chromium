@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_SURFACE_REGISTRY_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_SURFACE_REGISTRY_H_
 
-#include <cstdint>
+#include <cstddef>
 #include <map>
 #include <memory>
 
@@ -39,11 +39,15 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   ActorSurfaceRegistry& operator=(const ActorSurfaceRegistry&) = delete;
   ~ActorSurfaceRegistry() override;
 
-  // Null if no surface exists.
-  ActorSurface* Get(ActorSurfaceId id) const;
+  // Profile-scoped lookups: return null if no matching surface is owned by
+  // this profile's registry. Contrast with ActorSurfaceHandle::Get(), which is
+  // process-wide and profile-agnostic.
+  ActorSurface* Get(ActorSurfaceHandle handle) const;
   ActorSurface* GetForTab(tabs::TabHandle tab) const;
   ActorSurface* GetForHeadless(const content::WebContents* contents) const;
 
+  // Returns the surface for `tab`, creating one if needed. Returns null if
+  // `tab` does not resolve to a live tab in this registry.
   ActorSurface* GetOrCreateForTab(tabs::TabHandle tab);
 
   // Creates a headless WebContents owned by the headless manager and returns
@@ -54,26 +58,27 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   ActorSurface* CreateForHeadless(content::WebContents* contents);
 
   // Reconciles registry state when a surface's backing changes; the surface
-  // keeps its ActorSurfaceId. Promotion and demotion move the same WebContents
-  // in and out of a tab, so the new backing is derived from the surface itself.
+  // keeps its ActorSurfaceHandle. Promotion and demotion move the same
+  // WebContents in and out of a tab, so the new backing is derived from the
+  // surface itself.
   //
   // Both must be called while the tab exists: after the WebContents is inserted
   // into a tab, and before it is detached from one. Detaching fires
   // WillDetach(kDelete), which destroys tab-backed surfaces.
-  void OnSurfacePromoted(ActorSurfaceId id);
-  void OnSurfaceWillBeDemoted(ActorSurfaceId id);
+  void OnSurfacePromoted(ActorSurfaceHandle handle);
+  void OnSurfaceWillBeDemoted(ActorSurfaceHandle handle);
 
-  void DestroySurface(ActorSurfaceId id);
+  void DestroySurface(ActorSurfaceHandle handle);
 
   // HeadlessWebContentsManager::Observer:
   void OnHeadlessContentsWillBeDestroyed(
       content::WebContents* contents) override;
 
-  size_t size() const { return surfaces_.size(); }
+  size_t size() const { return owned_surfaces_.size(); }
 
  private:
-  ActorSurfaceImpl* GetImpl(ActorSurfaceId id) const;
-  void StartTrackingTab(ActorSurfaceId id, tabs::TabHandle tab);
+  ActorSurfaceImpl* GetImpl(ActorSurfaceHandle handle) const;
+  void StartTrackingTab(ActorSurfaceHandle handle, tabs::TabHandle tab);
   void StopTrackingTab(tabs::TabHandle tab);
 
   // Creates and destroys the WebContents backing headless surfaces.
@@ -82,20 +87,13 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
                           HeadlessWebContentsManager::Observer>
       headless_manager_observation_{this};
 
-  // Generates a new ActorSurfaceId for each surface created by this registry.
-  // Used when kGenerateIndependentIdsForActorSurface is enabled.
-  ActorSurfaceId::Generator next_surface_id_;
+  // All surfaces owned by this profile's registry, keyed by handle.
+  std::map<ActorSurfaceHandle, std::unique_ptr<ActorSurfaceImpl>>
+      owned_surfaces_;
 
-  // Next id for a headless surface when kGenerateIndependentIdsForActorSurface
-  // is disabled. Starts well above any expected TabHandle value, since
-  // tab-backed surfaces then use their TabHandle value as their id.
-  static constexpr int32_t kFirstHeadlessSurfaceId = 1000000;
-  int32_t next_headless_surface_id_ = kFirstHeadlessSurfaceId;
+  // Surface handle for each tab-backed surface's tab.
+  std::map<tabs::TabHandle, ActorSurfaceHandle> tab_to_surface_;
 
-  // All surfaces owned by this registry, keyed by id.
-  std::map<ActorSurfaceId, std::unique_ptr<ActorSurfaceImpl>> surfaces_;
-  // Surface for each tab-backed surface's tab.
-  std::map<tabs::TabHandle, ActorSurfaceId> tab_to_surface_;
   // WillDetach subscriptions for tracked tabs.
   std::map<tabs::TabHandle, base::CallbackListSubscription> tab_subscriptions_;
 };

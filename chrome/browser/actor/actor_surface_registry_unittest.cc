@@ -41,6 +41,12 @@ class ActorSurfaceRegistryTest : public testing::Test {
         .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
           return will_detach_callbacks_.Add(std::move(callback));
         });
+    ON_CALL(mock_tab2_, GetContents())
+        .WillByDefault(Return(web_contents1_.get()));
+    ON_CALL(mock_tab2_, RegisterWillDetach(_))
+        .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
+          return will_detach_callbacks_.Add(std::move(callback));
+        });
   }
 
   void TearDown() override {
@@ -72,8 +78,34 @@ TEST_F(ActorSurfaceRegistryTest, GetOrCreateForTabIsIdempotent) {
   EXPECT_EQ(registry_->GetOrCreateForTab(tab_handle()), surface);
   EXPECT_EQ(registry_->size(), 1u);
 
-  EXPECT_EQ(registry_->Get(surface->Id()), surface);
+  EXPECT_EQ(surface->GetHandle().Get(), surface);
+  EXPECT_EQ(registry_->Get(surface->GetHandle()), surface);
   EXPECT_EQ(registry_->GetForTab(tab_handle()), surface);
+}
+
+TEST_F(ActorSurfaceRegistryTest, GetOrCreateForStaleTabReturnsNull) {
+  tabs::TabHandle stale_handle;
+  {
+    tabs::MockTabInterface transient_tab;
+    stale_handle = transient_tab.GetHandle();
+  }
+  ASSERT_EQ(stale_handle.Get(), nullptr);
+
+  EXPECT_EQ(registry_->GetOrCreateForTab(stale_handle), nullptr);
+  EXPECT_EQ(registry_->GetOrCreateForTab(tabs::TabHandle::Null()), nullptr);
+  EXPECT_EQ(registry_->size(), 0u);
+}
+
+TEST_F(ActorSurfaceRegistryTest, GetOrCreateForCrossProfileTabReturnsNull) {
+  TestingProfile other_profile;
+  std::unique_ptr<content::WebContents> other_contents =
+      content::WebContentsTester::CreateTestWebContents(&other_profile,
+                                                        nullptr);
+  tabs::MockTabInterface other_tab;
+  ON_CALL(other_tab, GetContents()).WillByDefault(Return(other_contents.get()));
+
+  EXPECT_EQ(registry_->GetOrCreateForTab(other_tab.GetHandle()), nullptr);
+  EXPECT_EQ(registry_->size(), 0u);
 }
 
 TEST_F(ActorSurfaceRegistryTest, CreateForHeadlessIsIdempotent) {
@@ -83,6 +115,7 @@ TEST_F(ActorSurfaceRegistryTest, CreateForHeadlessIsIdempotent) {
   ASSERT_TRUE(surface);
   EXPECT_FALSE(surface->IsTab());
   EXPECT_EQ(surface->GetWebContents(), contents);
+  EXPECT_EQ(surface->GetHandle().Get(), surface);
   EXPECT_EQ(registry_->CreateForHeadless(contents), surface);
   EXPECT_EQ(registry_->size(), 1u);
 
@@ -102,42 +135,46 @@ TEST_F(ActorSurfaceRegistryTest,
 
 TEST_F(ActorSurfaceRegistryTest, DestroyHeadlessSurfaceDestroysContents) {
   ActorSurface* surface = registry_->CreateHeadlessWebContents();
-  const ActorSurfaceId id = surface->Id();
+  const ActorSurfaceHandle handle = surface->GetHandle();
   content::WebContentsDestroyedWatcher watcher(surface->GetWebContents());
 
-  registry_->DestroySurface(id);
+  registry_->DestroySurface(handle);
 
-  EXPECT_EQ(registry_->Get(id), nullptr);
+  EXPECT_EQ(handle.Get(), nullptr);
+  EXPECT_EQ(registry_->Get(handle), nullptr);
   EXPECT_EQ(registry_->size(), 0u);
   EXPECT_TRUE(watcher.IsDestroyed());
 }
 
-TEST_F(ActorSurfaceRegistryTest, PromotionKeepsIdAndRetargetsLookups) {
+TEST_F(ActorSurfaceRegistryTest, PromotionKeepsHandleAndRetargetsLookups) {
   ActorSurface* surface = registry_->CreateHeadlessWebContents();
   content::WebContents* contents = surface->GetWebContents();
-  const ActorSurfaceId id = surface->Id();
+  const ActorSurfaceHandle handle = surface->GetHandle();
 
   // Promotion parents the same WebContents into a tab.
   ON_CALL(mock_tab1_, GetContents()).WillByDefault(Return(contents));
   tabs::TabLookupFromWebContents::CreateForWebContents(contents, &mock_tab1_);
-  registry_->OnSurfacePromoted(id);
+  registry_->OnSurfacePromoted(handle);
 
-  EXPECT_EQ(surface->Id(), id);
+  EXPECT_EQ(surface->GetHandle(), handle);
+  EXPECT_EQ(handle.Get(), surface);
   EXPECT_TRUE(surface->IsTab());
   EXPECT_EQ(surface->GetTabHandle(), tab_handle());
   EXPECT_EQ(surface->GetWebContents(), contents);
 
   EXPECT_EQ(registry_->GetForTab(tab_handle()), surface);
+  EXPECT_EQ(registry_->GetForTab(tab_handle())->GetHandle(), handle);
   EXPECT_EQ(registry_->GetForHeadless(contents), nullptr);
 }
 
-TEST_F(ActorSurfaceRegistryTest, DemotionKeepsIdAndRetargetsLookups) {
+TEST_F(ActorSurfaceRegistryTest, DemotionKeepsHandleAndRetargetsLookups) {
   ActorSurface* surface = registry_->GetOrCreateForTab(tab_handle());
-  const ActorSurfaceId id = surface->Id();
+  const ActorSurfaceHandle handle = surface->GetHandle();
 
-  registry_->OnSurfaceWillBeDemoted(id);
+  registry_->OnSurfaceWillBeDemoted(handle);
 
-  EXPECT_EQ(surface->Id(), id);
+  EXPECT_EQ(surface->GetHandle(), handle);
+  EXPECT_EQ(handle.Get(), surface);
   EXPECT_FALSE(surface->IsTab());
   EXPECT_EQ(surface->GetWebContents(), web_contents1_.get());
 
@@ -147,58 +184,91 @@ TEST_F(ActorSurfaceRegistryTest, DemotionKeepsIdAndRetargetsLookups) {
 
 TEST_F(ActorSurfaceRegistryTest, TabDeletionDestroysSurface) {
   ActorSurface* surface = registry_->GetOrCreateForTab(tab_handle());
-  const ActorSurfaceId id = surface->Id();
+  const ActorSurfaceHandle handle = surface->GetHandle();
 
   will_detach_callbacks_.Notify(&mock_tab1_,
                                 tabs::TabInterface::DetachReason::kDelete);
 
-  EXPECT_EQ(registry_->Get(id), nullptr);
+  EXPECT_EQ(handle.Get(), nullptr);
+  EXPECT_EQ(registry_->Get(handle), nullptr);
   EXPECT_EQ(registry_->GetForTab(tab_handle()), nullptr);
   EXPECT_EQ(registry_->size(), 0u);
 }
 
 TEST_F(ActorSurfaceRegistryTest, TabMoveBetweenWindowsKeepsSurface) {
   ActorSurface* surface = registry_->GetOrCreateForTab(tab_handle());
-  const ActorSurfaceId id = surface->Id();
+  const ActorSurfaceHandle handle = surface->GetHandle();
 
   will_detach_callbacks_.Notify(
       &mock_tab1_, tabs::TabInterface::DetachReason::kInsertIntoOtherWindow);
 
-  EXPECT_EQ(registry_->Get(id), surface);
+  EXPECT_EQ(handle.Get(), surface);
+  EXPECT_EQ(registry_->Get(handle), surface);
 }
 
-TEST_F(ActorSurfaceRegistryTest, TabSurfaceIdIsTabHandleValue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kGenerateIndependentIdsForActorSurface);
+TEST_F(ActorSurfaceRegistryTest, TabSurfaceHandleIsTabHandleValue) {
+  base::test::ScopedFeatureList feature_list(kUseTabHandleAsSurfaceHandle);
   const tabs::TabHandle tab1 = mock_tab1_.GetHandle();
   const tabs::TabHandle tab2 = mock_tab2_.GetHandle();
 
-  const ActorSurfaceId id1 = registry_->GetOrCreateForTab(tab1)->Id();
-  const ActorSurfaceId id2 = registry_->GetOrCreateForTab(tab2)->Id();
+  const ActorSurfaceHandle handle1 =
+      registry_->GetOrCreateForTab(tab1)->GetHandle();
+  const ActorSurfaceHandle handle2 =
+      registry_->GetOrCreateForTab(tab2)->GetHandle();
 
-  EXPECT_EQ(id1.value(), tab1.raw_value());
-  EXPECT_EQ(id2.value(), tab2.raw_value());
-  EXPECT_NE(id1, id2);
+  EXPECT_EQ(handle1.raw_value(), tab1.raw_value());
+  EXPECT_EQ(handle2.raw_value(), tab2.raw_value());
+  EXPECT_NE(handle1, handle2);
 }
 
-TEST_F(ActorSurfaceRegistryTest, HeadlessIdsCountUpFromOneMillion) {
+TEST_F(ActorSurfaceRegistryTest, HeadlessHandlesAreNegativeAndDistinct) {
+  base::test::ScopedFeatureList feature_list(kUseTabHandleAsSurfaceHandle);
+  const ActorSurfaceHandle first =
+      registry_->CreateHeadlessWebContents()->GetHandle();
+  const ActorSurfaceHandle second =
+      registry_->CreateHeadlessWebContents()->GetHandle();
+
+  EXPECT_LT(first.raw_value(), 0);
+  EXPECT_EQ(second.raw_value(), first.raw_value() - 1);
+}
+
+TEST_F(ActorSurfaceRegistryTest, IndependentHandlesShareOneCounter) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kGenerateIndependentIdsForActorSurface);
-  const ActorSurfaceId first = registry_->CreateHeadlessWebContents()->Id();
-  const ActorSurfaceId second = registry_->CreateHeadlessWebContents()->Id();
+  feature_list.InitAndDisableFeature(kUseTabHandleAsSurfaceHandle);
 
-  EXPECT_EQ(first.value(), 1000000);
-  EXPECT_EQ(second.value(), 1000001);
+  const ActorSurfaceHandle first =
+      registry_->GetOrCreateForTab(tab_handle())->GetHandle();
+  const ActorSurfaceHandle second =
+      registry_->CreateHeadlessWebContents()->GetHandle();
+
+  EXPECT_GT(first.raw_value(), 0);
+  EXPECT_EQ(second.raw_value(), first.raw_value() + 1);
 }
 
-TEST_F(ActorSurfaceRegistryTest, IndependentIdsShareOneCounter) {
-  base::test::ScopedFeatureList feature_list(
-      kGenerateIndependentIdsForActorSurface);
+TEST_F(ActorSurfaceRegistryTest,
+       CrossProfileHandleGetIsGlobalAndRegistryGetIsProfileScoped) {
+  TestingProfile other_profile;
+  HeadlessWebContentsManager other_headless_manager(&other_profile);
+  ActorSurfaceRegistry other_registry(&other_headless_manager);
 
-  const ActorSurfaceId first = registry_->GetOrCreateForTab(tab_handle())->Id();
-  const ActorSurfaceId second = registry_->CreateHeadlessWebContents()->Id();
+  ActorSurface* surface1 = registry_->CreateHeadlessWebContents();
+  ActorSurface* surface2 = other_registry.CreateHeadlessWebContents();
+  ASSERT_TRUE(surface1);
+  ASSERT_TRUE(surface2);
 
-  EXPECT_EQ(second.value(), first.value() + 1);
+  const ActorSurfaceHandle handle1 = surface1->GetHandle();
+  const ActorSurfaceHandle handle2 = surface2->GetHandle();
+  EXPECT_NE(handle1, handle2);
+
+  // ActorSurfaceHandle::Get() is process-wide.
+  EXPECT_EQ(handle1.Get(), surface1);
+  EXPECT_EQ(handle2.Get(), surface2);
+
+  // ActorSurfaceRegistry::Get() is scoped to its own profile's surfaces.
+  EXPECT_EQ(registry_->Get(handle1), surface1);
+  EXPECT_EQ(registry_->Get(handle2), nullptr);
+  EXPECT_EQ(other_registry.Get(handle2), surface2);
+  EXPECT_EQ(other_registry.Get(handle1), nullptr);
 }
 
 }  // namespace

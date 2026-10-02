@@ -15,11 +15,12 @@ namespace actor {
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
 
-// When disabled, a tab-backed ActorSurface uses its TabHandle value as its
-// ActorSurfaceId, and headless surfaces take ids from a separate range starting
-// at 1000000. When enabled, every surface takes the next id from one counter,
-// independent of TabHandle.
-BASE_DECLARE_FEATURE(kGenerateIndependentIdsForActorSurface);
+// Temporary migration flag: when enabled, a tab-backed ActorSurface uses its
+// TabHandle value as its ActorSurfaceHandle (> 0), and headless surfaces
+// allocate negative handles (< 0) so the two ranges never collide. When
+// disabled, every surface takes the next positive handle (> 0) from one shared
+// counter, independent of TabHandle.
+BASE_DECLARE_FEATURE(kUseTabHandleAsSurfaceHandle);
 
 BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
 
