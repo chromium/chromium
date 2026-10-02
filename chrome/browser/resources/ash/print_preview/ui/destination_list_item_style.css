@@ -4,9 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_hidden_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #include=cr-hidden-style
  * #css_wrapper_metadata_end */
 
@@ -36,7 +36,7 @@
   margin-inline-start: 1em;
 }
 
-cr-icon {
+iron-icon {
   --icon-margin: calc((var(--search-icon-size) - var(--iron-icon-width))/2);
   fill: var(--google-grey-600);
   flex: 0;
@@ -48,7 +48,7 @@ cr-icon {
 }
 
 @media (prefers-color-scheme: dark) {
-  cr-icon {
+  iron-icon {
     fill: var(--google-grey-500);
   }
 }

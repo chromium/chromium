@@ -24,7 +24,8 @@ suite('PdfZoomToolbarTest', function() {
     document.body.appendChild(zoomToolbar);
 
     fitButton = zoomToolbar.$.fitButton;
-    button = fitButton.shadowRoot.querySelector('cr-icon-button')!;
+    button = fitButton.shadowRoot.querySelector<CrIconButtonElement>(
+        'cr-icon-button')!;
   });
 
   /**

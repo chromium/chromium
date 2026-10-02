@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NativeLayerImpl, PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -73,7 +73,7 @@ suite('PrinterSetupInfoTest', function() {
     assertTrue(isChildVisible(setupInfoElement, 'cr-button'));
     assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
     assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
-    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
   });
 
   /** Verifies button text is localized. */
@@ -224,30 +224,30 @@ suite('PrinterSetupInfoTest', function() {
         PrinterSetupInfoInitiator.PREVIEW_AREA, /*startResizeObserver=*/ true);
 
     // Verify the illustration is showing initially.
-    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
 
     // Reducing the width should hide the illustration.
     parentDiv.style.width = '249px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertFalse(isChildVisible(setupInfoElement, 'iron-icon'));
 
     // Expanding the width should show the illustration.
     parentDiv.style.width = '1000px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
 
     // Reducing the height should hide the illustration.
     parentDiv.style.height = '399px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertFalse(isChildVisible(setupInfoElement, 'iron-icon'));
 
     // Expanding the height should show the illustration.
     parentDiv.style.height = '1000px';
     await waitAfterNextRender(parentDiv);
     await waitAfterNextRender(setupInfoElement);
-    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+    assertTrue(isChildVisible(setupInfoElement, 'iron-icon'));
   });
 });

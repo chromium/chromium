@@ -79,7 +79,7 @@ suite('PagesSettingsTest', function() {
 
     // Default value is all pages.
     const customInputCollapse =
-        pagesSection.shadowRoot!.querySelector('cr-collapse')!;
+        pagesSection.shadowRoot!.querySelector('iron-collapse')!;
 
     assertFalse(pagesSection.getSetting('ranges').setFromUi);
     validateState([1, 2, 3, 4, 5], [], '', false);
@@ -300,7 +300,6 @@ suite('PagesSettingsTest', function() {
     input.blur();
 
     await whenBlurred;
-    await pagesSection.$.pageSettingsCustomInput.updateComplete;
     // Blurring a blank field sets the full page range.
     assertEquals(customValue, select.value);
     validateState([1, 2, 3], [], '', false);
@@ -354,7 +353,6 @@ suite('PagesSettingsTest', function() {
     // Change the page count. Since the range was set automatically, this
     // should reset it to the new set of all pages.
     pagesSection.pageCount = 2;
-    await pagesSection.$.pageSettingsCustomInput.updateComplete;
     validateState([1, 2], [], '', false);
     assertEquals('1-2', input.value);
   });

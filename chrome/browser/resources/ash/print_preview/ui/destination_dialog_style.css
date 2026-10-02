@@ -4,9 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_hidden_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #import=./throbber.css.js
  * #include=print-preview-shared cr-hidden-style throbber
  * #css_wrapper_metadata_end */
@@ -52,7 +52,7 @@ cr-button {
   margin-inline-end: 0;
 }
 
-cr-button cr-icon {
+cr-button iron-icon {
   --iron-icon-fill-color: currentColor;
   margin-inline-start: 8px;
 }

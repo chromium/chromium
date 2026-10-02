@@ -73,7 +73,8 @@ suite('OtherOptionsSettingsTest', function() {
       assertTrue(optionSetting.value);
       assertFalse(optionSetting.setFromUi);
       element.checked = false;
-      element.fire('change');
+      element.dispatchEvent(
+          new CustomEvent('change', {composed: true, bubbles: true}));
       return eventToPromise<CustomEvent<string>>(
                  'update-checkbox-setting', otherOptionsSection)
           .then(function(event: CustomEvent<string>) {

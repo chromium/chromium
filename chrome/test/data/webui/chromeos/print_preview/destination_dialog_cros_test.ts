@@ -266,14 +266,6 @@ suite('DestinationDialogCrosTest', function() {
     nativeLayer.setSimulateNoResponseForGetPrinters(true);
     await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
-    document.body.appendChild(dialog);
-    await nativeLayer.whenCalled('getPrinterCapabilities');
-    dialog.show();
-    flush();
-
-    // Move timer forward to clear delay.
-    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
-
     // Throbber should show while still searching because there are no valid
     // destinations.
     const throbber =

@@ -37,7 +37,7 @@ suite('ScalingSettingsInteractiveTest', function() {
                 .querySelector('print-preview-number-settings-section')!.$
                 .userValue.inputElement;
         const collapse =
-            scalingSection.shadowRoot!.querySelector('cr-collapse')!;
+            scalingSection.shadowRoot!.querySelector('iron-collapse')!;
 
         assertFalse(collapse.opened);
         assertEquals(

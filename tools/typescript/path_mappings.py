@@ -57,8 +57,8 @@ def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
     (
       '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
       (
-          f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/'
-          'polymer/polymer.d.ts'
+        f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/'
+        'polymer/polymer.d.ts'
       ),
     ),
     (
@@ -162,13 +162,8 @@ def _is_browser_only_dep(dep):
 
 
 def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
-  # TODO: Update Ash Print Preview to use ash cr_elements.
-  exceptions = [
-    'chrome/browser/resources/ash/print_preview',
-    'chrome/test/data/webui/chromeos/print_preview',
-  ]
   if is_ash_target and _is_browser_only_dep(raw_dep):
-    return target_path in exceptions
+    return False
 
   is_ash_dep = isInAshFolder(raw_dep[2:])
   if not is_ash_dep or is_ash_target:

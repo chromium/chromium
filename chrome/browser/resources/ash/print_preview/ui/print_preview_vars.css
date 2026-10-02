@@ -4,7 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=vars
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 html {
@@ -21,6 +21,7 @@ html {
   --print-preview-dialog-margin: 34px;
   --cr-form-field-label-height: initial;
   --cr-form-field-label-line-height: .75rem;
+  --cr-scrollable-border-color: var(--google-grey-300);
   --destination-item-height: 32px;
   --preview-area-background-color: var(--google-grey-300);
   --iron-icon-fill-color: var(--google-grey-700);
@@ -31,18 +32,37 @@ html {
 
   /* TODO(b/290239226): Remove hard-coded and google colors after print-preview
                         is configured to use dynamic colors. */
+  --cros-sys-app-elevation-3-shadow: 0 0 16px rgba(0, 0, 0, 0.12),
+      0 16px 16px rgba(0, 0, 0, 0.24);
+  --cros-sys-base_elevated: white;
+  --cros-sys-dialog_container: white;
+  --cros-sys-highlight_text: rgba(var(--google-blue-600-rgb), 0.3);
+  --cros-sys-input_field_on_base: var(--google-grey-100);
+  --cros-sys-on_surface: var(--cr-primary-text-color);
+  --cros-sys-on_surface_variant: var(--cr-secondary-text-color);
+  --cros-sys-primary: var(--cr-focus-outline-color);
+  --cros-tooltip-background-color: rgba(var(--google-grey-900-rgb), 0.8);
+  --cros-tooltip-label-color: white;
+  --cros-tooltip-link-color: var(--cr-link-color);
   --error-status-alert: var(--google-red-600);
   --error-status-warning: #e37400;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
+    --cr-scrollable-border-color: var(--google-grey-700);
     --preview-area-background-color: var(--google-grey-700);
     --print-preview-settings-border: var(--cr-separator-line);
     --iron-icon-fill-color: var(--google-grey-500);
 
     /* TODO(b/290239226): Remove hard-coded and google colors after
                           print-preview is configured to use dynamic colors. */
+    --cros-sys-base_elevated: var(--google-grey-900-white-4-percent);
+    --cros-sys-dialog_container: var(--google-grey-900-white-4-percent);
+    --cros-sys-highlight_text: rgba(var(--google-blue-300-rgb), 0.3);
+    --cros-sys-input_field_on_base: rgba(0, 0, 0, 0.3);
+    --cros-tooltip-background-color: rgba(255, 255, 255, 0.8);
+    --cros-tooltip-label-color: var(--google-grey-900);
     --error-status-alert: var(--google-red-300);
     --error-status-warning: #fdd663;
   }

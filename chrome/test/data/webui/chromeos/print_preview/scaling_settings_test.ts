@@ -99,7 +99,7 @@ suite('ScalingSettingsTest', function() {
          ScalingType.CUSTOM) ||
         (scalingSection.getSettingValue('scalingTypePdf') ===
          ScalingType.CUSTOM);
-    const collapse = scalingSection.shadowRoot!.querySelector('cr-collapse')!;
+    const collapse = scalingSection.shadowRoot!.querySelector('iron-collapse')!;
     assertEquals(!valid, scalingInput.invalid);
     assertEquals(scalingDisplayValue, scalingInput.value);
     assertEquals(expectedCollapseOpened, collapse.opened);
@@ -127,7 +127,6 @@ suite('ScalingSettingsTest', function() {
     setDocumentPdf(true);
 
     // Default is 100
-    await scalingCrInput.updateComplete;
     validateState('100', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '100');
     assertFalse(scalingSection.getSetting('scaling').setFromUi);
     assertFalse(scalingSection.getSetting('scalingType').setFromUi);
@@ -169,7 +168,6 @@ suite('ScalingSettingsTest', function() {
 
     // Select fit to page. Should clear the invalid value.
     await selectOption(scalingSection, ScalingType.FIT_TO_PAGE.toString());
-    await scalingCrInput.updateComplete;
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAGE, '105');
 
@@ -184,7 +182,6 @@ suite('ScalingSettingsTest', function() {
 
     // Pick default scaling. This should clear the error.
     await selectOption(scalingSection, ScalingType.DEFAULT.toString());
-    await scalingCrInput.updateComplete;
     validateState('105', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '105');
 
     // Custom scaling should set to last valid.
@@ -217,7 +214,6 @@ suite('ScalingSettingsTest', function() {
         });
 
         await selectOption(scalingSection, ScalingType.CUSTOM.toString());
-        await input.updateComplete;
         await triggerInputEvent(input, '90', scalingSection);
         validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
 

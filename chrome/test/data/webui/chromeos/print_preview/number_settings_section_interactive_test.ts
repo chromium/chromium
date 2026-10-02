@@ -30,7 +30,6 @@ suite('NumberSettingsSectionInteractiveTest', function() {
     // Initial value is 10.
     const crInput = numberSettings.getInput();
     const input = crInput.inputElement;
-    await crInput.updateComplete;
     assertEquals('10', input.value);
 
     // Set something invalid in the input.
@@ -42,7 +41,6 @@ suite('NumberSettingsSectionInteractiveTest', function() {
     // Blurring the input does not clear it or clear the error if there
     // is an explicit invalid value.
     input.blur();
-    await crInput.updateComplete;
     assertEquals('0', input.value);
     assertTrue(crInput.invalid);
 
@@ -55,7 +53,6 @@ suite('NumberSettingsSectionInteractiveTest', function() {
 
     // Blurring the input clears it to the default when it is empty.
     input.blur();
-    await crInput.updateComplete;
     assertEquals('50', input.value);
     assertFalse(crInput.invalid);
   });

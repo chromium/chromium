@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './number_settings_section.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';

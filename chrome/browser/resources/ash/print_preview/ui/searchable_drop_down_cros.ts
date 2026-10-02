@@ -18,16 +18,16 @@
  * non-CrOS platforms. DO NOT add new uses of this element in non-CrOS Print
  * Preview.
  */
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import type {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

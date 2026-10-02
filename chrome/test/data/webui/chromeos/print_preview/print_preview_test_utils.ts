@@ -4,8 +4,8 @@
 
 import type {CapabilitiesResponse, Cdd, ColorOption, DpiOption, DuplexOption, ExtensionDestinationInfo, LocalDestinationInfo, MediaSizeCapability, MediaSizeOption, MediaTypeOption, NativeInitialSettings, PageOrientationOption} from 'chrome://print/print_preview.js';
 import {DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, MeasurementSystemUnitType, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -380,9 +380,6 @@ export async function triggerInputEvent(
     inputElement: HTMLInputElement|CrInputElement, input: string,
     parentElement: HTMLElement): Promise<Event> {
   inputElement.value = input;
-  if (inputElement.tagName === 'CR-INPUT') {
-    await (inputElement as CrInputElement).updateComplete;
-  }
   inputElement.dispatchEvent(
       new CustomEvent('input', {composed: true, bubbles: true}));
   return await eventToPromise('input-change', parentElement);

@@ -34,7 +34,7 @@ suite('DuplexSettingsTest', function() {
   // Tests that making short edge unavailable prevents the collapse from
   // showing.
   test('short edge unavailable', function() {
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     duplexSection.setSetting('duplex', true);
     assertTrue(collapse.opened);
 
@@ -47,7 +47,7 @@ suite('DuplexSettingsTest', function() {
   // Tests that setting the setting updates the UI.
   test('set setting', () => {
     const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
 
@@ -66,7 +66,7 @@ suite('DuplexSettingsTest', function() {
   // updates the setting.
   test('select option', async () => {
     const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
-    const collapse = duplexSection.shadowRoot!.querySelector('cr-collapse')!;
+    const collapse = duplexSection.shadowRoot!.querySelector('iron-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
     assertFalse(duplexSection.getSettingValue('duplex') as boolean);
@@ -75,7 +75,8 @@ suite('DuplexSettingsTest', function() {
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
     checkbox.checked = true;
-    checkbox.fire('change');
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {composed: true, bubbles: true}));
     assertTrue(collapse.opened);
     assertTrue(duplexSection.getSettingValue('duplex') as boolean);
     assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);

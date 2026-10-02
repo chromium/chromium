@@ -79,7 +79,7 @@
       disabled="[[controlsDisabled_]]"
       hidden$="[[!shouldShowMoreSettings_]]">
   </print-preview-more-settings>
-  <cr-collapse id="moreSettings"
+  <iron-collapse id="moreSettings"
       opened="[[shouldExpandSettings_(
           settingsExpandedByUser_, shouldShowMoreSettings_)]]">
     <print-preview-media-size-settings settings="[[settings]]"
@@ -141,7 +141,7 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-  </cr-collapse>
+  </iron-collapse>
   <div class="cr-scrollable-bottom-shadow"></div>
 </div>
 <print-preview-button-strip destination="[[destination]]"

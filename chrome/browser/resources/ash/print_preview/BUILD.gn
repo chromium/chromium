@@ -89,6 +89,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "ui/cr_scrollable.css",
     "ui/destination_dialog_style.css",
     "ui/destination_list_item_style.css",
     "ui/destination_select_style.css",
@@ -98,7 +99,6 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "ui/icons.html" ]
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [
@@ -109,9 +109,9 @@ build_webui("build") {
   ]
 
   ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 

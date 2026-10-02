@@ -108,7 +108,7 @@ suite('AdvancedItemTest', function() {
 
   // Test that an input capability updates correctly when the setting is
   // updated (e.g. when sticky settings are set).
-  test('UpdateInput', async () => {
+  test('UpdateInput', () => {
     // Create capability
     item.capability = getCddTemplateWithAdvancedSettings(3, 'FooDevice')
                           .capabilities!.printer.vendor_capability![2]!;
@@ -120,7 +120,6 @@ suite('AdvancedItemTest', function() {
 
     // Update the setting.
     item.set('settings.vendorItems.value', {watermark: 'ABCD'});
-    await input.updateComplete;
     assertEquals('ABCD', input.inputElement.value);
   });
 
