@@ -359,11 +359,33 @@ class ContextualSearchSessionHandle {
                           CreateSearchUrlRequestInfo> search_url_request_info,
       base::OnceCallback<void(GURL)> callback);
 
-  // Returns the client to aim message for a new query for posting.
+  // Returns the client to aim message for a new query for posting. Equivalent
+  // to calling `TakeRemovedContexts()` and `MarkQuerySubmitted()` and then
+  // building the request from the controller.
   lens::ClientToAimMessage CreateClientToAimRequest(
       std::unique_ptr<contextual_search::ContextualSearchContextController::
                           CreateClientToAimRequestInfo>
           create_client_to_aim_request_info);
+
+  // Returns the request IDs of contexts removed since the last query that the
+  // server has not yet been told about: contexts dropped by a Smart Tab Sharing
+  // toggle, and persisted tabs that were deselected, closed, or navigated away
+  // from their uploaded page. Clears the returned contexts from this handle, so
+  // each removal is only reported once. Callers that submit queries outside of
+  // `CreateClientToAimRequest()` must call this on every submission and
+  // forward the result to the server as removed contexts.
+  std::vector<lens::LensOverlayRequestId> TakeRemovedContexts();
+
+  // Records that a query was submitted with `file_tokens` plus any uploaded
+  // context tokens not already in `file_tokens`. Moves submitted tabs into
+  // `persisted_tabs_`, clears `uploaded_context_tokens_`, appends to the
+  // submitted context tokens, and records query metrics when
+  // `query_text_length` is provided. Returns the full list of submitted
+  // tokens in upload order. Callers that submit queries outside of
+  // `CreateClientToAimRequest()` must call this on every submission.
+  std::vector<base::UnguessableToken> MarkQuerySubmitted(
+      std::vector<base::UnguessableToken> file_tokens,
+      std::optional<size_t> query_text_length);
 
   // Returns the list of uploaded but not yet committed context tokens for this
   // particular instance of the session.

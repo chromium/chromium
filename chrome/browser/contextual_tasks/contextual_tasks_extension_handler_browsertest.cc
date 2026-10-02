@@ -40,6 +40,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/permissions/request_type.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -828,8 +829,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   EXPECT_CALL(*mock_session_handle_,
               StartTabContextUploadFlow(token, testing::_, testing::_))
       .Times(1);
+  // Submission also refreshes the context library chip state, so only wait for
+  // the on_submit_query_response message.
   EXPECT_CALL(mock_page_, PostSearchMessage(testing::_))
-      .WillOnce(base::test::RunClosure(submit_run_loop.QuitClosure()));
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (message.has_value() && message->has_on_submit_query_response()) {
+          submit_run_loop.Quit();
+        }
+      });
 
   lens::SearchToClientMessage search_message;
   search_message.mutable_on_submit_query_request();
@@ -2178,6 +2186,96 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
+}
+
+// Deselection of previously submitted tabs is tracked only with context
+// management enabled.
+class ContextualTasksExtensionHandlerContextManagementBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTestBase {
+ public:
+  ContextualTasksExtensionHandlerContextManagementBrowserTest()
+      : ContextualTasksExtensionHandlerBrowserTestBase(
+            {kContextualTasks, kContextualTasksRearchitecture,
+             kContextualTasksForceEntryPointEligibility,
+             omnibox::kContextManagementInComposebox},
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextManagementBrowserTest,
+    OnWebviewMessage_OnSubmitQueryRequest_ReportsRemovedTabAndMarksSubmitted) {
+  contextual_search::FileInfo file_info;
+  file_info.file_token = base::UnguessableToken::Create();
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(4242);
+  file_info.request_id = req_id;
+  AttachActiveTab(file_info.file_token);
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{file_info}));
+
+  // A tab submitted in an earlier turn that the user has since deselected is
+  // pending removal on the server.
+  const SessionID deselected_session_id = SessionID::FromSerializedValue(777);
+  lens::LensOverlayRequestId removed_req_id;
+  removed_req_id.set_uuid(777);
+  mock_session_handle_->set_persisted_tabs(
+      {{deselected_session_id,
+        {base::UnguessableToken::Create(), removed_req_id}}});
+  mock_session_handle_->set_deselected_tabs_urls(
+      {{deselected_session_id, {GURL("https://example.com/old"), "Old"}}});
+
+  auto submit =
+      [&](base::OnceCallback<void(
+              const lens::ClientToSearchMessage::OnSubmitQueryResponse&)>
+              on_response) {
+        base::RunLoop run_loop;
+        EXPECT_CALL(mock_page_, PostSearchMessage(_))
+            .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+              auto message = wrapper.As<lens::ClientToSearchMessage>();
+              if (!message.has_value() ||
+                  !message->has_on_submit_query_response() || !on_response) {
+                return;
+              }
+              std::move(on_response).Run(message->on_submit_query_response());
+              run_loop.Quit();
+            });
+        lens::SearchToClientMessage request;
+        request.mutable_on_submit_query_request();
+        const size_t size = request.ByteSizeLong();
+        std::vector<uint8_t> serialized_message(size);
+        request.SerializeToArray(serialized_message.data(), size);
+        SimulateUserInteraction();
+        handler_->OnWebviewMessage(serialized_message);
+        run_loop.Run();
+        testing::Mock::VerifyAndClearExpectations(&mock_page_);
+      };
+
+  // First turn: the uploaded tab is added and the deselected tab is reported
+  // as removed.
+  submit(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage::OnSubmitQueryResponse& response) {
+        ASSERT_EQ(1, response.added_contexts_size());
+        EXPECT_EQ(4242u, response.added_contexts(0).request_id().uuid());
+        ASSERT_EQ(1, response.removed_contexts_size());
+        EXPECT_EQ(777u, response.removed_contexts(0).request_id().uuid());
+      }));
+
+  // Submission moves the uploaded token into the submitted set and persisted
+  // tabs, and drops the reported tab so its removal is only sent once.
+  EXPECT_TRUE(mock_session_handle_->GetUploadedContextTokens().empty());
+  EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
+              testing::ElementsAre(file_info.file_token));
+  EXPECT_TRUE(mock_session_handle_->has_submitted_context());
+  EXPECT_FALSE(
+      mock_session_handle_->persisted_tabs().contains(deselected_session_id));
+
+  // Second turn: nothing new was uploaded or removed.
+  submit(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage::OnSubmitQueryResponse& response) {
+        EXPECT_EQ(0, response.added_contexts_size());
+        EXPECT_EQ(0, response.removed_contexts_size());
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(
