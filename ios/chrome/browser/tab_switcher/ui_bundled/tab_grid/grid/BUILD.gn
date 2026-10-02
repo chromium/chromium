@@ -248,6 +248,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",

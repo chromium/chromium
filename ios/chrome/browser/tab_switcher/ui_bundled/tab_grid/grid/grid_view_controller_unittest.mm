@@ -6,10 +6,12 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller+Testing.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
@@ -254,4 +256,22 @@ TEST_F(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   [view_controller_
               replaceItem:[[GridItemIdentifier alloc] initWithTabItem:item_b]
       withReplacementItem:[[GridItemIdentifier alloc] initWithTabItem:item]];
+}
+
+// Tests that setting contentInsets translates physical left/right to
+// directional leading/trailing respecting RTL.
+TEST_F(BaseGridViewControllerTest, ContentInsetsRespectRTL) {
+  GridLayout* grid_layout = base::apple::ObjCCastStrict<GridLayout>(
+      view_controller_.collectionView.collectionViewLayout);
+  ASSERT_TRUE(grid_layout);
+
+  UIEdgeInsets insets = UIEdgeInsetsMake(10, 20, 30, 40);
+  view_controller_.contentInsets = insets;
+
+  EXPECT_EQ(view_controller_.collectionView.contentInset.top, 10);
+  EXPECT_EQ(view_controller_.collectionView.contentInset.bottom, 30);
+  const CGFloat expected_leading = UseRTLLayout() ? insets.right : insets.left;
+  const CGFloat expected_trailing = UseRTLLayout() ? insets.left : insets.right;
+  EXPECT_EQ(grid_layout.sectionInsets.leading, expected_leading);
+  EXPECT_EQ(grid_layout.sectionInsets.trailing, expected_trailing);
 }
