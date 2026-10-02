@@ -199,6 +199,15 @@ void PasswordManualFallbackFlow::OnSuggestionsShown(
       password_manager_driver_, field_id_.renderer_id);
   manual_fallback_metrics_recorder_->OnDidShowSuggestions(
       IsTriggerFieldRelevantInPasswordForm(form));
+
+  if (std::ranges::contains(suggestions,
+                            autofill::SuggestionType::kWebauthnPasskeyQrCode,
+                            &Suggestion::type)) {
+    if (autofill::PasswordManagerDelegate* password_manager_delegate =
+            password_manager_driver_->GetPasswordManagerDelegate()) {
+      password_manager_delegate->OnWebauthnInlineQrCodeSuggestionShown();
+    }
+  }
 }
 
 void PasswordManualFallbackFlow::OnSuggestionsHidden(
