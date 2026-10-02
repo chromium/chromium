@@ -9,6 +9,10 @@ import mojom.generate.module as mojom
 from mojom.generate.template_expander import UseJinja
 from generators.mojom_js_generator import JavaScriptStylizer
 
+# Supported features, design decisions, trade-offs, and known quirks of the
+# generated Fuzzilli profiles are documented in
+# //testing/libfuzzer/research/fuzzilli_mojom_fuzzing/README.md.
+
 GENERATOR_PREFIX = "fuzzilli"
 # Map primitive predicates to (fuzzilli type representation, type name). Type
 # name refers to the name used for arrays and maps (e.g. jsInt64MojoArray).
