@@ -20,6 +20,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 0
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 0
           }
         }
       },
@@ -39,6 +42,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 0
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 1
           }
         }
       },
@@ -58,6 +64,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 1
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
           }
         }
       },
@@ -75,6 +84,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "default_value": 0
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "default_value": 0
           }
         }
       },
@@ -84,7 +96,8 @@
           "AIModeSettings": 1,
           "ThirdPartyAiChatSettings": 1,
           "LensOverlaySettings": 1,
-          "SearchContentSharingSettings": 1
+          "SearchContentSharingSettings": 1,
+          "AutofillGenAiSettings": 1
         },
         "prefs": {
           "omnibox.ai_mode_settings": {
@@ -97,17 +110,22 @@
             "value": 1
           },
           "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
             "value": 1
           }
         }
       },
       {
+        "note": "Unlike on desktop, the iOS handler list does not route GenAiDefaultSettings to browser.gemini_settings, so GenAiDefaultSettings = 2 does not disable the Gemini app and an explicit AutofillGenAiSettings = 1 takes effect for Find and Fill with Gemini.",
         "policies": {
           "GenAiDefaultSettings": 2,
           "AIModeSettings": 1,
           "ThirdPartyAiChatSettings": 1,
           "LensOverlaySettings": 1,
-          "SearchContentSharingSettings": 1
+          "SearchContentSharingSettings": 1,
+          "AutofillGenAiSettings": 1
         },
         "prefs": {
           "omnibox.ai_mode_settings": {
@@ -120,6 +138,9 @@
             "value": 1
           },
           "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          },
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
             "value": 1
           }
         }
