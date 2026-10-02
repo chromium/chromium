@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -518,12 +520,16 @@ void AudioDecoderAndroid::OnBufferDecoded(
             config_.channel_number, config_.samples_per_second, input_frames,
             pool_);
     buffer->set_timestamp(base::TimeDelta());
-    const int channel_data_size = input_frames * sizeof(float);
+    const size_t channel_data_size = input_frames * sizeof(float);
+    // TODO(crbug.com/567978202): Spanify `CastDecoderBuffer` and
+    // `DecoderBufferBase`.
+    base::span<const uint8_t> decoded_data =
+        UNSAFE_TODO(base::span(decoded->data(), decoded->data_size()));
     for (int c = 0; c < config_.channel_number; ++c) {
-      UNSAFE_TODO(memcpy(buffer->channel_data()[c],
-                         decoded->data() + c * channel_data_size,
-                         channel_data_size));
+      buffer->planar_channel(c).copy_from_nonoverlapping(
+          decoded_data.take_first(channel_data_size));
     }
+    CHECK(decoded_data.empty());
 
     rate_shifter_->EnqueueBuffer(buffer);
     rate_shifter_info_.back().input_frames += input_frames;
