@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.device_dialog;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
@@ -16,6 +19,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
+import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.hid.HidManager;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -43,6 +48,14 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback {
+    private static final String TAG = "HidChooserDialog";
+
+    // Intent action for Android Special App Access to HID devices.
+    // Defined as a string literal because the platform constant is unreleased in the public
+    // Android SDK.
+    private static final String ACTION_MANAGE_APP_ACCESS_HID =
+            "android.settings.MANAGE_APP_ACCESS_HID";
+
     /** The dialog to show to let the user pick a device. */
     private @Nullable ItemChooserDialog mItemChooserDialog;
 
@@ -189,37 +202,87 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         String titleText =
                 activity.getString(R.string.hid_system_permission_explanation_dialog_title);
         String productName = ApkInfo.getHostPackageLabel();
-        String bodyText =
-                activity.getString(
-                        R.string.hid_system_permission_explanation_dialog_body, productName);
-        String positiveButtonText = activity.getString(R.string.ok);
 
-        PropertyModel dialogModel =
+        Intent settingsIntent =
+                new Intent(ACTION_MANAGE_APP_ACCESS_HID)
+                        .setData(Uri.parse("package:" + activity.getPackageName()));
+
+        boolean canDirectLink = PackageManagerUtils.canResolveActivity(settingsIntent);
+
+        PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(
-                                ModalDialogProperties.CONTROLLER,
-                                new ModalDialogProperties.Controller() {
-                                    @Override
-                                    public void onClick(
-                                            PropertyModel model, @ButtonType int buttonType) {
+                        .with(ModalDialogProperties.TITLE, titleText);
+
+        if (canDirectLink) {
+            String bodyText =
+                    activity.getString(
+                            R.string.hid_system_permission_explanation_dialog_body_direct,
+                            productName);
+            dialogModelBuilder
+                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
+                    .with(
+                            ModalDialogProperties.BUTTON_STYLES,
+                            ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                    .with(
+                            ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                            activity.getString(R.string.settings))
+                    .with(
+                            ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                            activity.getString(R.string.cancel))
+                    .with(
+                            ModalDialogProperties.CONTROLLER,
+                            new ModalDialogProperties.Controller() {
+                                @Override
+                                public void onClick(
+                                        PropertyModel model, @ButtonType int buttonType) {
+                                    if (buttonType == ButtonType.POSITIVE) {
+                                        try {
+                                            activity.startActivity(settingsIntent);
+                                        } catch (ActivityNotFoundException | SecurityException e) {
+                                            Log.w(TAG, "Failed to launch HID settings intent", e);
+                                        }
                                         modalDialogManager.dismissDialog(
                                                 model,
                                                 DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                    } else {
+                                        modalDialogManager.dismissDialog(
+                                                model,
+                                                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                                     }
+                                }
 
-                                    @Override
-                                    public void onDismiss(
-                                            PropertyModel model, int dismissalCause) {}
-                                })
-                        .with(ModalDialogProperties.TITLE, titleText)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
-                        .with(
-                                ModalDialogProperties.BUTTON_STYLES,
-                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
-                        .build();
+                                @Override
+                                public void onDismiss(PropertyModel model, int dismissalCause) {}
+                            });
+        } else {
+            String bodyText =
+                    activity.getString(
+                            R.string.hid_system_permission_explanation_dialog_body, productName);
+            dialogModelBuilder
+                    .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
+                    .with(
+                            ModalDialogProperties.BUTTON_STYLES,
+                            ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                    .with(
+                            ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                            activity.getString(R.string.ok))
+                    .with(
+                            ModalDialogProperties.CONTROLLER,
+                            new ModalDialogProperties.Controller() {
+                                @Override
+                                public void onClick(
+                                        PropertyModel model, @ButtonType int buttonType) {
+                                    modalDialogManager.dismissDialog(
+                                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                }
 
-        modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
+                                @Override
+                                public void onDismiss(PropertyModel model, int dismissalCause) {}
+                            });
+        }
+
+        modalDialogManager.showDialog(
+                dialogModelBuilder.build(), ModalDialogManager.ModalDialogType.APP);
     }
 
     @CalledByNative
