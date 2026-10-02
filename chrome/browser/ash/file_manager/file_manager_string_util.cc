@@ -233,8 +233,6 @@ void AddStringsForDrive(base::DictValue* dict) {
              IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL);
   SET_STRING("SYNC_SERVICE_UNAVAILABLE_ERROR",
              IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
-  SET_STRING("DRIVE_MANAGE_MIRRORSYNC",
-             IDS_FILE_BROWSER_DRIVE_MANAGE_MIRRORSYNC_LABEL);
   SET_STRING("GOOGLE_DRIVE_SETTINGS_LINK",
              IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL);
   SET_STRING("DRIVE_MULTIPLE_FILES_SYNCING",
@@ -1316,8 +1314,6 @@ void AddFileManagerFeatureStrings(
             ash::features::IsFilesLocalImageSearchEnabled());
   dict->Set("FILES_TRASH_DRIVE_ENABLED",
             base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
-
-  dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
   dict->Set("GUEST_OS", true);
 

@@ -2384,12 +2384,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kNewFilesPolicyUX);
   }
 
-  if (options.enable_mirrorsync) {
-    enabled_features.push_back(ash::features::kDriveFsMirroring);
-  } else {
-    disabled_features.push_back(ash::features::kDriveFsMirroring);
-  }
-
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =
@@ -3781,11 +3775,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isBannersFrameworkEnabled") {
     *output = base::ToString(options.enable_banners_framework);
-    return;
-  }
-
-  if (name == "isMirrorSyncEnabled") {
-    *output = base::ToString(options.enable_mirrorsync);
     return;
   }
 

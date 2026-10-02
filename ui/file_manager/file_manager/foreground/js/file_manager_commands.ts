@@ -17,7 +17,7 @@ import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandR
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
@@ -1825,25 +1825,6 @@ export class ManageInDriveCommand extends FilesCommand {
     // Run async, otherwise.
     actionsController.getActionsForEntries(entries).then(
         canExecuteManageInDrive);
-  }
-}
-
-/**
- * Opens the Manage MirrorSync dialog if the flag is enabled.
- */
-export class ManageMirrorsyncCommand extends FilesCommand {
-  execute(_event: CommandEvent, _fileManager: CommandHandlerDeps) {
-    chrome.fileManagerPrivate.openManageSyncSettings();
-  }
-
-  override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
-    // MirrorSync is only available to sync local directories, only show the
-    // folder when navigated to a local directory.
-    const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    event.canExecute = (currentRootType === RootType.MY_FILES ||
-                        currentRootType === RootType.DOWNLOADS) &&
-        isMirrorSyncEnabled();
-    event.command.setHidden(!event.canExecute);
   }
 }
 

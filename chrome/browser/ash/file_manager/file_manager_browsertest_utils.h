@@ -83,8 +83,6 @@ struct TestCase {
 
   TestCase& EnableArcVm();
 
-  TestCase& EnableMirrorSync();
-
   TestCase& EnableFileTransferConnector();
 
   TestCase& EnableFileTransferConnectorNewUX();

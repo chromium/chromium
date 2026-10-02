@@ -1238,10 +1238,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableGenericDocumentsProvider()
             .FeatureIds({"screenplay-56f7e10e-b7ba-4425-b397-14ce54d670dc"}),
         TestCase("openHelpPageFromDownloadsVolume"),
-        TestCase("openHelpPageFromDriveVolume"),
-        TestCase("showManageMirrorSyncShowsOnlyInLocalRoot"),
-        TestCase("showManageMirrorSyncShowsOnlyInLocalRoot")
-            .EnableMirrorSync()));
+        TestCase("openHelpPageFromDriveVolume")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.ts */

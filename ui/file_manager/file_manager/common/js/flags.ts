@@ -31,13 +31,6 @@ export function isCrosComponentsEnabled() {
   return isFlagEnabled('CROS_COMPONENTS');
 }
 
-/**
- * Returns true if DriveFsMirroring flag is enabled.
- */
-export function isMirrorSyncEnabled() {
-  return isFlagEnabled('DRIVEFS_MIRRORING');
-}
-
 export function isGoogleOneOfferFilesBannerEligibleAndEnabled() {
   return isFlagEnabled('ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER');
 }

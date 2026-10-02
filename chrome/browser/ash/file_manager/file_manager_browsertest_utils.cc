@@ -126,11 +126,6 @@ TestCase& TestCase::EnableArcVm() {
   return *this;
 }
 
-TestCase& TestCase::EnableMirrorSync() {
-  options.enable_mirrorsync = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableFileTransferConnector() {
   options.enable_file_transfer_connector = true;
   return *this;
@@ -256,10 +251,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_drive_trash) {
     full_name += "_DriveTrash";
-  }
-
-  if (options.enable_mirrorsync) {
-    full_name += "_MirrorSync";
   }
 
   if (options.file_transfer_connector_report_only) {

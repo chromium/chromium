@@ -180,9 +180,6 @@ class FileManagerBrowserTestBase
     // Whether test should run with ARCVM enabled.
     bool enable_arc_vm = false;
 
-    // Whether test should run with the DriveFsMirroring flag.
-    bool enable_mirrorsync = false;
-
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
 
