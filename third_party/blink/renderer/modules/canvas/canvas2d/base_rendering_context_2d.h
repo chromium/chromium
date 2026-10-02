@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -57,6 +58,7 @@ namespace blink {
 class Canvas2DResourceProvider;
 class Canvas2DBitmapProvider;
 class CanvasContextCreationAttributesCore;
+class CanvasImageProvider;
 class CanvasRenderingContext2DSettings;
 class DrawElementImageOptions;
 class ExceptionState;
@@ -79,7 +81,8 @@ class MODULES_EXPORT BaseRenderingContext2D
     : public CanvasRenderingContext,
       public Canvas2DRecorderContext,
       public MemoryManagedPaintRecorder::Client,
-      public FlushForImageObserver {
+      public FlushForImageObserver,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
@@ -386,7 +389,17 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   scoped_refptr<StaticBitmapImage> UnacceleratedSnapshot();
 
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
+
+  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
+
   std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
+  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
+  // Even when using a software bitmap provider, it may be called upon to
+  // rasterize a texture-backed resource, and that resource must be bound to a
+  // gpu context for the current thread.
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   cc::PaintImage::Id sw_snapshot_paint_image_id_ = cc::PaintImage::kInvalidId;
   cc::PaintImage::ContentId sw_snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;

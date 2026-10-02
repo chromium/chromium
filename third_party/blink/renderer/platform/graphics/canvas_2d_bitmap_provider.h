@@ -13,7 +13,6 @@
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -28,10 +27,6 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace trace_event {
-class ProcessMemoryDump;
-}  // namespace trace_event
-
 namespace blink {
 
 class CanvasImageProvider;
@@ -41,8 +36,7 @@ class CanvasImageProvider;
 // as a last-case resort when it is not possible to create
 // Canvas2DResourceProvider.
 class PLATFORM_EXPORT Canvas2DBitmapProvider final
-    : public CanvasMemoryDumpClient,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+    : public CanvasMemoryDumpClient {
  public:
   // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DBitmapProvider> CreateWithClear(
@@ -52,38 +46,26 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
       const gfx::ColorSpace& color_space,
       CanvasResourceProviderDelegate* delegate = nullptr);
 
-  ~Canvas2DBitmapProvider() override;
+  ~Canvas2DBitmapProvider();
 
-  void RasterRecord(cc::PaintRecord last_recording);
+  void RasterRecord(cc::PaintRecord last_recording,
+                    CanvasImageProvider* image_provider);
   SkSurface* surface() const { return surface_.get(); }
 
  private:
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
-                         viz::SharedImageFormat format,
-                         const gfx::ColorSpace& color_space,
                          CanvasResourceProviderDelegate* delegate);
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
+  void ApplyAnimatedImageFrameIndexesForId(CanvasImageProvider* image_provider,
+                                           SkCanvas* canvas,
+                                           uint32_t id);
 
-  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
-
-  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
-
-  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  viz::SharedImageFormat format_;
-  gfx::ColorSpace color_space_;
   WeakPersistent<CanvasResourceProviderDelegate> delegate_;
   const sk_sp<SkSurface> surface_;
-
-  // Even though this is a bitmap provider, it may be called upon to rasterize a
-  // texture-backed resource, and that resource must be bound to a gpu context
-  // for the current thread.
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
 
 }  // namespace blink

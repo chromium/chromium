@@ -21,11 +21,10 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -37,22 +36,14 @@ namespace blink {
 
 Canvas2DBitmapProvider::Canvas2DBitmapProvider(
     sk_sp<SkSurface> surface,
-    viz::SharedImageFormat format,
-    const gfx::ColorSpace& color_space,
     CanvasResourceProviderDelegate* delegate)
-    : format_(format),
-      color_space_(color_space),
-      delegate_(delegate),
-      surface_(std::move(surface)) {
+    : delegate_(delegate), surface_(std::move(surface)) {
   CHECK(surface_);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
 Canvas2DBitmapProvider::~Canvas2DBitmapProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
 }
 
 void Canvas2DBitmapProvider::OnMemoryDump(
@@ -80,63 +71,31 @@ size_t Canvas2DBitmapProvider::GetSize() const {
   return info.computeByteSize(info.minRowBytes());
 }
 
-void Canvas2DBitmapProvider::OnContextDestroyed() {
-  canvas_image_provider_ = nullptr;
-}
-
-CanvasImageProvider*
-Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
-  }
-
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-  }
-
-  cc::ImageDecodeCache* cache_rgba8 =
-      &Image::SharedCCDecodeCache(kN32_SkColorType);
-
-  if (!context_provider_wrapper_) {
-    context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-    if (context_provider_wrapper_) {
-      context_provider_wrapper_->AddObserver(this);
-    }
-  }
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, color_space_, format_,
-      cc::PlaybackImageProvider::RasterMode::kSoftware,
-      context_provider_wrapper_);
-
-  return canvas_image_provider_.get();
-}
-
 void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
+    CanvasImageProvider* image_provider,
     SkCanvas* canvas,
     uint32_t id) {
   CHECK(delegate_);
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(
+  CHECK(image_provider);
+  image_provider->SetAnimatedImageFrameIndexes(
       delegate_->GetAnimatedImageFrameIndexes(id));
 }
 
-void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
-  cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
-                                  GetOrCreateSWCanvasImageProvider());
+void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording,
+                                          CanvasImageProvider* image_provider) {
+  cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(), image_provider);
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   if (delegate_) {
-    // base::Unretained(this) is safe here because the callback will only be
-    // invoked during the scope of skia_canvas.drawPicture().
+    // base::Unretained(this) and base::Unretained(image_provider) are safe here
+    // because the callback will only be invoked during the scope of
+    // skia_canvas.drawPicture().
     custom_callback = base::BindRepeating(
         &Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId,
-        base::Unretained(this));
+        base::Unretained(this), base::Unretained(image_provider));
   }
   skia_canvas.drawPicture(std::move(last_recording), custom_callback);
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
+  image_provider->ReleaseLockedImages();
+  image_provider->UnbindTextureBackedImages();
 }
 
 std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
@@ -158,8 +117,8 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
   surface->getCanvas()->clear(
       alpha_type == kOpaque_SkAlphaType ? SkColors::kBlack
                                         : SkColors::kTransparent);
-  return base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-      std::move(surface), format, color_space, delegate));
+  return base::WrapUnique<Canvas2DBitmapProvider>(
+      new Canvas2DBitmapProvider(std::move(surface), delegate));
 }
 
 }  // namespace blink
