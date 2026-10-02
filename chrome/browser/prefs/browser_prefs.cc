@@ -1066,6 +1066,10 @@ inline constexpr char kNearbyPresenceSchedulingDownloadPrefName[] =
     "nearby_presence.scheduling.download";
 inline constexpr char kNearbyPresenceSchedulingCredentialDailySyncPrefName[] =
     "nearby_presence.scheduling.daily_sync";
+inline constexpr char kHatsBluetoothRevampCycleEndTs[] =
+    "hats_bluetooth_revamp_cycle_end_timestamp";
+inline constexpr char kHatsBluetoothRevampIsSelected[] =
+    "hats_bluetooth_revamp_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1520,6 +1524,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kNearbyPresenceSchedulingDownloadPrefName);
   registry->RegisterDictionaryPref(
       kNearbyPresenceSchedulingCredentialDailySyncPrefName);
+  registry->RegisterInt64Pref(kHatsBluetoothRevampCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsBluetoothRevampIsSelected, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2923,6 +2929,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNearbyPresenceSchedulingDownloadPrefName);
   profile_prefs->ClearPref(
       kNearbyPresenceSchedulingCredentialDailySyncPrefName);
+  profile_prefs->ClearPref(kHatsBluetoothRevampCycleEndTs);
+  profile_prefs->ClearPref(kHatsBluetoothRevampIsSelected);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

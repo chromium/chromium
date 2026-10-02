@@ -3559,16 +3559,6 @@ inline constexpr char kHatsBluetoothAudioDeviceIsSelected[] =
     "hats_bluetooth_audio_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the Bluetooth revamp experience survey.
-inline constexpr char kHatsBluetoothRevampCycleEndTs[] =
-    "hats_bluetooth_revamp_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the HaTS Bluetooth
-// revamp experience survey.
-inline constexpr char kHatsBluetoothRevampIsSelected[] =
-    "hats_bluetooth_revamp_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent Camera App survey cycle.
 inline constexpr char kHatsCameraAppSurveyCycleEndTs[] =
     "hats_camera_app_cycle_end_timestamp";

@@ -181,16 +181,6 @@ const HatsConfig kHatsGeneralCameraPrioritizedSurvey = {
     base::Days(120),
 };
 
-// Bluetooth revamp experience survey -- shown 5 mins after interacting with new
-// Bluetooth UI surfaces.
-const HatsConfig kHatsBluetoothRevampSurvey = {
-    ash::features::kHappinessTrackingSystemBluetoothRevamp,  // feature
-    base::Days(1),                               // new_device_threshold
-    ash::prefs::kHatsBluetoothRevampIsSelected,  // is_selected_pref_name
-    ash::prefs::
-        kHatsBluetoothRevampCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
 // Battery life experience survey -- shown after login.
 const HatsConfig kHatsBatteryLifeSurvey = {
     ash::features::kHappinessTrackingSystemBatteryLife,  // feature

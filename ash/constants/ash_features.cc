@@ -1958,11 +1958,6 @@ BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
 // Enables or disables the Happiness Tracking System for the General survey.
 BASE_FEATURE(kHappinessTrackingSystem, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Happiness Tracking System for Bluetooth revamp
-// survey.
-BASE_FEATURE(kHappinessTrackingSystemBluetoothRevamp,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Happiness Tracking System for the Battery life
 // survey.
 BASE_FEATURE(kHappinessTrackingSystemBatteryLife,

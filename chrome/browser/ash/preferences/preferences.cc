@@ -502,11 +502,6 @@ void Preferences::RegisterProfilePrefs(
       ash::prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
       base::Time());
 
-  registry->RegisterInt64Pref(ash::prefs::kHatsBluetoothRevampCycleEndTs, 0);
-
-  registry->RegisterBooleanPref(ash::prefs::kHatsBluetoothRevampIsSelected,
-                                false);
-
   registry->RegisterInt64Pref(ash::prefs::kHatsBatteryLifeCycleEndTs, 0);
 
   registry->RegisterBooleanPref(ash::prefs::kHatsBatteryLifeIsSelected, false);
