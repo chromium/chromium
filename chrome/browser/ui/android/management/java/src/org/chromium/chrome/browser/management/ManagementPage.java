@@ -46,7 +46,7 @@ public class ManagementPage extends BasicNativePage {
     }
 
     @Override
-    public boolean supportsEdgeToEdge() {
+    public boolean supportsEdgeToEdgeOnBottom() {
         return true;
     }
 

@@ -125,7 +125,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
     @Test
     public void testOnCustomBackgroundChanged_nonNtp() {
         when(mNativePage.useLightIconTint()).thenReturn(false);
-        when(mNativePage.supportsEdgeToEdge()).thenReturn(true);
+        when(mNativePage.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // 1. Tab is null.
         mTabSupplier.set(null);
@@ -142,7 +142,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
 
         // 3. Tab is native page but doesn't support edge-to-edge.
         when(mTab.isNativePage()).thenReturn(true);
-        when(mNativePage.supportsEdgeToEdge()).thenReturn(false);
+        when(mNativePage.supportsEdgeToEdgeOnBottom()).thenReturn(false);
         mAdjustedTopUiThemeColorProvider.updateColor(mTab, TAB_COLOR, false);
         clearInvocations(mTintObserver);
         mObserverCaptor.getValue().onCustomBackgroundChanged();
@@ -154,7 +154,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
         ColorStateList adjustedTint =
                 mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
         @BrandedColorScheme int adjustedBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
-        when(mNativePage.supportsEdgeToEdge()).thenReturn(true);
+        when(mNativePage.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // Case NTP uses light tint color.
         when(mNativePage.useLightIconTint()).thenReturn(true);

@@ -94,7 +94,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     }
 
     @Override
-    public boolean supportsEdgeToEdge() {
+    public boolean supportsEdgeToEdgeOnBottom() {
         return true;
     }
 

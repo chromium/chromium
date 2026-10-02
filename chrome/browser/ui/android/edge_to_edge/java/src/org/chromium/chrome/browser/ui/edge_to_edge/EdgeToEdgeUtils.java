@@ -325,7 +325,7 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isPageOptedIntoEdgeToEdge(@Nullable Tab tab) {
         if (tab == null || tab.isNativePage()) {
-            return isNativeTabDrawingToEdge(tab);
+            return isNativeTabDrawingToBottomEdge(tab);
         }
         if (sAlwaysDrawWebEdgeToEdgeForTesting || tab.shouldEnableEmbeddedMediaExperience()) {
             return true;
@@ -340,7 +340,7 @@ public class EdgeToEdgeUtils {
     static boolean isPageOptedIntoEdgeToEdge(
             @Nullable Tab tab, @WebContentsObserver.ViewportFitType int value) {
         if (tab == null || tab.isNativePage()) {
-            return isNativeTabDrawingToEdge(tab);
+            return isNativeTabDrawingToBottomEdge(tab);
         }
         if (sAlwaysDrawWebEdgeToEdgeForTesting || tab.shouldEnableEmbeddedMediaExperience()) {
             return true;
@@ -357,13 +357,13 @@ public class EdgeToEdgeUtils {
         return safeAreaInsetsTracker != null && safeAreaInsetsTracker.hasSafeAreaConstraint();
     }
 
-    /** Whether a native tab will be drawn edge to edge. */
-    static boolean isNativeTabDrawingToEdge(@Nullable Tab activeTab) {
+    /** Whether a native tab will be drawn to the bottom edge. */
+    static boolean isNativeTabDrawingToBottomEdge(@Nullable Tab activeTab) {
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
         if (activeTab == null) return false;
 
         NativePage nativePage = activeTab.getNativePage();
-        return nativePage != null && nativePage.supportsEdgeToEdge();
+        return nativePage != null && nativePage.supportsEdgeToEdgeOnBottom();
     }
 
     /** Whether a native tab will be drawn top edge to edge. */

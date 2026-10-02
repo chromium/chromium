@@ -196,7 +196,7 @@ public class BookmarkPageUnitTest {
 
     @Test
     public void testEdgeToEdge() {
-        assertTrue("Bookmark page should support E2E.", mBookmarkPage.supportsEdgeToEdge());
+        assertTrue("Bookmark page should support E2E.", mBookmarkPage.supportsEdgeToEdgeOnBottom());
 
         // This should call SimpleEdgeToEdgePadAdjuster#mControllerChangedCallback.
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);

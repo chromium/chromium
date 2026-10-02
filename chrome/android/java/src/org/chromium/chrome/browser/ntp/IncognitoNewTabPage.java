@@ -177,7 +177,7 @@ public class IncognitoNewTabPage extends BasicNativePage
     public void updateForUrl(String url) {}
 
     @Override
-    public boolean supportsEdgeToEdge() {
+    public boolean supportsEdgeToEdgeOnBottom() {
         return true;
     }
 

@@ -141,7 +141,7 @@ public class RecentTabsPage
     }
 
     @Override
-    public boolean supportsEdgeToEdge() {
+    public boolean supportsEdgeToEdgeOnBottom() {
         return true;
     }
 

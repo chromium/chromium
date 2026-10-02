@@ -285,7 +285,7 @@ public class EdgeToEdgeControllerTest {
         doNothing().when(mTab).addObserver(any());
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mKeyNativePage.supportsEdgeToEdge()).thenReturn(true);
+        when(mKeyNativePage.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         doReturn(EDGE_TO_EDGE_STATUS_TOKEN).when(mEdgeToEdgeStateProvider).acquireEdgeToEdgeToken();
         doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();

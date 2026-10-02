@@ -85,7 +85,8 @@ public class ManagementPageUnitTest {
 
     @Test
     public void testEdgeToEdge() {
-        assertTrue("ManagementPage should support E2E.", mManagementPage.supportsEdgeToEdge());
+        assertTrue(
+                "ManagementPage should support E2E.", mManagementPage.supportsEdgeToEdgeOnBottom());
 
         mEdgeToEdgeSupplier.set(mMockEdgeToEdgeController);
         verify(mMockEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());

@@ -101,7 +101,7 @@ public class SettingsPageUnitTest {
     public void testGetters() {
         assertEquals("Settings", mSettingsPage.getTitle());
         assertEquals("settings", mSettingsPage.getHost());
-        assertTrue(mSettingsPage.supportsEdgeToEdge());
+        assertTrue(mSettingsPage.supportsEdgeToEdgeOnBottom());
         assertEquals(
                 SemanticColorUtils.getSettingsBackgroundColor(mActivity),
                 mSettingsPage.getBackgroundColor());
@@ -112,7 +112,7 @@ public class SettingsPageUnitTest {
 
     @Test
     public void testEdgeToEdge() {
-        assertTrue("SettingsPage should support E2E.", mSettingsPage.supportsEdgeToEdge());
+        assertTrue("SettingsPage should support E2E.", mSettingsPage.supportsEdgeToEdgeOnBottom());
 
         verify(mFragmentDelegate)
                 .initSettings(

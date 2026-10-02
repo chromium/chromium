@@ -105,7 +105,7 @@ public class IncognitoNewTabPageUnitTest {
     public void setupEdgeToEdgeWithoutInsets() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(mEdgePadAdjusterCaptor.capture());
-        assertTrue("Incognito NTP should support E2E.", mIncognitoNtp.supportsEdgeToEdge());
+        assertTrue("Incognito NTP should support E2E.", mIncognitoNtp.supportsEdgeToEdgeOnBottom());
 
         // Simulate a new bottom insets is set.
         mEdgePadAdjusterCaptor.getValue().overrideBottomInset(0);

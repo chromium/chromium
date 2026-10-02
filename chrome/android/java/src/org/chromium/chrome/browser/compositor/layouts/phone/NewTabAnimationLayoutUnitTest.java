@@ -825,7 +825,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.isIncognitoBranded()).thenReturn(false);
         when(mCurrentTab.isNativePage()).thenReturn(true);
         when(mCurrentTab.getNativePage()).thenReturn(mNtp);
-        when(mNtp.supportsEdgeToEdge()).thenReturn(true);
+        when(mNtp.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // Setup new tab as regular web page (has bottom bar, does NOT support E2E)
         when(mNewTab.getUrl()).thenReturn(new GURL("https://google.com"));
@@ -899,7 +899,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isIncognitoBranded()).thenReturn(false);
         when(mNewTab.isNativePage()).thenReturn(true);
         when(mNewTab.getNativePage()).thenReturn(mNtp);
-        when(mNtp.supportsEdgeToEdge()).thenReturn(true);
+        when(mNtp.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // Mock E2E gesture nav bottom chin is active
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
@@ -963,7 +963,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.isIncognitoBranded()).thenReturn(false);
         when(mCurrentTab.isNativePage()).thenReturn(true);
         when(mCurrentTab.getNativePage()).thenReturn(mNtp);
-        when(mNtp.supportsEdgeToEdge()).thenReturn(true);
+        when(mNtp.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // Setup new tab as Incognito NTP (has bottom bar, supports E2E, but has other controls
         // visible)
@@ -971,7 +971,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isIncognitoBranded()).thenReturn(true);
         when(mNewTab.isNativePage()).thenReturn(true);
         when(mNewTab.getNativePage()).thenReturn(mNtp);
-        when(mNtp.supportsEdgeToEdge()).thenReturn(true);
+        when(mNtp.supportsEdgeToEdgeOnBottom()).thenReturn(true);
 
         // Configure bottom toolbar preference (remains on bottom on Incognito NTP)
         Field prefField =

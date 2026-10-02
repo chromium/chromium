@@ -126,7 +126,7 @@ public class DownloadPageUnitTest {
 
     @Test
     public void testEdgeToEdge() {
-        assertTrue("Download page should support E2E.", mDownloadPage.supportsEdgeToEdge());
+        assertTrue("Download page should support E2E.", mDownloadPage.supportsEdgeToEdgeOnBottom());
 
         // This should call SimpleEdgeToEdgePadAdjuster#mControllerChangedCallback.
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);

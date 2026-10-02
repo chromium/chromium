@@ -83,7 +83,7 @@ public class RecentTabsPageUnitTest {
 
     @Test
     public void testEdgeToEdge() {
-        assertTrue("Recent tabs do support E2E.", mRecentTabsPage.supportsEdgeToEdge());
+        assertTrue("Recent tabs do support E2E.", mRecentTabsPage.supportsEdgeToEdgeOnBottom());
 
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
