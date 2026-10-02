@@ -12,6 +12,9 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/span.h"
@@ -19,10 +22,12 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -668,6 +673,45 @@ TEST_F(ClipboardHistoryTest, RecordControlVMetrics) {
       "Ash.ClipboardHistory.ControlToVDelayV2", base::Milliseconds(100), 0);
   histogram_tester.ExpectTimeBucketCount(
       "Ash.ClipboardHistory.ControlToVDelayV2", base::Milliseconds(200), 1);
+}
+
+// Tests that clipboard history does not record items when disabled by policy.
+TEST_F(ClipboardHistoryTest, PolicyDisabledPreventsRecordingHistory) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+
+  auto* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  ASSERT_TRUE(prefs);
+
+  // Disable clipboard history via policy.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
+
+  // Write text to clipboard buffer.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"text1");
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // No item should be stored in clipboard history.
+  EXPECT_TRUE(GetClipboardHistoryItems().empty());
+
+  // Re-enable clipboard history.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
+
+  // Write text again.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"text2");
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // History should now contain the new item.
+  EXPECT_EQ(1u, GetClipboardHistoryItems().size());
 }
 
 }  // namespace ash

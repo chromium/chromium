@@ -9,6 +9,8 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,6 +24,7 @@
 #include "cc/paint/paint_flags.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -242,8 +245,24 @@ bool IsEnabledInCurrentMode() {
     case LoginStatus::USER:
     case LoginStatus::GUEST:
     case LoginStatus::CHILD:
-      return true;
+      return IsEnabledByPolicy();
   }
+}
+
+bool IsEnabledByPolicy() {
+  if (!ash::features::IsClipboardHistoryPolicyEnabled()) {
+    return true;
+  }
+
+  if (auto* prefs =
+          Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
+    if (prefs->FindPreference(prefs::kClipboardHistoryEnabled)) {
+      return prefs->GetInteger(prefs::kClipboardHistoryEnabled) ==
+             static_cast<int>(PolicyValue::kEnabled);
+    }
+  }
+
+  return true;
 }
 
 ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {

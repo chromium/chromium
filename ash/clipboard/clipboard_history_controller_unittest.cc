@@ -11,6 +11,8 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -35,6 +37,7 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -324,6 +327,63 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenu) {
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 2);
+}
+
+// Tests that ShowMenu() is disabled when the enterprise policy is set to false.
+TEST_F(ClipboardHistoryControllerTest, ShowMenuDisabledByPolicy) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+  base::HistogramTester histogram_tester;
+
+  auto* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  ASSERT_TRUE(prefs);
+
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test1");
+
+  // Disable clipboard history by policy.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
+
+  // Attempting to show menu via accelerator should not show the menu.
+  ShowMenu();
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Attempting to show menu directly should return false.
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
+      chromeos::clipboard_history::ShowSource::kAccelerator));
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                    /*expected_count=*/0);
+
+  // Writing new items to clipboard buffer should not record to history while
+  // policy is disabled.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"test2");
+  }
+  FlushMessageLoop();
+  EXPECT_FALSE(operation_confirmed_future_.IsReady());
+
+  // Re-enable clipboard history by policy.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
+
+  // Now the menu can be shown.
+  ShowMenu();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ContextMenu.ShowMenu",
+                                    /*expected_count=*/1);
+
+  // Hide the menu.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Writing new items to clipboard buffer should be recorded again.
+  WriteTextToClipboardAndConfirm(u"test3");
 }
 
 // Verifies that the clipboard history is disabled in some user modes, which

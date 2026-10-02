@@ -175,6 +175,9 @@ ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);
 // Returns whether the clipboard history is enabled for the current user mode.
 ASH_EXPORT bool IsEnabledInCurrentMode();
 
+// Returns whether the clipboard history is enabled by an enteprise policy.
+ASH_EXPORT bool IsEnabledByPolicy();
+
 // Returns an image icon for the file clipboard item.
 ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
     const ClipboardHistoryItem& item);
