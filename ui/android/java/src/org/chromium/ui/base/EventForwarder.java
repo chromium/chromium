@@ -972,7 +972,8 @@ public class EventForwarder {
                         : 0;
         boolean skipDipScale =
                 event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)
-                        && UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled();
+                        && UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled()
+                        && UiAndroidFeatureList.sPointerLockMouseDensityCompensation.isEnabled();
         event = mPointerLockEventHelper.transformCapturedPointerEvent(event, deviceRotation);
 
         if (!event.isFromSource(InputDevice.SOURCE_MOUSE)) {

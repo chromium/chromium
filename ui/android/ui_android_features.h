@@ -75,6 +75,12 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kHasContentUri);
 // Guard changes to use maximum window metrics for gesture navigation detection.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMaximumWindowForGestureNavDetection);
 
+// Kill switch for compensating captured relative mouse movement for display
+// density by skipping DIP scaling in EventForwarder instead of applying a
+// fixed 2.4x multiplier (crbug.com/567695649).
+// TODO(crbug.com/567695649): Remove once the fix has shipped to stable.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kPointerLockMouseDensityCompensation);
+
 // Scaling multiplier for captured physical mouse movement
 // (crbug.com/490206349).
 // See also crbug.com/567695649 for display density compensation.

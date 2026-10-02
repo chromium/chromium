@@ -640,6 +640,51 @@ public class EventForwarderTest {
     }
 
     @Test
+    @DisableFeatures(UiAndroidFeatures.POINTER_LOCK_MOUSE_DENSITY_COMPENSATION)
+    public void testCapturedPointerMouseMoveEventWhenDensityCompensationDisabled() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);
+        float scaleFactor = PointerLockEventHelper.LEGACY_MOUSE_MOVEMENT_SCALE_FACTOR;
+
+        final long downTime = 100;
+        final long eventTime = 200;
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        downTime,
+                        eventTime,
+                        MotionEvent.ACTION_MOVE,
+                        /* x= */ 1,
+                        /* y= */ -1,
+                        /* metaState= */ 0);
+        moveEvent.setSource(InputDevice.SOURCE_MOUSE_RELATIVE);
+
+        MotionEvent expectedEvent =
+                MotionEvent.obtain(
+                        downTime,
+                        eventTime,
+                        MotionEvent.ACTION_MOVE,
+                        /* x= */ scaleFactor,
+                        /* y= */ -scaleFactor,
+                        /* metaState= */ 0);
+        expectedEvent.setSource(InputDevice.SOURCE_MOUSE);
+
+        eventForwarder.onCapturedPointerEvent(moveEvent, Surface.ROTATION_0);
+
+        ArgumentCaptor<MotionEvent> captor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mNativeMock)
+                .onMouseEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        captor.capture(),
+                        eq(MotionEventUtils.getEventTimeNanos(moveEvent)),
+                        eq(moveEvent.getActionMasked()),
+                        eq(EventForwarder.getMouseEventActionButton(moveEvent)),
+                        eq(moveEvent.getToolType(0)),
+                        eq(false));
+        MotionEventTestUtils.assertEquals(captor.getValue(), expectedEvent);
+        eventForwarder.destroy();
+    }
+
+    @Test
     public void testCapturedPointerMouseScrollEvent() {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false, mScaledTouchSlop);

@@ -53,6 +53,9 @@ BASE_FEATURE(kHasContentUri, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMaximumWindowForGestureNavDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPointerLockMouseDensityCompensation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPointerLockMouseScaling, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRefactorMinWidthContextOverride,
