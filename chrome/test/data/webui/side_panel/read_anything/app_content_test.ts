@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, ContentController, LanguageToastElement, NodeStore, SpeechController, SpEmptyStateElement, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, ReadAloudNode, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
+import type {AppElement, ContentController, NodeStore, SpeechController, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, ContentType, ReadAloudNode, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
@@ -21,14 +20,8 @@ suite('AppContent', () => {
   let emptyState: SpEmptyStateElement;
   let speechController: SpeechController;
   let nodeStore: NodeStore;
-  let notificationManager: VoiceNotificationManager;
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
-
-  function getLineFocusPadding(): number {
-    const val = app.style.getPropertyValue('--line-focus-padding');
-    return val ? parseInt(val) : 0;
-  }
 
   setup(async () => {
     const result = await setupAppTestEnvironment();
@@ -37,7 +30,6 @@ suite('AppContent', () => {
     contentController = result.contentController;
     speechController = result.speechController;
     nodeStore = result.nodeStore;
-    notificationManager = result.notificationManager;
     readAloudModel = result.readAloudModel;
     visualBrowserProxy = result.visualBrowserProxy;
     emptyState =
@@ -50,58 +42,6 @@ suite('AppContent', () => {
 
     assertStringContains(emptyState.darkImagePath, spinner);
     assertStringContains(emptyState.imagePath, spinner);
-  });
-
-  test(
-      'connected callback adds line focus mouse listener in toolbar',
-      async () => {
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-            {detail: {data: LineFocusMovement.CURSOR}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-        let mouseMoveInToolbar = false;
-        let mouseMove = false;
-        LineFocusController.getInstance().onMouseMove = () => {
-          mouseMove = true;
-        };
-        LineFocusController.getInstance().onMouseMoveInToolbar = () => {
-          mouseMoveInToolbar = true;
-        };
-
-        app.$.toolbar.dispatchEvent(new MouseEvent('mousemove', {clientY: 10}));
-
-        assertTrue(mouseMoveInToolbar);
-        assertFalse(mouseMove);
-      });
-
-  test('line focus shortcut updates padding', async () => {
-    // Start with static line focus on.
-    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-        {detail: {data: LineFocusMovement.STATIC}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
-    // Ensure there's content so that padding can be added.
-    app.updateContent();
-    await whenCheck(app, () => getLineFocusPadding() !== 0);
-    assertLT(0, getLineFocusPadding());
-
-    // Toggling off should remove padding.
-    keyDownOn(app, 0, ['alt'], 'l');
-    await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
-
-    // Toggling on should remove padding.
-    keyDownOn(app, 0, ['alt'], 'l');
-    await microtasksFinished();
-    assertLT(0, getLineFocusPadding());
   });
 
   test('showLoading shows spinner', async () => {
@@ -351,92 +291,6 @@ suite('AppContent', () => {
     });
   });
 
-  suite('on links toggle', () => {
-    const linkId = 44;
-    const textId = 45;
-    const linkText = 'Try to keep it hidden';
-    const url = 'www.mountainview.gov';
-
-    setup(() => {
-      contentBrowserProxy.rootId = linkId;
-      contentBrowserProxy.htmlTagMap = {[linkId]: 'a'};
-      contentBrowserProxy.textContentMap = {[textId]: linkText};
-      contentBrowserProxy.childrenMap = {[linkId]: [textId]};
-      contentBrowserProxy.urlMap = {[linkId]: url};
-    });
-
-    test('shows links when enabled', async () => {
-      const expectedHtml = '<a href="' + url + '">' + linkText + '</a>';
-      app.updateContent();
-      await microtasksFinished();
-      assertTrue(contentController.hasContent());
-
-      visualBrowserProxy.linksEnabled = true;
-      emitEvent(app, ToolbarEvent.LINKS);
-      await microtasksFinished();
-
-      assertEquals(
-          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
-    });
-
-    test('hides links when disabled', async () => {
-      const expectedHtml =
-          '<span data-link="' + url + '">' + linkText + '</span>';
-      app.updateContent();
-      await microtasksFinished();
-      assertTrue(contentController.hasContent());
-
-      visualBrowserProxy.linksEnabled = false;
-      emitEvent(app, ToolbarEvent.LINKS);
-      await microtasksFinished();
-
-      assertEquals(
-          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
-    });
-  });
-
-  suite('on image toggle', () => {
-    const altText = 'No man is worth the aggravation';
-    const textNodeContent = 'Some text';
-
-    setup(() => {
-      contentBrowserProxy.rootId = 1;
-      contentBrowserProxy.htmlTagMap = {1: 'div', 2: 'img'};
-      contentBrowserProxy.altText = altText;
-      contentBrowserProxy.childrenMap = {1: [2, 3]};
-      contentBrowserProxy.textContentMap = {3: textNodeContent};
-    });
-
-    test('shows images when enabled', async () => {
-      app.updateContent();
-      await microtasksFinished();
-      assertTrue(contentController.hasContent());
-
-      visualBrowserProxy.imagesEnabled = true;
-      const expectedHtmlWithImage = '<div><canvas alt="' + altText +
-          '" class="downloaded-image"></canvas>' + textNodeContent + '</div>';
-      emitEvent(app, ToolbarEvent.IMAGES);
-      await microtasksFinished();
-
-      assertEquals(expectedHtmlWithImage, app.$.container.innerHTML);
-    });
-
-    test('hides images when disabled', async () => {
-      const expectedHtml = '<div><canvas alt="' + altText +
-          '" class="downloaded-image" style="display: none;"></canvas>' +
-          textNodeContent + '</div>';
-      app.updateContent();
-      await microtasksFinished();
-      assertTrue(contentController.hasContent());
-
-      visualBrowserProxy.imagesEnabled = false;
-      emitEvent(app, ToolbarEvent.IMAGES);
-      await microtasksFinished();
-
-      assertEquals(expectedHtml, app.$.container.innerHTML);
-    });
-  });
-
   suite('on speech active change', () => {
     test('selection allowed by default', () => {
       assertEquals(
@@ -576,39 +430,6 @@ suite('AppContent', () => {
     // After a selection, the read aloud state should still be set to true.
     // This differs from the V8 selection approach.
     assertTrue(speechController.isSpeechTreeInitialized());
-  });
-
-  suite('language toast', () => {
-    let toast: LanguageToastElement;
-
-    setup(() => {
-      toast = app.$.languageToast;
-    });
-
-    test('shows error toasts', async () => {
-      notificationManager.onNoEngineConnection();
-      await microtasksFinished();
-      assertTrue(toast.$.toast.open);
-    });
-
-    test('does not shows error toast with language menu open', async () => {
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
-
-      notificationManager.onNoEngineConnection();
-      await microtasksFinished();
-
-      assertFalse(toast.$.toast.open);
-    });
-
-    test('shows error toast after language menu is closed', async () => {
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
-
-      notificationManager.onNoEngineConnection();
-      await microtasksFinished();
-
-      assertTrue(toast.$.toast.open);
-    });
   });
 
   suite('Immersive Mode app content styling', () => {
@@ -771,29 +592,5 @@ suite('AppContent', () => {
       assertTrue(!!scrollOptions);
       assertEquals('smooth', scrollOptions.behavior);
     });
-  });
-
-  test('<pre> tags wrap and inherit font', () => {
-    // Some sites (e.g. Wattpad) incorrectly wrap large blocks of text
-    // in <pre> tags, which would cause reading mode to format this text in
-    // monospace and without wrapping to new lines.
-    const preElement = document.createElement('pre');
-    preElement.textContent =
-        'This is a text not code & reading mode should not format it as code.';
-    app.$.container.appendChild(preElement);
-
-    // Set a custom Reading Mode font and emit the font change event to update
-    // styles
-    const expectedFont = 'Andika';
-    visualBrowserProxy.fontName = expectedFont;
-    emitEvent(app, ToolbarEvent.FONT);
-
-    const computedStyle = window.getComputedStyle(preElement);
-    assertEquals('pre-wrap', computedStyle.whiteSpace);
-    assertEquals('break-word', computedStyle.overflowWrap);
-
-    const actualFont =
-        computedStyle.fontFamily.toLowerCase().replaceAll('"', '');
-    assertEquals(expectedFont.toLowerCase(), actualFont);
   });
 });

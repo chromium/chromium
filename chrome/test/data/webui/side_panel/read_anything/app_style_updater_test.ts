@@ -268,6 +268,26 @@ suite('AppStyleUpdater', () => {
         computeStyle('font-family'), visualBrowserProxy.fontName);
   });
 
+  test('<pre> tags wrap and inherit font', () => {
+    // Some sites (e.g. Wattpad) incorrectly wrap large blocks of text
+    // in <pre> tags, which would cause reading mode to format this text in
+    // monospace and without wrapping to new lines.
+    const preElement = document.createElement('pre');
+    preElement.textContent =
+        'This is a text not code & reading mode should not format it as code.';
+    app.$.container.appendChild(preElement);
+
+    visualBrowserProxy.fontName = 'Andika';
+    updater.setFont();
+
+    const computedStyle = window.getComputedStyle(preElement);
+    assertEquals('pre-wrap', computedStyle.whiteSpace);
+    assertEquals('break-word', computedStyle.overflowWrap);
+    assertStringContains(
+        computedStyle.fontFamily.toLowerCase(),
+        visualBrowserProxy.fontName.toLowerCase());
+  });
+
   test('current highlight', () => {
     const expectedYellowColor = 'yellow';
     const expectedDarkColor = 'black';

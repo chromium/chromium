@@ -4,14 +4,15 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, ContentController, LanguageToastElement, LineFocusController, SpeechController, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {LineFocusController, SpeechController, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -20,13 +21,21 @@ import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
   let audioBrowserProxy: TestAudioBrowserProxy;
+  let contentBrowserProxy: TestContentBrowserProxy;
+  let contentController: ContentController;
   let lineFocusController: LineFocusController;
   let metrics: TestMetricsBrowserProxy;
+  let notificationManager: VoiceNotificationManager;
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let visualBrowserProxy: TestVisualBrowserProxy;
   let voiceLanguageController: VoiceLanguageController;
+
+  function getLineFocusPadding(): number {
+    const val = app.style.getPropertyValue('--line-focus-padding');
+    return val ? parseInt(val) : 0;
+  }
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -90,8 +99,11 @@ suite('AppReceivesToolbarChanges', () => {
     const result = await setupAppTestEnvironment();
     app = result.app;
     audioBrowserProxy = result.audioBrowserProxy;
+    contentBrowserProxy = result.contentBrowserProxy;
+    contentController = result.contentController;
     lineFocusController = result.lineFocusController;
     metrics = result.metrics;
+    notificationManager = result.notificationManager;
     readAloudModel = result.readAloudModel;
     speech = result.speech;
     speechController = result.speechController;
@@ -194,6 +206,58 @@ suite('AppReceivesToolbarChanges', () => {
     const font2 = 'Comic Neue';
     emitFont(font2);
     assertFontsEqual(containerFont(), font2);
+  });
+
+  test(
+      'connected callback adds line focus mouse listener in toolbar',
+      async () => {
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: LineFocusMovement.CURSOR}});
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
+        let mouseMoveInToolbar = false;
+        let mouseMove = false;
+        lineFocusController.onMouseMove = () => {
+          mouseMove = true;
+        };
+        lineFocusController.onMouseMoveInToolbar = () => {
+          mouseMoveInToolbar = true;
+        };
+
+        app.$.toolbar.dispatchEvent(new MouseEvent('mousemove', {clientY: 10}));
+
+        assertTrue(mouseMoveInToolbar);
+        assertFalse(mouseMove);
+      });
+
+  test('line focus shortcut updates padding', async () => {
+    // Start with static line focus on.
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        {detail: {data: LineFocusMovement.STATIC}});
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+    assertEquals(0, getLineFocusPadding());
+    // Ensure there's content so that padding can be added.
+    app.updateContent();
+    await whenCheck(app, () => getLineFocusPadding() !== 0);
+    assertLT(0, getLineFocusPadding());
+
+    // Toggling off should remove padding.
+    keyDownOn(app, 0, ['alt'], 'l');
+    await microtasksFinished();
+    assertEquals(0, getLineFocusPadding());
+
+    // Toggling on should add padding.
+    keyDownOn(app, 0, ['alt'], 'l');
+    await microtasksFinished();
+    assertLT(0, getLineFocusPadding());
   });
 
   test('line focus style change updates line focus', async () => {
@@ -696,28 +760,147 @@ suite('AppReceivesToolbarChanges', () => {
     assertFontsEqual(containerFont(), 'Serif');
   });
 
-  test('on links toggle updates toolbar settingsPrefs', async () => {
-    visualBrowserProxy.linksEnabled = false;
-    emitEvent(app, ToolbarEvent.LINKS);
-    await microtasksFinished();
-    assertFalse(app.$.toolbar.settingsPrefs.linksEnabled);
+  suite('on links toggle', () => {
+    const linkId = 44;
+    const textId = 45;
+    const linkText = 'Try to keep it hidden';
+    const url = 'www.mountainview.gov';
 
-    visualBrowserProxy.linksEnabled = true;
-    emitEvent(app, ToolbarEvent.LINKS);
-    await microtasksFinished();
-    assertTrue(app.$.toolbar.settingsPrefs.linksEnabled);
+    setup(() => {
+      contentBrowserProxy.rootId = linkId;
+      contentBrowserProxy.htmlTagMap = {[linkId]: 'a'};
+      contentBrowserProxy.textContentMap = {[textId]: linkText};
+      contentBrowserProxy.childrenMap = {[linkId]: [textId]};
+      contentBrowserProxy.urlMap = {[linkId]: url};
+    });
+
+    test('shows links when enabled', async () => {
+      const expectedHtml = '<a href="' + url + '">' + linkText + '</a>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.linksEnabled = true;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+
+    test('hides links when disabled', async () => {
+      const expectedHtml =
+          '<span data-link="' + url + '">' + linkText + '</span>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.linksEnabled = false;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+
+    test('updates toolbar settingsPrefs', async () => {
+      visualBrowserProxy.linksEnabled = false;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+      assertFalse(app.$.toolbar.settingsPrefs.linksEnabled);
+
+      visualBrowserProxy.linksEnabled = true;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.settingsPrefs.linksEnabled);
+    });
   });
 
-  test('on images toggle updates toolbar settingsPrefs', async () => {
-    visualBrowserProxy.imagesEnabled = false;
-    emitEvent(app, ToolbarEvent.IMAGES);
-    await microtasksFinished();
-    assertFalse(app.$.toolbar.settingsPrefs.imagesEnabled);
+  suite('on image toggle', () => {
+    const altText = 'No man is worth the aggravation';
+    const textNodeContent = 'Some text';
 
-    visualBrowserProxy.imagesEnabled = true;
-    emitEvent(app, ToolbarEvent.IMAGES);
-    await microtasksFinished();
-    assertTrue(app.$.toolbar.settingsPrefs.imagesEnabled);
+    setup(() => {
+      contentBrowserProxy.rootId = 1;
+      contentBrowserProxy.htmlTagMap = {1: 'div', 2: 'img'};
+      contentBrowserProxy.altText = altText;
+      contentBrowserProxy.childrenMap = {1: [2, 3]};
+      contentBrowserProxy.textContentMap = {3: textNodeContent};
+    });
+
+    test('shows images when enabled', async () => {
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.imagesEnabled = true;
+      const expectedHtmlWithImage = '<div><canvas alt="' + altText +
+          '" class="downloaded-image"></canvas>' + textNodeContent + '</div>';
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+
+      assertEquals(expectedHtmlWithImage, app.$.container.innerHTML);
+    });
+
+    test('hides images when disabled', async () => {
+      const expectedHtml = '<div><canvas alt="' + altText +
+          '" class="downloaded-image" style="display: none;"></canvas>' +
+          textNodeContent + '</div>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      visualBrowserProxy.imagesEnabled = false;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+
+      assertEquals(expectedHtml, app.$.container.innerHTML);
+    });
+
+    test('updates toolbar settingsPrefs', async () => {
+      visualBrowserProxy.imagesEnabled = false;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+      assertFalse(app.$.toolbar.settingsPrefs.imagesEnabled);
+
+      visualBrowserProxy.imagesEnabled = true;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+      assertTrue(app.$.toolbar.settingsPrefs.imagesEnabled);
+    });
+  });
+
+  suite('language toast', () => {
+    let toast: LanguageToastElement;
+
+    setup(() => {
+      toast = app.$.languageToast;
+    });
+
+    test('shows error toasts', async () => {
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+      assertTrue(toast.$.toast.open);
+    });
+
+    test('does not shows error toast with language menu open', async () => {
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+
+      assertFalse(toast.$.toast.open);
+    });
+
+    test('shows error toast after language menu is closed', async () => {
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
+
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+
+      assertTrue(toast.$.toast.open);
+    });
   });
 
   test('on speech rate change updates toolbar settingsPrefs', async () => {
