@@ -4435,12 +4435,10 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
     ChromePasswordManagerClient::CreateForWebContents(owned_web_contents.get());
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(owned_web_contents.get()));
-    ManagePasswordsUIController::CreateForWebContents(owned_web_contents.get());
-    ASSERT_TRUE(
-        ManagePasswordsUIController::FromWebContents(owned_web_contents.get()));
     ASSERT_FALSE(owned_web_contents.get()->IsLoading());
     browser()->tab_strip_model()->AppendWebContents(
         std::move(owned_web_contents), true);
+    ASSERT_TRUE(ManagePasswordsUIController::FromWebContents(web_contents()));
     if (preexisting_tab) {
       ClearWebContentsPtr();
       browser()->tab_strip_model()->CloseWebContentsAt(

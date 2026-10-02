@@ -47,6 +47,7 @@ source_set("passwords") {
       "//components/password_manager/core/common",
       "//components/zoom",
       "//skia",
+      "//ui/base/unowned_user_data",
       "//ui/views",
       "//url",
     ]
@@ -167,6 +168,7 @@ source_set("impl") {
       "//components/constrained_window",
       "//components/desktop_to_mobile_promos",
       "//components/password_manager/core/browser/features:password_features",
+      "//components/tabs:public",
     ]
   }
 
@@ -321,6 +323,7 @@ source_set("unit_tests") {
       "//components/prefs",
       "//components/signin/public/identity_manager",
       "//components/strings:components_strings",
+      "//components/tabs:public",
       "//components/tabs:test_support",
       "//components/ukm:test_support",
       "//components/variations:test_support",

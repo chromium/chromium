@@ -14,9 +14,12 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "ui/views/widget/widget.h"
+
+class ManagePasswordsUIController;
 
 // Base class for testing password bubble views, which can be constructed
 // passing web_contents() and anchor_view(). Mock behaviors can be set for
@@ -50,7 +53,9 @@ class PasswordBubbleViewTestBase : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  tabs::MockTabInterface mock_tab_;
   std::unique_ptr<content::WebContents> test_web_contents_;
+  std::unique_ptr<ManagePasswordsUIController> manage_passwords_ui_controller_;
   std::unique_ptr<views::Widget> anchor_widget_;
   testing::NiceMock<password_manager::MockPasswordFeatureManager>
       feature_manager_mock_;

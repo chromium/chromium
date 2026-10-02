@@ -115,6 +115,8 @@
 using password_manager::MovePasswordToAccountStoreHelper;
 using password_manager::PasswordFormManagerForUI;
 
+DEFINE_USER_DATA(ManagePasswordsUIController);
+
 int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
 
 namespace {
@@ -195,9 +197,10 @@ GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
 }  // namespace
 
 ManagePasswordsUIController::ManagePasswordsUIController(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ManagePasswordsUIController>(*web_contents) {
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   passwords_data_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));
   password_manager::PasswordStoreInterface* profile_password_store =
@@ -210,9 +213,36 @@ ManagePasswordsUIController::ManagePasswordsUIController(
   if (account_password_store) {
     account_password_store->AddObserver(this);
   }
+  tab_will_detach_subscription_ = tab.RegisterWillDetach(base::BindRepeating(
+      [](ManagePasswordsUIController* controller, tabs::TabInterface* tab,
+         tabs::TabInterface::DetachReason reason) {
+        if (reason == tabs::TabInterface::DetachReason::kDelete) {
+          controller->Cleanup();
+        }
+      },
+      base::Unretained(this)));
 }
 
-ManagePasswordsUIController::~ManagePasswordsUIController() = default;
+ManagePasswordsUIController::~ManagePasswordsUIController() {
+  Cleanup();
+}
+
+// static
+ManagePasswordsUIController* ManagePasswordsUIController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+ManagePasswordsUIController* ManagePasswordsUIController::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+      const_cast<content::WebContents*>(web_contents));
+  return From(tab);
+}
 
 void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
@@ -1452,6 +1482,13 @@ void ManagePasswordsUIController::DestroyPopups() {
 }
 
 void ManagePasswordsUIController::WebContentsDestroyed() {
+  Cleanup();
+}
+
+void ManagePasswordsUIController::Cleanup() {
+  if (!web_contents()) {
+    return;
+  }
   password_manager::PasswordStoreInterface* profile_password_store =
       GetProfilePasswordStore(web_contents());
   if (profile_password_store) {
@@ -1462,9 +1499,9 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store) {
     account_password_store->RemoveObserver(this);
   }
+  dialog_controller_.reset();
   HideBubble(/*initiated_by_bubble_manager=*/false);
-  web_contents()->RemoveUserData(UserDataKey());
-  // `this` is now destroyed - do not add code here.
+  Observe(nullptr);
 }
 
 void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
@@ -1678,5 +1715,3 @@ void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
     manager->RequestShowController(*this, user_action);
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

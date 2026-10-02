@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
-#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -440,12 +439,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           web_contents));
-
-  // ManagePasswordsUIController expects ChromePasswordManagerClient to be
-  // created, which is gated by enable_browser_autofill.
-  if (enable_browser_autofill) {
-    ManagePasswordsUIController::CreateForWebContents(web_contents);
-  }
 
   TabDialogs::CreateForWebContents(web_contents);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);

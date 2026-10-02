@@ -36,6 +36,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -85,8 +86,9 @@ class FakePasswordManagerClient
 
 class MockManagePasswordsUIController : public ManagePasswordsUIController {
  public:
-  explicit MockManagePasswordsUIController(content::WebContents* web_contents)
-      : ManagePasswordsUIController(web_contents) {}
+  MockManagePasswordsUIController(tabs::TabInterface& tab,
+                                  content::WebContents* web_contents)
+      : ManagePasswordsUIController(tab, web_contents) {}
   ~MockManagePasswordsUIController() override = default;
 
   MOCK_METHOD(base::WeakPtr<PasswordsModelDelegate>,
@@ -213,24 +215,26 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
             std::move(logs_uploader));
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*tab_interface_, GetContents).WillByDefault(Return(web_contents()));
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         tab_interface_.get());
+    manage_passwords_ui_controller_ =
+        std::make_unique<::testing::NiceMock<MockManagePasswordsUIController>>(
+            *tab_interface_, web_contents());
     ON_CALL(*tab_interface_, RegisterWillDetach)
         .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
           tab_will_detach_callback_ = std::move(callback);
           return base::CallbackListSubscription();
         });
-    web_contents()->SetUserData(
-        ManagePasswordsUIController::UserDataKey(),
-        std::make_unique<::testing::NiceMock<MockManagePasswordsUIController>>(
-            web_contents()));
   }
 
   void TearDown() override {
-    tab_interface_.reset();
+    manage_passwords_ui_controller_.reset();
     actuator_.reset();
     delegate_.reset();
     mock_optimization_guide_keyed_service_ = nullptr;
     layout_provider_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+    tab_interface_.reset();
   }
 
   PasswordChangeDelegateImpl* delegate() { return delegate_.get(); }
@@ -256,9 +260,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   MockManagePasswordsUIController* manage_passwords_ui_controller() {
-    return static_cast<MockManagePasswordsUIController*>(
-        web_contents()->GetUserData(
-            ManagePasswordsUIController::UserDataKey()));
+    return manage_passwords_ui_controller_.get();
   }
 
   MockPasswordChangeUIController* mock_ui_controller() {
@@ -293,6 +295,8 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
       mock_optimization_guide_keyed_service_;
   MockPageNavigator navigator_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
+  std::unique_ptr<::testing::NiceMock<MockManagePasswordsUIController>>
+      manage_passwords_ui_controller_;
   std::unique_ptr<PasswordChangeDelegateImpl> delegate_;
   base::WeakPtr<MockPasswordChangeActuator> actuator_;
   tabs::TabInterface::WillDetach tab_will_detach_callback_;

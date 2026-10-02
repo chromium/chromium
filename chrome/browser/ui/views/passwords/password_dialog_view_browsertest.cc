@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_mock.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -40,6 +41,7 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -48,6 +50,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -138,7 +141,8 @@ std::vector<views::View*> GetViewsByID(int id, views::View* parent) {
 // ManagePasswordsUIController subclass to capture the dialog instance
 class TestManagePasswordsUIController : public ManagePasswordsUIController {
  public:
-  explicit TestManagePasswordsUIController(content::WebContents* web_contents);
+  TestManagePasswordsUIController(tabs::TabInterface& tab,
+                                  content::WebContents* web_contents);
 
   TestManagePasswordsUIController(const TestManagePasswordsUIController&) =
       delete;
@@ -179,18 +183,12 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
-    : ManagePasswordsUIController(web_contents),
+    : ManagePasswordsUIController(tab, web_contents),
       current_account_chooser_(nullptr),
       current_autosignin_prompt_(nullptr),
-      current_credential_leak_prompt_(nullptr) {
-  // Attach TestManagePasswordsUIController to |web_contents| so the default
-  // ManagePasswordsUIController isn't created.
-  // Do not silently replace an existing ManagePasswordsUIController because it
-  // unregisters itself in WebContentsDestroyed().
-  EXPECT_FALSE(web_contents->GetUserData(UserDataKey()));
-  web_contents->SetUserData(UserDataKey(), base::WrapUnique(this));
-}
+      current_credential_leak_prompt_(nullptr) {}
 
 void TestManagePasswordsUIController::OnDialogHidden() {
   ManagePasswordsUIController::OnDialogHidden();
@@ -337,7 +335,12 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   autofill::ChromeAutofillClient::CreateForWebContents(raw_new_tab);
   ChromePasswordManagerClient::CreateForWebContents(raw_new_tab);
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(raw_new_tab));
-  new TestManagePasswordsUIController(raw_new_tab);
+  ui::UserDataFactory::ScopedOverride scoped_override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindRepeating([](tabs::TabInterface& tab) {
+            return std::make_unique<TestManagePasswordsUIController>(
+                tab, tab.GetContents());
+          }));
   browser->GetTabStripModel()->AppendWebContents(std::move(new_tab), true);
 
   // Navigate to a Web URL.

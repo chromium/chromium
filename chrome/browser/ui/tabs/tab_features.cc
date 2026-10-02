@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -1080,6 +1081,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   auto_picture_in_picture_tab_helper_ =
       GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
           tab, tab, tab.GetContents());
+
+  manage_passwords_ui_controller_ =
+      GetUserDataFactory().CreateInstance<ManagePasswordsUIController>(
+          tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1517,6 +1522,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   auto_picture_in_picture_tab_helper_.reset();
   auto_picture_in_picture_tab_helper_ =
       GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
+          *tab, *tab, new_contents);
+
+  manage_passwords_ui_controller_.reset();
+  manage_passwords_ui_controller_ =
+      GetUserDataFactory().CreateInstance<ManagePasswordsUIController>(
           *tab, *tab, new_contents);
 }
 

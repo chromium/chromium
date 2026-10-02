@@ -63,6 +63,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -183,6 +185,7 @@ class TestPasswordManagerClient
 class TestManagePasswordsUIController : public ManagePasswordsUIController {
  public:
   TestManagePasswordsUIController(
+      tabs::TabInterface& tab,
       content::WebContents* contents,
       password_manager::PasswordManagerClient* client);
 
@@ -233,17 +236,14 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(
+    tabs::TabInterface& tab,
     content::WebContents* contents,
     password_manager::PasswordManagerClient* client)
-    : ManagePasswordsUIController(contents),
+    : ManagePasswordsUIController(tab, contents),
       manage_passwords_page_action_controller_(page_action_controller_) {
   passwords_action_item_ = actions::ActionItem::Builder()
                                .SetActionId(kActionShowPasswordsBubbleOrPage)
                                .Build();
-  // Do not silently replace an existing ManagePasswordsUIController because it
-  // unregisters itself in WebContentsDestroyed().
-  EXPECT_FALSE(contents->GetUserData(UserDataKey()));
-  contents->SetUserData(UserDataKey(), base::WrapUnique(this));
   set_client(client);
 }
 
@@ -383,6 +383,9 @@ class ManagePasswordsUIControllerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   TestPasswordManagerClient client_;
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<::testing::NiceMock<TestManagePasswordsUIController>>
+      controller_;
 
   PasswordForm test_local_form_;
   PasswordForm test_federated_form_;
@@ -396,8 +399,11 @@ void ManagePasswordsUIControllerTest::SetUp() {
   // Create the test UIController here so that it's bound to
   // |test_web_contents_|, and will be retrieved correctly via
   // ManagePasswordsUIController::FromWebContents in |controller()|.
-  new ::testing::NiceMock<TestManagePasswordsUIController>(web_contents(),
-                                                           &client_);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab_);
+  controller_ =
+      std::make_unique<::testing::NiceMock<TestManagePasswordsUIController>>(
+          mock_tab_, web_contents(), &client_);
 
   test_local_form_.url = GURL("http://example.com/login");
   test_local_form_.signon_realm =
@@ -428,6 +434,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
 void ManagePasswordsUIControllerTest::TearDown() {
   // Ensures that the PasswordManagerClient outlives the controller, which is
   // the case outside of tests.
+  controller_.reset();
   DeleteContents();
   ChromeRenderViewHostTestHarness::TearDown();
 }
@@ -527,10 +534,14 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleNotSuppressed) {
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleCancelled) {
   // Test on the real controller.
+  tabs::MockTabInterface local_mock_tab;
   std::unique_ptr<content::WebContents> web_content(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_content.get(),
                                                              GURL(kExampleUrl));
-  ManagePasswordsUIController::CreateForWebContents(web_content.get());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_content.get(),
+                                                       &local_mock_tab);
+  auto owned_controller = std::make_unique<ManagePasswordsUIController>(
+      local_mock_tab, web_content.get());
   ManagePasswordsUIController* controller =
       ManagePasswordsUIController::FromWebContents(web_content.get());
   controller->set_client(&client());

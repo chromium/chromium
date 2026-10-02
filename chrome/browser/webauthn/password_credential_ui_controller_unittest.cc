@@ -16,6 +16,8 @@
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,8 +38,9 @@ class MockPasswordManagerClient
 
 class MockManagePasswordsUIController : public ManagePasswordsUIController {
  public:
-  explicit MockManagePasswordsUIController(content::WebContents* web_contents)
-      : ManagePasswordsUIController(web_contents) {}
+  MockManagePasswordsUIController(tabs::TabInterface& tab,
+                                  content::WebContents* web_contents)
+      : ManagePasswordsUIController(tab, web_contents) {}
   ~MockManagePasswordsUIController() override = default;
 
   MOCK_METHOD(void,
@@ -60,19 +63,26 @@ class PasswordCredentialUIControllerTest
     controller_ = std::make_unique<PasswordCredentialUIController>(
         web_contents()->GetPrimaryMainFrame()->GetGlobalId(), model_.get());
     controller_->SetPasswordManagerClientForTesting(&client_);
-    web_contents()->SetUserData(
-        ManagePasswordsUIController::UserDataKey(),
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_);
+    mock_ui_controller_ =
         std::make_unique<::testing::NiceMock<MockManagePasswordsUIController>>(
-            web_contents()));
+            mock_tab_, web_contents());
+  }
+
+  void TearDown() override {
+    mock_ui_controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
   const testing::NiceMock<MockManagePasswordsUIController>&
   mock_ui_controller() {
-    return static_cast<testing::NiceMock<MockManagePasswordsUIController>&>(
-        *web_contents()->GetUserData(
-            ManagePasswordsUIController::UserDataKey()));
+    return *mock_ui_controller_;
   }
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<::testing::NiceMock<MockManagePasswordsUIController>>
+      mock_ui_controller_;
   testing::NiceMock<password_manager::MockPasswordFeatureManager>
       feature_manager_;
   scoped_refptr<AuthenticatorRequestDialogModel> model_;

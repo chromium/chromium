@@ -475,6 +475,8 @@ source_set("unit_tests") {
       "//chrome/browser/ui/signin",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+      "//components/tabs:public",
+      "//components/tabs:test_support",
       "//components/trusted_vault",
       "//components/trusted_vault:test_support",
       "//components/trusted_vault/proto",
