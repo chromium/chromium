@@ -10,16 +10,52 @@
 #import <string_view>
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
 
 class GURL;
 
+@class NSError;
+namespace web {
+class FakeWebState;
+}  // namespace web
+
 namespace actor {
+
+// A `FakeNavigationManager` that automatically simulates navigation start and
+// completion on `web_state` when `LoadURLWithParams()`, `GoBack()`, or
+// `GoForward()` is called.
+
+class CompletingFakeNavigationManager : public web::FakeNavigationManager {
+ public:
+  explicit CompletingFakeNavigationManager(web::FakeWebState* web_state);
+  ~CompletingFakeNavigationManager() override;
+  // `web::FakeNavigationManager` overrides.
+  void LoadURLWithParams(
+      const NavigationManager::WebLoadParams& params) override;
+  void GoBack() override;
+  void GoForward() override;
+  // Configures whether navigations automatically fire `OnNavigationStarted` and
+  // `OnNavigationFinished`.
+  void set_auto_complete(bool auto_complete) { auto_complete_ = auto_complete; }
+  // Configures whether simulated navigations commit (`HasCommitted()`).
+  void set_has_committed(bool has_committed) { has_committed_ = has_committed; }
+  // Configures an optional error for simulated navigations.
+  void set_error(NSError* error) { error_ = error; }
+
+ private:
+  void SimulateNavigation(const GURL& url);
+  raw_ptr<web::FakeWebState> web_state_ = nullptr;
+  bool auto_complete_ = true;
+  bool has_committed_ = true;
+  NSError* error_ = nil;
+};
 
 // Fake `OriginGatingChecker::Delegate` that returns a fixed decision
 // (`is_allowed`) for testing.

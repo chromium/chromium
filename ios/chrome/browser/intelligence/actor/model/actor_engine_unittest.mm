@@ -70,7 +70,6 @@ class MockActorEngineExecutionUpdatesDelegate
   std::vector<DelegateCall> calls_;
   bool on_will_execute_called_ = false;
 };
-
 }  // namespace
 
 // Test fixture for ActorEngine.
@@ -686,8 +685,9 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   fake_web_state->SetBrowserState(profile_.get());
-  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
-  web::FakeNavigationManager* fake_navigation_manager_ptr =
+  auto fake_navigation_manager =
+      std::make_unique<CompletingFakeNavigationManager>(fake_web_state.get());
+  CompletingFakeNavigationManager* fake_navigation_manager_ptr =
       fake_navigation_manager.get();
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
   fake_web_state->SetCurrentURL(GURL("https://safe.com"));

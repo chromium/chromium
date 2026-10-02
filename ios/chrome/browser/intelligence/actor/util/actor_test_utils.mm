@@ -8,9 +8,50 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/types.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "url/gurl.h"
 
 namespace actor {
+
+CompletingFakeNavigationManager::CompletingFakeNavigationManager(
+    web::FakeWebState* web_state)
+    : web_state_(web_state) {}
+
+CompletingFakeNavigationManager::~CompletingFakeNavigationManager() = default;
+
+void CompletingFakeNavigationManager::LoadURLWithParams(
+    const NavigationManager::WebLoadParams& params) {
+  web::FakeNavigationManager::LoadURLWithParams(params);
+  SimulateNavigation(params.url);
+}
+
+void CompletingFakeNavigationManager::GoBack() {
+  web::FakeNavigationManager::GoBack();
+  SimulateNavigation(GetLastCommittedItem() ? GetLastCommittedItem()->GetURL()
+                                            : GURL());
+}
+
+void CompletingFakeNavigationManager::GoForward() {
+  web::FakeNavigationManager::GoForward();
+  SimulateNavigation(GetLastCommittedItem() ? GetLastCommittedItem()->GetURL()
+                                            : GURL());
+}
+
+void CompletingFakeNavigationManager::SimulateNavigation(const GURL& url) {
+  if (!auto_complete_) {
+    return;
+  }
+  web::FakeNavigationContext context;
+  context.SetUrl(url);
+  context.SetHasCommitted(has_committed_);
+  if (error_) {
+    context.SetError(error_);
+  }
+  web_state_->OnNavigationStarted(&context);
+  web_state_->OnNavigationFinished(&context);
+}
 
 FakeOriginGatingCheckerDelegate::FakeOriginGatingCheckerDelegate(
     bool is_allowed)

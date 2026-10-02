@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 
 #import "base/memory/weak_ptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/gtest_util.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -27,6 +29,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +53,6 @@ class TestUrlLoadingObserver : public UrlLoadingObserver {
   ui::PageTransition last_transition_type_ = ui::PAGE_TRANSITION_FIRST;
   base::WeakPtr<web::WebState> last_web_state_;
 };
-
 }  // namespace
 
 class NavigateToolTest : public PlatformTest {
@@ -181,7 +183,7 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
 TEST_F(NavigateToolTest, Execute_Success) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get()));
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
@@ -214,7 +216,7 @@ TEST_F(NavigateToolTest,
   for (int i = 0; i < 2; i++) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
+        std::make_unique<CompletingFakeNavigationManager>(web_state.get()));
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(i).Activate());
@@ -252,7 +254,7 @@ TEST_F(NavigateToolTest,
 TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get()));
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
@@ -383,7 +385,7 @@ TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get()));
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
@@ -422,7 +424,7 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get()));
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
@@ -481,4 +483,149 @@ TEST_F(NavigateToolTest, Execute_MissingChecker_Crashes) {
   EXPECT_CHECK_DEATH(maybe_tool.value()->Execute(future.GetCallback()));
 }
 
+// Test that navigation fails with kNavigateCommittedErrorPage when the
+// navigation finishes without committing.
+TEST_F(NavigateToolTest, Execute_NavigationFailsToCommit) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get());
+  nav_manager->set_has_committed(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  web::WebState* target_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(0);
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://www.example.com/");
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), target_web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kNavigateCommittedErrorPage,
+            result.code());
+}
+
+// Test that destroying the WebState while navigation is in progress returns
+// kTabWentAway.
+TEST_F(NavigateToolTest, Execute_WebStateDestroyedDuringNavigation) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state.get());
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  web::WebState* target_web_state =
+      browser_->GetWebStateList()->GetWebStateAt(0);
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://www.example.com/");
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), target_web_state);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  // Let the async origin gating check finish so LoadUrl starts observing.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !url_loading_observer_.last_url_.is_empty(); }));
+
+  // Close/destroy the tab while NavigateTool is waiting for
+  // DidFinishNavigation.
+  browser_->GetWebStateList()->DetachWebStateAt(0);
+
+  ToolExecutionResult result = future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(mojom::ActionResultCode::kTabWentAway, result.code());
+}
+
+// Test that cancelling NavigateTool while navigation is in progress prevents
+// the completion callback from running when navigation later finishes.
+TEST_F(NavigateToolTest, Cancel_DuringNavigation_DoesNotRunCallback) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://www.example.com/");
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+
+  // Wait for async origin gating check to finish so LoadUrl starts
+  // observing the WebState before cancelling.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !url_loading_observer_.last_url_.is_empty(); }));
+
+  maybe_tool.value()->Cancel();
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  web_state_ptr->OnNavigationStarted(&context);
+  web_state_ptr->OnNavigationFinished(&context);
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Test that cancelling NavigateTool before async origin gating check
+// completes prevents LoadUrl and the completion callback from running.
+TEST_F(NavigateToolTest, Cancel_BeforeGatingDecision_DoesNotLoadUrl) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  auto nav_manager =
+      std::make_unique<CompletingFakeNavigationManager>(web_state_ptr);
+  nav_manager->set_auto_complete(false);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://www.example.com/");
+  action.mutable_navigate()->set_tab_id(tab_id);
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr);
+  ASSERT_TRUE(maybe_tool.has_value());
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  maybe_tool.value()->Execute(future.GetCallback());
+  maybe_tool.value()->Cancel();
+
+  base::test::TestFuture<void> flush_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  ASSERT_TRUE(flush_future.Wait());
+
+  EXPECT_TRUE(url_loading_observer_.last_url_.is_empty());
+  EXPECT_FALSE(future.IsReady());
+}
 }  // namespace actor
