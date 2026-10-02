@@ -429,6 +429,7 @@ class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
     stream_created_ = true;
     last_device_id_ = device_id;
     last_params_ = params;
+    last_enable_agc_ = enable_agc;
     has_processing_config_ = !processing_config.is_null();
     if (processing_config) {
       last_processing_settings_ = processing_config->settings;
@@ -481,6 +482,7 @@ class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
   bool stream_created() const { return stream_created_; }
   const std::string& last_device_id() const { return last_device_id_; }
   const media::AudioParameters& last_params() const { return last_params_; }
+  bool last_enable_agc() const { return last_enable_agc_; }
   bool has_processing_config() const { return has_processing_config_; }
   const std::optional<media::AudioProcessingSettings>&
   last_processing_settings() const {
@@ -495,6 +497,7 @@ class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
   std::string last_device_id_;
   media::AudioParameters last_params_;
   bool stream_created_ = false;
+  bool last_enable_agc_ = false;
   bool has_processing_config_ = false;
   std::optional<media::AudioProcessingSettings> last_processing_settings_;
   std::string last_aec_output_device_id_;
@@ -504,9 +507,8 @@ TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
-#endif
 
-  // Configure hardware device parameters with ECHO_CANCELLER effect.
+  // Configure hardware device parameters with ECHO_CANCELLER effect only.
   media::AudioParameters hw_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Mono(), 48000, 480);
@@ -524,9 +526,49 @@ TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_factory.last_params().sample_rate() > 0; }));
 
-  // Hardware AEC preferred: software processing config should NOT be sent.
+  // Hardware AEC preferred, but software NS and AGC should still be enabled.
+  EXPECT_TRUE(fake_factory.has_processing_config());
+  ASSERT_TRUE(fake_factory.last_processing_settings().has_value());
+  EXPECT_FALSE(fake_factory.last_processing_settings()->echo_cancellation);
+  EXPECT_TRUE(fake_factory.last_processing_settings()->noise_suppression);
+  EXPECT_TRUE(fake_factory.last_processing_settings()->automatic_gain_control);
+  EXPECT_TRUE(fake_factory.last_enable_agc());
+  EXPECT_EQ(fake_factory.last_params().sample_rate(), 16000);
+  EXPECT_EQ(fake_factory.last_params().frames_per_buffer(), 160);
+#endif
+}
+
+TEST_F(AudioControllerTest,
+       HardwareSupportingAllEffectsDoesNotEngageSoftwareProcessing) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
+#endif
+
+  // Configure hardware device parameters with all effects supported in HW.
+  media::AudioParameters hw_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
+  hw_params.set_effects(media::AudioParameters::ECHO_CANCELLER |
+                        media::AudioParameters::NOISE_SUPPRESSION |
+                        media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
+  audio_manager_.SetInputStreamParameters(hw_params);
+
+  FakeStreamFactoryForAec fake_factory;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        fake_factory.Bind(std::move(receiver));
+      });
+
+  AudioController controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_factory.last_params().sample_rate() > 0; }));
+
+  // All effects handled by hardware: software processing config should NOT be
+  // sent, and the input device should be opened with native sample rate.
   EXPECT_FALSE(fake_factory.has_processing_config());
-  // The input device should be opened with native hardware sample rate.
+  EXPECT_FALSE(fake_factory.last_enable_agc());
   EXPECT_EQ(fake_factory.last_params().sample_rate(), 48000);
 }
 
@@ -558,6 +600,7 @@ TEST_F(AudioControllerTest, HardwareLackingAecEngagesSoftwareAec) {
   EXPECT_TRUE(fake_factory.last_processing_settings()->echo_cancellation);
   EXPECT_TRUE(fake_factory.last_processing_settings()->noise_suppression);
   EXPECT_TRUE(fake_factory.last_processing_settings()->automatic_gain_control);
+  EXPECT_TRUE(fake_factory.last_enable_agc());
 
   // Audio service delivers 10ms (160 frames) at 16kHz mono.
   EXPECT_EQ(fake_factory.last_params().sample_rate(), 16000);

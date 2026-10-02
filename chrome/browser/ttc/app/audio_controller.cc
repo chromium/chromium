@@ -87,15 +87,6 @@ ErrorCode CaptureErrorToErrorCode(media::AudioCapturerSource::ErrorCode code) {
 std::optional<media::AudioProcessingSettings>
 GetSoftwareCaptureSettingsIfNeeded(
     const media::AudioParameters& device_params) {
-  // 1. Hardware First: prefer hardware AEC if supported by the device.
-  const bool device_supports_hw_aec =
-      (device_params.effects() & media::AudioParameters::ECHO_CANCELLER) != 0;
-  if (device_supports_hw_aec) {
-    return std::nullopt;
-  }
-
-  // 2. Software Fallback: fall back to WebRTC software AEC for unsupported
-  // hardware, provided Chrome-wide echo cancellation is enabled.
   if (!media::IsChromeWideEchoCancellationEnabled()) {
     return std::nullopt;
   }
@@ -109,12 +100,22 @@ GetSoftwareCaptureSettingsIfNeeded(
     return std::nullopt;
   }
 
-  return media::AudioProcessingSettings{
-      .echo_cancellation = true,
-      .noise_suppression = true,
-      .automatic_gain_control = true,
+  // Prefer hardware effects if supported by the device; fall back to WebRTC
+  // software processing for any effect not provided by hardware.
+  const int effects = device_params.effects();
+  media::AudioProcessingSettings settings{
+      .echo_cancellation =
+          (effects & media::AudioParameters::ECHO_CANCELLER) == 0,
+      .noise_suppression =
+          (effects & media::AudioParameters::NOISE_SUPPRESSION) == 0,
+      .automatic_gain_control =
+          (effects & media::AudioParameters::AUTOMATIC_GAIN_CONTROL) == 0,
       .multi_channel_capture_processing = false,
   };
+  if (!settings.NeedWebrtcAudioProcessing()) {
+    return std::nullopt;
+  }
+  return settings;
 }
 
 }  // namespace
@@ -308,11 +309,13 @@ void AudioController::OnInputDeviceParametersReceived(
   audio_capturer_source_ = audio::CreateInputDevice(
       std::move(stream_factory), device_id,
       audio::DeadStreamDetection::kEnabled, processing_settings);
+  audio_capturer_source_->Initialize(input_params, this);
   if (processing_settings.has_value()) {
     audio_capturer_source_->SetOutputDeviceForAec(
         media::AudioDeviceDescription::kDefaultDeviceId);
+    audio_capturer_source_->SetAutomaticGainControl(
+        processing_settings->automatic_gain_control);
   }
-  audio_capturer_source_->Initialize(input_params, this);
   audio_capturer_source_->Start();
 }
 
