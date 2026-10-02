@@ -186,4 +186,32 @@ bool ContextualTasksWebContentsUserData::IsPrimarySearchMessageSender(
   return false;
 }
 
+void ContextualTasksWebContentsUserData::RecordTabIdMapping(
+    int32_t tab_handle_id,
+    int32_t session_tab_id) {
+  tab_handle_to_session_id_[tab_handle_id] = session_tab_id;
+}
+
+std::optional<int32_t>
+ContextualTasksWebContentsUserData::GetSessionTabIdForTabHandle(
+    int32_t tab_handle_id) const {
+  auto it = tab_handle_to_session_id_.find(tab_handle_id);
+  if (it != tab_handle_to_session_id_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+std::optional<int32_t>
+ContextualTasksWebContentsUserData::GetTabHandleForSessionTabId(
+    int32_t session_tab_id) const {
+  for (const auto& [tab_handle_id, mapped_session_id] :
+       tab_handle_to_session_id_) {
+    if (mapped_session_id == session_tab_id) {
+      return tab_handle_id;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace contextual_tasks
