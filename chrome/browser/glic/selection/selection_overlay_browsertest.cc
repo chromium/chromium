@@ -4,9 +4,12 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
@@ -27,6 +30,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -36,6 +40,7 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace glic {
 
@@ -462,6 +467,143 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   controller->Close();
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+class SelectionOverlayTextSelectionBrowserTest : public GlicBrowserTest {
+ public:
+  SelectionOverlayTextSelectionBrowserTest() {
+    // The inline cue widget is not needed to pre-select the text selection.
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kGlicCaptureRegion,
+         ::features::kGlicSelectionOverlayPrompt,
+         ::features::kGlicSelectionSmallChip},
+        {::features::kGlicSelectionPrompt});
+  }
+  ~SelectionOverlayTextSelectionBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Same as `SelectionOverlayTextSelectionBrowserTest`, but with the small chip
+// disabled.
+class SelectionOverlayTextSelectionNoSmallChipBrowserTest
+    : public GlicBrowserTest {
+ public:
+  SelectionOverlayTextSelectionNoSmallChipBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kGlicCaptureRegion,
+         ::features::kGlicSelectionOverlayPrompt},
+        {::features::kGlicSelectionSmallChip,
+         ::features::kGlicSelectionPrompt});
+  }
+  ~SelectionOverlayTextSelectionNoSmallChipBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+namespace {
+
+// Starts a capture session the way the web client does. The observer's
+// receiver is dropped because these tests only check browser state.
+void StartCaptureRegion(tabs::TabInterface* tab) {
+  mojo::PendingRemote<mojom::CaptureRegionObserver> observer;
+  std::ignore = observer.InitWithNewPipeAndPassReceiver();
+  SelectionOverlayController::CaptureRegion(
+      tab,
+      GlicKeyedService::Get(tab->GetProfile())
+          ->active_instance_sharing_manager(),
+      std::move(observer), /*options=*/nullptr);
+}
+
+// Selects all text on the page and waits for the renderer to report the
+// selection bounds, which arrive asynchronously.
+[[nodiscard]] bool SelectAllAndWaitForBounds(
+    content::WebContents* web_contents) {
+  web_contents->SelectAll();
+  return base::test::RunUntil([&]() {
+    std::optional<gfx::Rect> bounds = web_contents->GetTextSelectionBounds(
+        web_contents->GetPrimaryMainFrame());
+    return bounds.has_value() && !bounds->IsEmpty();
+  });
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionBrowserTest,
+                       CaptureRegionPreselectsTextSelection) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  StartCaptureRegion(tab);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  controller->Close();
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionNoSmallChipBrowserTest,
+                       CaptureRegionIgnoresSelectionWithoutSmallChip) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  // A text selection exists, but the small chip is disabled.
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  StartCaptureRegion(tab);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+
+  controller->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionBrowserTest,
+                       CaptureRegionIgnoresClearedSelection) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  // Select text so that the observer records the selected frame.
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+
+  // Clear the selection. Starting a capture session afterwards must not reuse
+  // the previous selection.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "window.getSelection().removeAllRanges();"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  StartCaptureRegion(tab);
+
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+
+  controller->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

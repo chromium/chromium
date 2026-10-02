@@ -183,6 +183,10 @@ class SelectionOverlayController
 
   // Render all the `selected_regions_` on top of `redacted_screenshot_`.
   void RenderRegions(bool should_focus_panel);
+  // Renders the pre-selected regions once the overlay is bound and the page
+  // context is ready. Called from each of those steps, so whichever finishes
+  // last does the work.
+  void RenderPendingRegions();
 
   struct SelectedRegionData {
     explicit SelectedRegionData(selection::SelectedRegionPtr region);
@@ -212,6 +216,11 @@ class SelectionOverlayController
       uint32_t start_offset,
       uint32_t end_offset);
   void GetSuggestedActionsImpl(SuggestedActionsCallback callback);
+  // Replaces any existing selected regions with a single region created from
+  // `selection_bounds`, in screen coordinates. If `selected_frame` is live,
+  // also requests the text surrounding its selection.
+  void SetRegionFromBounds(content::RenderFrameHost* selected_frame,
+                           const gfx::Rect& selection_bounds);
   void RequestNewSuggestions(SelectedRegionData& region_data);
   void OnSuggestionsReceived(
       const base::UnguessableToken& region_id,
@@ -239,6 +248,9 @@ class SelectionOverlayController
   bool screenshot_available_ = false;
   selection::InteractionOptionsPtr interaction_options_ =
       selection::InteractionOptions::New();
+  // Whether the regions pre-selected at the start of the session still need
+  // to be sent to the web client.
+  bool staged_region_needs_render_ = false;
   SkBitmap initial_rgb_screenshot_;
   SkBitmap redacted_screenshot_;
   mojom::TabContextResultPtr tab_context_;

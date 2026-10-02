@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -418,6 +419,23 @@ void SelectionOverlayController::CaptureRegion(
     LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
     return;
   }
+  // When the small chip is enabled, pre-select the tab's current text
+  // selection.
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
+    if (auto* selection_observer = GlicSelectionObserver::From(tab)) {
+      if (std::optional<gfx::Rect> bounds =
+              selection_observer->GetCurrentSelectionBounds()) {
+        selection_overlay_controller->SetRegionFromBounds(
+            selection_observer->GetSelectedFrame(), *bounds);
+        // The overlay and the page context are not ready yet, so defer
+        // sending the region to the web client.
+        selection_overlay_controller->staged_region_needs_render_ =
+            selection_overlay_controller->GetSelectedRegionCount() > 0;
+        selection_observer->DismissUI(
+            GlicSelectionObserver::DismissReason::kActionTaken);
+      }
+    }
+  }
   selection_overlay_controller->BindCaptureRegionObserver(std::move(observer));
   selection_overlay_controller->Show(std::move(options));
 }
@@ -432,6 +450,13 @@ void SelectionOverlayController::ShowWithSelection(
     const gfx::Rect& selection_bounds,
     selection::InteractionOptionsPtr interaction_options) {
   interaction_options_ = std::move(interaction_options);
+  SetRegionFromBounds(selected_frame, selection_bounds);
+  Show(/*options=*/nullptr);
+}
+
+void SelectionOverlayController::SetRegionFromBounds(
+    content::RenderFrameHost* selected_frame,
+    const gfx::Rect& selection_bounds) {
   selected_regions_.clear();
   active_region_id_.reset();
   surrounding_text_timer_.Stop();
@@ -459,7 +484,6 @@ void SelectionOverlayController::ShowWithSelection(
       }
     }
   }
-  Show(/*options=*/nullptr);
 }
 
 void SelectionOverlayController::Close() {
@@ -543,6 +567,8 @@ void SelectionOverlayController::InitializeOverlay() {
     }
     page_->SetPostRegionSelections(std::move(regions));
   }
+
+  RenderPendingRegions();
 }
 
 bool SelectionOverlayController::HandleKeyboardEvent(
@@ -637,6 +663,8 @@ void SelectionOverlayController::PageContextReady(
       suggestion_service->UpdateScreenContent(redacted_screenshot_, apc);
     }
   }
+
+  RenderPendingRegions();
 }
 
 void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
@@ -1052,6 +1080,7 @@ void SelectionOverlayController::Reset() {
   redacted_screenshot_.reset();
   screenshot_available_ = false;
   interaction_options_ = selection::InteractionOptions::New();
+  staged_region_needs_render_ = false;
   selected_regions_.clear();
   active_region_id_.reset();
   surrounding_text_timer_.Stop();
@@ -1061,6 +1090,20 @@ void SelectionOverlayController::Reset() {
   capture_region_observer_.reset();
   options_.reset();
   overlay_web_view_focus_subscription_ = {};
+}
+
+void SelectionOverlayController::RenderPendingRegions() {
+  if (!staged_region_needs_render_) {
+    return;
+  }
+  // The web client cannot use the regions until the overlay is bound and the
+  // page context fetch has completed.
+  if (!page_ || !tab_context_ || redacted_screenshot_.empty()) {
+    return;
+  }
+  staged_region_needs_render_ = false;
+  // Keep focus on the overlay so that the user can adjust the region.
+  RenderRegions(/*should_focus_panel=*/false);
 }
 
 void SelectionOverlayController::RenderRegions(bool should_focus_panel) {

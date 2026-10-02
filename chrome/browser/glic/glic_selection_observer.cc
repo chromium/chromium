@@ -1214,6 +1214,25 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
                        SelectionSource::kAutomatic);
 }
 
+std::optional<gfx::Rect> GlicSelectionObserver::GetCurrentSelectionBounds()
+    const {
+  if (auto* selected_frame = GetSelectedFrame()) {
+    std::optional<gfx::Rect> bounds =
+        web_contents()->GetTextSelectionBounds(selected_frame);
+    if (bounds.has_value() && !bounds->IsEmpty()) {
+      return bounds;
+    }
+  }
+  return std::nullopt;
+}
+
+content::RenderFrameHost* GlicSelectionObserver::GetSelectedFrame() const {
+  if (!web_contents() || !last_selection_frame_token_.has_value()) {
+    return nullptr;
+  }
+  return content::RenderFrameHost::FromFrameToken(*last_selection_frame_token_);
+}
+
 void GlicSelectionObserver::ShowSelectionOverlay() {
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
@@ -1226,18 +1245,21 @@ void GlicSelectionObserver::ShowSelectionOverlay() {
     return;
   }
 
-  content::RenderFrameHost* selected_frame = nullptr;
-  std::optional<gfx::Rect> bounds;
-  if (last_selection_frame_token_.has_value()) {
-    selected_frame = content::RenderFrameHost::FromFrameToken(
-        *last_selection_frame_token_);
-    if (selected_frame) {
-      bounds = web_contents()->GetTextSelectionBounds(selected_frame);
-    }
+  // When the side panel is open, let the web client start the capture session.
+  if (glic_keyed_service_ && IsSidePanelOpen() &&
+      controller->state() == OverlayBaseController::State::kOff) {
+    GlicInvokeOptions options(
+        Target(*tab_interface),
+        glic::mojom::InvocationSource::kCaptureRegionHotkey);
+    options.wait_for_panel_open = true;
+    glic_keyed_service_->Invoke(std::move(options));
+    return;
   }
-  if (bounds.has_value() && !bounds->IsEmpty()) {
+  // When the side panel is not open, show the overlay directly with the
+  // current selection.
+  if (std::optional<gfx::Rect> bounds = GetCurrentSelectionBounds()) {
     controller->ShowWithSelection(
-        selected_frame, *bounds,
+        GetSelectedFrame(), *bounds,
         selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true));
   } else {

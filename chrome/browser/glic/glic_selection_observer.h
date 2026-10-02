@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 class Page;
@@ -92,16 +93,24 @@ class GlicSelectionObserver
     return has_sent_selection_context_;
   }
 
+  // Returns the bounds of the tab's current text selection if it exists, in
+  // screen coordinates. Returns `std::nullopt` otherwise.
+  std::optional<gfx::Rect> GetCurrentSelectionBounds() const;
+
+  // Returns the frame holding the tab's most recent text selection, or
+  // `nullptr` if there is none.
+  content::RenderFrameHost* GetSelectedFrame() const;
+
+  // Dismisses the selection UI.
+  // Virtual for testing.
+  virtual void DismissUI(DismissReason reason);
+
  protected:
   // Updates the Glic UI (nudge or panel) with the selected text.
   // Virtual for testing.
   virtual void UpdateSelectionState(const std::u16string& text,
                                     bool is_pending_selection,
                                     SelectionSource source);
-
-  // Dismisses the selection UI (widget and/or nudge).
-  // Virtual for testing.
-  virtual void DismissUI(DismissReason reason);
 
   // Returns true if the text selection is shared for the current profile.
   // Virtual for testing.

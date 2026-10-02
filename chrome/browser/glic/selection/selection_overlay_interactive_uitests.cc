@@ -15,6 +15,7 @@
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -296,6 +297,19 @@ class SelectionOverlayInteractiveTestWithSplitView
   }
 };
 
+class SelectionOverlayInteractiveTestWithTextSelection
+    : public SelectionOverlayInteractiveTest {
+ public:
+  SelectionOverlayInteractiveTestWithTextSelection() {
+    // The inline cue widget is not needed to pre-select the text selection.
+    feature_list_.InitWithFeatures({::features::kGlicSelectionSmallChip},
+                                   {::features::kGlicSelectionPrompt});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
@@ -315,6 +329,49 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}),
       WaitForShow(kLensPreselectionBubbleElementId));
+}
+
+// Starting a capture session while text is selected sends the pre-selected
+// region to the web client without the user adjusting it.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithTextSelection,
+                       PreSelectedRegionReachesClient) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasSelectionBounds);
+
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab,
+                          embedded_test_server()->GetURL("/title2.html")),
+      // Focus the page so that the text selection is reported.
+      WaitForWebContentsPainted(kActiveTab),
+      MoveMouseTo(kActiveTab, DeepQuery{"body"}), ClickMouse(), Do([this]() {
+        browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
+      }),
+      PollState(
+          kHasSelectionBounds,
+          [this]() {
+            auto* selection_observer = GlicSelectionObserver::From(
+                browser()->tab_strip_model()->GetActiveTab());
+            return selection_observer &&
+                   selection_observer->GetCurrentSelectionBounds().has_value();
+          }),
+      WaitForState(kHasSelectionBounds, true), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      // The region must also reach the web client, which only happens if the
+      // deferred render runs once the overlay and the page context are ready.
+      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
+                        "el => el.innerText.includes('Region: ')"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
