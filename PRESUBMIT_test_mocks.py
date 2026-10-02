@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 _REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -69,6 +70,19 @@ class MockInputApi(object):
   attribute as the list of changed files.
   """
 
+    DEFAULT_FILES_TO_CHECK = (
+        r'.+\.c$',
+        r'.+\.cc$',
+        r'.+\.cpp$',
+        r'.+\.h$',
+        r'.+\.m$',
+        r'.+\.mm$',
+        r'.+\.go$',
+        r'.+\.py$',
+        r'.+\.js$',
+        r'.+\.ts$',
+        r'.+\.rs$',
+    )
     DEFAULT_FILES_TO_SKIP = ()
 
     def __init__(self):
@@ -77,6 +91,7 @@ class MockInputApi(object):
         self.fnmatch = fnmatch
         self.json = json
         self.re = re
+        self.time = time
 
         # We want os_path.exists() and os_path.isfile() to work for files
         # that are both in the filesystem and mock files we have added
@@ -142,7 +157,10 @@ class MockInputApi(object):
         self.os_path.isfile = mock_isfile
         self.glob = mock_glob
 
-    def AffectedFiles(self, include_deletes=True, file_filter=None):
+    def AffectedFiles(self,
+                      include_deletes=True,
+                      file_filter=None,
+                      include_dirs=False):
         for file in self.files:
             if file_filter and not file_filter(file):
                 continue
@@ -437,10 +455,15 @@ class MockChange(object):
         return self._changed_files
 
     def AffectedFiles(self,
-                      include_dirs=False,
                       include_deletes=True,
-                      file_filter=None):
-        return self._changed_files
+                      file_filter=None,
+                      include_dirs=False):
+        files = self._changed_files
+        if not include_deletes:
+            files = list(filter(lambda f: f.Action() != 'D', files))
+        if file_filter:
+            files = list(filter(file_filter, files))
+        return files
 
     def GitFootersFromDescription(self):
         return self.footers

@@ -30,7 +30,7 @@ finally:
 import PRESUBMIT
 
 from PRESUBMIT_test_mocks import MockFile, MockAffectedFile
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockChange
 
 _TEST_DATA_DIR = 'base/test/data/presubmit'
 
@@ -57,6 +57,213 @@ class VersionControlConflictsTest(unittest.TestCase):
         errors = PRESUBMIT._CheckForVersionControlConflictsInFile(
             MockInputApi(), MockFile('some/polymer/README.md', lines))
         self.assertEqual(0, len(errors))
+
+    def testIgnoresVendoredCrates(self):
+        lines = [
+            '<<<<<<< HEAD', 'pub fn foo() {}', '=======', 'pub fn bar() {}',
+            '>>>>>>> main'
+        ]
+        vendored_paths = [
+            'third_party/rust/chromium_crates_io/vendor/serde-1.0/src/lib.rs',
+            'third_party\\rust\\chromium_crates_io\\vendor\\syn\\src\\lib.rs',
+        ]
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [MockFile(p, lines) for p in vendored_paths]
+        results = PRESUBMIT.CheckForVersionControlConflicts(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testChecksFirstPartyAndMixedChanges(self):
+        lines = [
+            '<<<<<<< HEAD', 'conflict line', '=======', 'resolved line',
+            '>>>>>>> main'
+        ]
+        mixed_files = [
+            MockFile('chrome/browser/ui/foo.cc', lines),
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                lines),
+            # Edge case: a crate named "vendor" must not be bypassed.
+            MockFile('third_party/rust/vendor/v1/BUILD.gn', lines),
+            MockFile('third_party/rust/chromium_crates_io/Cargo.toml', lines),
+        ]
+        mock_input_api = MockInputApi()
+        mock_input_api.files = mixed_files
+        results = PRESUBMIT.CheckForVersionControlConflicts(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        # 3 conflict markers in each of the 3 first-party files = 9 errors.
+        self.assertEqual(9, len(results[0].items))
+        reported_paths = ' '.join(results[0].items)
+        self.assertIn('chrome/browser/ui/foo.cc', reported_paths)
+        self.assertIn('third_party/rust/vendor/v1/BUILD.gn', reported_paths)
+        self.assertIn('third_party/rust/chromium_crates_io/Cargo.toml',
+                      reported_paths)
+        self.assertNotIn('serde', reported_paths)
+
+
+class CheckCommonVendoredBypassTest(unittest.TestCase):
+
+    def testVendoredCratesPathMatching(self):
+        self.assertTrue(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('third_party/rust/chromium_crates_io/vendor/foo.rs',
+                         [])))
+        self.assertTrue(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('third_party/rust/chromium_crates_io/vendor', [])))
+        self.assertTrue(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile(
+                    'third_party\\rust\\chromium_crates_io\\vendor\\foo.rs',
+                    [])))
+        self.assertTrue(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('third_party/rust/other_store/vendor/bar.rs', [])))
+        # Crate named "vendor" is first-party code and must not match.
+        self.assertFalse(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('third_party/rust/vendor/v1/BUILD.gn', [])))
+        self.assertFalse(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('third_party/rust/chromium_crates_io/Cargo.toml',
+                         [])))
+        self.assertFalse(
+            PRESUBMIT._IsVendoredCratesFile(
+                MockFile('chrome/browser/ui/foo.cc', [])))
+
+    def testCheckPatchFormattedBypassesVendoredCrates(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('chrome/browser/ui/foo.cc', ['int x = 1;']),
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                ['pub fn foo() {}']),
+        ]
+        mock_input_api.canned_checks.CheckPatchFormatted = mock.Mock(
+            return_value=[])
+
+        PRESUBMIT.CheckPatchFormatted(mock_input_api, MockOutputApi())
+
+        mock_input_api.canned_checks.CheckPatchFormatted.assert_called_once()
+        call_args, call_kwargs = (
+            mock_input_api.canned_checks.CheckPatchFormatted.call_args)
+        self.assertIs(call_args[0], mock_input_api)
+        file_filter = call_kwargs.get('file_filter')
+        self.assertIsNotNone(file_filter)
+        self.assertTrue(file_filter(MockFile('chrome/browser/ui/foo.cc', [])))
+        serde_path = (
+            'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs')
+        self.assertFalse(file_filter(MockFile(serde_path, [])))
+
+    def testFunctionalCheckInclusiveLanguageBypass(self):
+        try:
+            import presubmit_canned_checks
+        except ImportError:
+            raise unittest.SkipTest('presubmit_canned_checks not available')
+
+        mock_input_api = MockInputApi()
+        mock_input_api.ReadFile = mock.Mock(return_value='')
+        mock_input_api.files = [
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                ['let branch = "master";']),  # nocheck
+        ]
+        results = (presubmit_canned_checks.CheckInclusiveLanguage(
+            mock_input_api,
+            MockOutputApi(),
+            excluded_directories_relative_path=['exempt.txt'],
+            non_inclusive_terms=PRESUBMIT._NON_INCLUSIVE_TERMS,
+            source_file_filter=lambda f: not PRESUBMIT._IsVendoredCratesFile(
+                f)))
+        self.assertEqual(0, len(results))
+
+        mock_input_api.files = [
+            MockFile('chrome/browser/ui/foo.cc',
+                     ['const char* kBranch = "master";']),  # nocheck
+        ]
+        results_fp = (presubmit_canned_checks.CheckInclusiveLanguage(
+            mock_input_api,
+            MockOutputApi(),
+            excluded_directories_relative_path=['exempt.txt'],
+            non_inclusive_terms=PRESUBMIT._NON_INCLUSIVE_TERMS,
+            source_file_filter=lambda f: not PRESUBMIT._IsVendoredCratesFile(
+                f)))
+        self.assertEqual(1, len(results_fp))
+
+    def testCheckCommonBypassesVendoredCrates(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('chrome/browser/ui/foo.cc', ['int x = 1;']),
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                ['pub fn foo() {}']),
+        ]
+        mock_input_api.canned_checks.PanProjectChecks = mock.Mock(
+            return_value=[])
+        mock_input_api.canned_checks.CheckInclusiveLanguage = mock.Mock(
+            return_value=[])
+        mock_input_api.canned_checks.CheckChangeHasNoTabs = mock.Mock(
+            return_value=[])
+        mock_input_api.canned_checks.CheckOwnersDirMetadataExclusive = (
+            mock.Mock(return_value=[]))
+        mock_input_api.canned_checks.CheckNoNewMetadataInOwners = mock.Mock(
+            return_value=[])
+        mock_input_api.canned_checks.CheckNewDEPSHooksHasRequiredReviewers = (
+            mock.Mock(return_value=[]))
+        mock_input_api.canned_checks.CheckValidHostsInDEPSOnUpload = (
+            mock.Mock(return_value=[]))
+
+        PRESUBMIT.CheckCommon(mock_input_api, MockOutputApi())
+
+        mock_input_api.canned_checks.PanProjectChecks.assert_called_once()
+        call_args, call_kwargs = (
+            mock_input_api.canned_checks.PanProjectChecks.call_args)
+        self.assertIs(call_args[0], mock_input_api)
+        excluded_paths = call_kwargs.get('excluded_paths')
+        self.assertIn(PRESUBMIT._VENDORED_CRATES_PATH_RE, excluded_paths)
+        (mock_input_api.canned_checks.CheckInclusiveLanguage
+         .assert_called_once())
+        call_args, call_kwargs = (
+            mock_input_api.canned_checks.CheckInclusiveLanguage.call_args)
+        self.assertIs(call_args[0], mock_input_api)
+        source_file_filter = call_kwargs.get('source_file_filter')
+        self.assertIsNotNone(source_file_filter)
+        self.assertTrue(
+            source_file_filter(MockFile('chrome/browser/ui/foo.cc', [])))
+        serde_path = (
+            'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs')
+        self.assertFalse(source_file_filter(MockFile(serde_path, [])))
+
+    def testCheckGoogleSupportAnswerUrlBypassesVendoredCrates(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                ['support.google.com/chrome/answer/123']),
+            MockFile('chrome/browser/ui/foo.cc',
+                     ['support.google.com/chrome/answer/123']),
+        ]
+        results = PRESUBMIT.CheckGoogleSupportAnswerUrlOnUpload(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('chrome/browser/ui/foo.cc', results[0].items[0])
+
+    def testCheckTodoBugReferencesBypassesVendoredCrates(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                'third_party/rust/chromium_crates_io/vendor/serde/src/lib.rs',
+                ['// TODO(123): fix']),
+            MockFile('third_party/rust/other_store/vendor/foo/src/lib.rs',
+                     ['// TODO(456): fix']),
+            MockFile('chrome/browser/ui/foo.cc', ['// TODO(789): fix']),
+        ]
+        results = PRESUBMIT.CheckTodoBugReferences(mock_input_api,
+                                                   MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('chrome/browser/ui/foo.cc', results[0].items[0])
+
 
 
 class BadExtensionsTest(unittest.TestCase):

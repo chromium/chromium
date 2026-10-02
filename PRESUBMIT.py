@@ -15,12 +15,19 @@ For speed, checks should short-circuit based on affected file extensions
 # pylint: disable=g-import-not-at-top
 
 import dataclasses
+import re
 from typing import Callable
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
 PRESUBMIT_VERSION = '2.0.0'
+
+# Path regex for vendored third-party code (e.g. Rust crates in
+# //third_party/rust/<crate_store>/vendor/) that should be bypassed for
+# Chromium-specific presubmit checks.
+_VENDORED_CRATES_PATH_RE = r'^third_party/rust/[^/]+/vendor(?:/|$)'
+_COMPILED_VENDORED_CRATES_PATH_RE = re.compile(_VENDORED_CRATES_PATH_RE)
 
 _EXCLUDED_PATHS = (
     # Generated file
@@ -39,6 +46,8 @@ _EXCLUDED_PATHS = (
     r'^third_party/breakpad/.*',
     # sqlite is an imported third party dependency.
     r'^third_party/sqlite/.*',
+    # Vendored third-party Rust crates managed by gnrt.
+    _VENDORED_CRATES_PATH_RE,
     r'^v8/.*',
     r'.*MakeFile$',
     r'.+_autogen\.h$',
@@ -54,6 +63,7 @@ _EXCLUDED_PATHS = (
     # Third-party dependency frozen at a fixed version.
     r'chrome/test/data/webui/chromeos/chai_v4.js$',
 )
+
 
 _EXCLUDED_SET_NO_PARENT_PATHS = (
     # It's for historical reasons that blink isn't a top level directory, where
@@ -3068,7 +3078,10 @@ def CheckPydepsNeedsUpdating(input_api, output_api):
 
 def CheckPatchFormatted(input_api, output_api):
     """Checks that the patch is formatted properly."""
-    return input_api.canned_checks.CheckPatchFormatted(input_api, output_api)
+    return input_api.canned_checks.CheckPatchFormatted(
+        input_api,
+        output_api,
+        file_filter=lambda f: not _IsVendoredCratesFile(f))
 
 
 def CheckStableMojomChanges(input_api, output_api):
@@ -4037,9 +4050,20 @@ def _CheckForVersionControlConflictsInFile(input_api, f):
 
 
 def CheckForVersionControlConflicts(input_api, output_api):
-    """Usually this is not intentional and will cause a compile failure."""
+    """Usually this is not intentional and will cause a compile failure.
+
+    Vendored third-party code (//third_party/rust/<crate_store>/vendor/) is
+    bypassed because these files are pristine upstream extracts managed and
+    checksum-verified by `gnrt vendor`. Running ChangedContents() across
+    thousands of vendored files in large crate rolls adds significant
+    overhead (125-430ms) without benefit, as manual edits and git conflict
+    resolution occur in first-party patches, Cargo.toml, or gnrt configs,
+    not raw vendored files.
+    """
     errors = []
-    for f in input_api.AffectedFiles():
+    for f in input_api.AffectedFiles(
+            include_deletes=False,
+            file_filter=lambda f: not _IsVendoredCratesFile(f)):
         errors.extend(_CheckForVersionControlConflictsInFile(input_api, f))
 
     results = []
@@ -4054,7 +4078,8 @@ def CheckForVersionControlConflicts(input_api, output_api):
 def CheckGoogleSupportAnswerUrlOnUpload(input_api, output_api):
     pattern = input_api.re.compile(r'support\.google\.com\/chrome.*/answer')
     errors = []
-    for f in input_api.AffectedFiles():
+    for f in input_api.AffectedFiles(
+            file_filter=lambda f: not _IsVendoredCratesFile(f)):
         for line_num, line in f.ChangedContents():
             if pattern.search(line):
                 errors.append('    %s:%d %s' % (f.LocalPath(), line_num, line))
@@ -6539,6 +6564,12 @@ _NON_INCLUSIVE_TERMS = (
         True), )
 
 
+def _IsVendoredCratesFile(affected_file):
+    path = affected_file.LocalPath().replace('\\', '/')
+    return (path.startswith('third_party/rust/') and
+            bool(_COMPILED_VENDORED_CRATES_PATH_RE.match(path)))
+
+
 def CheckCommon(input_api, output_api):
     """Checks common to both upload and commit.
 
@@ -6567,6 +6598,7 @@ def CheckCommon(input_api, output_api):
     results.extend(
         input_api.canned_checks.CheckNoNewMetadataInOwners(
             input_api, output_api))
+
     results.extend(
         input_api.canned_checks.CheckInclusiveLanguage(
             input_api,
@@ -6574,7 +6606,9 @@ def CheckCommon(input_api, output_api):
             excluded_directories_relative_path=[
                 'infra', 'inclusive_language_presubmit_exempt_dirs.txt'
             ],
-            non_inclusive_terms=_NON_INCLUSIVE_TERMS))
+            non_inclusive_terms=_NON_INCLUSIVE_TERMS,
+            source_file_filter=lambda f: not _IsVendoredCratesFile(f)))
+
     results.extend(
         input_api.canned_checks.CheckNewDEPSHooksHasRequiredReviewers(
             input_api, output_api))
@@ -8343,9 +8377,7 @@ def CheckInlineConstexprDefinitionsInHeaders(input_api, output_api):
 def CheckTodoBugReferences(input_api, output_api):
     """Checks that bugs in TODOs use updated issue tracker IDs."""
 
-    files_to_skip = [
-        'PRESUBMIT_test.py', r'^third_party/rust/chromium_crates_io/vendor/.*'
-    ]
+    files_to_skip = ['PRESUBMIT_test.py', _VENDORED_CRATES_PATH_RE]
 
     def _FilterFile(affected_file):
         return input_api.FilterSourceFile(affected_file,
