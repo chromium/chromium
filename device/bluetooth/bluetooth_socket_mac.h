@@ -17,7 +17,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -32,6 +31,7 @@ class IOBufferWithSize;
 
 namespace device {
 
+class BluetoothAdapterMac;
 class BluetoothChannelMac;
 
 // Implements the BluetoothSocket class for the macOS platform.
@@ -152,10 +152,8 @@ class BluetoothSocketMac : public BluetoothSocket {
   BluetoothSocketMac();
   ~BluetoothSocketMac() override;
 
+  // Accepts a single incoming connection.
   void AcceptConnectionRequest();
-  void OnDeviceStateRetrievedForAccept(
-      std::unique_ptr<BluetoothChannelMac> channel,
-      BluetoothAdapterMac::DeviceInfo device_info);
 
   void ReleaseChannel();
   void ReleaseListener();

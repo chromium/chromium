@@ -31,7 +31,6 @@
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
@@ -211,18 +210,6 @@ std::string UuidSetToString(const device::BluetoothDevice::UUIDSet& uuids) {
 
 namespace device {
 
-BluetoothAdapterMac::DeviceInfo::DeviceInfo() = default;
-BluetoothAdapterMac::DeviceInfo::DeviceInfo(DeviceInfo&&) = default;
-BluetoothAdapterMac::DeviceInfo& BluetoothAdapterMac::DeviceInfo::operator=(
-    DeviceInfo&&) = default;
-BluetoothAdapterMac::DeviceInfo::~DeviceInfo() = default;
-
-BluetoothAdapterMac::AdapterState::AdapterState() = default;
-BluetoothAdapterMac::AdapterState::AdapterState(AdapterState&&) = default;
-BluetoothAdapterMac::AdapterState& BluetoothAdapterMac::AdapterState::operator=(
-    AdapterState&&) = default;
-BluetoothAdapterMac::AdapterState::~AdapterState() = default;
-
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterMac::CreateAdapter();
@@ -248,11 +235,13 @@ scoped_refptr<BluetoothAdapterMac> BluetoothAdapterMac::CreateAdapterForTest(
 
 BluetoothAdapterMac::BluetoothAdapterMac()
     : controller_state_function_(
-          base::BindRepeating(&BluetoothAdapterMac::GetHostControllerState)),
+          base::BindRepeating(&BluetoothAdapterMac::GetHostControllerState,
+                              base::Unretained(this))),
       power_state_function_(
           base::BindRepeating(IOBluetoothPreferenceSetControllerPowerState)),
       device_paired_status_callback_(
-          base::BindRepeating(&IsDeviceSystemPaired)) {}
+          base::BindRepeating(&IsDeviceSystemPaired)) {
+}
 
 BluetoothAdapterMac::~BluetoothAdapterMac() {
   if (connect_listener_bridge_) {
@@ -364,14 +353,7 @@ void BluetoothAdapterMac::CreateL2capService(
 }
 
 void BluetoothAdapterMac::ClassicDeviceFound(IOBluetoothDevice* device) {
-  IOBluetoothDevice* __strong strong_device = device;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&BluetoothAdapterMac::RetrieveDeviceState, strong_device),
-      base::BindOnce(&BluetoothAdapterMac::OnConnectedDeviceStateRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ClassicDeviceAdded(std::make_unique<BluetoothClassicDeviceMac>(this, device));
 }
 
 void BluetoothAdapterMac::ClassicDiscoveryStopped(bool unexpected) {
@@ -392,64 +374,24 @@ void BluetoothAdapterMac::OnConnectNotification(
                          << device_address;
     return;
   }
-  RetrieveDeviceStateAsync(
-      device,
-      base::BindOnce(&BluetoothAdapterMac::OnConnectedDeviceStateRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  DeviceConnected(
+      std::make_unique<device::BluetoothClassicDeviceMac>(this, device));
 }
 
-// static
-BluetoothAdapterMac::AdapterState BluetoothAdapterMac::RetrieveAdapterState(
-    HostControllerStateFunction controller_state_function) {
-  AdapterState state;
-  @autoreleasepool {
-    if (controller_state_function) {
-      HostControllerState controller_state = controller_state_function.Run();
-      state.is_present = controller_state.is_present;
-      state.classic_powered = controller_state.classic_powered;
-      state.address = controller_state.address;
-    }
-
-    for (IOBluetoothDevice* device in [IOBluetoothDevice pairedDevices]) {
-      DeviceInfo device_info = RetrieveDeviceState(device);
-      // pairedDevices sometimes includes unknown devices that are not paired.
-      // Radar issue with id 2282763004 has been filed about it.
-      if (device_info.is_paired) {
-        state.paired_devices.push_back(std::move(device_info));
-      }
-    }
+void BluetoothAdapterMac::DeviceConnected(
+    std::unique_ptr<BluetoothDevice> device) {
+  std::string device_address = device->GetAddress();
+  BLUETOOTH_LOG(EVENT) << "Device connected: name: "
+                       << device->GetNameForDisplay()
+                       << " address: " << device_address;
+  BluetoothDevice* old_device = GetDevice(device_address);
+  if (old_device) {
+    NotifyDeviceChanged(old_device);
+    return;
   }
-  return state;
-}
-
-// static
-BluetoothAdapterMac::DeviceInfo BluetoothAdapterMac::RetrieveDeviceState(
-    IOBluetoothDevice* device) {
-  DeviceInfo device_info;
-  @autoreleasepool {
-    device_info.address = BluetoothClassicDeviceMac::GetDeviceAddress(device);
-    if ([device name]) {
-      device_info.name = base::SysNSStringToUTF8([device name]);
-    }
-    device_info.is_paired = [device isPaired];
-    device_info.is_connected = [device isConnected];
-    device_info.objc_device = device;
-    device_info.uuids = BluetoothClassicDeviceMac::GetUuids(device);
-  }
-  return device_info;
-}
-
-// static
-void BluetoothAdapterMac::RetrieveDeviceStateAsync(
-    IOBluetoothDevice* device,
-    base::OnceCallback<void(DeviceInfo)> callback) {
-  IOBluetoothDevice* __strong strong_device = device;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&BluetoothAdapterMac::RetrieveDeviceState, strong_device),
-      std::move(callback));
+  // This might happen if the device is paired and connected within the
+  // kPollIntervalMs.
+  ClassicDeviceAdded(std::move(device));
 }
 
 base::WeakPtr<BluetoothAdapter> BluetoothAdapterMac::GetWeakPtr() {
@@ -540,11 +482,6 @@ void BluetoothAdapterMac::SetGetDevicePairedStatusCallbackForTesting(
   device_paired_status_callback_ = std::move(device_paired_status_callback);
 }
 
-void BluetoothAdapterMac::SetPollCallbackForTesting(
-    base::OnceClosure callback) {
-  poll_callback_for_testing_ = std::move(callback);
-}
-
 void BluetoothAdapterMac::StartScanWithFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
     DiscoverySessionResultCallback callback) {
@@ -603,18 +540,8 @@ void BluetoothAdapterMac::StopScan(DiscoverySessionResultCallback callback) {
 }
 
 void BluetoothAdapterMac::PollAdapter() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&BluetoothAdapterMac::RetrieveAdapterState,
-                     controller_state_function_),
-      base::BindOnce(&BluetoothAdapterMac::OnBackgroundPollComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BluetoothAdapterMac::OnBackgroundPollComplete(AdapterState state) {
   const bool was_present = IsPresent();
+  HostControllerState state = controller_state_function_.Run();
 
   if (address_ != state.address)
     should_update_name_ = true;
@@ -630,70 +557,66 @@ void BluetoothAdapterMac::OnBackgroundPollComplete(AdapterState state) {
     NotifyAdapterPoweredChanged(classic_powered_);
   }
 
-  // Update devices with asynchronously polled state.
-  uint32_t count = 0;
-  for (auto& device_info : state.paired_devices) {
-    OnConnectedDeviceStateRetrieved(std::move(device_info));
-    // Update the existing device, if it already existed.
-    ++count;
-  }
-
-  // Log if the paired device count changed.
-  if (!paired_count_.has_value() || paired_count_.value() != count) {
-    BLUETOOTH_LOG(DEBUG) << "Paired devices: " << count;
-    paired_count_ = count;
-  }
-
   RemoveTimedOutDevices();
+  AddPairedDevices();
 
   ui_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BluetoothAdapterMac::PollAdapter,
                      weak_ptr_factory_.GetWeakPtr()),
       base::Milliseconds(kPollIntervalMs));
-
-  if (poll_callback_for_testing_) {
-    std::move(poll_callback_for_testing_).Run();
-  }
 }
 
-void BluetoothAdapterMac::OnConnectedDeviceStateRetrieved(
-    DeviceInfo device_info) {
-  BluetoothDevice* old_device = GetDevice(device_info.address);
-  if (old_device) {
-    if (static_cast<BluetoothClassicDeviceMac*>(old_device)
-            ->UpdateState(std::move(device_info))) {
-      DVLOG(1) << "Classic device changed: " << old_device->GetAddress();
-      BLUETOOTH_LOG(EVENT) << "Classic device changed: "
-                           << old_device->GetAddress() << " service UUIDs: "
-                           << UuidSetToString(old_device->GetUUIDs());
-      for (auto& observer : observers_) {
-        observer.DeviceChanged(this, old_device);
-      }
-    }
+void BluetoothAdapterMac::ClassicDeviceAdded(
+    std::unique_ptr<BluetoothDevice> device) {
+  std::string device_address = device->GetAddress();
+  BluetoothDevice* old_device = GetDevice(device_address);
+  if (old_device && (old_device->GetUUIDs() == device->GetUUIDs())) {
+    DVLOG(3) << "Updating classic device: " << device_address;
+    old_device->UpdateTimestamp();
     return;
   }
 
-  std::string device_address = device_info.address;
-  BLUETOOTH_LOG(EVENT) << "Device connected: name: "
-                       << device_info.name.value_or("")
-                       << " address: " << device_address;
-
-  // This might happen if the device is paired and connected within the
-  // kPollIntervalMs.
-  std::unique_ptr<BluetoothDevice> device =
-      std::make_unique<BluetoothClassicDeviceMac>(this, std::move(device_info));
   BluetoothDevice* new_device = device.get();
   devices_[device_address] = std::move(device);
   static_cast<BluetoothClassicDeviceMac*>(new_device)
       ->StartListeningDisconnectEvent();
 
-  DVLOG(1) << "Adding new classic device: " << new_device->GetAddress();
-  BLUETOOTH_LOG(EVENT) << "Classic device added: " << new_device->GetAddress()
+  if (old_device) {
+    DVLOG(1) << "Classic device changed: " << device_address;
+    BLUETOOTH_LOG(EVENT) << "Classic device changed: " << device_address
+                         << " service UUIDs: "
+                         << UuidSetToString(new_device->GetUUIDs());
+    for (auto& observer : observers_) {
+      observer.DeviceChanged(this, new_device);
+    }
+    return;
+  }
+  DVLOG(1) << "Adding new classic device: " << device_address;
+  BLUETOOTH_LOG(EVENT) << "Classic device added: " << device_address
                        << " service UUIDs: "
                        << UuidSetToString(new_device->GetUUIDs());
   for (auto& observer : observers_) {
     observer.DeviceAdded(this, new_device);
+  }
+}
+
+void BluetoothAdapterMac::AddPairedDevices() {
+  uint32_t count = 0;
+  for (IOBluetoothDevice* device in [IOBluetoothDevice pairedDevices]) {
+    // pairedDevices sometimes includes unknown devices that are not paired.
+    // Radar issue with id 2282763004 has been filed about it.
+    if ([device isPaired]) {
+      ClassicDeviceAdded(
+          std::make_unique<BluetoothClassicDeviceMac>(this, device));
+      ++count;
+    }
+  }
+
+  // Log if the paired device count changed.
+  if (!paired_count_.has_value() || paired_count_.value() != count) {
+    BLUETOOTH_LOG(DEBUG) << "Paired devices: " << count;
+    paired_count_ = count;
   }
 }
 
