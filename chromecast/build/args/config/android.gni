@@ -8,6 +8,9 @@ device_user_agent_suffix = "DeviceType/AndroidTV"
 # This is a workaround to facilitate APKs >4GB
 symbol_level = 1
 
+# Build FFmpeg as a shared library.
+is_component_ffmpeg = true
+
 enable_extensions = false
 enable_pdf = false
 enable_plugins = false
