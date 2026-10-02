@@ -72,12 +72,14 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
        .last_updated = syncer::ProtoTimeToTime(123456789),
        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
        .form_factor =
-           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP},
+           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+       .interested_data_types = {syncer::BOOKMARKS, syncer::PASSWORDS}},
       {.cache_guid = "device_2",
        .last_updated = syncer::ProtoTimeToTime(987654321),
        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_LINUX,
        .form_factor =
-           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}};
+           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+       .interested_data_types = {syncer::SESSIONS}}};
 
   MockSuccessfulStatsFetch(
       &test_url_loader_factory_,
@@ -693,6 +695,57 @@ TEST_F(AccountPreviewDataFetcherTest, FiltersCurrentDevice) {
   ASSERT_TRUE(result_data.has_value());
   ASSERT_EQ(1U, result_data->devices.size());
   EXPECT_EQ("other_device", result_data->devices[0].cache_guid);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, PreviewsParsesInterestedDataTypes) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_, {});
+
+  // 32904 = BOOKMARKS
+  // 45873 = PASSWORDS
+  // 963985 = HISTORY
+  // 47745 = NIGORI
+  // 99999999 = invalid/unknown field number (ignored)
+  std::string response_json = R"({
+    "entitiesPreviews": [
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "other_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 2,
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            },
+            "invalidationFieldsPreview": {
+              "interestedDataTypeIds": [32904, 45873, 963985, 47745, 99999999]
+            }
+          }
+        }
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(), response_json);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data, hit_429] = future.Take();
+  ASSERT_TRUE(result_data.has_value());
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ(result_data->devices[0].interested_data_types,
+            syncer::DataTypeSet({syncer::BOOKMARKS, syncer::PASSWORDS,
+                                 syncer::HISTORY, syncer::NIGORI}));
 }
 
 TEST_F(AccountPreviewDataFetcherTest, Stats429Error) {

@@ -29,11 +29,13 @@ using ::testing::IsEmpty;
 DevicePreview CreateDevicePreview(
     const std::string& guid,
     base::Time last_updated,
-    sync_pb::SyncEnums_DeviceFormFactor form_factor) {
+    sync_pb::SyncEnums_DeviceFormFactor form_factor,
+    syncer::DataTypeSet interested_data_types = {}) {
   DevicePreview device;
   device.cache_guid = guid;
   device.last_updated = last_updated;
   device.form_factor = form_factor;
+  device.interested_data_types = interested_data_types;
   return device;
 }
 
@@ -157,20 +159,26 @@ TEST_F(AccountPreviewHeuristicTest,
   EXPECT_EQ(pref_no_devices->other_device_form_factor,
             sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED);
 
+  EXPECT_TRUE(pref_no_devices->other_device_enabled_data_types.empty());
+
   base::Time now = base::Time::Now();
   AccountPreviewData data_with_devices = CreatePreviewData(
       {}, {CreateDevicePreview(
                "guid1", now - base::Days(2),
-               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP),
+               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+               {syncer::BOOKMARKS}),
            CreateDevicePreview(
                "guid2", now - base::Days(1),
-               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
+               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+               {syncer::PASSWORDS, syncer::SESSIONS})});
 
   auto pref_with_devices =
       ComputeAccountPreviewPreference(GaiaId("user2"), data_with_devices);
   ASSERT_TRUE(pref_with_devices.has_value());
   EXPECT_EQ(pref_with_devices->other_device_form_factor,
             sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
+  EXPECT_EQ(pref_with_devices->other_device_enabled_data_types,
+            syncer::DataTypeSet({syncer::PASSWORDS, syncer::SESSIONS}));
 }
 
 TEST_F(AccountPreviewHeuristicTest,

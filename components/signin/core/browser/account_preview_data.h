@@ -25,6 +25,7 @@ struct DevicePreview {
       sync_pb::SyncEnums_OsType_OS_TYPE_UNSPECIFIED;
   sync_pb::SyncEnums_DeviceFormFactor form_factor =
       sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+  syncer::DataTypeSet interested_data_types;
 
   bool operator==(const DevicePreview&) const = default;
 };

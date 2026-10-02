@@ -1906,7 +1906,7 @@ TEST_F(AccountPreviewDataServiceTest, NullSyncService) {
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       GetPreferredAccountForPromoOtherDeviceFormFactor) {
+       GetPreferredAccountForPromoOtherDeviceFormFactorAndEnabledTypes) {
   AccountInfo account =
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
@@ -1915,6 +1915,12 @@ TEST_F(AccountPreviewDataServiceTest,
   dict.Set("other_device_form_factor",
            static_cast<int>(
                sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET));
+  base::ListValue interested_types;
+  interested_types.Append(
+      syncer::DataTypeToStableIdentifier(syncer::BOOKMARKS));
+  interested_types.Append(
+      syncer::DataTypeToStableIdentifier(syncer::PASSWORDS));
+  dict.Set("other_device_enabled_data_types", std::move(interested_types));
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
   EXPECT_THAT(
@@ -1924,7 +1930,10 @@ TEST_F(AccountPreviewDataServiceTest,
                          account.GetGaiaId()),
           testing::Field(
               &AccountPreviewPreference::other_device_form_factor,
-              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET))));
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET),
+          testing::Field(
+              &AccountPreviewPreference::other_device_enabled_data_types,
+              syncer::DataTypeSet({syncer::BOOKMARKS, syncer::PASSWORDS})))));
 }
 
 TEST_F(AccountPreviewDataServiceTest,

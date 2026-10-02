@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/account_preview_data_test_util.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/time.h"
@@ -49,6 +50,11 @@ std::string FormatPreviewsJson(const std::vector<DevicePreview>& devices) {
     if (i > 0) {
       previews_list += ",\n";
     }
+    std::vector<std::string> interested_ids;
+    for (syncer::DataType type : device.interested_data_types) {
+      interested_ids.push_back(base::NumberToString(
+          syncer::GetSpecificsFieldNumberFromDataType(type)));
+    }
     previews_list += base::StringPrintf(
         R"({
       "name": "dataTypes/device_info/syncEntitiesPreviews/%zu",
@@ -60,13 +66,17 @@ std::string FormatPreviewsJson(const std::vector<DevicePreview>& devices) {
           "deviceFormFactor": %d,
           "chromeVersionInfo": {
             "versionNumber": "126.0.0.0"
+          },
+          "invalidationFieldsPreview": {
+            "interestedDataTypeIds": [%s]
           }
         }
       }
     })",
         i, device.cache_guid.c_str(),
         syncer::TimeToProtoTime(device.last_updated),
-        static_cast<int>(device.os_type), static_cast<int>(device.form_factor));
+        static_cast<int>(device.os_type), static_cast<int>(device.form_factor),
+        base::JoinString(interested_ids, ", ").c_str());
   }
 
   return base::StringPrintf(R"({

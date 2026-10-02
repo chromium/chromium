@@ -58,6 +58,7 @@ class AccountPreviewDataService : public KeyedService {
     std::vector<PreferredDataTypeInfo> preferred_data_types;
     sync_pb::SyncEnums_DeviceFormFactor other_device_form_factor =
         sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+    syncer::DataTypeSet other_device_enabled_data_types;
 
     bool operator==(const AccountPreviewPreference&) const = default;
   };

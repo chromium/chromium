@@ -190,6 +190,22 @@ bool ParsePreviewsResponse(
     device.form_factor =
         static_cast<sync_pb::SyncEnums_DeviceFormFactor>(form_factor_int);
 
+    if (const auto* invalidation_fields =
+            device_info_preview->FindDict("invalidationFieldsPreview")) {
+      if (const auto* interested_ids =
+              invalidation_fields->FindList("interestedDataTypeIds")) {
+        for (const auto& id_val : *interested_ids) {
+          if (std::optional<int> id = id_val.GetIfInt()) {
+            syncer::DataType type =
+                syncer::GetDataTypeFromSpecificsFieldNumber(*id);
+            if (syncer::IsRealDataType(type)) {
+              device.interested_data_types.Put(type);
+            }
+          }
+        }
+      }
+    }
+
     data.devices.push_back(std::move(device));
   }
   return true;
