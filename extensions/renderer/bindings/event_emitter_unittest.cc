@@ -153,9 +153,9 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
 
   // A wrapper that just calls DisposeContextWrapper() on the curried in data.
   auto listener_wrapper = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    ASSERT_TRUE(info.Data()->IsExternal());
+    ASSERT_TRUE(info.DataV2().As<v8::Value>()->IsExternal());
     auto& data = *static_cast<ListenerClosureData*>(
-        info.Data().As<v8::External>()->Value(
+        info.DataV2().As<v8::External>()->Value(
             gin::kEventEmitterUnittestListenerClosureDataTag));
     data.test->DisposeContextWrapper(&data.did_invalidate_context,
                                      info.GetIsolate()->GetCurrentContext());

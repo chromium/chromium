@@ -327,7 +327,7 @@ void APIRequestHandler::AsyncResultHandler::CustomCallbackAdaptor(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  v8::Local<v8::Object> data = info.Data().As<v8::Object>();
+  v8::Local<v8::Object> data = info.DataV2().As<v8::Value>().As<v8::Object>();
 
   v8::Local<v8::Value> resolver =
       data->Get(context, gin::StringToSymbol(isolate, kResolverKey))

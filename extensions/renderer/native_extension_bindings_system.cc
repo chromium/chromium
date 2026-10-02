@@ -938,9 +938,10 @@ void NativeExtensionBindingsSystem::BindingAccessor(
   // See https://crbug.com/41375376.
   v8::Context::Scope context_scope(context);
 
-  // We use info.Data() to store a real name here instead of using the provided
-  // one to handle any weirdness from the caller (non-existent strings, etc).
-  v8::Local<v8::String> api_name = info.Data().As<v8::String>();
+  // We use info.DataV2() to store a real name here instead of using the
+  // provided one to handle any weirdness from the caller (non-existent
+  // strings, etc).
+  v8::Local<v8::String> api_name = info.DataV2().As<v8::String>();
   v8::Local<v8::Object> binding = GetAPIHelper(context, api_name);
   if (!binding.IsEmpty())
     info.GetReturnValue().Set(binding);
@@ -954,7 +955,7 @@ void NativeExtensionBindingsSystem::ThrowDeveloperModeRestrictedError(
       isolate,
       base::StringPrintf(
           "The '%s' API is only available for users in developer mode.",
-          gin::V8ToString(isolate, info.Data()).c_str()))));
+          gin::V8ToString(isolate, info.DataV2().As<v8::Value>()).c_str()))));
   return;
 }
 

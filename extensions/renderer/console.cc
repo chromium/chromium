@@ -51,7 +51,7 @@ void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   // TODO(devlin): Consider (D)CHECK(script_context)
   const auto level = static_cast<blink::mojom::ConsoleMessageLevel>(
-      info.Data().As<v8::Int32>()->Value());
+      info.DataV2().As<v8::Int32>()->Value());
   AddMessage(script_context, level, message);
 }
 

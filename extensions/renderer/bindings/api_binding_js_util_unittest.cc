@@ -286,9 +286,9 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
     v8::Local<v8::Object> error_object;
     ASSERT_TRUE(arguments.GetNext(&error_object));
 
-    ASSERT_TRUE(info.Data()->IsExternal());
+    ASSERT_TRUE(info.DataV2().As<v8::Value>()->IsExternal());
     ErrorInfo* error_out =
-        static_cast<ErrorInfo*>(info.Data().As<v8::External>()->Value(
+        static_cast<ErrorInfo*>(info.DataV2().As<v8::External>()->Value(
             gin::kAPIBindingJSUtilUnittestErrorInfoTag));
     error_out->full_message = full_message;
     error_out->exception_message = GetStringPropertyFromObject(

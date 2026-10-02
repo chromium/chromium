@@ -126,7 +126,7 @@ v8::Local<v8::Array> GetListenerResultArray(v8::Isolate* isolate,
 
 void DelayedOneTimeMessageCallbackHelper(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CHECK(info.Data()->IsString());
+  CHECK(info.DataV2().As<v8::Value>()->IsString());
 
   gin::Arguments arguments(info);
   v8::Isolate* isolate = arguments.isolate();
@@ -141,7 +141,7 @@ void DelayedOneTimeMessageCallbackHelper(
   }
 
   // Retrieve the CallbackID from v8 that we set when we created the callback.
-  v8::Local<v8::String> callback_id_v8_string = info.Data().As<v8::String>();
+  v8::Local<v8::String> callback_id_v8_string = info.DataV2().As<v8::String>();
   std::string callback_id_string;
   if (!gin::Converter<std::string>::FromV8(isolate, callback_id_v8_string,
                                            &callback_id_string)) {

@@ -391,11 +391,12 @@ void ModuleSystem::OverrideNativeHandlerForTest(const std::string& name) {
 void ModuleSystem::LazyFieldGetter(
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CHECK(!info.Data().IsEmpty());
-  CHECK(info.Data()->IsObject());
+  CHECK(!info.DataV2().IsEmpty());
+  CHECK(info.DataV2().As<v8::Value>()->IsObject());
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Object> parameters = v8::Local<v8::Object>::Cast(info.Data());
+  v8::Local<v8::Object> parameters =
+      info.DataV2().As<v8::Value>().As<v8::Object>();
   // This context should be the same as context()->v8_context().
   v8::Local<v8::Context> context =
       parameters->GetCreationContextChecked(isolate);

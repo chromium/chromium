@@ -75,7 +75,7 @@ void LastErrorGetter(v8::Local<v8::Name> property,
   v8::Local<v8::Private> last_error_key = v8::Private::ForApi(
       isolate, gin::StringToSymbol(isolate, kLastErrorProperty));
   if (!holder->GetPrivate(context, last_error_key).ToLocal(&last_error) ||
-      last_error != info.Data()) {
+      last_error != info.DataV2().As<v8::Value>()) {
     // Something funny happened - our private properties aren't set right.
     NOTREACHED();
   }

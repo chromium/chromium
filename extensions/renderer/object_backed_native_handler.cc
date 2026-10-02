@@ -104,7 +104,7 @@ void ObjectBackedNativeHandler::Router(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Object> data = args.Data().As<v8::Object>();
+  v8::Local<v8::Object> data = args.DataV2().As<v8::Value>().As<v8::Object>();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   v8::Local<v8::Value> handler_function_value;

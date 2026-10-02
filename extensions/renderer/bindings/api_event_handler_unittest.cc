@@ -1428,8 +1428,8 @@ TEST_F(APIEventHandlerTest, ContextInvalidationDuringEventDispatch) {
   auto invalidate_context =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
-        APIEventHandler* handler =
-            static_cast<APIEventHandler*>(info.Data().As<v8::External>()->Value(
+        APIEventHandler* handler = static_cast<APIEventHandler*>(
+            info.DataV2().As<v8::External>()->Value(
                 gin::kExternalPointerTypeTagDefaultTag));
         handler->InvalidateContext(context);
         binding::InvalidateContext(context);

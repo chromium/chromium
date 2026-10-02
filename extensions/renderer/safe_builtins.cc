@@ -74,7 +74,8 @@ void CallInstanceMethodCallback(
   v8::MicrotasksScope microtasks(context,
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
 
-  v8::Local<v8::Function> target_fn = info.Data().As<v8::Function>();
+  v8::Local<v8::Function> target_fn =
+      info.DataV2().As<v8::Value>().As<v8::Function>();
 
   if (info.Length() == 0) {
     isolate->ThrowException(v8::Exception::TypeError(
@@ -104,7 +105,7 @@ void CallStaticMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::MicrotasksScope microtasks(context,
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
 
-  v8::Local<v8::PrimitiveArray> data = info.Data().As<v8::PrimitiveArray>();
+  v8::Local<v8::PrimitiveArray> data = info.DataV2().As<v8::PrimitiveArray>();
   v8::Local<v8::Value> target_val = data->Get(isolate, 0);
   CHECK(target_val->IsFunction());
   v8::Local<v8::Function> target_fn = target_val.As<v8::Function>();
@@ -257,7 +258,8 @@ void JSONStringifyCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
     [&]() {
       // Unpack internal data: [target_function, receiver,
       // to_json_entries_array].
-      v8::Local<v8::PrimitiveArray> data = info.Data().As<v8::PrimitiveArray>();
+      v8::Local<v8::PrimitiveArray> data =
+          info.DataV2().As<v8::PrimitiveArray>();
       v8::Local<v8::Value> target_val = data->Get(isolate, 0);
       CHECK(target_val->IsFunction());
       v8::Local<v8::Function> target_fn = target_val.As<v8::Function>();

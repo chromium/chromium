@@ -548,9 +548,9 @@ void APIBinding::GetEventObject(
     return;
   }
 
-  CHECK(info.Data()->IsExternal());
+  CHECK(info.DataV2().As<v8::Value>()->IsExternal());
   auto* event_data = static_cast<EventData*>(
-      info.Data().As<v8::External>()->Value(gin::kAPIBindingEventDataTag));
+      info.DataV2().As<v8::External>()->Value(gin::kAPIBindingEventDataTag));
   v8::Local<v8::Value> retval;
   if (event_data->binding->binding_hooks_->CreateCustomEvent(
           context, event_data->full_name, &retval)) {
@@ -582,9 +582,9 @@ void APIBinding::GetCustomPropertyObject(
   }
 
   v8::Context::Scope context_scope(context);
-  CHECK(info.Data()->IsExternal());
+  CHECK(info.DataV2().As<v8::Value>()->IsExternal());
   auto* property_data =
-      static_cast<CustomPropertyData*>(info.Data().As<v8::External>()->Value(
+      static_cast<CustomPropertyData*>(info.DataV2().As<v8::External>()->Value(
           gin::kAPIBindingCustomPropertyDataTag));
 
   v8::Local<v8::Object> property = property_data->create_custom_type.Run(

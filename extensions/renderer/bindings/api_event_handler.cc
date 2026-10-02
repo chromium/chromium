@@ -92,7 +92,8 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
       context, CreatePerContextData::kDontCreateIfMissing);
   DCHECK(data);
 
-  v8::Local<v8::Object> dispatch_data = info.Data().As<v8::Object>();
+  v8::Local<v8::Object> dispatch_data =
+      info.DataV2().As<v8::Value>().As<v8::Object>();
   v8::Local<v8::Value> filter_id_value =
       dispatch_data->Get(context, gin::StringToSymbol(isolate, kFilterIdKey))
           .ToLocalChecked();

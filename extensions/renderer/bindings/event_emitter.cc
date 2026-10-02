@@ -389,7 +389,7 @@ void EventEmitter::DispatchAsyncHelper(
     return;
   }
 
-  v8::Local<v8::Object> data = info.Data().As<v8::Object>();
+  v8::Local<v8::Object> data = info.DataV2().As<v8::Value>().As<v8::Object>();
 
   v8::Local<v8::Value> emitter_value =
       data->Get(context, gin::StringToSymbol(isolate, kEmitterKey))
