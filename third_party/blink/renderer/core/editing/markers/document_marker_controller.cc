@@ -130,23 +130,14 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
   NOTREACHED();
 }
 
-void InvalidateVisualOverflowForNode(const Node& node,
-                                     DocumentMarker::MarkerType type) {
-  LayoutObject* layout_object = node.GetLayoutObject();
-  if (!layout_object ||
-      !DocumentMarker::MarkerTypes::HighlightPseudos().Intersects(
-          DocumentMarker::MarkerTypes(type))) {
-    return;
-  }
-  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(*layout_object,
-                                                          type)) {
-    layout_object->InvalidateVisualOverflow();
-  }
-}
-
-void InvalidatePaintForNode(const Node& node) {
+void InvalidatePaintForNode(const Node& node, DocumentMarker::MarkerType type) {
   LayoutObject* layout_object = node.GetLayoutObject();
   if (!layout_object) {
+    return;
+  }
+
+  if (layout_object->IsInCanvasSubtree() &&
+      (type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar)) {
     return;
   }
 
@@ -161,6 +152,13 @@ void InvalidatePaintForNode(const Node& node) {
     CHECK(first_letter_layout);
     first_letter_layout->SetShouldDoFullPaintInvalidation(
         PaintInvalidationReason::kDocumentMarker);
+  }
+
+  if (DocumentMarker::MarkerTypes::HighlightPseudos().Intersects(
+          DocumentMarker::MarkerTypes(type)) &&
+      HighlightStyleUtils::ShouldInvalidateVisualOverflow(*layout_object,
+                                                          type)) {
+    layout_object->InvalidateVisualOverflow();
   }
 
   // Tell accessibility about the new marker.
@@ -481,8 +479,7 @@ void DocumentMarkerController::AddMarkerToNode(const Text& text,
   }
   markers->Add(new_marker);
 
-  InvalidatePaintForNode(text);
-  InvalidateVisualOverflowForNode(text, new_marker->GetType());
+  InvalidatePaintForNode(text, new_marker_type);
 }
 
 // Moves markers from src_node to dst_node. Markers are moved if their start
@@ -498,7 +495,6 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
     return;
   }
 
-  bool doc_dirty = false;
   for (auto& marker_map : markers_) {
     if (!marker_map) {
       continue;
@@ -520,8 +516,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
     DCHECK(src_markers != dst_markers);
 
     if (src_markers->MoveMarkers(length, dst_markers)) {
-      doc_dirty = true;
-      InvalidateVisualOverflowForNode(dst_node, type);
+      InvalidatePaintForNode(dst_node, type);
       for (const auto& marker : dst_markers->GetMarkers()) {
         auto it = marker_groups_.find(marker);
         if (it != marker_groups_.end())
@@ -532,7 +527,7 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
     // the src and dst, in which case both lists may be empty despite
     // MoveMarkers returning false.
     if (src_markers->IsEmpty()) {
-      InvalidateVisualOverflowForNode(src_node, type);
+      InvalidatePaintForNode(src_node, type);
       marker_map->erase(&src_node);
       DidRemoveNodeFromMap(type);
     }
@@ -541,12 +536,6 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
       DidRemoveNodeFromMap(type);
     }
   }
-
-  if (!doc_dirty) {
-    return;
-  }
-
-  InvalidatePaintForNode(dst_node);
 }
 
 void DocumentMarkerController::DidRemoveNodeFromMap(
@@ -595,8 +584,7 @@ void DocumentMarkerController::RemoveMarkersInternal(
     }
   }
   if (list->RemoveMarkers(start_offset, length)) {
-    InvalidateVisualOverflowForNode(text, marker_type);
-    InvalidatePaintForNode(text);
+    InvalidatePaintForNode(text, marker_type);
   }
   if (list->IsEmpty()) {
     marker_map->erase(&text);
@@ -1169,8 +1157,7 @@ void DocumentMarkerController::RemoveSpellingMarkersUnderWords(
       DocumentMarkerList* const list = node_markers.value;
       if (To<SpellCheckMarkerListImpl>(list)->RemoveMarkersUnderWords(
               text.data(), words)) {
-        InvalidateVisualOverflowForNode(text, type);
-        InvalidatePaintForNode(text);
+        InvalidatePaintForNode(text, type);
         if (list->IsEmpty()) {
           nodes_to_remove.insert(node_markers.key);
         }
@@ -1205,7 +1192,7 @@ void DocumentMarkerController::RemoveSuggestionMarkerInRangeOnFinish(
       // one suggestion marker needs to be removed.
       To<SuggestionMarkerListImpl>(list)->RemoveMarkerByTag(
           suggestion_marker->Tag());
-      InvalidatePaintForNode(text);
+      InvalidatePaintForNode(text, DocumentMarker::kSuggestion);
       if (list->IsEmpty()) {
         marker_map->erase(&text);
         DidRemoveNodeFromMap(DocumentMarker::kSuggestion);
@@ -1230,7 +1217,7 @@ void DocumentMarkerController::RemoveSuggestionMarkerByType(
     // RemoveMarkerByType() might be expensive. In practice, we have at most
     // one suggestion marker needs to be removed.
     To<SuggestionMarkerListImpl>(list)->RemoveMarkerByType(type);
-    InvalidatePaintForNode(text);
+    InvalidatePaintForNode(text, DocumentMarker::kSuggestion);
     if (list->IsEmpty()) {
       marker_map->erase(node_marker_pair.first);
       DidRemoveNodeFromMap(DocumentMarker::kSuggestion);
@@ -1249,7 +1236,7 @@ void DocumentMarkerController::RemoveSuggestionMarkerByType(
   for (const auto& node_markers : *marker_map) {
     DocumentMarkerList* const list = node_markers.value;
     if (To<SuggestionMarkerListImpl>(list)->RemoveMarkerByType(type)) {
-      InvalidatePaintForNode(*node_markers.key);
+      InvalidatePaintForNode(*node_markers.key, DocumentMarker::kSuggestion);
       if (list->IsEmpty()) {
         marker_map->erase(node_markers.key);
         DidRemoveNodeFromMap(DocumentMarker::kSuggestion);
@@ -1277,7 +1264,7 @@ void DocumentMarkerController::RemoveSuggestionMarkerByTag(const Text& text,
     marker_map->erase(&text);
     DidRemoveNodeFromMap(DocumentMarker::kSuggestion);
   }
-  InvalidatePaintForNode(text);
+  InvalidatePaintForNode(text, DocumentMarker::kSuggestion);
 }
 
 void DocumentMarkerController::RemoveMarkersOfTypes(
@@ -1309,8 +1296,7 @@ void DocumentMarkerController::RemoveMarkersFromList(
   list->Clear();
 
   const Text& node = *iterator->key;
-  InvalidateVisualOverflowForNode(node, marker_type);
-  InvalidatePaintForNode(node);
+  InvalidatePaintForNode(node, marker_type);
   InvalidatePaintForTickmarks(node);
 
   MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(marker_type)];
@@ -1371,7 +1357,7 @@ bool DocumentMarkerController::SetTextMatchMarkersActive(
   if (!doc_dirty) {
     return false;
   }
-  InvalidatePaintForNode(text);
+  InvalidatePaintForNode(text, DocumentMarker::kTextMatch);
   return true;
 }
 
@@ -1417,7 +1403,6 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
   if (!text_node)
     return;
 
-  bool did_shift_marker = false;
   for (auto& marker_map : markers_) {
     if (!marker_map) {
       continue;
@@ -1428,22 +1413,19 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
     }
     DCHECK(!list->IsEmpty());
     DocumentMarker::MarkerType type = list->GetMarkers()[0]->GetType();
-    if (list->ShiftMarkers(node->data(), offset, old_length, new_length)) {
-      did_shift_marker = true;
+    if (list->ShiftMarkers(node->data(), offset, old_length, new_length) ||
+        list->IsEmpty()) {
+      InvalidatePaintForNode(*node, type);
     }
     if (list->IsEmpty()) {
-      InvalidateVisualOverflowForNode(*node, type);
       marker_map->erase(text_node);
       DidRemoveNodeFromMap(type);
     }
   }
 
-  if (!did_shift_marker)
-    return;
   if (!node->GetLayoutObject())
     return;
   InvalidateRectsForTextMatchMarkersInNode(*text_node);
-  InvalidatePaintForNode(*node);
 }
 
 void DocumentMarkerController::StartGlicMarkerAnimationIfNeeded() {
@@ -1525,8 +1507,8 @@ void DocumentMarkerController::InvalidatePaintForGlicMarkers() {
       markers_[MarkerTypeToMarkerIndex(DocumentMarker::kGlic)];
   CHECK(marker_map);
   for (auto& [text_node, marker_list] : *marker_map) {
-    CHECK_EQ(marker_list->MarkerType(), DocumentMarker::MarkerType::kGlic);
-    InvalidatePaintForNode(*text_node);
+    CHECK_EQ(marker_list->MarkerType(), DocumentMarker::kGlic);
+    InvalidatePaintForNode(*text_node, DocumentMarker::kGlic);
   }
 }
 

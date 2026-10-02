@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+
+<script>
+let paintCountInsideCanvas = 0;
+
+spellcheck_test(
+    '<canvas content="drawable"><div contenteditable>|</div></canvas>',
+    document => {
+      document.getElementsByTagName('canvas')[0].onpaint = () => {
+        paintCountInsideCanvas++;
+      };
+      document.execCommand('insertText', false, 'zz. ');
+    },
+    '<canvas content="drawable"><div contenteditable>#zz#.\u00A0</div></canvas>',
+    {
+      title: 'Spellcheck must be visually disabled inside canvas subtree with zero spellcheck repaints.',
+      callback: () => {
+        assert_less_than_equal(
+          paintCountInsideCanvas, 1,
+          'Typing misspelled words inside canvas must produce ZERO spellcheck-induced repaints'
+        );
+      }
+    }
+);
+
+let paintCountOnMove = 0;
+
+spellcheck_test(
+    '<div contenteditable>|</div><canvas content="drawable"><div></div></canvas>',
+    'insertText zz. ',
+    '<div contenteditable>#zz#.\u00A0</div><canvas content="drawable"><div></div></canvas>',
+    {
+      title: 'Spelling marker should appear when typed outside canvas subtree.',
+      callback: sample => {
+        const doc = sample.window.document;
+        const canvas = doc.getElementsByTagName('canvas')[0];
+        canvas.onpaint = () => { paintCountOnMove++; };
+
+        return spellcheck_test(
+          sample,
+          document => {
+            canvas.firstChild.appendChild(document.getElementsByTagName('div')[0]);
+          },
+          '<canvas content="drawable"><div><div contenteditable>#zz#.\u00A0</div></div></canvas>',
+          {
+            title: 'Spelling marker must be visually disabled and produce no extra repaints when moved into canvas subtree.',
+            callback: () => {
+              assert_less_than_equal(
+                paintCountOnMove, 1,
+                'Moving spelling markers into canvas subtree must not trigger extra paint invalidation events'
+              );
+            }
+          }
+        );
+      }
+    }
+);
+</script>
