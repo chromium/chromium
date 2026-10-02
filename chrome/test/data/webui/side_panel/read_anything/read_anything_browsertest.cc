@@ -149,6 +149,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppContent) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppLineFocus) {
+  RunSidePanelTest("side_panel/read_anything/app_line_focus_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
   RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
                    "mocha.run()");

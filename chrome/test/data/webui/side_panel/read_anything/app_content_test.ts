@@ -77,83 +77,6 @@ suite('AppContent', () => {
         assertFalse(mouseMove);
       });
 
-  test('connected callback adds line focus mouse listener', async () => {
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-        {detail: {data: LineFocusMovement.CURSOR}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
-    let mouseMoveInToolbar = false;
-    let mouseMove = false;
-    LineFocusController.getInstance().onMouseMove = () => {
-      mouseMove = true;
-    };
-    LineFocusController.getInstance().onMouseMoveInToolbar = () => {
-      mouseMoveInToolbar = true;
-    };
-
-    app.$.containerParent.dispatchEvent(
-        new MouseEvent('mousemove', {clientY: 10}));
-
-    assertTrue(mouseMove);
-    assertFalse(mouseMoveInToolbar);
-  });
-
-  test('new content updates padding for line focus', async () => {
-    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-        {detail: {data: LineFocusMovement.STATIC}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
-    assertEquals(0, getLineFocusPadding());
-
-    app.updateContent();
-    await whenCheck(app, () => getLineFocusPadding() !== 0);
-
-    assertLT(0, getLineFocusPadding());
-  });
-
-  test(
-      'new content does not update padding for line focus with flag disabled',
-      async () => {
-        visualBrowserProxy.lineFocusEnabled = false;
-        app.connectedCallback();
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-            {detail: {data: LineFocusMovement.CURSOR}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-        assertEquals(0, getLineFocusPadding());
-
-        app.updateContent();
-        await microtasksFinished();
-
-        assertEquals(0, getLineFocusPadding());
-      });
-
-  test(
-      'new content does not update padding for line focus with line focus off',
-      async () => {
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-            {detail: {data: LineFocusMovement.STATIC}});
-        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
-        await microtasksFinished();
-        assertEquals(0, getLineFocusPadding());
-
-        app.updateContent();
-        await microtasksFinished();
-
-        assertEquals(0, getLineFocusPadding());
-      });
-
   test('line focus shortcut updates padding', async () => {
     // Start with static line focus on.
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
@@ -181,92 +104,6 @@ suite('AppContent', () => {
     assertLT(0, getLineFocusPadding());
   });
 
-  test('line focus only shows on content', async () => {
-    contentController.setState(ContentType.NO_CONTENT);
-    await microtasksFinished();
-    assertTrue(app.$.lineFocus.hasAttribute('hidden'));
-
-    contentController.setState(ContentType.LOADING);
-    await microtasksFinished();
-    assertTrue(app.$.lineFocus.hasAttribute('hidden'));
-
-    contentController.setState(ContentType.HAS_CONTENT);
-    await microtasksFinished();
-    assertFalse(app.$.lineFocus.hasAttribute('hidden'));
-  });
-
-  test(
-      'onContentStateChange updates line focus style when enabled and ' +
-          'has content',
-      async () => {
-        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-
-        contentController.setState(ContentType.HAS_CONTENT);
-        await microtasksFinished();
-
-        assertEquals(
-            'block', app.style.getPropertyValue('--line-focus-display'));
-      });
-
-  test(
-      'onContentStateChange disables line focus style when no content',
-      async () => {
-        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-
-        contentController.setState(ContentType.NO_CONTENT);
-        await microtasksFinished();
-
-        assertEquals(
-            'none', app.style.getPropertyValue('--line-focus-display'));
-      });
-
-  test('onContentStateChange line focus showing if has content', async () => {
-    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
-
-    contentController.setState(ContentType.HAS_CONTENT);
-    await microtasksFinished();
-
-    assertTrue(app.$.toolbar.isLineFocusShowing);
-  });
-
-  test(
-      'onContentStateChange line focus not showing if off but has content',
-      async () => {
-        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
-        await microtasksFinished();
-
-        contentController.setState(ContentType.HAS_CONTENT);
-        await microtasksFinished();
-
-        assertFalse(app.$.toolbar.isLineFocusShowing);
-      });
-
-  test(
-      'onContentStateChange line focus not showing if no content', async () => {
-        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-
-        contentController.setState(ContentType.NO_CONTENT);
-        await microtasksFinished();
-
-        assertFalse(app.$.toolbar.isLineFocusShowing);
-      });
-
   test('showLoading shows spinner', async () => {
     const spinner = 'throbber';
 
@@ -285,29 +122,6 @@ suite('AppContent', () => {
 
     assertStringContains(emptyState.darkImagePath, spinner);
     assertStringContains(emptyState.imagePath, spinner);
-  });
-
-  test('showLoading marks line focus showing if enabled', async () => {
-    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
-
-    app.showLoading();
-    await microtasksFinished();
-
-    assertTrue(app.$.toolbar.isLineFocusShowing);
-  });
-
-  test('showLoading does not mark line focus showing if disabled', async () => {
-    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
-    await microtasksFinished();
-
-    app.showLoading();
-    await microtasksFinished();
-
-    assertFalse(app.$.toolbar.isLineFocusShowing);
   });
 
   test('showLoading clears read aloud state', () => {
@@ -795,19 +609,6 @@ suite('AppContent', () => {
 
       assertTrue(toast.$.toast.open);
     });
-  });
-
-  test('onNeedScrollForLineFocus scrolls', () => {
-    const startingScrollTop = app.$.containerScroller.scrollTop;
-    let scrollTo = 0;
-    app.$.containerScroller.scrollTo = (options) => {
-      scrollTo = (options as ScrollToOptions).top ?? 0;
-    };
-
-    const scrollDiff = 30;
-    app.onNeedScrollForLineFocus(scrollDiff);
-
-    assertEquals(startingScrollTop + scrollDiff, scrollTo);
   });
 
   suite('Immersive Mode app content styling', () => {
