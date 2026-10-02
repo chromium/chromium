@@ -94,7 +94,6 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
-    base::RunLoop().RunUntilIdle();
 
     // Set the Dictation locale for tests.
     SetDictationLocale("en-US");
