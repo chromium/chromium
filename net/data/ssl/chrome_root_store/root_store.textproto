@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 40
+version_major: 41
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -92,13 +92,13 @@ trust_anchors {
 
 # CN=Autoridad de Certificacion Firmaprofesional CIF A62634068, C=ES
 # https://publifirma.firmaprofesional.com/
-# Constraint date: Wed, Sept 30, 2026, 23:59:59 GMT+0000
+# Constraint date: Thurs, Aug 6, 2026 at 07:00:59 GMT+0000
 trust_anchors {
   sha256_hex: "57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a"
   crs_root_id: 10
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
-    sct_not_after_sec: 1790812799
+    sct_not_after_sec: 1785999659
     min_version: "153.0.8010.0"
   }
   constraints: {
@@ -2133,6 +2133,12 @@ additional_certs {
 # "CN=AC SERVIDORES SEGUROS TIPO2 G2,O=FNMT-RCM,C=ES,2.5.4.97=VATES-Q2826004J"
 additional_certs {
   sha256_hex: "7feb6f8c9c847a449e0b702386c2319aa1191f38df02d03be64b3f1ae1971f94"
+  eutl: true
+}
+
+# "CN=FIRMAPROFESIONAL ICA A01 QWAC 2026,O=Firmaprofesional SA,C=ES,2.5.4.97=VATES-A62634068"
+additional_certs {
+  sha256_hex: "95829c3f0175ba8a25168a3c5206d5353245d9498f564137bf08b844a6c14310"
   eutl: true
 }
 
