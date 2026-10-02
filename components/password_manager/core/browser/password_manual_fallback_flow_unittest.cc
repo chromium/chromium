@@ -882,6 +882,38 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().DidSelectSuggestion(suggestion, MakeFormGlobalId(), field_id);
 }
 
+TEST_F(PasswordManualFallbackFlowTest, SelectInlineQrCodeSuggestion) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  FieldGlobalId field_id = MakeFieldGlobalId();
+  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion(SuggestionType::kWebauthnPasskeyQrCode);
+  ON_CALL(driver(), GetPasswordManagerDelegate)
+      .WillByDefault(Return(&password_manager_delegate()));
+  EXPECT_CALL(password_manager_delegate(), SelectSuggestion(suggestion));
+  flow().DidSelectSuggestion(suggestion, MakeFormGlobalId(), field_id);
+}
+
+TEST_F(PasswordManualFallbackFlowTest, AcceptInlineQrCodeSuggestion) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  FieldGlobalId field_id = MakeFieldGlobalId();
+  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion(SuggestionType::kWebauthnPasskeyQrCode);
+  AutofillSuggestionDelegate::SuggestionMetadata metadata =
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}};
+  ON_CALL(driver(), GetPasswordManagerDelegate)
+      .WillByDefault(Return(&password_manager_delegate()));
+  EXPECT_CALL(password_manager_delegate(),
+              AcceptSuggestion(suggestion, metadata));
+  flow().DidAcceptSuggestion(suggestion, metadata, MakeFormGlobalId(),
+                             field_id);
+}
+
 // Test that both username and password are filled if the suggestion is accepted
 // for a popup triggered on a password form if the biometric authentication is
 // not available.

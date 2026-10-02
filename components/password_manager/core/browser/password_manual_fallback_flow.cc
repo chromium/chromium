@@ -137,6 +137,7 @@ bool PasswordManualFallbackFlow::SupportsSuggestionType(
     case autofill::SuggestionType::kViewPasswordDetails:
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
       return true;
     default:
       return false;
@@ -259,6 +260,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
       break;
     }
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
       if (auto* password_manager_delegate =
               password_manager_driver_->GetPasswordManagerDelegate()) {
         password_manager_delegate->SelectSuggestion(suggestion);
@@ -368,6 +370,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       break;
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
       if (auto* password_manager_delegate =
               password_manager_driver_->GetPasswordManagerDelegate()) {
         password_manager_delegate->AcceptSuggestion(suggestion, metadata);
