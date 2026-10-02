@@ -12,7 +12,6 @@
 
 :host {
   color: var(--color-sys-on-surface);
-  --cr-secondary-text-color: var(--google-grey-700);
   --disclaimer-cards-gap: 24px;
   --disclaimer-card-width: 300px;
 }
@@ -74,7 +73,7 @@ main {
 .work-badge {
   align-items: center;
   background-color: var(--signin-work-badge-background-color);
-  border: 1px solid var(--google-grey-300);
+  border: 1px solid var(--cr-scrollable-border-color);
   border-radius: 50%;
   box-sizing: border-box;
   display: flex;
@@ -103,11 +102,9 @@ main {
 }
 
 .title {
-  box-sizing: border-box;
   font-size: 32px;
   margin: 0;
   padding-inline: 48px;
-  width: 100%;
 }
 
 :host([app-mode='profile-picker']) .title {
@@ -126,9 +123,7 @@ main {
 }
 
 .disclaimer-container {
-  align-items: stretch;
   display: flex;
-  flex-direction: row;
   gap: var(--disclaimer-cards-gap);
   justify-content: center;
 }
@@ -136,7 +131,7 @@ main {
 .disclaimer {
   width: var(--disclaimer-card-width);
   align-items: center;
-  background-color: var(--google-white);
+  background-color: var(--cr-fallback-color-surface);
   border: 1px solid var(--google-grey-200);
   border-radius: 24px;
   box-sizing: border-box;
@@ -144,6 +139,7 @@ main {
   flex-direction: column;
   gap: 8px;
   padding: 24px;
+  text-align: center;
 }
 
 .disclaimer .icon {
@@ -153,17 +149,14 @@ main {
 }
 
 .disclaimer h2 {
-  color: var(--color-sys-on-surface);
   font-size: 16px;
   font-weight: 500;
-  text-align: center;
   margin: 0;
 }
 
 .disclaimer p {
-  color: var(--cr-secondary-text-color);
+  color: var(--google-grey-700);
   line-height: 20px;
-  text-align: center;
   margin: 0;
 }
 
@@ -186,8 +179,8 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
-  :host {
-    --cr-secondary-text-color: var(--google-grey-500);
+  .disclaimer p {
+    color: var(--google-grey-500);
   }
 
   .work-badge {
