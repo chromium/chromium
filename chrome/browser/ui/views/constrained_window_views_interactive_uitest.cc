@@ -6,11 +6,18 @@
 
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -25,6 +32,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -249,3 +257,43 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, ClosesOnEscape) {
   content::RunAllPendingInMessageLoop();
   EXPECT_EQ(nullptr, tracker.view());
 }
+
+#if BUILDFLAG(IS_MAC)
+// Tests that focusing the location bar (e.g. via cmd+L) while a tab-modal
+// dialog is key makes the browser window key, so that typing goes to the
+// location bar rather than to the dialog. On Mac, moving focus within the
+// browser window doesn't change the key window by itself.
+IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest,
+                       FocusLocationBarMakesBrowserWindowKey) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  views::Widget* browser_widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  web_contents->Focus();
+
+  ConstrainedWindowTestDialog* const dialog = ShowModalDialog(web_contents);
+  views::ViewTracker tracker(dialog);
+  dialog->GetWidget()->SetVisibilityChangedAnimationsEnabled(false);
+  views::test::WaitForWidgetActive(dialog->GetWidget(), true);
+  EXPECT_FALSE(browser_widget->IsActive());
+
+  chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION);
+
+  views::test::WaitForWidgetActive(browser_widget, true);
+  EXPECT_FALSE(dialog->GetWidget()->IsActive());
+  // Check the edit model rather than a specific view, so that this works with
+  // both the Views and the WebUI location bar. The latter focuses
+  // asynchronously.
+  OmniboxEditModel* edit_model =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBar()
+          ->GetOmniboxController()
+          ->edit_model();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return edit_model->has_focus(); }));
+  // The dialog stays open; it just isn't key anymore.
+  EXPECT_EQ(dialog, tracker.view());
+  EXPECT_TRUE(dialog->GetWidget()->IsVisible());
+}
+#endif  // BUILDFLAG(IS_MAC)

@@ -80,9 +80,21 @@ void ClearFocus() {
 
 - (void)orderOut:(id)sender {
   NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
-  if (selfAsWindow == g_fake_focused_window)
+  const bool was_focused = selfAsWindow == g_fake_focused_window;
+  // Grab the parent first, since ordering out a child window detaches it.
+  NSWindow* parent = selfAsWindow.parentWindow;
+  if (was_focused) {
     ClearFocus();
+  }
   g_order_out_swizzler->InvokeOriginal<void, id>(self, _cmd, sender);
+
+  // AppKit makes the window behind the key window key when the key window is
+  // ordered out. For child windows (e.g. tab-modal dialogs), that's usually the
+  // parent window, so emulate that.
+  if (was_focused && !g_fake_focused_window && parent.visible &&
+      parent.canBecomeKeyWindow) {
+    SetFocus(parent);
+  }
 }
 
 - (void)resignKeyWindow {

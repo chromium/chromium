@@ -212,6 +212,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/focus/focus_manager.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -2647,30 +2648,67 @@ void Zoom(BrowserWindowInterface* browser, content::PageZoom zoom) {
                        zoom);
 }
 
+namespace {
+
+// Keyboard focus commands (e.g. cmd+L) can run while a child window of the
+// browser window, such as a tab-modal dialog, is key. On Mac, moving focus to a
+// view in the browser window doesn't change the key window, so keystrokes would
+// keep going to the child window rather than to the newly focused browser UI.
+// Make the browser window key in that case. Mouse clicks don't need this, since
+// AppKit makes the clicked window key.
+//
+// This must be called after focus has moved. Otherwise, if the web contents is
+// still first responder, making the browser window key would hand key status
+// straight back to the tab-modal dialog (see ChromeRenderWidgetHostViewMac
+// Delegate's -windowDidBecomeKey).
+void ActivateWindowAfterFocusCommand(BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_MAC)
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || browser_view->IsActive()) {
+    return;
+  }
+  // Pane focus commands can move focus into a separate widget, such as a toast
+  // or a help bubble, which is then key. Only make the browser window key if
+  // focus landed in it.
+  views::FocusManager* focus_manager = browser_view->GetFocusManager();
+  if (!focus_manager || !focus_manager->GetFocusedView()) {
+    return;
+  }
+  browser_view->Activate();
+#endif
+}
+
+}  // namespace
+
 void FocusToolbar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusToolbar"));
   BrowserWindow::FromBrowser(browser)->FocusToolbar();
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusLocationBar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusLocation"));
   BrowserWindow::FromBrowser(browser)->SetFocusToLocationBar(true);
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusSearch(BrowserWindowInterface* browser) {
   // TODO(beng): replace this with FocusLocationBar
   base::RecordAction(UserMetricsAction("FocusSearch"));
   BrowserWindow::FromBrowser(browser)->GetLocationBar()->FocusSearch();
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusAppMenu(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusAppMenu"));
   BrowserWindow::FromBrowser(browser)->FocusAppMenu();
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusBookmarksToolbar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusBookmarksToolbar"));
   BookmarkBarController::From(browser)->FocusBookmarksToolbar();
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser) {
@@ -2681,11 +2719,13 @@ void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser) {
 void FocusNextPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusNextPane"));
   BrowserFocusController::From(browser)->RotatePaneFocus(true);
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusPreviousPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusPreviousPane"));
   BrowserFocusController::From(browser)->RotatePaneFocus(false);
+  ActivateWindowAfterFocusCommand(browser);
 }
 
 void FocusWebContentsPane(BrowserWindowInterface* browser) {
