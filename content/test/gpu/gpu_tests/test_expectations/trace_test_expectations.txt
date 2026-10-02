@@ -224,7 +224,7 @@ crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # Very Flaky on all win platforms
-crbug.com/517156647 [ no-clang-coverage release target-cpu-64 win11 ] SwapChainTraceTest_IsOpaque [ Failure ]
+crbug.com/517156647 [ no-clang-coverage release target-cpu-64 win ] SwapChainTraceTest_IsOpaque [ Failure ]
 
 # Win/AMD RX 7600 / RX 5500XT failures
 crbug.com/402989071 [ win11 amd ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
@@ -308,6 +308,7 @@ crbug.com/536977885 [ mac asan apple-angle-metal-renderer:-apple-m2 ] * [ RetryO
 crbug.com/567498386 [ win10 nvidia-0x2184 target-cpu-32 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 crbug.com/568529652 [ android android-pixel-2 ] TraceTest_Canvas2DRedBox [ RetryOnFailure ]
+crbug.com/568316653 [ win10 intel-0x4680 ] VideoPathTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 crbug.com/568316653 [ win10 intel-0x4680 ] VideoPathTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 ###############################
