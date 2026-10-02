@@ -576,6 +576,45 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   host_view()->AddChildView(std::move(view_to_reparent));
 }
 
+gfx::Rect TabCollectionAnimatingLayoutManager::HostAnimationOffsets::
+    InterpolateChildBounds(double value,
+                           const gfx::Rect& start_bounds,
+                           const gfx::Rect& target_bounds) const {
+  return gfx::Tween::RectValueBetween(value, start_bounds + start,
+                                      target_bounds + target) -
+         current;
+}
+
+TabCollectionAnimatingLayoutManager::HostAnimationOffsets
+TabCollectionAnimatingLayoutManager::GetHostAnimationOffsets(
+    double value) const {
+  const views::View* parent = host_view()->parent();
+  if (!parent || !parent->GetProperty(kHasAnimatingLayoutManagerKey)) {
+    return {};
+  }
+  const auto* parent_lm =
+      static_cast<const TabCollectionAnimatingLayoutManager*>(
+          parent->GetLayoutManager());
+  if (!parent_lm->is_animating_ ||
+      parent_lm->delegate_->IsViewDragging(*host_view())) {
+    return {};
+  }
+  auto start_it = parent_lm->start_view_layout_map_.find(host_view());
+  auto target_it = parent_lm->target_view_layout_map_.find(host_view());
+  if (start_it == parent_lm->start_view_layout_map_.end() ||
+      target_it == parent_lm->target_view_layout_map_.end()) {
+    return {};
+  }
+  const gfx::Rect& host_start = start_it->second.bounds;
+  const gfx::Rect& host_target = target_it->second.bounds;
+  return {
+      .start = host_start.OffsetFromOrigin(),
+      .target = host_target.OffsetFromOrigin(),
+      .current = gfx::Tween::RectValueBetween(value, host_start, host_target)
+                     .OffsetFromOrigin(),
+  };
+}
+
 views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     double value) const {
   views::ProposedLayout result;
@@ -607,6 +646,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     CalculateClosingViewsTargetX();
   }
 
+  const HostAnimationOffsets host_offsets = GetHostAnimationOffsets(value);
+
   for (views::View* child_view : host_view()->children()) {
     auto target_it = target_view_layout_map_.find(child_view);
     if (target_it != target_view_layout_map_.end()) {
@@ -624,7 +665,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
                  start_it != start_view_layout_map_.end()) {
         // Moved child.
         // Interpolate between start and target bounds.
-        interpolated_child.bounds = gfx::Tween::RectValueBetween(
+        interpolated_child.bounds = host_offsets.InterpolateChildBounds(
             value, start_it->second.bounds, target_it->second.bounds);
         // Snap visibility to target.
         interpolated_child.visible = target_it->second.visible;
@@ -642,7 +683,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
         if (previous_container_bounds) {
           gfx::Rect initial_bounds = views::View::ConvertRectFromScreen(
               host_view(), *previous_container_bounds);
-          interpolated_child.bounds = gfx::Tween::RectValueBetween(
+          interpolated_child.bounds = host_offsets.InterpolateChildBounds(
               value, initial_bounds, target_it->second.bounds);
         } else {
           gfx::Rect initial_bounds = target_it->second.bounds;
@@ -657,7 +698,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
               initial_bounds.set_x(it->second);
             }
           }
-          interpolated_child.bounds = gfx::Tween::RectValueBetween(
+          interpolated_child.bounds = host_offsets.InterpolateChildBounds(
               value, initial_bounds, target_it->second.bounds);
           if (child_view->layer()) {
             child_view->layer()->SetOpacity(static_cast<float>(value));
@@ -703,7 +744,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
           target_bounds.set_x(it->second);
         }
       }
-      interpolated_child.bounds = gfx::Tween::RectValueBetween(
+      interpolated_child.bounds = host_offsets.InterpolateChildBounds(
           value, start_it->second.bounds, target_bounds);
       if (child_view->layer()) {
         child_view->layer()->SetOpacity(static_cast<float>(1.0 - value));
@@ -769,8 +810,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       views::ChildLayout interpolated_child;
       interpolated_child.visible = child_view->GetVisible();
       interpolated_child.child_view = child_view;
-      interpolated_child.bounds =
-          gfx::Tween::RectValueBetween(value, start_bounds, target_bounds);
+      interpolated_child.bounds = host_offsets.InterpolateChildBounds(
+          value, start_bounds, target_bounds);
 
       if (!interpolated_child.bounds.IsEmpty()) {
         current_layout_content_size_ =

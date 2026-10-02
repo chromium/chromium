@@ -52,9 +52,12 @@ class TestLayoutManager : public views::LayoutManagerBase {
       // Place children at full width, starting from the top of the parent.
       int y = 0;
       for (const auto& child : host_view()->children()) {
+        const int child_height = child->GetPreferredSize().height() > 0
+                                     ? child->GetPreferredSize().height()
+                                     : 20;
         layout.child_layouts.emplace_back(child, child->GetVisible(),
-                                          gfx::Rect(0, y, 100, 20));
-        y += 20;
+                                          gfx::Rect(0, y, 100, child_height));
+        y += child_height;
       }
 
       // Calculate the total height based on all child layouts.
@@ -64,9 +67,12 @@ class TestLayoutManager : public views::LayoutManagerBase {
       // Place children horizontally within a fixed-width parent.
       int x = 0;
       for (const auto& child : host_view()->children()) {
+        const int child_width = child->GetPreferredSize().width() > 0
+                                    ? child->GetPreferredSize().width()
+                                    : 20;
         layout.child_layouts.emplace_back(child, child->GetVisible(),
-                                          gfx::Rect(x, 0, 20, 100));
-        x += 20;
+                                          gfx::Rect(x, 0, child_width, 100));
+        x += child_width;
       }
 
       // Calculate host size with fixed bounded width and total height.
@@ -75,9 +81,12 @@ class TestLayoutManager : public views::LayoutManagerBase {
       // Place children at full height, starting from the left of the parent.
       int x = 0;
       for (const auto& child : host_view()->children()) {
+        const int child_width = child->GetPreferredSize().width() > 0
+                                    ? child->GetPreferredSize().width()
+                                    : 20;
         layout.child_layouts.emplace_back(child, child->GetVisible(),
-                                          gfx::Rect(x, 0, 20, 100));
-        x += 20;
+                                          gfx::Rect(x, 0, child_width, 100));
+        x += child_width;
       }
 
       // Calculate the total width based on all child layouts.
@@ -518,6 +527,86 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   widget()->SetBounds(gfx::Rect(0, 0, 150, 150));
   widget()->LayoutRootViewIfNecessary();
   EXPECT_FALSE(layout_manager()->is_animating());
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       StationaryChildInMovingNestedContainerHasZeroJitter) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  // Create a leading tab with an odd size (21px) so 50% progress produces
+  // half-integer offsets (-10.5 vs +10.5) that would otherwise round in the
+  // same positive direction and cause +1px screen jitter on stationary views.
+  auto* leading_tab =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  leading_tab->SetPreferredSize(gfx::Size(21, 21));
+
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> group_delegate;
+  auto* group_view = host_view()->AddChildView(std::make_unique<views::View>());
+  auto* group_layout_manager = group_view->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(animation_axis()), group_delegate,
+          animation_coordinator(), animation_axis()));
+
+  group_view->AddChildView(std::make_unique<views::View>());
+  auto* stationary_tab =
+      group_view->AddChildView(std::make_unique<views::View>());
+
+  host_view()->InvalidateLayout();
+  group_view->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  widget()->LayoutRootViewIfNecessary();
+
+  ASSERT_EQ(is_vertical ? group_view->bounds().y() : group_view->bounds().x(),
+            21);
+  ASSERT_EQ(
+      is_vertical ? stationary_tab->bounds().y() : stationary_tab->bounds().x(),
+      20);
+
+  // Move `leading_tab` into `group_view` after the header: `group_view` shifts
+  // in `host_view()` from 21 to 0 (-21px) and expands from 40 to 61, while
+  // `stationary_tab` shifts inside `group_view` from 20 to 41 (+21px).
+  group_view->AddChildViewAt(host_view()->RemoveChildViewT(leading_tab), 1);
+  group_view->InvalidateLayout();
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  // Step through the animation (including a mid-animation interruption on the
+  // parent container at step 10) and verify `stationary_tab` remains at exact
+  // position 41 in `host_view()` with 0px jitter.
+  int step = 0;
+  while (layout_manager()->is_animating() ||
+         group_layout_manager->is_animating()) {
+    if (step == 10) {
+      host_view()->AddChildView(std::make_unique<views::View>());
+      host_view()->InvalidateLayout();
+      widget()->LayoutRootViewIfNecessary();
+    }
+
+    task_environment()->FastForwardBy(base::Milliseconds(5));
+    widget()->LayoutRootViewIfNecessary();
+
+    const int group_pos =
+        is_vertical ? group_view->bounds().y() : group_view->bounds().x();
+    const int stationary_pos_in_group = is_vertical
+                                            ? stationary_tab->bounds().y()
+                                            : stationary_tab->bounds().x();
+    EXPECT_EQ(group_pos + stationary_pos_in_group, 41) << "at step " << step;
+    ++step;
+  }
+
+  EXPECT_GT(step, 20);
+  EXPECT_EQ(is_vertical ? group_view->bounds().y() : group_view->bounds().x(),
+            0);
+  EXPECT_EQ(
+      is_vertical ? stationary_tab->bounds().y() : stationary_tab->bounds().x(),
+      41);
 }
 
 INSTANTIATE_TEST_SUITE_P(

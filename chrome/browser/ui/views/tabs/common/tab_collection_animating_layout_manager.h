@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -239,6 +240,24 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
   // between independent TabCollectionNodes. Invoked after the current
   // `animation_coordinator_` animation has ended.
   void ClearViewAnimationMetadata();
+
+  // Start, target, and current offsets of `host_view()` in its parent's space.
+  struct HostAnimationOffsets {
+    gfx::Vector2d start;
+    gfx::Vector2d target;
+    gfx::Vector2d current;
+
+    gfx::Rect InterpolateChildBounds(double value,
+                                     const gfx::Rect& start_bounds,
+                                     const gfx::Rect& target_bounds) const;
+  };
+
+  // Returns `host_view()`'s start, target, and current animation offsets in its
+  // parent's coordinate space (or zero vectors if not animated by a parent).
+  // Used to interpolate child bounds in parent space before converting back to
+  // local coordinates, avoiding +/-1px rounding jitter on stationary children
+  // when `host_view()` shifts and resizes simultaneously.
+  HostAnimationOffsets GetHostAnimationOffsets(double value) const;
 
   // Clears any metadata specific to the animating layout manager from `view`.
   void ClearViewAnimationMetadataForView(views::View* view);
