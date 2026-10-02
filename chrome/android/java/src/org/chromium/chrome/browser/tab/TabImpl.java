@@ -39,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -91,7 +90,6 @@ import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillProvider;
@@ -635,12 +633,11 @@ class TabImpl implements Tab, TabInternal {
         if (mPendingLoadParams != null) {
             return mUrl != null ? mUrl : new GURL(mPendingLoadParams.getUrl());
         }
-        GURL url = getWebContents() != null ? getWebContents().getVisibleUrl() : GURL.emptyGURL();
-
-        // If we have a ContentView, or a NativePage, or the url is not empty, we have a WebContents
-        // so cache the WebContent's url. If not use the cached version.
-        if (getWebContents() != null || isNativePage() || !url.getSpec().isEmpty()) {
-            mUrl = url;
+        WebContents webContents = getWebContents();
+        if (webContents != null) {
+            mUrl = webContents.getVisibleUrl();
+        } else if (isNativePage()) {
+            mUrl = GURL.emptyGURL();
         }
 
         return mUrl != null ? mUrl : GURL.emptyGURL();
@@ -927,17 +924,7 @@ class TabImpl implements Tab, TabInternal {
                 return handleJavaCrash();
             }
 
-            if (isDestroyed()) {
-                // This will crash below, but we want to know if the tab was destroyed or just never
-                // initialize.
-                throw new RuntimeException("Tab.loadUrl called on a destroyed tab");
-            }
-            if (mNativeTabAndroid == 0) {
-                // if mNativeTabAndroid is null then we are going to crash anyways on the
-                // native side. Lets crash on the java side so that we can have a better stack
-                // trace.
-                throw new RuntimeException("Tab.loadUrl called when no native side exists");
-            }
+            ensureValidForLoadUrl();
 
             // TODO(crbug.com/40549331): Don't fix up all URLs. Documentation on
             // FixupURL explicitly says not to use it on URLs coming from untrustworthy
@@ -946,13 +933,10 @@ class TabImpl implements Tab, TabInternal {
             // decisions of whether or not to fix up GURLs on a case-by-case basis based
             // on trustworthiness of the incoming URL.
             GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
-            // Request desktop sites if necessary.
-            if (fixedUrl.isValid()) {
-                params.setOverrideUserAgent(calculateUserAgentOverrideOption(fixedUrl));
-            } else {
-                // Fall back to the Url in webContents for site level setting.
-                params.setOverrideUserAgent(calculateUserAgentOverrideOption(null));
-            }
+            // Request desktop sites if necessary. Fall back to the Url in webContents for site
+            // level setting.
+            params.setOverrideUserAgent(
+                    calculateUserAgentOverrideOption(fixedUrl.isValid() ? fixedUrl : null));
 
             LoadUrlResult result = loadUrlInternal(params, fixedUrl);
 
@@ -967,6 +951,20 @@ class TabImpl implements Tab, TabInternal {
         }
     }
 
+    private void ensureValidForLoadUrl() {
+        if (isDestroyed()) {
+            // This will crash below, but we want to know if the tab was destroyed or just never
+            // initialize.
+            throw new RuntimeException("Tab.loadUrl called on a destroyed tab");
+        }
+        if (mNativeTabAndroid == 0) {
+            // if mNativeTabAndroid is null then we are going to crash anyways on the
+            // native side. Lets crash on the java side so that we can have a better stack
+            // trace.
+            throw new RuntimeException("Tab.loadUrl called when no native side exists");
+        }
+    }
+
     private LoadUrlResult loadUrlInternal(LoadUrlParams params, GURL fixedUrl) {
         if (mWebContents == null) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
 
@@ -974,9 +972,7 @@ class TabImpl implements Tab, TabInternal {
 
         // Discard pending load params if they exist. At this point we are navigating to a new URL
         // programmatically and the pending load never occurred.
-        if (mPendingLoadParams != null) {
-            mPendingLoadParams = null;
-        }
+        mPendingLoadParams = null;
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
         // typing chrome://history as well as selecting from the drop down menu.
@@ -1038,8 +1034,7 @@ class TabImpl implements Tab, TabInternal {
         if (mWebContents == null && mWebContentsState == null && mPendingLoadParams != null) {
             // Case 1: We have a pending load params but no WebContents or WebContentsState. Just
             // clobber the existing pending load params.
-            mPendingLoadParams = params;
-            mUrl = new GURL(params.getUrl());
+            setPendingLoadParams(params);
         } else if (mWebContentsState != null) {
             assert mPendingLoadParams == null
                     : "Should not have both a WebContentsState and a pending load params.";
@@ -1051,47 +1046,73 @@ class TabImpl implements Tab, TabInternal {
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.FreezeAndAppendPendingNavigationResult", success);
             if (success) {
-                // The pending load params were consumed to make the WebContentsState. Invalidate
-                // them.
-                mPendingLoadParams = null;
                 mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
             } else {
                 // If we failed to append the pending navigation, clear the WebContentsState and
                 // clobber with the new pending load params.
                 mWebContentsState.destroy();
                 mWebContentsState = null;
-                mPendingLoadParams = params;
-                mUrl = new GURL(params.getUrl());
+                setPendingLoadParams(params);
             }
         } else {
             // Case 3: The tab has a live WebContents and maybe a pending load params. Clobber
             // the previous pending load params (if one existed) and discard the WebContents.
             assert mWebContents != null;
             discardInternal(DiscardReason.APPEND_NAVIGATION);
-            mPendingLoadParams = params;
-            mUrl = new GURL(params.getUrl());
+            setPendingLoadParams(params);
         }
         triggerUpdatesOnAppendingNavigation(title);
     }
 
+    private void setPendingLoadParams(LoadUrlParams params) {
+        mPendingLoadParams = params;
+        mUrl = new GURL(params.getUrl());
+    }
+
     private void triggerUpdatesOnAppendingNavigation(@Nullable String title) {
-        RewindableIterator<TabObserver> observers = getRewindableTabObservers();
-        while (observers.hasNext()) {
-            observers.next().onUrlUpdated(this);
+        for (TabObserver observer : mObservers) {
+            observer.onUrlUpdated(this);
         }
-        observers.rewind();
         notifyFaviconChanged();
         assumeNonNull(mUrl);
         updateTitle(title == null ? mUrl.getSpec() : title);
 
-        while (observers.hasNext()) {
-            observers.next().onNavigationEntriesAppended(this);
+        for (TabObserver observer : mObservers) {
+            observer.onNavigationEntriesAppended(this);
         }
     }
 
     @CalledByNative
     @Override
     public boolean loadIfNeeded(boolean forceBackingSize) {
+        if (!canLoadIfNeeded()) {
+            return false;
+        }
+
+        if (mPendingLoadParams != null) {
+            if (mWebContents == null) {
+                WebContents webContents =
+                        WebContentsFactory.createWebContents(
+                                mProfile, isHidden(), /* initializeRenderer= */ false);
+                initWebContents(webContents);
+            }
+            loadUrl(mPendingLoadParams);
+            mPendingLoadParams = null;
+        } else if (isFrozen() && mWebContentsState == null) {
+            Log.e(TAG, "loadIfNeeded called on a frozen tab with no WebContentsState");
+            return false;
+        } else {
+            restoreIfNeeded();
+        }
+
+        if (forceBackingSize) {
+            maybeForceBackingSize();
+        }
+
+        return true;
+    }
+
+    private boolean canLoadIfNeeded() {
         if (isDestroyed()) {
             Log.e(TAG, "loadIfNeeded called on a destroyed tab");
             return false;
@@ -1128,38 +1149,21 @@ class TabImpl implements Tab, TabInternal {
             return false;
         }
 
-        if (mPendingLoadParams != null) {
-            if (mWebContents == null) {
-                WebContents webContents =
-                        WebContentsFactory.createWebContents(
-                                mProfile, isHidden(), /* initializeRenderer= */ false);
-                initWebContents(webContents);
-            }
-            loadUrl(mPendingLoadParams);
-            mPendingLoadParams = null;
-        } else if (isFrozen() && mWebContentsState == null) {
-            Log.e(TAG, "loadIfNeeded called on a frozen tab with no WebContentsState");
-            return false;
-        } else {
-            restoreIfNeeded();
-        }
+        return true;
+    }
 
+    private void maybeForceBackingSize() {
         // If we are trying to capture a tab, and it has never been loaded, then it will not have
         // its physical backing size set, which means it will never produce any frames. In this
         // case, set the physical backing size to an estimate of what it would be if it were shown.
-        if (forceBackingSize && !hasBacking() && mWindowAndroid != null) {
-            if (mWebContents != null) {
-                var display = mWindowAndroid.getDisplay();
-                float dipScale = display.getDipScale();
-                int width = (int) (mWebContents.getWidth() * dipScale);
-                int height = (int) (mWebContents.getHeight() * dipScale);
-                TabImplJni.get()
-                        .onPhysicalBackingSizeChanged(
-                                mNativeTabAndroid, mWebContents, width, height);
-            }
+        if (!hasBacking() && mWindowAndroid != null && mWebContents != null) {
+            var display = mWindowAndroid.getDisplay();
+            float dipScale = display.getDipScale();
+            int width = (int) (mWebContents.getWidth() * dipScale);
+            int height = (int) (mWebContents.getHeight() * dipScale);
+            TabImplJni.get()
+                    .onPhysicalBackingSizeChanged(mNativeTabAndroid, mWebContents, width, height);
         }
-
-        return true;
     }
 
     @Override
@@ -1629,12 +1633,12 @@ class TabImpl implements Tab, TabInternal {
         mIsPinned = isPinned;
 
         // If applicable set up for a lazy background tab load.
-        mPendingLoadParams = loadUrlParams;
-        boolean hasPendingLoadUrlParams = loadUrlParams != null;
-        if (hasPendingLoadUrlParams) {
-            assumeNonNull(loadUrlParams);
-            mUrl = new GURL(loadUrlParams.getUrl());
+        if (loadUrlParams != null) {
+            setPendingLoadParams(loadUrlParams);
+            assumeNonNull(mUrl);
             setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
+        } else {
+            mPendingLoadParams = null;
         }
 
         // The {@link mDelegateFactory} needs to be set before calling
@@ -2687,15 +2691,17 @@ class TabImpl implements Tab, TabInternal {
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             maybeInflateContentView();
-            assert !isFrozen() || mWebContentsState != null
-                    : "crbug.com/40248349: A frozen tab must have WebContentsState to restore"
-                            + " from.";
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
-            if ((isFrozen()
-                            && mWebContentsState != null
-                            && !unfreezeContents(/* noRenderer= */ false))
-                    || !needsReload()) {
+            if (isFrozen()) {
+                assert mWebContentsState != null
+                        : "crbug.com/40248349: A frozen tab must have WebContentsState to restore"
+                                + " from.";
+                if (mWebContentsState == null || !unfreezeContents(/* noRenderer= */ false)) {
+                    return;
+                }
+            }
+            if (!needsReload()) {
                 return;
             }
 
@@ -2731,23 +2737,16 @@ class TabImpl implements Tab, TabInternal {
             WebContents webContents =
                     mWebContentsState.restoreWebContents(getProfile(), isHidden(), noRenderer);
 
-            UrlConstantResolver urlConstantResolver =
-                    UrlConstantResolverFactory.getForProfile(mProfile);
-            String failedRestoreUrl = urlConstantResolver.getNtpUrl();
+            String failedRestoreUrl = null;
             if (webContents == null) {
                 // State restore failed, just create a new empty web contents as that is the best
                 // that can be done at this point.
-                webContents = WebContentsFactory.createWebContents(mProfile, isHidden(), false);
+                webContents =
+                        WebContentsFactory.createWebContents(
+                                mProfile, isHidden(), /* initializeRenderer= */ false);
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
-
-                assumeNonNull(mUrl);
-                if (!mUrl.getSpec().isEmpty()) {
-                    failedRestoreUrl = mUrl.getSpec();
-                } else if (!TextUtils.isEmpty(
-                        mWebContentsState.getFallbackUrlForRestorationFailure())) {
-                    failedRestoreUrl = mWebContentsState.getFallbackUrlForRestorationFailure();
-                }
+                failedRestoreUrl = resolveFallbackUrlForFailedRestore(mWebContentsState);
             }
 
             View compositorView =
@@ -2760,12 +2759,25 @@ class TabImpl implements Tab, TabInternal {
             initWebContents(webContents);
 
             if (!restored) {
+                assumeNonNull(failedRestoreUrl);
                 loadUrl(new LoadUrlParams(failedRestoreUrl, PageTransition.GENERATED));
             }
         } finally {
             TraceEvent.end("Tab.unfreezeContents");
         }
         return restored;
+    }
+
+    private String resolveFallbackUrlForFailedRestore(WebContentsState state) {
+        assumeNonNull(mUrl);
+        if (!mUrl.getSpec().isEmpty()) {
+            return mUrl.getSpec();
+        }
+        String fallbackUrl = state.getFallbackUrlForRestorationFailure();
+        if (!TextUtils.isEmpty(fallbackUrl)) {
+            return fallbackUrl;
+        }
+        return UrlConstantResolverFactory.getForProfile(mProfile).getNtpUrl();
     }
 
     /**
