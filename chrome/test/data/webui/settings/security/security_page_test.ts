@@ -115,7 +115,7 @@ suite('Main', function() {
     document.body.appendChild(page);
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -124,8 +124,8 @@ suite('Main', function() {
   });
 
   test('ManageCertificatesClick', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#manageCertificatesLinkRow')!.click();
+    page.shadowRoot.querySelector<HTMLElement>(
+                       '#manageCertificatesLinkRow')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
@@ -148,18 +148,18 @@ suite('Main', function() {
   test('HttpsFirstModeControls', async () => {
     // Check that the old toggle row under "Advanced" is _not_ present.
     const oldToggle =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+        page.shadowRoot.querySelector<HTMLElement>('#httpsOnlyModeToggle');
     assertFalse(!!oldToggle);
 
     // Test the new settings UI.
-    const secureConnections = page.shadowRoot!.querySelector<HTMLElement>(
-        '#secureConnectionsSection');
+    const secureConnections =
+        page.shadowRoot.querySelector<HTMLElement>('#secureConnectionsSection');
     const toggleButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeToggle');
-    const collapse = page.shadowRoot!.querySelector<HTMLElement>(
+        page.shadowRoot.querySelector<HTMLElement>('#httpsFirstModeToggle');
+    const collapse = page.shadowRoot.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroupCollapse');
-    const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
-        '#httpsFirstModeRadioGroup');
+    const radioGroup =
+        page.shadowRoot.querySelector<HTMLElement>('#httpsFirstModeRadioGroup');
     assertTrue(!!secureConnections);
     assertTrue(!!toggleButton);
     assertTrue(!!collapse);
@@ -180,7 +180,7 @@ suite('Main', function() {
         prefService.getPref('generated.https_first_mode_enabled').value);
 
     // Select the "Strict Mode" radio button.
-    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+    let radioButton = page.shadowRoot.querySelector<HTMLElement>(
         '#httpsFirstModeEnabledStrict');
     assertTrue(!!radioButton);
     radioButton.click();
@@ -190,7 +190,7 @@ suite('Main', function() {
         prefService.getPref('generated.https_first_mode_enabled').value);
 
     // Select the "Balanced Mode" radio button again.
-    radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+    radioButton = page.shadowRoot.querySelector<HTMLElement>(
         '#httpsFirstModeEnabledBalanced');
     assertTrue(!!radioButton);
     radioButton.click();
@@ -214,8 +214,8 @@ suite('Main', function() {
   // the radio options automatically.
   test('HttpsFirstModeSettingPairsWithSafeBrowsing', async () => {
     const toggleButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeToggle');
-    const collapse = page.shadowRoot!.querySelector<HTMLElement>(
+        page.shadowRoot.querySelector<HTMLElement>('#httpsFirstModeToggle');
+    const collapse = page.shadowRoot.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroupCollapse');
     assertTrue(!!toggleButton);
     assertTrue(!!collapse);
@@ -239,7 +239,7 @@ suite('Main', function() {
 
     // The UI should automatically expand the radio group and select balanced.
     assertTrue(isChildVisible(page, '#httpsFirstModeRadioGroup'));
-    const balancedButton = page.shadowRoot!.querySelector<HTMLInputElement>(
+    const balancedButton = page.shadowRoot.querySelector<HTMLInputElement>(
         '#httpsFirstModeEnabledBalanced');
     assertTrue(!!balancedButton);
     assertTrue(balancedButton.checked);
@@ -247,8 +247,8 @@ suite('Main', function() {
 
   // Tests that the correct Advanced Protection sublabel is used when the
   // HTTPS-First Mode setting toggle has user control disabled.
-  test('HttpsFirstModeSettingAdvancedProtectionSubLabel', function() {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+  test('HttpsFirstModeSettingAdvancedProtectionSubLabel', async function() {
+    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#httpsFirstModeToggle');
     assertTrue(!!toggle);
     const defaultSubLabel =
@@ -260,7 +260,7 @@ suite('Main', function() {
       value: HttpsFirstModeSetting.DISABLED,
       userControlDisabled: true,
     }]);
-    flush();
+    await microtasksFinished();
     const lockedSubLabel =
         loadTimeData.getString('httpsFirstModeDescriptionAdvancedProtection');
     assertEquals(lockedSubLabel, toggle.subLabel);
@@ -270,7 +270,7 @@ suite('Main', function() {
       value: HttpsFirstModeSetting.ENABLED_FULL,
       userControlDisabled: true,
     }]);
-    flush();
+    await microtasksFinished();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
 
@@ -433,8 +433,8 @@ suite('FlagsDisabled', function() {
   });
 
   test('LogManageCertificatesClick', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#manageCertificatesLinkRow')!.click();
+    page.shadowRoot.querySelector<HTMLElement>(
+                       '#manageCertificatesLinkRow')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
@@ -451,14 +451,14 @@ suite('FlagsDisabled', function() {
     // Check that the new "Secure connections" section is not shown if the
     // flag is disabled.
     const secureConnections =
-        page.shadowRoot!.querySelector<HTMLElement>('secureConnectionsSection');
+        page.shadowRoot.querySelector<HTMLElement>('secureConnectionsSection');
     assertFalse(!!secureConnections);
 
     // Test the old settings UI when the HttpsFirstBalancedMode flag is
     // disabled. Checks that toggling the HTTPS-Only Mode setting sets the
     // associated pref.
     const httpsOnlyModeToggle =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+        page.shadowRoot.querySelector<HTMLElement>('#httpsOnlyModeToggle');
     assertTrue(!!httpsOnlyModeToggle);
 
     assertEquals(
@@ -473,8 +473,8 @@ suite('FlagsDisabled', function() {
 
   // Tests that the correct Advanced Protection sublabel is used when the
   // HTTPS-Only Mode setting toggle has user control disabled.
-  test('HttpsOnlyModeSettingSubLabel', function() {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+  test('HttpsOnlyModeSettingSubLabel', async function() {
+    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#httpsOnlyModeToggle');
     assertTrue(!!toggle);
     const defaultSubLabel = loadTimeData.getString('httpsOnlyModeDescription');
@@ -485,7 +485,7 @@ suite('FlagsDisabled', function() {
       value: HttpsFirstModeSetting.DISABLED,
       userControlDisabled: true,
     }]);
-    flush();
+    await microtasksFinished();
     const lockedSubLabel =
         loadTimeData.getString('httpsOnlyModeDescriptionAdvancedProtection');
     assertEquals(lockedSubLabel, toggle.subLabel);
@@ -495,7 +495,7 @@ suite('FlagsDisabled', function() {
       value: HttpsFirstModeSetting.ENABLED_FULL,
       userControlDisabled: true,
     }]);
-    flush();
+    await microtasksFinished();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
 
@@ -517,7 +517,7 @@ suite('FlagsDisabled', function() {
   // kExtendedReportingRemovePrefDependency is fully launched.
   test('LogSafeBrowsingExtendedToggle', async function() {
     const safeBrowsingReportingToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#safeBrowsingReportingToggle');
     assertTrue(!!safeBrowsingReportingToggle);
     page.$.safeBrowsingStandard.click();
@@ -539,7 +539,7 @@ suite('FlagsDisabled', function() {
         prefService.getPref('generated.safe_browsing').value);
 
     const safeBrowsingReportingToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#safeBrowsingReportingToggle');
     assertTrue(!!safeBrowsingReportingToggle);
     assertFalse(safeBrowsingReportingToggle.disabled);
@@ -572,7 +572,7 @@ suite('FlagsDisabled', function() {
   // kExtendedReportingRemovePrefDependency is fully launched.
   test('noControlSafeBrowsingReportingInEnhanced', async () => {
     const safeBrowsingReportingToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#safeBrowsingReportingToggle');
     assertTrue(!!safeBrowsingReportingToggle);
     page.$.safeBrowsingStandard.click();
@@ -587,7 +587,7 @@ suite('FlagsDisabled', function() {
   // kExtendedReportingRemovePrefDependency is fully launched.
   test('noControlSafeBrowsingReportingInDisabled', async function() {
     const safeBrowsingReportingToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#safeBrowsingReportingToggle');
     assertTrue(!!safeBrowsingReportingToggle);
     page.$.safeBrowsingStandard.click();
@@ -1056,8 +1056,8 @@ suite('SafeBrowsingMetrics', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
-        .cancel.click();
+    page.shadowRoot.querySelector(
+                       'settings-simple-confirmation-dialog')!.$.cancel.click();
     flush();
     const [disableDeniedResult, disableDeniedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -1079,7 +1079,7 @@ suite('SafeBrowsingMetrics', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
+    page.shadowRoot.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
     const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([
@@ -1155,8 +1155,8 @@ suite('SafeBrowsingLabelsAndToggles', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('PasswordsLeakDetectionText', function() {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+  test('PasswordsLeakDetectionText', async function() {
+    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#passwordsLeakToggle');
     assertTrue(!!toggle);
 
@@ -1177,7 +1177,7 @@ suite('SafeBrowsingLabelsAndToggles', function() {
       {key: 'profile.password_manager_leak_detection', value: true},
       {key: 'generated.password_leak_detection', userControlDisabled: true},
     ]);
-    flush();
+    await microtasksFinished();
     assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([
@@ -1187,13 +1187,13 @@ suite('SafeBrowsingLabelsAndToggles', function() {
         userControlDisabled: false,
       },
     ]);
-    flush();
+    await microtasksFinished();
     assertEquals(defaultSubLabel, toggle.subLabel);
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {key: 'profile.password_manager_leak_detection', value: false},
     ]);
-    flush();
+    await microtasksFinished();
     assertEquals(defaultSubLabel, toggle.subLabel);
   });
 
@@ -1235,7 +1235,7 @@ suite('SafeBrowsingLabelsAndToggles', function() {
     }]);
     flush();
 
-    const learnMoreLink = page.shadowRoot!.querySelector<HTMLElement>(
+    const learnMoreLink = page.shadowRoot.querySelector<HTMLElement>(
         '#enhancedProtectionLearnMoreLink');
 
     // Confirm that the learnMoreLink element exists.
@@ -1388,7 +1388,7 @@ suite('JavascriptOptimizer', function() {
   // setting page.
   test('NavigateToJavascriptOptimizerSetting', async () => {
     await createPage();
-    const link = page.shadowRoot!.querySelector<HTMLElement>(
+    const link = page.shadowRoot.querySelector<HTMLElement>(
         '#javascriptOptimizerSettingLink');
     assertTrue(!!link);
     link.click();
@@ -1400,7 +1400,7 @@ suite('JavascriptOptimizer', function() {
   test('JavascriptOptimizerSubLabelAllow', async () => {
     setDefaultJavascriptOptimizerContentSetting(ContentSetting.ALLOW);
     await createPage();
-    const link = page.shadowRoot!.querySelector<CrLinkRowElement>(
+    const link = page.shadowRoot.querySelector<CrLinkRowElement>(
         '#javascriptOptimizerSettingLink');
     assertTrue(!!link);
     const expectedSubLabel = loadTimeData.getString(
@@ -1411,7 +1411,7 @@ suite('JavascriptOptimizer', function() {
   test('JavascriptOptimizerSubLabelBlock', async () => {
     setDefaultJavascriptOptimizerContentSetting(ContentSetting.BLOCK);
     await createPage();
-    const link = page.shadowRoot!.querySelector<CrLinkRowElement>(
+    const link = page.shadowRoot.querySelector<CrLinkRowElement>(
         '#javascriptOptimizerSettingLink');
     assertTrue(!!link);
     const expectedSubLabel = loadTimeData.getString(
@@ -1423,7 +1423,7 @@ suite('JavascriptOptimizer', function() {
 async function clickCancelOnDisableSafebrowsingDialog(
     page: SettingsSecurityPageElement) {
   const confirmationDialog =
-      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+      page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
   assertTrue(!!confirmationDialog);
   const closePromise = eventToPromise('close', confirmationDialog);
   confirmationDialog.$.cancel.click();
@@ -1435,7 +1435,7 @@ async function clickCancelOnDisableSafebrowsingDialog(
 async function clickConfirmOnDisableSafebrowsingDialog(
     page: SettingsSecurityPageElement) {
   const confirmationDialog =
-      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+      page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
   assertTrue(!!confirmationDialog);
   const closePromise = eventToPromise('close', confirmationDialog);
   confirmationDialog.$.confirm.click();
