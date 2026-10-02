@@ -18,7 +18,7 @@ namespace media {
 
 namespace {
 
-constexpr char kTestModelFileName[] = "test_model_stateful_1_2_160_2.tflite";
+constexpr char kTestModelFileName[] = "test_model_1_2_160_2.tflite";
 
 }  // namespace
 

@@ -60,7 +60,10 @@ source_set("test_support") {
     "//third_party/flatbuffers",
     "//third_party/tflite",
   ]
-  data = [ "test_model_stateful_1_2_160_2.tflite" ]
+  data = [
+    "test_model_1_2_160_2.tflite",
+    "test_model_stateful_1_2_160_2.tflite",
+  ]
 }
 
 source_set("unit_tests") {
