@@ -62,7 +62,7 @@ void WebUIContentsWarmupLevelRecorder::BeforeContentsCreation() {
     pre_condition_->preloaded_contents = preloaded_contents->GetWeakPtr();
     pre_condition_->preloaded_process =
         preloaded_contents->GetPrimaryMainFrame()->GetProcess();
-    pre_condition_->preloaded_host = preloaded_contents->GetURL().GetHost();
+    pre_condition_->preloaded_host = preloaded_contents->GetURL().host();
   }
 }
 
@@ -79,7 +79,7 @@ void WebUIContentsWarmupLevelRecorder::AfterContentsCreation(
   }
 
   if (pre_condition_->preloaded_contents.get() == web_contents) {
-    level_ = pre_condition_->preloaded_host == web_contents->GetURL().GetHost()
+    level_ = pre_condition_->preloaded_host == web_contents->GetURL().host()
                  ? WebUIContentsWarmupLevel::kPreloadedWebContents
                  : WebUIContentsWarmupLevel::kRedirectedWebContents;
     return;
