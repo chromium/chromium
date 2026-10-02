@@ -124,6 +124,9 @@ class BottomSheetCoordinator
     /** The height of the screen in the previous layout pass. */
     private int mPreviousScreenHeight;
 
+    /** The viewport bottom inset in pixels from the previous container layout pass. */
+    private @Px int mPreviousViewportBottomInset;
+
     /** The animator used to move the sheet to a fixed state when released by the user. */
     private @Nullable ValueAnimator mSettleAnimator;
 
@@ -315,73 +318,8 @@ class BottomSheetCoordinator
 
         // Listen to height changes on the root.
         mSheetContainer.addOnLayoutChangeListener(
-                new View.OnLayoutChangeListener() {
-                    private int mPreviousViewportBottomInset;
-
-                    @Override
-                    public void onLayoutChange(
-                            View v,
-                            int left,
-                            int top,
-                            int right,
-                            int bottom,
-                            int oldLeft,
-                            int oldTop,
-                            int oldRight,
-                            int oldBottom) {
-                        // Compute the new height taking the keyboard into account.
-                        // TODO(mdjones): Share this logic with LocationBarLayout: crbug.com/725725.
-                        int previousWidth = mContainerWidth;
-                        int previousHeight = mContainerHeight;
-                        mContainerWidth = right - left;
-                        mContainerHeight = bottom - top;
-
-                        if (previousWidth != mContainerWidth
-                                || previousHeight != mContainerHeight) {
-                            if (!isHalfStateEnabled()) {
-                                @SheetState int currentState = getSheetState();
-                                if (currentState == SheetState.HALF) {
-                                    setSheetState(SheetState.FULL, false);
-                                } else if (currentState == SheetState.SCROLLING
-                                        && getTargetSheetState() == SheetState.HALF) {
-                                    // Let the animation resume to the full height.
-                                    mMediator.setTargetSheetState(SheetState.FULL);
-                                }
-                            }
-                            invalidateContentDesiredHeight();
-                            sizeAndPositionSheetInParent();
-
-                            mMediator.notifyContainerSizeChanged(mContainerWidth, mContainerHeight);
-                        }
-
-                        updateContentContainerHeight();
-
-                        @Px
-                        int viewportBottomInset =
-                                getViewportBottomInset(getEdgeToEdgeBottomInset());
-                        if (previousHeight != mContainerHeight
-                                || mPreviousViewportBottomInset != viewportBottomInset) {
-                            // If we are in the middle of a touch event stream (i.e. scrolling while
-                            // keyboard is up) don't set the sheet state. Instead allow the gesture
-                            // detector to position the sheet and make sure the keyboard hides.
-                            if (mMediator.isScrolling()) {
-                                keyboardDelegate.hideKeyboard(mView);
-                            } else {
-                                @SheetState int targetState = getTargetSheetState();
-                                if (targetState != SheetState.NONE) {
-                                    cancelAnimation();
-                                    createSettleAnimation(targetState, StateChangeReason.NONE);
-                                } else {
-                                    endAnimations();
-                                    setSheetState(getSheetState(), false);
-                                }
-                            }
-                        }
-
-                        maybeRevertStateOnLayoutChange();
-                        mPreviousViewportBottomInset = viewportBottomInset;
-                    }
-                });
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                        onContainerLayoutChange(left, top, right, bottom, keyboardDelegate));
 
         mInsetObserver.addWindowInsetsAnimationListener(
                 new WindowInsetsAnimationListener() {
@@ -446,12 +384,85 @@ class BottomSheetCoordinator
         return viewportBottomInset;
     }
 
+    private void onContainerLayoutChange(
+            int left, int top, int right, int bottom, KeyboardVisibilityDelegate keyboardDelegate) {
+        // Compute the new height taking the keyboard into account.
+        // TODO(mdjones): Share this logic with LocationBarLayout: crbug.com/725725.
+        int previousWidth = mContainerWidth;
+        int previousHeight = mContainerHeight;
+        mContainerWidth = right - left;
+        mContainerHeight = bottom - top;
+        if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
+            onContainerSizeChanged();
+        }
+
+        boolean insetOrHeightChanged = updateViewportAndBottomInset(previousHeight);
+        if (!maybeRevertStateOnLayoutChange() && insetOrHeightChanged) {
+            resettleSheetOnContainerChange(keyboardDelegate);
+        }
+
+        updateContentContainerHeight();
+    }
+
+    private void onContainerSizeChanged() {
+        maybePromoteHalfStateOnSizeChange();
+        invalidateContentDesiredHeight();
+        sizeAndPositionSheetInParent();
+        mMediator.notifyContainerSizeChanged(mContainerWidth, mContainerHeight);
+    }
+
+    private boolean updateViewportAndBottomInset(@Px int previousHeight) {
+        @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
+        updateViewport(e2eBottomInset);
+        @Px int viewportBottomInset = getViewportBottomInset(e2eBottomInset);
+        boolean insetOrHeightChanged =
+                previousHeight != mContainerHeight
+                        || mPreviousViewportBottomInset != viewportBottomInset;
+        mPreviousViewportBottomInset = viewportBottomInset;
+        return insetOrHeightChanged;
+    }
+
+    private void maybePromoteHalfStateOnSizeChange() {
+        if (isHalfStateEnabled()) return;
+
+        @SheetState int currentState = getSheetState();
+        if (currentState == SheetState.HALF) {
+            setSheetState(SheetState.FULL, false);
+        } else if (currentState == SheetState.SCROLLING
+                && getTargetSheetState() == SheetState.HALF) {
+            // Let the animation resume to the full height.
+            mMediator.setTargetSheetState(SheetState.FULL);
+        }
+    }
+
+    private void resettleSheetOnContainerChange(KeyboardVisibilityDelegate keyboardDelegate) {
+        // If we are in the middle of a touch event stream (i.e. scrolling while keyboard is up)
+        // don't set the sheet state. Instead allow the gesture detector to position the sheet and
+        // make sure the keyboard hides.
+        if (mMediator.isScrolling()) {
+            keyboardDelegate.hideKeyboard(mView);
+            return;
+        }
+
+        @SheetState int targetState = getTargetSheetState();
+        if (targetState != SheetState.NONE) {
+            cancelAnimation();
+            createSettleAnimation(targetState, StateChangeReason.NONE);
+            return;
+        }
+
+        endAnimations();
+        setSheetState(getSheetState(), false);
+    }
+
     /**
      * Detects keyboard being closed upon layout changes. Done lazily during layout changes instead
      * of directly in a keyboard visibility listener due since layout changes will not have been
      * processed yet in the bottom sheet.
+     *
+     * @return True if the sheet state was reverted to its pre-keyboard state.
      */
-    private void maybeRevertStateOnLayoutChange() {
+    private boolean maybeRevertStateOnLayoutChange() {
         assert mWindow != null;
 
         // If the screen height has changed, reset the cached state since it may no longer be valid.
@@ -463,12 +474,12 @@ class BottomSheetCoordinator
                         mPreviousScreenHeight,
                         isKeyboardShowing(),
                         isFullHeightResizeContent());
-        if (stateToRestore != SheetState.NONE) {
-            setInternalCurrentState(SheetState.NONE, StateChangeReason.NONE);
-            setSheetState(stateToRestore, /* animate= */ false);
-        }
-
         mPreviousScreenHeight = decorHeight;
+        if (stateToRestore != SheetState.NONE) {
+            setSheetState(stateToRestore, /* animate= */ false);
+            return true;
+        }
+        return false;
     }
 
     private boolean isKeyboardShowing() {
@@ -1368,34 +1379,45 @@ class BottomSheetCoordinator
                 content == null ? false : content.shouldLongPressMoveSheet();
         mMediator.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
-        if (content != null && isFullHeightWrapContent()) {
-            // Listen for layout/size changes.
-            content.getContentView().addOnLayoutChangeListener(this);
+        configureSheetAppearanceForContent(content);
+        configureWrapContentLayout(content);
 
-            invalidateContentDesiredHeight();
-            ensureContentIsWrapped(/* animate= */ true);
-
-            // HALF state is forbidden when wrapping the content.
-            if (getSheetState() == SheetState.HALF) {
-                setSheetState(SheetState.FULL, /* animate= */ true);
-            }
-        }
+        updateContentContainerHeight();
         // Update the color before notify the observers, as some might read the sheet bg color.
-        boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
-        @SheetLayoutMode int mode = SheetLayoutMode.STANDARD;
-        if (isLargeFormFactorUiEnabled) {
-            mode = SheetLayoutMode.DESKTOP_POPUP;
-        } else if (isLargeFormFactorFallbackUiEnabled()) {
-            mode = SheetLayoutMode.DESKTOP_FALLBACK;
-        }
+        updateBackgroundColor();
+        mMediator.notifySheetContentChanged(content);
+    }
 
+    private void configureSheetAppearanceForContent(@Nullable BottomSheetContent content) {
+        updateSheetLayoutMode(resolveSheetLayoutMode());
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
-        updateContentContainerHeight();
         sizeAndPositionSheetInParent();
-        updateBackgroundColor();
-        updateSheetLayoutMode(mode);
-        mMediator.notifySheetContentChanged(content);
+    }
+
+    private @SheetLayoutMode int resolveSheetLayoutMode() {
+        if (isLargeFormFactorUiEnabled()) {
+            return SheetLayoutMode.DESKTOP_POPUP;
+        }
+        if (isLargeFormFactorFallbackUiEnabled()) {
+            return SheetLayoutMode.DESKTOP_FALLBACK;
+        }
+        return SheetLayoutMode.STANDARD;
+    }
+
+    private void configureWrapContentLayout(@Nullable BottomSheetContent content) {
+        if (content == null || !isFullHeightWrapContent()) return;
+
+        // Listen for layout/size changes.
+        content.getContentView().addOnLayoutChangeListener(this);
+
+        invalidateContentDesiredHeight();
+        ensureContentIsWrapped(/* animate= */ true);
+
+        // HALF state is forbidden when wrapping the content.
+        if (getSheetState() == SheetState.HALF) {
+            setSheetState(SheetState.FULL, /* animate= */ true);
+        }
     }
 
     private @SheetState int getTargetOrCurrentState() {
