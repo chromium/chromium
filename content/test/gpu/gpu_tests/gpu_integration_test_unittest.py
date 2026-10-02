@@ -1263,6 +1263,10 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
     GpuTestClass._args_changed_this_browser_start = True
     GpuTestClass._about_gpu_content = None
     GpuTestClass._test_that_started_browser = None
+    GpuTestClass._about_gpu_cache = {}
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo()
+    )
     GpuTestClass.browser = mock.MagicMock()
     GpuTestClass.browser.browser_type = 'release'
     GpuTestClass.tab = mock.MagicMock()
@@ -1311,6 +1315,67 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
       GpuTestClass.tab.action_runner.WaitForJavaScriptCondition.call_count, 2
     )
     self.assertEqual(GpuTestClass._about_gpu_content, expected_content)
+
+  def testRetrieveAboutGpuCachesByBrowserArgs(self):
+    content_a = 'a' * 2000
+    content_b = 'b' * 2000
+    GpuTestClass.tab.action_runner.EvaluateJavaScript.side_effect = [
+      content_a,
+      content_b,
+    ]
+    instance = GpuTestClass('runTest')
+    instance.artifacts = mock.MagicMock()
+
+    # First launch with --arg-a.
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo(browser_args={'--arg-a'})
+    )
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._RetrieveAboutGpu()
+    instance._ReportAboutGpu('test_a1')
+    self.assertEqual(GpuTestClass._about_gpu_content, content_a)
+    self.assertEqual(GpuTestClass._test_that_started_browser, 'test_a1')
+    self.assertEqual(GpuTestClass.tab.Navigate.call_count, 1)
+
+    # Switch to --arg-b.
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo(browser_args={'--arg-b'})
+    )
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._RetrieveAboutGpu()
+    instance._ReportAboutGpu('test_b1')
+    self.assertEqual(GpuTestClass._about_gpu_content, content_b)
+    self.assertEqual(GpuTestClass._test_that_started_browser, 'test_b1')
+    self.assertEqual(GpuTestClass.tab.Navigate.call_count, 2)
+
+    # Switch back to --arg-a: should use cache without navigating to
+    # chrome://gpu.
+    GpuTestClass._last_launched_browser_info = (
+      gpu_integration_test._BrowserLaunchInfo(browser_args={'--arg-a'})
+    )
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._RetrieveAboutGpu()
+    self.assertEqual(GpuTestClass.tab.Navigate.call_count, 2)
+    self.assertEqual(GpuTestClass._about_gpu_content, content_a)
+    self.assertEqual(GpuTestClass._test_that_started_browser, 'test_a1')
+
+    instance._ReportAboutGpu('test_a2')
+    instance.artifacts.CreateInMemoryTextArtifact.assert_called_once_with(
+      'about_gpu', 'See artifacts for test_a1'
+    )
+
+  def testRestartBrowserClearsArgsChangedFlag(self):
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass.platform = mock.MagicMock()
+    GpuTestClass._finder_options = mock.MagicMock()
+    with (
+      mock.patch.object(GpuTestClass, 'StopBrowser'),
+      mock.patch.object(GpuTestClass, 'SetBrowserOptions'),
+      mock.patch.object(GpuTestClass, 'StartBrowser'),
+    ):
+      GpuTestClass._RestartBrowser('test failure')
+
+    self.assertFalse(GpuTestClass._args_changed_this_browser_start)
 
 
 def _ExtractTestResults(

@@ -19,7 +19,7 @@ import os
 import pkgutil
 import re
 import types
-from typing import Any, Type
+from typing import Any, NamedTuple, Type
 import unittest
 
 import py_utils
@@ -108,6 +108,11 @@ class _BrowserLaunchInfo:
     )
 
 
+class _CachedAboutGpu(NamedTuple):
+  content: str
+  test_that_started_browser: str
+
+
 # pylint: disable=too-many-public-methods
 class GpuIntegrationTest(
   serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase
@@ -159,8 +164,9 @@ class GpuIntegrationTest(
   # determining whether the contents need to be retrieved again after a browser
   # restart. This caching is also shared with the tag generation code to avoid
   # unnecessary communication with the browser when args did not change.
-  _about_gpu_content = None
-  _test_that_started_browser = None
+  _about_gpu_content: str | None = None
+  _test_that_started_browser: str | None = None
+  _about_gpu_cache: dict[frozenset[str], _CachedAboutGpu] = {}
   _args_changed_this_browser_start = True
   _cached_platform_tags: list[str] | None = None
 
@@ -715,6 +721,22 @@ class GpuIntegrationTest(
     if not hasattr(cls.tab, 'action_runner'):
       return
 
+    browser_args_key = frozenset(cls._last_launched_browser_info.browser_args)
+    # TODO(crbug.com/568512619): Skipping the chrome://gpu navigation when
+    # --gpu-blocklist-test-group=2 triggers a SwiftShader fallback on Linux
+    # leaves the initial about:blank RasterDecoderImpl alive until WebGL
+    # context creation, tripping a DCHECK in RasterDecoderImpl::Destroy().
+    if (
+      '--gpu-blocklist-test-group=2' not in browser_args_key
+      and browser_args_key in cls._about_gpu_cache
+    ):
+      cached_about_gpu = cls._about_gpu_cache[browser_args_key]
+      cls._about_gpu_content = cached_about_gpu.content
+      cls._test_that_started_browser = (
+        cached_about_gpu.test_that_started_browser
+      )
+      return
+
     cls._about_gpu_content = None
     cls._test_that_started_browser = None
 
@@ -780,6 +802,7 @@ class GpuIntegrationTest(
       cls.SetBrowserOptions(cls.GetOriginalFinderOptions())
       cls.StartBrowser()
     else:
+      cls._args_changed_this_browser_start = False
       is_cros = cls.browser.platform.GetOSName() == 'chromeos'
       if is_cros:
         logging.info('crbug.com/449866954: Stopping browser')
@@ -1111,6 +1134,11 @@ class GpuIntegrationTest(
 
     if cls._test_that_started_browser is None:
       cls._test_that_started_browser = test_name
+      browser_args_key = frozenset(cls._last_launched_browser_info.browser_args)
+      cls._about_gpu_cache[browser_args_key] = _CachedAboutGpu(
+        content=cls._about_gpu_content,
+        test_that_started_browser=test_name,
+      )
       # Replacement is necessary to not create an invalid path on Windows.
       timestamp = datetime.datetime.now().isoformat().replace(':', '_')
       self.artifacts.CreateArtifact(
