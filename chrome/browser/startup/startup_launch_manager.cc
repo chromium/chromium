@@ -62,6 +62,14 @@ bool ShouldShowInfoBars() {
     return false;
   }
 
+  // Admins set this via the LaunchOnStartupEnabled policy, possibly after
+  // startup; prompting the user to change it would be pointless.
+  const PrefService::Preference* launch_pref =
+      local_state->FindPreference(prefs::kForegroundLaunchOnLogin);
+  if (launch_pref->IsManaged() || launch_pref->IsRecommended()) {
+    return false;
+  }
+
   const bool is_accepted =
       local_state->GetBoolean(prefs::kStartupLaunchInfobarAccepted);
   const int declined_count =
@@ -239,6 +247,12 @@ void StartupLaunchManager::ForceReleaseAllLocks() {
 void StartupLaunchManager::OnLaunchOnStartupPrefChanged() {
   UpdateForegroundLaunchRegistration();
 
+  // The observer also fires for policy changes, which aren't user toggles.
+  if (!g_browser_process->local_state()
+           ->FindPreference(prefs::kForegroundLaunchOnLogin)
+           ->IsUserControlled()) {
+    return;
+  }
   constexpr char histogram_name[] =
       "Startup.Launch.Foreground.PreferenceChanged";
   base::UmaHistogramBoolean(histogram_name,

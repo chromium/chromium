@@ -1974,6 +1974,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrintingLPACSandboxEnabled,
     prefs::kPrintingLPACSandboxEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kLaunchOnStartupEnabled,
+    prefs::kForegroundLaunchOnLogin,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
