@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -250,6 +251,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   _closeButton.tintColor = [UIColor clearColor];
   _closeButton.accessibilityIdentifier =
       kAssistantAIMCloseButtonAccessibilityIdentifier;
+  _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
 
   // Shadow for button.
   ApplyHeaderElementShadow(_closeButton);
@@ -270,6 +272,10 @@ void ApplyHeaderElementShadow(UIView* targetView) {
         forControlEvents:UIControlEventTouchUpInside];
   _backButton.translatesAutoresizingMaskIntoConstraints = NO;
   _backButton.hidden = YES;
+  _backButton.accessibilityIdentifier =
+      kAssistantAIMBackButtonAccessibilityIdentifier;
+  _backButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK);
 
   ApplyHeaderElementShadow(_backButton);
   [self addSubview:_backButton];
@@ -319,6 +325,10 @@ void ApplyHeaderElementShadow(UIView* targetView) {
                 action:@selector(didTapStartNewThread)
       forControlEvents:UIControlEventTouchUpInside];
   button.hidden = NO;
+  button.accessibilityIdentifier =
+      kAssistantAIMNewThreadButtonAccessibilityIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP);
   _startNewThreadButton = button;
   return button;
 }
@@ -329,8 +339,11 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       createHeaderActionButtonWithImage:SymbolTemplateWithPointSize(
                                             SymbolLineThreeSpark,
                                             kHeaderActionSymbolPointSize)];
-  // TODO(crbug.com/493128413): Add accessibility identifier for history button.
   button.hidden = NO;
+  button.accessibilityIdentifier =
+      kAssistantAIMHistoryButtonAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP);
   [button addTarget:self
                 action:@selector(didTapHistoryButton)
       forControlEvents:UIControlEventTouchUpInside];
@@ -347,6 +360,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   button.hidden = !experimental_flags::IsOmniboxDebuggingEnabled();
   button.accessibilityIdentifier =
       kAssistantAIMContextMenuButtonAccessibilityIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP);
 
   _contextMenuButton = button;
 

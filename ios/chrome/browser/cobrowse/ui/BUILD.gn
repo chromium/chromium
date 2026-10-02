@@ -18,6 +18,7 @@ source_set("ui") {
   deps = [
     ":constants",
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/composebox/ui",
@@ -42,12 +43,16 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "assistant_aim_zero_state_view_controller_unittest.mm" ]
+  sources = [
+    "assistant_aim_header_view_unittest.mm",
+    "assistant_aim_zero_state_view_controller_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":ui",
     "//base",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//ui/base",

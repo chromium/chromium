@@ -7,15 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+// Accessibility identifier for the Assistant AIM back button.
+extern NSString* const kAssistantAIMBackButtonAccessibilityIdentifier;
+
 // Accessibility identifier for the Assistant AIM close button.
 extern NSString* const kAssistantAIMCloseButtonAccessibilityIdentifier;
 
 // Accessibility identifier for the Assistant AIM context menu button.
 extern NSString* const kAssistantAIMContextMenuButtonAccessibilityIdentifier;
 
+// Accessibility identifier for the Assistant AIM history button.
+extern NSString* const kAssistantAIMHistoryButtonAccessibilityIdentifier;
+
 // Accessibility identifier for the signed out zero state displayed in the
 // Assistant AIM history.
 extern NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
+
+// Accessibility identifier for the Assistant AIM new thread button.
+extern NSString* const kAssistantAIMNewThreadButtonAccessibilityIdentifier;
 
 // Accessibility identifier for the Assistant AIM zero state greeting label.
 extern NSString* const kAssistantAIMZeroStateGreetingAccessibilityIdentifier;
