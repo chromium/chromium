@@ -10,14 +10,6 @@
 
 # Please keep things in lexical order.
 
-function InitialWebUIParams() {
-  join / \
-    high_stream_priority/true \
-    without_spellcheck/true \
-    without_translate/true \
-    # empty line
-}
-
 function InitialWebUISurfaceSyncParams() {
   join / \
     deadline_in_frames/12000 \
@@ -35,10 +27,13 @@ function WebiumMetricsMappingParams() {
 
 function WebUIReloadButtonParams() {
   join / \
+    WebUIReloadButtonBypassLoaderThrottles/true \
     WebUIReloadButtonDeferBrowserViewShow/false \
     WebUIReloadButtonKeepVisibleUntilPaint/true \
     WebUIReloadButtonPrewarmWebUI/true \
     WebUIReloadButtonPrewarmWebUIPreNavigate/true \
+    WebUIReloadButtonRestartUnresponsive/true \
+    WebUIReloadButtonRestartUnresponsiveRenderersTimeout/5s \
     # empty line
 }
 
@@ -48,7 +43,7 @@ join , \
   DeferLayoutDuringBrowserStartup \
   DeferSessionStorageScavengingOnStartup \
   DeferSpellcheckInitialization \
-  InitialWebUI:$(InitialWebUIParams) \
+  InitialWebUI \
   InitialWebUISurfaceSync:$(InitialWebUISurfaceSyncParams) \
   InitialWebUIWithoutExtensions \
   LazyKeyedServiceInstantiation \
