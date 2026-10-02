@@ -712,6 +712,52 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRepositionTest) {
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }
 
+// This test validates that an owned popup that grows upward, which moves its
+// origin inside the hosting widget, ends up realigned to the widget's origin.
+TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRealignedOnGrowUpward) {
+  DesktopAuraTopLevelWindowTest popup_window;
+
+  popup_window.set_use_async_mode(false);
+
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+
+  const gfx::Size grown_size(339, 219);
+  popup_window.owned_window()->SetBounds(
+      gfx::Rect(gfx::Point(0, -144), grown_size));
+
+  EXPECT_EQ(gfx::Rect(grown_size), popup_window.owned_window()->bounds());
+
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+}
+
+// This test validates that a bounds change on the hosting widget keeps the
+// owned popup at the widget's origin without resizing it. A fractional device
+// scale factor makes the widget's size differ from the popup's by a rounding
+// step; propagating that size back to the popup would make the two windows
+// chase each other and grow by a pixel per round trip.
+TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupKeepsSizeOnHostResize) {
+  DesktopAuraTopLevelWindowTest popup_window;
+
+  popup_window.set_use_async_mode(false);
+
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+
+  const gfx::Size popup_size(339, 75);
+  popup_window.owned_window()->SetBounds(gfx::Rect(popup_size));
+
+  aura::Window* top_level_window =
+      popup_window.top_level_widget()->GetNativeView();
+  top_level_window->SetBounds(
+      gfx::Rect(top_level_window->bounds().origin(),
+                gfx::Size(popup_size.width() + 1, popup_size.height() + 1)));
+
+  EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
+
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // The following code verifies we can correctly destroy a Widget from a mouse

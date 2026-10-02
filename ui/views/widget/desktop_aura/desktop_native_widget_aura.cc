@@ -214,7 +214,10 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
       top_level_widget_->SetBounds(window->GetBoundsInScreen());
     } else if (top_level_widget_ &&
                window == top_level_widget_->GetNativeView()) {
-      child_window_->SetBounds(gfx::Rect(new_bounds.size()));
+      // Only the origin is realigned: the widget's size is the child's size
+      // after a DIP/pixel round trip, so copying it back would feed rounding
+      // error into the child on fractional device scale factors.
+      child_window_->SetBounds(gfx::Rect(child_window_->bounds().size()));
     }
   }
 
