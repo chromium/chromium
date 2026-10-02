@@ -75,7 +75,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
@@ -808,25 +808,19 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
   // Fallback helper to add simple Send Tab to Self menu item.
   void BuildSendTabToSelfSimpleItem();
 
-  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
-      send_tab_to_self_submenu_delegate_;
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 };
 
 void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
     BrowserWindowInterface* browser) {
-  send_tab_to_self_submenu_delegate_ =
-      send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  send_tab_to_self_submenu_ =
+      send_tab_to_self::SendTabToSelfSubMenuModel::MaybeCreateForTab(
           browser->tab_strip_model()->GetActiveWebContents(),
           send_tab_to_self::ShareEntryPoint::kShareMenu);
-  if (!send_tab_to_self_submenu_delegate_) {
+  if (!send_tab_to_self_submenu_) {
     BuildSendTabToSelfSimpleItem();
     return;
   }
-  send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
-      send_tab_to_self_submenu_delegate_.get());
-  send_tab_to_self_submenu_delegate_->PopulateSubmenu(
-      send_tab_to_self_submenu_.get());
 
   AddSubMenuWithStringIdAndIcon(
       IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,

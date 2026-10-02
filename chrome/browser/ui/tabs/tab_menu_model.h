@@ -13,10 +13,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
-namespace send_tab_to_self {
-class SendTabToSelfContextMenuDelegate;
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 class ContextMenuMatcher;
@@ -104,8 +100,6 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel> arrange_split_view_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> glic_tab_sub_menu_model_;
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
-  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
-      send_tab_to_self_submenu_delegate_;
 
   // `tab_strip_` needs to outlive this class.
   raw_ptr<TabStripModel> tab_strip_;

@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_iph_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -417,8 +417,8 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
   void SendTabAndCloseContextMenu() {
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-        web_contents, ShareEntryPoint::kTabMenu)
+    SendTabToSelfSubMenuModel::MaybeCreateForTab(web_contents,
+                                                 ShareEntryPoint::kTabMenu)
         ->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
     static_cast<BrowserTabStripController*>(

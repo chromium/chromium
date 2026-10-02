@@ -12,8 +12,8 @@ source_set("send_tab_to_self") {
   sources = [
     "send_tab_to_self_activation_tracker.h",
     "send_tab_to_self_bubble.h",
-    "send_tab_to_self_context_menu_delegate.h",
     "send_tab_to_self_iph_controller.h",
+    "send_tab_to_self_sub_menu_model.h",
     "send_tab_to_self_toolbar_icon_controller.h",
     "send_tab_to_self_util.h",
   ]
@@ -35,8 +35,8 @@ source_set("send_tab_to_self") {
 source_set("impl") {
   sources = [
     "send_tab_to_self_activation_tracker.cc",
-    "send_tab_to_self_context_menu_delegate.cc",
     "send_tab_to_self_iph_controller.cc",
+    "send_tab_to_self_sub_menu_model.cc",
     "send_tab_to_self_toolbar_icon_controller.cc",
     "send_tab_to_self_util.cc",
   ]
@@ -140,8 +140,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "send_tab_to_self_activation_tracker_unittest.cc",
-    "send_tab_to_self_context_menu_delegate_unittest.cc",
     "send_tab_to_self_iph_controller_unittest.cc",
+    "send_tab_to_self_sub_menu_model_unittest.cc",
   ]
   deps = [
     ":send_tab_to_self",

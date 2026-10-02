@@ -21,7 +21,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -335,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents, ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  ASSERT_TRUE(submenu);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   observer.WaitForNextEntry();
 

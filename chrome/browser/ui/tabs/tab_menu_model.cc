@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -211,11 +211,11 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
     web_contents_list.push_back(tab_strip_->GetWebContentsAt(i));
   }
 
-  send_tab_to_self_submenu_delegate_ = send_tab_to_self::
-      SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
+  send_tab_to_self_submenu_ =
+      send_tab_to_self::SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
           tab_strip_->GetWebContentsAt(index), web_contents_list,
           send_tab_to_self::ShareEntryPoint::kTabMenu);
-  if (!send_tab_to_self_submenu_delegate_) {
+  if (!send_tab_to_self_submenu_) {
 #if BUILDFLAG(IS_MAC)
     if (features::IsMenuSimplificationEnabled()) {
       AddItemWithIcon(
@@ -238,11 +238,6 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
 #endif
     return;
   }
-  send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
-      send_tab_to_self_submenu_delegate_.get());
-
-  send_tab_to_self_submenu_delegate_->PopulateSubmenu(
-      send_tab_to_self_submenu_.get());
 
 #if BUILDFLAG(IS_MAC)
   if (features::IsMenuSimplificationEnabled()) {

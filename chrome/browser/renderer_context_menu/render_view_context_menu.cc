@@ -129,7 +129,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
@@ -4747,20 +4747,15 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   // user interacts with the right-click flow on a hyperlink (e.g., fetching
   // the destination page title or using a domain fallback if anchor text is
   // empty).
-  send_tab_to_self_submenu_delegate_ =
-      send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  send_tab_to_self_submenu_ =
+      send_tab_to_self::SendTabToSelfSubMenuModel::MaybeCreateForTab(
           embedder_web_contents_,
           is_link ? send_tab_to_self::ShareEntryPoint::kLinkMenu
                   : send_tab_to_self::ShareEntryPoint::kContentMenu,
           target_url,
           is_link ? base::UTF16ToUTF8(params_.link_text) : std::string());
 
-  if (send_tab_to_self_submenu_delegate_) {
-    send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
-        send_tab_to_self_submenu_delegate_.get());
-    send_tab_to_self_submenu_delegate_->PopulateSubmenu(
-        send_tab_to_self_submenu_.get());
-
+  if (send_tab_to_self_submenu_) {
 #if BUILDFLAG(IS_MAC)
     if (features::IsMenuSimplificationEnabled()) {
       menu_model_.AddSubMenuWithStringIdAndIcon(

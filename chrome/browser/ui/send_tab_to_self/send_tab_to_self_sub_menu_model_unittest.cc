@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 
 #include <memory>
 #include <string>
@@ -50,10 +50,9 @@ using testing::ElementsAre;
 using testing::Field;
 using testing::UnorderedElementsAre;
 
-class SendTabToSelfContextMenuDelegateTest
-    : public ChromeRenderViewHostTestHarness {
+class SendTabToSelfSubMenuModelTest : public ChromeRenderViewHostTestHarness {
  public:
-  SendTabToSelfContextMenuDelegateTest()
+  SendTabToSelfSubMenuModelTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
@@ -65,10 +64,9 @@ class SendTabToSelfContextMenuDelegateTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(
-            &SendTabToSelfContextMenuDelegateTest::BuildStubSyncService,
-            base::Unretained(this)));
+        profile(), base::BindRepeating(
+                       &SendTabToSelfSubMenuModelTest::BuildStubSyncService,
+                       base::Unretained(this)));
   }
 
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
@@ -91,9 +89,9 @@ class SendTabToSelfContextMenuDelegateTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that the delegate correctly truncates the device list to a maximum of 5
+// Tests that the submenu model truncates the device list to a maximum of 5
 // devices.
-TEST_F(SendTabToSelfContextMenuDelegateTest, GetDevicesForDisplayLimitsToFive) {
+TEST_F(SendTabToSelfSubMenuModelTest, GetDevicesForDisplayLimitsToFive) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   for (int i = 0; i < 10; ++i) {
@@ -103,24 +101,22 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, GetDevicesForDisplayLimitsToFive) {
   }
   model()->SetTargetDeviceInfoSortedList(devices);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
-  // The delegate should return exactly 5 devices + separator + manage item.
-  EXPECT_EQ(menu_model.GetItemCount(), 7u);
-  EXPECT_EQ(menu_model.GetCommandIdAt(0),
+  // The submenu should contain 5 devices + separator + manage item.
+  EXPECT_EQ(submenu->GetItemCount(), 7u);
+  EXPECT_EQ(submenu->GetCommandIdAt(0),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1);
-  EXPECT_EQ(menu_model.GetCommandIdAt(4),
+  EXPECT_EQ(submenu->GetCommandIdAt(4),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST);
 }
 
-// Tests that ExecuteCommand correctly triggers the underlying send operation
-// with the expected device information.
-TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
+// Tests that `ExecuteCommand` triggers the underlying send operation with the
+// expected device information.
+TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsToDevice) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
@@ -134,17 +130,15 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
       web_contents()->GetController().GetLastCommittedEntry();
   web_contents()->UpdateTitleForEntry(entry, kExampleTitle);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
   base::test::TestFuture<const SendTabToSelfEntry*> future;
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   const SendTabToSelfEntry* sent_entry = future.Get();
   ASSERT_TRUE(sent_entry);
@@ -154,10 +148,10 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
   EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kExampleTitle));
 }
 
-// Tests that ExecuteCommand uses the target URL and target title passed to
+// Tests that `ExecuteCommand` uses the target URL and target title passed to
 // `MaybeCreateForTab` when sending to a device (e.g., when right-clicking a
 // hyperlink).
-TEST_F(SendTabToSelfContextMenuDelegateTest,
+TEST_F(SendTabToSelfSubMenuModelTest,
        ExecuteCommandSendsTargetUrlAndTitleWhenProvided) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
@@ -170,14 +164,12 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   const std::string kLinkTitle = "Link Anchor Text";
   NavigateAndCommit(kPageUrl);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kLinkMenu, kLinkUrl, kLinkTitle);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   std::vector<std::string> guids = model()->GetAllGuids();
   ASSERT_EQ(guids.size(), 1u);
@@ -187,9 +179,9 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   EXPECT_EQ(sent_entry->GetTitle(), kLinkTitle);
 }
 
-// Tests that when target title is empty, the delegate falls back to the parent
-// web contents page title during ExecuteCommand.
-TEST_F(SendTabToSelfContextMenuDelegateTest,
+// Tests that when target title is empty, `ExecuteCommand` falls back to the
+// parent web contents page title.
+TEST_F(SendTabToSelfSubMenuModelTest,
        ExecuteCommandSendsTitleFallbackWhenTitleEmpty) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
@@ -205,14 +197,12 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
       web_contents()->GetController().GetLastCommittedEntry();
   web_contents()->UpdateTitleForEntry(entry, kPageTitle);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kLinkMenu, kLinkUrl);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   std::vector<std::string> guids = model()->GetAllGuids();
   ASSERT_EQ(guids.size(), 1u);
@@ -221,59 +211,53 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kPageTitle));
 }
 
-// Tests that PopulateSubmenu correctly adds the device items and the "Manage
-// Devices" item to the menu model with the expected localized label.
-TEST_F(SendTabToSelfContextMenuDelegateTest,
-       PopulateSubmenuAddsDevicesAndManageItem) {
+// Tests that `BuildMenu` adds the device items and the "Manage Devices" item
+// to the submenu model with the expected localized label.
+TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuAddsDevicesAndManageItem) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
   // Expect: 1 device item + 1 separator + 1 manage devices item = 3 items.
-  ASSERT_EQ(menu_model.GetItemCount(), 3u);
-  EXPECT_EQ(menu_model.GetCommandIdAt(0),
+  ASSERT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetCommandIdAt(0),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1);
-  EXPECT_EQ(menu_model.GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(menu_model.GetCommandIdAt(2),
+  EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(submenu->GetCommandIdAt(2),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES);
-  EXPECT_EQ(menu_model.GetLabelAt(2),
+  EXPECT_EQ(submenu->GetLabelAt(2),
             l10n_util::GetStringUTF16(
                 IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES));
 }
 
-// Tests that PopulateSubmenu uses sentence case for the three-dot share menu
+// Tests that `BuildMenu` uses sentence case for the three-dot share menu
 // across all platforms including macOS.
-TEST_F(SendTabToSelfContextMenuDelegateTest,
-       PopulateSubmenuUsesSentenceCaseForShareMenu) {
+TEST_F(SendTabToSelfSubMenuModelTest, BuildMenuUsesSentenceCaseForShareMenu) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
                        OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-          web_contents(), ShareEntryPoint::kShareMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(web_contents(),
+                                                   ShareEntryPoint::kShareMenu);
+  ASSERT_TRUE(submenu);
 
-  ASSERT_EQ(menu_model.GetItemCount(), 3u);
-  EXPECT_EQ(menu_model.GetLabelAt(2),
+  ASSERT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetLabelAt(2),
             l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES));
 }
 
-// Tests that OnMenuWillShow correctly records device count metrics.
-TEST_F(SendTabToSelfContextMenuDelegateTest, OnMenuWillShowRecordsMetrics) {
+// Tests that `OnMenuWillShow` records device count metrics.
+TEST_F(SendTabToSelfSubMenuModelTest, OnMenuWillShowRecordsMetrics) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
@@ -284,22 +268,21 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, OnMenuWillShowRecordsMetrics) {
 
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
-  delegate->OnMenuWillShow(&menu_model);
+  submenu->OnMenuWillShow(submenu.get());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.TargetDeviceCount",
       static_cast<int>(SendTabToSelfDeviceCount::kTwoDevices), 1);
 }
 
-TEST_F(SendTabToSelfContextMenuDelegateTest,
-       ExecuteCommandSendsMultipleTabsToDevice) {
+// Tests that `ExecuteCommand` sends all selected tabs when created via
+// `MaybeCreateForMultipleTabs`.
+TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSendsMultipleTabsToDevice) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
@@ -328,17 +311,15 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   std::vector<content::WebContents*> web_contents_list = {web_contents(),
                                                           web_contents2.get()};
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
           web_contents(), web_contents_list, ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu_model(delegate.get());
-  delegate->PopulateSubmenu(&menu_model);
+  ASSERT_TRUE(submenu);
 
   base::test::TestFuture<const SendTabToSelfEntry*> future;
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   std::vector<std::tuple<std::string, GURL, std::string>> sent_entries;
   for (size_t i = 0; i < web_contents_list.size(); ++i) {
@@ -352,8 +333,9 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
                   std::make_tuple("guid0", kUrl2, base::UTF16ToUTF8(kTitle2))));
 }
 
-TEST_F(SendTabToSelfContextMenuDelegateTest,
-       ExecuteCommandSkipsDestroyedWebContents) {
+// Tests that `ExecuteCommand` skips any `WebContents` destroyed while the menu
+// was open.
+TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandSkipsDestroyedWebContents) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
@@ -373,10 +355,10 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   std::vector<content::WebContents*> web_contents_list = {web_contents(),
                                                           web_contents2.get()};
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
           web_contents(), web_contents_list, ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(submenu);
 
   // Destroy the second tab.
   web_contents2.reset();
@@ -386,7 +368,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
 
   // Executing command should not crash and should send only the valid first
   // tab.
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   const SendTabToSelfEntry* sent_entry = future.Get();
   ASSERT_TRUE(sent_entry);
@@ -396,52 +378,52 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
 
 // Tests that `IsCommandIdEnabled` returns true only for Send Tab to Self
 // submenu commands.
-TEST_F(SendTabToSelfContextMenuDelegateTest, IsCommandIdEnabled) {
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+TEST_F(SendTabToSelfSubMenuModelTest, IsCommandIdEnabled) {
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(submenu);
 
-  // Command IDs handled by the Send Tab to Self submenu delegate.
-  EXPECT_TRUE(delegate->IsCommandIdEnabled(
+  // Command IDs handled by the Send Tab to Self submenu model.
+  EXPECT_TRUE(submenu->IsCommandIdEnabled(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1));
-  EXPECT_TRUE(delegate->IsCommandIdEnabled(
+  EXPECT_TRUE(submenu->IsCommandIdEnabled(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST));
-  EXPECT_TRUE(delegate->IsCommandIdEnabled(
+  EXPECT_TRUE(submenu->IsCommandIdEnabled(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES));
-  EXPECT_TRUE(delegate->IsCommandIdEnabled(
+  EXPECT_TRUE(submenu->IsCommandIdEnabled(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN));
 
-  // Examples of command IDs not handled by this delegate.
-  EXPECT_FALSE(delegate->IsCommandIdEnabled(IDC_COPY));
+  // Examples of command IDs not handled by this submenu model.
+  EXPECT_FALSE(submenu->IsCommandIdEnabled(IDC_COPY));
   EXPECT_FALSE(
-      delegate->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU));
+      submenu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU));
 }
 
 // Tests that `MaybeCreateForTab` and `MaybeCreateForMultipleTabs` return
 // nullptr when any precondition for showing the submenu is not met.
-TEST_F(SendTabToSelfContextMenuDelegateTest,
+TEST_F(SendTabToSelfSubMenuModelTest,
        MaybeCreateReturnsNullWhenPreconditionsNotMet) {
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 /*web_contents=*/nullptr, ShareEntryPoint::kContentMenu),
             nullptr);
 
   std::vector<content::WebContents*> web_contents_list = {web_contents()};
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
                 /*primary_web_contents=*/nullptr, web_contents_list,
                 ShareEntryPoint::kTabMenu),
             nullptr);
 
   // Returns nullptr when `GetEntryPointDisplayReason` is `std::nullopt`.
   sync_service()->SetEntryPointDisplayReason(std::nullopt);
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
   // Returns nullptr when `ShouldShowSubmenu` is false for the display reason.
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferSignIn);
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
@@ -450,7 +432,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
   model()->SetTargetDeviceInfoSortedList({});
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 }
@@ -459,28 +441,28 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
 // `kOfferSignIn` and `kOfferReauth` behind `kSendTabToSelfSubmenuSigninPromos`,
 // and requires both `kSendTabToSelfSubmenuSigninPromos` and
 // `kSendTabToSelfNoTargetDeviceQrCode` for `kInformNoTargetDevice`.
-TEST_F(SendTabToSelfContextMenuDelegateTest, MaybeCreateForTabByDisplayReason) {
+TEST_F(SendTabToSelfSubMenuModelTest, MaybeCreateForTabByDisplayReason) {
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
-  EXPECT_NE(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_NE(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferSignIn);
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kInformNoTargetDevice);
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferReauth);
-  EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                 web_contents(), ShareEntryPoint::kContentMenu),
             nullptr);
 
@@ -489,19 +471,19 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, MaybeCreateForTabByDisplayReason) {
         kSendTabToSelfSubmenuSigninPromos);
     sync_service()->SetEntryPointDisplayReason(
         EntryPointDisplayReason::kOfferSignIn);
-    EXPECT_NE(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+    EXPECT_NE(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                   web_contents(), ShareEntryPoint::kContentMenu),
               nullptr);
 
     sync_service()->SetEntryPointDisplayReason(
         EntryPointDisplayReason::kOfferReauth);
-    EXPECT_NE(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+    EXPECT_NE(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                   web_contents(), ShareEntryPoint::kContentMenu),
               nullptr);
 
     sync_service()->SetEntryPointDisplayReason(
         EntryPointDisplayReason::kInformNoTargetDevice);
-    EXPECT_EQ(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+    EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                   web_contents(), ShareEntryPoint::kContentMenu),
               nullptr);
   }
@@ -514,17 +496,17 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, MaybeCreateForTabByDisplayReason) {
         {});
     sync_service()->SetEntryPointDisplayReason(
         EntryPointDisplayReason::kInformNoTargetDevice);
-    EXPECT_NE(SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+    EXPECT_NE(SendTabToSelfSubMenuModel::MaybeCreateForTab(
                   web_contents(), ShareEntryPoint::kContentMenu),
               nullptr);
   }
 #endif
 }
 
-class SendTabToSelfContextMenuDelegateSigninPromosTest
-    : public SendTabToSelfContextMenuDelegateTest {
+class SendTabToSelfSubMenuModelSigninPromosTest
+    : public SendTabToSelfSubMenuModelTest {
  public:
-  SendTabToSelfContextMenuDelegateSigninPromosTest() {
+  SendTabToSelfSubMenuModelSigninPromosTest() {
     feature_list_.InitWithFeatures({kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
                                     kSendTabToSelfNoTargetDeviceQrCode
@@ -537,128 +519,117 @@ class SendTabToSelfContextMenuDelegateSigninPromosTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that `PopulateSubmenu` adds the "Not signed in" title and "Sign in to
+// Tests that `BuildMenu` adds the "Not signed in" title and "Sign in to
 // Chrome" action item with an icon for `kOfferSignIn`, using context-menu
 // capitalization for context menus and sentence case for the three-dot share
 // menu, and that `OnMenuWillShow` does not record target device count metrics.
-TEST_F(SendTabToSelfContextMenuDelegateSigninPromosTest,
-       PopulateSubmenuForOfferSignIn) {
+TEST_F(SendTabToSelfSubMenuModelSigninPromosTest, BuildMenuForOfferSignIn) {
   base::HistogramTester histogram_tester;
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferSignIn);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> content_delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> content_menu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(content_delegate);
-  ui::SimpleMenuModel content_menu(content_delegate.get());
-  content_delegate->PopulateSubmenu(&content_menu);
-  ASSERT_EQ(content_menu.GetItemCount(), 2u);
-  EXPECT_EQ(content_menu.GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
-  EXPECT_EQ(content_menu.GetLabelAt(0),
+  ASSERT_TRUE(content_menu);
+  ASSERT_EQ(content_menu->GetItemCount(), 2u);
+  EXPECT_EQ(content_menu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(content_menu->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
-  EXPECT_EQ(content_menu.GetCommandIdAt(1),
+  EXPECT_EQ(content_menu->GetCommandIdAt(1),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
   EXPECT_EQ(
-      content_menu.GetLabelAt(1),
+      content_menu->GetLabelAt(1),
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN));
-  EXPECT_FALSE(content_menu.GetIconAt(1).IsEmpty());
-  content_delegate->OnMenuWillShow(&content_menu);
+  EXPECT_FALSE(content_menu->GetIconAt(1).IsEmpty());
+  content_menu->OnMenuWillShow(content_menu.get());
   histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TargetDeviceCount",
                                     0);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> share_delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-          web_contents(), ShareEntryPoint::kShareMenu);
-  ASSERT_TRUE(share_delegate);
-  ui::SimpleMenuModel share_menu(share_delegate.get());
-  share_delegate->PopulateSubmenu(&share_menu);
-  ASSERT_EQ(share_menu.GetItemCount(), 2u);
-  EXPECT_EQ(share_menu.GetLabelAt(1),
+  std::unique_ptr<SendTabToSelfSubMenuModel> share_menu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(web_contents(),
+                                                   ShareEntryPoint::kShareMenu);
+  ASSERT_TRUE(share_menu);
+  ASSERT_EQ(share_menu->GetItemCount(), 2u);
+  EXPECT_EQ(share_menu->GetLabelAt(1),
             l10n_util::GetStringUTF16(
                 IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL));
 }
 
-// Tests that `PopulateSubmenu` adds the "Not signed in" title and "Sign in to
+// Tests that `BuildMenu` adds the "Not signed in" title and "Sign in to
 // Chrome" action item with an icon for `kOfferReauth`.
-TEST_F(SendTabToSelfContextMenuDelegateSigninPromosTest,
-       PopulateSubmenuForOfferReauth) {
+TEST_F(SendTabToSelfSubMenuModelSigninPromosTest, BuildMenuForOfferReauth) {
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferReauth);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> menu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
-  ui::SimpleMenuModel menu(delegate.get());
-  delegate->PopulateSubmenu(&menu);
-  ASSERT_EQ(menu.GetItemCount(), 2u);
-  EXPECT_EQ(menu.GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
-  EXPECT_EQ(menu.GetLabelAt(0),
+  ASSERT_TRUE(menu);
+  ASSERT_EQ(menu->GetItemCount(), 2u);
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(menu->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
-  EXPECT_EQ(menu.GetCommandIdAt(1),
+  EXPECT_EQ(menu->GetCommandIdAt(1),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
-  EXPECT_EQ(menu.GetLabelAt(1), l10n_util::GetStringUTF16(
-                                    IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN));
-  EXPECT_FALSE(menu.GetIconAt(1).IsEmpty());
+  EXPECT_EQ(
+      menu->GetLabelAt(1),
+      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN));
+  EXPECT_FALSE(menu->GetIconAt(1).IsEmpty());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Tests that `PopulateSubmenu` adds the "No other device found" title and "Sign
+// Tests that `BuildMenu` adds the "No other device found" title and "Sign
 // in on your phone" action item with an icon for `kInformNoTargetDevice`, using
 // context-menu capitalization for context menus and sentence case for the
 // three-dot share menu.
-TEST_F(SendTabToSelfContextMenuDelegateSigninPromosTest,
-       PopulateSubmenuForInformNoTargetDevice) {
+TEST_F(SendTabToSelfSubMenuModelSigninPromosTest,
+       BuildMenuForInformNoTargetDevice) {
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kInformNoTargetDevice);
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> content_delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> content_menu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(content_delegate);
-  ui::SimpleMenuModel content_menu(content_delegate.get());
-  content_delegate->PopulateSubmenu(&content_menu);
-  ASSERT_EQ(content_menu.GetItemCount(), 2u);
-  EXPECT_EQ(content_menu.GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
-  EXPECT_EQ(content_menu.GetLabelAt(0),
+  ASSERT_TRUE(content_menu);
+  ASSERT_EQ(content_menu->GetItemCount(), 2u);
+  EXPECT_EQ(content_menu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(content_menu->GetLabelAt(0),
             l10n_util::GetStringUTF16(
                 IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE));
-  EXPECT_EQ(content_menu.GetCommandIdAt(1),
+  EXPECT_EQ(content_menu->GetCommandIdAt(1),
             IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
   EXPECT_EQ(
-      content_menu.GetLabelAt(1),
+      content_menu->GetLabelAt(1),
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_ON_PHONE_BUTTON_LABEL));
-  EXPECT_FALSE(content_menu.GetIconAt(1).IsEmpty());
+  EXPECT_FALSE(content_menu->GetIconAt(1).IsEmpty());
 
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> share_delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-          web_contents(), ShareEntryPoint::kShareMenu);
-  ASSERT_TRUE(share_delegate);
-  ui::SimpleMenuModel share_menu(share_delegate.get());
-  share_delegate->PopulateSubmenu(&share_menu);
-  ASSERT_EQ(share_menu.GetItemCount(), 2u);
-  EXPECT_EQ(share_menu.GetLabelAt(1),
+  std::unique_ptr<SendTabToSelfSubMenuModel> share_menu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(web_contents(),
+                                                   ShareEntryPoint::kShareMenu);
+  ASSERT_TRUE(share_menu);
+  ASSERT_EQ(share_menu->GetItemCount(), 2u);
+  EXPECT_EQ(share_menu->GetLabelAt(1),
             l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE));
 }
 #endif
 
-// Tests that ExecuteCommand does not crash when called for the "Manage Devices"
-// or sign-in promo command with a null or destroyed web contents.
-TEST_F(SendTabToSelfContextMenuDelegateTest,
+// Tests that `ExecuteCommand` does not crash when called for the "Manage
+// Devices" or sign-in promo command with a destroyed `WebContents`.
+TEST_F(SendTabToSelfSubMenuModelTest,
        ExecuteCommandManageDevicesWithDestroyedWebContentsDoesNotCrash) {
   auto web_contents2 =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
-      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+  std::unique_ptr<SendTabToSelfSubMenuModel> submenu =
+      SendTabToSelfSubMenuModel::MaybeCreateForTab(
           web_contents2.get(), ShareEntryPoint::kContentMenu);
-  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(submenu);
   // Destroy web contents before executing command.
   web_contents2.reset();
 
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
-                           0);
-  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN, 0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
+                          0);
+  submenu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN, 0);
 }
 
 }  // namespace

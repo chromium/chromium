@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 
 #include <memory>
 #include <string_view>
@@ -189,8 +189,8 @@ bool ShouldShowSubmenu(ShareEntryPoint entry_point,
 }  // namespace
 
 // static
-std::unique_ptr<SendTabToSelfContextMenuDelegate>
-SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+std::unique_ptr<SendTabToSelfSubMenuModel>
+SendTabToSelfSubMenuModel::MaybeCreateForTab(
     content::WebContents* primary_web_contents,
     ShareEntryPoint entry_point,
     const GURL& target_url,
@@ -213,57 +213,59 @@ SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
     }
   }
 
-  return base::WrapUnique(new SendTabToSelfContextMenuDelegate(
+  return base::WrapUnique(new SendTabToSelfSubMenuModel(
       primary_web_contents, *reason, std::move(devices), entry_point,
       target_url, target_title));
 }
 
 // static
-std::unique_ptr<SendTabToSelfContextMenuDelegate>
-SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
+std::unique_ptr<SendTabToSelfSubMenuModel>
+SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
     content::WebContents* primary_web_contents,
     base::span<content::WebContents* const> web_contents_list,
     ShareEntryPoint entry_point) {
-  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
+  std::unique_ptr<SendTabToSelfSubMenuModel> model =
       MaybeCreateForTab(primary_web_contents, entry_point);
-  if (delegate) {
-    delegate->web_contents_list_ = GetWeakWebContentsList(web_contents_list);
+  if (model) {
+    model->web_contents_list_ = GetWeakWebContentsList(web_contents_list);
   }
-  return delegate;
+  return model;
 }
 
-SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
+SendTabToSelfSubMenuModel::SendTabToSelfSubMenuModel(
     content::WebContents* primary_web_contents,
     EntryPointDisplayReason display_reason,
     std::vector<TargetDeviceInfo> devices,
     ShareEntryPoint entry_point,
     const GURL& target_url,
     const std::string& target_title)
-    : primary_web_contents_(primary_web_contents->GetWeakPtr()),
+    : ui::SimpleMenuModel(this),
+      primary_web_contents_(primary_web_contents->GetWeakPtr()),
       web_contents_list_(
           GetWeakWebContentsList(base::span_from_ref(primary_web_contents))),
       display_reason_(display_reason),
       devices_(std::move(devices)),
       entry_point_(entry_point),
       target_url_(target_url),
-      target_title_(target_title) {}
+      target_title_(target_title) {
+  BuildMenu();
+}
 
-SendTabToSelfContextMenuDelegate::~SendTabToSelfContextMenuDelegate() = default;
+SendTabToSelfSubMenuModel::~SendTabToSelfSubMenuModel() = default;
 
 // static
-std::u16string SendTabToSelfContextMenuDelegate::GetDeviceItemLabel(
+std::u16string SendTabToSelfSubMenuModel::GetDeviceItemLabel(
     const TargetDeviceInfo& device) {
   return l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_LABEL,
                                     base::UTF8ToUTF16(device.device_name),
                                     device.GetLastActiveTimeForDisplay());
 }
 
-void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
-    ui::SimpleMenuModel* model) {
+void SendTabToSelfSubMenuModel::BuildMenu() {
   switch (display_reason_) {
     case EntryPointDisplayReason::kOfferSignIn:
     case EntryPointDisplayReason::kOfferReauth: {
-      model->AddTitleWithStringId(IDS_PROFILES_LOCAL_PROFILE_STATE);
+      AddTitleWithStringId(IDS_PROFILES_LOCAL_PROFILE_STATE);
       // The three-dot share menu (`kShareMenu`) uses sentence case on all
       // platforms, whereas context menus use Title Case on macOS for
       // consistency with macOS system menus. The existing sentence-case string
@@ -273,7 +275,7 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
           entry_point_ == ShareEntryPoint::kShareMenu
               ? IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL
               : IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN;
-      model->AddItemWithStringIdAndIcon(
+      AddItemWithStringIdAndIcon(
           IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN, sign_in_string_id,
           ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
@@ -283,13 +285,12 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
       return;
     }
     case EntryPointDisplayReason::kInformNoTargetDevice: {
-      model->AddTitleWithStringId(
-          IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE);
+      AddTitleWithStringId(IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE);
       const int sign_in_on_phone_string_id =
           entry_point_ == ShareEntryPoint::kShareMenu
               ? IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE
               : IDS_PROFILE_MENU_SIGNIN_ON_PHONE_BUTTON_LABEL;
-      model->AddItemWithStringIdAndIcon(
+      AddItemWithStringIdAndIcon(
           IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN,
           sign_in_on_phone_string_id,
           ui::ImageModel::FromVectorIcon(
@@ -303,30 +304,28 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
   }
 
   for (size_t i = 0; i < devices_.size(); ++i) {
-    model->AddItem(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 + i,
-                   GetDeviceItemLabel(devices_[i]));
+    AddItem(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 + i,
+            GetDeviceItemLabel(devices_[i]));
   }
 
-  model->AddSeparator(ui::NORMAL_SEPARATOR);
+  AddSeparator(ui::NORMAL_SEPARATOR);
   const int manage_devices_string_id =
       entry_point_ == ShareEntryPoint::kShareMenu
           ? IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES
           : IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_MANAGE_DEVICES;
-  model->AddItemWithStringId(
-      IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
-      manage_devices_string_id);
+  AddItemWithStringId(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
+                      manage_devices_string_id);
 }
 
-bool SendTabToSelfContextMenuDelegate::IsCommandIdEnabled(
-    int command_id) const {
+bool SendTabToSelfSubMenuModel::IsCommandIdEnabled(int command_id) const {
   return (command_id >= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 &&
           command_id <= IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST) ||
          command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES ||
          command_id == IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN;
 }
 
-void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
-                                                      int event_flags) {
+void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
+                                               int event_flags) {
   if (!primary_web_contents_) {
     return;
   }
@@ -392,8 +391,7 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
   }
 }
 
-void SendTabToSelfContextMenuDelegate::OnMenuWillShow(
-    ui::SimpleMenuModel* source) {
+void SendTabToSelfSubMenuModel::OnMenuWillShow(ui::SimpleMenuModel* source) {
   if (!primary_web_contents_ ||
       display_reason_ != EntryPointDisplayReason::kOfferFeature) {
     return;

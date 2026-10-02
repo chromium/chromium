@@ -64,10 +64,6 @@ class SpellingOptionsSubMenuObserver;
 class TemplateURL;
 class ToastController;
 
-namespace send_tab_to_self {
-class SendTabToSelfContextMenuDelegate;
-}
-
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -644,9 +640,6 @@ class RenderViewContextMenu
   const bool is_paste_and_match_style_enabled_;
 
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
-  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
-      send_tab_to_self_submenu_delegate_;
-
   std::unique_ptr<ui::SimpleMenuModel> split_layout_submenu_;
 
   //  Used for CTR metrics of menu item for opening Glic.
