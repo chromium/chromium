@@ -278,7 +278,7 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   // Check hover selection color matching subtle state.
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(profile_item->GetSelectedColorId(),
-            ui::kColorSysStateHoverOnSubtle);
+            ui::kColorAppMenuRowBackgroundHovered);
   EXPECT_EQ(menu.GetLabelFontList(profile_item->GetCommand()),
             &views::TypographyProvider::Get().GetFont(
                 views::style::CONTEXT_MENU, views::style::STYLE_BODY_3_MEDIUM));
@@ -303,9 +303,11 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(item_separator->GetColorId(), ui::kColorMenuBackground);
 #endif
   EXPECT_EQ(password_item->GetSelectedColorId(),
-            ui::kColorSysStateHoverOnSubtle);
-  EXPECT_EQ(print_item->GetSelectedColorId(), ui::kColorSysStateHoverOnSubtle);
-  EXPECT_EQ(zoom_item->GetSelectedColorId(), ui::kColorSysStateHoverOnSubtle);
+            ui::kColorAppMenuRowBackgroundHovered);
+  EXPECT_EQ(print_item->GetSelectedColorId(),
+            ui::kColorAppMenuRowBackgroundHovered);
+  EXPECT_EQ(zoom_item->GetSelectedColorId(),
+            ui::kColorAppMenuRowBackgroundHovered);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

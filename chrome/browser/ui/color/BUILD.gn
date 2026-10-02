@@ -112,6 +112,10 @@ if (!is_android) {
       "//ui/color:mixers",
       "//ui/gfx",
     ]
+
+    if (is_linux) {
+      sources += [ "linux/native_chrome_color_mixer_linux_unittest.cc" ]
+    }
   }
 }
 

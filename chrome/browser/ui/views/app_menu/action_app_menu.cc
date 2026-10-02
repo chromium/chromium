@@ -569,7 +569,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetMenuItemBackground(background);
 
     // Apply darker hover selection states matching section theme.
-    menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
+    menu_item->SetSelectedColorId(ui::kColorAppMenuRowBackgroundHovered);
   }
 }
 
