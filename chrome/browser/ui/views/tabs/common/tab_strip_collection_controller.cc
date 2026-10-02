@@ -300,11 +300,13 @@ void TabStripCollectionController::SelectTab(
 void TabStripCollectionController::CloseTab(
     const tabs::TabInterface* tab_interface,
     CloseTabSource source) {
-  if (tab_closing_helper_ && source != CloseTabSource::kFromNonUIEvent) {
-    tab_closing_helper_->MaybeEnterTabClosingMode(std::nullopt, source);
-  }
-
-  model_->delegate()->CloseTab(tab_interface, source);
+  base::OnceCallback<void(CloseTabSource)> on_approved =
+      tab_closing_helper_
+          ? base::BindOnce(
+                &HorizontalTabClosingHelper::MaybeEnterTabClosingMode,
+                base::Unretained(tab_closing_helper_.get()), std::nullopt)
+          : base::NullCallback();
+  model_->delegate()->CloseTab(tab_interface, source, std::move(on_approved));
 }
 
 void TabStripCollectionController::ToggleSelected(

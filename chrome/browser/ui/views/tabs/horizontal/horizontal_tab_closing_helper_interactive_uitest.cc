@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -24,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
@@ -209,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
           return;
         }
 
-        controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
+        controller->CloseTab(model->GetTabAtIndex(model->count() - 2),
                              CloseTabSource::kFromMouse);
 
         auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -223,6 +226,85 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
           EXPECT_EQ(unpinned->GetMinimumSize().width(),
                     helper->override_available_width_for_tabs().value());
         }
+      }));
+}
+
+// Closing the last tab does not enter tab closing mode.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingLastTabDoesNotEnterClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() { CreateConstrainedTabs(8); }), Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        EXPECT_NE(helper, nullptr);
+        if (!helper) {
+          return;
+        }
+
+        controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_FALSE(helper->in_tab_close());
+        EXPECT_FALSE(helper->override_available_width_for_tabs().has_value());
+      }));
+}
+
+// Closing the trailingmost tab while in closing mode does not further shrink
+// the override width, allowing remaining tabs to expand.
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabClosingHelperInteractiveUiTest,
+    ClosingTrailingmostTabWhileInClosingModeAllowsExpansion) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        CreateConstrainedTabs(8);
+        CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
+                            ui::PAGE_TRANSITION_TYPED));
+        CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
+                            ui::PAGE_TRANSITION_TYPED));
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        EXPECT_NE(helper, nullptr);
+        if (!helper) {
+          return;
+        }
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        EXPECT_NE(unpinned, nullptr);
+        if (!unpinned || unpinned->children().empty()) {
+          return;
+        }
+
+        // Close a middle tab to enter closing mode.
+        controller->CloseTab(model->GetTabAtIndex(2),
+                             CloseTabSource::kFromMouse);
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        const int override_width =
+            helper->override_available_width_for_tabs().value();
+        const int tab_width_before = unpinned->children()[0]->view()->width();
+
+        // Close the trailingmost tab.
+        controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
+                             CloseTabSource::kFromMouse);
+
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        if (browser_view && browser_view->GetWidget()) {
+          browser_view->GetWidget()->LayoutRootViewIfNecessary();
+        }
+
+        // The override width should not have shrunk.
+        if (helper->in_tab_close()) {
+          EXPECT_EQ(helper->override_available_width_for_tabs().value(),
+                    override_width);
+        }
+        // Remaining tabs should have expanded.
+        EXPECT_GE(unpinned->children()[0]->view()->width(), tab_width_before);
       }));
 }
 
@@ -501,5 +583,164 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
 
         // Remaining tabs stay at their exact initial width without expanding.
         EXPECT_EQ(unpinned->children()[0]->view()->width(), initial_tab_width);
+      }));
+}
+
+// When tabs are overflowing, closing the trailingmost tab enters closing mode
+// to maintain scroll position and keep remaining tabs at their frozen size.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingLastTabWhenOverflowingEntersClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() { CreateOverflowingTabs(); }), Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        ASSERT_FALSE(unpinned->children().empty());
+
+        auto* unpinned_container =
+            views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
+        ASSERT_NE(unpinned_container, nullptr);
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        .has_value());
+        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
+                        ->is_bounded());
+
+        const int initial_available_space =
+            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+        const int initial_tab_width = unpinned->children()[0]->view()->width();
+
+        // Close the trailingmost tab while overflowing.
+        controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        if (helper->override_available_width_for_tabs().has_value()) {
+          EXPECT_GT(helper->override_available_width_for_tabs().value(),
+                    initial_available_space);
+        }
+        // The container maintains its overflowing state and visible bounds.
+        EXPECT_TRUE(IsUnpinnedContainerOverflowing());
+        // Remaining tabs should maintain their width without expanding.
+        EXPECT_EQ(unpinned->children()[0]->view()->width(), initial_tab_width);
+      }));
+}
+
+// Closing the sole tab in a 1-tab group in the middle of the tab strip locks
+// remaining tab widths so they do not expand by the removed group's width.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingSingleTabGroupInMiddleMaintainsTabWidths) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        tab_groups::DeletionDialogController::From(browser())
+            ->SetPrefsPreventShowingDialogForTesting(true);
+        CreateConstrainedTabs(8);
+        CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
+                            ui::PAGE_TRANSITION_TYPED));
+        CHECK(AddTabAtIndex(-1, GURL(url::kAboutBlankURL),
+                            ui::PAGE_TRANSITION_TYPED));
+        browser()->tab_strip_model()->AddToNewGroup({2});
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        ASSERT_FALSE(unpinned->children().empty());
+        const int initial_tab_width = unpinned->children()[0]->view()->width();
+
+        // Close the sole tab in the middle 1-tab group.
+        controller->CloseTab(model->GetTabAtIndex(2),
+                             CloseTabSource::kFromMouse);
+
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+        EXPECT_EQ(unpinned->children()[0]->view()->width(), initial_tab_width);
+      }));
+}
+
+// Closing the sole tab in a trailingmost 1-tab group does not stay in tab
+// closing mode when not overflowing.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingTrailingmostSingleTabGroupExitsClosingMode) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        tab_groups::DeletionDialogController::From(browser())
+            ->SetPrefsPreventShowingDialogForTesting(true);
+        CreateConstrainedTabs(8);
+        TabStripModel* model = browser()->tab_strip_model();
+        model->AddToNewGroup({model->count() - 1});
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        controller->CloseTab(model->GetTabAtIndex(model->count() - 1),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_FALSE(helper->in_tab_close());
+        EXPECT_FALSE(helper->override_available_width_for_tabs().has_value());
+      }));
+}
+
+// Closing a tab when the only other visible unpinned tabs are in splits still
+// counts the split tabs as visible and enters tab closing mode.
+IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
+                       ClosingTabWithSplitTabsCountsSplitAsVisible) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        CreateConstrainedTabs(7);
+        TabStripModel* model = browser()->tab_strip_model();
+        model->ActivateTabAt(1);
+        model->AddToNewSplit(
+            {2}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        model->ActivateTabAt(3);
+        model->AddToNewSplit(
+            {4}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        model->ActivateTabAt(5);
+        model->AddToNewSplit(
+            {6}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kTabContextMenu);
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* controller = GetController();
+        auto* helper = GetClosingHelper();
+        ASSERT_NE(helper, nullptr);
+
+        // Close the first tab (leaving only the 3 splits).
+        controller->CloseTab(model->GetTabAtIndex(0),
+                             CloseTabSource::kFromMouse);
+
+        EXPECT_TRUE(helper->in_tab_close());
+        EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
       }));
 }

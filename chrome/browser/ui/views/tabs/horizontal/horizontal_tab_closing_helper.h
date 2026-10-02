@@ -59,8 +59,16 @@ class HorizontalTabClosingHelper : public views::MouseWatcherListener {
   void OnTouchTimerFired();
 
   void OnChildWillBeRemoved(TabCollectionNode* child_node);
+  void OnChildrenRemoved();
   void OnChildrenAdded(const tabs::TabCollectionNodes& handles);
   void OnChildMoved(TabCollectionNode* moved_node);
+
+  // Returns the trailingmost visible unpinned tab node, or nullptr if none is
+  // found.
+  const TabCollectionNode* GetLastVisibleTab() const;
+  bool IsLastVisibleTab(const TabCollectionNode* child_node) const;
+  bool IsUnpinnedContainerOverflowing() const;
+  int GetVisibleTabCount() const;
 
   void InvalidateLayout();
   UnpinnedTabContainerView* GetUnpinnedContainer() const;
@@ -75,6 +83,7 @@ class HorizontalTabClosingHelper : public views::MouseWatcherListener {
   base::OneShotTimer touch_resize_timer_;
 
   base::CallbackListSubscription on_child_will_be_removed_subscription_;
+  base::CallbackListSubscription on_children_removed_subscription_;
   base::CallbackListSubscription on_children_added_subscription_;
   base::CallbackListSubscription on_child_moved_subscription_;
 };

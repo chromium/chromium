@@ -6,16 +6,17 @@
 
 #include <algorithm>
 
-#include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
-#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -29,6 +30,62 @@ constexpr auto kTouchResizeLayoutTime = base::Seconds(2);
 constexpr int kMouseWatcherVerticalSlop = 40;
 // Expand the watched region to the trailing side to cover the new tab button.
 constexpr int kMouseWatcherHorizontalSlop = 60;
+
+std::optional<int> FindInactiveTabWidth(
+    const TabCollectionNode& parent,
+    const TabCollectionNode* closing_tab_node) {
+  for (const auto& child : parent.children()) {
+    if (child.get() == closing_tab_node || !child->view()->GetVisible()) {
+      continue;
+    }
+    if (child->type() == TabCollectionNode::Type::TAB) {
+      TabView* other_tab_view = views::AsViewClass<TabView>(child->view());
+      if (!other_tab_view->IsActive() && other_tab_view->width() > 0) {
+        return other_tab_view->width();
+      }
+    } else if (child->type() == TabCollectionNode::Type::SPLIT ||
+               child->type() == TabCollectionNode::Type::GROUP) {
+      if (auto width = FindInactiveTabWidth(*child, closing_tab_node)) {
+        return width;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+const TabCollectionNode* GetLastVisibleTabInNode(
+    const TabCollectionNode& parent) {
+  for (const auto& child : base::Reversed(parent.children())) {
+    if (!child->view()->GetVisible()) {
+      continue;
+    }
+    if (child->type() == TabCollectionNode::Type::TAB) {
+      return child.get();
+    } else if (child->type() == TabCollectionNode::Type::SPLIT ||
+               child->type() == TabCollectionNode::Type::GROUP) {
+      if (const auto* tab = GetLastVisibleTabInNode(*child)) {
+        return tab;
+      }
+    }
+  }
+  return nullptr;
+}
+
+int GetVisibleTabCountInNode(const TabCollectionNode& parent) {
+  int count = 0;
+  for (const auto& child : parent.children()) {
+    if (!child->view()->GetVisible()) {
+      continue;
+    }
+    if (child->type() == TabCollectionNode::Type::TAB) {
+      ++count;
+    } else if (child->type() == TabCollectionNode::Type::SPLIT ||
+               child->type() == TabCollectionNode::Type::GROUP) {
+      count += GetVisibleTabCountInNode(*child);
+    }
+  }
+  return count;
+}
 }  // namespace
 
 HorizontalTabClosingHelper::HorizontalTabClosingHelper(
@@ -37,6 +94,10 @@ HorizontalTabClosingHelper::HorizontalTabClosingHelper(
   on_child_will_be_removed_subscription_ =
       root_node_->RegisterOnChildWillBeRemovedCallback(
           base::BindRepeating(&HorizontalTabClosingHelper::OnChildWillBeRemoved,
+                              base::Unretained(this)));
+  on_children_removed_subscription_ =
+      root_node_->RegisterOnChildRemovedCallback(
+          base::BindRepeating(&HorizontalTabClosingHelper::OnChildrenRemoved,
                               base::Unretained(this)));
   on_children_added_subscription_ = root_node_->RegisterOnChildrenAddedCallback(
       base::BindRepeating(&HorizontalTabClosingHelper::OnChildrenAdded,
@@ -52,6 +113,12 @@ void HorizontalTabClosingHelper::MaybeEnterTabClosingMode(
     std::optional<int> override_width,
     CloseTabSource source) {
   if (source == CloseTabSource::kFromNonUIEvent) {
+    return;
+  }
+
+  // If there is only 1 visible tab (or none), closing it will leave 0 tabs, so
+  // tab closing mode is not meaningful.
+  if (GetVisibleTabCount() <= 1) {
     return;
   }
 
@@ -157,13 +224,51 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
     return;
   }
 
-  if (!child_node || child_node->type() != TabCollectionNode::Type::TAB) {
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const TabCollectionNode* tab_node = child_node;
+  int extra_removed_width = 0;
+  if (child_node->type() == TabCollectionNode::Type::GROUP ||
+      child_node->type() == TabCollectionNode::Type::SPLIT) {
+    if (child_node->children().size() != 1 ||
+        child_node->children()[0]->type() != TabCollectionNode::Type::TAB) {
+      return;
+    }
+    tab_node = child_node->children()[0].get();
+    if (child_node->type() == TabCollectionNode::Type::GROUP) {
+      const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+      extra_removed_width =
+          std::max(0, child_node->view()->width() - tab_node->view()->width() +
+                          (tab_overlap - header_overlap));
+    }
+  } else if (child_node->type() != TabCollectionNode::Type::TAB) {
     return;
   }
 
   // Pinned or hidden tabs do not affect the unpinned container's width.
-  TabView* tab_view = views::AsViewClass<TabView>(child_node->view());
-  if (!tab_view || tab_view->data().pinned || !tab_view->GetVisible()) {
+  TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
+  if (tab_view->data().pinned || !tab_view->GetVisible()) {
+    // Exit if closing a pinned or not visible tab without an active width lock.
+    if (!override_available_width_for_tabs_.has_value()) {
+      ExitTabClosingMode();
+    }
+    return;
+  }
+
+  // If we're closing the last visible tab, tab closing mode is no longer
+  // meaningful.
+  if (GetVisibleTabCount() <= 1) {
+    ExitTabClosingMode();
+    return;
+  }
+
+  // Closing the trailingmost visible tab allows remaining visible tabs to
+  // expand, unless the container is currently overflowing.
+  if (!IsUnpinnedContainerOverflowing() && IsLastVisibleTab(tab_node)) {
+    // Exit if closing the last visible tab when not overflowing without an
+    // active width lock.
+    if (!override_available_width_for_tabs_.has_value()) {
+      ExitTabClosingMode();
+    }
     return;
   }
 
@@ -173,56 +278,20 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
   // given the active width (unless it's pinned). So the width being
   // removed from the container is really the current width of whichever
   // inactive tab will be made active. Iterate forward to find the first
-  // unpinned tab that is not hidden inside a collapsed group.
+  // unpinned tab that is visible.
   if (tab_view->IsActive()) {
     if (TabCollectionNode* unpinned_node =
             root_node_->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED)) {
-      auto get_inactive_tab_width =
-          [&](const TabCollectionNode* node) -> std::optional<int> {
-        if (node == child_node) {
-          return std::nullopt;
-        }
-        if (TabView* other_tab_view =
-                views::AsViewClass<TabView>(node->view())) {
-          if (!other_tab_view->IsActive() && other_tab_view->GetVisible() &&
-              other_tab_view->width() > 0) {
-            return other_tab_view->width();
-          }
-        }
-        return std::nullopt;
-      };
-
-      for (const auto& unpinned_child : unpinned_node->children()) {
-        if (unpinned_child->type() == TabCollectionNode::Type::TAB) {
-          if (auto width = get_inactive_tab_width(unpinned_child.get())) {
-            size_delta = *width;
-            break;
-          }
-        } else if (unpinned_child->type() == TabCollectionNode::Type::GROUP) {
-          if (TabGroupView* group_view =
-                  views::AsViewClass<TabGroupView>(unpinned_child->view())) {
-            if (!group_view->IsCollapsed()) {
-              bool found = false;
-              for (const auto& group_child : unpinned_child->children()) {
-                if (auto width = get_inactive_tab_width(group_child.get())) {
-                  size_delta = *width;
-                  found = true;
-                  break;
-                }
-              }
-              if (found) {
-                break;
-              }
-            }
-          }
-        }
+      if (auto width = FindInactiveTabWidth(*unpinned_node, tab_node)) {
+        size_delta = *width;
       }
     }
   }
 
+  size_delta += extra_removed_width;
+
   // Reduce the override width by the removed tab's net width (accounting for
   // tab overlap) to keep remaining tabs frozen at their current sizes.
-  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   int current_override =
       override_available_width_for_tabs_.value_or(GetUnpinnedContainerWidth());
 
@@ -235,6 +304,42 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
           : std::max(0, current_override - size_delta + tab_overlap);
 
   SetOverrideAvailableWidth(new_override);
+}
+
+void HorizontalTabClosingHelper::OnChildrenRemoved() {
+  // Exit if remaining tabs have reached their unconstrained preferred width.
+  if (in_tab_close_ && override_available_width_for_tabs_.has_value() &&
+      *override_available_width_for_tabs_ >=
+          GetUnpinnedContainerTotalPreferredWidth()) {
+    ExitTabClosingMode();
+  }
+}
+
+const TabCollectionNode* HorizontalTabClosingHelper::GetLastVisibleTab() const {
+  TabCollectionNode* unpinned_node =
+      root_node_->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  return unpinned_node ? GetLastVisibleTabInNode(*unpinned_node) : nullptr;
+}
+
+bool HorizontalTabClosingHelper::IsLastVisibleTab(
+    const TabCollectionNode* child_node) const {
+  return child_node && child_node == GetLastVisibleTab();
+}
+
+bool HorizontalTabClosingHelper::IsUnpinnedContainerOverflowing() const {
+  if (UnpinnedTabContainerView* unpinned_container = GetUnpinnedContainer()) {
+    if (const auto* scroll_view =
+            views::ScrollView::GetScrollViewForContents(unpinned_container)) {
+      return scroll_view->IsHorizontalContentOverflowing();
+    }
+  }
+  return false;
+}
+
+int HorizontalTabClosingHelper::GetVisibleTabCount() const {
+  TabCollectionNode* unpinned_node =
+      root_node_->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  return unpinned_node ? GetVisibleTabCountInNode(*unpinned_node) : 0;
 }
 
 void HorizontalTabClosingHelper::InvalidateLayout() {
