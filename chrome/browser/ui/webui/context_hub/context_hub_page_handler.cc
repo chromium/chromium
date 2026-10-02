@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
@@ -808,6 +810,15 @@ void ContextHubPageHandler::OpenUrlsInTabGroup(
     const std::string& group_label,
     const std::vector<GURL>& urls,
     OpenUrlsInTabGroupCallback callback) {
+  if (!base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
+      !base::FeatureList::IsEnabled(
+          browser::context_hub::mojom::kSmartSearch)) {
+    receiver_.ReportBadMessage(
+        "OpenUrlsInTabGroup cannot be called without Topics or SmartSearch "
+        "enabled.");
+    return;
+  }
+
   if (!tab_provider_) {
     std::move(callback).Run(false);
     return;

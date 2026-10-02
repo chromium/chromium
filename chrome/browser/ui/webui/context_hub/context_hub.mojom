@@ -430,8 +430,8 @@ interface PageHandler {
   [RuntimeFeature=kSmartSearch]
   ExecuteSmartSearch(string query) => (array<SmartSearchResult> results);
 
-  // Opens the specified URLs (capped to 10) into a new tab group.
-  [RuntimeFeature=kTopics]
+  // Opens the specified URLs (capped to 10) into a new tab group. Guarded in
+  // PageHandler by kTopics or kSmartSearch enabled.
   OpenUrlsInTabGroup(string group_label, array<url.mojom.Url> urls)
       => (bool success);
 

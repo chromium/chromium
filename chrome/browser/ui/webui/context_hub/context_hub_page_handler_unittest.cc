@@ -52,6 +52,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2565,6 +2566,26 @@ TEST_F(ContextHubPageHandlerTest,
       future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       OpenUrlsInTabGroup_FeaturesDisabled_ReportsBadMessage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {browser::context_hub::mojom::kTopics,
+           browser::context_hub::mojom::kSmartSearch});
+
+  EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup(_, _)).Times(0);
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->OpenUrlsInTabGroup("Topic", {GURL("https://example.com/a")},
+                               base::DoNothing());
+
+  EXPECT_EQ(
+      "OpenUrlsInTabGroup cannot be called without Topics or SmartSearch "
+      "enabled.",
+      bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(ContextHubPageHandlerTest, OpenTopic_TopicId) {

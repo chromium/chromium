@@ -9,6 +9,7 @@ import '//resources/cr_elements/icons.html.js';
 import './smart_search_card.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory} from '../context_hub.mojom-webui.js';
@@ -18,6 +19,8 @@ import {getHtml} from './smart_search.html.js';
 import type {SmartSearchResult} from './smart_search_card.js';
 
 export type {SmartSearchResult} from './smart_search_card.js';
+
+const MAX_URLS_TO_OPEN = 10;
 
 export class SmartSearchElement extends CrLitElement {
   static get is() {
@@ -158,11 +161,50 @@ export class SmartSearchElement extends CrLitElement {
     this.selectedIds_ = new Set(this.selectedIds_);
   }
 
-  protected onOpenSelectedClick_() {
-    const selectedItems =
-        this.results_.filter(r => this.selectedIds_.has(r.id));
-    for (const item of selectedItems) {
-      window.open(item.url, '_blank');
+  // Only web pages are openable, matching the browser-side filter in
+  // `PageHandler::OpenUrlsInTabGroup()`. This also covers the `window.open`
+  // fallback, which would otherwise bypass that filter.
+  protected isValidUrl_(urlStr: string): boolean {
+    if (!urlStr) {
+      return false;
+    }
+    try {
+      const {protocol} = new URL(urlStr);
+      return protocol === 'https:' || protocol === 'http:';
+    } catch {
+      return false;
+    }
+  }
+
+  protected async onOpenSelectedClick_() {
+    const urls = this.results_.filter(r => this.selectedIds_.has(r.id))
+                     .map(r => r.url)
+                     .filter(url => this.isValidUrl_(url));
+    if (urls.length === 0) {
+      return;
+    }
+
+    if (this.smartSearchEnabled_) {
+      try {
+        // TODO(crbug.com/552048073): Generate a shorter tab group name in the
+        // search response instead of using the raw query when the query is
+        // long.
+        const {success} =
+            await browserProxyFactory.getInstance().handler.openUrlsInTabGroup(
+                this.searchQuery_.trim(), urls);
+        if (success) {
+          return;
+        }
+      } catch (e) {
+        // Fallback if backend method call fails or is not supported.
+        console.error('Failed to open tabs in group:', e);
+      }
+    }
+
+    // Fallback: open capped URLs in new tabs. Note that opening multiple tabs
+    // via window.open is best-effort and may be throttled by popup blockers.
+    for (const url of urls.slice(0, MAX_URLS_TO_OPEN)) {
+      OpenWindowProxyImpl.getInstance().openUrl(url);
     }
   }
 }
