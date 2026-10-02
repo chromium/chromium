@@ -243,9 +243,6 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   EXPECT_FALSE(MediaDialogView::IsShowing());
 
   // Now we should be able to enter tab fullscreen again.
-  browser()->GetWindow()->Activate();
-  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
-  initiator_->Focus();
   ui_test_utils::FullscreenWaiter reenter_waiter(browser(),
                                                  {.tab_fullscreen = true});
   EXPECT_TRUE(content::ExecJs(initiator_,
