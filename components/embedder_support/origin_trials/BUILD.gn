@@ -21,7 +21,6 @@ source_set("origin_trials") {
   deps = [
     "//components/embedder_support",
     "//components/prefs",
-    "//content/public/browser",
     "//content/public/common",
     "//third_party/blink/public/common",
   ]
