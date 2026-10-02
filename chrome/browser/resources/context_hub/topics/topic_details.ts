@@ -71,7 +71,6 @@ export class TopicDetailsElement extends CrLitElement {
   static override get properties() {
     return {
       topic: {type: Object},
-      isScrolled_: {type: Boolean},
       loadState_: {type: String},
       selectedTab_: {type: Number},
       sites_: {type: Array},
@@ -81,7 +80,6 @@ export class TopicDetailsElement extends CrLitElement {
 
   // Set directly (e.g. by tests) to skip fetching the topic named in the URL.
   accessor topic: TopicItem|null = null;
-  protected accessor isScrolled_: boolean = false;
   // Nothing is rendered while loading. 'not-found' is used when the topic in
   // the URL doesn't exist (e.g. it expired or was deleted since the page was
   // opened) or couldn't be fetched.
@@ -176,13 +174,6 @@ export class TopicDetailsElement extends CrLitElement {
     const icon = this.topic?.icon || '';
     const title = this.topic?.title || 'Topic Details';
     document.title = !icon || isCrIcon(icon) ? title : `${icon} ${title}`;
-  }
-
-  protected onScroll_(e: Event) {
-    const scrolled = (e.currentTarget as HTMLElement).scrollTop > 10;
-    if (this.isScrolled_ !== scrolled) {
-      this.isScrolled_ = scrolled;
-    }
   }
 
   protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {

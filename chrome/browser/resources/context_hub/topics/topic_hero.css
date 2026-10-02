@@ -12,8 +12,8 @@
  * sits behind the page content and scrolls away with it. The background color
  * is set per topic by the element. */
 :host {
-  --topic-hero-gradient-rgb: 255, 255, 255;
   --topic-hero-pattern-fill: rgba(255, 255, 255, 0.48);
+  --topic-hero-surface: var(--cr-fallback-color-surface1, #fff);
   background-color: var(--topic-hero-background-color, var(--google-blue-100));
   display: block;
   height: 320px;
@@ -39,23 +39,25 @@
   user-select: none;
 }
 
+/* Fades the banner into the page. Every stop is the page's own surface color,
+ * so the fade is even and the banner's bottom edge matches the page exactly,
+ * in light and dark mode. */
 .gradient-overlay {
   background: linear-gradient(
       to bottom,
-      rgba(var(--topic-hero-gradient-rgb), 0) 0%,
-      rgba(var(--topic-hero-gradient-rgb), 0.12) 12%,
-      rgba(var(--topic-hero-gradient-rgb), 0.22) 30%,
-      rgba(var(--topic-hero-gradient-rgb), 0.52) 50%,
-      rgba(var(--topic-hero-gradient-rgb), 0.82) 70%,
-      rgba(var(--topic-hero-gradient-rgb), 0.96) 90%,
-      var(--cr-fallback-color-surface1, #fff) 100%);
+      transparent 0%,
+      color-mix(in srgb, var(--topic-hero-surface) 12%, transparent) 12%,
+      color-mix(in srgb, var(--topic-hero-surface) 22%, transparent) 30%,
+      color-mix(in srgb, var(--topic-hero-surface) 52%, transparent) 50%,
+      color-mix(in srgb, var(--topic-hero-surface) 82%, transparent) 70%,
+      color-mix(in srgb, var(--topic-hero-surface) 96%, transparent) 90%,
+      var(--topic-hero-surface) 100%);
   inset: 0;
   position: absolute;
 }
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --topic-hero-gradient-rgb: 31, 31, 31;
     --topic-hero-pattern-fill: rgba(255, 255, 255, 0.24);
   }
 }

@@ -11,9 +11,13 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --topic-details-header-bg: rgba(255, 255, 255, 0.1);
-  --topic-details-header-scrolled-bg: rgba(255, 255, 255, 0.85);
-  --topic-details-header-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  /* How far the header starts below the top of the hero. It sticks once the
+   * page has scrolled this far. */
+  --topic-details-header-offset: 180px;
+  /* Over how much scrolling, just before the header sticks, its frosted
+   * background fades in. */
+  --topic-details-header-frost-distance: 60px;
+  --topic-details-header-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   background-color: var(--cr-fallback-color-surface1);
   box-sizing: border-box;
   color: var(--cr-primary-text-color);
@@ -24,7 +28,8 @@
   width: 100%;
 }
 
-/* The scroll container. position: relative anchors topic-hero. */
+/* The scroll container. position: relative anchors topic-hero. Its scroll
+ * position drives the header's frosted background. */
 #wrapper {
   background-color: var(--cr-fallback-color-surface1);
   border: 1px solid var(--cr-separator-color);
@@ -36,6 +41,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  scroll-timeline: --topic-details-scroll block;
   scrollbar-width: none;
   width: 100%;
 }
@@ -44,21 +50,44 @@ topic-hero {
   z-index: 1;
 }
 
+/* Transparent while it scrolls over the hero, so the title sits directly on
+ * the pattern. */
 #header {
-  backdrop-filter: blur(16px);
-  background-color: var(--topic-details-header-bg);
   box-sizing: border-box;
   inset-block-start: 0;
-  margin-block-start: 180px;
+  margin-block-start: var(--topic-details-header-offset);
   padding: 16px 36px 0;
   position: sticky;
-  transition: background-color 200ms ease, box-shadow 200ms ease;
   z-index: 3;
 }
 
-#header.scrolled {
-  background-color: var(--topic-details-header-scrolled-bg);
-  box-shadow: var(--topic-details-header-scrolled-shadow);
+/* The header's frosted background: the page color, slightly translucent and
+ * blurring what scrolls under it. It fades in as the header reaches the top,
+ * driven by the scroll position rather than toggled, so it never covers the
+ * hero while the header is still scrolling with it. */
+#header::before {
+  animation: topic-details-header-frost linear both;
+  animation-range:
+      calc(var(--topic-details-header-offset) -
+           var(--topic-details-header-frost-distance))
+      var(--topic-details-header-offset);
+  animation-timeline: --topic-details-scroll;
+  backdrop-filter: blur(16px);
+  background-color: color-mix(
+      in srgb, var(--cr-fallback-color-surface1) 85%, transparent);
+  box-shadow: var(--topic-details-header-shadow);
+  content: '';
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+@keyframes topic-details-header-frost {
+  to {
+    opacity: 1;
+  }
 }
 
 .title-row {
@@ -145,8 +174,6 @@ topic-hero {
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --topic-details-header-bg: rgba(31, 31, 31, 0.1);
-    --topic-details-header-scrolled-bg: rgba(31, 31, 31, 0.85);
-    --topic-details-header-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --topic-details-header-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 }

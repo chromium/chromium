@@ -9,8 +9,7 @@ import type {TopicDetailsElement} from './topic_details.js';
 export function getHtml(this: TopicDetailsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="wrapper" aria-busy="${this.loadState_ === 'loading'}"
-    @scroll="${this.onScroll_}">
+<div id="wrapper" aria-busy="${this.loadState_ === 'loading'}">
 ${this.loadState_ === 'not-found' ? html`
   <!-- TODO(crbug.com/558572977): Use internationalized strings once GRD -->
   <!-- strings are added. -->
@@ -23,7 +22,7 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
   <topic-hero .topic="${this.topic}"></topic-hero>
 
   <!-- Layer 3: sticks to the top. -->
-  <div id="header" class="${this.isScrolled_ ? 'scrolled' : ''}">
+  <div id="header">
     <div class="title-row">
       <h1 id="title">${this.topic.title}</h1>
       <cr-button id="sitesButton" class="tonal-button"
