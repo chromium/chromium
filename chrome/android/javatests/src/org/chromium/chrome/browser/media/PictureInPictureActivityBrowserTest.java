@@ -36,7 +36,6 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
@@ -54,7 +53,6 @@ import java.util.concurrent.TimeoutException;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 // PictureInPicture#isEnabled() is true on Android 11+.
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034213
 public class PictureInPictureActivityBrowserTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -69,6 +67,7 @@ public class PictureInPictureActivityBrowserTest {
             "/chrome/test/data/media/picture-in-picture/autopip-video.html";
     private static final String VIDEO_CONFERENCING_PAGE =
             "/chrome/test/data/media/picture-in-picture/video-conferencing-usermedia.html";
+    private static final long PIP_TIMEOUT_MILLISECONDS = 5000L;
 
     @Before
     public void setUp() {
@@ -102,16 +101,12 @@ public class PictureInPictureActivityBrowserTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562965594
     public void testClosePipForConferenceVideo() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(VIDEO_CONFERENCING_PAGE);
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
 
         PictureInPictureActivity pipActivity = enterPip(webContents);
-        // Wait for remote actions to be loaded in the pip activity. This wait reduces the flakiness
-        // where the pip window is "hide" too quickly, and the action is ignored.
-        waitForRemoteActions(pipActivity);
         closePip(pipActivity);
         // Conference video should still be playing after closing pip.
         assertFalse(
@@ -185,20 +180,22 @@ public class PictureInPictureActivityBrowserTest {
     }
 
     private PictureInPictureActivity getPictureInPictureActivity() {
-        final Activity[] activityHolder = new Activity[1];
+        final PictureInPictureActivity[] activityHolder = new PictureInPictureActivity[1];
         CriteriaHelper.pollUiThread(
                 () -> {
                     List<Activity> activities = ApplicationStatus.getRunningActivities();
                     for (Activity activity : activities) {
-                        if (activity instanceof PictureInPictureActivity) {
-                            activityHolder[0] = activity;
-                            return true;
+                        if (activity instanceof PictureInPictureActivity pipActivity) {
+                            activityHolder[0] = pipActivity;
+                            return pipActivity.isPipTransitionCompleteForTesting(mActivity);
                         }
                     }
                     return false;
                 },
-                "Could not find PictureInPictureActivity.");
-        return (PictureInPictureActivity) activityHolder[0];
+                "Could not find PictureInPictureActivity in PiP mode.",
+                PIP_TIMEOUT_MILLISECONDS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        return activityHolder[0];
     }
 
     private void closePip(PictureInPictureActivity activity) {
