@@ -516,6 +516,9 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesRealTicks) {
       base::time_internal::RealTicks::Now();
   task_environment.AdvanceClock(kDelay);
   EXPECT_EQ(start_time + kDelay, base::time_internal::RealTicks::Now());
+
+  task_environment.SuspendedAdvanceClock(kDelay);
+  EXPECT_EQ(start_time + kDelay * 2, base::time_internal::RealTicks::Now());
 }
 
 TEST_F(TaskEnvironmentTest, SuspendedAdvanceClockDoesntAdvanceLiveTicks) {
@@ -524,12 +527,9 @@ TEST_F(TaskEnvironmentTest, SuspendedAdvanceClockDoesntAdvanceLiveTicks) {
 
   const TimeTicks start_time = base::TimeTicks::Now();
   const LiveTicks live_start_time = base::LiveTicks::Now();
-  const time_internal::RealTicks real_start_time =
-      base::time_internal::RealTicks::Now();
   task_environment.SuspendedAdvanceClock(kDelay);
   EXPECT_EQ(live_start_time, base::LiveTicks::Now());
   EXPECT_EQ(start_time + kDelay, base::TimeTicks::Now());
-  EXPECT_EQ(real_start_time + kDelay, base::time_internal::RealTicks::Now());
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockDoesNotRunTasks) {

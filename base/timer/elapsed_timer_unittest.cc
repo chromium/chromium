@@ -5,9 +5,13 @@
 #include "base/timer/elapsed_timer.h"
 
 #include <concepts>
+#include <optional>
 
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -25,6 +29,9 @@ static_assert(std::copyable<ElapsedThreadTimer>);
 
 static_assert(std::movable<ElapsedLiveTimer>);
 static_assert(std::copyable<ElapsedLiveTimer>);
+
+static_assert(std::movable<ElapsedNoSleepTimer>);
+static_assert(std::copyable<ElapsedNoSleepTimer>);
 
 TEST(ElapsedTimerTest, Simple) {
   ElapsedTimer timer;
@@ -132,6 +139,199 @@ TEST(ElapsedLiveTimerTest, Mocked) {
   // Real-time doesn't matter.
   PlatformThread::Sleep(kSleepDuration);
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
+class ElapsedNoSleepTimerTest : public ::testing::Test {
+ protected:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_F(ElapsedNoSleepTimerTest, Mocked) {
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedNoSleepTimer timer;
+  EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  task_environment_.AdvanceClock(kSleepDuration);
+  EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
+TEST_F(ElapsedNoSleepTimerTest, ReturnsElapsedWhenClocksAgree) {
+  ElapsedNoSleepTimer timer;
+  task_environment_.AdvanceClock(Seconds(2));
+
+  std::optional<TimeDelta> elapsed = timer.Elapsed();
+  ASSERT_TRUE(elapsed.has_value());
+  EXPECT_EQ(*elapsed, Seconds(2));
+}
+
+TEST_F(ElapsedNoSleepTimerTest, FastForwardByAdvancesTimer) {
+  ElapsedNoSleepTimer timer;
+  task_environment_.FastForwardBy(Seconds(5));
+
+  std::optional<TimeDelta> elapsed = timer.Elapsed();
+  ASSERT_TRUE(elapsed.has_value());
+  EXPECT_EQ(*elapsed, Seconds(5));
+}
+
+TEST_F(ElapsedNoSleepTimerTest, ReturnsNulloptWhenClocksDivergeDuringSleep) {
+  ElapsedNoSleepTimer timer;
+  // AdvanceClock simulates normal awake time.
+  task_environment_.AdvanceClock(Seconds(1));
+  // SuspendedAdvanceClock simulates system suspension where LiveTicks pauses
+  // while RealTicks continues advancing.
+  task_environment_.SuspendedAdvanceClock(Seconds(9));
+
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+}
+
+TEST_F(ElapsedNoSleepTimerTest, SuspendedFastForwardByDetectsSleep) {
+  ElapsedNoSleepTimer timer;
+  task_environment_.SuspendedFastForwardBy(Seconds(5));
+
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+}
+
+TEST_F(ElapsedNoSleepTimerTest, MultipleCallsToElapsed) {
+  ElapsedNoSleepTimer timer;
+  task_environment_.AdvanceClock(Seconds(1));
+  EXPECT_EQ(timer.Elapsed(), Seconds(1));
+
+  task_environment_.AdvanceClock(Seconds(2));
+  EXPECT_EQ(timer.Elapsed(), Seconds(3));
+
+  // Simulating sleep invalidates the interval for this timer.
+  task_environment_.SuspendedAdvanceClock(Seconds(1));
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+
+  // Subsequent Elapsed() calls still return nullopt because the sleep occurred
+  // since timer creation.
+  task_environment_.AdvanceClock(Seconds(1));
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+
+  // A new timer created after sleep behaves normally.
+  ElapsedNoSleepTimer timer2;
+  task_environment_.AdvanceClock(Seconds(2));
+  EXPECT_EQ(timer2.Elapsed(), Seconds(2));
+}
+
+TEST_F(ElapsedNoSleepTimerTest, StartTimeMatchesLiveTicks) {
+  ElapsedNoSleepTimer timer;
+  EXPECT_EQ(timer.start_time(), task_environment_.NowLiveTicks());
+
+  task_environment_.AdvanceClock(Seconds(3));
+  ElapsedNoSleepTimer timer2;
+  EXPECT_EQ(timer2.start_time(), task_environment_.NowLiveTicks());
+  EXPECT_EQ(timer2.start_time() - timer.start_time(), Seconds(3));
+}
+
+class ElapsedNoSleepTimerSamplingMarginTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    mock_live_ticks_ = LiveTicks() + Microseconds(1000000);
+    mock_real_ticks_ = time_internal::RealTicks() + Microseconds(2000000);
+    inter_clock_read_duration_ = TimeDelta();
+  }
+
+  static LiveTicks MockLiveTicksNow() { return mock_live_ticks_; }
+  static time_internal::RealTicks MockRealTicksNow() {
+    mock_live_ticks_ += inter_clock_read_duration_;
+    return mock_real_ticks_;
+  }
+
+  void AdvanceLiveTicks(TimeDelta delta) { mock_live_ticks_ += delta; }
+  void AdvanceRealTicks(TimeDelta delta) { mock_real_ticks_ += delta; }
+
+  void AdvanceBothClocks(TimeDelta delta) {
+    AdvanceLiveTicks(delta);
+    AdvanceRealTicks(delta);
+  }
+
+  static LiveTicks mock_live_ticks_;
+  static time_internal::RealTicks mock_real_ticks_;
+  static TimeDelta inter_clock_read_duration_;
+
+  subtle::ScopedTimeClockOverrides time_overrides_{
+      /*time_override=*/nullptr,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr,
+      &ElapsedNoSleepTimerSamplingMarginTest::MockLiveTicksNow,
+      /*time_ticks_low_resolution_override=*/nullptr,
+      &ElapsedNoSleepTimerSamplingMarginTest::MockRealTicksNow};
+};
+
+// static
+LiveTicks ElapsedNoSleepTimerSamplingMarginTest::mock_live_ticks_ =
+    LiveTicks() + Microseconds(1000000);
+// static
+time_internal::RealTicks
+    ElapsedNoSleepTimerSamplingMarginTest::mock_real_ticks_ =
+        time_internal::RealTicks() + Microseconds(2000000);
+// static
+TimeDelta ElapsedNoSleepTimerSamplingMarginTest::inter_clock_read_duration_ =
+    TimeDelta();
+
+TEST_F(ElapsedNoSleepTimerSamplingMarginTest,
+       ReturnsPrimaryElapsedWithinSamplingErrorMargin) {
+  // Simulate 2 µs elapsed between reading LiveTicks and RealTicks during clock
+  // sampling.
+  inter_clock_read_duration_ = Microseconds(2);
+
+  ElapsedNoSleepTimer timer;
+  AdvanceBothClocks(Seconds(1));
+
+  // With a 2 µs read duration at start and 2 µs at end, the dynamic max error
+  // is 4 µs. A clock discrepancy within this margin must be tolerated.
+  std::optional<TimeDelta> elapsed = timer.Elapsed();
+  ASSERT_TRUE(elapsed.has_value());
+  EXPECT_EQ(*elapsed, Seconds(1) + Microseconds(2));
+}
+
+TEST_F(ElapsedNoSleepTimerSamplingMarginTest,
+       ReturnsNulloptWhenDivergenceExceedsSamplingErrorMargin) {
+  // Simulate 2 µs elapsed between reading LiveTicks and RealTicks during clock
+  // sampling.
+  inter_clock_read_duration_ = Microseconds(2);
+
+  ElapsedNoSleepTimer timer;
+  AdvanceLiveTicks(Seconds(1));
+  // Advance RealTicks beyond the 4 µs dynamic error margin (start: 2 µs, end:
+  // 2 µs) to simulate sleep.
+  AdvanceRealTicks(Seconds(1) + Microseconds(10));
+
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+}
+
+TEST_F(ElapsedNoSleepTimerSamplingMarginTest,
+       ReturnsNulloptWhenSamplingErrorIsExcessive) {
+  // Simulate excessive read duration exceeding allowed threshold (e.g. thread
+  // preemption during clock sampling across all retry attempts).
+  inter_clock_read_duration_ =
+      ElapsedNoSleepTimer::kMaxAllowedSamplingError + Microseconds(1);
+
+  ElapsedNoSleepTimer timer;
+  AdvanceBothClocks(Seconds(1));
+
+  // Even though no sleep occurred, sampling uncertainty was too large for
+  // reliable sleep detection.
+  EXPECT_EQ(timer.Elapsed(), std::nullopt);
+}
+
+// Disabled on Android x86: In the 32-bit x86 emulator clock read latency
+// occasionally exceeds kMaxAllowedSamplingError.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_ReturnsValidElapsedWithoutSleep \
+  DISABLED_ReturnsValidElapsedWithoutSleep
+#else
+#define MAYBE_ReturnsValidElapsedWithoutSleep ReturnsValidElapsedWithoutSleep
+#endif
+TEST(ElapsedNoSleepTimerRealClockTest, MAYBE_ReturnsValidElapsedWithoutSleep) {
+  ElapsedNoSleepTimer timer;
+  std::optional<TimeDelta> elapsed = timer.Elapsed();
+  ASSERT_TRUE(elapsed.has_value());
+  EXPECT_GE(*elapsed, TimeDelta());
 }
 
 }  // namespace base

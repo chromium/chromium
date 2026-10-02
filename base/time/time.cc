@@ -280,12 +280,13 @@ LiveAndRealTicks SampleLiveAndRealTicks() {
   constexpr int kMaxAttempts = 3;
   // A threshold to ensure the thread was not preempted between clock reads.
   // Back-to-back clock reads take only tens of nanoseconds on native hardware,
-  // so 10 µs is orders of magnitude smaller than typical OS thread preemption
+  // so 50 µs is orders of magnitude smaller than typical OS thread preemption
   // intervals (1–10 ms), reliably detecting if a context switch occurred
-  // between reads. At the same time, 10 µs provides enough headroom for
-  // virtualized test environments (e.g., heavily loaded CQ bots) to avoid
-  // spurious retries.
-  constexpr TimeDelta kMaxInterClockReadDuration = Microseconds(10);
+  // between reads. At the same time, 50 µs provides enough headroom for
+  // virtualized test environments (e.g., heavily loaded CQ bots where
+  // clock reading like CLOCK_BOOTTIME may require a full kernel syscall) to
+  // avoid spurious retries.
+  constexpr TimeDelta kMaxInterClockReadDuration = Microseconds(50);
 
   LiveTicks live;
   RealTicks real;
