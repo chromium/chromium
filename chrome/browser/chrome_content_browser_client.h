@@ -82,6 +82,10 @@ namespace blocked_content {
 class PopupNavigationDelegate;
 }  // namespace blocked_content
 
+namespace extensions {
+class Extension;
+}  // namespace extensions
+
 namespace content {
 class BrowserContext;
 class BtmService;
@@ -1255,6 +1259,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // Used by subclasses (e.g. implemented by downstream embedders) to add
   // their own extra part objects.
   void AddExtraPart(std::unique_ptr<ChromeContentBrowserClientParts> part);
+
+  static void AddChromeSchemeFactories(
+      int render_process_id,
+      content::RenderFrameHost* frame_host,
+      content::WebContents* web_contents,
+      const extensions::Extension* extension,
+      NonNetworkURLLoaderFactoryMap* factories);
 
   // Exposed for tests to perform dependency injection.
   virtual std::unique_ptr<HttpAuthCoordinator> CreateHttpAuthCoordinator();

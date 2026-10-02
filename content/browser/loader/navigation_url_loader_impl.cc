@@ -710,7 +710,8 @@ void NavigationURLLoaderImpl::Start() {
           url_loader_factory::Create(
               ContentBrowserClient::URLLoaderFactoryType::kNavigation,
               url_loader_factory::TerminalParams::ForNonNetwork(
-                  CreateWebUIURLLoaderFactory(
+                  CreateWebUIURLLoaderFactoryWithoutOriginLock(
+                      WebUIURLLoaderFactoryPasskey::GetPassKey(),
                       frame_tree_node->current_frame_host(), scheme, {}),
                   network::mojom::kBrowserProcessId),
               url_loader_factory::ContentClientParams(
