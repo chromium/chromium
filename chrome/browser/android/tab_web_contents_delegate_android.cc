@@ -13,15 +13,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/content_uri_utils.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
@@ -68,7 +74,10 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/paint_preview/buildflags/buildflags.h"
+#include "components/pdf/common/constants.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/navigation_controller.h"
@@ -83,6 +92,7 @@
 #include "content/public/common/content_features.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "net/base/filename_util.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "skia/ext/region_ops.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -171,6 +181,28 @@ void ShowFramebustBlockMessageInternal(
 constexpr base::TimeDelta kEffectiveUserEscapeDuration =
     base::Milliseconds(1250);
 
+constexpr char kPdfPageUrlPrefix[] = "chrome-native://pdf/link?url=";
+
+// Returns the MIME type of the file selected in the file picker, which may be
+// either a content URI or a regular file path.
+std::string GetSelectedFileMimeType(const base::FilePath& file_path) {
+  if (file_path.IsContentUri()) {
+    return base::GetContentUriMimeType(file_path);
+  }
+  std::string mime_type;
+  net::GetMimeTypeFromFile(file_path, &mime_type);
+  return mime_type;
+}
+
+// Returns whether a PDF selected via the open file dialog should be shown in
+// the inline PDF viewer. Respects the existing platform support and incognito
+// checks.
+bool ShouldOpenSelectedPdfInline(content::BrowserContext* browser_context) {
+  content::DownloadManagerDelegate* delegate =
+      browser_context->GetDownloadManagerDelegate();
+  return delegate && delegate->ShouldOpenPdfInline();
+}
+
 class OpenFileSelectListener : public content::FileSelectListener {
  public:
   explicit OpenFileSelectListener(content::WebContents* web_contents)
@@ -192,6 +224,41 @@ class OpenFileSelectListener : public content::FileSelectListener {
     if (!url.is_valid() || !url.has_scheme()) {
       url = net::FilePathToFileURL(file_path);
     }
+
+    if (!url.is_valid() ||
+        !ShouldOpenSelectedPdfInline(web_contents_->GetBrowserContext())) {
+      OnMimeTypeResolved(std::move(url), std::string());
+      return;
+    }
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&GetSelectedFileMimeType, file_path),
+        base::BindOnce(&OpenFileSelectListener::OnMimeTypeResolved,
+                       base::WrapRefCounted(this), std::move(url)));
+  }
+
+  void OnMimeTypeResolved(GURL url, const std::string& mime_type) {
+    // The WebContents may have been destroyed while resolving the MIME type.
+    if (!web_contents_) {
+      return;
+    }
+
+    // LoadURL() from C++ bypasses TabImpl#loadUrl(), which is where PDF
+    // navigations are detected and the PDF native page is shown. When inline
+    // PDF viewing is enabled, wrap the URL in a chrome-native://pdf/ URL so the
+    // tab shows the PDF native page, mirroring PdfUtils#encodePdfPageUrl.
+    // Otherwise, load the raw URL to keep the original behavior.
+    if (url.is_valid() &&
+        base::EqualsCaseInsensitiveASCII(mime_type, pdf::kPDFMimeType)) {
+      url = GURL(base::StrCat(
+          {kPdfPageUrlPrefix,
+           base::EscapeQueryParamValue(url.spec(), /*use_plus=*/true)}));
+
+      base::UmaHistogramBoolean("Android.Pdf.DownloadUrlEncoded",
+                                url.is_valid());
+    }
+
     if (url.is_valid()) {
       web_contents_->GetController().LoadURL(
           url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());

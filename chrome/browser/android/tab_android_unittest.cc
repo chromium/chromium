@@ -5,11 +5,16 @@
 #include "chrome/browser/android/tab_android.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "cc/slim/layer.h"
@@ -36,6 +41,11 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/download_manager_delegate.h"
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/window_container_type.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -44,6 +54,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/android/view_android.h"
 
 namespace {
@@ -699,6 +710,117 @@ TEST_F(TabAndroidTest, CollectionDestructionClearsParentPointer) {
   // and subsequent destruction in TearDown() will not hit
   // CHECK(!parent_collection_).
   EXPECT_EQ(tab_android_->GetParentCollection(), nullptr);
+}
+
+namespace {
+
+class PdfTestDownloadManagerDelegate : public content::DownloadManagerDelegate {
+ public:
+  bool ShouldOpenPdfInline() override { return true; }
+};
+
+class PdfTestingProfile : public TestingProfile {
+ public:
+  content::DownloadManagerDelegate* GetDownloadManagerDelegate() override {
+    return &download_manager_delegate_;
+  }
+
+ private:
+  PdfTestDownloadManagerDelegate download_manager_delegate_;
+};
+
+class FileCapturingDelegate : public android::TabWebContentsDelegateAndroid {
+ public:
+  using TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid;
+
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override {
+    listener_ = std::move(listener);
+  }
+
+  scoped_refptr<content::FileSelectListener> TakeListener() {
+    return std::move(listener_);
+  }
+
+ private:
+  scoped_refptr<content::FileSelectListener> listener_;
+};
+
+}  // namespace
+
+class TabAndroidOpenFileTest : public TabAndroidTest {
+ protected:
+  // Triggers the open file flow, selects `file_path`, and returns the URL of
+  // the resulting visible navigation entry.
+  GURL OpenFileAndGetLoadedUrl(Profile* profile,
+                               const base::FilePath& file_path) {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile));
+    FileCapturingDelegate delegate(
+        env_, base::android::ScopedJavaLocalRef<jobject>(), web_contents.get());
+    web_contents->SetDelegate(&delegate);
+
+    Java_TabAndroidTestHelper_openFile(env_, web_contents.get());
+    scoped_refptr<content::FileSelectListener> listener =
+        delegate.TakeListener();
+    EXPECT_NE(nullptr, listener);
+    if (!listener) {
+      return GURL();
+    }
+
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+    files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file_path,
+                                          file_path.BaseName().AsUTF16Unsafe(),
+                                          std::vector<std::u16string>())));
+    listener->FileSelected(std::move(files), base::FilePath(),
+                           blink::mojom::FileChooserParams::Mode::kOpen);
+    // The MIME type is resolved asynchronously on the thread pool, so wait for
+    // the resulting navigation. A new WebContents already has an initial
+    // NavigationEntry, so wait for a non-initial one.
+    content::NavigationController& controller = web_contents->GetController();
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      content::NavigationEntry* visible_entry = controller.GetVisibleEntry();
+      return visible_entry && !visible_entry->IsInitialEntry();
+    }));
+
+    content::NavigationEntry* entry = controller.GetVisibleEntry();
+    GURL url = entry ? entry->GetURL() : GURL();
+    web_contents->SetDelegate(nullptr);
+    return url;
+  }
+};
+
+TEST_F(TabAndroidOpenFileTest, EncodesPdfFileWhenInlineEnabled) {
+  PdfTestingProfile pdf_profile;
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GURL("chrome-native://pdf/"
+                 "link?url=file%3A%2F%2F%2Fsdcard%2FDownload%2Fsample.pdf"),
+            OpenFileAndGetLoadedUrl(
+                &pdf_profile, base::FilePath("/sdcard/Download/sample.pdf")));
+  histogram_tester.ExpectUniqueSample("Android.Pdf.DownloadUrlEncoded", true,
+                                      1);
+}
+
+TEST_F(TabAndroidOpenFileTest, LoadsRawPdfFileUrlWhenInlineDisabled) {
+  // TestingProfile has no DownloadManagerDelegate, so inline PDF is disabled.
+  TestingProfile profile;
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GURL("file:///sdcard/Download/sample.pdf"),
+            OpenFileAndGetLoadedUrl(
+                &profile, base::FilePath("/sdcard/Download/sample.pdf")));
+  histogram_tester.ExpectTotalCount("Android.Pdf.DownloadUrlEncoded", 0);
+}
+
+TEST_F(TabAndroidOpenFileTest, LoadsRawUrlForNonPdfFile) {
+  PdfTestingProfile pdf_profile;
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GURL("file:///sdcard/Download/sample.txt"),
+            OpenFileAndGetLoadedUrl(
+                &pdf_profile, base::FilePath("/sdcard/Download/sample.txt")));
+  histogram_tester.ExpectTotalCount("Android.Pdf.DownloadUrlEncoded", 0);
 }
 
 DEFINE_JNI(TabAndroidTestHelper)

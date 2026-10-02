@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessTabDelegateFactory;
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 
 /** Used by tab_android_unittest.cc to initialize a tab. */
 @NullMarked
@@ -48,5 +50,11 @@ public class TabAndroidTestHelper {
                 /* initializeRenderer= */ false,
                 /* isPinned= */ false);
         return tab;
+    }
+
+    /** Triggers the native openFile flow for C++ unit test usage. */
+    @CalledByNative
+    public static void openFile(@JniType("content::WebContents*") WebContents webContents) {
+        TabWebContentsDelegateAndroidImplJni.get().openFile(webContents);
     }
 }
