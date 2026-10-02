@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `.gni` file defines constants that are shared / reused across
+# `cpp_api_from_rust.gni` and `rust_api_from_cpp.gni`.
+
+crubit_support_path_format = "\"third_party/crubit/support/{header}\""
+rustfmt_config_path = "//.rustfmt.toml"
+
+_toolchain_bin_path = "//third_party/rust-toolchain/bin"
+cpp_api_from_rust_exe_path = "${_toolchain_bin_path}/cc_bindings_from_rs"
+rust_api_from_cpp_exe_path = "${_toolchain_bin_path}/rs_bindings_from_cc"
+rustfmt_exe_path = "${_toolchain_bin_path}/rustfmt"
+if (host_os == "win") {
+  cpp_api_from_rust_exe_path += ".exe"
+  rust_api_from_cpp_exe_path += ".exe"
+  rustfmt_exe_path += ".exe"
+}
+
+# TODO(lukasza): Make this also work on other host platforms.  (Possibly
+# hoisting this Crubit-agnostic functionality into some other, reusable
+# location elsewhere.)
+if (host_os == "linux") {
+  clang_format_exe_path = "//buildtools/linux64-format/clang-format"
+} else if (host_os == "win") {
+  clang_format_exe_path = "//buildtools/win-format/clang-format.exe"
+}

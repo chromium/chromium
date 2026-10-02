@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/gni_impl/crubit_shared_args.gni")
 import("//build/toolchain/kythe.gni")
 
 _globally_enabled_crubit_features = [
@@ -98,25 +99,6 @@ template("cpp_api_from_rust") {
     _original_attributes.deps += [ "//build/rust/std:std_bindings" ]
   }
 
-  _crubit_support_path_format = "\"third_party/crubit/support/{header}\""
-  _cpp_api_from_rust_exe_path =
-      "//third_party/rust-toolchain/bin/cc_bindings_from_rs"
-  _rustfmt_exe_path = "//third_party/rust-toolchain/bin/rustfmt"
-  _rustfmt_config_path = "//.rustfmt.toml"
-  if (host_os == "win") {
-    _cpp_api_from_rust_exe_path += ".exe"
-    _rustfmt_exe_path += ".exe"
-  }
-
-  # TODO(lukasza): Make this also work on other host platforms.  (Possibly
-  # hoisting this `cpp_api_from_rust`-agnostic functionality into some other,
-  # reusable location elsewhere.)
-  if (host_os == "linux") {
-    _clang_format_exe_path = "//buildtools/linux64-format/clang-format"
-  } else if (host_os == "win") {
-    _clang_format_exe_path = "//buildtools/win-format/clang-format.exe"
-  }
-
   _action_rsp_path = "$target_out_dir/$_action_target_name.rsp"
 
   generated_file(_rspgen_target_name) {
@@ -149,9 +131,9 @@ template("cpp_api_from_rust") {
     script = "//build/rust/gni_impl/cpp_api_from_rust_wrapper.py"
     inputs = rustc_wrapper_inputs
     inputs += [
-      _cpp_api_from_rust_exe_path,
-      _rustfmt_exe_path,
-      _rustfmt_config_path,
+      cpp_api_from_rust_exe_path,
+      rustfmt_exe_path,
+      rustfmt_config_path,
     ]
     outputs = [
       _h_out,
@@ -161,7 +143,7 @@ template("cpp_api_from_rust") {
     # `cpp_api_from_rust_wrapper.py` flags:
     args = [
       "--cpp-api-from-rust-exe-path",
-      rebase_path(_cpp_api_from_rust_exe_path, root_build_dir),
+      rebase_path(cpp_api_from_rust_exe_path, root_build_dir),
 
       "--rustc-env-and-flags",
       rebase_path(invoker.rustc_env_and_flags, root_build_dir),
@@ -188,13 +170,13 @@ template("cpp_api_from_rust") {
       "--portable-abi-compatible",
 
       "--crubit-support-path-format",
-      _crubit_support_path_format,
+      crubit_support_path_format,
 
       "--rustfmt-exe-path",
-      rebase_path(_rustfmt_exe_path, root_build_dir),
+      rebase_path(rustfmt_exe_path, root_build_dir),
 
       "--rustfmt-config-path",
-      rebase_path(_rustfmt_config_path, root_build_dir),
+      rebase_path(rustfmt_config_path, root_build_dir),
 
       "--crate-namespace",
       "self=${_cpp_namespace}",
@@ -205,11 +187,11 @@ template("cpp_api_from_rust") {
         "self=${_feature}",
       ]
     }
-    if (defined(_clang_format_exe_path)) {
-      inputs += [ _clang_format_exe_path ]
+    if (defined(clang_format_exe_path)) {
+      inputs += [ clang_format_exe_path ]
       args += [
         "--clang-format-exe-path",
-        rebase_path(_clang_format_exe_path, root_build_dir),
+        rebase_path(clang_format_exe_path, root_build_dir),
       ]
     }
     if (enable_kythe_annotations) {
