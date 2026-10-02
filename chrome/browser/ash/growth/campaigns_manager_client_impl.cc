@@ -117,6 +117,7 @@ void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
   if (!tracker) {
     CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     std::move(callback).Run(false);
+    return;
   }
 
   tracker->AddOnInitializedCallback(
