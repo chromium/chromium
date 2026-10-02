@@ -65,6 +65,11 @@ class MockReadAloudPlaybackController
               SetTextContent,
               (std::vector<read_aloud::mojom::TextSegmentPtr> segments),
               (override));
+  MOCK_METHOD(void,
+              SetOverviewContent,
+              (mojo_base::BigBuffer response_bytes,
+               SetOverviewContentCallback callback),
+              (override));
   MOCK_METHOD(void, Play, (), (override));
   MOCK_METHOD(void, Pause, (), (override));
   MOCK_METHOD(void,

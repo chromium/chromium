@@ -196,9 +196,9 @@ void ReadAloudPlaybackController::SetTextContent(
           "SetTextContent");
       return;
     }
-    total_text_bytes += segment->text.size() *
-                        sizeof(std::remove_reference_t<
-                               decltype(segment->text)>::value_type);
+    total_text_bytes +=
+        segment->text.size() *
+        sizeof(std::remove_reference_t<decltype(segment->text)>::value_type);
   }
   if (total_text_bytes > kMaxMojoPayloadSizeBytes) {
     controller_receiver_.ReportBadMessage(
@@ -231,6 +231,15 @@ void ReadAloudPlaybackController::SetTextContent(
     // user explicitly triggers Play(). Notify client to synchronize UI state.
     SetPlaybackState(read_aloud::mojom::PlaybackState::kPaused);
   }
+}
+
+void ReadAloudPlaybackController::SetOverviewContent(
+    mojo_base::BigBuffer response_bytes,
+    SetOverviewContentCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/559821661): Implement overview response parsing and playback
+  // initialization.
+  std::move(callback).Run(/*success=*/false, /*title=*/std::string());
 }
 
 void ReadAloudPlaybackController::Play() {
@@ -540,9 +549,9 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
         chunk_index, result.timings.back().end_time, result.timings);
   }
 
-  prefetch_manager_.OnSynthesisResponse(
-      sequence_id, chunk_index, std::move(result.audio_buffer),
-      std::move(result.timings));
+  prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index,
+                                        std::move(result.audio_buffer),
+                                        std::move(result.timings));
 
   decoder_sequencer_.ReplenishBuffer();
 }

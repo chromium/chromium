@@ -65,6 +65,18 @@ interface ReadAloudPlaybackController {
   // - The text length of each segment must not exceed `kMaxTextLengthPerSegment` (65,536 characters).
   // Exceeding these limits will trigger a bad message error and close the receiver channel.
   SetTextContent(array<TextSegment> segments);
+
+  // Replaces the article text by deserializing and processing an AI Overview
+  // response (ReadAloudGenerateTextResponse protobuf) in the sandboxed utility
+  // process.
+  //
+  // On success, initializes playback segments, flushes prefetch caches, and
+  // returns the extracted title metadata to the browser.
+  // On failure (empty script, malformed protobuf, or limit violation),
+  // returns `success = false` and an empty string without altering existing
+  // playback state.
+  SetOverviewContent(mojo_base.mojom.BigBuffer response_bytes)
+      => (bool success, string title);
   Play();
   Pause();
   SeekToWord(uint32 segment_index, uint32 character_offset);

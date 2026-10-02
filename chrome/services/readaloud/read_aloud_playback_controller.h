@@ -78,6 +78,8 @@ class ReadAloudPlaybackController
   void SetPlaybackMode(read_aloud::mojom::PlaybackMode mode) override;
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override;
+  void SetOverviewContent(mojo_base::BigBuffer response_bytes,
+                          SetOverviewContentCallback callback) override;
   void Play() override;
   void Pause() override;
   void SeekToWord(uint32_t segment_index, uint32_t character_offset) override;

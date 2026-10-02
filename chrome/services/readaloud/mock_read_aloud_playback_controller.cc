@@ -22,6 +22,12 @@ MockReadAloudPlaybackController::MockReadAloudPlaybackController(
   ON_CALL(*this, SetTextContent)
       .WillByDefault(::testing::Invoke(
           this, &MockReadAloudPlaybackController::DefaultSetTextContent));
+  ON_CALL(*this, SetOverviewContent)
+      .WillByDefault(
+          [](mojo_base::BigBuffer, SetOverviewContentCallback callback) {
+            std::move(callback).Run(/*success=*/false,
+                                    /*title=*/std::string());
+          });
   ON_CALL(*this, Play).WillByDefault(::testing::Invoke(
       this, &MockReadAloudPlaybackController::DefaultPlay));
   ON_CALL(*this, Pause).WillByDefault(::testing::Invoke(

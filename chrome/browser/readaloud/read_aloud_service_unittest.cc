@@ -189,6 +189,10 @@ class FakePlaybackController
       std::move(set_text_content_callback_).Run();
     }
   }
+  void SetOverviewContent(mojo_base::BigBuffer response_bytes,
+                          SetOverviewContentCallback callback) override {
+    std::move(callback).Run(/*success=*/false, /*title=*/std::string());
+  }
 
   void Play() override {
     play_count_++;
