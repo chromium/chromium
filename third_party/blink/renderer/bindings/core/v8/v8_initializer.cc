@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -852,6 +853,14 @@ bool IsDOMExceptionWrapper(v8::Isolate* isolate, v8::Local<v8::Object> object) {
   return V8DOMException::HasInstance(isolate, object);
 }
 
+void DynamicScriptCompiledFromEmbedderCallback(v8::Local<v8::Context> context,
+                                               int script_id) {
+  if (auto* monitor = ScriptInitiationMonitor::FromExecutionContext(
+          ToExecutionContext(context))) {
+    monitor->DidRegisterDynamicScript(V8ScriptId(script_id));
+  }
+}
+
 void EmitDevToolsEvent(v8::Isolate* isolate) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters", "data",
@@ -896,6 +905,8 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
   isolate->SetIsJSApiWrapperNativeErrorCallback(IsDOMExceptionWrapper);
+  isolate->SetDynamicScriptCompiledFromEmbedderCallback(
+      DynamicScriptCompiledFromEmbedderCallback);
   DOMArrayBuffer::SetArrayBufferDetachCallback(isolate);
   isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
