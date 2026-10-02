@@ -9,10 +9,8 @@
 ### Android
 
  * [android-brya-kano-i5-8gb-perf](https://ci.chromium.org/p/chrome/builders/ci/android-brya-kano-i5-8gb-perf): Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB.
- * [android-corsola-steelix-8gb-perf](https://ci.chromium.org/p/chrome/builders/ci/android-corsola-steelix-8gb-perf): Corsola SKU steelix_MT8186_8GB.
  * [android-go-wembley-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley-perf): Android U.
  * [android-go-wembley_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley_webview-perf): Android U.
- * [android-nissa-uldren-8gb-perf](https://ci.chromium.org/p/chrome/builders/ci/android-nissa-uldren-8gb-perf): Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB.
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel10-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10-perf): Android B.

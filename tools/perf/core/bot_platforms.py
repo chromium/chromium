@@ -1100,18 +1100,6 @@ PLATFORM_INFO = {
     'platform_os': 'android',
     'is_fyi': False,
   },
-  'android-corsola-steelix-8gb-perf': {
-    'description': 'Corsola SKU steelix_MT8186_8GB',
-    'num_shards': 7,
-    'platform_os': 'android',
-    'is_fyi': False,
-  },
-  'android-nissa-uldren-8gb-perf': {
-    'description': 'Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB',
-    'num_shards': 7,
-    'platform_os': 'android',
-    'is_fyi': False,
-  },
   'android-pixel4-perf': {
     'description': 'Android R',
     'num_shards': 38,

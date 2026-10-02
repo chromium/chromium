@@ -157,8 +157,6 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'android-pixel10_webview-perf-pgo',
     'android-pixel10_webview-perf-pgo-heapdump',
     'android-brya-kano-i5-8gb-perf',
-    'android-corsola-steelix-8gb-perf',
-    'android-nissa-uldren-8gb-perf',
     'linux-arm-builder-perf',
     'linux-builder-perf',
     'linux-falcon-rak-5070-perf',
@@ -672,52 +670,6 @@ BUILDERS = {
       'os': 'Android',
       'label-pool': 'chrome.tests.perf',
       'label-hwid_sku': 'kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
-    },
-    'server': 'https://chromeos-swarming.appspot.com',
-    'service_account': 'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
-    'realm': 'chromeos:chrome',
-  },
-  'android-corsola-steelix-8gb-perf': {
-    'tests': [
-      {
-        'isolate': 'performance_test_suite_android_chrome_google_bundle',
-        'extra_args': [
-          '--device',
-          'variable_lab_dut_hostname',
-          '--connect-to-device-over-network',
-        ],
-      }
-    ],
-    'platform': 'android-chrome-bundle',
-    'dimension': {
-      'dut_state': 'ready',
-      'pool': 'chrome',
-      'os': 'Android',
-      'label-pool': 'chrome.tests.perf',
-      'label-hwid_sku': 'steelix_MT8186_8GB',
-    },
-    'server': 'https://chromeos-swarming.appspot.com',
-    'service_account': 'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
-    'realm': 'chromeos:chrome',
-  },
-  'android-nissa-uldren-8gb-perf': {
-    'tests': [
-      {
-        'isolate': 'performance_test_suite_android_chrome_google_bundle',
-        'extra_args': [
-          '--device',
-          'variable_lab_dut_hostname',
-          '--connect-to-device-over-network',
-        ],
-      }
-    ],
-    'platform': 'android-chrome-bundle',
-    'dimension': {
-      'dut_state': 'ready',
-      'pool': 'chrome',
-      'os': 'Android',
-      'label-pool': 'chrome.tests.perf',
-      'label-hwid_sku': 'uldren_99C4LZ/Q1XT/6W_8GB',
     },
     'server': 'https://chromeos-swarming.appspot.com',
     'service_account': 'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
