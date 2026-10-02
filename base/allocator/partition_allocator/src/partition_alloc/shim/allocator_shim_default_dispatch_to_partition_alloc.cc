@@ -176,16 +176,16 @@ std::array<
     g_roots = {};
 
 PA_ALWAYS_INLINE size_t PartitionIndexFromAllocToken(AllocToken alloc_token) {
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
   return AllocTokenHasPointerValue(alloc_token) ? kPointerPartitionIndex
                                                 : kDefaultPartitionIndex;
+#else
+  return kDefaultPartitionIndex;
+#endif
 }
 
 partition_alloc::PartitionRoot* Allocator(size_t partition_index) {
-#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
   return g_roots[partition_index].Get();
-#else
-  return g_roots[kDefaultPartitionIndex].Get();
-#endif
 }
 
 // Original g_root_ if it was replaced by ConfigurePartitions().

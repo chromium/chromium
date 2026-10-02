@@ -18,13 +18,13 @@
 
 namespace allocator_shim {
 
+inline constexpr size_t kDefaultPartitionIndex = 0;
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+inline constexpr size_t kPointerPartitionIndex = 1;
 inline constexpr size_t kNumPartitions = 2;
 #else
 inline constexpr size_t kNumPartitions = 1;
 #endif
-inline constexpr size_t kDefaultPartitionIndex = 0;
-inline constexpr size_t kPointerPartitionIndex = 1;
 
 namespace internal {
 
