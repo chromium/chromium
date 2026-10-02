@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 
 /**
@@ -156,29 +156,70 @@ public interface SideUiContainer {
             @HeightType int newHeightType) {}
 
     /**
-     * Called when this container <i>will</i> be auto-closed due to space constraints.
+     * Called when this container <i>will</i> be auto-closed.
      *
-     * <p>Examples:
+     * <p>A container will be auto-closed during a UI update flow in {@link SideUiCoordinator} if:
      *
      * <ul>
-     *   <li>When the window becomes too small, we may need to hide this container.
-     *   <li>When the available space is limited, showing a higher-priority container may require
-     *       closing a lower-priority container.
+     *   <li>the {@link UiUpdateRequest} isn't from the container, and
+     *   <li>the container has informed {@link SideUiCoordinator} that it should be closed, via
+     *       {@link #determineShowableSize} and {@link #hasContentToShow}.
      * </ul>
      *
-     * <p>In each example above, the container will be notified by this API.
+     * <p>The typical reason this API is invoked is a change in available space, such as:
      *
-     * <p>This method is called during a UI update flow in {@link SideUiCoordinator}, immediately
-     * before the new {@link SideUiSpecs} is applied to the UI. Implementations should use this
-     * method to preserve states needed by {@link #onWillAutoRestore()}, but <i>not</i> request
-     * another UI update via {@link SideUiCoordinator#updateUi}.
+     * <ul>
+     *   <li>when the window becomes too small, or
+     *   <li>when the available space is limited and a higher-priority container will be shown.
+     * </ul>
+     *
+     * <p>However, since {@link SideUiCoordinator} updates <i>all</i> registered containers in
+     * <i>one</i> UI update flow, and a {@link UiUpdateRequest} can be sent at any moment, it's
+     * possible for this API to be invoked in cases not involving a change in available space.
+     * Consider the following hypothetical scenario:
+     *
+     * <ul>
+     *   <li>t0: Container_1 and Container_2 are open.
+     *   <li>t1: Container_2 prepares its internal states for closing itself. These internal states
+     *       will be used by {@link #determineShowableSize} and {@link #hasContentToShow} to inform
+     *       {@link SideUiCoordinator} that Container_2 should be closed.
+     *   <li>t2: Before Container_2 sends a {@link UiUpdateRequest}, something else (Container_1, or
+     *       some OS signal we are observing) sends a request.
+     *   <li>t3: Container_2's {@code onWillAutoClose} will be invoked.
+     *   <li>t4: Container_2 sends its own {@link UiUpdateRequest}.
+     *   <li>t5: The request at t4 has no effect since Container_2 has already been updated.
+     * </ul>
+     *
+     * <p>Therefore:
+     *
+     * <ul>
+     *   <li>The container shouldn't assume this API is always a signal of insufficient space, and
+     *       should use the {@code isShowable} parameter to determine the reason for auto-close.
+     *   <li>The container shouldn't assume {@link #onWillAutoRestore} will follow.
+     *   <li>The container should <i>always</i> update its UI and internal states to be consistent
+     *       with the "closed" state. This is because by the time this API is invoked, the container
+     *       has already told {@link SideUiCoordinator} it should be closed, and {@link
+     *       SideUiCoordinator} <i>will</i> apply the "closed" UI specs, so the container should
+     *       never contradict itself.
+     *   <li>The container shouldn't request another UI update via {@link
+     *       SideUiCoordinator#updateUi} in this method since the method is invoked during an
+     *       ongoing UI update flow.
+     * </ul>
+     *
+     * @param isShowable Whether this container is still showable (i.e. whether there is enough
+     *     space for it).
      */
-    default void onWillAutoClose() {}
+    default void onWillAutoClose(boolean isShowable) {}
 
     /**
-     * Called when this container <i>will</i> be auto-restored after it's auto-closed.
+     * Called when this container <i>will</i> be auto-restored.
      *
-     * @see #onWillAutoClose
+     * <p>This is similar to {@link #onWillAutoClose}. Please read the documentation for {@link
+     * #onWillAutoClose} to understand when this API will be invoked and the expected
+     * implementation.
+     *
+     * <p>Unlike {@link #onWillAutoClose}, there is no {@code isShowable} parameter since by the
+     * time this API is invoked, the container is guaranteed to be showable.
      */
     default void onWillAutoRestore() {}
 

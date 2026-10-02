@@ -594,6 +594,7 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: The right SideUiContainer should receive the auto-close notification.
         assertEquals(1, rightUiContainer.mNumOnWillAutoCloseReceived);
+        assertEquals(false, rightUiContainer.mLastIsShowableOnWillAutoClose);
         assertEquals(0, rightUiContainer.mNumOnWillAutoRestoreReceived);
         assertEquals(0, leftUiContainer.mNumOnWillAutoCloseReceived);
         assertEquals(0, leftUiContainer.mNumOnWillAutoRestoreReceived);

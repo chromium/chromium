@@ -370,8 +370,8 @@ void SidePanelCoordinatorAndroid::OnTabWillBeDestroyed(TabAndroid* tab) {
   deferred_entry_tracker_.ClearTabScopedEntry(tab->GetHandle());
 }
 
-void SidePanelCoordinatorAndroid::OnWillAutoClose() {
-  SPLOG("OnWillAutoClose");
+void SidePanelCoordinatorAndroid::OnWillAutoClose(bool is_showable) {
+  SPLOG("OnWillAutoClose - is_showable: " << is_showable);
 
   if (has_insufficient_space_) {
     return;

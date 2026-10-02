@@ -545,7 +545,9 @@ final class SideUiCoordinatorImpl
             @Px int currentReservedWidth = currentSideUiSpecs.getReservedWidth(anchorSide);
             @Px int newReservedWidth = newSideUiSpecs.getReservedWidth(anchorSide);
             if (currentReservedWidth != 0 && newReservedWidth == 0) {
-                container.onWillAutoClose();
+                boolean isShowable =
+                        newSideUiShowability.mShowableSideUiIds.contains(container.getSideUiId());
+                container.onWillAutoClose(isShowable);
             } else if (currentReservedWidth == 0 && newReservedWidth != 0) {
                 container.onWillAutoRestore();
             }

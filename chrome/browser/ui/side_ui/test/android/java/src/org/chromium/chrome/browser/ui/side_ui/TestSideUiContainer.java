@@ -69,14 +69,17 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Number of times {@link #onWillAutoClose} is called. */
     public int mNumOnWillAutoCloseReceived;
 
+    /** The last {@code isShowable} received by {@link #onWillAutoClose}. */
+    public @Nullable Boolean mLastIsShowableOnWillAutoClose;
+
     /** Number of times {@link #onWillAutoRestore} is called. */
     public int mNumOnWillAutoRestoreReceived;
 
     /**
-     * Whether to call {@link SideUiCoordinator#updateUi} in {@link #onWillAutoClose()}.
+     * Whether to call {@link SideUiCoordinator#updateUi} in {@link #onWillAutoClose}.
      *
      * <p>When this is true, it simulates a common mistake in a {@link SideUiContainer}. Please see
-     * the documentation of {@link #onWillAutoClose()} for details.
+     * the documentation of {@link #onWillAutoClose} for details.
      */
     public boolean mRequestUiUpdateOnWillAutoClose;
 
@@ -220,8 +223,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
-    public void onWillAutoClose() {
+    public void onWillAutoClose(boolean isShowable) {
         mNumOnWillAutoCloseReceived++;
+        mLastIsShowableOnWillAutoClose = isShowable;
 
         if (mRequestUiUpdateOnWillAutoClose) {
             mSideUiCoordinator.updateUi(
