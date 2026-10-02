@@ -8,12 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -39,7 +36,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit test for {@link SimpleEdgeToEdgePadAdjuster}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SimpleEdgeToEdgePadAdjusterUnitTest {
 
     @Rule
@@ -185,15 +181,29 @@ public class SimpleEdgeToEdgePadAdjusterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
     public void testOverrideBottomInset_NoOpWhenUnchanged() {
-        View view = spy(new View(mActivity));
+        TestView view = new TestView(mActivity);
         var padAdjuster = new SimpleEdgeToEdgePadAdjuster(view, /* enableClipToPadding= */ true);
 
         int bottomInsets = 100;
         padAdjuster.overrideBottomInset(bottomInsets);
         assertEquals(bottomInsets, view.getPaddingBottom());
-        clearInvocations(view);
+        view.mSetPaddingCount = 0;
 
         padAdjuster.overrideBottomInset(bottomInsets);
-        verify(view, never()).setPadding(anyInt(), anyInt(), anyInt(), anyInt());
+        assertEquals(0, view.mSetPaddingCount);
+    }
+
+    private static class TestView extends View {
+        int mSetPaddingCount;
+
+        TestView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void setPadding(int left, int top, int right, int bottom) {
+            super.setPadding(left, top, right, bottom);
+            mSetPaddingCount++;
+        }
     }
 }

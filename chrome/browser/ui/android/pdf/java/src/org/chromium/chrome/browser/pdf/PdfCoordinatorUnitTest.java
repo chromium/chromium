@@ -134,7 +134,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
             PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class,
             PdfCoordinatorUnitTest.CustomShadowParcelFileDescriptor.class
         })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PdfCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -3504,13 +3503,12 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     public void testCalculateCurrentPage() {
-        PdfView mockPdfView = org.mockito.Mockito.mock(PdfView.class);
-        when(mockPdfView.getHeight()).thenReturn(1000); // 50% threshold is y = 500
+        PdfView pdfView = new PdfView(mActivity);
+        pdfView.layout(0, 0, 500, 1000); // 50% threshold is y = 500
 
         // Case 1: pageLocations is null - fallback to firstVisiblePage
         assertEquals(
-                0,
-                PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(mockPdfView, 0, null));
+                0, PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(pdfView, 0, null));
 
         // Case 2: Page 1 top (rect.top = 600) is below 50% viewport height (threshold 500)
         SparseArray<RectF> pageLocations = new SparseArray<>();
@@ -3519,7 +3517,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 0,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 0, pageLocations));
+                        pdfView, 0, pageLocations));
 
         // Case 3: Page 1 top (rect.top = 450) crosses 50% viewport height (threshold 500)
         pageLocations.put(0, new RectF(0, -350, 800, 450));
@@ -3527,7 +3525,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 1,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 0, pageLocations));
+                        pdfView, 0, pageLocations));
 
         // Case 4: Multiple pages visible, page 2 crosses threshold, page 3 is below threshold
         SparseArray<RectF> multiPageLocations = new SparseArray<>();
@@ -3537,7 +3535,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 2,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 1, multiPageLocations));
+                        pdfView, 1, multiPageLocations));
 
         // Case 5: Two pages per row, pages 0 and 1 visible at the top (top = 0)
         SparseArray<RectF> twoPageLocations = new SparseArray<>();
@@ -3546,7 +3544,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 0,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 0, twoPageLocations));
+                        pdfView, 0, twoPageLocations));
 
         // Case 6: Two pages per row, pages 2 and 3 (pages 3 and 4) visible and crossing threshold
         SparseArray<RectF> twoPageRow1Locations = new SparseArray<>();
@@ -3559,7 +3557,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 2,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 0, twoPageRow1Locations));
+                        pdfView, 0, twoPageRow1Locations));
 
         // Case 7: Two pages per row, row 1 has not crossed threshold
         SparseArray<RectF> twoPageRow0Locations = new SparseArray<>();
@@ -3570,7 +3568,7 @@ public class PdfCoordinatorUnitTest {
         assertEquals(
                 0,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
-                        mockPdfView, 0, twoPageRow0Locations));
+                        pdfView, 0, twoPageRow0Locations));
     }
 
     @Test

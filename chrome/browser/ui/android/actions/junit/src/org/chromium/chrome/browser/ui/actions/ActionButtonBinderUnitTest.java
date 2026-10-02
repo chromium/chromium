@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -19,6 +18,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -53,7 +53,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link ActionButtonBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActionButtonBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -190,23 +189,26 @@ public class ActionButtonBinderUnitTest {
         String expectedDescription = "5 items";
 
         PropertyModel model = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
-        ImageView mockView = spy(new ImageView(mActivity));
-        Context mockContext = mock(Context.class);
-        Resources mockResources = mock(Resources.class);
-
-        doReturn(mockContext).when(mockView).getContext();
-        doReturn(mockResources).when(mockContext).getResources();
+        Resources mockResources = spy(mActivity.getResources());
         doReturn(expectedDescription)
                 .when(mockResources)
                 .getQuantityString(pluralResId, count, count);
+        Context context =
+                new ContextWrapper(mActivity) {
+                    @Override
+                    public Resources getResources() {
+                        return mockResources;
+                    }
+                };
+        ImageView view = new ImageView(context);
 
-        PropertyModelChangeProcessor.create(model, mockView, ActionButtonBinder::bind);
+        PropertyModelChangeProcessor.create(model, view, ActionButtonBinder::bind);
 
         model.set(
                 ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
                 new ResourceTextResolver(pluralResId, count));
 
-        assertEquals(expectedDescription, mockView.getContentDescription());
+        assertEquals(expectedDescription, view.getContentDescription());
     }
 
     @Test

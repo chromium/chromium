@@ -4,29 +4,25 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Rect;
-import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 
 /** Tests AppMenu#getPopupPosition. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AppMenuPopupPositionTest {
 
     private final int[] mTempLocation = new int[2];
@@ -40,42 +36,28 @@ public class AppMenuPopupPositionTest {
     private static final int ANCHOR_Y = 300;
     private static final int ANCHOR_WIDTH = 40;
     private static final int NEGATIVE_SOFTWARE_VERTICAL_OFFSET = 25;
-    private static final int BOTTOM_BAR_MARGIN_DP = 12;
-    private final View mAnchorView = mock(View.class);
     private final Rect mAppRect = new Rect(0, 0, APP_WIDTH, APP_HEIGHT);
     private final Rect mBgPaddingRect = new Rect(BG_PADDING, BG_PADDING, BG_PADDING, BG_PADDING);
+    private View mAnchorView;
+    private int mBottomBarMargin;
 
     @Before
     public void setUp() {
-        doAnswer(
-                        (InvocationOnMock invocation) -> {
-                            mTempLocation[0] = ANCHOR_X;
-                            mTempLocation[1] = ANCHOR_Y;
-                            return null;
-                        })
-                .when(mAnchorView)
-                .getLocationInWindow(mTempLocation);
+        Context context = ContextUtils.getApplicationContext();
+        mBottomBarMargin =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_app_menu_lateral_margin);
 
-        doAnswer(
-                        (InvocationOnMock invocation) -> {
-                            mTempLocation[0] = ANCHOR_X;
-                            mTempLocation[1] = ANCHOR_Y;
-                            return null;
-                        })
-                .when(mAnchorView)
-                .getLocationOnScreen(mTempLocation);
-
-        when(mAnchorView.getWidth()).thenReturn(ANCHOR_WIDTH);
-
-        Context context = mock(Context.class);
-        Resources resources = mock(Resources.class);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        displayMetrics.density = 1.0f;
-        when(context.getResources()).thenReturn(resources);
-        when(resources.getDisplayMetrics()).thenReturn(displayMetrics);
-        when(resources.getDimensionPixelSize(R.dimen.bottom_bar_app_menu_lateral_margin))
-                .thenReturn(BOTTOM_BAR_MARGIN_DP);
-        when(mAnchorView.getContext()).thenReturn(context);
+        // Attach the anchor to a window so that getLocationInWindow() reflects its position.
+        FrameLayout root = new FrameLayout(context);
+        mAnchorView = new View(context);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ANCHOR_WIDTH, 0);
+        params.leftMargin = ANCHOR_X;
+        params.topMargin = ANCHOR_Y;
+        root.addView(mAnchorView, params);
+        context.getSystemService(WindowManager.class)
+                .addView(root, new WindowManager.LayoutParams());
+        ShadowLooper.idleMainLooper();
     }
 
     @Test
@@ -150,7 +132,7 @@ public class AppMenuPopupPositionTest {
         int[] results =
                 getPopupPosition(false, true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR, false);
 
-        int expectedX = APP_WIDTH - BOTTOM_BAR_MARGIN_DP - POPUP_WIDTH + BG_PADDING;
+        int expectedX = APP_WIDTH - mBottomBarMargin - POPUP_WIDTH + BG_PADDING;
         int expectedY = ANCHOR_Y - POPUP_HEIGHT + BG_PADDING;
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
@@ -161,7 +143,7 @@ public class AppMenuPopupPositionTest {
         int[] results =
                 getPopupPosition(false, true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_RTL, false);
 
-        int expectedX = BOTTOM_BAR_MARGIN_DP - BG_PADDING;
+        int expectedX = mBottomBarMargin - BG_PADDING;
         int expectedY = ANCHOR_Y - POPUP_HEIGHT + BG_PADDING;
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);

@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -73,7 +74,6 @@ import org.chromium.url.JUnitTestGURLs;
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomBarMediatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -89,14 +89,12 @@ public class BottomBarMediatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private ActionRegistry mActionRegistry;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private View mView;
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
-
     @Captor
     private ArgumentCaptor<GlicKeyedService.AllowedChangedObserver> mAllowedChangedObserverCaptor;
 
@@ -109,6 +107,7 @@ public class BottomBarMediatorUnitTest {
     private SettableNullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private SettableNullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
     private PropertyModel mModel;
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private @Nullable BottomBarMediator mMediator;
 
     @Before
@@ -136,7 +135,6 @@ public class BottomBarMediatorUnitTest {
         when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mNewTabActionSupplier);
 
-        when(mView.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius))
                 .thenReturn(12);

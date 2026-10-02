@@ -22,12 +22,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -43,7 +43,6 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @Config(sdk = VERSION_CODES.R)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeControllerCreatorUnitTest {
     private static final int TOP_STATUS_INSET = 150;
     private static final int NAVBAR_INSET = 100;
@@ -109,16 +108,16 @@ public class EdgeToEdgeControllerCreatorUnitTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mMockView;
     @Mock private InsetObserver mInsetObserver;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private Activity mActivity;
     private EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     private final CallbackHelper mInitializeController = new CallbackHelper();
 
     @Before
     public void setup() {
-        mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mEdgeToEdgeControllerCreator =
                 new EdgeToEdgeControllerCreator(
                         new WeakReference<>(mActivity),
@@ -126,8 +125,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
                         mInitializeController::notifyCalled,
                         /* supportsTopInset= */ true);
 
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(
-                mMockView, MISSING_SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, MISSING_SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized, the window insets are still missing"
                         + " system bars.",
@@ -138,14 +136,14 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     @Test
     public void gestureNav_initializesControllerWhenAppropriate() {
         mEdgeToEdgeControllerCreator.onApplyWindowInsets(
-                mMockView, GESTURE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
+                mView, GESTURE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized, the window insets are still missing the"
                         + " navbar.",
                 0,
                 mInitializeController.getCallCount());
 
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, GESTURE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, GESTURE_NAV_WINDOW_INSETS);
         assertEquals(
                 "The controller should be initialized, the window insets now indicate a gesture"
                         + " navigation bar.",
@@ -155,7 +153,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
 
     @Test
     public void gestureNav_initializesControllerOnlyOnce() {
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, GESTURE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, GESTURE_NAV_WINDOW_INSETS);
         assertEquals(
                 "The controller should be initialized, the window insets now indicate a gesture"
                         + " navigation bar.",
@@ -166,7 +164,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
                 .when(mInsetObserver)
                 .hasInsetsConsumer(eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
 
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, GESTURE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, GESTURE_NAV_WINDOW_INSETS);
         assertEquals(
                 "A new controller should not be initialized if one has already been created"
                         + " before.",
@@ -178,14 +176,14 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void tappableNav_neverInitializesController() {
         mEdgeToEdgeControllerCreator.onApplyWindowInsets(
-                mMockView, TAPPABLE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
+                mView, TAPPABLE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized, the window insets are still missing the"
                         + " navbar.",
                 0,
                 mInitializeController.getCallCount());
 
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, TAPPABLE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, TAPPABLE_NAV_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized, the window insets now indicate a"
                         + " tappable navigation bar.",
@@ -197,7 +195,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void tappableNav_initializesControllerWhenEdgelessTopInsetEnabled() {
         mEdgeToEdgeControllerCreator.onApplyWindowInsets(
-                mMockView, TAPPABLE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
+                mView, TAPPABLE_NAV_MISSING_NAVBAR_WINDOW_INSETS);
         assertEquals(
                 "The controller should be initialized when edgeless top inset is enabled, even with"
                         + " tappable navbar, as long as status bar insets are present.",
@@ -216,7 +214,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
                         mInitializeController::notifyCalled,
                         /* supportsTopInset= */ false);
 
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, TAPPABLE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, TAPPABLE_NAV_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized on tappable navbar when top inset is"
                         + " not supported by the caller.",
@@ -228,7 +226,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     @Config(qualifiers = "xlarge")
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void tappableNav_onTablet_neverInitializesControllerEvenWhenEdgelessTopInsetEnabled() {
-        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mMockView, TAPPABLE_NAV_WINDOW_INSETS);
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, TAPPABLE_NAV_WINDOW_INSETS);
         assertEquals(
                 "The controller should not be initialized on tablets with tappable navbar, even"
                         + " when edgeless top inset is enabled.",

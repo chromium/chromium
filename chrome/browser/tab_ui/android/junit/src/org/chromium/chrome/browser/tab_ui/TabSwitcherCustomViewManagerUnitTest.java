@@ -21,17 +21,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TabSwitcherCustomViewManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherCustomViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabSwitcherCustomViewManager.Delegate mDelegate;
-    @Mock private View mView;
     @Mock private Runnable mBackPressRunnableMock;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
     @Before
@@ -42,7 +42,7 @@ public class TabSwitcherCustomViewManagerUnitTest {
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mDelegate, mView);
+        verifyNoMoreInteractions(mDelegate);
     }
 
     @Test

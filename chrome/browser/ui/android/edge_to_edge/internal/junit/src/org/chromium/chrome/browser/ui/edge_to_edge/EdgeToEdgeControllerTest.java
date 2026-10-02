@@ -37,6 +37,7 @@ import android.graphics.Point;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsets;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -57,6 +58,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -105,7 +107,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = VERSION_CODES.R)
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
@@ -258,12 +259,12 @@ public class EdgeToEdgeControllerTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverArgumentCaptor;
 
-    @Mock private View mViewMock;
-
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TopInsetProvider.Observer mTopInsetObserver;
+
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     @Before
     public void setUp() {
@@ -273,13 +274,13 @@ public class EdgeToEdgeControllerTest {
                         (inv) -> {
                             mWindowInsetsListenerCaptor
                                     .getValue()
-                                    .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                                    .onApplyWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
                             return null;
                         })
                 .when(mInsetObserver)
                 .retriggerOnApplyWindowInsets();
 
-        mActivity = Mockito.spy(Robolectric.buildActivity(AppCompatActivity.class).setup().get());
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mLayoutManagerSupplier.set(mLayoutManager);
 
         doNothing().when(mTab).addObserver(any());
@@ -729,7 +730,7 @@ public class EdgeToEdgeControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.EdgeToEdge.SupportedConfigurationSwitch2")
                         .build()) {
-            mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         }
     }
 
@@ -741,7 +742,7 @@ public class EdgeToEdgeControllerTest {
                         "Android.EdgeToEdge.SupportedConfigurationSwitch2",
                         SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED);
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         watcher.assertExpected();
     }
 
@@ -780,7 +781,7 @@ public class EdgeToEdgeControllerTest {
         // Simulate a 3-button navbar being added without activity recreation.
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
         assertFalse(EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity));
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -788,7 +789,7 @@ public class EdgeToEdgeControllerTest {
                         SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED);
         // Simulate a 3-button navbar being removed without activity recreation.
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         watcher.assertExpected();
     }
 
@@ -817,7 +818,7 @@ public class EdgeToEdgeControllerTest {
         assertNotNull(mWindowInsetsListenerCaptor.getValue());
         mWindowInsetsListenerCaptor
                 .getValue()
-                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                .onApplyWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertFalse(
                 "Shouldn't be opted into edge-to-edge after toggling viewport-fit.",
                 mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
@@ -860,7 +861,7 @@ public class EdgeToEdgeControllerTest {
         assertNotNull(mWindowInsetsListenerCaptor.getValue());
         mWindowInsetsListenerCaptor
                 .getValue()
-                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                .onApplyWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(
                 "Should be opted into edge-to-edge after toggling viewport-fit.",
                 mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
@@ -920,10 +921,10 @@ public class EdgeToEdgeControllerTest {
         mockPadAdjuster.checkInsets(BOTTOM_INSET);
 
         mEdgeToEdgeControllerImpl.handleWindowInsets(
-                mViewMock, SYSTEM_BARS_WINDOW_INSETS_WITH_KEYBOARD);
+                mView, SYSTEM_BARS_WINDOW_INSETS_WITH_KEYBOARD);
         mockPadAdjuster.checkInsets(0);
 
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         mockPadAdjuster.checkInsets(BOTTOM_INSET);
     }
 
@@ -1099,14 +1100,14 @@ public class EdgeToEdgeControllerTest {
         mTabProvider.set(mTab);
 
         assertTrue(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
         // Simulate a tappable navigation bar.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
 
         assertFalse(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
         assertFalse(
                 "Drawing to edge should be false when the configuration is not supported.",
                 mEdgeToEdgeControllerImpl.isDrawingToEdge());
@@ -1130,7 +1131,7 @@ public class EdgeToEdgeControllerTest {
         mTabProvider.set(mTab);
 
         assertTrue(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
         // Simulate a tappable navigation bar.
@@ -1139,7 +1140,7 @@ public class EdgeToEdgeControllerTest {
 
         assertFalse(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
         mEdgeToEdgeControllerImpl.handleWindowInsets(
-                mViewMock, SYSTEM_BARS_NEITHER_TAPPABLE_NOR_GESTURE_NAV);
+                mView, SYSTEM_BARS_NEITHER_TAPPABLE_NOR_GESTURE_NAV);
         assertFalse(
                 "Drawing to edge should be false when the configuration is not supported.",
                 mEdgeToEdgeControllerImpl.isDrawingToEdge());
@@ -1169,7 +1170,7 @@ public class EdgeToEdgeControllerTest {
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController")
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WINDOW_INSETS);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         }
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1190,8 +1191,7 @@ public class EdgeToEdgeControllerTest {
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, GESTURE_NAV_INSETS_MISSING_NAVBAR);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, GESTURE_NAV_INSETS_MISSING_NAVBAR);
         }
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1224,8 +1224,7 @@ public class EdgeToEdgeControllerTest {
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
         }
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1246,7 +1245,7 @@ public class EdgeToEdgeControllerTest {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
             mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
+                    mView, SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
         }
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1282,7 +1281,7 @@ public class EdgeToEdgeControllerTest {
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController")
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WINDOW_INSETS);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         }
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1304,8 +1303,7 @@ public class EdgeToEdgeControllerTest {
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, GESTURE_NAV_INSETS_MISSING_NAVBAR);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, GESTURE_NAV_INSETS_MISSING_NAVBAR);
         }
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1345,8 +1343,7 @@ public class EdgeToEdgeControllerTest {
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, GESTURE_NAV_INSETS_MISSING_NAVBAR);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mView, GESTURE_NAV_INSETS_MISSING_NAVBAR);
         }
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1385,7 +1382,7 @@ public class EdgeToEdgeControllerTest {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(GESTURE_NAV_INSETS_MISSING_ALL_BOTTOM_INSETS);
             mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, GESTURE_NAV_INSETS_MISSING_ALL_BOTTOM_INSETS);
+                    mView, GESTURE_NAV_INSETS_MISSING_ALL_BOTTOM_INSETS);
         }
         // In practice, it doesn't matter if the controller is drawing toEdge or not, as any applied
         // padding will be zero anyways.
@@ -1502,7 +1499,7 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
@@ -1518,7 +1515,7 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         // Consumption should be done through the TopInsetCoordinator instead of from the
         // EdgeToEdgeController.
@@ -1538,7 +1535,7 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
@@ -1586,7 +1583,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
 
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
     }
@@ -1599,7 +1596,7 @@ public class EdgeToEdgeControllerTest {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.TOOLBAR_SWIPE);
         mEdgeToEdgeControllerImpl.onTabSwitched(null);
 
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         // Verify that notifyObservers() is called because it's a toolbar swipe.
@@ -1615,7 +1612,7 @@ public class EdgeToEdgeControllerTest {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.HUB);
         mEdgeToEdgeControllerImpl.onTabSwitched(null);
 
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         // Verify that notifyObservers() is NOT called when the tab switcher is showing with null
@@ -1738,7 +1735,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(mKeyNativePage);
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should be drawing to top edge on NTP",
@@ -1751,7 +1748,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
         mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(
                 "Should no longer be drawing to top edge after navigating away from NTP",
@@ -1766,7 +1763,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
         mTabProvider.set(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
         clearInvocations(mTopInsetObserver);
@@ -1784,7 +1781,7 @@ public class EdgeToEdgeControllerTest {
                 mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
         verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
     }
@@ -1800,7 +1797,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(mKeyNativePage);
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should be drawing to top edge on NTP even with 3-button nav",
@@ -1813,7 +1810,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
         mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(
                 "Should restore top scalp after navigating from NTP even with 3-button nav",
@@ -1832,7 +1829,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(
                 "Should not be drawing to top edge on standard webpage",
@@ -1847,7 +1844,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(mKeyNativePage);
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should draw to top edge after navigating to NTP on 3-button nav",
@@ -1867,7 +1864,7 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should be drawing to top edge on NTP with 3-button nav",
@@ -1891,7 +1888,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(null);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
         WindowInsetsCompat webResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertFalse(
                 "Should not draw to top edge on regular web page",
@@ -1908,7 +1905,7 @@ public class EdgeToEdgeControllerTest {
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
         WindowInsetsCompat ntpResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should draw to top edge after switching to NTP with 3-button nav",
@@ -1927,7 +1924,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(mKeyNativePage);
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should be drawing to top edge on NTP in gesture nav",
@@ -1936,7 +1933,7 @@ public class EdgeToEdgeControllerTest {
         // 2. Switch to 3-button nav dynamically.
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Top edge should remain active on NTP after switching to 3-button nav",
@@ -1956,7 +1953,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getNativePage()).thenReturn(mKeyNativePage);
         when(mKeyNativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Should be drawing to top edge on NTP in 3-button nav",
@@ -1969,7 +1966,7 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
         when(mInsetObserver.hasSeenNonZeroNavigationBarInsets()).thenReturn(true);
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
 
         assertTrue(
                 "Top edge should remain active on NTP after switching to gesture nav",
@@ -2012,7 +2009,7 @@ public class EdgeToEdgeControllerTest {
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.captionBar()));
     }
@@ -2075,7 +2072,7 @@ public class EdgeToEdgeControllerTest {
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
     }
 
@@ -2117,7 +2114,7 @@ public class EdgeToEdgeControllerTest {
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat ntpResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(Insets.NONE, ntpResult.getInsets(WindowInsetsCompat.Type.statusBars()));
         verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
 
@@ -2138,7 +2135,7 @@ public class EdgeToEdgeControllerTest {
 
         // Status bars must NOT be consumed on the web page.
         WindowInsetsCompat webResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, webResult.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(TOP_INSET, webResult.getInsets(WindowInsetsCompat.Type.statusBars()).top);
 
@@ -2158,7 +2155,7 @@ public class EdgeToEdgeControllerTest {
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat webResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, webResult.getInsets(WindowInsetsCompat.Type.statusBars()));
 
         clearInvocations(mInsetObserver);
@@ -2177,7 +2174,7 @@ public class EdgeToEdgeControllerTest {
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         WindowInsetsCompat ntpResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(Insets.NONE, ntpResult.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, ntpResult.getInsets(WindowInsetsCompat.Type.captionBar()));
 
@@ -2197,7 +2194,7 @@ public class EdgeToEdgeControllerTest {
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat defaultResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, defaultResult.getInsets(WindowInsetsCompat.Type.statusBars()));
 
         clearInvocations(mInsetObserver);
@@ -2215,7 +2212,7 @@ public class EdgeToEdgeControllerTest {
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         WindowInsetsCompat customResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertEquals(Insets.NONE, customResult.getInsets(WindowInsetsCompat.Type.statusBars()));
         verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
     }
@@ -2247,7 +2244,7 @@ public class EdgeToEdgeControllerTest {
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         WindowInsetsCompat defaultResult =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, defaultResult.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(TOP_INSET, defaultResult.getInsets(WindowInsetsCompat.Type.statusBars()).top);
 
@@ -2261,7 +2258,7 @@ public class EdgeToEdgeControllerTest {
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         WindowInsetsCompat result =
-                mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertNotEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
     }
 
@@ -2390,7 +2387,7 @@ public class EdgeToEdgeControllerTest {
                         /* supportsTopEdgeToEdge= */ true);
         mTabProvider.set(tab);
 
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         // Verify setting the same value (false) is a no-op.
@@ -2401,14 +2398,14 @@ public class EdgeToEdgeControllerTest {
         // Set status indicator visible — top inset should NOT be consumed on NTP.
         mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         // Hide status indicator — top inset should be consumed again on NTP.
         clearInvocations(mInsetObserver);
         mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
     }
 
@@ -2439,11 +2436,16 @@ public class EdgeToEdgeControllerTest {
     }
 
     Window mockWindowWithRootInsets(WindowInsetsCompat rootInsets) {
-        View mockView = Mockito.mock(View.class);
-        doReturn(rootInsets.toWindowInsets()).when(mockView).getRootWindowInsets();
+        View view =
+                new View(mActivity) {
+                    @Override
+                    public WindowInsets getRootWindowInsets() {
+                        return rootInsets.toWindowInsets();
+                    }
+                };
 
         Window mockWindow = Mockito.mock(Window.class);
-        doReturn(mockView).when(mockWindow).getDecorView();
+        doReturn(view).when(mockWindow).getDecorView();
         return mockWindow;
     }
 

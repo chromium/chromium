@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.cars;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,7 +25,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DrivingRestrictionsManagerTest {
     private DrivingRestrictionsManager mManager;
     @Spy private DrivingRestrictionsDelegate mSpyDelegate;
@@ -39,34 +40,28 @@ public class DrivingRestrictionsManagerTest {
     public void testDrivingOptimizationRequired() {
         // Set state for Activity so it's added to the list of running activities tracked by
         // ApplicationStatus.
-        Activity activity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
 
-        verify(activity, never().description("Activity shouldn't be finished yet.")).finish();
+        assertFalse("Activity shouldn't be finished yet.", activity.isFinishing());
         mSpyDelegate.notifyCallback(true);
-        verify(
-                        activity,
-                        times(1).description(
-                                        "Activity should be finished after driver optimizations"
-                                                + " required."))
-                .finish();
+        assertTrue(
+                "Activity should be finished after driver optimizations required.",
+                activity.isFinishing());
     }
 
     @Test
     public void testDrivingOptimizationNotRequired() {
         // Set state for Activity so it's added to the list of running activities tracked by
         // ApplicationStatus.
-        Activity activity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
 
-        verify(activity, never().description("Activity shouldn't be finished yet.")).finish();
+        assertFalse("Activity shouldn't be finished yet.", activity.isFinishing());
         mSpyDelegate.notifyCallback(false);
-        verify(
-                        activity,
-                        never().description(
-                                        "Activity shouldn't be finished if driver optimizations not"
-                                                + " required."))
-                .finish();
+        assertFalse(
+                "Activity shouldn't be finished if driver optimizations not required.",
+                activity.isFinishing());
     }
 
     @Test

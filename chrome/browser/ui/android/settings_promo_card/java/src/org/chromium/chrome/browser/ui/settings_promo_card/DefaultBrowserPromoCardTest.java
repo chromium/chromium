@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.settings_promo_card;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -40,7 +40,6 @@ import org.chromium.ui.base.TestActivity;
 /** Test for {@link DefaultBrowserPromoCard}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DefaultBrowserPromoCardTest {
     @Mock private Tracker mTestTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
@@ -53,7 +52,7 @@ public class DefaultBrowserPromoCardTest {
 
     @Before
     public void setup() {
-        mActivity = spy(Robolectric.buildActivity(TestActivity.class).setup().get());
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
     }
 
@@ -126,7 +125,7 @@ public class DefaultBrowserPromoCardTest {
         DefaultBrowserPromoCard card = initializePromoCard();
 
         ((Button) card.getView().findViewById(R.id.promo_primary_button)).performClick();
-        verify(mActivity, times(1)).startActivity(any(), any());
+        Assert.assertNotNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
         verify(mTestTracker, times(1)).notifyEvent("default_browser_promo_setting_card_used");
         histogramWatcher.assertExpected();
     }
