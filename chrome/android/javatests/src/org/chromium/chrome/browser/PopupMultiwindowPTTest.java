@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
@@ -70,6 +71,7 @@ public class PopupMultiwindowPTTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/568762355")
     public void testBasicIncognito() {
         final IncognitoNewTabPageStation incognitoEntryPoint =
                 mEntryPage.openNewIncognitoTabOrWindowFast();
