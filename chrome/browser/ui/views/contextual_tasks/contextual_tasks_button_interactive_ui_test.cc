@@ -941,6 +941,39 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPromoInteractiveTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPromoInteractiveTest,
+                       PromoAbortsWhenButtonHides) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      // If the button hides before its show animation completes (e.g. task is
+      // disassociated immediately on close), the promo should not be requested.
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(), RemoveTaskFromTab(0),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckPromoRequested(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+          false),
+      EnsureNotPresent(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      // When the button stays visible long enough for the show animation to
+      // finish, the promo appears and is aborted if the button later hides.
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForPromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature),
+      RemoveTaskFromTab(0),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckPromoActive(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+          false));
+}
+
 class ContextualTasksEphemeralBrandedButtonInteractiveTest
     : public ContextualTasksEphemeralButtonInteractiveTest {
  public:
