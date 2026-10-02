@@ -15,13 +15,15 @@ found in the LICENSE file.
     android:paddingBottom="@dimen/glic_mic_dialog_padding_bottom">
 
   <ImageView
-      android:layout_width="@dimen/glic_mic_dialog_icon_size"
-      android:layout_height="@dimen/glic_mic_dialog_icon_size"
+      android:id="@+id/mic_dialog_illustration"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginBottom="@dimen/glic_mic_dialog_icon_margin_bottom"
+      android:layout_marginBottom="@dimen/glic_mic_dialog_illustration_margin_bottom"
+      android:adjustViewBounds="true"
       android:importantForAccessibility="no"
-      android:src="@drawable/ic_mic_white_24dp"
-      app:tint="@macro/default_icon_color" />
+      android:scaleType="fitCenter"
+      app:srcCompat="@drawable/glic_mic_permission_dialog_illustration" />
 
   <TextView
       android:id="@+id/mic_dialog_title"
