@@ -317,6 +317,9 @@ suite('HistoryAppTest', function() {
         element.shadowRoot.querySelector('cr-history-embeddings');
     assertTrue(!!historyEmbeddingsElement);
     assertFalse(historyEmbeddingsElement.forceSuppressLogging);
+    // Intercept the click to prevent the browser from navigating.
+    element.$.historyEmbeddingsDisclaimerLink.addEventListener(
+        'click', (e) => e.preventDefault());
     element.$.historyEmbeddingsDisclaimerLink.click();
     await microtasksFinished();
     assertTrue(historyEmbeddingsElement.forceSuppressLogging);
