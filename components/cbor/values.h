@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -134,6 +135,10 @@ class CBOR_EXPORT Value {
   };
   static constexpr Undefined undefined;
 
+  struct InvalidUTF8 final {
+    BinaryValue bytes;
+  };
+
   // Returns a Value with Type::INVALID_UTF8. This factory method lets tests
   // encode such a value as a CBOR string. It should never be used outside of
   // tests since encoding may yield invalid CBOR data.
@@ -185,25 +190,27 @@ class CBOR_EXPORT Value {
   Value Clone() const;
 
   // Returns the type of the value stored by the current Value object.
-  Type type() const { return type_; }
+  Type type() const;
 
-  // Returns true if the current object represents a given type.
-  bool is_type(Type type) const { return type == type_; }
-  bool is_invalid_utf8() const { return type() == Type::INVALID_UTF8; }
-  bool is_simple() const { return type() == Type::SIMPLE_VALUE; }
-  bool is_bool() const {
-    return is_simple() && (simple_value_ == SimpleValue::TRUE_VALUE ||
-                           simple_value_ == SimpleValue::FALSE_VALUE);
+  bool is_invalid_utf8() const {
+    return std::holds_alternative<InvalidUTF8>(data_);
   }
-  bool is_unsigned() const { return type() == Type::UNSIGNED; }
-  bool is_negative() const { return type() == Type::NEGATIVE; }
-  bool is_integer() const { return is_unsigned() || is_negative(); }
-  bool is_bytestring() const { return type() == Type::BYTE_STRING; }
-  bool is_string() const { return type() == Type::STRING; }
-  bool is_array() const { return type() == Type::ARRAY; }
-  bool is_map() const { return type() == Type::MAP; }
+  bool is_simple() const { return is_bool() || is_null() || is_undefined(); }
+  bool is_bool() const { return std::holds_alternative<bool>(data_); }
+  bool is_unsigned() const { return is_integer() && GetInteger() >= 0; }
+  bool is_negative() const { return is_integer() && GetInteger() < 0; }
+  bool is_integer() const { return std::holds_alternative<int64_t>(data_); }
+  bool is_bytestring() const {
+    return std::holds_alternative<BinaryValue>(data_);
+  }
+  bool is_string() const { return std::holds_alternative<std::string>(data_); }
+  bool is_array() const { return std::holds_alternative<ArrayValue>(data_); }
+  bool is_map() const { return std::holds_alternative<MapValue>(data_); }
+  bool is_null() const { return std::holds_alternative<Null>(data_); }
+  bool is_undefined() const { return std::holds_alternative<Undefined>(data_); }
 
   // These will all fatally assert if the type doesn't match.
+  // Deprecated: Use `GetBool()` or `is_null()` or `is_undefined()`.
   SimpleValue GetSimpleValue() const;
   bool GetBool() const;
   int64_t GetInteger() const;
@@ -219,6 +226,11 @@ class CBOR_EXPORT Value {
   MapValue& GetMap() LIFETIME_BOUND;
   const BinaryValue& GetInvalidUTF8() const LIFETIME_BOUND;
 
+  template <typename Visitor>
+  auto Visit(Visitor&& visitor) const {
+    return std::visit(std::forward<Visitor>(visitor), data_);
+  }
+
  private:
   friend class Reader;
 
@@ -227,28 +239,21 @@ class CBOR_EXPORT Value {
   };
   static constexpr invalid_utf8_t invalid_utf8;
 
-  explicit Value(SimpleValue in_simple);
-
   // This constructor creates `INVALID_UTF8` values, which only
   // `Reader` and `InvalidUTF8StringValueForTesting()` may do.
   Value(invalid_utf8_t, base::span<const uint8_t> in_bytes);
 
-  Type type_;
+  using Storage = std::variant<Null,
+                               Undefined,
+                               bool,
+                               int64_t,
+                               BinaryValue,
+                               std::string,
+                               ArrayValue,
+                               MapValue,
+                               InvalidUTF8>;
 
-  union {
-    SimpleValue simple_value_;
-    int64_t integer_value_;
-    BinaryValue bytestring_value_;
-    std::string string_value_;
-    ArrayValue array_value_;
-    MapValue map_value_;
-  };
-
-  void InternalMoveConstructFrom(Value&& that);
-
-  // Destroys the active union member without updating |type_|. Only valid
-  // immediately before InternalMoveConstructFrom() or destruction.
-  void InternalCleanup();
+  Storage data_;
 };
 
 }  // namespace cbor

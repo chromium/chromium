@@ -20,6 +20,7 @@
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/experiment_metrics.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
@@ -80,115 +81,106 @@ bool ShouldUseRustWriter(std::optional<bool> use_rust) {
 // outlive `node`.
 std::optional<cbor::rust::MapKey> ConvertCppMapKeyToRust(
     const Value& key LIFETIME_BOUND,
-    int max_nesting_level,
-    bool allow_invalid_utf8) {
+    const int max_nesting_level,
+    const bool allow_invalid_utf8) {
   if (max_nesting_level < 0) {
     return std::nullopt;
   }
-  switch (key.type()) {
-    case Value::Type::UNSIGNED:
-      return cbor::rust::MapKey::MakeInt(key.GetUnsigned());
-    case Value::Type::NEGATIVE:
-      return cbor::rust::MapKey::MakeInt(key.GetNegative());
-    case Value::Type::BYTE_STRING:
-      return cbor::rust::MapKey::MakeBytestring(
-          rs_std::SliceRef<const uint8_t>(key.GetBytestring()));
-    case Value::Type::STRING: {
-      auto str_ref = rs_std::StrRef::FromUtf8(key.GetString());
-      CHECK(str_ref.has_value());
-      return cbor::rust::MapKey::MakeString(*str_ref);
-    }
-    case Value::Type::INVALID_UTF8:
-      if (!allow_invalid_utf8) {
-        NOTREACHED() << constants::kUnsupportedMajorType;
-      }
-      return cbor::rust::MapKey::MakeInvalidUtf8(
-          rs_std::SliceRef<const uint8_t>(key.GetInvalidUTF8()));
-    case Value::Type::ARRAY:
-    case Value::Type::MAP:
-    case Value::Type::SIMPLE_VALUE:
-      NOTREACHED();
-  }
-  NOTREACHED();
+  return key.Visit(absl::Overload{
+      [](int64_t v) { return cbor::rust::MapKey::MakeInt(v); },
+      [](const Value::BinaryValue& v) {
+        return cbor::rust::MapKey::MakeBytestring(
+            rs_std::SliceRef<const uint8_t>(v));
+      },
+      [](const std::string& v) {
+        auto str_ref = rs_std::StrRef::FromUtf8(v);
+        CHECK(str_ref.has_value());
+        return cbor::rust::MapKey::MakeString(*str_ref);
+      },
+      [&](const Value::InvalidUTF8& v) {
+        if (!allow_invalid_utf8) {
+          NOTREACHED() << constants::kUnsupportedMajorType;
+        }
+        return cbor::rust::MapKey::MakeInvalidUtf8(
+            rs_std::SliceRef<const uint8_t>(v.bytes));
+      },
+      [](const auto&) -> cbor::rust::MapKey { NOTREACHED(); },
+  });
 }
 
 std::optional<cbor::rust::Value> ConvertCppValueToRust(
     const Value& node LIFETIME_BOUND,
-    int max_nesting_level,
-    bool allow_invalid_utf8) {
+    const int max_nesting_level,
+    const bool allow_invalid_utf8) {
   if (max_nesting_level < 0) {
     return std::nullopt;
   }
 
-  switch (node.type()) {
-    case Value::Type::INVALID_UTF8:
-      if (!allow_invalid_utf8) {
-        NOTREACHED() << constants::kUnsupportedMajorType;
-      }
-      return cbor::rust::Value::MakeInvalidUtf8(
-          rs_std::SliceRef<const uint8_t>(node.GetInvalidUTF8()));
-    case Value::Type::UNSIGNED:
-      return cbor::rust::Value::MakeInt(node.GetUnsigned());
-    case Value::Type::NEGATIVE:
-      return cbor::rust::Value::MakeInt(node.GetNegative());
-    case Value::Type::BYTE_STRING:
-      return cbor::rust::Value::MakeBytestring(
-          rs_std::SliceRef<const uint8_t>(node.GetBytestring()));
-    case Value::Type::STRING: {
-      auto str_ref = rs_std::StrRef::FromUtf8(node.GetString());
-      CHECK(str_ref.has_value());
-      return cbor::rust::Value::MakeString(*str_ref);
-    }
-    case Value::Type::ARRAY: {
-      const Value::ArrayValue& array = node.GetArray();
-      rs_std::Vec<cbor::rust::Value> items =
-          cbor::rust::vec_with_capacity_values(array.size());
-      for (const Value& elem : array) {
-        std::optional<cbor::rust::Value> converted = ConvertCppValueToRust(
-            elem, max_nesting_level - 1, allow_invalid_utf8);
-        if (!converted) {
-          return std::nullopt;
+  return node.Visit(absl::Overload{
+      [&](const Value::InvalidUTF8& v) -> std::optional<cbor::rust::Value> {
+        if (!allow_invalid_utf8) {
+          NOTREACHED() << constants::kUnsupportedMajorType;
         }
-        cbor::rust::vec_push_value(items, *std::move(converted));
-      }
-      return cbor::rust::Value::MakeArray(std::move(items));
-    }
-    case Value::Type::MAP: {
-      const Value::MapValue& map = node.GetMap();
-      rs_std::Vec<cbor::rust::MapEntry> entries =
-          cbor::rust::vec_with_capacity_entries(map.size());
-      for (const auto& [cpp_key, cpp_value] : map) {
-        std::optional<cbor::rust::MapKey> key = ConvertCppMapKeyToRust(
-            cpp_key, max_nesting_level - 1, allow_invalid_utf8);
-        if (!key) {
-          return std::nullopt;
+        return cbor::rust::Value::MakeInvalidUtf8(
+            rs_std::SliceRef<const uint8_t>(v.bytes));
+      },
+      [](int64_t v) -> std::optional<cbor::rust::Value> {
+        return cbor::rust::Value::MakeInt(v);
+      },
+      [](const Value::BinaryValue& v) -> std::optional<cbor::rust::Value> {
+        return cbor::rust::Value::MakeBytestring(
+            rs_std::SliceRef<const uint8_t>(v));
+      },
+      [](const std::string& v) -> std::optional<cbor::rust::Value> {
+        auto str_ref = rs_std::StrRef::FromUtf8(v);
+        CHECK(str_ref.has_value());
+        return cbor::rust::Value::MakeString(*str_ref);
+      },
+      [&](const Value::ArrayValue& array) -> std::optional<cbor::rust::Value> {
+        rs_std::Vec<cbor::rust::Value> items =
+            cbor::rust::vec_with_capacity_values(array.size());
+        for (const Value& elem : array) {
+          std::optional<cbor::rust::Value> converted = ConvertCppValueToRust(
+              elem, max_nesting_level - 1, allow_invalid_utf8);
+          if (!converted) {
+            return std::nullopt;
+          }
+          cbor::rust::vec_push_value(items, *std::move(converted));
         }
-        std::optional<cbor::rust::Value> value = ConvertCppValueToRust(
-            cpp_value, max_nesting_level - 1, allow_invalid_utf8);
-        if (!value) {
-          return std::nullopt;
+        return cbor::rust::Value::MakeArray(std::move(items));
+      },
+      [&](const Value::MapValue& map) -> std::optional<cbor::rust::Value> {
+        rs_std::Vec<cbor::rust::MapEntry> entries =
+            cbor::rust::vec_with_capacity_entries(map.size());
+        for (const auto& [cpp_key, cpp_value] : map) {
+          std::optional<cbor::rust::MapKey> key = ConvertCppMapKeyToRust(
+              cpp_key, max_nesting_level - 1, allow_invalid_utf8);
+          if (!key) {
+            return std::nullopt;
+          }
+          std::optional<cbor::rust::Value> value = ConvertCppValueToRust(
+              cpp_value, max_nesting_level - 1, allow_invalid_utf8);
+          if (!value) {
+            return std::nullopt;
+          }
+          cbor::rust::vec_push_entry(
+              entries,
+              cbor::rust::MapEntry{*std::move(key), *std::move(value)});
         }
-        cbor::rust::vec_push_entry(
-            entries, cbor::rust::MapEntry{*std::move(key), *std::move(value)});
-      }
-      // `Value::MapValue` is already sorted in canonical CBOR order.
-      return cbor::rust::Value::MakeMap(
-          cbor::rust::Map::from_sorted_vec_unchecked(std::move(entries)));
-    }
-    case Value::Type::SIMPLE_VALUE:
-      switch (node.GetSimpleValue()) {
-        case Value::SimpleValue::FALSE_VALUE:
-          return cbor::rust::Value::MakeBoolean(false);
-        case Value::SimpleValue::TRUE_VALUE:
-          return cbor::rust::Value::MakeBoolean(true);
-        case Value::SimpleValue::NULL_VALUE:
-          return cbor::rust::Value::MakeNull();
-        case Value::SimpleValue::UNDEFINED:
-          return cbor::rust::Value::MakeUndefined();
-      }
-      NOTREACHED();
-  }
-  NOTREACHED();
+        // `Value::MapValue` is already sorted in canonical CBOR order.
+        return cbor::rust::Value::MakeMap(
+            cbor::rust::Map::from_sorted_vec_unchecked(std::move(entries)));
+      },
+      [](bool v) -> std::optional<cbor::rust::Value> {
+        return cbor::rust::Value::MakeBoolean(v);
+      },
+      [](Value::Null) -> std::optional<cbor::rust::Value> {
+        return cbor::rust::Value::MakeNull();
+      },
+      [](Value::Undefined) -> std::optional<cbor::rust::Value> {
+        return cbor::rust::Value::MakeUndefined();
+      },
+  });
 }
 #endif
 
@@ -244,93 +236,91 @@ std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
 Writer::Writer(std::vector<uint8_t>* cbor) : encoded_cbor_(cbor) {}
 
 bool Writer::EncodeCBOR(const Value& node,
-                        int max_nesting_level,
-                        bool allow_invalid_utf8) {
+                        const int max_nesting_level,
+                        const bool allow_invalid_utf8) {
   if (max_nesting_level < 0)
     return false;
 
-  switch (node.type()) {
-    case Value::Type::INVALID_UTF8: {
-      if (!allow_invalid_utf8) {
-        NOTREACHED() << constants::kUnsupportedMajorType;
-      }
-      // Encode a CBOR string with invalid UTF-8 data. This may produce invalid
-      // CBOR and is reachable in tests only. See
-      // |allow_invalid_utf8_for_testing| in Config.
-      const Value::BinaryValue& bytes = node.GetInvalidUTF8();
-      StartItem(Value::Type::STRING, base::strict_cast<uint64_t>(bytes.size()));
-      encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
-      return true;
-    }
+  return node.Visit(absl::Overload{
+      [&](const Value::InvalidUTF8& v) {
+        if (!allow_invalid_utf8) {
+          NOTREACHED() << constants::kUnsupportedMajorType;
+        }
+        // Encode a CBOR string with invalid UTF-8 data. This may produce
+        // invalid CBOR and is reachable in tests only. See
+        // |allow_invalid_utf8_for_testing| in Config.
+        const Value::BinaryValue& bytes = v.bytes;
+        StartItem(Value::Type::STRING,
+                  base::strict_cast<uint64_t>(bytes.size()));
+        encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
+        return true;
+      },
+      [&](int64_t v) {
+        if (v >= 0) {
+          StartItem(Value::Type::UNSIGNED, static_cast<uint64_t>(v));
+        } else {
+          StartItem(Value::Type::NEGATIVE, static_cast<uint64_t>(-(v + 1)));
+        }
+        return true;
+      },
+      [&](const Value::BinaryValue& bytes) {
+        StartItem(Value::Type::BYTE_STRING,
+                  base::strict_cast<uint64_t>(bytes.size()));
+        // Add the bytes.
+        encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
+        return true;
+      },
+      [&](const std::string& string) {
+        StartItem(Value::Type::STRING,
+                  base::strict_cast<uint64_t>(string.size()));
 
-    // Represents unsigned integers.
-    case Value::Type::UNSIGNED: {
-      int64_t value = node.GetUnsigned();
-      StartItem(Value::Type::UNSIGNED, static_cast<uint64_t>(value));
-      return true;
-    }
+        // Add the characters.
+        encoded_cbor_->insert(encoded_cbor_->end(), string.begin(),
+                              string.end());
+        return true;
+      },
+      [&](const Value::ArrayValue& array) {
+        StartItem(Value::Type::ARRAY, array.size());
+        for (const auto& value : array) {
+          if (!EncodeCBOR(value, max_nesting_level - 1, allow_invalid_utf8)) {
+            return false;
+          }
+        }
+        return true;
+      },
+      [&](const Value::MapValue& map) {
+        StartItem(Value::Type::MAP, map.size());
 
-    // Represents negative integers.
-    case Value::Type::NEGATIVE: {
-      int64_t value = node.GetNegative();
-      StartItem(Value::Type::NEGATIVE, static_cast<uint64_t>(-(value + 1)));
-      return true;
-    }
-
-    // Represents a byte string.
-    case Value::Type::BYTE_STRING: {
-      const Value::BinaryValue& bytes = node.GetBytestring();
-      StartItem(Value::Type::BYTE_STRING,
-                base::strict_cast<uint64_t>(bytes.size()));
-      // Add the bytes.
-      encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
-      return true;
-    }
-
-    case Value::Type::STRING: {
-      std::string_view string = node.GetString();
-      StartItem(Value::Type::STRING,
-                base::strict_cast<uint64_t>(string.size()));
-
-      // Add the characters.
-      encoded_cbor_->insert(encoded_cbor_->end(), string.begin(), string.end());
-      return true;
-    }
-
-    // Represents an array.
-    case Value::Type::ARRAY: {
-      const Value::ArrayValue& array = node.GetArray();
-      StartItem(Value::Type::ARRAY, array.size());
-      for (const auto& value : array) {
-        if (!EncodeCBOR(value, max_nesting_level - 1, allow_invalid_utf8))
-          return false;
-      }
-      return true;
-    }
-
-    // Represents a map.
-    case Value::Type::MAP: {
-      const Value::MapValue& map = node.GetMap();
-      StartItem(Value::Type::MAP, map.size());
-
-      for (const auto& value : map) {
-        if (!EncodeCBOR(value.first, max_nesting_level - 1, allow_invalid_utf8))
-          return false;
-        if (!EncodeCBOR(value.second, max_nesting_level - 1,
-                        allow_invalid_utf8))
-          return false;
-      }
-      return true;
-    }
-
-    // Represents a simple value.
-    case Value::Type::SIMPLE_VALUE: {
-      const Value::SimpleValue simple_value = node.GetSimpleValue();
-      StartItem(Value::Type::SIMPLE_VALUE,
-                base::checked_cast<uint64_t>(simple_value));
-      return true;
-    }
-  }
+        for (const auto& value : map) {
+          if (!EncodeCBOR(value.first, max_nesting_level - 1,
+                          allow_invalid_utf8)) {
+            return false;
+          }
+          if (!EncodeCBOR(value.second, max_nesting_level - 1,
+                          allow_invalid_utf8)) {
+            return false;
+          }
+        }
+        return true;
+      },
+      [&](bool v) {
+        StartItem(
+            Value::Type::SIMPLE_VALUE,
+            base::checked_cast<uint64_t>(v ? Value::SimpleValue::TRUE_VALUE
+                                           : Value::SimpleValue::FALSE_VALUE));
+        return true;
+      },
+      [&](Value::Null) {
+        StartItem(Value::Type::SIMPLE_VALUE,
+                  base::checked_cast<uint64_t>(Value::SimpleValue::NULL_VALUE));
+        return true;
+      },
+      [&](Value::Undefined) {
+        StartItem(Value::Type::SIMPLE_VALUE,
+                  base::checked_cast<uint64_t>(Value::SimpleValue::UNDEFINED));
+        return true;
+      },
+  });
 }
 
 void Writer::StartItem(Value::Type type, uint64_t size) {
