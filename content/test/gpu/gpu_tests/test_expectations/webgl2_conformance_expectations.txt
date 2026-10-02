@@ -779,10 +779,12 @@ crbug.com/530045332 [ android qualcomm no-passthrough ] conformance2/textures/mi
 
 ## DrDc being re-enabled ##
 
-# On Adreno GPUs, flushes (which may happen inadvertently when the command
-# buffer is full) between draw calls would cause MaskConstancy test failures.
+# On Adreno and PowerVR GPUs, flushes (which may happen inadvertently when the
+# command buffer is full) between draw calls would cause MaskConstancy test
+# failures.
 crbug.com/429124907 [ android angle-opengles passthrough qualcomm ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 crbug.com/429124907 [ android angle-opengles passthrough qualcomm ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/429124907 [ android android-pixel-10 angle-opengles imagination-technologies passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 ## Pixel 6 ##
 

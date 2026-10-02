@@ -524,9 +524,9 @@ crbug.com/564887537 [ mac apple-angle-metal-renderer:-apple-m2 asan ] WebglExten
 
 crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_depth_texture [ Failure ]  # finder:disable-unused Not tested in Chromium, but tested by Intel.
 
-## Linux / OpenGL / GTX 1660 ##
+## Linux / OpenGL / NVIDIA ##
 
-crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance/extensions/oes-texture-float-with-canvas.html [ RetryOnFailure ]
+crbug.com/498282277 [ linux angle-opengl nvidia ] conformance/extensions/oes-texture-float-with-canvas.html [ RetryOnFailure ]
 
 ####################
 # Android failures #
