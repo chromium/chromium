@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.payments;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import android.net.Uri;
+
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
@@ -17,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -70,6 +73,7 @@ import java.util.Set;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344662668): Failing when batched, batch this again.
 @MediumTest
+@EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
@@ -267,13 +271,15 @@ public class AndroidPaymentAppFinderTest
 
     @Before
     public void setUp() throws Throwable {
+        String testServerUrl =
+                mActivityTestRule.getTestServer().getURL("/components/test/data/payments/");
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        "ip-address-space-overrides",
+                        Uri.parse(testServerUrl).getAuthority() + "=public");
         mStartingPage = mActivityTestRule.startOnBlankPage();
         mPackageManager.reset();
-        mDownloader.setTestServerUrl(
-                new GURL(
-                        mActivityTestRule
-                                .getTestServer()
-                                .getURL("/components/test/data/payments/")));
+        mDownloader.setTestServerUrl(new GURL(testServerUrl));
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;
         mPaymentOptions = new PaymentOptions();

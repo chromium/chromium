@@ -1537,6 +1537,9 @@ public final class ProductionSupportedFlagList {
                 MediaFeatures.AUDIO_RENDERER_MIXER_IMMEDIATE_PAUSE,
                 "Immediately pauses the underlying audio output stream on explicit media"
                         + " player pauses instead of waiting for the 10-second mixer pause delay."),
+        Flag.baseFeature(
+                PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE,
+                "When enabled, the PaymentRequest will enforce LNA with ClientSecurityState."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

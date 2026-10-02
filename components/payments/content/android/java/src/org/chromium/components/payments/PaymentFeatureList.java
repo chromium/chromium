@@ -41,6 +41,8 @@ public abstract class PaymentFeatureList {
     public static final String WEB_PAYMENTS_EXPERIMENTAL_FEATURES =
             "WebPaymentsExperimentalFeatures";
     public static final String WEB_PAYMENTS_SINGLE_APP_UI_SKIP = "WebPaymentsSingleAppUiSkip";
+    public static final String PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE =
+            "PaymentRequestEnforceLNAWithClientSecurityState";
     public static final String PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD =
             "PaymentHandlerDialogUseInitiatorInUrlLoad";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";

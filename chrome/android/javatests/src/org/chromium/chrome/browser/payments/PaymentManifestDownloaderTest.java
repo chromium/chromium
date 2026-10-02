@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.net.Uri;
+
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -15,16 +17,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.CSPChecker;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -35,6 +40,7 @@ import org.chromium.url.Origin;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
+@EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)
 public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -100,6 +106,10 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Before
     public void setUp() throws Throwable {
         mServer = mActivityTestRule.getTestServer();
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        "ip-address-space-overrides",
+                        Uri.parse(mServer.getURL("/")).getAuthority() + "=public");
         mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
