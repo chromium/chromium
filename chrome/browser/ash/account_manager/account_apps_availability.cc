@@ -89,7 +89,9 @@ void CompleteGetAccountsAvailableInArc(
       result.insert(account);
   }
 
-  CHECK_EQ(result.size(), gaia_ids_in_arc.size(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568531557): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(result.size(), gaia_ids_in_arc.size());
   if (result.size() != gaia_ids_in_arc.size()) {
     LOG(ERROR) << "Expected " << gaia_ids_in_arc.size() << " accounts, but "
                << result.size() << " accounts were found in Account Manager.";
