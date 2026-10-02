@@ -673,6 +673,7 @@ FT_BEGIN_HEADER
 #define TT_CONFIG_CMAP_FORMAT_12
 #define TT_CONFIG_CMAP_FORMAT_13
 #define TT_CONFIG_CMAP_FORMAT_14
+#define TT_CONFIG_CMAP_FORMAT_15
 
 
   /*************************************************************************/
