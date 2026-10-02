@@ -832,7 +832,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   std::optional<PDFiumEngine::NamedDestination> valid_page_obj =
       engine->GetNamedDestination("ValidPageObj");
   ASSERT_TRUE(valid_page_obj.has_value());
-  EXPECT_EQ(0u, valid_page_obj->page);
+  EXPECT_EQ(0u, valid_page_obj->page_index);
   EXPECT_EQ("XYZ", valid_page_obj->view);
   ASSERT_EQ(3u, valid_page_obj->num_params);
   EXPECT_EQ(1.2f, valid_page_obj->params[2]);
@@ -846,7 +846,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   std::optional<PDFiumEngine::NamedDestination> valid_page_number =
       engine->GetNamedDestination("ValidPageNumber");
   ASSERT_TRUE(valid_page_number.has_value());
-  EXPECT_EQ(1u, valid_page_number->page);
+  EXPECT_EQ(1u, valid_page_number->page_index);
 
   // A destination with an out-of-range page number
   std::optional<PDFiumEngine::NamedDestination> invalid_page_number =

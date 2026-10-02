@@ -162,8 +162,8 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Named destination in a document.
   struct NamedDestination {
-    // 0-based page number.
-    unsigned long page;
+    // 0-based page index.
+    unsigned long page_index;
 
     // View fit type (see table 8.2 "Destination syntax" on page 582 of PDF
     // Reference 1.7). Empty string if not present.

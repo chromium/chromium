@@ -1944,12 +1944,13 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
   std::optional<PDFiumEngine::NamedDestination> named_destination =
       engine_->GetNamedDestination(*message.FindString("namedDestination"));
 
-  const int page_number = named_destination.has_value()
-                              ? base::checked_cast<int>(named_destination->page)
-                              : -1;
+  const int page_index =
+      named_destination.has_value()
+          ? base::checked_cast<int>(named_destination->page_index)
+          : -1;
 
   base::DictValue reply = PrepareReplyMessage(message);
-  reply.Set("pageNumber", page_number);
+  reply.Set("pageNumber", page_index);
 
   if (named_destination.has_value() && !named_destination->view.empty()) {
     std::ostringstream view_stream;
