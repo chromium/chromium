@@ -1,0 +1,109 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `.gni` file defines args for passing C/C++ compiler flags to
+# libclang-based tools (e.g. `bindgen` or Crubit's `rs_bindings_from_cc`)
+# from a GN `action`.  The `action` needs to use the same `configs` as a C/C++
+# target would (e.g. `default_compiler_configs`), and needs to depend on the
+# C/C++ targets that the parsed headers depend on.  This way `{{defines}}`,
+# `{{include_dirs}}`, `{{cflags}}`, etc. are populated.
+#
+# The args are expected to be filtered by `filter_clang_args.py` before they
+# are passed to the tool.
+#
+# Usage:
+#   action("foo") {
+#     ...
+#     args += [ "--" ] + libclang_args_for_cpp
+#   }
+
+import("//build/config/clang/clang.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
+}
+
+# Args that are needed in addition to `{{defines}}`, `{{cflags}}`, etc.
+_libclang_extra_args = []
+
+# libclang will run the system `clang` to find the "resource dir" which it
+# places before the directory specified in `-isysroot`.
+# https://github.com/llvm/llvm-project/blob/699e0bed4bfead826e210025bf33e5a1997c018b/clang/lib/Tooling/Tooling.cpp#L499-L510
+#
+# This means include files are pulled from the wrong place if the `clang`
+# says the wrong thing. We point it to our clang's resource dir which will
+# make it behave consistently with our other command line flags and allows
+# system headers to be found.
+_libclang_extra_args += [
+  "-resource-dir",
+  rebase_path(clang_base_path + "/lib/clang/" + clang_version, root_build_dir),
+]
+
+if (is_win) {
+  # On Windows we fall back to using system headers from a sysroot from
+  # depot_tools. This is negotiated by python scripts and the result is
+  # available in //build/toolchain/win/win_toolchain_data.gni. From there
+  # we get the `include_flags_imsvc` which point to the system headers.
+  if (host_cpu == "x86") {
+    _win_toolchain_data = win_toolchain_data_x86
+  } else if (host_cpu == "x64") {
+    _win_toolchain_data = win_toolchain_data_x64
+  } else if (host_cpu == "arm64") {
+    _win_toolchain_data = win_toolchain_data_arm64
+  } else {
+    error("Unsupported host_cpu, add it to win_toolchain_data.gni")
+  }
+  _libclang_extra_args += _win_toolchain_data.include_flags_imsvc_list
+
+  # We pass MSVC style flags to clang on Windows, and libclang needs to be
+  # told explicitly to accept them.
+  _libclang_extra_args += [ "--driver-mode=cl" ]
+
+  # On Windows, libclang adds arguments that it then fails to understand
+  # (-fno-spell-checking, -fallow-editor-placeholders).
+  # Replace these two arguments with a version that clang-cl can parse.
+  # (Diagnostic flags like -Wno-unknown-argument and
+  # -Wno-unused-command-line-argument are handled by filter_clang_args.py).
+  _libclang_extra_args += [
+    "/clang:-fno-spell-checking",
+    "/clang:-fallow-editor-placeholders",
+  ]
+}
+
+# Passes C comments through as rustdoc attributes.
+if (is_win) {
+  _libclang_extra_args += [ "/clang:-fparse-all-comments" ]
+} else {
+  _libclang_extra_args += [ "-fparse-all-comments" ]
+}
+
+if (is_cfi) {
+  # LLVM searches for a default CFI ignorelist at (exactly)
+  # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
+  # Even if we provide a custom -fsanitize-ignorelist, the absence
+  # of this default file will cause a fatal error. clang finds
+  # it within third_party/llvm-build, but for libclang-based tools our cwd
+  # is the $out_dir. We _could_ create this file at the right
+  # location within the outdir using a "copy" target, but as
+  # we don't actually generate code within these tools, the easier
+  # option is to tell them to ignore all CFI ignorelists.
+  _libclang_extra_args += [ "-fno-sanitize-ignorelist" ]
+}
+
+# Args for parsing C headers.
+libclang_args_for_c = [
+                        "{{defines}}",
+                        "{{include_dirs}}",
+                        "{{cflags}}",
+                        "{{cflags_c}}",
+                      ] + _libclang_extra_args
+
+# Args for parsing C++ headers.
+libclang_args_for_cpp = [
+                          "{{defines}}",
+                          "{{include_dirs}}",
+                          "{{cflags}}",
+                          "{{cflags_cc}}",
+                        ] + _libclang_extra_args

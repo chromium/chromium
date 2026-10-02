@@ -4,11 +4,8 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
+import("//build/rust/gni_impl/libclang_args.gni")
 import("//build/rust/rust_static_library.gni")
-
-if (is_win) {
-  import("//build/toolchain/win/win_toolchain_data.gni")
-}
 
 _bindgen_path = "${rust_bindgen_root}/bin/bindgen"
 if (host_os == "win") {
@@ -217,92 +214,15 @@ template("rust_bindgen_generator") {
         "-x",
         "c++",
       ]
-    }
-
-    args += [
-      "{{defines}}",
-      "{{include_dirs}}",
-      "{{cflags}}",
-    ]
-    if (_cpp) {
-      args += [ "{{cflags_cc}}" ]
+      args += libclang_args_for_cpp
     } else {
-      args += [ "{{cflags_c}}" ]
-    }
-
-    # libclang will run the system `clang` to find the "resource dir" which it
-    # places before the directory specified in `-isysroot`.
-    # https://github.com/llvm/llvm-project/blob/699e0bed4bfead826e210025bf33e5a1997c018b/clang/lib/Tooling/Tooling.cpp#L499-L510
-    #
-    # This means include files are pulled from the wrong place if the `clang`
-    # says the wrong thing. We point it to our clang's resource dir which will
-    # make it behave consistently with our other command line flags and allows
-    # system headers to be found.
-    clang_resource_dir =
-        rebase_path(clang_base_path + "/lib/clang/" + clang_version,
-                    root_build_dir)
-    args += [
-      "-resource-dir",
-      clang_resource_dir,
-    ]
-
-    if (is_win) {
-      # On Windows we fall back to using system headers from a sysroot from
-      # depot_tools. This is negotiated by python scripts and the result is
-      # available in //build/toolchain/win/win_toolchain_data.gni. From there
-      # we get the `include_flags_imsvc` which point to the system headers.
-      if (host_cpu == "x86") {
-        win_toolchain_data = win_toolchain_data_x86
-      } else if (host_cpu == "x64") {
-        win_toolchain_data = win_toolchain_data_x64
-      } else if (host_cpu == "arm64") {
-        win_toolchain_data = win_toolchain_data_arm64
-      } else {
-        error("Unsupported host_cpu, add it to win_toolchain_data.gni")
-      }
-      args += win_toolchain_data.include_flags_imsvc_list
-    }
-
-    # Passes C comments through as rustdoc attributes.
-    if (is_win) {
-      args += [ "/clang:-fparse-all-comments" ]
-    } else {
-      args += [ "-fparse-all-comments" ]
+      args += libclang_args_for_c
     }
 
     # Default configs include "-fvisibility=hidden", and for some reason this
     # causes bindgen not to emit function bindings. Override it.
     if (!is_win) {
       args += [ "-fvisibility=default" ]
-    }
-
-    if (is_win) {
-      # We pass MSVC style flags to clang on Windows, and libclang needs to be
-      # told explicitly to accept them.
-      args += [ "--driver-mode=cl" ]
-
-      # On Windows, libclang adds arguments that it then fails to understand
-      # (-fno-spell-checking, -fallow-editor-placeholders).
-      # Replace these two arguments with a version that clang-cl can parse.
-      # (Diagnostic flags like -Wno-unknown-argument and
-      # -Wno-unused-command-line-argument are handled by filter_clang_args.py).
-      args += [
-        "/clang:-fno-spell-checking",
-        "/clang:-fallow-editor-placeholders",
-      ]
-    }
-
-    if (is_cfi) {
-      # LLVM searches for a default CFI ignorelist at (exactly)
-      # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
-      # Even if we provide a custom -fsanitize-ignorelist, the absence
-      # of this default file will cause a fatal error. clang finds
-      # it within third_party/llvm-build, but for bindgen our cwd
-      # is the $out_dir. We _could_ create this file at the right
-      # location within the outdir using a "copy" target, but as
-      # we don't actually generate code within bindgen, the easier
-      # option is to tell bindgen to ignore all CFI ignorelists.
-      args += [ "-fno-sanitize-ignorelist" ]
     }
     if (!defined(_library_name) || !_wrap_static_fns) {
       not_needed([ _bindgen_target_name ])
