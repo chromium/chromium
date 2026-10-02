@@ -21,6 +21,16 @@ const AtomicString& IcoRustImageDecoder::MimeType() const {
   return ico_mime_type;
 }
 
+gfx::Size IcoRustImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
+  const SkCodec* sk_codec = codec();
+  SkCodec::FrameInfo frame_info;
+  if (!sk_codec || !sk_codec->getFrameInfo(index, &frame_info)) {
+    return Size();
+  }
+  return gfx::Size(frame_info.fFrameRect.width(),
+                   frame_info.fFrameRect.height());
+}
+
 std::unique_ptr<SkCodec> IcoRustImageDecoder::OnCreateSkCodec(
     std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {

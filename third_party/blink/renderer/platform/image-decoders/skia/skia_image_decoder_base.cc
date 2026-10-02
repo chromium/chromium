@@ -307,7 +307,8 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       wtf_size_t required_previous_frame_index =
           frame.RequiredPreviousFrameIndex();
       if (required_previous_frame_index == kNotFound) {
-        if (!frame.AllocatePixelData(Size().width(), Size().height(),
+        const gfx::Size frame_size = FrameSizeAtIndex(current_frame_index);
+        if (!frame.AllocatePixelData(frame_size.width(), frame_size.height(),
                                      ColorSpaceForSkImages())) {
           SetFailedFrameIndex(current_frame_index);
           continue;
@@ -394,10 +395,12 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
         // `codec_->getInfo().colorSpace()` to sRGB as a fallback.
       }
 
-      SkImageInfo image_info = codec_->getInfo()
-                                   .makeColorType(color_type)
-                                   .makeAlphaType(alpha_type)
-                                   .makeColorSpace(color_space);
+      SkImageInfo image_info =
+          codec_->getInfo()
+              .makeWH(frame.Bitmap().width(), frame.Bitmap().height())
+              .makeColorType(color_type)
+              .makeAlphaType(alpha_type)
+              .makeColorSpace(color_space);
 
       SkCodec::Options options;
       options.fFrameIndex = current_frame_index;

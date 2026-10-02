@@ -5,6 +5,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -202,6 +203,36 @@ std::unique_ptr<ImageDecoder> CreateRustICODecoder() {
   return std::make_unique<IcoRustImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+void ExpectFrameSizes(ImageDecoder* decoder) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("/images/resources/2entries.ico");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+
+  constexpr std::array kExpectedFrameSizes = {gfx::Size(32, 32),
+                                              gfx::Size(16, 16)};
+  ASSERT_EQ(kExpectedFrameSizes.size(), decoder->FrameCount());
+  for (wtf_size_t i = 0; i < kExpectedFrameSizes.size(); ++i) {
+    EXPECT_EQ(kExpectedFrameSizes[i], decoder->FrameSizeAtIndex(i));
+
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(kExpectedFrameSizes[i].width(), frame->Bitmap().width());
+    EXPECT_EQ(kExpectedFrameSizes[i].height(), frame->Bitmap().height());
+  }
+}
+
+TEST(ICOImageDecoderTests, CppFrameSizes) {
+  std::unique_ptr<ImageDecoder> decoder = CreateCppICODecoder();
+  ExpectFrameSizes(decoder.get());
+}
+
+TEST(ICOImageDecoderTests, RustFrameSizes) {
+  std::unique_ptr<ImageDecoder> decoder = CreateRustICODecoder();
+  ExpectFrameSizes(decoder.get());
 }
 
 // Returns true if every pixel in `bitmap` is fully opaque (alpha == 255),
