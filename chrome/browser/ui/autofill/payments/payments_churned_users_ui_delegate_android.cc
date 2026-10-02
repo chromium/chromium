@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 
@@ -57,6 +58,8 @@ void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
               base::BindOnce(
                   &PaymentsChurnedUsersUiDelegateAndroid::OnMessageDismissed,
                   weak_ptr_factory_.GetWeakPtr())));
+      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
       break;
   }
 }
@@ -113,11 +116,20 @@ PaymentsChurnedUsersUiDelegateAndroid::GetOrCreateAutofillMessageController() {
   return *autofill_message_controller_;
 }
 
+void PaymentsChurnedUsersUiDelegateAndroid::OnUiClosed(
+    PaymentsUiClosedReason closed_reason) {
+  if (!closed_callback_) {
+    return;
+  }
+  autofill_metrics::LogPaymentsChurnedUsersBubbleResult(closed_reason);
+  std::move(closed_callback_).Run(closed_reason);
+}
+
 void PaymentsChurnedUsersUiDelegateAndroid::OnMessageAccepted() {
   if (!closed_callback_) {
     return;
   }
-  std::move(closed_callback_).Run(PaymentsUiClosedReason::kAccepted);
+  OnUiClosed(PaymentsUiClosedReason::kAccepted);
   if (auto* snackbar_controller = client_->GetAutofillSnackbarController()) {
     snackbar_controller->Show(
         AutofillSnackbarType::kResurrectChurnedUsers,
@@ -145,10 +157,10 @@ void PaymentsChurnedUsersUiDelegateAndroid::OnMessageDismissed(
     case messages::DismissReason::GESTURE:
       // Since the message banner only has a primary action button, swiping the
       // message away is treated as an explicit rejection (`kCancelled`).
-      std::move(closed_callback_).Run(PaymentsUiClosedReason::kCancelled);
+      OnUiClosed(PaymentsUiClosedReason::kCancelled);
       break;
     default:
-      std::move(closed_callback_).Run(PaymentsUiClosedReason::kNotInteracted);
+      OnUiClosed(PaymentsUiClosedReason::kNotInteracted);
       break;
   }
   closed_callback_.Reset();

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/autofill/autofill_payments_churned_users_bottom_sheet_bridge.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/messages/android/message_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -126,8 +128,24 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
     delegate_.reset();
   }
 
+  void ExpectShowResultRecorded(
+      autofill_metrics::PaymentsChurnedUsersBubbleShowResult show_result,
+      base::HistogramBase::Count32 expected_count = 1) {
+    histogram_tester_.ExpectUniqueSample(
+        "Autofill.PaymentsChurnedUsersBubble.ShowResult", show_result,
+        expected_count);
+  }
+
+  void ExpectResultRecorded(PaymentsUiClosedReason closed_reason,
+                            base::HistogramBase::Count32 expected_count = 1) {
+    histogram_tester_.ExpectUniqueSample(
+        "Autofill.PaymentsChurnedUsersBubble.Result", closed_reason,
+        expected_count);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   raw_ptr<MockAutofillMessageController> mock_message_controller_ = nullptr;
   std::unique_ptr<PaymentsChurnedUsersUiDelegateAndroid> delegate_;
 };
@@ -180,6 +198,8 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
   EXPECT_CALL(closed_callback, Run(PaymentsUiClosedReason::kUnknown));
 
   delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
+
+  ExpectResultRecorded(PaymentsUiClosedReason::kUnknown, 0);
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
@@ -202,6 +222,9 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
 
   delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
 
+  ExpectShowResultRecorded(
+      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
+
   ASSERT_TRUE(shown_message_model);
   EXPECT_EQ(shown_message_model->GetType(),
             AutofillMessageModel::Type::kResurrectChurnedUsers);
@@ -213,6 +236,8 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
 
   shown_message_model->OnActionClicked();
   shown_message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+
+  ExpectResultRecorded(PaymentsUiClosedReason::kAccepted);
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
@@ -234,6 +259,8 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
   EXPECT_CALL(*mock_snackbar_controller(), Show).Times(0);
 
   shown_message_model->OnDismissed(messages::DismissReason::GESTURE);
+
+  ExpectResultRecorded(PaymentsUiClosedReason::kCancelled);
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
@@ -257,6 +284,8 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
     EXPECT_CALL(*mock_snackbar_controller(), Show).Times(0);
     shown_message_model->OnDismissed(dismiss_reason);
   }
+
+  ExpectResultRecorded(PaymentsUiClosedReason::kNotInteracted, 2);
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
@@ -274,12 +303,15 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
   ASSERT_TRUE(shown_message_model);
 
   // A second request while the first message is still showing must not trigger
-  // a duplicate `Show` call on the message controller or overwrite the initial
-  // `closed_callback_`.
+  // a duplicate `Show` call on the message controller, overwrite the initial
+  // `closed_callback_`, or log a duplicate metric.
   base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
       second_closed_callback;
   EXPECT_CALL(second_closed_callback, Run).Times(0);
   delegate()->ShowPaymentsChurnedUsersUI(second_closed_callback.Get());
+
+  ExpectShowResultRecorded(
+      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
 
   EXPECT_CALL(initial_closed_callback, Run(PaymentsUiClosedReason::kAccepted));
   EXPECT_CALL(*mock_snackbar_controller(),

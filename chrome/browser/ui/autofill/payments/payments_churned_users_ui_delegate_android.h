@@ -53,6 +53,7 @@ class PaymentsChurnedUsersUiDelegateAndroid
   GetOrCreatePaymentsChurnedUsersBottomSheetBridge();
   AutofillMessageController& GetOrCreateAutofillMessageController();
 
+  void OnUiClosed(PaymentsUiClosedReason closed_reason);
   void OnMessageAccepted();
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
