@@ -39,7 +39,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -84,6 +83,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @Features.DisableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
+    ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS,
     ChromeFeatureList.ANDROID_BOTTOM_BAR
 })
 @SuppressLint("NewApi")
@@ -328,9 +328,6 @@ public class TabbedNavigationBarColorControllerTest {
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @Restriction(DeviceFormFactor.PHONE)
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
-            message = "https://crbug.com/568383108")
     public void testSetNavigationBarScrimFractionEdgeToEdge() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(false);
         initialize();
