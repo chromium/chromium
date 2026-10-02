@@ -1299,6 +1299,46 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
 }
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OpenInZeroState_LoadsDefaultAiPageUrl_WithRearchitectureFlag) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillOnce(Return(std::nullopt))
+      .WillOnce(Return(std::nullopt))
+      .WillRepeatedly(Return(new_task));
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+
+  GURL default_ai_url("https://www.google.com/search?udm=50&aep=46");
+  ON_CALL(*mock_ui_service, GetInitialUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(Return(std::nullopt));
+  ON_CALL(*mock_ui_service, GetDefaultAiPageUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(Return(default_ai_url));
+
+  EXPECT_CALL(
+      *mock_ui_service,
+      SetInitialEntryPointForTask(
+          new_task.GetTaskId(),
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON))
+      .Times(1);
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+
+  coordinator_->OpenInZeroState();
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(new_task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+  GURL expected_url(
+      "https://www.google.com/search?udm=50&aep=46&cs=0&gsc=2&hl=en");
+  EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // The extensions menu dereferences extensions::TabHelper::FromWebContents()
 // without a null check, so the side panel's WebContents must have one attached
