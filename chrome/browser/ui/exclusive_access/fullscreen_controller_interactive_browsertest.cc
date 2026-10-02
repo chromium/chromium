@@ -1370,6 +1370,12 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
     GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
   }
 #endif
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
+  if (GetParam() && ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/568756577): Flaky on Linux Wayland.
+    GTEST_SKIP() << "Flaky. See https://crbug.com/568756577";
+  }
+#endif
 
   auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
   EXPECT_TRUE(success);
