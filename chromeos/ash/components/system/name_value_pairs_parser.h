@@ -30,12 +30,6 @@ enum class NameValuePairsFormat {
   // The base for this format is that of |kVpdDump|, with the additional
   // provision that keys may be unquoted.
   kMachineInfo,
-  // Values produced by the crossystem tool.
-  // Each key and value is unquoted, and separated by an equal ('=') sign.
-  // Whitespace is allowed, and used, around key and value, and is not part of
-  // either. Comments are supported and start with a sharp ('#') character and
-  // run to the end of the line.
-  kCrossystem
 };
 
 // The parser is used to get machine info as name-value pairs. Defined here to
@@ -59,23 +53,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
   bool ParseNameValuePairsFromFile(const base::FilePath& file_path,
                                    NameValuePairsFormat format);
 
-  // Parses name-value pairs in the specified |format| from the standard output
-  // of a tool invocation specified by |command|.
-  //
-  // Returns false if there was any error in the command invocation or when
-  // parsing its output. Valid pairs will still be added to the map.
-  bool ParseNameValuePairsFromTool(const base::CommandLine& command,
-                                   NameValuePairsFormat format);
-
   // Parses name-value pairs in the specified |format| from a string.
   //
-  // Returns false if there was any error in the command invocation or when
-  // parsing its output. Valid pairs will still be added to the map.
+  // Returns false if there was any error when parsing the string. Valid pairs
+  // will still be added to the map.
   bool ParseNameValuePairsFromString(const std::string& string,
                                      NameValuePairsFormat format);
-
-  // Delete all pairs with |value|.
-  void DeletePairsWithValue(const std::string& value);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VpdDumpNameValuePairsParserTest,
@@ -85,8 +68,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser, TestParseErrorInVpdDumpFormat);
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
                            TestParseNameValuePairsInMachineInfoFormat);
-  FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
-                           TestParseNameValuePairsFromCrossytemTool);
 
   friend class NameValuePairsParserFuzzer;
 

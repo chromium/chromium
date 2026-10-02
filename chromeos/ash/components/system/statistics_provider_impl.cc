@@ -69,13 +69,13 @@ const base::CommandLine::CharType kOemManifestFilePath[] =
 // File to get regional data from.
 const char kCrosRegions[] = "/usr/share/misc/cros-regions.json";
 
-const char kHardwareClassCrosSystemKey[] = "hwid";
+constexpr char kHardwareClassCrosSystemKey[] = "hwid";
 const char kHardwareClassValueUnknown[] = "unknown";
 
-const char kIsVmCrosSystemKey[] = "inside_vm";
+constexpr char kIsVmCrosSystemKey[] = "inside_vm";
 
 // ChromeOS should allow debug features.
-const char kIsCrosDebugCrosSystemKey[] = "cros_debug";
+constexpr char kIsCrosDebugCrosSystemKey[] = "cros_debug";
 
 // Items in region dictionary.
 const char kKeyboardsPath[] = "keyboards";
@@ -205,6 +205,29 @@ std::optional<std::string> GetCommandOutput(const base::CommandLine& command) {
     return std::nullopt;
   }
   return output;
+}
+
+// Runs `crossystem_tool` with `key` as a single argument and returns the
+// trimmed output if it succeeds and is a valid single-line value.
+std::optional<std::string> GetCrossystemValue(
+    const base::CommandLine& crossystem_tool,
+    std::string_view key) {
+  base::CommandLine command = crossystem_tool;
+  command.AppendArg(key);
+  std::string output;
+  if (!base::GetAppOutput(command, &output)) {
+    VLOG(1) << "Failed to get crossystem property: " << key;
+    return std::nullopt;
+  }
+  std::string_view trimmed = base::TrimWhitespaceASCII(output, base::TRIM_ALL);
+  if (trimmed.empty() || trimmed == kCrosSystemValueError) {
+    return std::nullopt;
+  }
+  if (trimmed.find_first_of("\r\n") != std::string_view::npos) {
+    LOG(ERROR) << "Invalid multiline value for crossystem property: " << key;
+    return std::nullopt;
+  }
+  return std::string(trimmed);
 }
 
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
@@ -612,58 +635,18 @@ void StatisticsProviderImpl::LoadMachineStatistics(
     return;
   }
 
-  LoadCrossystemTool();
-
-  std::string crossystem_wpsw;
-
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    // If available, the key should be taken from machine info or VPD instead of
-    // the tool. If not available, the tool's value will be restored.
-    auto it = machine_info_.find(kFirmwareWriteProtectCurrentKey);
-    if (it != machine_info_.end()) {
-      crossystem_wpsw = it->second;
-      machine_info_.erase(it);
-    }
-  }
-
   LoadMachineInfoFile();
   LoadVpd();
+  LoadCrossystemTool();
 
   // Ensure that the hardware class key is present with the expected
   // key name, and if it couldn't be retrieved, that the value is "unknown".
-  std::string hardware_class = machine_info_[kHardwareClassCrosSystemKey];
-  machine_info_[kHardwareClassKey] =
-      !hardware_class.empty() ? hardware_class : kHardwareClassValueUnknown;
+  if (const auto it = machine_info_.find(kHardwareClassKey);
+      it == machine_info_.end() || it->second.empty()) {
+    machine_info_[kHardwareClassKey] = kHardwareClassValueUnknown;
+  }
 
   if (base::SysInfo::IsRunningOnChromeOS()) {
-    // By default, assume that this is *not* a VM. If crossystem is not present,
-    // report that we are not in a VM.
-    machine_info_[kIsVmKey] = kIsVmValueFalse;
-    const auto is_vm_iter = machine_info_.find(kIsVmCrosSystemKey);
-    if (is_vm_iter != machine_info_.end() &&
-        is_vm_iter->second == kIsVmValueTrue) {
-      machine_info_[kIsVmKey] = kIsVmValueTrue;
-    }
-
-    // By default, assume that this is *not* in debug mode. If crossystem is not
-    // present, report that we are not in debug mode.
-    machine_info_[kIsCrosDebugKey] = kIsCrosDebugValueFalse;
-    const auto is_debug_iter = machine_info_.find(kIsCrosDebugCrosSystemKey);
-    if (is_debug_iter != machine_info_.end() &&
-        is_debug_iter->second == kIsCrosDebugValueTrue) {
-      machine_info_[kIsCrosDebugKey] = kIsCrosDebugValueTrue;
-    }
-
-    // Use the write-protect value from crossystem only if it hasn't been loaded
-    // from any other source, since the result of crossystem is less reliable
-    // for this key.
-    if (!machine_info_.contains(kFirmwareWriteProtectCurrentKey) &&
-        !crossystem_wpsw.empty()) {
-      LOG(WARNING) << "wpsw_cur missing from machine_info, using value: "
-                   << crossystem_wpsw;
-      machine_info_[kFirmwareWriteProtectCurrentKey] = crossystem_wpsw;
-    }
-
     // TODO(b/315929204): Remove temporary logging.
     if (machine_info_.find(kFirmwareWriteProtectCurrentKey) ==
         machine_info_.end()) {
@@ -715,17 +698,43 @@ void StatisticsProviderImpl::LoadCrossystemTool() {
     return;
   }
 
-  NameValuePairsParser parser(&machine_info_);
-  // Parse all of the key/value pairs from the crossystem tool.
-  if (!parser.ParseNameValuePairsFromTool(sources_.crossystem_tool,
-                                          NameValuePairsFormat::kCrossystem)) {
-    LOG(ERROR) << "Errors parsing output from: "
-               << sources_.crossystem_tool.GetProgram();
+  if (!base::PathExists(sources_.crossystem_tool.GetProgram())) {
+    LOG(WARNING) << "Tool for statistics not found: "
+                 << sources_.crossystem_tool.GetProgram();
+    return;
   }
 
-  // Drop useless "(error)" values so they don't displace valid values
-  // supplied later by other tools: https://crbug.com/844258
-  parser.DeletePairsWithValue(kCrosSystemValueError);
+  // A list of keys pairs:
+  //   1. crossystem key
+  //   2. statistics provider key
+  //
+  //   The list is an intersection of
+  //   - all parameters used in calls to GetMachineStatistic
+  //   - all keys from src/platform/vboot_reference/utility/crossystem.c
+  constexpr auto kKeyPairs =
+      std::array<std::pair<std::string_view, std::string_view>, 7>{
+          std::pair{kDevSwitchBootKey, kDevSwitchBootKey},
+          {kFirmwareTypeKey, kFirmwareTypeKey},
+          {kKernelKeyVersion, kKernelKeyVersion},
+          {kFirmwareWriteProtectCurrentKey, kFirmwareWriteProtectCurrentKey},
+          {kHardwareClassCrosSystemKey, kHardwareClassKey},
+          {kIsVmCrosSystemKey, kIsVmKey},
+          {kIsCrosDebugCrosSystemKey, kIsCrosDebugKey}};
+
+  for (const auto& [crossystem_key, statistics_key] : kKeyPairs) {
+    if (machine_info_.contains(statistics_key)) {
+      continue;
+    }
+    auto value = GetCrossystemValue(sources_.crossystem_tool, crossystem_key);
+    if (!value) {
+      continue;
+    }
+    LOG_IF(WARNING, crossystem_key == kFirmwareWriteProtectCurrentKey)
+        << statistics_key
+        << " missing from machine_info, using value from crossystem: "
+        << *value;
+    machine_info_[statistics_key] = std::move(*value);
+  }
 }
 
 void StatisticsProviderImpl::LoadMachineInfoFile() {

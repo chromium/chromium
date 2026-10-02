@@ -21,21 +21,6 @@ namespace ash::system {
 
 namespace {
 
-// Runs a tool and capture its standard output into |output|. Returns false
-// if the tool cannot be run.
-bool GetToolOutput(const base::CommandLine& command, std::string* output) {
-  if (!base::PathExists(command.GetProgram())) {
-    LOG(WARNING) << "Tool for statistics not found: " << command.GetProgram();
-    return false;
-  }
-  if (!base::GetAppOutput(command, output)) {
-    LOG(WARNING) << "Error executing " << command.GetProgram();
-    return false;
-  }
-
-  return true;
-}
-
 // Assigns a non quoted version of |input| to |unquoted|, and returns
 // whether |input| was actually quoted or not.
 bool GetUnquotedString(const std::string& input, std::string* unquoted) {
@@ -47,18 +32,6 @@ bool GetUnquotedString(const std::string& input, std::string* unquoted) {
     unquoted->assign(input);
 
   return unquoted->size() != input_size;
-}
-
-// Assigns a non commented version of |input| to |uncommented|. Whitespace
-// before the comment is trimmed.
-void GetUncommentedString(const std::string& input, std::string* uncommented) {
-  const size_t comment_pos = input.find('#');
-  if (comment_pos == std::string::npos) {
-    uncommented->assign(input);
-  } else {
-    uncommented->assign(input, 0, comment_pos);
-    base::TrimWhitespaceASCII(*uncommented, base::TRIM_TRAILING, uncommented);
-  }
 }
 
 // Parse a name from |input|, validating that it is in |format|, and assign it
@@ -77,11 +50,6 @@ bool ParseName(const std::string& input,
       GetUnquotedString(input, name);
       parsed_ok = true;
       break;
-    case NameValuePairsFormat::kCrossystem:
-      // We trim all ASCII whitespace and the name then must not be quoted.
-      base::TrimWhitespaceASCII(input, base::TRIM_ALL, name);
-      parsed_ok = !GetUnquotedString(*name, name);
-      break;
   }
 
   // Names must not be empty in addition to having parsed successfully.
@@ -89,20 +57,12 @@ bool ParseName(const std::string& input,
 }
 
 // Parse a value from |input|, validating that it is in |format|, and assign it
-// to |name|.
+// to |value|.
 bool ParseValue(const std::string& input,
                 NameValuePairsFormat format,
                 std::string* value) {
-  if (format == NameValuePairsFormat::kCrossystem) {
-    // The crossystem format allows for comments, remove them.
-    GetUncommentedString(input, value);
-    // We trim all ASCII whitespace and preserve the rest as is.
-    base::TrimWhitespaceASCII(*value, base::TRIM_ALL, value);
-    return true;
-  } else {
-    // The value must be quoted, and we unquote it.
-    return GetUnquotedString(input, value);
-  }
+  // The value must be quoted, and we unquote it.
+  return GetUnquotedString(input, value);
 }
 
 // Return a string for logging a value.
@@ -116,8 +76,6 @@ const char* GetNameValuePairsFormatName(NameValuePairsFormat format) {
       return "VPD dump";
     case NameValuePairsFormat::kMachineInfo:
       return "machine info";
-    case NameValuePairsFormat::kCrossystem:
-      return "crossystem";
   }
   return "unknown";
 }
@@ -143,31 +101,10 @@ bool NameValuePairsParser::ParseNameValuePairsFromFile(
   }
 }
 
-bool NameValuePairsParser::ParseNameValuePairsFromTool(
-    const base::CommandLine& command,
-    NameValuePairsFormat format) {
-  std::string output_string;
-  if (!GetToolOutput(command, &output_string))
-    return false;
-
-  return ParseNameValuePairs(output_string, format);
-}
-
 bool NameValuePairsParser::ParseNameValuePairsFromString(
     const std::string& input,
     NameValuePairsFormat format) {
   return ParseNameValuePairs(input, format);
-}
-
-void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
-  auto it = map_->begin();
-  while (it != map_->end()) {
-    if (it->second == value) {
-      it = map_->erase(it);
-    } else {
-      it++;
-    }
-  }
 }
 
 void NameValuePairsParser::AddNameValuePair(const std::string& name,

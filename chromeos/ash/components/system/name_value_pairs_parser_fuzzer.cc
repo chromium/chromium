@@ -25,7 +25,6 @@ class NameValuePairsParserFuzzer {
     name_value_map_.clear();
 
     testInputAsVpdDumpLine(input);
-    testInputAsCrossystemOutputLine(input);
 
     testInputAsVpdDumpValuesForKey(input);
   }
@@ -34,11 +33,6 @@ class NameValuePairsParserFuzzer {
   void testInputAsVpdDumpLine(const std::string& input) {
     NameValuePairsParser parser(&name_value_map_);
     parser.ParseNameValuePairs(input, NameValuePairsFormat::kVpdDump);
-  }
-
-  void testInputAsCrossystemOutputLine(const std::string& input) {
-    NameValuePairsParser parser(&name_value_map_);
-    parser.ParseNameValuePairs(input, NameValuePairsFormat::kCrossystem);
   }
 
   void testInputAsVpdDumpValuesForKey(const std::string& input) {

@@ -38,7 +38,6 @@ constexpr char kCatCmd[] = "/bin/cat";
 constexpr char kLsbReleaseContent[] = "CHROMEOS_RELEASE_NAME=Chromium OS\n";
 constexpr char kInvalidLsbReleaseContent[] = "Just empty";
 
-constexpr char kCrossystemToolFormat[] = "%s = %s   # %s\n";
 constexpr char kMachineInfoFormat[] = "\"%s\"=\"%s\"\n";
 
 // Creates a file named with `filename` in the temp dir and fills it with
@@ -85,6 +84,18 @@ base::CommandLine GenerateFakeVpdCommand(
   shell_arg += "'; exit " + base::NumberToString(exit_status);
 
   return base::CommandLine({"/bin/sh", "-c", shell_arg});
+}
+
+base::CommandLine GenerateFakeCrossystemCommand(
+    const std::map<std::string, std::string>& contents) {
+  std::string shell_arg = "case \"$1\" in ";
+  for (const auto& [key, value] : contents) {
+    shell_arg += base::StringPrintf("%s) printf '%%s' '%s';; ", key.c_str(),
+                                    value.c_str());
+  }
+  shell_arg += "*) exit 1;; esac";
+
+  return base::CommandLine({"/bin/sh", "-c", shell_arg, "--"});
 }
 
 class SourcesBuilder {
@@ -138,7 +149,7 @@ class SourcesBuilder {
 
   StatisticsProviderImpl::StatisticsSources Build() {
     if (sources_.crossystem_tool.GetProgram().empty()) {
-      sources_.crossystem_tool = base::CommandLine(base::FilePath(kEchoCmd));
+      sources_.crossystem_tool = base::CommandLine(base::FilePath(kFalseCmd));
     }
 
     if (sources_.vpd_tool.GetProgram().empty()) {
@@ -212,30 +223,25 @@ class StatisticsProviderImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-// Test that the provider loads statistics from the tool if they have correct
-// format, and ignores statistics errors. The crossystem tool is faked with
-// echo command printing formatted statistics.
+// Test that the provider loads known statistics from the crossystem tool by
+// querying each property individually, and ignores errors or unknown keys.
 TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromCrossystemTool) {
   base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
                                                             base::Time());
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
-  // Setup provider's sources.
-  const std::string kEchoArgs =
-      base::StringPrintf(kCrossystemToolFormat, "crossystem_key_1",
-                         "crossystem_value_1", "Valid statistic") +
-      base::StringPrintf(kCrossystemToolFormat, "crossystem_key_2",
-                         "crossystem_value_2", "Valid statistic") +
-      base::StringPrintf(kCrossystemToolFormat, "crossystem_key_3", "(error)",
-                         "Invalid statistic to be erased") +
-      "crossystem_key_4 : invalid_separator # Invalid statistic\n" +
-      base::StringPrintf(kCrossystemToolFormat, "crossystem_key_5", "(error)",
-                         "Invalid statistic to be erased");
+  const auto fake_crossystem = GenerateFakeCrossystemCommand({
+      {kDevSwitchBootKey, "0"},
+      {kFirmwareTypeKey, "normal"},
+      {"hwid", "TEST_HWID 1234"},
+      {"inside_vm", "1"},
+      {"cros_debug", "(error)"},
+      {kKernelKeyVersion, "0x00010001"},
+      {"unrequested_key", "unrequested_value"},
+  });
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
-          .Build();
+      SourcesBuilder(temp_dir()).set_crossystem_tool(fake_crossystem).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -243,13 +249,51 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromCrossystemTool) {
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  EXPECT_EQ(provider->GetMachineStatistic("crossystem_key_1"),
-            "crossystem_value_1");
-  EXPECT_EQ(provider->GetMachineStatistic("crossystem_key_2"),
-            "crossystem_value_2");
-  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_3"));
-  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_4"));
-  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_5"));
+  EXPECT_EQ(provider->GetMachineStatistic(kDevSwitchBootKey), "0");
+  EXPECT_EQ(provider->GetMachineStatistic(kFirmwareTypeKey), "normal");
+  EXPECT_EQ(provider->GetMachineStatistic(kHardwareClassKey), "TEST_HWID 1234");
+  EXPECT_EQ(provider->GetMachineStatistic(kIsVmKey), kIsVmValueTrue);
+  EXPECT_FALSE(provider->GetMachineStatistic(kIsCrosDebugKey));
+  EXPECT_EQ(provider->GetMachineStatistic(kKernelKeyVersion), "0x00010001");
+  EXPECT_FALSE(provider->GetMachineStatistic("unrequested_key"));
+}
+
+// Tests that crossystem values containing newlines or unrequested keys (such as
+// fwid) cannot inject or poison other statistics.
+TEST_F(StatisticsProviderImplTest,
+       DoesNotAllowCrossystemToPoisonOtherStatistics) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  const auto fake_crossystem = GenerateFakeCrossystemCommand({
+      {"fwid", "x\nmainfw_type=nonchrome\nserial_number=poisoned"},
+      {"hwid", "x\nmainfw_type=nonchrome"},
+      {kFirmwareTypeKey, "normal"},
+      {kSerialNumberKey, "crossystem_serial"},
+      {kRlzBrandCodeKey, "crossystem_brand"},
+  });
+
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kSerialNumberKey, "valid_serial") +
+      base::StringPrintf(kMachineInfoFormat, kRlzBrandCodeKey, "ABCD");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_crossystem_tool(fake_crossystem)
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .Build();
+
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  EXPECT_EQ(provider->GetMachineStatistic(kFirmwareTypeKey), "normal");
+  EXPECT_EQ(provider->GetMachineStatistic(kHardwareClassKey), "unknown");
+  EXPECT_EQ(provider->GetMachineStatistic(kSerialNumberKey), "valid_serial");
+  EXPECT_EQ(provider->GetMachineStatistic(kRlzBrandCodeKey), "ABCD");
+  EXPECT_FALSE(provider->GetMachineStatistic("fwid"));
 }
 
 // Tests that provider has special handling for the firmware write protect key
@@ -261,9 +305,9 @@ TEST_F(StatisticsProviderImplTest,
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const std::string kEchoArgs =
-      base::StringPrintf(kCrossystemToolFormat, kFirmwareWriteProtectCurrentKey,
-                         "crossytem_value", "");
+  const auto fake_crossystem = GenerateFakeCrossystemCommand({
+      {kFirmwareWriteProtectCurrentKey, "crossystem_value"},
+  });
 
   const std::string kMachineInfoStatistics =
       base::StringPrintf(kMachineInfoFormat, kFirmwareWriteProtectCurrentKey,
@@ -271,7 +315,7 @@ TEST_F(StatisticsProviderImplTest,
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
+          .set_crossystem_tool(fake_crossystem)
           .set_machine_info(
               CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
           .Build();
@@ -296,9 +340,9 @@ TEST_F(
   ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const std::string kEchoArgs =
-      base::StringPrintf(kCrossystemToolFormat, kFirmwareWriteProtectCurrentKey,
-                         "crossytem_value", "");
+  const auto fake_crossystem = GenerateFakeCrossystemCommand({
+      {kFirmwareWriteProtectCurrentKey, "crossystem_value"},
+  });
 
   const std::string kMachineInfoStatistics = base::StringPrintf(
       kMachineInfoFormat, "machine_info_completely_different_key",
@@ -306,7 +350,7 @@ TEST_F(
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
+          .set_crossystem_tool(fake_crossystem)
           .set_machine_info(
               CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
           .Build();
@@ -318,7 +362,7 @@ TEST_F(
 
   // Check statistics.
   EXPECT_EQ(provider->GetMachineStatistic(kFirmwareWriteProtectCurrentKey),
-            "crossytem_value");
+            "crossystem_value");
 }
 
 // Tests that StatisticsProvider skips crossystem tool in non-ChromeOS test
@@ -330,16 +374,13 @@ TEST_F(StatisticsProviderImplTest,
   ASSERT_FALSE(base::SysInfo::IsRunningOnChromeOS());
 
   // Setup provider's sources.
-  const std::string kEchoArgs =
-      base::StringPrintf(kCrossystemToolFormat, "key_1", "value_1",
-                         "Valid statistic") +
-      base::StringPrintf(kCrossystemToolFormat, "key_2", "value_2",
-                         "Valid statistic");
+  const auto fake_crossystem = GenerateFakeCrossystemCommand({
+      {kDevSwitchBootKey, "1"},
+      {kFirmwareTypeKey, "normal"},
+  });
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
-      SourcesBuilder(temp_dir())
-          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
-          .Build();
+      SourcesBuilder(temp_dir()).set_crossystem_tool(fake_crossystem).Build();
 
   // Load statistics.
   auto provider = StatisticsProviderImpl::CreateProviderForTesting(
@@ -347,8 +388,8 @@ TEST_F(StatisticsProviderImplTest,
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
 
   // Check statistics.
-  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_1"));
-  EXPECT_FALSE(provider->GetMachineStatistic("crossystem_key_2"));
+  EXPECT_FALSE(provider->GetMachineStatistic(kDevSwitchBootKey));
+  EXPECT_FALSE(provider->GetMachineStatistic(kFirmwareTypeKey));
 }
 
 // Test that the provider loads statistics from machine info file if they have
