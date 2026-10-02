@@ -533,6 +533,8 @@ extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
+extern const char kContextualTasksContextMultiTurnTabRelevanceName[];
+extern const char kContextualTasksContextMultiTurnTabRelevanceDescription[];
 extern const char kContextualTasksSearchQueryName[];
 extern const char kContextualTasksSearchQueryDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
