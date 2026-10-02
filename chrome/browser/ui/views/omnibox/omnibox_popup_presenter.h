@@ -40,6 +40,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldApplyHeightWorkarounds() const override;
   bool ShouldDetachWebContentsOnHide() const override;
   bool ShouldEvictOnHide() const override;
+  bool ShouldDestroyWidgetOnHide() const override;
   bool ShouldSizeWebViewToPreferredHeight() const override;
 };
 

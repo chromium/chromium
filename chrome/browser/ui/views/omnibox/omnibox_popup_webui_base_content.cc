@@ -548,8 +548,8 @@ void OmniboxPopupWebUIBaseContent::Detach() {
   }
 
   // Avoid color mode flicking.
-  // When kOmniboxFullWebUIDestroyWidgetOnHide is enabled the widget is
-  // destroyed on hide, then the Webcontents will fall back to use system's
+  // When a widget destroy-on-hide flag is enabled the widget is destroyed on
+  // hide, then the Webcontents will fall back to use system's
   // color mode, which can be different from the browser's color mode.
   views::Widget* location_bar_widget =
       popup_presenter_->delegate().GetLocationBarWidget();

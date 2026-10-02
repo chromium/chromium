@@ -333,6 +333,10 @@ BASE_FEATURE(kOmniboxWebUIPopupHideOnCreation, DISABLED);
 // WebUI omnibox is enabled. The WebUI container (and its WebContents) is
 // preserved across the swap, so this does not discard the pre-warmed renderer.
 BASE_FEATURE(kOmniboxFullWebUIDestroyWidgetOnHide, ENABLED);
+// Per-popup counterparts of `kOmniboxFullWebUIDestroyWidgetOnHide` that
+// take effect regardless of whether the full WebUI omnibox is enabled.
+BASE_FEATURE(kOmniboxAimDestroyWidgetOnHide, ENABLED);
+BASE_FEATURE(kOmniboxWebUIDestroyWidgetOnHide, DISABLED);
 
 // When enabled, the WebUI searchbox will bypass OmniboxController and
 // OmniboxEditModel.

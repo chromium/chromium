@@ -90,6 +90,12 @@ bool OmniboxPopupAimPresenter::ShouldEvictOnHide() const {
   return omnibox::ShouldAimEvictOnHide();
 }
 
+bool OmniboxPopupAimPresenter::ShouldDestroyWidgetOnHide() const {
+  return base::FeatureList::IsEnabled(
+             omnibox::kOmniboxAimDestroyWidgetOnHide) ||
+         OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide();
+}
+
 bool OmniboxPopupAimPresenter::ShouldSizeWebViewToPreferredHeight() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxAimSizeWebViewToPreferredHeight);
