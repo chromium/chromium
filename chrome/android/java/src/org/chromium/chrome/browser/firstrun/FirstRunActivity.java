@@ -989,6 +989,12 @@ public class FirstRunActivity extends FirstRunActivityBase
     }
 
     @Override
+    public void showInfoPage(String url) {
+        assert url.startsWith("https://");
+        CustomTabActivity.showInfoPage(this, url);
+    }
+
+    @Override
     public Promise<@Nullable Void> getNativeInitializationPromise() {
         return mNativeInitializationPromise;
     }

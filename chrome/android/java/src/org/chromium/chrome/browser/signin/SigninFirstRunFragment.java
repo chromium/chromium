@@ -465,7 +465,7 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link EnterpriseSignalsDisclaimerCoordinator.Delegate}. */
     @Override
     public void showInfoPage(String url) {
-        // TODO(b/553341908): Open the learn more page.
+        assumeNonNull(getPageDelegate()).showInfoPage(url);
     }
 
     /** Implements {@link EnterpriseSignalsDisclaimerCoordinator.Delegate}. */

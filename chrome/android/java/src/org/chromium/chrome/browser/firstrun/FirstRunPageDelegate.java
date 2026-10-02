@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -24,14 +26,14 @@ public interface FirstRunPageDelegate {
     boolean advanceToNextPage();
 
     /**
-     * Unsuccessfully aborts the First Run Experience.
-     * This usually means that the application will be closed.
+     * Unsuccessfully aborts the First Run Experience. This usually means that the application will
+     * be closed.
      */
     void abortFirstRunExperience();
 
     /**
-     * Successfully completes the First Run Experience.
-     * All results will be packaged and sent over to the main activity.
+     * Successfully completes the First Run Experience. All results will be packaged and sent over
+     * to the main activity.
      */
     void completeFirstRunExperience();
 
@@ -59,9 +61,19 @@ public interface FirstRunPageDelegate {
 
     /**
      * Show an informational web page. The page doesn't show navigation control.
+     *
      * @param url Resource id for the URL of the web page.
      */
-    void showInfoPage(int url);
+    void showInfoPage(@StringRes int url);
+
+    /**
+     * Show an informational web page. The page doesn't show navigation control. This function does
+     * not use LocalizationUtils.substituteLocalePlaceholder() and opens the URL as-is.
+     *
+     * @param url The URL of the web page. It must be a trusted, app-controlled URL starting with
+     *     "https://".
+     */
+    void showInfoPage(String url);
 
     /**
      * Records the FRE progress histogram MobileFre.Progress.
