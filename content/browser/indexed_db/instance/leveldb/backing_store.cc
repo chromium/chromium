@@ -948,7 +948,9 @@ Status ReadObjectStores(
       std::string_view slice(it->Key());
       bool ok = ObjectStoreMetaDataKey::Decode(&slice, &meta_data_key) &&
                 slice.empty();
-      CHECK(ok, base::NotFatalUntil::M158);
+      // TODO(crbug.com/565537403): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(ok);
       if (!ok || meta_data_key.MetaDataType() != ObjectStoreMetaDataKey::NAME) {
         INTERNAL_CONSISTENCY_ERROR(GET_OBJECT_STORES);
         // Possible stale metadata, but don't fail the load.
