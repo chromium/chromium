@@ -494,6 +494,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSettingsInTabDesktop,
     &kSettingsInTabUrlNav,
     &kSettingsMultiColumn,
+    &kSettingsSearchCollapsibleSearchBox,
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
     &kShortCircuitUnfocusAnimation,
@@ -931,6 +932,7 @@ BASE_FEATURE(kSettingsInTab, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsInTabDesktop, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsInTabUrlNav, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsMultiColumn, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsSearchCollapsibleSearchBox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsSingleActivity, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShareCustomActionsInCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -14400,6 +14400,7 @@ from previous Chrome versions.
   <int value="-169074869"
       label="CastStreamingExponentialVideoBitrateAlgorithm:disabled"/>
   <int value="-168306701" label="SystemLiveCaption:disabled"/>
+  <int value="-167886370" label="SettingsSearchCollapsibleSearchBox:enabled"/>
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
   <int value="-167302414" label="AutomaticFullscreenContentSetting:enabled"/>
@@ -16905,6 +16906,7 @@ from previous Chrome versions.
   <int value="615008173" label="UserAgentOverrideExperiment:enabled"/>
   <int value="615437216"
       label="CrOSLateBootChromeboxUsbPassthroughRestrictions:enabled"/>
+  <int value="615474353" label="SettingsSearchCollapsibleSearchBox:disabled"/>
   <int value="615733361" label="DiscardOccludedBitmaps:disabled"/>
   <int value="616141486" label="PasswordNotesWithBackup:disabled"/>
   <int value="616245141" label="LensOverlayOptimizationFilter:enabled"/>

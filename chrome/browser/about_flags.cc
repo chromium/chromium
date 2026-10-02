@@ -7874,6 +7874,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsInTabUrlNavDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTabUrlNav)},
 
+    {"settings-search-collapsible-search-box",
+     flag_descriptions::kSettingsSearchCollapsibleSearchBoxName,
+     flag_descriptions::kSettingsSearchCollapsibleSearchBoxDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSettingsSearchCollapsibleSearchBox)},
+
     {"android-settings-url", flag_descriptions::kAndroidSettingsUrlName,
      flag_descriptions::kAndroidSettingsUrlDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSettingsUrl)},

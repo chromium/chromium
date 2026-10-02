@@ -1484,6 +1484,12 @@ inline constexpr char kSettingsInTabUrlNavDescription[] =
     "of the Android navigation stack, as well as maps settings pages to "
     "distinct URLs. Requires SettingsInTab to be enabled.";
 
+inline constexpr char kSettingsSearchCollapsibleSearchBoxName[] =
+    "Settings Search Collapsible Search Box";
+inline constexpr char kSettingsSearchCollapsibleSearchBoxDescription[] =
+    "Collapses the search bar in single-column Settings on scroll and shows a "
+    "search icon in the toolbar.";
+
 inline constexpr char kAccountPickerDialogName[] = "Account Picker Dialog";
 inline constexpr char kAccountPickerDialogDescription[] =
     "Enables the account picker dialog on large form factors.";

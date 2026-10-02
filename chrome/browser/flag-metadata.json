@@ -9020,6 +9020,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "settings-search-collapsible-search-box",
+    "owners": [ "jtanaristy@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 170
