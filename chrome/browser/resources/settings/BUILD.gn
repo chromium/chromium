@@ -165,14 +165,6 @@ build_webui("build") {
     web_component_files += [ "site_settings/smart_card_readers_page.ts" ]
   }
 
-  if (is_mac) {
-    web_component_files += [ "autofill_page/passwords/passkey_edit_dialog.ts" ]
-  }
-
-  if (is_win || is_mac) {
-    web_component_files += [ "autofill_page/passwords/passkeys_page.ts" ]
-  }
-
   # -----------------web_component_files end ----------------------------------
 
   # -----------------ts_files start ----------------------------
@@ -537,8 +529,19 @@ build_webui("build") {
     ]
   }
 
+  if (is_mac) {
+    ts_files += [
+      "autofill_page/passwords/passkey_edit_dialog.html.ts",
+      "autofill_page/passwords/passkey_edit_dialog.ts",
+    ]
+  }
+
   if (is_win || is_mac) {
-    ts_files += [ "autofill_page/passwords/passkeys_browser_proxy.ts" ]
+    ts_files += [
+      "autofill_page/passwords/passkeys_browser_proxy.ts",
+      "autofill_page/passwords/passkeys_page.html.ts",
+      "autofill_page/passwords/passkeys_page.ts",
+    ]
   }
 
   # -----------------ts_files end -------------------------------

@@ -253,8 +253,6 @@ export class SettingsPasskeysPageElement extends
   }
 }
 
-export type PasskeysPageElement = SettingsPasskeysPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-passkeys-page': SettingsPasskeysPageElement;

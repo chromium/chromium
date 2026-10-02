@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {PasskeyEditDialogElement} from './passkey_edit_dialog.js';
+
+export function getHtml(this: PasskeyEditDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title" id="title">$i18n{editPasskeyDialogTitle}</div>
   <div slot="body">
@@ -24,3 +34,5 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}

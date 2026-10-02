@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsPasskeysPageElement} from './passkeys_page.js';
+
+export function getHtml(this: SettingsPasskeysPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{managePasskeysTitle}"
     search-label="$i18n{managePasskeysSearch}"
     .searchTerm="${this.filter_}"
@@ -86,3 +96,5 @@ ${this.showDeleteConfirmationDialog_ ? html`
   ` : ''}
 </if>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}
