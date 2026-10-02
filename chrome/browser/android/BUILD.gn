@@ -31,6 +31,7 @@ source_set("tabs_public") {
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//content/public/browser",
     "//extensions/buildflags",
     "//skia",
     "//ui/base/unowned_user_data",

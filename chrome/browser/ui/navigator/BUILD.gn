@@ -76,6 +76,10 @@ source_set("impl") {
     ]
   }
 
+  if (is_android) {
+    deps += [ "//chrome/browser/android:tabs_public" ]
+  }
+
   if (!is_android) {
     sources += [
       "browser_navigator.cc",
@@ -120,6 +124,17 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base/unowned_user_data",
   ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/ui/android/tab_model",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+    ]
+  }
 }
 
 if (!is_android) {

@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -22,6 +22,22 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/test/test_renderer_host.h"
+#endif
+
 using ::testing::_;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -30,6 +46,19 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, initialize the Java and native Tab objects.
+    JNIEnv* env = base::android::AttachCurrentThread();
+    java_tab_ = Java_TabAndroidTestHelper_createAndInitializeTabImpl(
+        env, 1, profile()->GetJavaObject(),
+        static_cast<int32_t>(TabModel::TabLaunchType::FROM_LINK));
+    EXPECT_FALSE(java_tab_.is_null()) << "Java tab creation failed.";
+
+    tab_android_ = TabAndroid::GetNativeTab(env, java_tab_);
+    EXPECT_NE(tab_android_, nullptr)
+        << "Failed to get native TabAndroid from Java TabImpl";
+#endif
 
     mock_browser_ =
         std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
@@ -82,6 +111,27 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
     mock_browser_.reset();
     mock_tabs_.clear();
     web_contents_list_.clear();
+
+#if BUILDFLAG(IS_ANDROID)
+    DeleteContents();
+    tab_android_ = nullptr;
+    if (!java_tab_.is_null()) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      // Call the destroy() method on the Java TabImpl object.
+      // This will trigger TabAndroid::Destroy() via JNI.
+      auto tab_impl_class =
+          jni_zero::AdoptRef(env, env->GetObjectClass(java_tab_.obj()));
+      EXPECT_FALSE(tab_impl_class.is_null());
+
+      jmethodID destroy_method =
+          env->GetMethodID(tab_impl_class.obj(), "destroy", "()I");
+      EXPECT_NE(nullptr, destroy_method)
+          << "Failed to find TabImpl.destroy() method";
+      env->CallIntMethod(java_tab_.obj(), destroy_method);
+    }
+    java_tab_.Reset();
+#endif
+
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -97,6 +147,10 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
 
   MockBrowserWindowInterface* browser() { return mock_browser_.get(); }
 
+#if BUILDFLAG(IS_ANDROID)
+  TabAndroid* tab_android() const { return tab_android_; }
+#endif
+
   const char* kUrl1 = "http://1.chromium.org/1";
   const char* kUrl2 = "http://2.chromium.org/2";
   const char* kUrl3 = "https://3.chromium.org/3";
@@ -110,6 +164,11 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
 
   std::vector<std::unique_ptr<content::WebContents>> web_contents_list_;
   std::vector<std::unique_ptr<tabs::MockTabInterface>> mock_tabs_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> java_tab_;
+  raw_ptr<TabAndroid> tab_android_ = nullptr;
+#endif
 };
 
 TEST_F(BrowserNavigatorParamsUtilsTest, FindsExactMatch) {
@@ -142,3 +201,92 @@ TEST_F(BrowserNavigatorParamsUtilsTest, DoesNotFindDifferentPath) {
   auto params = NavigateParamsForTest(GURL(kUrl1).Resolve("/a"));
   EXPECT_EQ(GetIndexOfExistingTabMatchingURL(browser(), params), -1);
 }
+
+TEST_F(BrowserNavigatorParamsUtilsTest,
+       DoesNotOverrideUserAgentForNullContents) {
+  auto params = NavigateParamsForTest(GURL(kUrl1));
+  EXPECT_EQ(
+      LoadURLParamsFromNavigateParams(nullptr, &params).override_user_agent,
+      content::NavigationController::UA_OVERRIDE_INHERIT);
+}
+
+TEST_F(BrowserNavigatorParamsUtilsTest,
+       DoesNotOverrideUserAgentWithoutTabAndroid) {
+  auto params = NavigateParamsForTest(GURL(kUrl1));
+  EXPECT_EQ(LoadURLParamsFromNavigateParams(web_contents(), &params)
+                .override_user_agent,
+            content::NavigationController::UA_OVERRIDE_INHERIT);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(BrowserNavigatorParamsUtilsTest, OverridesUserAgentOnAndroid) {
+  ASSERT_NE(tab_android(), nullptr);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       tab_android());
+  ASSERT_EQ(TabAndroid::FromWebContents(web_contents()), tab_android());
+
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ASSERT_TRUE(content_settings);
+  content_settings->SetContentSettingDefaultScope(
+      GURL(kUrl1), GURL(kUrl1), ContentSettingsType::REQUEST_DESKTOP_SITE,
+      CONTENT_SETTING_ALLOW);
+
+  auto params = NavigateParamsForTest(GURL(kUrl1));
+  EXPECT_EQ(LoadURLParamsFromNavigateParams(web_contents(), &params)
+                .override_user_agent,
+            content::NavigationController::UA_OVERRIDE_TRUE);
+}
+
+TEST_F(BrowserNavigatorParamsUtilsTest,
+       DoesNotOverrideUserAgentForSubframeNavigationsOnAndroid) {
+  ASSERT_NE(tab_android(), nullptr);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       tab_android());
+  ASSERT_EQ(TabAndroid::FromWebContents(web_contents()), tab_android());
+
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings->SetContentSettingDefaultScope(
+      GURL(kUrl1), GURL(kUrl1), ContentSettingsType::REQUEST_DESKTOP_SITE,
+      CONTENT_SETTING_ALLOW);
+
+  // Navigate the outer frame using LoadURLParamsFromNavigateParams to naturally
+  // establish UA_OVERRIDE_TRUE via the Java TabImpl.
+  auto main_params = NavigateParamsForTest(GURL(kUrl1));
+  auto main_load_url_params =
+      LoadURLParamsFromNavigateParams(web_contents(), &main_params);
+  EXPECT_EQ(main_load_url_params.override_user_agent,
+            content::NavigationController::UA_OVERRIDE_TRUE);
+  web_contents()->GetController().LoadURLWithParams(main_load_url_params);
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  ASSERT_TRUE(web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->GetIsOverridingUserAgent());
+
+  // Create a child frame (subframe).
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendChild("subframe");
+  ASSERT_TRUE(subframe);
+  // Initiate navigation parameters targeting the subframe.
+  auto subframe_params = NavigateParamsForTest(GURL(kUrl1));
+  subframe_params.frame_tree_node_id = subframe->GetFrameTreeNodeId();
+
+  auto subframe_load_url_params =
+      LoadURLParamsFromNavigateParams(web_contents(), &subframe_params);
+
+  // Subframe navigations must inherit the outer frame's user agent override.
+  EXPECT_EQ(subframe_load_url_params.override_user_agent,
+            content::NavigationController::UA_OVERRIDE_INHERIT);
+
+  // Validate that the outer frame maintains its user agent override setting.
+  EXPECT_TRUE(web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->GetIsOverridingUserAgent());
+}
+
+DEFINE_JNI(TabAndroidTestHelper)
+#endif  // BUILDFLAG(IS_ANDROID)

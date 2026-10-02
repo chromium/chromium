@@ -28,6 +28,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/token_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class GURL;
@@ -145,6 +146,8 @@ class TabAndroid : public tabs::TabInterface,
   bool IsNativePage() const;
   int GetLaunchType() const;
   int GetUserAgent() const;
+  content::NavigationController::UserAgentOverrideOption
+  CalculateUserAgentOverrideOption(const GURL& url) const;
 
   // Return whether the tab is currently visible and the user can interact with
   // it.

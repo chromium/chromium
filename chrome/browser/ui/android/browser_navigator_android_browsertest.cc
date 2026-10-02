@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 
+#include <tuple>
+
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -21,8 +24,12 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -2273,4 +2280,120 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(0, tab_list2->GetActiveIndex());
   EXPECT_EQ(url2,
             tab_list2->GetActiveTab()->GetContents()->GetLastCommittedURL());
+}
+
+// This test verifies that the user agent override is set correctly for
+// browser-initiated navigations across combinations of content settings
+// and window open dispositions.
+class NavigateAndroidUserAgentOverrideBrowserTest
+    : public NavigateAndroidBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<ContentSetting, WindowOpenDisposition>> {
+ public:
+  ContentSetting GetContentSetting() const { return std::get<0>(GetParam()); }
+  WindowOpenDisposition GetDisposition() const {
+    return std::get<1>(GetParam());
+  }
+
+ protected:
+  // Navigates using the given NavigateParams and returns the last committed
+  // NavigationEntry.
+  content::NavigationEntry* NavigateAndWait(NavigateParams* params) {
+    base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+    Navigate(params, future.GetCallback());
+
+    base::WeakPtr<content::NavigationHandle> handle = future.Get();
+    EXPECT_TRUE(handle);
+    if (!handle) {
+      return nullptr;
+    }
+    content::WebContents* contents = handle->GetWebContents();
+    EXPECT_TRUE(contents);
+    if (!contents) {
+      return nullptr;
+    }
+
+    content::TestNavigationObserver observer(contents);
+    observer.Wait();
+
+    return contents ? contents->GetController().GetLastCommittedEntry()
+                    : nullptr;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigateAndroidUserAgentOverrideBrowserTest,
+                       RespectsDesktopSiteContentSettings) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(content_settings);
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  content_settings->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, GetContentSetting());
+
+  NavigateParams params(browser_window_, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = GetDisposition();
+  if (GetDisposition() == WindowOpenDisposition::CURRENT_TAB) {
+    params.source_contents = web_contents_;
+  }
+
+  content::NavigationEntry* entry = NavigateAndWait(&params);
+  ASSERT_TRUE(entry);
+  bool expected_is_overriding_user_agent =
+      GetContentSetting() == CONTENT_SETTING_ALLOW;
+  EXPECT_EQ(expected_is_overriding_user_agent,
+            entry->GetIsOverridingUserAgent());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NavigateAndroidUserAgentOverrideBrowserTest,
+    testing::Combine(testing::Values(CONTENT_SETTING_BLOCK,
+                                     CONTENT_SETTING_ALLOW),
+                     testing::Values(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     WindowOpenDisposition::NEW_WINDOW)));
+
+// Verifies that for browser-initiated navigations, navigating within
+// CURRENT_TAB from an ALLOW site to a BLOCK site resets the user agent
+// override (exercising UA_OVERRIDE_FALSE).
+IN_PROC_BROWSER_TEST_F(NavigateAndroidUserAgentOverrideBrowserTest,
+                       UserAgentOverride_CurrentTab_AllowToBlock) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(content_settings);
+
+  auto navigate_in_current_tab = [&](const GURL& url) {
+    NavigateParams params(browser_window_, url, ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.source_contents = web_contents_;
+    return NavigateAndWait(&params);
+  };
+
+  const GURL desktop_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL mobile_url = embedded_test_server()->GetURL("/title2.html");
+
+  // 1. Navigate to desktop_url with ALLOW (Desktop site) in CURRENT_TAB.
+  content_settings->SetContentSettingDefaultScope(
+      desktop_url, desktop_url, ContentSettingsType::REQUEST_DESKTOP_SITE,
+      CONTENT_SETTING_ALLOW);
+  content::NavigationEntry* entry1 = navigate_in_current_tab(desktop_url);
+  ASSERT_TRUE(entry1);
+  EXPECT_TRUE(entry1->GetIsOverridingUserAgent());
+
+  // 2. Set content setting to BLOCK (Mobile site) so navigating to mobile_url
+  // in CURRENT_TAB exercises UA_OVERRIDE_FALSE.
+  content_settings->SetContentSettingDefaultScope(
+      mobile_url, mobile_url, ContentSettingsType::REQUEST_DESKTOP_SITE,
+      CONTENT_SETTING_BLOCK);
+
+  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents_);
+  ASSERT_TRUE(tab_android);
+  EXPECT_EQ(content::NavigationController::UA_OVERRIDE_FALSE,
+            tab_android->CalculateUserAgentOverrideOption(mobile_url));
+
+  content::NavigationEntry* entry2 = navigate_in_current_tab(mobile_url);
+  ASSERT_TRUE(entry2);
+  EXPECT_FALSE(entry2->GetIsOverridingUserAgent());
 }

@@ -96,6 +96,7 @@ if (is_desktop_android) {
     deps = [
       "//base",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui",
@@ -104,6 +105,8 @@ if (is_desktop_android) {
       "//chrome/browser/ui/browser_window/test:android_browser_test_support",
       "//chrome/browser/ui/navigator",
       "//chrome/test:test_support_ui_android",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",

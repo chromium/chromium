@@ -262,6 +262,16 @@ int TabAndroid::GetUserAgent() const {
   return Java_TabImpl_getUserAgent(env, GetJavaObject(env));
 }
 
+content::NavigationController::UserAgentOverrideOption
+TabAndroid::CalculateUserAgentOverrideOption(const GURL& url) const {
+  JNIEnv* env = AttachCurrentThread();
+  auto j_obj = GetJavaObject(env);
+  if (!j_obj) {
+    return content::NavigationController::UA_OVERRIDE_INHERIT;
+  }
+  return Java_TabImpl_calculateUserAgentOverrideOption(env, j_obj, url);
+}
+
 bool TabAndroid::IsNativePage() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isNativePage(env, GetJavaObject(env));

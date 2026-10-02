@@ -3175,13 +3175,16 @@ class TabImpl implements Tab, TabInternal {
         return status;
     }
 
-    public @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
+    @CalledByNative
+    public @JniType("content::NavigationController::UserAgentOverrideOption")
+    @UserAgentOverrideOption int calculateUserAgentOverrideOption(
+            @JniType("GURL") @Nullable GURL url) {
         WebContents webContents = getWebContents();
         boolean currentRequestDesktopSite = TabUtils.isUsingDesktopUserAgent(webContents);
         // INHERIT means use the same UA that was used last time.
         @UserAgentOverrideOption int userAgentOverrideOption = UserAgentOverrideOption.INHERIT;
 
-        if (url == null && webContents != null) {
+        if (GURL.isEmptyOrInvalid(url) && webContents != null) {
             url = webContents.getVisibleUrl();
         }
 
