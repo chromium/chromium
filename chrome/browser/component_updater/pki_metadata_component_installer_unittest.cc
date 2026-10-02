@@ -409,7 +409,7 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(host_pins.size(), 0u);
 }
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // Tests that installing the PKI Metadata component does not update the pinning
 // list if the built in list is newer.
 TEST_F(PKIMetadataComponentInstallerTest,

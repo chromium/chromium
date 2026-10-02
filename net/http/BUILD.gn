@@ -140,9 +140,10 @@ source_set("transport_security_state_generated_files") {
   ]
 
   if (include_transport_security_state_preload_list) {
-    deps += [
-      ":generate_transport_security_state",
-      ":generate_transport_security_state_pins",
-    ]
+    deps += [ ":generate_transport_security_state" ]
+  }
+
+  if (chrome_key_pinning_supported) {
+    deps += [ ":generate_transport_security_state_pins" ]
   }
 }

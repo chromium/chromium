@@ -36,12 +36,29 @@ declare_args() {
   enable_reporting = !is_ios
 
   # Includes the transport security state preload list. This list includes
-  # mechanisms (e.g. HSTS, HPKP) to enforce trusted connections to a significant
+  # the HSTS mechanism to enforce trusted connections to a significant
   # set of hardcoded domains. While this list has a several hundred KB of binary
   # size footprint, this flag should not be disabled unless the embedder is
   # willing to take the responsibility to make sure that all important
   # connections use HTTPS.
   include_transport_security_state_preload_list = !is_cronet_build
+
+  # Includes the key pinning preload list and enforcement implementation.
+  #
+  # Note: there is a separate pinning enabled flag that is only true on
+  # GOOGLE_CHROME_BRANDING builds or in certain tests. This allows tests of the
+  # key pinning code and preload list to still be run in non-official builds.
+  #
+  # Note: this must contain all the chrome_root_store_supported builds. It also
+  # currently contains is_fuchsia and any other non-Cronet embedder build.
+  # TODO(crbug.com/497882860): perhaps this should be defined by inclusions
+  # rather than exclusions? Including is_fuchsia is probably intentional but
+  # other builds included currently might not be.
+  # TODO(crbug.com/497882860): This doesn't need to include iOS, should change
+  # to `!is_cronet_build && !is_ios`. However there are currently some
+  # transport_security_state_unittest tests that assume both buildflags are
+  # the same. Remove is_ios once the unittests are untangled.
+  chrome_key_pinning_supported = !is_cronet_build
 
   # Platforms for which certificate verification can be performed either using
   # the builtin cert verifier with the Chrome Root Store, or with the platform

@@ -57,7 +57,7 @@ const TransportSecurityStateSource* const kDefaultHSTSSource = nullptr;
 
 const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // TODO(crbug.com/497882860): Remove pins include from this file.
 #include "net/http/transport_security_state_static_pins.h"  // nogncheck
 // Points to the pins source.
@@ -583,7 +583,7 @@ size_t TransportSecurityState::num_sts_entries() const {
   return enabled_sts_hosts_.size();
 }
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // static
 base::Time TransportSecurityState::GetBuiltInPinsListTimestamp() {
   return kPinsListTimestamp;
@@ -899,7 +899,7 @@ bool TransportSecurityState::IsStaticPKPListTimely() const {
   // If the list has not been updated via component updater, freshness depends
   // on the compiled-in list freshness.
   if (!host_pins_.has_value()) {
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
     return (base::Time::Now() - kPinsListTimestamp).InDays() < 70;
 #else
     return false;

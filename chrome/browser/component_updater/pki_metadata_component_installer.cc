@@ -70,7 +70,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 #endif
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 #include "net/http/transport_security_state.h"
 #endif
 
@@ -840,14 +840,14 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
                                base::Seconds(proto->timestamp().seconds()) +
                                base::Nanoseconds(proto->timestamp().nanos());
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   // Do not update the pins list with the component data if it's older than the
   // built in list.
   if (proto_timestamp <
       net::TransportSecurityState::GetBuiltInPinsListTimestamp()) {
     return;
   }
-#endif  // BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
   network::mojom::PinListPtr pinlist_ptr = network::mojom::PinList::New();
 

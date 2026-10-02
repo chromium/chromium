@@ -78,6 +78,7 @@ buildflag_header("buildflags") {
     "ENABLE_WEBSOCKETS=$enable_websockets",
     "ENABLE_CLIENT_CERTIFICATES=$enable_client_certificates",
     "INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST=$include_transport_security_state_preload_list",
+    "CHROME_KEY_PINNING_SUPPORTED=$chrome_key_pinning_supported",
     "USE_KERBEROS=$use_kerberos",
     "USE_EXTERNAL_GSSAPI=$use_external_gssapi",
     "CHROME_ROOT_STORE_OPTIONAL=$chrome_root_store_optional",

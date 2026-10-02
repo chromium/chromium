@@ -1081,6 +1081,16 @@ TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 
+#if !BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+// TODO(crbug.com/497882860): Some of these tests currently assume that
+// INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST and
+// CHROME_KEY_PINNING_SUPPORTED are always the same, and will lead to a
+// null dereference if CHROME_KEY_PINNING_SUPPORTED is false and a test tries
+// to force key pinning to enabled using the production pin list.
+// This requirement should be removed once the test code is untangled further.
+#error "inconsistent build flags (see comment)"
+#endif
+
 class TransportSecurityStateStaticTest : public TransportSecurityStateTest {
  public:
   TransportSecurityStateStaticTest() {

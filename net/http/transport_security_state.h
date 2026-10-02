@@ -415,7 +415,7 @@ class NET_EXPORT TransportSecurityState {
   // The number of cached STSState entries.
   size_t num_sts_entries() const;
 
-#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   static base::Time GetBuiltInPinsListTimestamp();
 #endif
 
