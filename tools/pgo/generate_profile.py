@@ -35,7 +35,7 @@ import sys
 import time
 import psutil
 import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import List, Optional
 
 _SRC_DIR = pathlib.Path(__file__).parents[2]
@@ -128,11 +128,11 @@ class Benchmark:
         # Insert story as the second argument to make it easier to understand
         # what the benchmark command is running at a glance.
         copy_args.insert(1, f'--story={story}')
-        return Benchmark(
-            self.name,
-            copy_args,
-            self.enable_features.copy(),
-            self.disable_features.copy(),
+        return replace(
+            self,
+            args=copy_args,
+            enable_features=self.enable_features.copy(),
+            disable_features=self.disable_features.copy(),
         )
 
     def ProduceBrowserArgs(
