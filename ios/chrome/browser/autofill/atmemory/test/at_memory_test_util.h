@@ -37,15 +37,30 @@
 // Returns a matcher for the image displayed in the zero-state empty view.
 + (id<GREYMatcher>)emptyStateImage;
 
-// Returns a matcher for a search result cell matching the given subtitle text.
-+ (id<GREYMatcher>)searchResultCellWithSubtitle:(NSString*)subtitle;
+// Returns a matcher for a search result cell with the given `title`.
++ (id<GREYMatcher>)searchResultCellWithTitle:(NSString*)title;
 
 // Returns a matcher for the info button on a search result cell with the given
-// subtitle text.
-+ (id<GREYMatcher>)infoButtonForSearchResultWithSubtitle:(NSString*)subtitle;
+// `title`.
++ (id<GREYMatcher>)infoButtonForSearchResultWithTitle:(NSString*)title;
 
-// Returns a matcher for a granular fill chip button with the given label.
+// Returns a matcher for a granular fill chip button with the given `label`.
 + (id<GREYMatcher>)chipButtonWithLabel:(NSString*)label;
+
+// Returns a matcher for the "Manage your saved info" cell in granular fill.
++ (id<GREYMatcher>)manageSavedInfoCell;
+
+// Returns a matcher for the AtMemory zero-state empty view.
++ (id<GREYMatcher>)emptyView;
+
+// Returns a matcher for the inline privacy notice title label.
++ (id<GREYMatcher>)inlineNoticeTitle;
+
+// Returns a matcher for the inline privacy notice "OK" button.
++ (id<GREYMatcher>)inlineNoticeOKButton;
+
+// Returns a matcher for the AI disclosure footer view.
++ (id<GREYMatcher>)aiDisclosureFooter;
 
 @end
 

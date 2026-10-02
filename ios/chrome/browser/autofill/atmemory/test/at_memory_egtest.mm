@@ -7,6 +7,7 @@
 #import "base/path_service.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/personal_context/core/personal_context_debug_features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/atmemory/test/at_memory_test_util.h"
@@ -27,6 +28,7 @@ constexpr char kVehicleMakeFieldID[] = "vehicleMake";
 constexpr char kMakeFieldText[] = "Make:";
 constexpr char kHttpServerFilesDirectory[] =
     "ios/testing/data/http_server_files/";
+constexpr char kMockPersonalContextVehicleMakeResultType[] = "14";
 
 // Element IDs for SSL warning bypass.
 NSString* const kDetailsButtonID = @"details-button";
@@ -38,7 +40,21 @@ NSString* const kHttpsServerStartFailureMessage =
 
 // Search queries.
 NSString* const kCarSearchQuery = @"car";
+NSString* const kCarSearchQuerySuffix = @"s";
+NSString* const kCarsSearchQuery = @"cars";
 NSString* const kNoDataSearchQuery = @"flight";
+
+// Default entity GUID used by `autofill::test::GetVehicleEntityInstance()`.
+NSString* const kVehicleEntityID = @"00000000-0000-4000-8000-200000000000";
+
+// Test entity data and labels.
+NSString* const kVehicleMakeBMW = @"BMW";
+NSString* const kVehicleMakeDoubleFilledBMW = @"BMWBMW";
+NSString* const kVehicleModelSeries2 = @"Series 2";
+
+// JavaScript format strings.
+NSString* const kFieldValueCheckScriptFormat =
+    @"document.getElementById('%s')?.value === '%@'";
 
 // Starts the HTTPS test server serving test HTML files.
 void SetUpHTTPSServer(
@@ -83,6 +99,8 @@ void LoadVehicleFormPage(net::test_server::EmbeddedTestServer* test_server) {
   [ChromeEarlGrey loadURL:test_server->GetURL(kVehicleFormPageURL)];
   BypassSSLWarning();
   [ChromeEarlGrey waitForWebStateContainingText:kMakeFieldText];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not cached in main frame.");
 }
 
 // Focuses the `kVehicleMakeFieldID` input on the page and taps the AtMemory
@@ -97,6 +115,14 @@ void OpenAtMemoryForVehicleMakeField() {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil searchBar]];
+}
+
+// Verifies that the web input field with `field_id` has been filled with
+// `expected_value`.
+void VerifyFieldHasBeenFilled(const char* field_id, NSString* expected_value) {
+  NSString* condition = [NSString
+      stringWithFormat:kFieldValueCheckScriptFormat, field_id, expected_value];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 // Types `query` into the AtMemory search bar and taps the search prompt cell to
@@ -126,9 +152,29 @@ void AtMemorySearchWithQuery(NSString* query) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(autofill::features::kAutofillAtMemory);
   config.features_enabled.push_back(
+      autofill::features::kAutofillAtMemorySearchStatefulness);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillAtMemoryPreviouslyFilled);
+  config.features_enabled.push_back(
       autofill::features::debug::kAtMemorySkipEnablementChecks);
   config.features_enabled.push_back(
       autofill::features::kAutofillAiWithDataSchema);
+  // Mock query intent resolution to return `MemoryDataType::kVehicleMake`
+  // (14).
+  config.features_enabled_and_params.push_back(
+      {personal_context::features::debug::kMockPersonalContextResult,
+       {{{personal_context::features::debug::kMockPersonalContextResultTypeParam
+              .name,
+          kMockPersonalContextVehicleMakeResultType}}}});
+
+  if ([self isRunningTest:@selector(testInlineNoticeAcknowledge)]) {
+    config.features_enabled.push_back(
+        personal_context::features::debug::
+            kAutofillAmbientAutofillSkipEligibilityChecks);
+    config.features_enabled.push_back(
+        personal_context::features::debug::
+            kPersonalContextResetNoticePrefsOnStartup);
+  }
   return config;
 }
 
@@ -141,6 +187,7 @@ void AtMemorySearchWithQuery(NSString* query) {
 }
 
 - (void)tearDownHelper {
+  [AutofillAppInterface removeEntityWithUUID:kVehicleEntityID];
   [AutofillAppInterface setNetworkConnectionOffline:NO];
   _HTTPSServer.reset();
   [super tearDownHelper];
@@ -170,6 +217,94 @@ void AtMemorySearchWithQuery(NSString* query) {
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil noConnectionCell]];
+}
+
+// Tests that typing in the search bar updates the search prompt cell and
+// displays the AI disclosure footer.
+- (void)testTypingState {
+  [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil searchBar]]
+      performAction:grey_typeText(kCarSearchQuery)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil searchPromptCellWithQuery:kCarSearchQuery]];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil
+                                                          aiDisclosureFooter]];
+
+  [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil searchBar]]
+      performAction:grey_typeText(kCarSearchQuerySuffix)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil searchPromptCellWithQuery:kCarsSearchQuery]];
+}
+
+// Tests granular filling of a specific field from the entity details view.
+- (void)testGranularFill {
+  [AutofillAppInterface saveVehicleEntity];
+  AtMemorySearchWithQuery(kCarSearchQuery);
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil searchResultCellWithTitle:kVehicleMakeBMW]];
+  [[EarlGrey
+      selectElementWithMatcher:
+          [AtMemoryTestUtil infoButtonForSearchResultWithTitle:kVehicleMakeBMW]]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil chipButtonWithLabel:kVehicleModelSeries2]];
+  [[EarlGrey
+      selectElementWithMatcher:[AtMemoryTestUtil
+                                   chipButtonWithLabel:kVehicleModelSeries2]]
+      performAction:grey_tap()];
+
+  VerifyFieldHasBeenFilled(kVehicleMakeFieldID, kVehicleModelSeries2);
+}
+
+// Tests that previously filled items appear in the zero state and can be
+// selected to re-fill.
+- (void)testRecentFills {
+  [AutofillAppInterface saveVehicleEntity];
+  AtMemorySearchWithQuery(kCarSearchQuery);
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil searchResultCellWithTitle:kVehicleMakeBMW]];
+  [[EarlGrey
+      selectElementWithMatcher:[AtMemoryTestUtil
+                                   searchResultCellWithTitle:kVehicleMakeBMW]]
+      performAction:grey_tap()];
+
+  VerifyFieldHasBeenFilled(kVehicleMakeFieldID, kVehicleMakeBMW);
+
+  OpenAtMemoryForVehicleMakeField();
+
+  // Test filling with previously filled data works and appends to existing
+  // text.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          [AtMemoryTestUtil searchResultCellWithTitle:kVehicleMakeBMW]];
+  [[EarlGrey
+      selectElementWithMatcher:[AtMemoryTestUtil
+                                   searchResultCellWithTitle:kVehicleMakeBMW]]
+      performAction:grey_tap()];
+
+  VerifyFieldHasBeenFilled(kVehicleMakeFieldID, kVehicleMakeDoubleFilledBMW);
+}
+
+// Tests that the inline privacy notice is displayed and can be dismissed.
+- (void)testInlineNoticeAcknowledge {
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil inlineNoticeTitle]];
+  [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil inlineNoticeOKButton]]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:[AtMemoryTestUtil
+                                                 inlineNoticeTitle]];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil emptyView]];
 }
 
 @end
