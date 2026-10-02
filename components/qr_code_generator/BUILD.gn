@@ -13,7 +13,7 @@ declare_args() {
 
 # Error type shared between C++ and Rust.
 source_set("error") {
-  sources = [ "error.h" ]
+  public = [ "error.h" ]
 }
 
 source_set("bitmap_generator") {
@@ -45,10 +45,12 @@ buildflag_header("cpp_api_from_rust_buildflags") {
 }
 
 source_set("qr_code_generator") {
-  sources = [
-    "qr_code_generator.cc",
-    "qr_code_generator.h",
-  ]
+  # Enforces that `qr_code_generator.h` does not #include headers from private
+  # `deps`, which also stops GN from forwarding the Crubit bindings' hard_deps
+  # to targets depending on `:qr_code_generator`.
+  check_includes_strict = true
+  public = [ "qr_code_generator.h" ]
+  sources = [ "qr_code_generator.cc" ]
   deps = [ ":cpp_api_from_rust_buildflags" ]
   if (enable_cpp_api_from_rust) {
     deps += [
