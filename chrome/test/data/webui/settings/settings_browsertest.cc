@@ -1798,7 +1798,14 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingRadio) {
 
 using SettingsSecurityPageV2Test = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, Main) {
+// TODO(crbug.com/568529249): This test is failing flakily on Linux debug
+// builders because of timed out.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Main DISABLED_Main
+#else
+#define MAYBE_Main Main
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, MAYBE_Main) {
   RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('Main')");
 }
