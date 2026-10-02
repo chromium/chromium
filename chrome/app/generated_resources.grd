@@ -15413,7 +15413,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Didn't work?
         </message>
         <message name="IDS_DEFAULT_BROWSER_VISUAL_GUIDED_SETTER_OPEN_WINDOWS_SETTINGS" desc="Button label to open Windows settings in the default browser visual guided setter.">
-          Open windows settings
+          Open Windows settings
         </message>
       </if>
 
