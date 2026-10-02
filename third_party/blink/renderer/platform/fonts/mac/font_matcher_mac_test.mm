@@ -8,10 +8,11 @@
 #import <CoreText/CoreText.h>
 #include <Foundation/Foundation.h>
 
+#include <string_view>
+
 #include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -304,16 +305,17 @@ TEST_P(TestFontMatchingByNameAndWeight, TestCTAndNSMatchEqual) {
   bool flag;
   std::tie(font_name, weight, flag) = GetParam();
   ScopedFontFamilyPostscriptMatchingCTMigrationForTest scoped_feature(flag);
-  // AppKit computes weight values of some fonts not as discrete as CoreText.
-  // This is causing matching results of CoreText approach for some weight
-  // values of several font families to be more precise than AppKit's. For
-  // instance, if desired weight is 300, with AppKit approach will match
-  // "HelveticaNeue-Thin" font, while with CoreText we will match
-  // "HelveticaNeue-Light". This fonts should be skipped in this test.
-  // This issue is described in the comment under
-  // "MatchFamilyWithWeightVariations" test.
-  if (UNSAFE_TODO(strcmp(font_name.family_name, "Helvetica Neue")) == 0 ||
-      UNSAFE_TODO(strcmp(font_name.family_name, "Hiragino Sans")) == 0) {
+  // `MatchNSFontFamily` uses AppKit's integer weights (`font_info[2]`), whereas
+  // `MatchFontFamily` (when `MacFontWeightFromOS2` is enabled) reads
+  // `usWeightClass` from the `OS/2` table. Skip families where the font's
+  // declared `OS/2.usWeightClass` differs from AppKit's weight scale (e.g.,
+  // "Helvetica Neue", "Hiragino Sans", "Avenir" where Book and Roman both
+  // declare 400 and Black/Heavy declare 800/900, and "Gill Sans" where
+  // UltraBold declares 1000).
+  std::string_view family_name(font_name.family_name);
+  if (family_name == "Helvetica Neue" || family_name == "Hiragino Sans" ||
+      (RuntimeEnabledFeatures::MacFontWeightFromOS2Enabled() &&
+       (family_name == "Avenir" || family_name == "Gill Sans"))) {
     return;
   }
   TestCTAndNSMatchEqual(font_name.family_name, 11, weight, kNormalSlopeValue,
@@ -361,36 +363,85 @@ TEST(FontMatcherMacTest, FontFamilyMatchingWithBoldCondensedTraits) {
 }
 
 TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
-  // For some fonts AppKit returns inconsistent weight values in the font
-  // information, retrieved using `availableFontsForFamily`. For instance, both
-  // "NotoSansMyanmar-Light" and "NotoSansMyanmar-Thin" have AppKit weight value
-  // of 3, while "NotoSansMyanmar-Thin" should be thinner than
-  // "NotoSansMyanmar-Light".
-  // This behavior is affecting matching results. For instance, in this test, if
-  // the "FontFamilyStyleMatchingCTMigration" flag is off, we are using
-  // `availableFontsForFamily`, so for `weight=300` we will match
-  // "NotoSansMyanmar-Thin" font instead of "NotoSansMyanmar-Light".
-  // The same issue might appear with CoreText but less often. For instance, for
-  // both "AppleSDGothicNeo-Heavy" and "AppleSDGothicNeo-ExtraBold" CoreText
-  // returns font weight value 0.56, although weight value of
-  // "AppleSDGothicNeo-Heavy" is higher than weight value of
-  // "AppleSDGothicNeo-ExtraBold". However, for fonts in "Noto Sans Myanmar"
-  // family CoreText returns the correct weight values.
-  // Hence we only run this test with the "FontFamilyStyleMatchingCTMigration"
-  // flag on.
-  ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(true);
+  // For some fonts, both AppKit (`availableMembersOfFontFamily:`) and CoreText
+  // (`kCTFontWeightTrait`) report inconsistent weights: AppKit reports weight 3
+  // for both "NotoSansMyanmar-Thin" and "NotoSansMyanmar-Light", while CoreText
+  // swaps "NotoSansMyanmar-Thin" (`OS/2.usWeightClass` 100,
+  // `kCTFontWeightTrait` -0.6 -> 200) and "NotoSansMyanmar-ExtraLight"
+  // (`OS/2.usWeightClass` 200, `kCTFontWeightTrait` -0.8 -> 100). With
+  // `MacFontWeightFromOS2` enabled, both paths read `usWeightClass` from the
+  // `OS/2` table and match the expected face.
+  ScopedMacFontWeightFromOS2ForTest scoped_os2_weight(true);
+  struct TestCase {
+    int requested_weight;
+    const char* expected_ps_name;
+  };
+  constexpr TestCase kCases[] = {
+      {100, "NotoSansMyanmar-Thin"},   {200, "NotoSansMyanmar-ExtraLight"},
+      {300, "NotoSansMyanmar-Light"},  {400, "NotoSansMyanmar-Regular"},
+      {500, "NotoSansMyanmar-Medium"}, {600, "NotoSansMyanmar-SemiBold"},
+      {700, "NotoSansMyanmar-Bold"},   {800, "NotoSansMyanmar-ExtraBold"},
+      {900, "NotoSansMyanmar-Black"},
+  };
   AtomicString family_name = AtomicString("Noto Sans Myanmar");
-  for (int weight = 100; weight <= 900; weight += 100) {
-    ScopedCFTypeRef<CTFontRef> font =
-        MatchFontFamily(family_name, FontSelectionValue(weight),
-                        kNormalSlopeValue, kNormalWidthValue, 11);
-    NSDictionary* traits = CFToNSOwnershipCast(CTFontCopyTraits(font.get()));
-    NSNumber* actual_weight_num =
-        ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
+  for (bool ct_migration : {false, true}) {
+    ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(
+        ct_migration);
+    for (const auto& c : kCases) {
+      ScopedCFTypeRef<CTFontRef> font =
+          MatchFontFamily(family_name, FontSelectionValue(c.requested_weight),
+                          kNormalSlopeValue, kNormalWidthValue, 11);
+      ASSERT_TRUE(font) << "weight=" << c.requested_weight
+                        << " ct_migration=" << ct_migration;
+      ScopedCFTypeRef<CFStringRef> matched_postscript_name(
+          CTFontCopyPostScriptName(font.get()));
+      ScopedCFTypeRef<CFStringRef> expected_postscript_name(
+          CFStringCreateWithCString(nullptr, c.expected_ps_name,
+                                    kCFStringEncodingUTF8));
+      EXPECT_EQ(CFStringCompare(matched_postscript_name.get(),
+                                expected_postscript_name.get(),
+                                kCFCompareCaseInsensitive),
+                kCFCompareEqualTo)
+          << "weight=" << c.requested_weight
+          << " ct_migration=" << ct_migration;
+    }
+  }
+}
 
-    float actual_ct_weight = actual_weight_num.floatValue;
-    int actual_weight = ToCSSFontWeight(actual_ct_weight);
-    EXPECT_EQ(actual_weight, weight);
+TEST(FontMatcherMacTest, HiraginoSansWeightMatching) {
+  ScopedMacFontWeightFromOS2ForTest scoped_os2_weight(true);
+  struct TestCase {
+    int requested_weight;
+    const char* expected_ps_name;
+  };
+  constexpr TestCase kCases[] = {
+      {100, "HiraginoSans-W0"}, {200, "HiraginoSans-W1"},
+      {250, "HiraginoSans-W2"}, {300, "HiraginoSans-W3"},
+      {400, "HiraginoSans-W4"}, {500, "HiraginoSans-W5"},
+      {600, "HiraginoSans-W6"}, {700, "HiraginoSans-W7"},
+      {800, "HiraginoSans-W8"}, {900, "HiraginoSans-W9"},
+  };
+  for (bool ct_migration : {false, true}) {
+    ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(
+        ct_migration);
+    for (const auto& c : kCases) {
+      ScopedCFTypeRef<CTFontRef> font = MatchFontFamily(
+          AtomicString("Hiragino Sans"), FontSelectionValue(c.requested_weight),
+          kNormalSlopeValue, kNormalWidthValue, 11);
+      ASSERT_TRUE(font) << "weight=" << c.requested_weight
+                        << " ct_migration=" << ct_migration;
+      ScopedCFTypeRef<CFStringRef> matched_postscript_name(
+          CTFontCopyPostScriptName(font.get()));
+      ScopedCFTypeRef<CFStringRef> expected_postscript_name(
+          CFStringCreateWithCString(nullptr, c.expected_ps_name,
+                                    kCFStringEncodingUTF8));
+      EXPECT_EQ(CFStringCompare(matched_postscript_name.get(),
+                                expected_postscript_name.get(),
+                                kCFCompareCaseInsensitive),
+                kCFCompareEqualTo)
+          << "weight=" << c.requested_weight
+          << " ct_migration=" << ct_migration;
+    }
   }
 }
 

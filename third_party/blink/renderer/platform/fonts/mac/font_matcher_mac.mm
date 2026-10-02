@@ -34,9 +34,13 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
+#include <optional>
+#include <utility>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -226,6 +230,49 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
   return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
 }
 
+// Reads `usWeightClass` from the font's OpenType `OS/2` table if present and
+// valid. Both AppKit (`availableMembersOfFontFamily:`) and CoreText
+// (`kCTFontWeightTrait`) apply heuristic weight mappings that can collapse
+// distinct weights (e.g., Thin and Light in PingFang SC/TC, Noto Sans Myanmar)
+// or shift weights (e.g., Hiragino Sans W2-W8). Reading `usWeightClass`
+// directly from the `OS/2` table provides the authoritative CSS weight
+// declared by the font.
+std::optional<uint16_t> Os2WeightFromCTFont(CTFontRef font) {
+  if (!font) [[unlikely]] {
+    return std::nullopt;
+  }
+  ScopedCFTypeRef<CFDataRef> os2_table(
+      CTFontCopyTable(font, kCTFontTableOS2, kCTFontTableOptionNoOptions));
+  if (!os2_table) [[unlikely]] {
+    return std::nullopt;
+  }
+  // In the OpenType OS/2 table, `usWeightClass` is a big-endian uint16_t at
+  // byte offset 4 (following uint16_t version and int16_t xAvgCharWidth).
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/os2
+  constexpr size_t kOs2WeightClassOffset = 4;
+  base::span<const uint8_t> bytes = base::apple::CFDataToSpan(os2_table.get());
+  if (bytes.size() < kOs2WeightClassOffset + sizeof(uint16_t)) [[unlikely]] {
+    return std::nullopt;
+  }
+  const uint16_t weight_class = base::U16FromBigEndian(
+      bytes.subspan<kOs2WeightClassOffset, sizeof(uint16_t)>());
+  if (weight_class >= 10 && weight_class <= 1000) {
+    // Values from 10 to 1000 are valid as is.
+    // - Values from 1 to 9 are legacy values that needs conversions. See below.
+    // - Values from 1 to 1000 are valid:
+    //   https://learn.microsoft.com/en-us/typography/opentype/spec/os2#usweightclass
+    return weight_class;
+  }
+  if (weight_class >= 1) {
+    // Some legacy TrueType fonts use 1-9 instead of 100-900; see Apple's
+    // TrueType Reference Manual:
+    // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
+    // and Skia's `SkOTTable_OS_2_VA.h` / `SkCTFont.cpp`.
+    return weight_class * 100;
+  }
+  return std::nullopt;
+}
+
 // This function is similar to `BestStyleMatchForFamily` except
 // it uses AppKit `availableMembersOfFontFamily` instead of CoreText API
 // to retrieve information about the fonts from the desired family.
@@ -254,13 +301,25 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
                                    size);
   }
 
-  NSString* matched_font_name;
+  const bool use_os2_weight =
+      RuntimeEnabledFeatures::MacFontWeightFromOS2Enabled();
+  NSString* matched_font_name = nil;
+  ScopedCFTypeRef<CTFontRef> matched_font;
   CTFontSymbolicTraits chosen_traits;
   int chosen_weight;
   for (NSArray* font_info in fonts) {
+    NSString* candidate_name = font_info[0];
+    ScopedCFTypeRef<CTFontRef> candidate_font;
+    std::optional<uint16_t> os2_weight;
+    if (use_os2_weight && candidate_name) {
+      candidate_font.reset(
+          CTFontCreateWithName(NSToCFPtrCast(candidate_name), size, nullptr));
+      os2_weight = Os2WeightFromCTFont(candidate_font.get());
+    }
     int candidate_weight = kNormalWeightValue;
-    NSNumber* candidate_weight_ns = font_info[2];
-    if (candidate_weight_ns) {
+    if (os2_weight) {
+      candidate_weight = *os2_weight;
+    } else if (NSNumber* candidate_weight_ns = font_info[2]) {
       candidate_weight = AppKitToCSSFontWeight(candidate_weight_ns.intValue);
     }
 
@@ -273,7 +332,8 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
     if (!matched_font_name ||
         BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
                        chosen_weight, candidate_traits, candidate_weight)) {
-      matched_font_name = font_info[0];
+      matched_font_name = candidate_name;
+      matched_font = std::move(candidate_font);
       chosen_traits = candidate_traits;
       chosen_weight = candidate_weight;
 
@@ -287,7 +347,9 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
   if (!matched_font_name) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
-
+  if (matched_font) {
+    return matched_font;
+  }
   return ScopedCFTypeRef<CTFontRef>(
       CTFontCreateWithName(NSToCFPtrCast(matched_font_name), size, nullptr));
 }
@@ -311,6 +373,8 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
+  const bool use_os2_weight =
+      RuntimeEnabledFeatures::MacFontWeightFromOS2Enabled();
   ScopedCFTypeRef<CTFontRef> matched_font_in_family;
   CTFontSymbolicTraits chosen_traits;
   int chosen_weight;
@@ -322,8 +386,17 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
       continue;
     }
 
+    ScopedCFTypeRef<CTFontRef> candidate_font;
+    std::optional<uint16_t> os2_weight;
+    if (use_os2_weight) {
+      candidate_font.reset(
+          CTFontCreateWithFontDescriptor(descriptor, size, nullptr));
+      os2_weight = Os2WeightFromCTFont(candidate_font.get());
+    }
+
     int candidate_traits = kCTNormalTraitsValue;
-    int candidate_weight = kNormalWeightValue;
+    int candidate_weight =
+        os2_weight ? *os2_weight : static_cast<int>(kNormalWeightValue);
     ScopedCFTypeRef<CFTypeRef> traits_ref(
         CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute));
     NSDictionary* traits =
@@ -335,18 +408,24 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
         candidate_traits = candidate_traits_num.intValue;
       }
 
-      NSNumber* candidate_weight_num =
-          ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
-      if (candidate_weight_num) {
-        candidate_weight = ToCSSFontWeight(candidate_weight_num.floatValue);
+      if (!os2_weight) {
+        NSNumber* candidate_weight_num =
+            ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
+        if (candidate_weight_num) {
+          candidate_weight = ToCSSFontWeight(candidate_weight_num.floatValue);
+        }
       }
     }
 
     if (!matched_font_in_family ||
         BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
                        chosen_weight, candidate_traits, candidate_weight)) {
-      matched_font_in_family.reset(
-          CTFontCreateWithFontDescriptor(descriptor, size, nullptr));
+      if (candidate_font) {
+        matched_font_in_family = std::move(candidate_font);
+      } else {
+        matched_font_in_family.reset(
+            CTFontCreateWithFontDescriptor(descriptor, size, nullptr));
+      }
       chosen_traits = candidate_traits;
       chosen_weight = candidate_weight;
       // If we found a font with the exact weight and traits we asked for, we

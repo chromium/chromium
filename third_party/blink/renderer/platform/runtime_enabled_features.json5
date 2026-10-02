@@ -4135,6 +4135,12 @@
       status: "stable",
     },
     {
+      // Read font weight from the OpenType OS/2 table first during macOS font
+      // family style matching, falling back to AppKit/CoreText weights if the
+      // OS/2 table is unavailable. See https://crbug.com/543243014.
+      name: "MacFontWeightFromOS2",
+    },
+    {
       name: "MachineLearningNeuralNetwork",
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
