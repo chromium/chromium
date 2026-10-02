@@ -83,11 +83,11 @@ BASE_FEATURE(kOnlyUseWindowResizeHelperOnResize,
 
 // Re-create the CAContext on window resize to try to better synchronize the
 // resize.
-BASE_FEATURE(kCAContextFenceOnResize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCAContextFenceOnResize, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Make live-resize of an NSWindow be asynchronous (so it doesn't block the
 // UI thread).
-BASE_FEATURE(kAsyncLiveResize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAsyncLiveResize, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keeps the NSWindow invisible (via its `alphaValue`) until the first
 // compositor frame has been received.

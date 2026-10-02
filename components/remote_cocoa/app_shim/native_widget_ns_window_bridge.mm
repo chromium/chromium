@@ -2033,6 +2033,10 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
     return;
   compositor_frame_dip_size_ = frame_dip_size;
 
+  // Take the fence mach port (if any), and only release it after the NSWindow
+  // resize.
+  auto fence_mach_port = std::move(ca_layer_params.ca_context_fence_mach_port);
+
   // Update the contents atomically with the NSWindow frame resize.
   std::optional<ScopedCAActionDisabler> disabler;
   if (live_resize_.pending_window_frame.has_value()) {
