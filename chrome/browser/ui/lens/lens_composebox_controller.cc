@@ -258,13 +258,13 @@ void LensComposeboxController::DeleteContext(const base::UnguessableToken& id) {
   // the overlay to clear the visual selection.
   if (vsc_image_data_ && vsc_image_data_->id == id) {
     vsc_image_data_.reset();
-    lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
+    lens_search_controller_->lens_overlay_controller()->ClearRegionSelection();
   }
 }
 
 void LensComposeboxController::ClearFiles() {
   ClearVisualSelectionContext();
-  lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
+  lens_search_controller_->lens_overlay_controller()->ClearRegionSelection();
 }
 
 lens::LensSessionMetricsLogger*
