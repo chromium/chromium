@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -288,23 +289,58 @@ void EditContext::updateCharacterBounds(
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
-  control_bounds_ = gfx::ToEnclosingRect(
+  const gfx::Rect new_control_bounds = gfx::ToEnclosingRect(
       gfx::RectF(ClampToWithNaNTo0<float>(control_bounds->x()),
                  ClampToWithNaNTo0<float>(control_bounds->y()),
                  ClampToWithNaNTo0<float>(control_bounds->width()),
                  ClampToWithNaNTo0<float>(control_bounds->height())));
+  const bool changed = new_control_bounds != control_bounds_;
+  control_bounds_ = new_control_bounds;
   TRACE_EVENT1("ime", "EditContext::updateControlBounds", "control_bounds",
                control_bounds_.ToString());
+  if (changed) {
+    ScheduleTextInputStateUpdateIfActive();
+  }
 }
 
 void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
-  selection_bounds_ = gfx::ToEnclosingRect(
+  const gfx::Rect new_selection_bounds = gfx::ToEnclosingRect(
       gfx::RectF(ClampToWithNaNTo0<float>(selection_bounds->x()),
                  ClampToWithNaNTo0<float>(selection_bounds->y()),
                  ClampToWithNaNTo0<float>(selection_bounds->width()),
                  ClampToWithNaNTo0<float>(selection_bounds->height())));
+  const bool changed = new_selection_bounds != selection_bounds_;
+  selection_bounds_ = new_selection_bounds;
   TRACE_EVENT1("ime", "EditContext::updateSelectionBounds", "selection_bounds",
                selection_bounds_.ToString());
+  if (changed) {
+    ScheduleTextInputStateUpdateIfActive();
+  }
+}
+
+void EditContext::ScheduleTextInputStateUpdateIfActive() {
+  if (!RuntimeEnabledFeatures::EditContextBoundsUpdateSchedulesFrameEnabled()) {
+    return;
+  }
+  // The EditContext may outlive its frame (e.g. after the document is
+  // detached), so don't use GetInputMethodController(), which assumes a frame.
+  LocalDOMWindow* window = DomWindow();
+  if (!window) {
+    return;
+  }
+  LocalFrame* frame = window->GetFrame();
+  if (!frame ||
+      frame->GetInputMethodController().GetActiveEditContext() != this) {
+    return;
+  }
+  // WidgetBase::DidBeginMainFrame() calls UpdateTextInputState(), which sends
+  // TextInputStateChanged if the EditContext bounds differ from what was last
+  // sent. This runs even if the frame ends up having no visual updates, so
+  // requesting an animation frame is sufficient, and multiple bounds updates
+  // within one frame are coalesced into a single IPC.
+  if (LocalFrameView* view = frame->View()) {
+    view->ScheduleAnimation();
+  }
 }
 
 void EditContext::updateText(uint32_t start,

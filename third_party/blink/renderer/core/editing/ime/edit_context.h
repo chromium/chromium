@@ -236,6 +236,15 @@ class CORE_EXPORT EditContext final : public EventTarget,
  private:
   InputMethodController& GetInputMethodController() const;
 
+  // Called when `control_bounds_` or `selection_bounds_` change. If this is
+  // the active EditContext, schedules a main frame so that
+  // WidgetBase::UpdateTextInputState() runs (from DidBeginMainFrame()) and
+  // sends the new bounds to the browser via TextInputStateChanged. Without
+  // this, bounds updated from a timer or other async task (which neither
+  // mutate the DOM nor dirty layout) would not be sent until some unrelated
+  // frame is produced.
+  void ScheduleTextInputStateUpdateIfActive();
+
   void DeleteCurrentSelection();
 
   // Events fired to JS.

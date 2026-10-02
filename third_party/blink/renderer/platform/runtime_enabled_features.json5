@@ -2665,6 +2665,14 @@
       status: "test"
     },
     {
+      // Schedule a main frame when EditContext.updateControlBounds() or
+      // updateSelectionBounds() changes the bounds of the active EditContext,
+      // so the new bounds are sent to the browser in TextInputStateChanged even
+      // when called from an async task that doesn't otherwise cause a frame.
+      name: "EditContextBoundsUpdateSchedulesFrame",
+      status: "stable",
+    },
+    {
       // Support code point-based deletion calculations in
       // DeleteSurroundingTextInCodePoints() for EditContext.
       name: "EditContextCodePointDeletion",

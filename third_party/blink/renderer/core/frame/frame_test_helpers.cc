@@ -1145,6 +1145,8 @@ void TestWebFrameWidgetHost::TextInputStateChanged(
     ui::mojom::blink::TextInputStatePtr state) {
   if (state->show_ime_if_needed)
     ++virtual_keyboard_request_count_;
+  ++text_input_state_changed_count_;
+  last_text_input_state_ = std::move(state);
 }
 
 void TestWebFrameWidgetHost::SelectionBoundsChanged(
