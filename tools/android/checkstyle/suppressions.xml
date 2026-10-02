@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN" "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN" "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
+  <!-- Ignore Javadoc syntax errors from AbstractJavadocCheck subclasses (e.g. UnusedImports, JavadocType). -->
+  <suppress message="Javadoc comment at column \d+ has parse error"/>
   <!-- Code in chrome/ should use SharedPreferencesManager. Ref: crbug.com/1022108 -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
             files="src/(android_webview|base|chromecast|components|content|device|media|net|remoting|services|testing|third_party|tools|ui)/"/>

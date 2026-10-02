@@ -224,6 +224,19 @@ public class A {
         self._check()
 
     @java("""
+/**
+ * @see {@link #test()}
+ */
+public class A {
+    /** Calls {@link #test)}. */
+    public void test() {
+    }
+}
+""")
+    def test_JavadocParseError(self):
+        self._check()
+
+    @java("""
 package MyPackage;
 class A {
 }
