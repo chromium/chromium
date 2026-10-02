@@ -4,46 +4,72 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
+#import "base/callback_list.h"
+#import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 
 namespace {
 
-// Error messages displayed when microphone permissions or recording fails.
-NSString* const kMicrophonePermissionDeniedError =
-    @"Microphone permission denied";
-NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
+// Error message displayed when the TTC service is unavailable.
+NSString* const kServiceUnavailableError = @"TTC service is unavailable";
+
+// Default error message displayed when a session error occurs without a
+// specific description.
+NSString* const kDefaultSessionError = @"Voice session encountered an error";
+
+// Converts a `TTCSessionLifecycle` to the corresponding `TTCSessionUIState`.
+TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
+  switch (lifecycle) {
+    case TTCSessionLifecycle::kInitializing:
+      return TTCSessionUIState::kConnecting;
+    case TTCSessionLifecycle::kLive:
+      return TTCSessionUIState::kListening;
+    case TTCSessionLifecycle::kFinished:
+      return TTCSessionUIState::kIdle;
+  }
+}
 
 }  // namespace
 
-@interface TTCMediator () <TTCAudioControllerDelegate>
+@interface TTCMediator () <TTCSessionControllerObserver>
 @end
 
 @implementation TTCMediator {
   // Current voice session lifecycle state (Idle, Connecting, Listening, Error).
-  TTCSessionState _currentState;
+  TTCSessionUIState _currentState;
 
-  // Audio engine managing CoreAudio microphone capture, playback, and RMS.
-  TTCAudioEngine* _audioEngine;
+  // TTC keyed service for the profile.
+  raw_ptr<TTCKeyedService> _ttcService;
 
-  // Whether developer diagnostic test audio is currently playing.
-  BOOL _isTestAudioActive;
+  // Subscription observing state changes in TTCKeyedService.
+  base::CallbackListSubscription _stateChangeSubscription;
+
+  // Weak reference to the currently observed session controller.
+  __weak TTCSessionController* _observedSessionController;
 }
 
-- (instancetype)initWithAudioEngine:(TTCAudioEngine*)audioEngine {
+#pragma mark - Initialization
+
+- (instancetype)initWithTTCService:(TTCKeyedService*)ttcService {
   self = [super init];
   if (self) {
-    _currentState = TTCSessionState::kIdle;
-    _audioEngine = audioEngine;
-    _audioEngine.delegate = self;
-    _isTestAudioActive = NO;
+    _currentState = TTCSessionUIState::kIdle;
+    _ttcService = ttcService;
+    if (_ttcService) {
+      __weak TTCMediator* weakSelf = self;
+      _stateChangeSubscription = _ttcService->RegisterStateChangedCallback(
+          base::BindRepeating(^(TTCServiceState state) {
+            [weakSelf handleServiceStateChanged:state];
+          }));
+      [self startObservingSessionControllerIfNeeded];
+    }
   }
   return self;
-}
-
-- (instancetype)init {
-  return [self initWithAudioEngine:[[TTCAudioEngine alloc] init]];
 }
 
 #pragma mark - Setters
@@ -58,108 +84,118 @@ NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
 #pragma mark - TTCMutator
 
 - (void)startSession {
-  _currentState = TTCSessionState::kConnecting;
-  [self.consumer setSessionState:_currentState];
+  if (!_ttcService || !_ttcService->IsEnabled()) {
+    _currentState = TTCSessionUIState::kError;
+    [self.consumer setSessionState:_currentState];
+    [self.consumer didEncounterError:kServiceUnavailableError];
+    return;
+  }
 
-  __weak TTCMediator* weakSelf = self;
-  [_audioEngine startCaptureWithCompletion:^(BOOL success, NSError* error) {
-    [weakSelf didStartCaptureWithSuccess:success error:error];
-  }];
+  if (_observedSessionController || _ttcService->is_session_active()) {
+    return;
+  }
+
+  _ttcService->StartSession();
+  [self startObservingSessionControllerIfNeeded];
 }
 
 - (void)stopSession {
-  [_audioEngine stopCapture];
-  _currentState = TTCSessionState::kIdle;
-  [self.consumer setSessionState:TTCSessionState::kIdle];
-  [self.consumer setMicEnergyLevel:0.0f];
+  if (_ttcService && _ttcService->is_session_active()) {
+    _ttcService->EndSession();
+  }
 }
 
 - (void)setLoopbackEnabled:(BOOL)enabled {
-  _audioEngine.loopbackEnabled = enabled;
   [self.consumer setLoopbackEnabled:enabled];
 }
 
 - (void)playTestAudio {
-  _isTestAudioActive = YES;
-  [self.consumer setTestAudioPlaying:YES];
-  [_audioEngine playTestTone];
+  [self.consumer setTestAudioPlaying:NO];
 }
 
 - (void)stopTestAudio {
-  _isTestAudioActive = NO;
   [self.consumer setTestAudioPlaying:NO];
-  [_audioEngine stopTestTone];
 }
 
 - (void)viewWillAppear {
   [self hydrateConsumer];
 }
 
-#pragma mark - TTCAudioControllerDelegate
+#pragma mark - TTCSessionControllerObserver
 
-- (void)audioController:(id<TTCAudioController>)controller
-    didUpdateInputEnergy:(float)rms {
-  if (_currentState != TTCSessionState::kListening) {
+- (void)sessionController:(TTCSessionController*)controller
+       didChangeLifecycle:(TTCSessionLifecycle)lifecycle {
+  [self updateConsumerForLifecycle:lifecycle];
+}
+
+- (void)sessionController:(TTCSessionController*)controller
+      didUpdateAudioLevel:(float)audioLevel {
+  if (_currentState != TTCSessionUIState::kListening) {
     return;
   }
-  [_consumer setMicEnergyLevel:rms];
+  [self.consumer setMicEnergyLevel:audioLevel];
 }
 
-- (void)audioControllerDidStartPlayback:(id<TTCAudioController>)controller {
-  if (_isTestAudioActive) {
-    [self.consumer setTestAudioPlaying:YES];
-  }
-}
-
-- (void)audioControllerDidStopPlayback:(id<TTCAudioController>)controller {
-  if (_isTestAudioActive) {
-    _isTestAudioActive = NO;
-    [self.consumer setTestAudioPlaying:NO];
-  }
-}
-
-- (void)audioController:(id<TTCAudioController>)controller
-      didEncounterError:(NSError*)error {
-  _currentState = TTCSessionState::kError;
-  [_consumer setSessionState:_currentState];
-  [_consumer didEncounterError:error.localizedDescription
-                                   ?: kFailedToStartCaptureError];
+- (void)sessionController:(TTCSessionController*)controller
+         didFailWithError:(NSError*)error {
+  _currentState = TTCSessionUIState::kError;
+  [self.consumer setSessionState:_currentState];
+  [self.consumer
+      didEncounterError:error.localizedDescription ?: kDefaultSessionError];
 }
 
 #pragma mark - Public
 
 - (void)disconnect {
-  _isTestAudioActive = NO;
-  [_audioEngine disconnect];
-  _audioEngine.delegate = nil;
-  _audioEngine = nil;
-  _currentState = TTCSessionState::kIdle;
+  [self stopObservingSessionControllerIfNeeded];
+  _stateChangeSubscription = {};
+  _ttcService = nullptr;
   _consumer = nil;
 }
 
 #pragma mark - Private
 
-
-// Handles the result of starting audio capture. If successful, transitions
-// the session to listening state; otherwise transitions to error state.
-- (void)didStartCaptureWithSuccess:(BOOL)success error:(NSError*)error {
-  // Discard callback if the session was stopped or disconnected while startup
-  // was pending.
-  if (_currentState != TTCSessionState::kConnecting) {
-    if (success) {
-      [_audioEngine stopCapture];
-    }
+// Starts observing the active session controller if not already observing.
+- (void)startObservingSessionControllerIfNeeded {
+  if (_observedSessionController || !_ttcService ||
+      !_ttcService->session_controller()) {
     return;
   }
+  _observedSessionController = _ttcService->session_controller();
+  [_observedSessionController addObserver:self];
+  [self updateConsumerForLifecycle:_observedSessionController.lifecycle];
+}
 
-  if (success) {
-    _currentState = TTCSessionState::kListening;
-    [self.consumer setSessionState:_currentState];
-  } else {
-    _currentState = TTCSessionState::kError;
-    [self.consumer setSessionState:_currentState];
-    [self.consumer didEncounterError:error.localizedDescription
-                                         ?: kFailedToStartCaptureError];
+// Stops observing the active session controller if currently observing.
+- (void)stopObservingSessionControllerIfNeeded {
+  if (!_observedSessionController) {
+    return;
+  }
+  [_observedSessionController removeObserver:self];
+  _observedSessionController = nil;
+}
+
+// Updates `_currentState` and notifies the consumer based on the session
+// controller lifecycle.
+- (void)updateConsumerForLifecycle:(TTCSessionLifecycle)lifecycle {
+  _currentState = SessionUIStateForLifecycle(lifecycle);
+  [self.consumer setSessionState:_currentState];
+  if (_currentState == TTCSessionUIState::kIdle) {
+    [self.consumer setMicEnergyLevel:0.0f];
+  }
+}
+
+// Handles service state changes dispatched by `TTCKeyedService`.
+- (void)handleServiceStateChanged:(TTCServiceState)state {
+  if (state == TTCServiceState::kSessionActive) {
+    [self startObservingSessionControllerIfNeeded];
+  } else if (state == TTCServiceState::kSessionInactive) {
+    [self stopObservingSessionControllerIfNeeded];
+    if (_currentState != TTCSessionUIState::kError) {
+      _currentState = TTCSessionUIState::kIdle;
+      [self.consumer setSessionState:TTCSessionUIState::kIdle];
+      [self.consumer setMicEnergyLevel:0.0f];
+    }
   }
 }
 
@@ -170,8 +206,8 @@ NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
   }
   [_consumer setSessionState:_currentState];
   [_consumer setMicEnergyLevel:0.0f];
-  [_consumer setLoopbackEnabled:_audioEngine.loopbackEnabled];
-  [_consumer setTestAudioPlaying:_isTestAudioActive];
+  [_consumer setLoopbackEnabled:NO];
+  [_consumer setTestAudioPlaying:NO];
 }
 
 @end

@@ -47,7 +47,7 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
 }  // namespace
 
 @implementation TTCViewController {
-  TTCSessionState _currentState;
+  TTCSessionUIState _currentState;
   BOOL _isTestAudioPlaying;
   BOOL _isLoopbackEnabled;
 
@@ -68,7 +68,7 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _feature = feature;
-    _currentState = TTCSessionState::kIdle;
+    _currentState = TTCSessionUIState::kIdle;
     _isTestAudioPlaying = NO;
     _isLoopbackEnabled = NO;
   }
@@ -144,8 +144,10 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
   // Microphone Input Level Card.
   UIView* meterCard = [self createMeterCard];
 
-  // Developer Diagnostics Card.
+  // Developer Diagnostics Card (hidden as prototype audio diagnostics are
+  // disconnected from the live service session).
   UIView* diagnosticsCard = [self createDiagnosticsCard];
+  diagnosticsCard.hidden = YES;
 
   // Main Vertical Content Stack.
   UIStackView* mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -207,36 +209,36 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
 
 #pragma mark - TTCConsumer
 
-- (void)setSessionState:(TTCSessionState)state {
+- (void)setSessionState:(TTCSessionUIState)state {
   _currentState = state;
   switch (state) {
-    case TTCSessionState::kIdle:
+    case TTCSessionUIState::kIdle:
       _micButton.backgroundColor = [UIColor colorNamed:kBlueColor];
       _statusLabel.text = kStatusLabelIdleText;
       _statusLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
       [_energyLevelMeter setProgress:0.0 animated:NO];
       break;
-    case TTCSessionState::kConnecting:
+    case TTCSessionUIState::kConnecting:
       _micButton.backgroundColor = [UIColor colorNamed:kOrange500Color];
       _statusLabel.text = kStatusLabelConnectingText;
       _statusLabel.textColor = [UIColor colorNamed:kOrange500Color];
       break;
-    case TTCSessionState::kHandshaking:
+    case TTCSessionUIState::kHandshaking:
       _micButton.backgroundColor = [UIColor colorNamed:kOrange500Color];
       _statusLabel.text = kStatusLabelHandshakingText;
       _statusLabel.textColor = [UIColor colorNamed:kOrange500Color];
       break;
-    case TTCSessionState::kListening:
+    case TTCSessionUIState::kListening:
       _micButton.backgroundColor = [UIColor colorNamed:kRedColor];
       _statusLabel.text = kStatusLabelListeningText;
       _statusLabel.textColor = [UIColor colorNamed:kRedColor];
       break;
-    case TTCSessionState::kModelSpeaking:
+    case TTCSessionUIState::kModelSpeaking:
       _micButton.backgroundColor = [UIColor colorNamed:kGreenColor];
       _statusLabel.text = kStatusLabelModelSpeakingText;
       _statusLabel.textColor = [UIColor colorNamed:kGreenColor];
       break;
-    case TTCSessionState::kError:
+    case TTCSessionUIState::kError:
       _micButton.backgroundColor = [UIColor colorNamed:kBlueColor];
       _statusLabel.text = kStatusLabelErrorText;
       _statusLabel.textColor = [UIColor colorNamed:kRedColor];
@@ -283,8 +285,8 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
 #pragma mark - Actions
 
 - (void)micButtonTapped:(UIButton*)sender {
-  if (_currentState != TTCSessionState::kIdle &&
-      _currentState != TTCSessionState::kError) {
+  if (_currentState != TTCSessionUIState::kIdle &&
+      _currentState != TTCSessionUIState::kError) {
     [self.ttcMutator stopSession];
     return;
   }

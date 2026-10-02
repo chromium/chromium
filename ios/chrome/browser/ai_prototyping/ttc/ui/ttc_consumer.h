@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-// High-level session states for the TalkToChrome experience.
-enum class TTCSessionState {
+// High-level session UI states for the TTC experience.
+enum class TTCSessionUIState {
   // Idle state; audio and network sessions are inactive.
   kIdle = 0,
   // Establishing connection with model endpoint.
@@ -28,7 +28,7 @@ enum class TTCSessionState {
 @protocol TTCConsumer <NSObject>
 
 // Updates the current high-level voice session state.
-- (void)setSessionState:(TTCSessionState)state;
+- (void)setSessionState:(TTCSessionUIState)state;
 
 // Updates the microphone input energy level in RMS (normalized 0.0 - 1.0).
 - (void)setMicEnergyLevel:(float)rms;

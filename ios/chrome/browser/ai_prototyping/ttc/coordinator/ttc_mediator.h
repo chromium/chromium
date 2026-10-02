@@ -9,23 +9,24 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_mutator.h"
 
-@class TTCAudioEngine;
+class TTCKeyedService;
 @protocol TTCConsumer;
 
-// Mediator driving the TalkToChrome microphone input debug UI.
+// Mediator driving the TTC UI by bridging TTCKeyedService and
+// active TTCSessionController events to the consumer.
 @interface TTCMediator : NSObject <TTCMutator>
 
-// Consumer receiving updates from the mediator.
+// Consumer receiving UI updates from the mediator.
 @property(nonatomic, weak) id<TTCConsumer> consumer;
 
-// Initializer injecting the audio engine.
-- (instancetype)initWithAudioEngine:(TTCAudioEngine*)audioEngine
+// Designated initializer injecting the profile's TTC keyed service.
+- (instancetype)initWithTTCService:(TTCKeyedService*)ttcService
     NS_DESIGNATED_INITIALIZER;
 
-// Default initializer creating an internal TTCAudioEngine.
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects active state observations and clears references.
+// Disconnects active observations and cleans up references. Does not terminate
+// the underlying profile session.
 - (void)disconnect;
 
 @end
