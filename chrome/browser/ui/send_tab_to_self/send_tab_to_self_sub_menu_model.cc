@@ -82,14 +82,12 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
 }
 
 // Returns `target_url` if valid; otherwise falls back to the last committed URL
-// of `web_contents`. Since `web_contents` is null if unavailable, subsequent
-// queries will fail anyway so falling back to `GURL()` is alright.
+// of `web_contents`.
 GURL ResolveTargetUrl(const GURL& target_url,
                       content::WebContents* web_contents) {
-  if (target_url.is_valid()) {
-    return target_url;
-  }
-  return web_contents ? web_contents->GetLastCommittedURL() : GURL();
+  CHECK(web_contents);
+  return target_url.is_valid() ? target_url
+                               : web_contents->GetLastCommittedURL();
 }
 
 // Returns `target_title` if non-empty; otherwise falls back to the active page
@@ -99,11 +97,9 @@ GURL ResolveTargetUrl(const GURL& target_url,
 // page title fallback when link anchor text is empty).
 std::string ResolveTargetTitle(const std::string& target_title,
                                content::WebContents* web_contents) {
-  if (!target_title.empty()) {
-    return target_title;
-  }
-  return web_contents ? base::UTF16ToUTF8(web_contents->GetTitle())
-                      : std::string();
+  CHECK(web_contents);
+  return !target_title.empty() ? target_title
+                               : base::UTF16ToUTF8(web_contents->GetTitle());
 }
 
 std::vector<base::WeakPtr<content::WebContents>> GetWeakWebContentsList(
