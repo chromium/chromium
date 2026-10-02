@@ -5886,6 +5886,10 @@
             "platforms": [
                 "android"
             ],
+            "form_factors": [
+                "phone",
+                "tablet"
+            ],
             "experiments": [
                 {
                     "name": "Enabled",
