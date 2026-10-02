@@ -81,13 +81,14 @@ struct QNameComponentsTranslator {
   }
   static void Store(QualifiedNameImpl*& location,
                     const QualifiedNameData& data,
-                    unsigned) {
+                    uint32_t hash_code) {
     const QualifiedNameComponents& components = data.components_;
     auto name =
         QualifiedNameImpl::Create(components.prefix_, components.local_name_,
                                   components.namespace_, data.is_static_);
     name->AddRef();
     location = name.get();
+    DCHECK_EQ(HashTraits<QualifiedNameImpl*>::GetHash(location), hash_code);
   }
 };
 

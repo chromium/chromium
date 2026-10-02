@@ -260,7 +260,7 @@ inline bool operator==(const QualifiedName& q, const AtomicString& a) {
 }
 
 inline uint32_t HashComponents(const QualifiedNameComponents& buf) {
-  return HashMemory32(base::byte_span_from_ref(buf));
+  return HashMemory64(base::byte_span_from_ref(buf)) & 0xFFFFFF;
 }
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);
